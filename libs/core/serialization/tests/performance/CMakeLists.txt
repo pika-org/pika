@@ -12,17 +12,17 @@ foreach(benchmark ${benchmarks})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Benchmarks/Modules/Core/Serialization")
+  set(folder_name "Benchmarks/Modules/Local/Serialization")
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${benchmark}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${benchmark}_FLAGS}
     EXCLUDE_FROM_ALL
     FOLDER ${folder_name}
   )
 
-  add_hpx_performance_test(
+  hpx_local_add_performance_test(
     "modules.serialization" ${benchmark} ${${benchmark}_PARAMETERS}
   )
 endforeach()

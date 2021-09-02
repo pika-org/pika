@@ -6,22 +6,24 @@
 
 set(tests config_registry)
 
-set(config_registry_FLAGS COMPILE_FLAGS -DHPX_MODULE_STATIC_LINKING)
+set(config_registry_FLAGS COMPILE_FLAGS -DHPX_LOCAL_MODULE_STATIC_LINKING)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)
 
   source_group("Source Files" FILES ${sources})
 
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS} ${${test}_LIBRARIES}
     NOLIBS
     DEPENDENCIES hpx_config_registry
     EXCLUDE_FROM_ALL
     HPX_PREFIX ${HPX_BUILD_PREFIX}
-    FOLDER "Tests/Unit/Modules/Core/ConfigRegistry"
+    FOLDER "Tests/Unit/Modules/Local/ConfigRegistry"
   )
 
-  add_hpx_unit_test("modules.config_registry" ${test} ${${test}_PARAMETERS})
+  hpx_local_add_unit_test(
+    "modules.config_registry" ${test} ${${test}_PARAMETERS}
+  )
 endforeach()

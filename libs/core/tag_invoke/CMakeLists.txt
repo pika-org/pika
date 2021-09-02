@@ -24,13 +24,13 @@ set(tag_invoke_compat_headers
 
 set(tag_invoke_sources)
 
-include(HPX_AddModule)
-add_hpx_module(
-  core tag_invoke
+include(HPXLocal_AddModule)
+hpx_local_add_module(
+  local tag_invoke
   GLOBAL_HEADER_GEN ON
   SOURCES ${tag_invoke_sources}
   HEADERS ${tag_invoke_headers}
   COMPAT_HEADERS ${tag_invoke_compat_headers}
-  MODULE_DEPENDENCIES hpx_config hpx_type_support
+  MODULE_DEPENDENCIES hpx_config_local hpx_type_support
   CMAKE_SUBDIRS examples tests
 )

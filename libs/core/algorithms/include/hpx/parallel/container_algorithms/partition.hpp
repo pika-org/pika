@@ -898,7 +898,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/iterator_support/range.hpp>
 #include <hpx/iterator_support/traits/is_iterator.hpp>
@@ -925,7 +925,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                 traits::projected_range<Proj, Rng>>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::partition is deprecated, use hpx::partition instead")
         typename util::detail::algorithm_result<ExPolicy,
             typename hpx::traits::range_iterator<Rng>::type>::type
@@ -958,9 +958,8 @@ namespace hpx { namespace parallel { inline namespace v1 {
                 traits::projected_range<Proj, Rng>>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 8,
-        "hpx::parallel::partition_copy is deprecated, use "
-        "hpx::partition_copy "
+    HPX_LOCAL_DEPRECATED_V(0, 1,
+        "hpx::parallel::partition_copy is deprecated, use hpx::partition_copy "
         "instead") util::detail::algorithm_result_t<ExPolicy,
         parallel::util::in_out_out_result<hpx::traits::range_iterator_t<Rng>,
             FwdIter2, FwdIter3>> partition_copy(ExPolicy&& policy, Rng&& rng,

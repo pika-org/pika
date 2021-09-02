@@ -26,7 +26,7 @@ set(tests
     serialization_std_variant
 )
 
-if(HPX_SERIALIZATION_WITH_BOOST_TYPES)
+if(HPXLocal_SERIALIZATION_WITH_BOOST_TYPES)
   set(tests ${tests} serialization_boost_variant)
 endif()
 
@@ -42,19 +42,21 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Core/Serialization")
+  set(folder_name "Tests/Unit/Modules/Local/Serialization")
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL NOLIBS
-    DEPENDENCIES hpx_core
+    DEPENDENCIES hpx_local
     FOLDER ${folder_name}
   )
 
-  add_hpx_unit_test("modules.serialization" ${test} ${${test}_PARAMETERS})
-  target_compile_definitions(${test}_test PRIVATE -DHPX_MODULE_STATIC_LINKING)
+  hpx_local_add_unit_test("modules.serialization" ${test} ${${test}_PARAMETERS})
+  target_compile_definitions(
+    ${test}_test PRIVATE -DHPX_LOCAL_MODULE_STATIC_LINKING
+  )
 
 endforeach()
 
@@ -64,25 +66,25 @@ foreach(test ${full_tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Core/Serialization")
+  set(folder_name "Tests/Unit/Modules/Local/Serialization")
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
     FOLDER ${folder_name}
   )
 
-  add_hpx_unit_test("modules.serialization" ${test} ${${test}_PARAMETERS})
+  hpx_local_add_unit_test("modules.serialization" ${test} ${${test}_PARAMETERS})
 
 endforeach()
 
-if(HPX_WITH_COMPILE_ONLY_TESTS)
+if(HPXLocal_WITH_COMPILE_ONLY_TESTS)
   # add compile time tests
   set(compile_tests succeed_compile_empty_class)
 
-  if(HPX_WITH_FAIL_COMPILE_TESTS)
+  if(HPXLocal_WITH_FAIL_COMPILE_TESTS)
     set(fail_compile_tests)
     foreach(fail_compile_test ${fail_compile_tests})
       set(${fail_compile_test}_FLAGS FAILURE_EXPECTED)
@@ -96,10 +98,10 @@ if(HPX_WITH_COMPILE_ONLY_TESTS)
 
     source_group("Source Files" FILES ${sources})
 
-    add_hpx_unit_compile_test(
+    hpx_local_add_unit_compile_test(
       "modules.serialization" ${compile_test}
       SOURCES ${sources} ${${compile_test}_FLAGS}
-      FOLDER "Tests/Unit/Modules/Core/Serialization/CompileOnly"
+      FOLDER "Tests/Unit/Modules/Local/Serialization/CompileOnly"
     )
 
   endforeach()

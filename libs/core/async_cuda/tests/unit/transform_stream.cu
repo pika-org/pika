@@ -179,8 +179,8 @@ int hpx_main()
         dummy::reset_counts();
         auto s1 = ex::just(1);
         auto s2 = cu::transform_stream(std::move(s1), dummy{});
-        HPX_TEST_EQ(
-            ex::sync_wait(ex::transfer(std::move(s2), ex::thread_pool_scheduler{})),
+        HPX_TEST_EQ(ex::sync_wait(ex::transfer(
+                        std::move(s2), ex::thread_pool_scheduler{})),
             2.0);
         HPX_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         HPX_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -196,8 +196,8 @@ int hpx_main()
         auto s2 = cu::transform_stream(std::move(s1), dummy{});
         auto s3 = cu::transform_stream(std::move(s2), dummy{});
         auto s4 = cu::transform_stream(std::move(s3), dummy{});
-        HPX_TEST_EQ(
-            ex::sync_wait(ex::transfer(std::move(s4), ex::thread_pool_scheduler{})),
+        HPX_TEST_EQ(ex::sync_wait(ex::transfer(
+                        std::move(s4), ex::thread_pool_scheduler{})),
             4.0);
         HPX_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         HPX_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -215,8 +215,8 @@ int hpx_main()
         auto s3 = ex::transfer(std::move(s2), ex::thread_pool_scheduler{});
         auto s4 = ex::then(std::move(s3), dummy{});
         auto s5 = cu::transform_stream(std::move(s4), dummy{});
-        HPX_TEST_EQ(
-            ex::sync_wait(ex::transfer(std::move(s5), ex::thread_pool_scheduler{})),
+        HPX_TEST_EQ(ex::sync_wait(ex::transfer(
+                        std::move(s5), ex::thread_pool_scheduler{})),
             4.0);
         HPX_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         HPX_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -270,8 +270,7 @@ int hpx_main()
 
         auto s = ex::just(p, &p_h, sizeof(type), cudaMemcpyHostToDevice) |
             cu::transform_stream(cuda_memcpy_async{}) |
-            ex::then(&cu::check_cuda_error) |
-            ex::then([p] { return p; }) |
+            ex::then(&cu::check_cuda_error) | ex::then([p] { return p; }) |
             cu::transform_stream(increment{}) |
             cu::transform_stream(increment{}) |
             cu::transform_stream(increment{});

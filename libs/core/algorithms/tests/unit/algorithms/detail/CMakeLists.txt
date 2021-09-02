@@ -16,10 +16,10 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Core/Algorithms/Detail")
+  set(folder_name "Tests/Unit/Modules/Local/Algorithms/Detail")
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
@@ -31,5 +31,7 @@ foreach(test ${tests})
     ${test}_test PRIVATE hpx_iterator_support_test_utilities
   )
 
-  add_hpx_unit_test("modules.algorithms.detail" ${test} ${${test}_PARAMETERS})
+  hpx_local_add_unit_test(
+    "modules.algorithms.detail" ${test} ${${test}_PARAMETERS}
+  )
 endforeach()

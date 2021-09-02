@@ -14,14 +14,14 @@ foreach(test ${tests})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources}
     EXCLUDE_FROM_ALL
     HPX_PREFIX ${HPX_BUILD_PREFIX}
-    FOLDER "Tests/Unit/Modules/Core/RuntimeLocal"
+    FOLDER "Tests/Unit/Modules/Local/RuntimeLocal"
   )
 
-  add_hpx_unit_test("modules.runtime_local" ${test} ${${test}_PARAMETERS})
+  hpx_local_add_unit_test("modules.runtime_local" ${test} ${${test}_PARAMETERS})
 
 endforeach()

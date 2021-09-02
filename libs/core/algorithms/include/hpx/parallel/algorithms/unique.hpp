@@ -458,7 +458,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/functional/invoke.hpp>
 #include <hpx/iterator_support/traits/is_iterator.hpp>
@@ -708,7 +708,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                     traits::projected<Proj, FwdIter>>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::unique is deprecated, use "
         "hpx::unique instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
@@ -944,7 +944,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                 traits::projected<Proj, FwdIter1>>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::unique_copy is deprecated, use "
         "hpx::unique_copy instead")
         typename util::detail::algorithm_result<ExPolicy,

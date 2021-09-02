@@ -82,9 +82,9 @@ set(runtime_local_sources
     thread_stacktrace.cpp
 )
 
-include(HPX_AddModule)
-add_hpx_module(
-  core runtime_local
+include(HPXLocal_AddModule)
+hpx_local_add_module(
+  local runtime_local
   GLOBAL_HEADER_GEN ON
   SOURCES ${runtime_local_sources}
   HEADERS ${runtime_local_headers}

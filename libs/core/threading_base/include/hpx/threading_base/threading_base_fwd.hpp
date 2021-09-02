@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/coroutines/coroutine_fwd.hpp>
 #include <hpx/coroutines/thread_enums.hpp>
 #include <hpx/coroutines/thread_id_type.hpp>
@@ -22,7 +22,7 @@
 #include <memory>
 #include <utility>
 
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
 namespace hpx { namespace util { namespace external_timer {
     struct task_wrapper;
 }}}    // namespace hpx::util::external_timer
@@ -37,7 +37,7 @@ namespace hpx { namespace threads {
     namespace policies {
         struct scheduler_base;
     }
-    class HPX_CORE_EXPORT thread_pool_base;
+    class HPX_LOCAL_EXPORT thread_pool_base;
 
     /// \cond NOINTERNAL
     using thread_id_ref_type = thread_id_ref;
@@ -56,10 +56,10 @@ namespace hpx { namespace threads {
     using thread_self = coroutines::detail::coroutine_self;
     using thread_self_impl_type = coroutines::detail::coroutine_impl;
 
-#if defined(HPX_HAVE_APEX)
-    HPX_CORE_EXPORT std::shared_ptr<hpx::util::external_timer::task_wrapper>
+#if defined(HPX_LOCAL_HAVE_APEX)
+    HPX_LOCAL_EXPORT std::shared_ptr<hpx::util::external_timer::task_wrapper>
     get_self_timer_data(void);
-    HPX_CORE_EXPORT void set_self_timer_data(
+    HPX_LOCAL_EXPORT void set_self_timer_data(
         std::shared_ptr<hpx::util::external_timer::task_wrapper> data);
 #endif
     /// \endcond

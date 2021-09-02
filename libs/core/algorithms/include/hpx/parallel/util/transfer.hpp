@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/algorithms/traits/pointer_category.hpp>
 #include <hpx/functional/detail/tag_fallback_invoke.hpp>
 #include <hpx/parallel/algorithms/detail/distance.hpp>

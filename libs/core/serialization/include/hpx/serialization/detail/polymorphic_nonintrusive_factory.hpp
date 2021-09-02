@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/modules/debugging.hpp>
 #include <hpx/modules/errors.hpp>
@@ -28,7 +28,7 @@
 #include <typeinfo>
 #include <unordered_map>
 
-#include <hpx/config/warnings_prefix.hpp>
+#include <hpx/local/config/warnings_prefix.hpp>
 
 namespace hpx { namespace serialization { namespace detail {
 
@@ -135,7 +135,7 @@ namespace hpx { namespace serialization { namespace detail {
         using serializer_typeinfo_map_type = std::unordered_map<std::string,
             std::string, hpx::util::jenkins_hash>;
 
-        HPX_CORE_EXPORT static polymorphic_nonintrusive_factory& instance();
+        HPX_LOCAL_EXPORT static polymorphic_nonintrusive_factory& instance();
 
         void register_class(std::type_info const& typeinfo,
             std::string const& class_name, function_bunch_type const& bunch)
@@ -222,12 +222,12 @@ namespace hpx { namespace serialization { namespace detail {
 
 }}}    // namespace hpx::serialization::detail
 
-#include <hpx/config/warnings_suffix.hpp>
+#include <hpx/local/config/warnings_suffix.hpp>
 
 #define HPX_SERIALIZATION_REGISTER_CLASS_DECLARATION(Class)                    \
     namespace hpx { namespace serialization { namespace detail {               \
                 template <>                                                    \
-                struct HPX_ALWAYS_EXPORT get_serialization_name<Class>;        \
+                struct HPX_LOCAL_ALWAYS_EXPORT get_serialization_name<Class>;  \
             }                                                                  \
         }                                                                      \
     }                                                                          \
@@ -243,7 +243,7 @@ namespace hpx { namespace serialization { namespace detail {
 #define HPX_SERIALIZATION_REGISTER_CLASS_NAME(Class, Name)                     \
     namespace hpx { namespace serialization { namespace detail {               \
                 template <>                                                    \
-                struct HPX_ALWAYS_EXPORT get_serialization_name<Class>         \
+                struct HPX_LOCAL_ALWAYS_EXPORT get_serialization_name<Class>   \
                 {                                                              \
                     char const* operator()()                                   \
                     {                                                          \
@@ -259,7 +259,7 @@ namespace hpx { namespace serialization { namespace detail {
     Parameters, Template, Name)                                                \
     namespace hpx { namespace serialization { namespace detail {               \
                 HPX_PP_STRIP_PARENS(Parameters)                                \
-                struct HPX_ALWAYS_EXPORT                                       \
+                struct HPX_LOCAL_ALWAYS_EXPORT                                 \
                     get_serialization_name<HPX_PP_STRIP_PARENS(Template)>      \
                 {                                                              \
                     char const* operator()()                                   \

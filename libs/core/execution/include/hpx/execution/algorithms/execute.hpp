@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/execution/algorithms/start_detached.hpp>
 #include <hpx/execution/algorithms/then.hpp>
 #include <hpx/execution_base/sender.hpp>

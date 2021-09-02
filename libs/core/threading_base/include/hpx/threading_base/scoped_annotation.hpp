@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 
 #if defined(HPX_HAVE_THREAD_DESCRIPTION)
 #include <hpx/threading_base/thread_description.hpp>
@@ -14,7 +14,7 @@
 
 #if HPX_HAVE_ITTNOTIFY != 0
 #include <hpx/modules/itt_notify.hpp>
-#elif defined(HPX_HAVE_APEX)
+#elif defined(HPX_LOCAL_HAVE_APEX)
 #include <hpx/threading_base/external_timer.hpp>
 #endif
 #endif
@@ -24,7 +24,8 @@
 
 namespace hpx {
     namespace detail {
-        HPX_CORE_EXPORT char const* store_function_annotation(std::string name);
+        HPX_LOCAL_EXPORT char const* store_function_annotation(
+            std::string name);
     }    // namespace detail
 
 #if defined(HPX_HAVE_THREAD_DESCRIPTION)
@@ -79,7 +80,7 @@ namespace hpx {
                             ->set_description(name);
             }
 
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
             threads::set_self_timer_data(hpx::util::external_timer::update_task(
                 threads::get_self_timer_data(), std::string(name)));
@@ -92,7 +93,7 @@ namespace hpx {
             if (self != nullptr)
             {
                 char const* name_c_str =
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
                     detail::store_function_annotation(name);
 #else
                     detail::store_function_annotation(HPX_MOVE(name));
@@ -101,7 +102,7 @@ namespace hpx {
                             ->set_description(name_c_str);
             }
 
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
             threads::set_self_timer_data(hpx::util::external_timer::update_task(
                 threads::get_self_timer_data(), HPX_MOVE(name)));
@@ -120,7 +121,7 @@ namespace hpx {
                             ->set_description(hpx::util::thread_description(f));
             }
 
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
             /* no need to update the task description in APEX, because
              * this same description was used when the task was created. */
 #endif
@@ -160,7 +161,7 @@ namespace hpx {
 }    // namespace hpx
 
 namespace hpx::util {
-    using annotate_function HPX_DEPRECATED_V(1, 8,
+    using annotate_function HPX_LOCAL_DEPRECATED_V(0, 1,
         "Please use hpx::scoped_annotation instead.") = hpx::scoped_annotation;
 
 }    // namespace hpx::util

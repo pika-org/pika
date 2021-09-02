@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -85,84 +85,84 @@ struct ___itt_counter;
 // decide whether to use the ITT notify API if it's available
 
 #if HPX_HAVE_ITTNOTIFY != 0
-HPX_CORE_EXPORT extern bool use_ittnotify_api;
+HPX_LOCAL_EXPORT extern bool use_ittnotify_api;
 
 ///////////////////////////////////////////////////////////////////////////////
-HPX_CORE_EXPORT void itt_sync_create(
+HPX_LOCAL_EXPORT void itt_sync_create(
     void* addr, const char* objtype, const char* objname) noexcept;
-HPX_CORE_EXPORT void itt_sync_rename(void* addr, const char* name) noexcept;
-HPX_CORE_EXPORT void itt_sync_prepare(void* addr) noexcept;
-HPX_CORE_EXPORT void itt_sync_acquired(void* addr) noexcept;
-HPX_CORE_EXPORT void itt_sync_cancel(void* addr) noexcept;
-HPX_CORE_EXPORT void itt_sync_releasing(void* addr) noexcept;
-HPX_CORE_EXPORT void itt_sync_released(void* addr) noexcept;
-HPX_CORE_EXPORT void itt_sync_destroy(void* addr) noexcept;
+HPX_LOCAL_EXPORT void itt_sync_rename(void* addr, const char* name) noexcept;
+HPX_LOCAL_EXPORT void itt_sync_prepare(void* addr) noexcept;
+HPX_LOCAL_EXPORT void itt_sync_acquired(void* addr) noexcept;
+HPX_LOCAL_EXPORT void itt_sync_cancel(void* addr) noexcept;
+HPX_LOCAL_EXPORT void itt_sync_releasing(void* addr) noexcept;
+HPX_LOCAL_EXPORT void itt_sync_released(void* addr) noexcept;
+HPX_LOCAL_EXPORT void itt_sync_destroy(void* addr) noexcept;
 
-HPX_CORE_EXPORT ___itt_caller* itt_stack_create() noexcept;
-HPX_CORE_EXPORT void itt_stack_enter(___itt_caller* ctx) noexcept;
-HPX_CORE_EXPORT void itt_stack_leave(___itt_caller* ctx) noexcept;
-HPX_CORE_EXPORT void itt_stack_destroy(___itt_caller* ctx) noexcept;
+HPX_LOCAL_EXPORT ___itt_caller* itt_stack_create() noexcept;
+HPX_LOCAL_EXPORT void itt_stack_enter(___itt_caller* ctx) noexcept;
+HPX_LOCAL_EXPORT void itt_stack_leave(___itt_caller* ctx) noexcept;
+HPX_LOCAL_EXPORT void itt_stack_destroy(___itt_caller* ctx) noexcept;
 
-HPX_CORE_EXPORT void itt_frame_begin(
+HPX_LOCAL_EXPORT void itt_frame_begin(
     ___itt_domain const* frame, ___itt_id* id) noexcept;
-HPX_CORE_EXPORT void itt_frame_end(
+HPX_LOCAL_EXPORT void itt_frame_end(
     ___itt_domain const* frame, ___itt_id* id) noexcept;
 
-HPX_CORE_EXPORT int itt_mark_create(char const*) noexcept;
-HPX_CORE_EXPORT void itt_mark_off(int mark) noexcept;
-HPX_CORE_EXPORT void itt_mark(int mark, char const*) noexcept;
+HPX_LOCAL_EXPORT int itt_mark_create(char const*) noexcept;
+HPX_LOCAL_EXPORT void itt_mark_off(int mark) noexcept;
+HPX_LOCAL_EXPORT void itt_mark(int mark, char const*) noexcept;
 
-HPX_CORE_EXPORT void itt_thread_set_name(char const*) noexcept;
-HPX_CORE_EXPORT void itt_thread_ignore() noexcept;
+HPX_LOCAL_EXPORT void itt_thread_set_name(char const*) noexcept;
+HPX_LOCAL_EXPORT void itt_thread_ignore() noexcept;
 
-HPX_CORE_EXPORT void itt_task_begin(
+HPX_LOCAL_EXPORT void itt_task_begin(
     ___itt_domain const*, ___itt_string_handle*) noexcept;
-HPX_CORE_EXPORT void itt_task_begin(
+HPX_LOCAL_EXPORT void itt_task_begin(
     ___itt_domain const*, ___itt_id*, ___itt_string_handle*) noexcept;
-HPX_CORE_EXPORT void itt_task_end(___itt_domain const*) noexcept;
+HPX_LOCAL_EXPORT void itt_task_end(___itt_domain const*) noexcept;
 
-HPX_CORE_EXPORT ___itt_domain* itt_domain_create(char const*) noexcept;
-HPX_CORE_EXPORT ___itt_string_handle* itt_string_handle_create(
+HPX_LOCAL_EXPORT ___itt_domain* itt_domain_create(char const*) noexcept;
+HPX_LOCAL_EXPORT ___itt_string_handle* itt_string_handle_create(
     char const*) noexcept;
 
-HPX_CORE_EXPORT ___itt_id* itt_make_id(void*, std::size_t);
-HPX_CORE_EXPORT void itt_id_create(
+HPX_LOCAL_EXPORT ___itt_id* itt_make_id(void*, std::size_t);
+HPX_LOCAL_EXPORT void itt_id_create(
     ___itt_domain const*, ___itt_id* id) noexcept;
-HPX_CORE_EXPORT void itt_id_destroy(___itt_id* id) noexcept;
+HPX_LOCAL_EXPORT void itt_id_destroy(___itt_id* id) noexcept;
 
-HPX_CORE_EXPORT __itt_heap_function itt_heap_function_create(
+HPX_LOCAL_EXPORT __itt_heap_function itt_heap_function_create(
     const char*, const char*) noexcept;
-HPX_CORE_EXPORT void itt_heap_allocate_begin(
+HPX_LOCAL_EXPORT void itt_heap_allocate_begin(
     __itt_heap_function, std::size_t, int) noexcept;
-HPX_CORE_EXPORT void itt_heap_allocate_end(
+HPX_LOCAL_EXPORT void itt_heap_allocate_end(
     __itt_heap_function, void**, std::size_t, int) noexcept;
-HPX_CORE_EXPORT void itt_heap_free_begin(__itt_heap_function, void*) noexcept;
-HPX_CORE_EXPORT void itt_heap_free_end(__itt_heap_function, void*) noexcept;
-HPX_CORE_EXPORT void itt_heap_reallocate_begin(
+HPX_LOCAL_EXPORT void itt_heap_free_begin(__itt_heap_function, void*) noexcept;
+HPX_LOCAL_EXPORT void itt_heap_free_end(__itt_heap_function, void*) noexcept;
+HPX_LOCAL_EXPORT void itt_heap_reallocate_begin(
     __itt_heap_function, void*, std::size_t, int) noexcept;
-HPX_CORE_EXPORT void itt_heap_reallocate_end(
+HPX_LOCAL_EXPORT void itt_heap_reallocate_end(
     __itt_heap_function, void*, void**, std::size_t, int) noexcept;
-HPX_CORE_EXPORT void itt_heap_internal_access_begin() noexcept;
-HPX_CORE_EXPORT void itt_heap_internal_access_end() noexcept;
+HPX_LOCAL_EXPORT void itt_heap_internal_access_begin() noexcept;
+HPX_LOCAL_EXPORT void itt_heap_internal_access_end() noexcept;
 
-HPX_CORE_EXPORT ___itt_counter* itt_counter_create(
+HPX_LOCAL_EXPORT ___itt_counter* itt_counter_create(
     char const*, char const*) noexcept;
-HPX_CORE_EXPORT ___itt_counter* itt_counter_create_typed(
+HPX_LOCAL_EXPORT ___itt_counter* itt_counter_create_typed(
     char const*, char const*, int) noexcept;
-HPX_CORE_EXPORT void itt_counter_destroy(___itt_counter*) noexcept;
-HPX_CORE_EXPORT void itt_counter_set_value(___itt_counter*, void*) noexcept;
+HPX_LOCAL_EXPORT void itt_counter_destroy(___itt_counter*) noexcept;
+HPX_LOCAL_EXPORT void itt_counter_set_value(___itt_counter*, void*) noexcept;
 
-HPX_CORE_EXPORT int itt_event_create(char const* name, int namelen) noexcept;
-HPX_CORE_EXPORT int itt_event_start(int evnt) noexcept;
-HPX_CORE_EXPORT int itt_event_end(int evnt) noexcept;
+HPX_LOCAL_EXPORT int itt_event_create(char const* name, int namelen) noexcept;
+HPX_LOCAL_EXPORT int itt_event_start(int evnt) noexcept;
+HPX_LOCAL_EXPORT int itt_event_end(int evnt) noexcept;
 
-HPX_CORE_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
+HPX_LOCAL_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
     ___itt_string_handle* key, std::uint64_t const& data) noexcept;
-HPX_CORE_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
+HPX_LOCAL_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
     ___itt_string_handle* key, double const& data) noexcept;
-HPX_CORE_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
+HPX_LOCAL_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
     ___itt_string_handle* key, char const* data) noexcept;
-HPX_CORE_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
+HPX_LOCAL_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
     ___itt_string_handle* key, void const* data) noexcept;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,8 +175,8 @@ namespace hpx { namespace util { namespace itt {
 
     struct stack_context
     {
-        HPX_CORE_EXPORT stack_context();
-        HPX_CORE_EXPORT ~stack_context();
+        HPX_LOCAL_EXPORT stack_context();
+        HPX_LOCAL_EXPORT ~stack_context();
 
         stack_context(stack_context const& rhs) = delete;
         stack_context(stack_context&& rhs) noexcept
@@ -201,8 +201,8 @@ namespace hpx { namespace util { namespace itt {
 
     struct caller_context
     {
-        HPX_CORE_EXPORT caller_context(stack_context& ctx);
-        HPX_CORE_EXPORT ~caller_context();
+        HPX_LOCAL_EXPORT caller_context(stack_context& ctx);
+        HPX_LOCAL_EXPORT ~caller_context();
 
         stack_context& ctx_;
     };
@@ -213,7 +213,7 @@ namespace hpx { namespace util { namespace itt {
         HPX_NON_COPYABLE(domain);
 
         domain() = default;
-        HPX_CORE_EXPORT domain(char const*) noexcept;
+        HPX_LOCAL_EXPORT domain(char const*) noexcept;
 
         ___itt_domain* domain_ = nullptr;
     };
@@ -222,14 +222,14 @@ namespace hpx { namespace util { namespace itt {
     {
         HPX_NON_COPYABLE(thread_domain);
 
-        HPX_CORE_EXPORT thread_domain() noexcept;
+        HPX_LOCAL_EXPORT thread_domain() noexcept;
     };
 
     struct id
     {
-        HPX_CORE_EXPORT id(
+        HPX_LOCAL_EXPORT id(
             domain const& domain, void* addr, unsigned long extra = 0) noexcept;
-        HPX_CORE_EXPORT ~id();
+        HPX_LOCAL_EXPORT ~id();
 
         id(id const& rhs) = delete;
         id(id&& rhs) noexcept
@@ -255,9 +255,9 @@ namespace hpx { namespace util { namespace itt {
     ///////////////////////////////////////////////////////////////////////////
     struct frame_context
     {
-        HPX_CORE_EXPORT frame_context(
+        HPX_LOCAL_EXPORT frame_context(
             domain const& domain, id* ident = nullptr) noexcept;
-        HPX_CORE_EXPORT ~frame_context();
+        HPX_LOCAL_EXPORT ~frame_context();
 
         domain const& domain_;
         id* ident_ = nullptr;
@@ -265,8 +265,8 @@ namespace hpx { namespace util { namespace itt {
 
     struct undo_frame_context
     {
-        HPX_CORE_EXPORT undo_frame_context(frame_context& frame) noexcept;
-        HPX_CORE_EXPORT ~undo_frame_context();
+        HPX_LOCAL_EXPORT undo_frame_context(frame_context& frame) noexcept;
+        HPX_LOCAL_EXPORT ~undo_frame_context();
 
         frame_context& frame_;
     };
@@ -274,8 +274,8 @@ namespace hpx { namespace util { namespace itt {
     ///////////////////////////////////////////////////////////////////////////
     struct mark_context
     {
-        HPX_CORE_EXPORT mark_context(char const* name) noexcept;
-        HPX_CORE_EXPORT ~mark_context();
+        HPX_LOCAL_EXPORT mark_context(char const* name) noexcept;
+        HPX_LOCAL_EXPORT ~mark_context();
 
         int itt_mark_;
         char const* name_ = nullptr;
@@ -283,8 +283,8 @@ namespace hpx { namespace util { namespace itt {
 
     struct undo_mark_context
     {
-        HPX_CORE_EXPORT undo_mark_context(mark_context& mark) noexcept;
-        HPX_CORE_EXPORT ~undo_mark_context();
+        HPX_LOCAL_EXPORT undo_mark_context(mark_context& mark) noexcept;
+        HPX_LOCAL_EXPORT ~undo_mark_context();
 
         mark_context& mark_;
     };
@@ -294,7 +294,7 @@ namespace hpx { namespace util { namespace itt {
     {
         string_handle() noexcept = default;
 
-        HPX_CORE_EXPORT string_handle(char const* s) noexcept;
+        HPX_LOCAL_EXPORT string_handle(char const* s) noexcept;
 
         string_handle(___itt_string_handle* h) noexcept
           : handle_(h)
@@ -336,18 +336,18 @@ namespace hpx { namespace util { namespace itt {
     ///////////////////////////////////////////////////////////////////////////
     struct task
     {
-        HPX_CORE_EXPORT task(domain const&, string_handle const&,
+        HPX_LOCAL_EXPORT task(domain const&, string_handle const&,
             std::uint64_t metadata) noexcept;
-        HPX_CORE_EXPORT task(domain const&, string_handle const&) noexcept;
-        HPX_CORE_EXPORT ~task();
+        HPX_LOCAL_EXPORT task(domain const&, string_handle const&) noexcept;
+        HPX_LOCAL_EXPORT ~task();
 
-        HPX_CORE_EXPORT void add_metadata(
+        HPX_LOCAL_EXPORT void add_metadata(
             string_handle const& name, std::uint64_t val) noexcept;
-        HPX_CORE_EXPORT void add_metadata(
+        HPX_LOCAL_EXPORT void add_metadata(
             string_handle const& name, double val) noexcept;
-        HPX_CORE_EXPORT void add_metadata(
+        HPX_LOCAL_EXPORT void add_metadata(
             string_handle const& name, char const* val) noexcept;
-        HPX_CORE_EXPORT void add_metadata(
+        HPX_LOCAL_EXPORT void add_metadata(
             string_handle const& name, void const* val) noexcept;
 
         template <typename T>
@@ -364,7 +364,7 @@ namespace hpx { namespace util { namespace itt {
     ///////////////////////////////////////////////////////////////////////////
     struct heap_function
     {
-        HPX_CORE_EXPORT heap_function(
+        HPX_LOCAL_EXPORT heap_function(
             char const* name, char const* domain) noexcept;
 
         __itt_heap_function heap_function_ = nullptr;
@@ -372,8 +372,8 @@ namespace hpx { namespace util { namespace itt {
 
     struct heap_internal_access
     {
-        HPX_CORE_EXPORT heap_internal_access() noexcept;
-        HPX_CORE_EXPORT ~heap_internal_access();
+        HPX_LOCAL_EXPORT heap_internal_access() noexcept;
+        HPX_LOCAL_EXPORT ~heap_internal_access();
     };
 
     struct heap_allocate
@@ -411,9 +411,9 @@ namespace hpx { namespace util { namespace itt {
 
     struct heap_free
     {
-        HPX_CORE_EXPORT heap_free(
+        HPX_LOCAL_EXPORT heap_free(
             heap_function& heap_function, void* addr) noexcept;
-        HPX_CORE_EXPORT ~heap_free();
+        HPX_LOCAL_EXPORT ~heap_free();
 
     private:
         heap_function& heap_function_;
@@ -423,10 +423,10 @@ namespace hpx { namespace util { namespace itt {
     ///////////////////////////////////////////////////////////////////////////
     struct counter
     {
-        HPX_CORE_EXPORT counter(char const* name, char const* domain) noexcept;
-        HPX_CORE_EXPORT counter(
+        HPX_LOCAL_EXPORT counter(char const* name, char const* domain) noexcept;
+        HPX_LOCAL_EXPORT counter(
             char const* name, char const* domain, int type) noexcept;
-        HPX_CORE_EXPORT ~counter();
+        HPX_LOCAL_EXPORT ~counter();
 
         template <typename T>
         void set_value(T const& value) noexcept

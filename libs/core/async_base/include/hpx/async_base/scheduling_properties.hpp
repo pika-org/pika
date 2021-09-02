@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/functional/detail/tag_fallback_invoke.hpp>
 
 namespace hpx { namespace execution { namespace experimental {

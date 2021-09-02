@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <hpx/config/move.hpp>
+#include <hpx/local/config/move.hpp>
 #include <hpx/parallel/util/low_level.hpp>
 #include <hpx/parallel/util/range.hpp>
 

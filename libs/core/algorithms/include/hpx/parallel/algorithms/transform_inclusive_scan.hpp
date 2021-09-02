@@ -400,7 +400,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/functional/detail/tag_fallback_invoke.hpp>
 #include <hpx/functional/invoke.hpp>
@@ -629,7 +629,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::transform_inclusive_scan is deprecated, use "
         "hpx::transform_inclusive_scan instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
@@ -673,7 +673,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::transform_inclusive_scan is deprecated, use "
         "hpx::transform_inclusive_scan instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 
 namespace hpx {
 
@@ -27,12 +27,12 @@ namespace hpx {
 
     namespace lcos {
         template <typename R>
-        using future HPX_DEPRECATED_V(
-            1, 8, "hpx::lcos::future is deprecated. Use hpx::future instead.") =
+        using future HPX_LOCAL_DEPRECATED_V(
+            0, 1, "hpx::lcos::future is deprecated. Use hpx::future instead.") =
             hpx::future<R>;
 
         template <typename R>
-        using shared_future HPX_DEPRECATED_V(1, 8,
+        using shared_future HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::lcos::shared_future is deprecated. Use hpx::shared_future "
             "instead.") = hpx::shared_future<R>;
     }    // namespace lcos

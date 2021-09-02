@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
-#if (HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX))
+#include <hpx/local/config.hpp>
+#if (HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX))
 #include <hpx/modules/itt_notify.hpp>
 #endif
 
@@ -17,7 +17,7 @@ namespace hpx { namespace actions { namespace detail {
     template <typename Action>
     char const* get_action_name() noexcept;
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
     template <typename Action>
     util::itt::string_handle const& get_action_name_itt() noexcept;
 #endif

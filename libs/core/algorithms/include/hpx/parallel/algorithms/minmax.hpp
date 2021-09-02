@@ -363,7 +363,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/functional/invoke.hpp>
@@ -542,7 +542,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 7,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::min_element is deprecated, use hpx::min_element "
         "instead") hpx::parallel::util::detail::algorithm_result_t<ExPolicy,
         FwdIter> min_element(ExPolicy&& policy, FwdIter first, FwdIter last,
@@ -705,7 +705,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 7,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::max_element is deprecated, use hpx::max_element "
         "instead") hpx::parallel::util::detail::algorithm_result_t<ExPolicy,
         FwdIter> max_element(ExPolicy&& policy, FwdIter first, FwdIter last,
@@ -898,7 +898,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 7,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::minmax_element is deprecated, use hpx::minmax_element "
         "instead") hpx::parallel::util::detail::algorithm_result_t<ExPolicy,
         minmax_element_result<FwdIter>> minmax_element(ExPolicy&& policy,

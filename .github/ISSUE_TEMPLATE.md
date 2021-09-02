@@ -19,6 +19,7 @@
 
 ... Please describe your environment
 
-  - HPX Version:
+  - HPXLocal Version:
+  - (if applicable) HPX Version:
   - Platform (compiler, OS):
 

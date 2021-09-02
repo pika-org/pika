@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assertion/current_function.hpp>
 #include <hpx/assertion/evaluate_assert.hpp>
 #include <hpx/assertion/source_location.hpp>
@@ -32,7 +32,7 @@ namespace hpx { namespace assertion {
     /// Set the assertion handler to be used within a program. If the handler has been
     /// set already once, the call to this function will be ignored.
     /// \note This function is not thread safe
-    HPX_CORE_EXPORT void set_assertion_handler(assertion_handler handler);
+    HPX_LOCAL_EXPORT void set_assertion_handler(assertion_handler handler);
 }}    // namespace hpx::assertion
 
 #if defined(DOXYGEN)
@@ -84,6 +84,7 @@ namespace hpx { namespace assertion {
     HPX_ASSERT_(false,                                                         \
         "This code is meant to be unreachable. If you are seeing this error "  \
         "message it means that you have found a bug in HPX. Please report it " \
-        "on the issue tracker: https://github.com/STEllAR-GROUP/hpx/issues."); \
+        "on https://github.com/STEllAR-GROUP/hpx-local/issues or "             \
+        "https://github.com/STEllAR-GROUP/hpx/issues.");                       \
     std::terminate()
 #endif

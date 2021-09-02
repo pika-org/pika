@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/debugging/demangle_helper.hpp>
 #include <hpx/preprocessor/stringize.hpp>
 #include <hpx/preprocessor/strip_parens.hpp>
@@ -49,7 +49,7 @@ namespace hpx { namespace util { namespace detail {
 #define HPX_DECLARE_GET_FUNCTION_NAME(VTable, F, Name)                         \
     namespace hpx { namespace util { namespace detail {                        \
          template <>                                                           \
-         HPX_ALWAYS_EXPORT char const* get_function_name<VTable,               \
+         HPX_LOCAL_ALWAYS_EXPORT char const* get_function_name<VTable,         \
              std::decay<HPX_PP_STRIP_PARENS(F)>::type>();                      \
                                                                                \
          template <>                                                           \
@@ -63,7 +63,7 @@ namespace hpx { namespace util { namespace detail {
 #define HPX_DEFINE_GET_FUNCTION_NAME(VTable, F, Name)                          \
     namespace hpx { namespace util { namespace detail {                        \
         template <>                                                            \
-        HPX_ALWAYS_EXPORT char const* get_function_name<VTable,                \
+        HPX_LOCAL_ALWAYS_EXPORT char const* get_function_name<VTable,          \
             std::decay<HPX_PP_STRIP_PARENS(F)>::type>()                        \
         {                                                                      \
             /*If you encounter this assert while compiling code, that means    \

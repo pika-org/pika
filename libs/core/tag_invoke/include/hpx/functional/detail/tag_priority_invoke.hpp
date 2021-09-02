@@ -104,7 +104,7 @@ namespace hpx::functional::detail {
 }    // namespace hpx::functional::detail
 #else
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/functional/detail/tag_fallback_invoke.hpp>
 #include <hpx/functional/invoke_result.hpp>
 #include <hpx/functional/tag_invoke.hpp>

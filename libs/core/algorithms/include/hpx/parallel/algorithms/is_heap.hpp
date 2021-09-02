@@ -134,7 +134,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/functional/invoke.hpp>
 #include <hpx/functional/traits/is_invocable.hpp>
@@ -286,8 +286,8 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(
-        1, 6, "hpx::parallel::is_heap is deprecated, use hpx::is_heap instead")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::parallel::is_heap is deprecated, use hpx::is_heap instead")
         typename util::detail::algorithm_result<ExPolicy, bool>::type
         is_heap(ExPolicy&& policy, RandIter first, RandIter last,
             Comp&& comp = Comp(), Proj&& proj = Proj())
@@ -436,7 +436,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 6,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::is_heap_until is deprecated, use hpx::is_heap_until "
         "instead")
         typename util::detail::algorithm_result<ExPolicy, RandIter>::type

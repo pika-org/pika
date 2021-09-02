@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/coroutines/thread_enums.hpp>
 #include <hpx/threading_base/thread_description.hpp>
 #include <hpx/threading_base/threading_base_fwd.hpp>
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
 #include <hpx/threading_base/external_timer.hpp>
 #endif
 #include <hpx/type_support/unused.hpp>
@@ -36,7 +36,7 @@ namespace hpx { namespace threads {
           , parent_id(nullptr)
           , parent_phase(0)
 #endif
-#ifdef HPX_HAVE_APEX
+#ifdef HPX_LOCAL_HAVE_APEX
           , timer_data(nullptr)
 #endif
           , priority(thread_priority::normal)
@@ -71,8 +71,8 @@ namespace hpx { namespace threads {
             parent_id = rhs.parent_id;
             parent_phase = rhs.parent_phase;
 #endif
-#ifdef HPX_HAVE_APEX
-            // HPX_HAVE_APEX forces the HPX_HAVE_THREAD_DESCRIPTION
+#ifdef HPX_LOCAL_HAVE_APEX
+            // HPX_LOCAL_HAVE_APEX forces the HPX_HAVE_THREAD_DESCRIPTION
             // and HPX_HAVE_THREAD_PARENT_REFERENCE settings to be on
             timer_data = rhs.timer_data;
 #endif
@@ -89,8 +89,8 @@ namespace hpx { namespace threads {
           , parent_id(rhs.parent_id)
           , parent_phase(rhs.parent_phase)
 #endif
-#ifdef HPX_HAVE_APEX
-          // HPX_HAVE_APEX forces the HPX_HAVE_THREAD_DESCRIPTION and
+#ifdef HPX_LOCAL_HAVE_APEX
+          // HPX_LOCAL_HAVE_APEX forces the HPX_HAVE_THREAD_DESCRIPTION and
           // HPX_HAVE_THREAD_PARENT_REFERENCE settings to be on
           , timer_data(util::external_timer::new_task(
                 description, parent_locality_id, parent_id))
@@ -122,8 +122,8 @@ namespace hpx { namespace threads {
           , parent_id(nullptr)
           , parent_phase(0)
 #endif
-#ifdef HPX_HAVE_APEX
-          // HPX_HAVE_APEX forces the HPX_HAVE_THREAD_DESCRIPTION and
+#ifdef HPX_LOCAL_HAVE_APEX
+          // HPX_LOCAL_HAVE_APEX forces the HPX_HAVE_THREAD_DESCRIPTION and
           // HPX_HAVE_THREAD_PARENT_REFERENCE settings to be on
           , timer_data(util::external_timer::new_task(
                 description, parent_locality_id, parent_id))
@@ -155,8 +155,8 @@ namespace hpx { namespace threads {
         threads::thread_id_type parent_id;
         std::size_t parent_phase;
 #endif
-#ifdef HPX_HAVE_APEX
-        // HPX_HAVE_APEX forces the HPX_HAVE_THREAD_DESCRIPTION and
+#ifdef HPX_LOCAL_HAVE_APEX
+        // HPX_LOCAL_HAVE_APEX forces the HPX_HAVE_THREAD_DESCRIPTION and
         // HPX_HAVE_THREAD_PARENT_REFERENCE settings to be on
         std::shared_ptr<util::external_timer::task_wrapper> timer_data;
 #endif

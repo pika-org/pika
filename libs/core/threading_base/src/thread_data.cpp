@@ -15,7 +15,7 @@
 #include <hpx/thread_support/unlock_guard.hpp>
 #include <hpx/threading_base/scheduler_base.hpp>
 #include <hpx/threading_base/thread_data.hpp>
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
 #include <hpx/threading_base/external_timer.hpp>
 #endif
 
@@ -96,7 +96,7 @@ namespace hpx { namespace threads {
         if (0 == parent_locality_id_)
             parent_locality_id_ = detail::get_locality_id(hpx::throws);
 #endif
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
         set_timer_data(init_data.timer_data);
 #endif
     }
@@ -250,7 +250,7 @@ namespace hpx { namespace threads {
             parent_locality_id_ = detail::get_locality_id(hpx::throws);
         }
 #endif
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
         set_timer_data(init_data.timer_data);
 #endif
     }
@@ -402,7 +402,7 @@ namespace hpx { namespace threads {
 #endif
     }
 
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
     std::shared_ptr<hpx::util::external_timer::task_wrapper>
     get_self_timer_data()
     {

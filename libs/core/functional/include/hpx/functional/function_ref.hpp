@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/functional/detail/empty_function.hpp>
 #include <hpx/functional/detail/vtable/callable_vtable.hpp>
@@ -176,7 +176,7 @@ namespace hpx { namespace util {
 
         util::itt::string_handle get_function_annotation_itt() const
         {
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
             return vptr->get_function_annotation_itt(object);
 #else
             static util::itt::string_handle sh;
@@ -224,7 +224,7 @@ namespace hpx { namespace traits {
         }
     };
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
     template <typename Sig>
     struct get_function_annotation_itt<util::function_ref<Sig>>
     {

@@ -11,17 +11,17 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Core/Debugging")
+  set(folder_name "Tests/Unit/Modules/Local/Debugging")
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS} ${${test}_LIBS}
     EXCLUDE_FROM_ALL
     FOLDER ${folder_name}
     NOLIBS
-    DEPENDENCIES hpx_core
+    DEPENDENCIES hpx_local
   )
 
-  add_hpx_unit_test("modules.debugging" ${test} ${${test}_PARAMETERS})
+  hpx_local_add_unit_test("modules.debugging" ${test} ${${test}_PARAMETERS})
 endforeach()

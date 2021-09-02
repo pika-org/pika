@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 
 #include <hpx/assert.hpp>
 #include <hpx/concepts/concepts.hpp>
@@ -36,20 +36,20 @@ namespace hpx { namespace execution { namespace experimental {
     class task_group
     {
     public:
-        HPX_CORE_EXPORT task_group();
-        HPX_CORE_EXPORT ~task_group();
+        HPX_LOCAL_EXPORT task_group();
+        HPX_LOCAL_EXPORT ~task_group();
 
     private:
         struct on_exit
         {
-            HPX_CORE_EXPORT explicit on_exit(task_group& tg);
-            HPX_CORE_EXPORT ~on_exit();
+            HPX_LOCAL_EXPORT explicit on_exit(task_group& tg);
+            HPX_LOCAL_EXPORT ~on_exit();
 
-            HPX_CORE_EXPORT on_exit(on_exit const& rhs) = delete;
-            HPX_CORE_EXPORT on_exit& operator=(on_exit const& rhs) = delete;
+            HPX_LOCAL_EXPORT on_exit(on_exit const& rhs) = delete;
+            HPX_LOCAL_EXPORT on_exit& operator=(on_exit const& rhs) = delete;
 
-            HPX_CORE_EXPORT on_exit(on_exit&& rhs) noexcept;
-            HPX_CORE_EXPORT on_exit& operator=(on_exit&& rhs) noexcept;
+            HPX_LOCAL_EXPORT on_exit(on_exit&& rhs) noexcept;
+            HPX_LOCAL_EXPORT on_exit& operator=(on_exit&& rhs) noexcept;
 
             hpx::lcos::local::latch* latch_;
         };
@@ -104,17 +104,17 @@ namespace hpx { namespace execution { namespace experimental {
         }
 
         // Waits for all tasks in the group to complete.
-        HPX_CORE_EXPORT void wait();
+        HPX_LOCAL_EXPORT void wait();
 
         // Add an exception to this task_group
-        HPX_CORE_EXPORT void add_exception(std::exception_ptr p);
+        HPX_LOCAL_EXPORT void add_exception(std::exception_ptr p);
 
     private:
         friend class serialization::access;
 
-        HPX_CORE_EXPORT void serialize(
+        HPX_LOCAL_EXPORT void serialize(
             serialization::input_archive&, unsigned const);
-        HPX_CORE_EXPORT void serialize(
+        HPX_LOCAL_EXPORT void serialize(
             serialization::output_archive&, unsigned const);
 
     private:

@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <hpx/config/warnings_prefix.hpp>
+#include <hpx/local/config/warnings_prefix.hpp>
 
 namespace hpx::detail {
     template <typename T>
@@ -294,7 +294,7 @@ namespace hpx::execution::experimental::detail {
         virtual void start() & noexcept = 0;
     };
 
-    struct HPX_CORE_EXPORT empty_any_operation_state final
+    struct HPX_LOCAL_EXPORT empty_any_operation_state final
       : any_operation_state_base
     {
         bool empty() const noexcept override;
@@ -333,7 +333,7 @@ namespace hpx::execution::experimental::detail {
         }
     };
 
-    class HPX_CORE_EXPORT any_operation_state
+    class HPX_LOCAL_EXPORT any_operation_state
     {
         using base_type = detail::any_operation_state_base;
         template <typename Sender, typename Receiver>
@@ -357,7 +357,7 @@ namespace hpx::execution::experimental::detail {
         any_operation_state& operator=(any_operation_state&&) = delete;
         any_operation_state& operator=(any_operation_state const&) = delete;
 
-        HPX_CORE_EXPORT friend void tag_invoke(
+        HPX_LOCAL_EXPORT friend void tag_invoke(
             hpx::execution::experimental::start_t,
             any_operation_state& os) noexcept;
     };
@@ -376,7 +376,7 @@ namespace hpx::execution::experimental::detail {
         }
     };
 
-    HPX_NORETURN HPX_CORE_EXPORT void throw_bad_any_call(
+    HPX_NORETURN HPX_LOCAL_EXPORT void throw_bad_any_call(
         char const* class_name, char const* function_name);
 
     template <typename... Ts>
@@ -865,4 +865,4 @@ namespace hpx::detail {
     };
 }    // namespace hpx::detail
 
-#include <hpx/config/warnings_suffix.hpp>
+#include <hpx/local/config/warnings_suffix.hpp>

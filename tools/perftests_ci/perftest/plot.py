@@ -404,7 +404,7 @@ def _add_executor_comparison_plots(report, data):
 
 
 def compare_executors(data, output):
-    title = 'HPX executors Comparison'
+    title = 'HPXLocal executors Comparison'
     with html.Report(output, title) as report:
         _add_executor_comparison_plots(report, data)
         _add_info(report, [f'Configuration {i + 1}' for i in range(len(data))],

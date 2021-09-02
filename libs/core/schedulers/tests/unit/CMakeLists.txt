@@ -13,13 +13,13 @@ foreach(test ${tests})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS} ${${test}_LIBRARIES}
     EXCLUDE_FROM_ALL
     HPX_PREFIX ${HPX_BUILD_PREFIX}
-    FOLDER "Tests/Unit/Modules/Core/Schedulers"
+    FOLDER "Tests/Unit/Modules/Local/Schedulers"
   )
 
-  add_hpx_unit_test("modules.schedulers" ${test} ${${test}_PARAMETERS})
+  hpx_local_add_unit_test("modules.schedulers" ${test} ${${test}_PARAMETERS})
 endforeach()

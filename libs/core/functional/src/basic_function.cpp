@@ -143,7 +143,7 @@ namespace hpx { namespace util { namespace detail {
 
     util::itt::string_handle function_base::get_function_annotation_itt() const
     {
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
         return vptr->get_function_annotation_itt(object);
 #else
         return util::itt::string_handle{};

@@ -106,7 +106,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/algorithms/traits/is_value_proxy.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/iterator_support/traits/is_iterator.hpp>
@@ -200,8 +200,8 @@ namespace hpx { namespace parallel { inline namespace v1 {
             hpx::traits::is_forward_iterator<FwdIter>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(
-        1, 6, "hpx::parallel::fill is deprecated, use hpx::fill instead")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::parallel::fill is deprecated, use hpx::fill instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
         fill(ExPolicy&& policy, FwdIter first, FwdIter last, T const& value)
     {
@@ -261,8 +261,8 @@ namespace hpx { namespace parallel { inline namespace v1 {
             hpx::traits::is_forward_iterator<FwdIter>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(
-        1, 6, "hpx::parallel::fill_n is deprecated, use hpx::fill_n instead")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::parallel::fill_n is deprecated, use hpx::fill_n instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
         fill_n(ExPolicy&& policy, FwdIter first, Size count, T const& value)
     {

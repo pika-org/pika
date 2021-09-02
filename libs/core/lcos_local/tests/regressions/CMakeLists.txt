@@ -13,15 +13,17 @@ foreach(test ${tests})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
     HPX_PREFIX ${HPX_BUILD_PREFIX}
-    FOLDER "Tests/Regressions/Modules/Core/LCOsLocal"
+    FOLDER "Tests/Regressions/Modules/Local/LCOsLocal"
   )
 
   target_link_libraries(${test}_test PRIVATE ${${test}_LIBRARIES})
-  add_hpx_regression_test("modules.lcos_local" ${test} ${${test}_PARAMETERS})
+  hpx_local_add_regression_test(
+    "modules.lcos_local" ${test} ${${test}_PARAMETERS}
+  )
 
 endforeach()

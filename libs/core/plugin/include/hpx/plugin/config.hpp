@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/plugin/config/defines.hpp>
 #include <hpx/preprocessor/stringize.hpp>
 
@@ -43,7 +43,7 @@ namespace hpx { namespace util { namespace plugin {
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(HPX_PLUGIN_NO_EXPORT_API)
 
-#define HPX_PLUGIN_EXPORT_API HPX_SYMBOL_EXPORT
+#define HPX_PLUGIN_EXPORT_API HPX_LOCAL_SYMBOL_EXPORT
 
 #if defined(HPX_WINDOWS)
 

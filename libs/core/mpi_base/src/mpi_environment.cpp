@@ -5,7 +5,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 
 #include <hpx/modules/logging.hpp>
 #include <hpx/modules/mpi_base.hpp>
@@ -59,7 +59,6 @@ namespace hpx { namespace util {
     bool mpi_environment::check_mpi_environment(
         util::runtime_configuration const& cfg)
     {
-#if defined(HPX_HAVE_NETWORKING) && defined(HPX_HAVE_PARCELPORT_MPI)
         // We disable the MPI parcelport if any of these hold:
         //
         // - The parcelport is explicitly disabled
@@ -74,25 +73,12 @@ namespace hpx { namespace util {
             return false;
         }
 
-        if (!detail::detect_mpi_environment(cfg, HPX_HAVE_PARCELPORT_MPI_ENV))
-        {
-            // log message was already generated
-            return false;
-        }
-
-        return true;
-#elif defined(HPX_HAVE_MODULE_MPI_BASE)
-        // if MPI futures are enabled while networking is off we need to
-        // check whether we were run using mpirun
+        // log message was already generated
         return detail::detect_mpi_environment(cfg, HPX_HAVE_PARCELPORT_MPI_ENV);
-#else
-        return false;
-#endif
     }
 }}    // namespace hpx::util
 
-#if (defined(HPX_HAVE_NETWORKING) && defined(HPX_HAVE_PARCELPORT_MPI)) ||      \
-    defined(HPX_HAVE_MODULE_MPI_BASE)
+#if defined(HPX_HAVE_MODULE_MPI_BASE)
 
 namespace hpx { namespace util {
 
@@ -212,7 +198,6 @@ namespace hpx { namespace util {
 
         this_rank = rank();
 
-#if defined(HPX_HAVE_NETWORKING)
         if (this_rank == 0)
         {
             rtcfg.mode_ = hpx::runtime_mode::console;
@@ -221,11 +206,6 @@ namespace hpx { namespace util {
         {
             rtcfg.mode_ = hpx::runtime_mode::worker;
         }
-#elif defined(HPX_HAVE_DISTRIBUTED_RUNTIME)
-        rtcfg.mode_ = hpx::runtime_mode::console;
-#else
-        rtcfg.mode_ = hpx::runtime_mode::local;
-#endif
 
         rtcfg.add_entry("hpx.parcel.mpi.rank", std::to_string(this_rank));
         rtcfg.add_entry("hpx.parcel.mpi.processorname", get_processor_name());

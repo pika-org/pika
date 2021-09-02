@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <hpx/config/forward.hpp>
+#include <hpx/local/config/forward.hpp>
 
 #include <algorithm>
 #include <cctype>

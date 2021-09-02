@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/functional/invoke_fused.hpp>
 
 #include <cstddef>
@@ -61,7 +61,7 @@ namespace hpx { namespace traits {
         }
     };
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
     template <typename Result, typename F>
     struct get_function_annotation_itt<
         parallel::util::detail::partitioner_iteration<Result, F>>

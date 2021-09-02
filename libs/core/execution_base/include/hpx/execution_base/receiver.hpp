@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <hpx/config/constexpr.hpp>
+#include <hpx/local/config/constexpr.hpp>
 #include <hpx/functional/tag_invoke.hpp>
 #include <hpx/functional/traits/is_invocable.hpp>
 

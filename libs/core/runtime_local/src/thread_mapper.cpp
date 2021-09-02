@@ -21,8 +21,7 @@
 #include <pthread.h>
 #endif
 
-#if defined(HPX_HAVE_PAPI) && defined(__linux__) && !defined(__ANDROID) &&     \
-    !defined(ANDROID)
+#if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
 #include <sys/syscall.h>
 #include <unistd.h>
 #endif
@@ -47,8 +46,7 @@ namespace hpx { namespace util {
           : label_(label)
           , id_(std::this_thread::get_id())
           , tid_(get_system_thread_id())
-#if defined(HPX_HAVE_PAPI) && defined(__linux__) && !defined(__ANDROID) &&     \
-    !defined(ANDROID)
+#if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
           , linux_tid_(syscall(SYS_gettid))
 #endif
           , cleanup_()
@@ -196,8 +194,7 @@ namespace hpx { namespace util {
         return thread_map_[idx].tid_;
     }
 
-#if defined(HPX_HAVE_PAPI) && defined(__linux__) && !defined(__ANDROID) &&     \
-    !defined(ANDROID)
+#if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
     pid_t thread_mapper::get_linux_thread_id(std::uint32_t tix) const
     {
         std::lock_guard<mutex_type> m(mtx_);

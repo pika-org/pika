@@ -729,7 +729,7 @@ namespace hpx {
 
 #else
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/datastructures/tuple.hpp>
@@ -1203,7 +1203,7 @@ namespace hpx {
             HPX_CONCEPT_REQUIRES_(hpx::is_execution_policy<ExPolicy>::value &&
                 (hpx::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
-        HPX_DEPRECATED_V(1, 6,
+        HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::parallel::for_loop is deprecated, use hpx::for_loop instead")
         typename util::detail::algorithm_result<ExPolicy>::type for_loop(
             ExPolicy&& policy, std::decay_t<I> first, I last, Args&&... args)
@@ -1220,7 +1220,7 @@ namespace hpx {
         template <typename I, typename... Args,
             HPX_CONCEPT_REQUIRES_(hpx::traits::is_iterator<I>::value ||
                 std::is_integral<I>::value)>
-        HPX_DEPRECATED_V(1, 6,
+        HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::parallel::for_loop is deprecated, use hpx::for_loop instead")
         void for_loop(std::decay_t<I> first, I last, Args&&... args)
         {
@@ -1236,7 +1236,7 @@ namespace hpx {
                                       std::is_integral<S>::value &&
                 (hpx::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
-        HPX_DEPRECATED_V(1, 6,
+        HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::parallel::for_loop is deprecated, use hpx::for_loop instead")
         typename util::detail::algorithm_result<ExPolicy>::type
             for_loop_strided(ExPolicy&& policy, std::decay_t<I> first, I last,
@@ -1256,7 +1256,7 @@ namespace hpx {
             HPX_CONCEPT_REQUIRES_(std::is_integral<S>::value &&
                 (hpx::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
-        HPX_DEPRECATED_V(1, 6,
+        HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::parallel::for_loop is deprecated, use hpx::for_loop instead")
         void for_loop_strided(
             std::decay_t<I> first, I last, S stride, Args&&... args)
@@ -1275,7 +1275,7 @@ namespace hpx {
                                       std::is_integral<Size>::value &&
                 (hpx::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
-        HPX_DEPRECATED_V(1, 6,
+        HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::parallel::for_loop is deprecated, use hpx::for_loop instead")
         typename util::detail::algorithm_result<ExPolicy>::type
             for_loop_n(ExPolicy&& policy, I first, Size size, Args&&... args)
@@ -1293,7 +1293,7 @@ namespace hpx {
             HPX_CONCEPT_REQUIRES_(std::is_integral<Size>::value &&
                 (hpx::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
-        HPX_DEPRECATED_V(1, 6,
+        HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::parallel::for_loop is deprecated, use hpx::for_loop instead")
         void for_loop_n(I first, Size size, Args&&... args)
         {
@@ -1311,7 +1311,7 @@ namespace hpx {
                     Size>::value&& std::is_integral<S>::value &&
                 (hpx::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
-        HPX_DEPRECATED_V(1, 6,
+        HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::parallel::for_loop is deprecated, use hpx::for_loop instead")
         typename util::detail::algorithm_result<ExPolicy>::type
             for_loop_n_strided(
@@ -1333,7 +1333,7 @@ namespace hpx {
                 std::is_integral<Size>::value&& std::is_integral<S>::value &&
                 (hpx::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
-        HPX_DEPRECATED_V(1, 6,
+        HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::parallel::for_loop is deprecated, use hpx::for_loop instead")
         void for_loop_n_strided(I first, Size size, S stride, Args&&... args)
         {
@@ -1576,7 +1576,7 @@ namespace hpx { namespace traits {
         }
     };
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
     template <typename ExPolicy, typename F, typename S, typename Tuple>
     struct get_function_annotation_itt<
         parallel::v2::detail::part_iterations<ExPolicy, F, S, Tuple>>

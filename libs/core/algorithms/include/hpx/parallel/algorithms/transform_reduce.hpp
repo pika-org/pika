@@ -251,7 +251,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/algorithms/traits/segmented_iterator_traits.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/functional/invoke.hpp>
@@ -420,7 +420,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 6,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::transform_reduce is deprecated, use "
         "hpx::transform_reduce instead")
         typename util::detail::algorithm_result<ExPolicy, T>::type
@@ -641,7 +641,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             hpx::traits::is_iterator<FwdIter2>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 6,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::transform_reduce is deprecated, use "
         "hpx::transform_reduce instead")
         typename util::detail::algorithm_result<ExPolicy, T>::type
@@ -681,7 +681,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 6,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::transform_reduce is deprecated, use "
         "hpx::transform_reduce instead")
         typename util::detail::algorithm_result<ExPolicy, T>::type
@@ -743,7 +743,7 @@ namespace hpx { namespace traits {
         }
     };
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
     template <typename T, typename ExPolicy, typename Reduce, typename Convert>
     struct get_function_annotation_itt<parallel::v1::detail::
             transform_reduce_iteration<T, ExPolicy, Reduce, Convert>>

@@ -152,7 +152,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/algorithms/traits/segmented_iterator_traits.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/functional/bind_back.hpp>
@@ -313,8 +313,8 @@ namespace hpx { namespace parallel { inline namespace v1 {
             hpx::traits::is_iterator<FwdIterB>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(
-        1, 6, "hpx::parallel::count is deprecated, use hpx::count instead")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::parallel::count is deprecated, use hpx::count instead")
         typename util::detail::algorithm_result<ExPolicy,
             typename std::iterator_traits<FwdIterB>::difference_type>::type
         count(ExPolicy&& policy, FwdIterB first, FwdIterE last, T const& value,
@@ -409,8 +409,8 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(
-        1, 6, "hpx::parallel::count is deprecated, use hpx::count instead")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::parallel::count is deprecated, use hpx::count instead")
         typename util::detail::algorithm_result<ExPolicy,
             typename std::iterator_traits<FwdIterB>::difference_type>::type
         count_if(ExPolicy&& policy, FwdIterB first, FwdIterE last, F&& f,

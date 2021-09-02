@@ -180,7 +180,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/datastructures/tuple.hpp>
 #include <hpx/functional/deferred_call.hpp>
@@ -544,8 +544,8 @@ namespace hpx {
 namespace hpx::lcos {
 
     template <typename Range>
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
     std::enable_if_t<traits::is_future_range_v<Range>,
         hpx::future<
             when_some_result<std::decay_t<Range>>>> when_some(std::size_t n,
@@ -559,8 +559,8 @@ namespace hpx::lcos {
             typename lcos::detail::future_iterator_traits<Iterator>::type>,
         typename Enable =
             std::enable_if_t<hpx::traits::is_iterator_v<Iterator>>>
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
     hpx::future<when_some_result<Container>> when_some(
         std::size_t n, Iterator begin, Iterator end, error_code& = throws)
     {
@@ -572,7 +572,7 @@ namespace hpx::lcos {
             typename lcos::detail::future_iterator_traits<Iterator>::type>,
         typename Enable =
             std::enable_if_t<hpx::traits::is_iterator_v<Iterator>>>
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::lcos::when_some_n is deprecated. Use hpx::when_some_n instead.")
     hpx::future<when_some_result<Container>> when_some_n(
         std::size_t n, Iterator begin, std::size_t count, error_code& = throws)
@@ -580,8 +580,8 @@ namespace hpx::lcos {
         return hpx::when_some(n, begin, count);
     }
 
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
     inline hpx::future<when_some_result<hpx::tuple<>>> when_some(
         std::size_t n, error_code& = throws)
     {
@@ -589,8 +589,8 @@ namespace hpx::lcos {
     }
 
     template <typename T, typename... Ts>
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
     std::enable_if_t<!(traits::is_future_range_v<T> && sizeof...(Ts) == 0),
         hpx::future<when_some_result<hpx::tuple<traits::acquire_future_t<T>,
             traits::acquire_future_t<Ts>...>>>> when_some(std::size_t n, T&& t,
@@ -600,8 +600,8 @@ namespace hpx::lcos {
     }
 
     template <typename T, typename... Ts>
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::when_some is deprecated. Use hpx::when_some instead.")
     std::enable_if_t<!(traits::is_future_range_v<T> && sizeof...(Ts) == 0),
         hpx::future<when_some_result<hpx::tuple<traits::acquire_future_t<T>,
             traits::acquire_future_t<Ts>...>>>> when_some(std::size_t n,
@@ -611,7 +611,7 @@ namespace hpx::lcos {
     }
 
     template <typename Container>
-    using when_some_result HPX_DEPRECATED_V(1, 8,
+    using when_some_result HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::lcos::when_some_result is deprecated. Use hpx::when_some_result "
         "instead.") = hpx::when_some_result<Container>;
 }    // namespace hpx::lcos

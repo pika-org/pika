@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/execution_base/this_thread.hpp>
 #include <hpx/functional/unique_function.hpp>
@@ -22,7 +22,7 @@
 #include <hpx/thread_pools/detail/scoped_background_timer.hpp>
 #endif
 
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
 #include <hpx/threading_base/external_timer.hpp>
 #endif
 
@@ -577,7 +577,7 @@ namespace hpx { namespace threads { namespace detail {
     {
         std::atomic<hpx::state>& this_state = scheduler.get_state(num_thread);
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
         util::itt::stack_context ctx;    // helper for itt support
         util::itt::thread_domain thread_domain;
         util::itt::id threadid(thread_domain, &scheduler);
@@ -690,7 +690,7 @@ namespace hpx { namespace threads { namespace detail {
                                 is_active_wrapper utilization(
                                     counters.is_active_);
                                 auto* thrdptr = get_thread_id_data(thrd);
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
                                 util::itt::caller_context cctx(ctx);
                                 // util::itt::undo_frame_context undoframe(fctx);
                                 util::itt::task task =
@@ -705,7 +705,7 @@ namespace hpx { namespace threads { namespace detail {
                                 exec_time_wrapper exec_time_collector(
                                     idle_rate);
 
-#if defined(HPX_HAVE_APEX)
+#if defined(HPX_LOCAL_HAVE_APEX)
                                 // get the APEX data pointer, in case we are resuming the
                                 // thread and have to restore any leaf timers from
                                 // direct actions, etc.

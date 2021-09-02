@@ -146,7 +146,7 @@ namespace hpx {
 
 #else
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/functional/invoke.hpp>
 #include <hpx/iterator_support/traits/is_iterator.hpp>
 #include <hpx/iterator_support/zip_iterator.hpp>
@@ -258,7 +258,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
     }    // namespace detail
 
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::adjacent_difference is deprecated, use "
         "hpx::adjacent_difference instead")
     inline std::enable_if_t<hpx::is_execution_policy_v<ExPolicy>,
@@ -279,7 +279,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
 
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename Op>
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::adjacent_difference is deprecated, use "
         "hpx::adjacent_difference instead")
     inline std::enable_if_t<hpx::is_execution_policy_v<ExPolicy>,

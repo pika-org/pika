@@ -444,7 +444,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/functional/invoke.hpp>
@@ -717,7 +717,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                             traits::projected<Proj, BidirIter>>
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::stable_partition is deprecated, use "
         "hpx::stable_partition instead")
         util::detail::algorithm_result_t<ExPolicy, BidirIter> stable_partition(
@@ -1470,7 +1470,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                     Pred, traits::projected<Proj, FwdIter>>
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::partition is deprecated, use "
         "hpx::partition instead")
         util::detail::algorithm_result_t<ExPolicy, FwdIter> partition(

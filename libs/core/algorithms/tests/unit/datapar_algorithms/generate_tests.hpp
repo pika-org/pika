@@ -9,10 +9,10 @@
 #pragma once
 
 #include <hpx/execution/traits/vector_pack_type.hpp>
-#include <hpx/include/datapar.hpp>
 #include <hpx/local/init.hpp>
 #include <hpx/modules/testing.hpp>
 #include <hpx/parallel/algorithms/generate.hpp>
+#include <hpx/parallel/datapar.hpp>
 
 #include <cstddef>
 #include <iostream>

@@ -6,21 +6,20 @@
 
 # add inpect executable
 
-include(HPX_SetupBoostRegex)
+include(HPXLocal_SetupBoostRegex)
 
-add_hpx_executable(
-  inspect INTERNAL_FLAGS AUTOGLOB NOLIBS FOLDER "Tools/Inspect"
+hpx_local_add_executable(
+  inspect_local INTERNAL_FLAGS AUTOGLOB NOLIBS FOLDER "Tools/Local/Inspect"
 )
 
 if(NOT Boost_REGEX_FOUND)
-  hpx_error("HPX inspect tool requires Boost.Regex")
+  hpx_local_error("HPXLocal inspect tool requires Boost.Regex")
 endif()
 
 # Set the basic search paths for the generated HPX headers
-target_include_directories(inspect PRIVATE ${PROJECT_BINARY_DIR})
 target_link_libraries(
-  inspect PRIVATE Boost::regex hpx_dependencies_boost hpx_core
+  inspect_local PRIVATE Boost::regex hpx_local_dependencies_boost hpx_local
 )
 
 # add dependencies to pseudo-target
-add_hpx_pseudo_dependencies(tools.inspect inspect)
+hpx_local_add_pseudo_dependencies(tools.inspect inspect_local)

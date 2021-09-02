@@ -9,7 +9,7 @@
 //
 // See http://www.boost.org/libs/container for documentation.
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 
 #include <hpx/datastructures/detail/small_vector.hpp>
 #include <hpx/modules/testing.hpp>

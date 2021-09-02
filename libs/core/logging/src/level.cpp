@@ -7,7 +7,7 @@
 
 #include <hpx/logging/level.hpp>
 
-#if defined(HPX_HAVE_LOGGING)
+#if defined(HPX_LOCAL_HAVE_LOGGING)
 #include <boost/utility/string_ref.hpp>
 
 #include <cstddef>
@@ -55,4 +55,4 @@ namespace hpx { namespace util { namespace logging {
 
 }}}    // namespace hpx::util::logging
 
-#endif    // HPX_HAVE_LOGGING
+#endif    // HPX_LOCAL_HAVE_LOGGING

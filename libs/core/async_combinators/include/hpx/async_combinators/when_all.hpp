@@ -132,7 +132,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/allocator_support/internal_allocator.hpp>
 #include <hpx/datastructures/tuple.hpp>
 #include <hpx/futures/detail/future_data.hpp>
@@ -285,8 +285,8 @@ namespace hpx {
 namespace hpx::lcos {
 
     template <typename... Args>
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::when_all is deprecated. Use hpx::when_all instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::when_all is deprecated. Use hpx::when_all instead.")
     auto when_all(Args&&... args)
     {
         return hpx::when_all(HPX_FORWARD(Args, args)...);
@@ -295,7 +295,7 @@ namespace hpx::lcos {
     template <typename Iterator,
         typename Enable =
             std::enable_if_t<hpx::traits::is_iterator_v<Iterator>>>
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::lcos::when_all_n is deprecated. Use hpx::when_all_n instead.")
     auto when_all_n(Iterator begin, std::size_t count)
     {

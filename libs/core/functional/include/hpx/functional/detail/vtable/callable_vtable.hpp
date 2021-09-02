@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/functional/detail/empty_function.hpp>
 #include <hpx/functional/detail/vtable/vtable.hpp>
 #include <hpx/functional/invoke.hpp>
@@ -40,7 +40,7 @@ namespace hpx { namespace util { namespace detail {
         }
         char const* (*get_function_annotation)(void*);
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
         template <typename T>
         HPX_FORCEINLINE static util::itt::string_handle
         _get_function_annotation_itt(void* f)
@@ -59,7 +59,7 @@ namespace hpx { namespace util { namespace detail {
                 &callable_info_vtable::template _get_function_address<T>)
           , get_function_annotation(
                 &callable_info_vtable::template _get_function_annotation<T>)
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
           , get_function_annotation_itt(
                 &callable_info_vtable::template _get_function_annotation_itt<T>)
 #endif
@@ -72,7 +72,7 @@ namespace hpx { namespace util { namespace detail {
 #if defined(HPX_HAVE_THREAD_DESCRIPTION)
           : get_function_address(nullptr)
           , get_function_annotation(nullptr)
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
           , get_function_annotation_itt(nullptr)
 #endif
 #endif

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/concurrency/cache_line_data.hpp>
 #include <hpx/hashing/fibhash.hpp>
 #include <hpx/lock_registration/detail/register_locks.hpp>

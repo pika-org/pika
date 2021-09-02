@@ -13,17 +13,17 @@
 #include <hpx/threading_base/thread_pool_base.hpp>
 
 // The following implementation has been divided for Linux and Mac OSX
-#if defined(HPX_HAVE_DYNAMIC_HPX_MAIN) &&                                      \
-    (defined(__linux) || defined(__linux__) || defined(linux) ||               \
-        defined(__APPLE__))
+#if (defined(__linux) || defined(__linux__) || defined(linux) ||               \
+    defined(__APPLE__))
 
 namespace hpx_start {
     // Redefining weak variables defined in hpx_main.hpp to facilitate error
     // checking and make sure correct errors are thrown. It is added again
     // to make sure that these variables are defined correctly in cases
     // where hpx_main functionalities are not used.
-    HPX_SYMBOL_EXPORT bool is_linked __attribute__((weak)) = false;
-    HPX_SYMBOL_EXPORT bool include_libhpx_wrap __attribute__((weak)) = false;
+    HPX_LOCAL_SYMBOL_EXPORT bool is_linked __attribute__((weak)) = false;
+    HPX_LOCAL_SYMBOL_EXPORT bool include_libhpx_wrap __attribute__((weak)) =
+        false;
 }    // namespace hpx_start
 
 #endif
@@ -52,9 +52,8 @@ namespace hpx { namespace threads { namespace detail {
         else
         {
 // The following implementation has been divided for Linux and Mac OSX
-#if defined(HPX_HAVE_DYNAMIC_HPX_MAIN) &&                                      \
-    (defined(__linux) || defined(__linux__) || defined(linux) ||               \
-        defined(__APPLE__))
+#if (defined(__linux) || defined(__linux__) || defined(linux) ||               \
+    defined(__APPLE__))
 
                     // hpx_main.hpp is included but not linked to libhpx_wrap
                     if (!hpx_start::is_linked && hpx_start::include_libhpx_wrap)

@@ -4,9 +4,9 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-if(HPX_WITH_COMPILE_ONLY_TESTS)
+if(HPXLocal_WITH_COMPILE_ONLY_TESTS)
   set(compile_tests)
-  if(HPX_WITH_CUDA OR HPX_WITH_HIP)
+  if(HPXLocal_WITH_CUDA OR HPXLocal_WITH_HIP)
     list(APPEND compile_tests service_executor_cuda)
     set(service_executor_cuda_CUDA ON)
   endif()
@@ -20,10 +20,10 @@ if(HPX_WITH_COMPILE_ONLY_TESTS)
 
     source_group("Source Files" FILES ${sources})
 
-    add_hpx_regression_compile_test(
+    hpx_local_add_regression_compile_test(
       "modules.executors" ${compile_test}
       SOURCES ${sources} ${${compile_test}_FLAGS}
-      FOLDER "Tests/Regressions/Modules/Core/Executors/CompileOnly"
+      FOLDER "Tests/Regressions/Modules/Local/Executors/CompileOnly"
     )
   endforeach()
 endif()

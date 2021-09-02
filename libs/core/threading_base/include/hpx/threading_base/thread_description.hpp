@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/functional/traits/get_action_name.hpp>
 #include <hpx/functional/traits/get_function_address.hpp>
 #include <hpx/functional/traits/get_function_annotation.hpp>
 #include <hpx/functional/traits/is_action.hpp>
 #include <hpx/threading_base/threading_base_fwd.hpp>
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
 #include <hpx/modules/itt_notify.hpp>
 #endif
 
@@ -44,11 +44,11 @@ namespace hpx { namespace util {
 
         data_type type_;
         data data_;
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
         util::itt::string_handle desc_itt_;
 #endif
 
-        HPX_CORE_EXPORT void init_from_alternative_name(char const* altname);
+        HPX_LOCAL_EXPORT void init_from_alternative_name(char const* altname);
 
     public:
         thread_description() noexcept
@@ -63,7 +63,7 @@ namespace hpx { namespace util {
             data_.desc_ = desc ? desc : "<unknown>";
         }
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
         thread_description(
             char const* desc, util::itt::string_handle const& sh) noexcept
           : type_(data_type_description)
@@ -88,7 +88,7 @@ namespace hpx { namespace util {
             if (name != nullptr)    // -V547
             {
                 altname = name;
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
                 desc_itt_ = traits::get_function_annotation_itt<F>::call(f);
 #endif
             }
@@ -107,7 +107,7 @@ namespace hpx { namespace util {
             init_from_alternative_name(altname);
 #endif
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
             if (!desc_itt_)
             {
                 desc_itt_ = util::itt::string_handle(get_description());
@@ -123,7 +123,7 @@ namespace hpx { namespace util {
           : type_(data_type_description)
         {
             data_.desc_ = hpx::actions::detail::get_action_name<Action>();
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
             desc_itt_ = hpx::actions::detail::get_action_name_itt<Action>();
 #endif
         }
@@ -139,7 +139,7 @@ namespace hpx { namespace util {
             return data_.desc_;
         }
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
         util::itt::string_handle get_description_itt() const noexcept
         {
             HPX_ASSERT(type_ == data_type_description);
@@ -200,7 +200,7 @@ namespace hpx { namespace util {
 
     private:
         // expose for ABI compatibility reasons
-        HPX_CORE_EXPORT void init_from_alternative_name(char const* altname);
+        HPX_LOCAL_EXPORT void init_from_alternative_name(char const* altname);
 
     public:
         thread_description() noexcept = default;
@@ -234,7 +234,7 @@ namespace hpx { namespace util {
             return "<unknown>";
         }
 
-#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)
+#if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_LOCAL_HAVE_APEX)
         util::itt::string_handle get_description_itt() const noexcept
         {
             HPX_ASSERT(type_ == data_type_description);
@@ -278,9 +278,9 @@ namespace hpx { namespace util {
     };
 #endif
 
-    HPX_CORE_EXPORT std::ostream& operator<<(
+    HPX_LOCAL_EXPORT std::ostream& operator<<(
         std::ostream&, thread_description const&);
-    HPX_CORE_EXPORT std::string as_string(thread_description const& desc);
+    HPX_LOCAL_EXPORT std::string as_string(thread_description const& desc);
 }}    // namespace hpx::util
 
 namespace hpx { namespace threads {
@@ -304,16 +304,16 @@ namespace hpx { namespace threads {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of hpx#exception.
-    HPX_CORE_EXPORT util::thread_description get_thread_description(
+    HPX_LOCAL_EXPORT util::thread_description get_thread_description(
         thread_id_type const& id, error_code& ec = throws);
-    HPX_CORE_EXPORT util::thread_description set_thread_description(
+    HPX_LOCAL_EXPORT util::thread_description set_thread_description(
         thread_id_type const& id,
         util::thread_description const& desc = util::thread_description(),
         error_code& ec = throws);
 
-    HPX_CORE_EXPORT util::thread_description get_thread_lco_description(
+    HPX_LOCAL_EXPORT util::thread_description get_thread_lco_description(
         thread_id_type const& id, error_code& ec = throws);
-    HPX_CORE_EXPORT util::thread_description set_thread_lco_description(
+    HPX_LOCAL_EXPORT util::thread_description set_thread_lco_description(
         thread_id_type const& id,
         util::thread_description const& desc = util::thread_description(),
         error_code& ec = throws);

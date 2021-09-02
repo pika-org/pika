@@ -12,14 +12,14 @@
 
 set -o errexit
 
-VERSION_MAJOR=$(sed -n 's/set(HPX_VERSION_MAJOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_MINOR=$(sed -n 's/set(HPX_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_SUBMINOR=$(sed -n 's/set(HPX_VERSION_SUBMINOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_TAG=$(sed -n 's/set(HPX_VERSION_TAG "\(.*\)")/\1/p' CMakeLists.txt)
+VERSION_MAJOR=$(sed -n 's/set(HPXLocal_VERSION_MAJOR \(.*\))/\1/p' CMakeLists.txt)
+VERSION_MINOR=$(sed -n 's/set(HPXLocal_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
+VERSION_SUBMINOR=$(sed -n 's/set(HPXLocal_VERSION_SUBMINOR \(.*\))/\1/p' CMakeLists.txt)
+VERSION_TAG=$(sed -n 's/set(HPXLocal_VERSION_TAG "\(.*\)")/\1/p' CMakeLists.txt)
 VERSION_FULL_NOTAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_SUBMINOR}
 VERSION_FULL_TAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_SUBMINOR}${VERSION_TAG}
 VERSION_FULL_NOTAG_UNDERSCORE=${VERSION_MAJOR}_${VERSION_MINOR}_${VERSION_SUBMINOR}
-VERSION_TITLE="HPX V${VERSION_FULL_NOTAG}: The C++ Standards Library for Parallelism and Concurrency"
+VERSION_TITLE="HPXLocal V${VERSION_FULL_NOTAG}: The C++ Standards Library for Parallelism and Concurrency"
 VERSION_RELEASE_NOTES_URL="https://hpx-docs.stellar-group.org/tags/${VERSION_FULL_TAG}/html/releases/whats_new_${VERSION_FULL_NOTAG_UNDERSCORE}.html"
 VERSION_DESCRIPTION="[Release notes](${VERSION_RELEASE_NOTES_URL})"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)

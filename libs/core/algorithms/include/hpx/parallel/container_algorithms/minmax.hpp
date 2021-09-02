@@ -783,7 +783,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/iterator_support/range.hpp>
 #include <hpx/iterator_support/traits/is_range.hpp>
@@ -816,7 +816,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                 hpx::parallel::traits::projected_range<Proj, Rng>
             >
         )>
-    HPX_DEPRECATED_V(1, 7,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::min_element is deprecated, use "
         "hpx::ranges::min_element instead")
         hpx::parallel::util::detail::algorithm_result_t<ExPolicy,
@@ -845,7 +845,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                 hpx::parallel::traits::projected_range<Proj, Rng>
             >
         )>
-    HPX_DEPRECATED_V(1, 7,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::max_element is deprecated, use "
         "hpx::ranges::max_element instead")
         hpx::parallel::util::detail::algorithm_result_t<ExPolicy,
@@ -880,7 +880,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                 hpx::parallel::traits::projected_range<Proj, Rng>
             >
         )>
-    HPX_DEPRECATED_V(1, 7,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::minmax_element is deprecated, use "
         "hpx::ranges::minmax_element instead")
         hpx::parallel::util::detail::algorithm_result_t<ExPolicy,

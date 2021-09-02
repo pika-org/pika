@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/errors/exception.hpp>
 #include <hpx/mpi_base/mpi.hpp>
 

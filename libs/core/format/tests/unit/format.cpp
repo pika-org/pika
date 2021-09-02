@@ -4,7 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/modules/format.hpp>
 #include <hpx/modules/testing.hpp>
 
@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-int main(int argc, char* argv[])
+int main()
 {
     using hpx::util::format;
     {

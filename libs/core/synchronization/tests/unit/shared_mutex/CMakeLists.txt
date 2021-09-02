@@ -9,7 +9,7 @@ set(tests shared_mutex1 shared_mutex2)
 set(shared_mutex1_PARAMETERS THREADS_PER_LOCALITY 4)
 set(shared_mutex2_PARAMETERS THREADS_PER_LOCALITY 4)
 
-set(shared_mutex1_FLAGS DEPENDENCIES PRIVATE hpx_dependencies_boost)
+set(shared_mutex1_FLAGS DEPENDENCIES PRIVATE hpx_local_dependencies_boost)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)
@@ -17,15 +17,15 @@ foreach(test ${tests})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
     HPX_PREFIX ${HPX_BUILD_PREFIX}
-    FOLDER "Tests/Unit/Modules/Core/Synchronization/SharedMutex"
+    FOLDER "Tests/Unit/Modules/Local/Synchronization/SharedMutex"
   )
 
-  add_hpx_unit_test(
+  hpx_local_add_unit_test(
     "modules.synchronization.shared_mutex" ${test} ${${test}_PARAMETERS}
   )
 

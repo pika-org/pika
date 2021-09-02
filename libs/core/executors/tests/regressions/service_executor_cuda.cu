@@ -9,5 +9,5 @@
 int main()
 {
     hpx::parallel::execution::detail::service_executor exec{nullptr};
-    exec.async_execute([]{}).get();
+    exec.async_execute([] {}).get();
 }

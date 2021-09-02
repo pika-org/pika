@@ -5,9 +5,9 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 
-#if defined(HPX_HAVE_LOGGING)
+#if defined(HPX_LOCAL_HAVE_LOGGING)
 #include <hpx/modules/filesystem.hpp>
 #include <hpx/modules/logging.hpp>
 #include <hpx/util/from_string.hpp>
@@ -96,4 +96,4 @@ namespace hpx { namespace util { namespace logging {
 
 }}}    // namespace hpx::util::logging
 
-#endif    // HPX_HAVE_LOGGING
+#endif    // HPX_LOCAL_HAVE_LOGGING

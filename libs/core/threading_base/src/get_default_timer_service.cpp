@@ -41,8 +41,8 @@ namespace hpx { namespace threads { namespace detail {
 #else
             HPX_THROW_EXCEPTION(invalid_status,
                 "hpx::threads::detail::get_default_timer_service",
-                "No timer service installed. Rebuild HPX with "
-                "HPX_WITH_TIMER_POOL=ON or provide a timer service "
+                "No timer service installed. Rebuild HPXLocal with "
+                "HPXLocal_WITH_TIMER_POOL=ON or provide a timer service "
                 "manually using "
                 "hpx::threads::detail::set_get_default_timer_service.");
 #endif

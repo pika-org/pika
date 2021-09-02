@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/async_base/launch_policy.hpp>
 #include <hpx/coroutines/detail/get_stack_pointer.hpp>
@@ -36,7 +36,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <hpx/config/warnings_prefix.hpp>
+#include <hpx/local/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace hpx {
@@ -49,7 +49,7 @@ namespace hpx {
     };
 
     namespace lcos {
-        enum class HPX_DEPRECATED_V(1, 8,
+        enum class HPX_LOCAL_DEPRECATED_V(0, 1,
             "hpx::lcos::future_status is deprecated. Use "
             "hpx::future_status instead.") future_status
         {
@@ -66,7 +66,7 @@ namespace hpx { namespace lcos { namespace detail {
 
     using run_on_completed_error_handler_type =
         util::function_nonser<void(std::exception_ptr const& e)>;
-    HPX_CORE_EXPORT void set_run_on_completed_error_handler(
+    HPX_LOCAL_EXPORT void set_run_on_completed_error_handler(
         run_on_completed_error_handler_type f);
 
     ///////////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ namespace hpx { namespace lcos { namespace detail {
     void intrusive_ptr_release(future_data_refcnt_base* p) noexcept;
 
     ///////////////////////////////////////////////////////////////////////
-    struct HPX_CORE_EXPORT future_data_refcnt_base
+    struct HPX_LOCAL_EXPORT future_data_refcnt_base
     {
         // future shared states are non-copyable and non-movable
         future_data_refcnt_base(future_data_refcnt_base const&) = delete;
@@ -220,7 +220,7 @@ namespace hpx { namespace lcos { namespace detail {
     struct future_data_base;
 
     template <>
-    struct HPX_CORE_EXPORT future_data_base<traits::detail::future_data_void>
+    struct HPX_LOCAL_EXPORT future_data_base<traits::detail::future_data_void>
       : future_data_refcnt_base
     {
         using mutex_type = lcos::local::spinlock;
@@ -1059,4 +1059,4 @@ namespace hpx { namespace traits { namespace detail {
     };
 }}}    // namespace hpx::traits::detail
 
-#include <hpx/config/warnings_suffix.hpp>
+#include <hpx/local/config/warnings_suffix.hpp>

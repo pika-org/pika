@@ -5,8 +5,8 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(tests cuda_future transform_stream)
-if(HPX_WITH_GPUBLAS)
-  set(benchmarks ${benchmarks} cublas_matmul)
+if(HPXLocal_WITH_GPUBLAS)
+  list(APPEND benchmarks cublas_matmul)
 endif()
 
 set(cublas_matmul_PARAMETERS THREADS_PER_LOCALITY 4)
@@ -32,16 +32,16 @@ foreach(test ${tests})
   source_group("Source Files" FILES ${sources})
 
   # add test executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     DEPENDENCIES ${${test_program}_FLAGS}
     EXCLUDE_FROM_ALL
     HPX_PREFIX ${HPX_BUILD_PREFIX}
-    FOLDER "Tests/Unit/Modules/Core/AsyncCuda"
+    FOLDER "Tests/Unit/Modules/Local/AsyncCuda"
   )
 
-  add_hpx_unit_test(
+  hpx_local_add_unit_test(
     "modules.async_cuda" ${test} ${${test}_PARAMETERS} RUN_SERIAL
   )
 endforeach()

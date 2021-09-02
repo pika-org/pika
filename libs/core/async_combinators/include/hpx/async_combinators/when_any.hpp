@@ -120,7 +120,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/async_combinators/when_any.hpp>
 #include <hpx/datastructures/tuple.hpp>
@@ -471,8 +471,8 @@ namespace hpx {
 namespace hpx::lcos {
 
     template <typename... Ts>
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::when_any is deprecated. Use hpx::when_any instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::when_any is deprecated. Use hpx::when_any instead.")
     auto when_any(Ts&&... ts)
     {
         return hpx::when_any(HPX_FORWARD(Ts, ts)...);
@@ -481,7 +481,7 @@ namespace hpx::lcos {
     template <typename Iterator,
         typename Enable =
             std::enable_if_t<hpx::traits::is_iterator_v<Iterator>>>
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::lcos::when_any_n is deprecated. Use hpx::when_any_n instead.")
     auto when_any_n(Iterator begin, std::size_t count)
     {
@@ -489,7 +489,7 @@ namespace hpx::lcos {
     }
 
     template <typename Container>
-    using when_any_result HPX_DEPRECATED_V(1, 8,
+    using when_any_result HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::lcos::when_all_result is deprecated. Use hpx::when_all_result "
         "instead.") = hpx::when_any_result<Container>;
 }    // namespace hpx::lcos

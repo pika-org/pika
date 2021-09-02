@@ -391,7 +391,7 @@ namespace hpx { namespace ranges {
 }}       // namespace hpx::ranges
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/iterator_support/range.hpp>
 #include <hpx/iterator_support/traits/is_iterator.hpp>
@@ -421,7 +421,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
             >::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 6,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::transform is deprecated, use hpx::ranges::transform "
         "instead") typename util::detail::algorithm_result<ExPolicy,
         util::in_out_result<typename hpx::traits::range_iterator<Rng>::type,
@@ -463,7 +463,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                 traits::projected<Proj2, InIter2>>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 6,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::transform is deprecated, use hpx::ranges::transform "
         "instead") typename util::detail::algorithm_result<ExPolicy,
         util::in_in_out_result<typename hpx::traits::range_iterator<Rng>::type,
@@ -507,7 +507,7 @@ namespace hpx { namespace parallel { inline namespace v1 {
                 traits::projected_range<Proj2, Rng2>>::value
         )>
     // clang-format on
-    HPX_DEPRECATED_V(1, 6,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::parallel::transform is deprecated, use hpx::ranges::transform "
         "instead") typename util::detail::algorithm_result<ExPolicy,
         util::in_in_out_result<typename hpx::traits::range_iterator<Rng1>::type,

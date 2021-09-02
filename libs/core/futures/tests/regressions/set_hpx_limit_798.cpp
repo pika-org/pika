@@ -7,7 +7,7 @@
 // This test case demonstrates the issue described in #798: HPX_LIMIT does not
 // work for local dataflow
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #if !defined(HPX_COMPUTE_DEVICE_CODE)
 #include <hpx/local/future.hpp>
 #include <hpx/local/init.hpp>

@@ -6,7 +6,7 @@
 
 set(tests any boost_any is_tuple_like unique_any tuple)
 
-if(HPX_WITH_CXX17_MEMORY_RESOURCE)
+if(HPXLocal_WITH_CXX17_MEMORY_RESOURCE)
   set(tests ${tests} small_vector)
 endif()
 
@@ -15,15 +15,17 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Core/Datastructures")
+  set(folder_name "Tests/Unit/Modules/Local/Datastructures")
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
     FOLDER ${folder_name}
   )
 
-  add_hpx_unit_test("modules.datastructures" ${test} ${${test}_PARAMETERS})
+  hpx_local_add_unit_test(
+    "modules.datastructures" ${test} ${${test}_PARAMETERS}
+  )
 endforeach()

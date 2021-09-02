@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 
 #if defined(HPX_HAVE_THREAD_DESCRIPTION)
 #include <hpx/functional/detail/invoke.hpp>
@@ -19,7 +19,7 @@
 
 #if HPX_HAVE_ITTNOTIFY != 0
 #include <hpx/modules/itt_notify.hpp>
-#elif defined(HPX_HAVE_APEX)
+#elif defined(HPX_LOCAL_HAVE_APEX)
 #include <hpx/threading_base/external_timer.hpp>
 #endif
 #endif
@@ -31,10 +31,6 @@
 #include <utility>
 
 namespace hpx {
-    namespace detail {
-        HPX_CORE_EXPORT char const* store_function_annotation(std::string name);
-    }    // namespace detail
-
 #if defined(HPX_HAVE_THREAD_DESCRIPTION)
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
@@ -180,7 +176,7 @@ namespace hpx::traits {
 
 namespace hpx::util {
     template <typename F>
-    HPX_DEPRECATED_V(1, 8, "Please use hpx::annotated_function instead.")
+    HPX_LOCAL_DEPRECATED_V(0, 1, "Please use hpx::annotated_function instead.")
     constexpr decltype(auto)
         annotated_function(F&& f, char const* name = nullptr) noexcept
     {
@@ -188,7 +184,7 @@ namespace hpx::util {
     }
 
     template <typename F>
-    HPX_DEPRECATED_V(1, 8, "Please use hpx::annotated_function instead.")
+    HPX_LOCAL_DEPRECATED_V(0, 1, "Please use hpx::annotated_function instead.")
     constexpr decltype(auto)
         annotated_function(F&& f, std::string const& name) noexcept
     {

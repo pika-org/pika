@@ -20,14 +20,14 @@ foreach(test ${tests})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  add_hpx_executable(
+  hpx_local_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
     DEPENDENCIES Mpi::mpi ${${test}_DEPENDENCIES}
-    FOLDER "Tests/Unit/Modules/Core/AsyncMPI"
+    FOLDER "Tests/Unit/Modules/Local/AsyncMPI"
   )
 
-  add_hpx_unit_test("modules.async_mpi" ${test} ${${test}_PARAMETERS})
+  hpx_local_add_unit_test("modules.async_mpi" ${test} ${${test}_PARAMETERS})
 
 endforeach()

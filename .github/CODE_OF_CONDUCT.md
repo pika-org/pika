@@ -4,6 +4,9 @@
 <!-- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)        -->
 
+As a sub-project of [HPX](https://github.com/STEllAR-GROUP/hpx), HPXLocal
+follows the [code of conduct of
+HPX](https://github.com/STEllAR-GROUP/hpx/blob/master/.github/CODE_OF_CONDUCT.md).
 # HPX Code of Conduct
 
 Like the technical community as a whole, the HPX team and community is made up

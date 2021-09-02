@@ -20,7 +20,6 @@ env = os.environ.copy()
 def load(envfile):
     if not os.path.exists(envfile):
         raise FileNotFoundError(f'Could find environment file "{envfile}"')
-    #env['HPX_CMAKE_PYUTILS_ENVFILE'] = os.path.abspath(envfile)
 
     envdir, envfile = os.path.split(envfile)
     output = runtools.run(

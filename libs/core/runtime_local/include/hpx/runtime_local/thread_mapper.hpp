@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/functional/function.hpp>
 #include <hpx/modules/errors.hpp>
 #include <hpx/runtime_local/os_thread_type.hpp>
@@ -20,10 +20,9 @@
 #include <thread>
 #include <vector>
 
-#include <hpx/config/warnings_prefix.hpp>
+#include <hpx/local/config/warnings_prefix.hpp>
 
-#if defined(HPX_HAVE_PAPI) && defined(__linux__) && !defined(__ANDROID) &&     \
-    !defined(ANDROID)
+#if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
 #include <sys/syscall.h>
 #endif
 
@@ -41,7 +40,7 @@ namespace hpx { namespace util {
             util::function_nonser<bool(std::uint32_t)>;
 
         // thread-specific data
-        class HPX_CORE_EXPORT os_thread_data
+        class HPX_LOCAL_EXPORT os_thread_data
         {
         public:
             os_thread_data() = default;
@@ -64,8 +63,7 @@ namespace hpx { namespace util {
             // the native_handle() of the associated thread
             std::uint64_t tid_;
 
-#if defined(HPX_HAVE_PAPI) && defined(__linux__) && !defined(__ANDROID) &&     \
-    !defined(ANDROID)
+#if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
             // the Linux thread id (required by PAPI)
             pid_t linux_tid_;
 #endif
@@ -79,7 +77,7 @@ namespace hpx { namespace util {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    class HPX_CORE_EXPORT thread_mapper
+    class HPX_LOCAL_EXPORT thread_mapper
     {
     public:
         HPX_NON_COPYABLE(thread_mapper);
@@ -126,8 +124,7 @@ namespace hpx { namespace util {
         // returns low level thread id (native_handle)
         std::uint64_t get_thread_native_handle(std::uint32_t tix) const;
 
-#if defined(HPX_HAVE_PAPI) && defined(__linux__) && !defined(__ANDROID) &&     \
-    !defined(ANDROID)
+#if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
         pid_t get_linux_thread_id(std::uint32_t tix) const;
 #endif
 
@@ -161,4 +158,4 @@ namespace hpx { namespace util {
     };
 }}    // namespace hpx::util
 
-#include <hpx/config/warnings_suffix.hpp>
+#include <hpx/local/config/warnings_suffix.hpp>

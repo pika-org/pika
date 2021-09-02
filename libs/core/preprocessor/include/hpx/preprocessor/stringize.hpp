@@ -2,7 +2,7 @@
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the HPX Software License, Version 1.0. (See accompanying
-//  file LICENSE_1_0.txt or copy at http://www.HPX.org/LICENSE_1_0.txt)
+//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 /* Copyright (C) 2001
  * Housemarque Oy

@@ -212,22 +212,27 @@ set(algorithms_compat_headers
 
 set(algorithms_sources handle_exception_termination_handler.cpp task_group.cpp)
 
-include(HPX_AddModule)
-add_hpx_module(
-  core algorithms
+include(HPXLocal_AddModule)
+hpx_local_add_module(
+  local algorithms
   HEADERS ${algorithms_headers}
   COMPAT_HEADERS ${algorithms_compat_headers}
   SOURCES ${algorithms_sources}
   MODULE_DEPENDENCIES
     hpx_async_combinators
     hpx_async_local
-    hpx_config
+    hpx_concepts
+    hpx_config_local
+    hpx_errors
     hpx_execution
     hpx_executors
+    hpx_iterator_support
     hpx_futures
     hpx_lcos_local
     hpx_pack_traversal
     hpx_serialization
+    hpx_threading_base
+    hpx_type_support
     hpx_util
   CMAKE_SUBDIRS examples tests
 )

@@ -125,7 +125,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/async_base/launch_policy.hpp>
 #include <hpx/datastructures/tuple.hpp>
 #include <hpx/futures/future.hpp>
@@ -451,8 +451,8 @@ namespace hpx {
 namespace hpx::lcos {
 
     template <typename F, typename... Ts>
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::when_each is deprecated. Use hpx::when_each instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::when_each is deprecated. Use hpx::when_each instead.")
     auto when_each(F&& f, Ts&&... ts)
     {
         return hpx::when_each(HPX_FORWARD(F, f), HPX_FORWARD(Ts, ts)...);
@@ -461,7 +461,7 @@ namespace hpx::lcos {
     template <typename F, typename Iterator,
         typename Enable =
             std::enable_if_t<hpx::traits::is_iterator_v<Iterator>>>
-    HPX_DEPRECATED_V(1, 8,
+    HPX_LOCAL_DEPRECATED_V(0, 1,
         "hpx::lcos::when_each_n is deprecated. Use hpx::when_each_n instead.")
     hpx::future<Iterator> when_each_n(F&& f, Iterator begin, std::size_t count)
     {

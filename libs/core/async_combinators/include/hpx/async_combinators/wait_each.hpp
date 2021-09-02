@@ -115,7 +115,7 @@ namespace hpx {
 
 #else    // DOXYGEN
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/async_combinators/detail/throw_if_exceptional.hpp>
 #include <hpx/async_combinators/when_each.hpp>
 #include <hpx/futures/traits/is_future.hpp>
@@ -129,7 +129,6 @@ namespace hpx {
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace hpx {
-
     template <typename F, typename Future>
     void wait_each_nothrow(F&& f, std::vector<Future>& values)
     {
@@ -233,8 +232,8 @@ namespace hpx {
 namespace hpx::lcos {
 
     template <typename F, typename... Ts>
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::wait_each is deprecated. Use hpx::wait_each instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::wait_each is deprecated. Use hpx::wait_each instead.")
     void wait_each(F&& f, Ts&&... ts)
     {
         hpx::wait_each(HPX_FORWARD(F, f), HPX_FORWARD(Ts, ts)...);
@@ -243,8 +242,8 @@ namespace hpx::lcos {
     template <typename F, typename Iterator,
         typename Enable =
             std::enable_if_t<hpx::traits::is_iterator_v<Iterator>>>
-    HPX_DEPRECATED_V(
-        1, 8, "hpx::lcos::wait_each is deprecated. Use hpx::wait_each instead.")
+    HPX_LOCAL_DEPRECATED_V(
+        0, 1, "hpx::lcos::wait_each is deprecated. Use hpx::wait_each instead.")
     void wait_each_n(F&& f, Iterator begin, std::size_t count)
     {
         hpx::wait_each_n(HPX_FORWARD(F, f), begin, count);

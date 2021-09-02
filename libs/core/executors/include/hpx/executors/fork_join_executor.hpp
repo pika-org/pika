@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <hpx/config.hpp>
+#include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/async_base/launch_policy.hpp>
 #include <hpx/concurrency/cache_line_data.hpp>
@@ -659,7 +659,7 @@ namespace hpx { namespace execution { namespace experimental {
         }
     };
 
-    HPX_CORE_EXPORT std::ostream& operator<<(
+    HPX_LOCAL_EXPORT std::ostream& operator<<(
         std::ostream& os, fork_join_executor::loop_schedule const& schedule);
 }}}    // namespace hpx::execution::experimental
 
