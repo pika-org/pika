@@ -1,0 +1,20 @@
+# Copyright (c) 2012 Bryce Adelstein-Lelbach
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+*.pyc
+/build
+.DS_Store
+.gitignore
+.ptp-sync-folder
+/Dockerfile
+/.dockerignore
+.ycm_extra_conf.py
+/apex
+packages
+.vscode
+.ccls-cache
+.clangd
+/out
