@@ -1,4 +1,3 @@
-//  Copyright (c) 2021 Srinivas Yadav
 //  Copyright (c) 2015 Daniel Bourgeois
 //  Copyright (c) 2021 Karame M.Shokooh
 //  Copyright (c) 2021 Srinivas Yadav
@@ -9,7 +8,6 @@
 
 #include <hpx/local/algorithm.hpp>
 #include <hpx/local/init.hpp>
-
 #include <iostream>
 #include <string>
 #include <vector>
