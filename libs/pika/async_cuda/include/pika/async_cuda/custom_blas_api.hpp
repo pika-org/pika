@@ -9,7 +9,7 @@
 // clang-format off
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_HIP) && defined(PIKA_HAVE_GPUBLAS)
+#if defined(PIKA_HAVE_HIP)
 
     #include <hipblas.h>
 
@@ -34,7 +34,7 @@
     #define CUBLAS_STATUS_INTERNAL_ERROR HIPBLAS_STATUS_INTERNAL_ERROR
     #define CUBLAS_STATUS_NOT_SUPPORTED HIPBLAS_STATUS_NOT_SUPPORTED
 
-#elif defined(PIKA_HAVE_CUDA) && defined(PIKA_HAVE_GPUBLAS)
+#elif defined(PIKA_HAVE_CUDA)
 
     #include <cublas_v2.h>
 

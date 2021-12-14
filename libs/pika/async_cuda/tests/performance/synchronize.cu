@@ -16,13 +16,17 @@ __global__ void dummy() {}
 
 int pika_main(pika::program_options::variables_map& vm)
 {
+    namespace ex = pika::execution::experimental;
+    namespace cu = pika::cuda::experimental;
+
     std::size_t const iterations = vm["iterations"].as<std::size_t>();
     std::size_t const batch_size = 10;
     std::size_t const batch_iterations = iterations / batch_size;
     std::size_t const non_batch_iterations = iterations % batch_size;
 
-    cudaStream_t cuda_stream;
-    pika::cuda::experimental::check_cuda_error(cudaStreamCreate(&cuda_stream));
+    cu::cuda_pool pool{};
+    cu::cuda_scheduler sched{pool};
+    cudaStream_t cuda_stream = pool.get_next_stream().get();
 
     // Warmup
     {
@@ -30,8 +34,7 @@ int pika_main(pika::program_options::variables_map& vm)
         for (std::size_t i = 0; i != iterations; ++i)
         {
             dummy<<<1, 1, 0, cuda_stream>>>();
-            pika::cuda::experimental::check_cuda_error(
-                cudaStreamSynchronize(cuda_stream));
+            cu::check_cuda_error(cudaStreamSynchronize(cuda_stream));
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -44,8 +47,7 @@ int pika_main(pika::program_options::variables_map& vm)
         for (std::size_t i = 0; i != iterations; ++i)
         {
             dummy<<<1, 1, 0, cuda_stream>>>();
-            pika::cuda::experimental::check_cuda_error(
-                cudaStreamSynchronize(cuda_stream));
+            cu::check_cuda_error(cudaStreamSynchronize(cuda_stream));
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -62,16 +64,14 @@ int pika_main(pika::program_options::variables_map& vm)
             {
                 dummy<<<1, 1, 0, cuda_stream>>>();
             }
-            pika::cuda::experimental::check_cuda_error(
-                cudaStreamSynchronize(cuda_stream));
+            cu::check_cuda_error(cudaStreamSynchronize(cuda_stream));
         }
 
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
             dummy<<<1, 1, 0, cuda_stream>>>();
         }
-        pika::cuda::experimental::check_cuda_error(
-            cudaStreamSynchronize(cuda_stream));
+        cu::check_cuda_error(cudaStreamSynchronize(cuda_stream));
 
         double elapsed = timer.elapsed();
         std::cout
@@ -80,10 +80,7 @@ int pika_main(pika::program_options::variables_map& vm)
     }
 
     {
-        pika::cuda::experimental::enable_user_polling poll("default");
-
-        namespace ex = pika::execution::experimental;
-        namespace cu = pika::cuda::experimental;
+        cu::enable_user_polling poll("default");
 
         auto const f = [](cudaStream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
@@ -92,19 +89,16 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::chrono::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
         {
-            cu::transform_stream(ex::just(), f, cuda_stream) | ex::sync_wait();
+            ex::schedule(sched) | cu::then_with_stream(f) | ex::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
-            << "transform_stream:                                              "
+            << "then_with_stream:                                              "
             << elapsed << '\n';
     }
 
     {
-        pika::cuda::experimental::enable_user_polling poll("default");
-
-        namespace ex = pika::execution::experimental;
-        namespace cu = pika::cuda::experimental;
+        cu::enable_user_polling poll("default");
 
         auto const f = [](cudaStream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
@@ -114,35 +108,28 @@ int pika_main(pika::program_options::variables_map& vm)
         for (std::size_t i = 0; i < batch_iterations; ++i)
         {
             // We have to manually unroll this loop, because the type of the
-            // sender changes for each additional transform_stream call. The
+            // sender changes for each additional then_with_stream call. The
             // number of unrolled calls must match batch_size above.
-            cu::transform_stream(ex::just(), f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) | ex::sync_wait();
+            ex::schedule(sched) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | ex::sync_wait();
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
-            cu::transform_stream(ex::just(), f, cuda_stream) | ex::sync_wait();
+            ex::schedule(sched) | cu::then_with_stream(f) | ex::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
-            << "transform_stream batched:                                      "
+            << "then_with_stream batched:                                      "
             << elapsed << '\n';
     }
 
     {
-        pika::cuda::experimental::enable_user_polling poll("default");
-
-        namespace ex = pika::execution::experimental;
-        namespace cu = pika::cuda::experimental;
+        cu::enable_user_polling poll("default");
 
         auto const f = [](cudaStream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
@@ -152,38 +139,44 @@ int pika_main(pika::program_options::variables_map& vm)
         for (std::size_t i = 0; i < batch_iterations; ++i)
         {
             // We have to manually unroll this loop, because the type of the
-            // sender changes for each additional transform_stream call. The
+            // sender changes for each additional then_with_stream call. The
             // number of unrolled calls must match batch_size above. Here we
             // intentionally insert dummy then([]{}) calls between the
-            // transform_stream calls to force synchronization between the
+            // then_with_stream calls to force synchronization between the
             // kernel launches.
-            cu::transform_stream(ex::just(), f, cuda_stream) | ex::then([] {}) |
-                cu::transform_stream(f, cuda_stream) | ex::then([] {}) |
-                cu::transform_stream(f, cuda_stream) | ex::then([] {}) |
-                cu::transform_stream(f, cuda_stream) | ex::then([] {}) |
-                cu::transform_stream(f, cuda_stream) | ex::then([] {}) |
-                cu::transform_stream(f, cuda_stream) | ex::then([] {}) |
-                cu::transform_stream(f, cuda_stream) | ex::then([] {}) |
-                cu::transform_stream(f, cuda_stream) | ex::then([] {}) |
-                cu::transform_stream(f, cuda_stream) | ex::then([] {}) |
-                cu::transform_stream(f, cuda_stream) | ex::sync_wait();
+            ex::schedule(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
+                ex::transfer(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
+                ex::transfer(sched) | cu::then_with_stream(f) | ex::sync_wait();
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
-            cu::transform_stream(ex::just(), f, cuda_stream) | ex::sync_wait();
+            ex::schedule(sched) | cu::then_with_stream(f) | ex::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
-            << "transform_stream force synchronize batched:                    "
+            << "then_with_stream force synchronize batched:                    "
             << elapsed << '\n';
     }
 
     {
-        pika::cuda::experimental::enable_user_polling poll("default");
-
-        namespace ex = pika::execution::experimental;
-        namespace cu = pika::cuda::experimental;
+        cu::enable_user_polling poll("default");
 
         auto const f = [](cudaStream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
@@ -192,20 +185,17 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::chrono::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
         {
-            cu::transform_stream(ex::just(), f, cuda_stream) |
+            ex::schedule(sched) | cu::then_with_stream(f) |
                 ex::transfer(ex::thread_pool_scheduler{}) | ex::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
-            << "transform_stream with transfer:                                "
+            << "then_with_stream with transfer:                                "
             << elapsed << '\n';
     }
 
     {
-        pika::cuda::experimental::enable_user_polling poll("default");
-
-        namespace ex = pika::execution::experimental;
-        namespace cu = pika::cuda::experimental;
+        cu::enable_user_polling poll("default");
 
         auto const f = [](cudaStream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
@@ -215,33 +205,27 @@ int pika_main(pika::program_options::variables_map& vm)
         for (std::size_t i = 0; i < batch_iterations; ++i)
         {
             // We have to manually unroll this loop, because the type of the
-            // sender changes for each additional transform_stream call. The
+            // sender changes for each additional then_with_stream call. The
             // number of unrolled calls must match batch_size above.
-            cu::transform_stream(ex::just(), f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
-                cu::transform_stream(f, cuda_stream) |
+            ex::schedule(sched) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) | cu::then_with_stream(f) |
+                cu::then_with_stream(f) |
                 ex::transfer(ex::thread_pool_scheduler{}) | ex::sync_wait();
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
-            cu::transform_stream(ex::just(), f, cuda_stream) |
+            ex::schedule(sched) | cu::then_with_stream(f) |
                 ex::transfer(ex::thread_pool_scheduler{}) | ex::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
-            << "transform_stream with transfer batched:                        "
+            << "then_with_stream with transfer batched:                        "
             << elapsed << '\n';
     }
-
-    pika::cuda::experimental::check_cuda_error(cudaStreamDestroy(cuda_stream));
 
     return pika::finalize();
 }

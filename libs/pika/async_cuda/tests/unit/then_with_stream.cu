@@ -20,19 +20,31 @@ struct dummy
 {
     static std::atomic<std::size_t> host_void_calls;
     static std::atomic<std::size_t> stream_void_calls;
+    static std::atomic<std::size_t> cublas_void_calls;
+    static std::atomic<std::size_t> cusolver_void_calls;
     static std::atomic<std::size_t> host_int_calls;
     static std::atomic<std::size_t> stream_int_calls;
+    static std::atomic<std::size_t> cublas_int_calls;
+    static std::atomic<std::size_t> cusolver_int_calls;
     static std::atomic<std::size_t> host_double_calls;
     static std::atomic<std::size_t> stream_double_calls;
+    static std::atomic<std::size_t> cublas_double_calls;
+    static std::atomic<std::size_t> cusolver_double_calls;
 
     static void reset_counts()
     {
         host_void_calls = 0;
         stream_void_calls = 0;
+        cublas_void_calls = 0;
+        cusolver_void_calls = 0;
         host_int_calls = 0;
         stream_int_calls = 0;
+        cublas_int_calls = 0;
+        cusolver_int_calls = 0;
         host_double_calls = 0;
         stream_double_calls = 0;
+        cublas_double_calls = 0;
+        cusolver_double_calls = 0;
     }
 
     void operator()() const
@@ -44,6 +56,16 @@ struct dummy
     {
         ++stream_void_calls;
         dummy_kernel<<<1, 1, 0, stream>>>();
+    }
+
+    void operator()(cublasHandle_t handle) const
+    {
+        ++cublas_void_calls;
+    }
+
+    void operator()(cusolverDnHandle_t handle) const
+    {
+        ++cusolver_void_calls;
     }
 
     double operator()(int x) const
@@ -59,6 +81,18 @@ struct dummy
         return x + 1;
     }
 
+    double operator()(cublasHandle_t handle, int x) const
+    {
+        ++cublas_int_calls;
+        return x + 1;
+    }
+
+    double operator()(cusolverDnHandle_t handle, int x) const
+    {
+        ++cusolver_int_calls;
+        return x + 1;
+    }
+
     int operator()(double x) const
     {
         ++host_double_calls;
@@ -71,14 +105,32 @@ struct dummy
         dummy_kernel<<<1, 1, 0, stream>>>();
         return x + 1;
     }
+
+    int operator()(cublasHandle_t handle, double x) const
+    {
+        ++cublas_double_calls;
+        return x + 1;
+    }
+
+    int operator()(cusolverDnHandle_t handle, double x) const
+    {
+        ++cusolver_double_calls;
+        return x + 1;
+    }
 };
 
 std::atomic<std::size_t> dummy::host_void_calls{0};
 std::atomic<std::size_t> dummy::stream_void_calls{0};
+std::atomic<std::size_t> dummy::cublas_void_calls{0};
+std::atomic<std::size_t> dummy::cusolver_void_calls{0};
 std::atomic<std::size_t> dummy::host_int_calls{0};
 std::atomic<std::size_t> dummy::stream_int_calls{0};
+std::atomic<std::size_t> dummy::cublas_int_calls{0};
+std::atomic<std::size_t> dummy::cusolver_int_calls{0};
 std::atomic<std::size_t> dummy::host_double_calls{0};
 std::atomic<std::size_t> dummy::stream_double_calls{0};
+std::atomic<std::size_t> dummy::cublas_double_calls{0};
+std::atomic<std::size_t> dummy::cusolver_double_calls{0};
 
 __global__ void increment_kernel(int* p)
 {
@@ -108,16 +160,18 @@ int pika_main()
     namespace cu = ::pika::cuda::experimental;
     namespace ex = ::pika::execution::experimental;
 
+    cu::cuda_pool pool{};
+
     cu::enable_user_polling p;
 
     // Only stream transform
     {
         dummy::reset_counts();
-        auto s1 = ex::just();
-        auto s2 = cu::transform_stream(std::move(s1), dummy{});
-        // NOTE: transform_stream calls triggers the receiver on a plain
+        auto s = ex::just() | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{});
+        // NOTE: then_with_stream calls triggers the receiver on a plain
         // std::thread. We explicitly change the context back to an pika::thread.
-        ex::sync_wait(ex::transfer(std::move(s2), ex::thread_pool_scheduler{}));
+        ex::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{}));
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(0));
@@ -128,11 +182,10 @@ int pika_main()
 
     {
         dummy::reset_counts();
-        auto s1 = ex::just();
-        auto s2 = cu::transform_stream(std::move(s1), dummy{});
-        auto s3 = cu::transform_stream(std::move(s2), dummy{});
-        auto s4 = cu::transform_stream(std::move(s3), dummy{});
-        ex::sync_wait(ex::transfer(std::move(s4), ex::thread_pool_scheduler{}));
+        auto s = ex::just() | ex::transfer(cu::cuda_scheduler(pool)) |
+            cu::then_with_stream(dummy{}) | cu::then_with_stream(dummy{}) |
+            cu::then_with_stream(dummy{});
+        ex::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{}));
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(3));
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(0));
@@ -144,12 +197,12 @@ int pika_main()
     // Mixing stream transform with host scheduler
     {
         dummy::reset_counts();
-        auto s1 = ex::just();
-        auto s2 = cu::transform_stream(std::move(s1), dummy{});
-        auto s3 = ex::transfer(std::move(s2), ex::thread_pool_scheduler{});
-        auto s4 = ex::then(std::move(s3), dummy{});
-        auto s5 = cu::transform_stream(std::move(s4), dummy{});
-        ex::sync_wait(ex::transfer(std::move(s5), ex::thread_pool_scheduler{}));
+        auto s = ex::just() | ex::transfer(cu::cuda_scheduler(pool)) |
+            cu::then_with_stream(dummy{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
+            ex::transfer(cu::cuda_scheduler(pool)) |
+            cu::then_with_stream(dummy{});
+        ex::sync_wait(ex::transfer(std::move(s), ex::thread_pool_scheduler{}));
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(2));
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(0));
@@ -160,12 +213,11 @@ int pika_main()
 
     {
         dummy::reset_counts();
-        auto s1 = ex::schedule(ex::thread_pool_scheduler{});
-        auto s2 = ex::then(std::move(s1), dummy{});
-        auto s3 = cu::transform_stream(std::move(s2), dummy{});
-        auto s4 = ex::transfer(std::move(s3), ex::thread_pool_scheduler{});
-        auto s5 = ex::then(std::move(s4), dummy{});
-        ex::sync_wait(std::move(s5));
+        auto s = ex::schedule(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
+            ex::transfer(cu::cuda_scheduler(pool)) |
+            cu::then_with_stream(dummy{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        ex::sync_wait(std::move(s));
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(2));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(0));
@@ -177,10 +229,10 @@ int pika_main()
     // Only stream transform with non-void values
     {
         dummy::reset_counts();
-        auto s1 = ex::just(1);
-        auto s2 = cu::transform_stream(std::move(s1), dummy{});
+        auto s = ex::just(1) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{});
         PIKA_TEST_EQ(ex::sync_wait(ex::transfer(
-                         std::move(s2), ex::thread_pool_scheduler{})),
+                         std::move(s), ex::thread_pool_scheduler{})),
             2.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -192,12 +244,11 @@ int pika_main()
 
     {
         dummy::reset_counts();
-        auto s1 = ex::just(1);
-        auto s2 = cu::transform_stream(std::move(s1), dummy{});
-        auto s3 = cu::transform_stream(std::move(s2), dummy{});
-        auto s4 = cu::transform_stream(std::move(s3), dummy{});
+        auto s = ex::just(1) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{}) | cu::then_with_stream(dummy{}) |
+            cu::then_with_stream(dummy{});
         PIKA_TEST_EQ(ex::sync_wait(ex::transfer(
-                         std::move(s4), ex::thread_pool_scheduler{})),
+                         std::move(s), ex::thread_pool_scheduler{})),
             4.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -210,13 +261,13 @@ int pika_main()
     // Mixing stream transform with host scheduler with non-void values
     {
         dummy::reset_counts();
-        auto s1 = ex::just(1);
-        auto s2 = cu::transform_stream(std::move(s1), dummy{});
-        auto s3 = ex::transfer(std::move(s2), ex::thread_pool_scheduler{});
-        auto s4 = ex::then(std::move(s3), dummy{});
-        auto s5 = cu::transform_stream(std::move(s4), dummy{});
+        auto s = ex::just(1) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
+            ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{});
         PIKA_TEST_EQ(ex::sync_wait(ex::transfer(
-                         std::move(s5), ex::thread_pool_scheduler{})),
+                         std::move(s), ex::thread_pool_scheduler{})),
             4.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -228,13 +279,11 @@ int pika_main()
 
     {
         dummy::reset_counts();
-        auto s1 = ex::just(1);
-        auto s2 = ex::transfer(std::move(s1), ex::thread_pool_scheduler{});
-        auto s3 = ex::then(std::move(s2), dummy{});
-        auto s4 = cu::transform_stream(std::move(s3), dummy{});
-        auto s5 = ex::transfer(std::move(s4), ex::thread_pool_scheduler{});
-        auto s6 = ex::then(std::move(s5), dummy{});
-        PIKA_TEST_EQ(ex::sync_wait(std::move(s6)), 4.0);
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        PIKA_TEST_EQ(ex::sync_wait(std::move(s)), 4.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(2));
@@ -245,13 +294,12 @@ int pika_main()
 
     {
         dummy::reset_counts();
-        auto s1 = ex::transfer_just(ex::thread_pool_scheduler{}, 1);
-        auto s2 = ex::then(std::move(s1), dummy{});
-        auto s3 = cu::transform_stream(std::move(s2), dummy{});
-        auto s4 = cu::transform_stream(std::move(s3), dummy{});
-        auto s5 = ex::transfer(std::move(s4), ex::thread_pool_scheduler{});
-        auto s6 = ex::then(std::move(s5), dummy{});
-        PIKA_TEST_EQ(ex::sync_wait(std::move(s6)), 5.0);
+
+        auto s = ex::transfer_just(ex::thread_pool_scheduler{}, 1) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{}) | cu::then_with_stream(dummy{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        PIKA_TEST_EQ(ex::sync_wait(std::move(s)), 5.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(1));
@@ -269,19 +317,72 @@ int pika_main()
         cu::check_cuda_error(cudaMalloc((void**) &p, sizeof(type)));
 
         auto s = ex::just(p, &p_h, sizeof(type), cudaMemcpyHostToDevice) |
-            cu::transform_stream(cuda_memcpy_async{}) |
+            ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(cuda_memcpy_async{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) |
             ex::then(&cu::check_cuda_error) | ex::then([p] { return p; }) |
-            cu::transform_stream(increment{}) |
-            cu::transform_stream(increment{}) |
-            cu::transform_stream(increment{});
+            ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(increment{}) |
+            cu::then_with_stream(increment{}) |
+            cu::then_with_stream(increment{});
         ex::when_all(ex::just(&p_h), std::move(s), ex::just(sizeof(type)),
             ex::just(cudaMemcpyDeviceToHost)) |
-            cu::transform_stream(cuda_memcpy_async{}) |
+            ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(cuda_memcpy_async{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) |
             ex::then(&cu::check_cuda_error) |
             ex::then([&p_h] { PIKA_TEST_EQ(p_h, 3); }) |
             ex::transfer(ex::thread_pool_scheduler{}) | ex::sync_wait();
 
         cu::check_cuda_error(cudaFree(p));
+    }
+
+    // cuBLAS and cuSOLVER
+    {
+        dummy::reset_counts();
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{}) |
+            cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
+            cu::then_with_cusolver(dummy{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        PIKA_TEST_EQ(ex::sync_wait(std::move(s)), 6);
+        PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(2));
+        PIKA_TEST_EQ(dummy::stream_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(1));
+    }
+
+    // Host continuation
+    {
+        dummy::reset_counts();
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{}) | cu::then_on_host(dummy{}) |
+            cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
+            cu::then_with_cusolver(dummy{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        PIKA_TEST_EQ(ex::sync_wait(std::move(s)), 7.0);
+        PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(2));
+        PIKA_TEST_EQ(dummy::stream_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
     }
 
     return pika::finalize();

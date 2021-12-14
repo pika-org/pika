@@ -4,17 +4,30 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests cuda_future transform_stream)
-if(PIKA_WITH_GPUBLAS)
-  list(APPEND benchmarks cublas_matmul)
-endif()
+set(tests
+    cublas_handle
+    cublas_matmul
+    cuda_bulk
+    cuda_future
+    cuda_pool
+    cuda_scheduler
+    cuda_stream
+    cusolver_handle
+    then_with_stream
+)
 
 set(cublas_matmul_PARAMETERS THREADS 4)
 set(cuda_future_PARAMETERS THREADS 4)
-set(transform_stream_PARAMETERS THREADS 4)
+set(then_with_stream_PARAMETERS THREADS 4)
 
+set(cublas_handle_CUDA ON)
+set(cuda_bulk_CUDA ON)
 set(cuda_future_CUDA_SOURCE saxpy trivial_demo)
-set(transform_stream_CUDA ON)
+set(cuda_pool_CUDA ON)
+set(cuda_scheduler_CUDA ON)
+set(cuda_stream_CUDA ON)
+set(cusolver_handle_CUDA ON)
+set(then_with_stream_CUDA ON)
 
 foreach(test ${tests})
   if(${${test}_CUDA})

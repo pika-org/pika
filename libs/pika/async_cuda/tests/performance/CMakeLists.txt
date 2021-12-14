@@ -4,10 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(benchmarks synchronize)
-if(PIKA_WITH_GPUBLAS)
-  list(APPEND benchmarks cuda_executor_throughput)
-endif()
+set(benchmarks cuda_executor_throughput synchronize)
 
 set(synchronize_CUDA ON)
 set(cuda_executor_throughput_PARAMETERS THREADS 1)

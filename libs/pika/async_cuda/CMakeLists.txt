@@ -12,30 +12,53 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Default location is $PIKA_ROOT/libs/async_cuda/include
 set(async_cuda_headers
+    pika/async_cuda/cublas_exception.hpp
+    pika/async_cuda/cublas_executor.hpp
+    pika/async_cuda/cublas_handle.hpp
+    pika/async_cuda/cuda_device_scope.hpp
     pika/async_cuda/cuda_event.hpp
     pika/async_cuda/cuda_executor.hpp
     pika/async_cuda/cuda_exception.hpp
     pika/async_cuda/cuda_future.hpp
     pika/async_cuda/cuda_polling_helper.hpp
-    pika/async_cuda/cublas_executor.hpp
+    pika/async_cuda/cuda_pool.hpp
+    pika/async_cuda/cuda_scheduler.hpp
+    pika/async_cuda/cuda_scheduler_bulk.hpp
+    pika/async_cuda/cuda_stream.hpp
+    pika/async_cuda/cusolver_exception.hpp
+    pika/async_cuda/cusolver_handle.hpp
     pika/async_cuda/custom_blas_api.hpp
     pika/async_cuda/custom_gpu_api.hpp
+    pika/async_cuda/custom_lapack_api.hpp
     pika/async_cuda/detail/cuda_debug.hpp
     pika/async_cuda/detail/cuda_event_callback.hpp
     pika/async_cuda/get_targets.hpp
     pika/async_cuda/target.hpp
-    pika/async_cuda/transform_stream.hpp
+    pika/async_cuda/then_on_host.hpp
+    pika/async_cuda/then_with_stream.hpp
 )
 
-set(async_cuda_sources cuda_event_callback.cpp cuda_future.cpp cuda_target.cpp
-                       get_targets.cpp
+set(async_cuda_sources
+    cublas_exception.cpp
+    cublas_handle.cpp
+    cuda_device_scope.cpp
+    cuda_event_callback.cpp
+    cuda_exception.cpp
+    cuda_future.cpp
+    cuda_pool.cpp
+    cuda_scheduler.cpp
+    cuda_stream.cpp
+    cuda_target.cpp
+    cusolver_exception.cpp
+    cusolver_handle.cpp
+    get_targets.cpp
 )
 
 if(PIKA_WITH_HIP AND TARGET roc::hipblas)
   set(async_cuda_extra_deps ${async_cuda_extra_deps} roc::hipblas)
 elseif(PIKA_WITH_CUDA AND TARGET Cuda::cuda)
   set(async_cuda_extra_deps ${async_cuda_extra_deps} Cuda::cuda
-                            ${CUDA_CUBLAS_LIBRARIES}
+                            ${CUDA_CUBLAS_LIBRARIES} ${CUDA_CUSOLVER_LIBRARIES}
   )
 endif()
 

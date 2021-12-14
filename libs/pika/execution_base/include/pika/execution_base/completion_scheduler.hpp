@@ -20,8 +20,9 @@ namespace pika::execution::experimental {
     };
 
     template <typename Scheduler>
-    inline constexpr get_completion_scheduler_t<Scheduler>
-        get_completion_scheduler{};
+    PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
+        get_completion_scheduler_t<Scheduler>
+            get_completion_scheduler{};
 
     namespace detail {
         template <bool TagInvocable, typename CPO, typename Sender>

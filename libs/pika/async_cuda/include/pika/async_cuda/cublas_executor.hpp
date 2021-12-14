@@ -8,7 +8,8 @@
 #pragma once
 
 #include <pika/config.hpp>
-#if defined(PIKA_HAVE_GPU_SUPPORT) && defined(PIKA_HAVE_GPUBLAS)
+#if defined(PIKA_HAVE_GPU_SUPPORT)
+#include <pika/async_cuda/cublas_exception.hpp>
 #include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_executor.hpp>
 #include <pika/async_cuda/cuda_future.hpp>
@@ -31,83 +32,10 @@
 #include <utility>
 
 namespace pika { namespace cuda { namespace experimental {
-
     namespace detail {
         using print_on = debug::enable_print<false>;
         static constexpr print_on cub_debug("CUBLAS_");
 
-        // -------------------------------------------------------------------------
-        // Error handling in cublas calls
-        // not all of these are supported by all cuda/cublas versions
-        // (comment them out if they cause compiler errors)
-        inline const char* _cublasGetErrorString(cublasStatus_t error)
-        {
-            switch (error)
-            {
-            case CUBLAS_STATUS_SUCCESS:
-                return "CUBLAS_STATUS_SUCCESS";
-            case CUBLAS_STATUS_NOT_INITIALIZED:
-                return "CUBLAS_STATUS_NOT_INITIALIZED";
-            case CUBLAS_STATUS_ALLOC_FAILED:
-                return "CUBLAS_STATUS_ALLOC_FAILED";
-            case CUBLAS_STATUS_INVALID_VALUE:
-                return "CUBLAS_STATUS_INVALID_VALUE";
-            case CUBLAS_STATUS_ARCH_MISMATCH:
-                return "CUBLAS_STATUS_ARCH_MISMATCH";
-            case CUBLAS_STATUS_MAPPING_ERROR:
-                return "CUBLAS_STATUS_MAPPING_ERROR";
-            case CUBLAS_STATUS_EXECUTION_FAILED:
-                return "CUBLAS_STATUS_EXECUTION_FAILED";
-            case CUBLAS_STATUS_INTERNAL_ERROR:
-                return "CUBLAS_STATUS_INTERNAL_ERROR";
-            case CUBLAS_STATUS_NOT_SUPPORTED:
-                return "CUBLAS_STATUS_NOT_SUPPORTED";
-#ifdef PIKA_HAVE_HIP
-            case HIPBLAS_STATUS_HANDLE_IS_NULLPTR:
-                return "HIPBLAS_STATUS_HANDLE_IS_NULLPTR";
-#if PIKA_HIP_VERSION >= 40300000
-            case HIPBLAS_STATUS_INVALID_ENUM:
-                return "HIPBLAS_STATUS_INVALID_ENUM";
-#endif
-#else
-            case CUBLAS_STATUS_LICENSE_ERROR:
-                return "CUBLAS_STATUS_LICENSE_ERROR";
-#endif
-            }
-            return "<unknown>";
-        }
-    }    // namespace detail
-
-    // -------------------------------------------------------------------------
-    // exception type for failed launch of cuda functions
-    struct PIKA_EXPORT cublas_exception : pika::exception
-    {
-        cublas_exception(const std::string& msg, cublasStatus_t err)
-          : pika::exception(pika::bad_function_call, msg)
-          , err_(err)
-        {
-        }
-        cublasStatus_t get_cublas_errorcode()
-        {
-            return err_;
-        }
-
-    protected:
-        cublasStatus_t err_;
-    };
-
-    inline cublasStatus_t check_cublas_error(cublasStatus_t err)
-    {
-        if (err != CUBLAS_STATUS_SUCCESS)
-        {
-            auto temp = std::string("cublas function returned error code :") +
-                detail::_cublasGetErrorString(err);
-            throw cublas_exception(temp, err);
-        }
-        return err;
-    }
-
-    namespace detail {
         // specialization for return type of cublasStatus_t
         template <typename... Args>
         struct dispatch_helper<cublasStatus_t, Args...>
