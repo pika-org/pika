@@ -53,8 +53,6 @@ function(hpx_local_add_compile_test category name)
   if(${name}_FAILURE_EXPECTED)
     set_tests_properties("${category}.${name}" PROPERTIES WILL_FAIL TRUE)
   endif()
-
-  set_tests_properties("${category}.${name}" PROPERTIES RUN_SERIAL TRUE)
 endfunction(hpx_local_add_compile_test)
 
 function(hpx_local_add_compile_test_target_dependencies category name)
