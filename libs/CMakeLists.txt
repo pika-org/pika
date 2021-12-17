@@ -76,7 +76,7 @@ set_target_properties(
              SOVERSION ${HPXLocal_SOVERSION}
              CLEAN_DIRECT_OUTPUT 1
              OUTPUT_NAME hpx_local
-             FOLDER "Local"
+             FOLDER "Core"
 )
 install(
   TARGETS hpx_local

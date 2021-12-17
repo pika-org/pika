@@ -309,7 +309,7 @@ function(hpx_local_add_module libname modulename)
   string(REGEX REPLACE "^.(.*)" "${first_letter}\\1" libname_cap "${libname}")
 
   set_target_properties(
-    hpx_${modulename} PROPERTIES FOLDER "Local/Modules/${libname_cap}"
+    hpx_${modulename} PROPERTIES FOLDER "Core/Modules/${libname_cap}"
                                  POSITION_INDEPENDENT_CODE ON
   )
 
