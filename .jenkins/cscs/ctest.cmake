@@ -8,8 +8,6 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 set(CTEST_TEST_TIMEOUT 300)
-set(CTEST_BUILD_PARALLELISM 20)
-set(CTEST_TEST_PARALLELISM 20)
 set(CTEST_CMAKE_GENERATOR Ninja)
 set(CTEST_SITE "cscs(daint)")
 set(CTEST_UPDATE_COMMAND "git")
@@ -17,10 +15,10 @@ set(CTEST_UPDATE_VERSION_ONLY "ON")
 set(CTEST_SUBMIT_RETRY_COUNT 5)
 set(CTEST_SUBMIT_RETRY_DELAY 60)
 
-# We reduce the number of concurrent jobs with icc since it has higher memory
-# requirements than other compilers.
-if("${CTEST_BUILD_CONFIGURATION_NAME}" STREQUAL "icc")
-  set(CTEST_BUILD_PARALLELISM 5)
+include(ProcessorCount)
+processorcount(processor_count)
+if(NOT processor_count EQUAL 0)
+  set(test_args PARALLEL_LEVEL ${processor_count})
 endif()
 
 if(NOT "$ENV{ghprbPullId}" STREQUAL "")
@@ -52,10 +50,10 @@ ctest_update()
 ctest_submit(PARTS Update)
 ctest_configure()
 ctest_submit(PARTS Configure)
-ctest_build(TARGET install FLAGS "-k0 -j ${CTEST_BUILD_PARALLELISM}")
-ctest_build(TARGET tests FLAGS "-k0 -j ${CTEST_BUILD_PARALLELISM}")
+ctest_build(TARGET install FLAGS "-k0")
+ctest_build(TARGET tests FLAGS "-k0")
 ctest_submit(PARTS Build)
-ctest_test(PARALLEL_LEVEL "${CTEST_TEST_PARALLELISM}")
+ctest_test(${test_args})
 ctest_submit(PARTS Test BUILD_ID CTEST_BUILD_ID)
 file(WRITE "jenkins-hpx-${CTEST_BUILD_CONFIGURATION_NAME}-cdash-build-id.txt"
      "${CTEST_BUILD_ID}"
