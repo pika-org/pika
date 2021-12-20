@@ -35,7 +35,7 @@ jobs:
               -DHPXLocal_WITH_EXAMPLES=ON \
               -DHPXLocal_WITH_TESTS=ON \
               -DHPXLocal_WITH_TESTS_HEADERS=OFF \
-              -DHPXLocal_WITH_TESTS_MAX_THREADS_PER_LOCALITY=2 \
+              -DHPXLocal_WITH_TESTS_MAX_THREADS_PER_LOCALITY=3 \
               -DHPXLocal_WITH_CHECK_MODULE_DEPENDENCIES=ON
     - name: Build
       shell: bash
