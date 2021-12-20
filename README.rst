@@ -5,7 +5,7 @@
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-|circleci_status|
+|circleci_status| |codacy|
 
 Documentation: `latest
 <https://hpx-docs.stellar-group.org/latest/html/index.html>`_,
@@ -61,3 +61,7 @@ Past and current funding and support for HPX is listed `here
 .. |circleci_status| image:: https://circleci.com/gh/STEllAR-GROUP/hpx-local/tree/master.svg?style=svg
      :target: https://circleci.com/gh/STEllAR-GROUP/hpx-local/tree/master
      :alt: HPXLocal master branch build status
+
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/e1d514277dca4a70bcb30cea518a3d4b
+     :target: https://www.codacy.com/gh/STEllAR-GROUP/hpx-local
+     :alt: HPXLocal Code Quality Assessment
