@@ -15,7 +15,6 @@ function(hpx_local_create_cmake_test name using_install_dir hpx_local_dir
          build_type test_dir
 )
   set(build_dir "${CMAKE_CURRENT_BINARY_DIR}/${name}")
-  set(ADDITIONAL_CMAKE_OPTIONS -DUSING_INSTALL_DIR=${using_install_dir})
   if(CMAKE_TOOLCHAIN_FILE)
     set(ADDITIONAL_CMAKE_OPTIONS ${ADDITIONAL_CMAKE_OPTIONS}
                                  -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
