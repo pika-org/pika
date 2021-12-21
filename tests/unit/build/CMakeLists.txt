@@ -49,10 +49,10 @@ function(hpx_local_create_cmake_test name using_install_dir hpx_local_dir
     COMMAND
       "${CMAKE_CTEST_COMMAND}" --build-and-test "${test_dir}" "${build_dir}"
       --build-generator "${CMAKE_GENERATOR}" --build-noclean --build-options
-      -DHPXLocal_DIR=${hpx_local_dir} -DBOOST_ROOT=${BOOST_ROOT}
-      ${ADDITIONAL_CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_SAFE}
-      -DCMAKE_BUILD_TYPE=${build_type} ${cmake_cuda_compiler} --test-command
-      "${CMAKE_CTEST_COMMAND}" --output-on-failure
+      -DHPXLocal_DIR=${hpx_local_dir} ${ADDITIONAL_CMAKE_OPTIONS}
+      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_SAFE} -DCMAKE_BUILD_TYPE=${build_type}
+      ${cmake_cuda_compiler} --test-command "${CMAKE_CTEST_COMMAND}"
+      --output-on-failure
     VERBATIM
   )
   add_dependencies(${name} hpx_local)
