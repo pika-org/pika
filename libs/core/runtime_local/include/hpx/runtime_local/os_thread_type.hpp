@@ -23,7 +23,6 @@ namespace hpx { namespace runtime_local {
         worker_thread,      ///< kernel thread is used to schedule HPX threads
         io_thread,          ///< kernel thread can be used for IO operations
         timer_thread,       ///< kernel is used by timer operations
-        parcel_thread,      ///< kernel is used by networking operations
         custom_thread       ///< kernel is registered by the application
     };
 

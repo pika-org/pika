@@ -386,8 +386,6 @@ with section("parse"):
                 "ARGS": "+",
                 "EXECUTABLE": 1,
                 "LOCALITIES": 1,
-                "PARCELPORTS": "+",
-                "THREADS_PER_LOCALITY": 1,
             },
             "pargs": {"flags": ["FAILURE_EXPECTED"], "nargs": "2+"},
         },

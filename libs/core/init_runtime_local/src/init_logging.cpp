@@ -228,14 +228,6 @@ namespace hpx { namespace util {
             LTIM_CONSOLE_(level_) << msg;
             break;
 
-        case destination_agas:
-            LAGAS_CONSOLE_(level_) << msg;
-            break;
-
-        case destination_parcel:
-            LPT_CONSOLE_(level_) << msg;
-            break;
-
         case destination_app:
             LAPP_CONSOLE_(level_) << msg;
             break;
@@ -334,106 +326,6 @@ namespace hpx { namespace util {
             logging::level lvl, logging_destination dest)
         {
             writer.set_destination(name, console_local(lvl, dest));
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // initialize logging for AGAS
-        void init_agas_log(logging::level lvl, std::string logdest,
-            std::string logformat, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
-            void (*define_formatters)(logging::writer::named_write&))
-        {
-            if (hpx::util::logging::level::disable_all != lvl)
-            {
-                logger_writer_type& writer = agas_logger()->writer();
-
-#if defined(ANDROID) || defined(__ANDROID__)
-                if (logdest.empty())    // ensure minimal defaults
-                    logdest = isconsole ? "android_log" : "console";
-                agas_logger()->writer().set_destination(
-                    "android_log", android_log("hpx.agas"));
-#else
-                if (logdest.empty())    // ensure minimal defaults
-                    logdest = isconsole ? "cerr" : "console";
-#endif
-                if (logformat.empty())
-                    logformat = "|\\n";
-
-                set_console_dest(
-                    writer, "console", lvl, destination_agas);    //-V106
-                writer.write(logformat, logdest);
-                define_formatters(writer);
-
-                agas_logger()->mark_as_initialized();
-            }
-            agas_logger()->set_enabled(lvl);
-        }
-
-        void init_agas_log(runtime_configuration& ini, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
-            void (*define_formatters)(logging::writer::named_write&))
-        {
-            auto settings = detail::get_log_settings(ini, "hpx.logging.agas");
-
-            auto lvl = hpx::util::logging::level::disable_all;
-            if (!settings.level_.empty())
-                lvl = detail::get_log_level(settings.level_, true);
-
-            init_agas_log(lvl, HPX_MOVE(settings.dest_),
-                HPX_MOVE(settings.format_), isconsole, set_console_dest,
-                define_formatters);
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        // initialize logging for the parcel transport
-        void init_parcel_log(logging::level lvl, std::string logdest,
-            std::string logformat, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
-            void (*define_formatters)(logging::writer::named_write&))
-        {
-            if (hpx::util::logging::level::disable_all != lvl)
-            {
-                logger_writer_type& writer = parcel_logger()->writer();
-
-#if defined(ANDROID) || defined(__ANDROID__)
-                if (logdest.empty())    // ensure minimal defaults
-                    logdest = isconsole ? "android_log" : "console";
-                parcel_logger()->writer().set_destination(
-                    "android_log", android_log("hpx.parcel"));
-#else
-                if (logdest.empty())    // ensure minimal defaults
-                    logdest = isconsole ? "cerr" : "console";
-#endif
-                if (logformat.empty())
-                    logformat = "|\\n";
-
-                set_console_dest(
-                    writer, "console", lvl, destination_parcel);    //-V106
-                writer.write(logformat, logdest);
-                define_formatters(writer);
-
-                parcel_logger()->mark_as_initialized();
-            }
-            parcel_logger()->set_enabled(lvl);
-        }
-
-        void init_parcel_log(runtime_configuration& ini, bool isconsole,
-            void (*set_console_dest)(logger_writer_type&, char const*,
-                logging::level, logging_destination),
-            void (*define_formatters)(logging::writer::named_write&))
-        {
-            auto settings = detail::get_log_settings(ini, "hpx.logging.parcel");
-
-            auto lvl = hpx::util::logging::level::disable_all;
-            if (!settings.level_.empty())
-                lvl = detail::get_log_level(settings.level_, true);
-
-            init_parcel_log(lvl, HPX_MOVE(settings.dest_),
-                HPX_MOVE(settings.format_), isconsole, set_console_dest,
-                define_formatters);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -676,85 +568,6 @@ namespace hpx { namespace util {
         }
 
         ///////////////////////////////////////////////////////////////////////
-        void init_agas_console_log(
-            logging::level lvl, std::string logdest, std::string logformat)
-        {
-            if (hpx::util::logging::level::disable_all != lvl)
-            {
-                logger_writer_type& writer = agas_console_logger()->writer();
-
-#if defined(ANDROID) || defined(__ANDROID__)
-                if (logdest.empty())    // ensure minimal defaults
-                    logdest = "android_log";
-                writer.set_destination("android_log", android_log("hpx.agas"));
-#else
-                if (logdest.empty())    // ensure minimal defaults
-                    logdest = "cerr";
-#endif
-                if (logformat.empty())
-                    logformat = "|\\n";
-
-                writer.write(logformat, logdest);
-
-                agas_console_logger()->mark_as_initialized();
-            }
-            agas_console_logger()->set_enabled(lvl);
-        }
-
-        void init_agas_console_log(util::section const& ini)
-        {
-            auto settings =
-                detail::get_log_settings(ini, "hpx.logging.console.agas");
-
-            auto lvl = hpx::util::logging::level::disable_all;
-            if (!settings.level_.empty())
-                lvl = detail::get_log_level(settings.level_, true);
-
-            init_agas_console_log(
-                lvl, HPX_MOVE(settings.dest_), HPX_MOVE(settings.format_));
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        void init_parcel_console_log(
-            logging::level lvl, std::string logdest, std::string logformat)
-        {
-            if (hpx::util::logging::level::disable_all != lvl)
-            {
-                logger_writer_type& writer = parcel_console_logger()->writer();
-
-#if defined(ANDROID) || defined(__ANDROID__)
-                if (logdest.empty())    // ensure minimal defaults
-                    logdest = "android_log";
-                writer.set_destination(
-                    "android_log", android_log("hpx.parcel"));
-#else
-                if (logdest.empty())    // ensure minimal defaults
-                    logdest = "cerr";
-#endif
-                if (logformat.empty())
-                    logformat = "|\\n";
-
-                writer.write(logformat, logdest);
-
-                parcel_console_logger()->mark_as_initialized();
-            }
-            parcel_console_logger()->set_enabled(lvl);
-        }
-
-        void init_parcel_console_log(util::section const& ini)
-        {
-            auto settings =
-                detail::get_log_settings(ini, "hpx.logging.console.parcel");
-
-            auto lvl = hpx::util::logging::level::disable_all;
-            if (!settings.level_.empty())
-                lvl = detail::get_log_level(settings.level_, true);
-
-            init_parcel_console_log(
-                lvl, HPX_MOVE(settings.dest_), HPX_MOVE(settings.format_));
-        }
-
-        ///////////////////////////////////////////////////////////////////////
         void init_timing_console_log(
             logging::level lvl, std::string logdest, std::string logformat)
         {
@@ -934,9 +747,6 @@ namespace hpx { namespace util {
             default_define_formatters = define_formatters;
 
             // initialize normal logs
-            init_agas_log(ini, isconsole, set_console_dest, define_formatters);
-            init_parcel_log(
-                ini, isconsole, set_console_dest, define_formatters);
             init_timing_log(
                 ini, isconsole, set_console_dest, define_formatters);
             init_hpx_log(ini, isconsole, set_console_dest, define_formatters);
@@ -945,8 +755,6 @@ namespace hpx { namespace util {
                 ini, isconsole, set_console_dest, define_formatters);
 
             // initialize console logs
-            init_agas_console_log(ini);
-            init_parcel_console_log(ini);
             init_timing_console_log(ini);
             init_hpx_console_log(ini);
             init_app_console_log(ini);
@@ -973,16 +781,6 @@ namespace hpx { namespace util {
         case destination_timing:
             timing_logger()->set_enabled(logging::level::disable_all);
             timing_console_logger()->set_enabled(logging::level::disable_all);
-            break;
-
-        case destination_agas:
-            agas_logger()->set_enabled(logging::level::disable_all);
-            agas_console_logger()->set_enabled(logging::level::disable_all);
-            break;
-
-        case destination_parcel:
-            parcel_logger()->set_enabled(logging::level::disable_all);
-            parcel_console_logger()->set_enabled(logging::level::disable_all);
             break;
 
         case destination_app:
@@ -1021,22 +819,6 @@ namespace hpx { namespace util {
                 detail::default_isconsole, detail::default_set_console_dest,
                 detail::default_define_formatters);
             detail::init_debuglog_console_log(
-                lvl, HPX_MOVE(logdest), HPX_MOVE(logformat));
-            break;
-
-        case destination_agas:
-            detail::init_agas_log(lvl, logdest, logformat,
-                detail::default_isconsole, detail::default_set_console_dest,
-                detail::default_define_formatters);
-            detail::init_agas_console_log(
-                lvl, HPX_MOVE(logdest), HPX_MOVE(logformat));
-            break;
-
-        case destination_parcel:
-            detail::init_parcel_log(lvl, logdest, logformat,
-                detail::default_isconsole, detail::default_set_console_dest,
-                detail::default_define_formatters);
-            detail::init_parcel_console_log(
                 lvl, HPX_MOVE(logdest), HPX_MOVE(logformat));
             break;
 
@@ -1088,7 +870,6 @@ namespace hpx { namespace util {
             // warn if logging is requested
             if (get_entry_as<int>(ini, "hpx.logging.level", -1) > 0 ||
                 get_entry_as<int>(ini, "hpx.logging.timing.level", -1) > 0 ||
-                get_entry_as<int>(ini, "hpx.logging.agas.level", -1) > 0 ||
                 get_entry_as<int>(ini, "hpx.logging.debuglog.level", -1) > 0 ||
                 get_entry_as<int>(ini, "hpx.logging.application.level", -1) > 0)
             {

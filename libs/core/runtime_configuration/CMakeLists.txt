@@ -7,7 +7,6 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(runtime_configuration_headers
-    hpx/runtime_configuration/agas_service_mode.hpp
     hpx/runtime_configuration/init_ini_data.hpp
     hpx/runtime_configuration/runtime_configuration.hpp
     hpx/runtime_configuration/runtime_configuration_fwd.hpp
@@ -20,7 +19,6 @@ set(
   hpx/util/ini.hpp => hpx/modules/runtime_configuration.hpp
   hpx/util/init_ini_data.hpp => hpx/modules/runtime_configuration.hpp
   hpx/util/runtime_configuration.hpp => hpx/modules/runtime_configuration.hpp
-  hpx/plugins/plugin_registry_base.hpp => hpx/modules/runtime_configuration.hpp
   hpx/runtime/runtime_mode.hpp => hpx/modules/runtime_configuration.hpp
 )
 # cmake-format: on

@@ -59,20 +59,6 @@ namespace hpx { namespace util {
     bool mpi_environment::check_mpi_environment(
         util::runtime_configuration const& cfg)
     {
-        // We disable the MPI parcelport if any of these hold:
-        //
-        // - The parcelport is explicitly disabled
-        // - The application is not run in an MPI environment
-        // - The TCP parcelport is enabled and has higher priority
-        if (get_entry_as(cfg, "hpx.parcel.mpi.enable", 1) == 0 ||
-            (get_entry_as(cfg, "hpx.parcel.tcp.enable", 1) &&
-                (get_entry_as(cfg, "hpx.parcel.tcp.priority", 1) >
-                    get_entry_as(cfg, "hpx.parcel.mpi.priority", 0))))
-        {
-            LBT_(info) << "MPI support disabled via configuration settings\n";
-            return false;
-        }
-
         // log message was already generated
         return detail::detect_mpi_environment(cfg, HPX_HAVE_PARCELPORT_MPI_ENV);
     }

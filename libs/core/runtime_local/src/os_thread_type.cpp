@@ -19,7 +19,6 @@ namespace hpx { namespace runtime_local {
             "worker-thread",
             "io-thread",
             "timer-thread",
-            "parcel-thread",
             "custom-thread"
         };
         // clang-format on

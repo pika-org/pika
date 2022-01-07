@@ -12,7 +12,6 @@
 #include <hpx/ini/ini.hpp>
 #include <hpx/modules/filesystem.hpp>
 #include <hpx/errors/error_code.hpp>
-#include <hpx/runtime_configuration/agas_service_mode.hpp>
 #include <hpx/runtime_configuration/runtime_configuration_fwd.hpp>
 #include <hpx/runtime_configuration/runtime_mode.hpp>
 
@@ -48,35 +47,6 @@ namespace hpx { namespace util {
         // re-initialize all entries based on the additional information from
         // any explicit command line options
         void reconfigure(std::vector<std::string> const& ini_defs);
-
-        // Returns the AGAS mode of this locality, returns either hosted (for
-        // localities connecting to a remote AGAS server) or bootstrap for the
-        // locality hosting the AGAS server.
-        agas::service_mode get_agas_service_mode() const;
-
-        // initial number of localities
-        std::uint32_t get_num_localities() const;
-        void set_num_localities(std::uint32_t);
-
-        // should networking be enabled
-        bool enable_networking() const;
-
-        // sequence number of first usable pu
-        std::uint32_t get_first_used_core() const;
-        void set_first_used_core(std::uint32_t);
-
-        // Get the size of the ipc parcelport data buffer cache
-        std::size_t get_ipc_data_buffer_cache_size() const;
-
-        // Get AGAS client-side local cache size
-        std::size_t get_agas_local_cache_size(
-            std::size_t dflt = HPX_AGAS_LOCAL_CACHE_SIZE) const;
-
-        bool get_agas_caching_mode() const;
-
-        bool get_agas_range_caching_mode() const;
-
-        std::size_t get_agas_max_pending_refcnt_requests() const;
 
         // Load application specific configuration and merge it with the
         // default configuration loaded from hpx.ini
@@ -124,13 +94,6 @@ namespace hpx { namespace util {
         // Return the configured sizes of any of the know thread pools
         std::size_t get_thread_pool_size(char const* poolname) const;
 
-        // Return the endianness to be used for out-serialization
-        std::string get_endian_out() const;
-
-        // Return maximally allowed message sizes
-        std::uint64_t get_max_inbound_message_size() const;
-        std::uint64_t get_max_outbound_message_size() const;
-
     private:
         std::ptrdiff_t init_stack_size(char const* entryname,
             char const* defaultvaluestr, std::ptrdiff_t defaultvalue) const;
@@ -151,7 +114,6 @@ namespace hpx { namespace util {
         runtime_mode mode_;
 
     private:
-        mutable std::uint32_t num_localities;
         mutable std::uint32_t num_os_threads;
         std::ptrdiff_t small_stacksize;
         std::ptrdiff_t medium_stacksize;

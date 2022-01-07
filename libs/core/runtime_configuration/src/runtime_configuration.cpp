@@ -41,25 +41,6 @@
 #include <unistd.h>
 #endif
 
-#if (defined(__linux) || defined(linux) || defined(__linux__))
-#include <arpa/inet.h>
-#include <ifaddrs.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#endif
-
-#if !defined(HPX_WINDOWS)
-#if defined(HPX_DEBUG)
-#define HPX_DLL_STRING "libhpxd" HPX_SHARED_LIB_EXTENSION
-#else
-#define HPX_DLL_STRING "libhpx" HPX_SHARED_LIB_EXTENSION
-#endif
-#elif defined(HPX_DEBUG)
-#define HPX_DLL_STRING "hpxd" HPX_SHARED_LIB_EXTENSION
-#else
-#define HPX_DLL_STRING "hpx" HPX_SHARED_LIB_EXTENSION
-#endif
-
 #include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -174,19 +155,6 @@ namespace hpx { namespace util {
             "trace_depth = ${HPX_TRACE_DEPTH:" HPX_PP_STRINGIZE(
                 HPX_PP_EXPAND(HPX_HAVE_THREAD_BACKTRACE_DEPTH)) "}",
 
-            // arity for collective operations implemented in a tree fashion
-            "[hpx.lcos.collectives]",
-            "arity = ${HPX_LCOS_COLLECTIVES_ARITY:32}",
-            "cut_off = ${HPX_LCOS_COLLECTIVES_CUT_OFF:-1}",
-
-            // connect back to the given latch if specified
-            "[hpx.on_startup]",
-            "wait_on_latch = ${HPX_ON_STARTUP_WAIT_ON_LATCH}",
-
-            // by default, enable networking
-            "[hpx.parcel]",
-            "enable = 1",
-
             "[hpx.stacks]",
             "small_size = ${HPX_SMALL_STACK_SIZE:" HPX_PP_STRINGIZE(
                 HPX_PP_EXPAND(HPX_SMALL_STACK_SIZE)) "}",
@@ -206,8 +174,6 @@ namespace hpx { namespace util {
             "io_pool_size = ${HPX_NUM_IO_POOL_SIZE:" HPX_PP_STRINGIZE(
                 HPX_PP_EXPAND(HPX_NUM_IO_POOL_SIZE)) "}",
 #endif
-            "parcel_pool_size = ${HPX_NUM_PARCEL_POOL_SIZE:" HPX_PP_STRINGIZE(
-                HPX_PP_EXPAND(HPX_NUM_PARCEL_POOL_SIZE)) "}",
 #if defined(HPX_HAVE_TIMER_POOL)
             "timer_pool_size = ${HPX_NUM_TIMER_POOL_SIZE:" HPX_PP_STRINGIZE(
                 HPX_PP_EXPAND(HPX_NUM_TIMER_POOL_SIZE)) "}",
@@ -254,17 +220,12 @@ namespace hpx { namespace util {
 
             // predefine command line aliases
             "[hpx.commandline.aliases]",
-            "-a = --hpx:agas",
-            "-c = --hpx:console",
             "-h = --hpx:help",
             "-I = --hpx:ini",
-            "-l = --hpx:localities",
             "-p = --hpx:app-config",
             "-q = --hpx:queuing",
-            "-r = --hpx:run-agas-server",
             "-t = --hpx:threads",
             "-v = --hpx:version",
-            "-w = --hpx:worker",
             "-x = --hpx:hpx",
             "-0 = --hpx:node=0",
             "-1 = --hpx:node=1",
@@ -276,22 +237,6 @@ namespace hpx { namespace util {
             "-7 = --hpx:node=7",
             "-8 = --hpx:node=8",
             "-9 = --hpx:node=9",
-
-            "[hpx.agas]",
-            // 'address' has deliberately no default, see
-            // command_line_handling.cpp
-            "address = ${HPX_AGAS_SERVER_ADDRESS}",
-            "port = ${HPX_AGAS_SERVER_PORT:" HPX_PP_STRINGIZE(
-                HPX_PP_EXPAND(HPX_INITIAL_IP_PORT)) "}",
-            "max_pending_refcnt_requests = "
-            "${HPX_AGAS_MAX_PENDING_REFCNT_REQUESTS:" HPX_PP_STRINGIZE(
-                HPX_PP_EXPAND(
-                    HPX_INITIAL_AGAS_MAX_PENDING_REFCNT_REQUESTS)) "}",
-            "service_mode = hosted",
-            "local_cache_size = ${HPX_AGAS_LOCAL_CACHE_SIZE:" HPX_PP_STRINGIZE(
-                HPX_PP_EXPAND(HPX_AGAS_LOCAL_CACHE_SIZE)) "}",
-            "use_range_caching = ${HPX_AGAS_USE_RANGE_CACHING:1}",
-            "use_caching = ${HPX_AGAS_USE_CACHING:1}",
             // clang-format on
         };
 
@@ -366,46 +311,6 @@ namespace hpx { namespace util {
 #endif
             "format = ${HPX_CONSOLE_TIMING_LOGFORMAT:|}",
 
-            // logging related to AGAS
-            "[hpx.logging.agas]",
-            "level = ${HPX_AGAS_LOGLEVEL:-1}",
-            "destination = ${HPX_AGAS_LOGDESTINATION:"
-                "file(hpx.agas.$[system.pid].log)}",
-            "format = ${HPX_AGAS_LOGFORMAT:" HPX_LOGFORMAT
-                "P%parentloc%/%hpxparent%.%hpxparentphase% %time%("
-                    HPX_TIMEFORMAT ") [%idx%][AGAS] |\\n}",
-
-            // console logging related to AGAS
-            "[hpx.logging.console.agas]",
-            "level = ${HPX_AGAS_LOGLEVEL:$[hpx.logging.agas.level]}",
-#if defined(ANDROID) || defined(__ANDROID__)
-            "destination = ${HPX_CONSOLE_AGAS_LOGDESTINATION:android_log}",
-#else
-            "destination = ${HPX_CONSOLE_AGAS_LOGDESTINATION:"
-                "file(hpx.agas.$[system.pid].log)}",
-#endif
-            "format = ${HPX_CONSOLE_AGAS_LOGFORMAT:|}",
-
-            // logging related to the parcel transport
-            "[hpx.logging.parcel]",
-            "level = ${HPX_PARCEL_LOGLEVEL:-1}",
-            "destination = ${HPX_PARCEL_LOGDESTINATION:"
-                "file(hpx.parcel.$[system.pid].log)}",
-            "format = ${HPX_PARCEL_LOGFORMAT:" HPX_LOGFORMAT
-                "P%parentloc%/%hpxparent%.%hpxparentphase% %time%("
-                HPX_TIMEFORMAT ") [%idx%][  PT] |\\n}",
-
-            // console logging related to the parcel transport
-            "[hpx.logging.console.parcel]",
-            "level = ${HPX_PARCEL_LOGLEVEL:$[hpx.logging.parcel.level]}",
-#if defined(ANDROID) || defined(__ANDROID__)
-            "destination = ${HPX_CONSOLE_PARCEL_LOGDESTINATION:android_log}",
-#else
-            "destination = ${HPX_CONSOLE_PARCEL_LOGDESTINATION:"
-                "file(hpx.parcel.$[system.pid].log)}",
-#endif
-            "format = ${HPX_CONSOLE_PARCEL_LOGFORMAT:|}",
-
             // logging related to applications
             "[hpx.logging.application]",
             "level = ${HPX_APP_LOGLEVEL:-1}",
@@ -460,7 +365,6 @@ namespace hpx { namespace util {
         std::vector<std::string> const& extra_static_ini_defs_)
       : extra_static_ini_defs(extra_static_ini_defs_)
       , mode_(mode)
-      , num_localities(0)
       , num_os_threads(0)
       , small_stacksize(HPX_SMALL_STACK_SIZE)
       , medium_stacksize(HPX_MEDIUM_STACK_SIZE)
@@ -516,177 +420,6 @@ namespace hpx { namespace util {
         medium_stacksize = init_medium_stack_size();
         large_stacksize = init_large_stack_size();
         huge_stacksize = init_huge_stack_size();
-    }
-
-    std::size_t runtime_configuration::get_ipc_data_buffer_cache_size() const
-    {
-        if (util::section const* sec = get_section("hpx.parcel.ipc");
-            nullptr != sec)
-        {
-            return hpx::util::get_entry_as<std::size_t>(*sec,
-                "data_buffer_cache_size",
-                HPX_PARCEL_IPC_DATA_BUFFER_CACHE_SIZE);
-        }
-        return HPX_PARCEL_IPC_DATA_BUFFER_CACHE_SIZE;
-    }
-
-    agas::service_mode runtime_configuration::get_agas_service_mode() const
-    {
-        // load all components as described in the configuration information
-        if (util::section const* sec = get_section("hpx.agas"); nullptr != sec)
-        {
-            std::string const m = sec->get_entry("service_mode", "hosted");
-
-            if (m == "hosted")
-            {
-                return agas::service_mode_hosted;
-            }
-            else if (m == "bootstrap")
-            {
-                return agas::service_mode_bootstrap;
-            }
-            else
-            {
-                // REVIEW: exception type is overused
-                HPX_THROW_EXCEPTION(bad_parameter,
-                    "runtime_configuration::get_agas_service_mode",
-                    "invalid AGAS router mode \"{}\"", m);
-            }
-        }
-        return agas::service_mode_hosted;
-    }
-
-    std::uint32_t runtime_configuration::get_num_localities() const
-    {
-        if (num_localities == 0)
-        {
-            if (util::section const* sec = get_section("hpx"); nullptr != sec)
-            {
-                num_localities = hpx::util::get_entry_as<std::uint32_t>(
-                    *sec, "localities", 1);
-            }
-        }
-
-        HPX_ASSERT(num_localities != 0);
-        return num_localities;
-    }
-
-    void runtime_configuration::set_num_localities(
-        std::uint32_t num_localities_)
-    {
-        // this function should not be called on the AGAS server
-        HPX_ASSERT(agas::service_mode_bootstrap != get_agas_service_mode());
-        num_localities = num_localities_;
-
-        if (util::section* sec = get_section("hpx"); nullptr != sec)
-        {
-            sec->add_entry("localities", std::to_string(num_localities));
-        }
-    }
-
-    // this function should figure out whether networking has to be enabled.
-    bool runtime_configuration::enable_networking() const
-    {
-        if (util::section const* sec = get_section("hpx"); nullptr != sec)
-        {
-            // get the number of initial localities
-            if (hpx::util::get_entry_as<std::uint32_t>(*sec, "localities", 1) >
-                1)
-            {
-                return true;
-            }
-
-            // on localities other than locality zero the number of
-            // localities might not have been initialized yet
-            if (hpx::util::get_entry_as<std::int32_t>(*sec, "node", -1) > 0)
-            {
-                return true;
-            }
-
-            // get whether localities are expected to connect
-            if (hpx::util::get_entry_as<std::int32_t>(
-                    *sec, "expect_connecting_localities", 0) != 0)
-            {
-                return true;
-            }
-
-            // for any runtime mode except 'console' networking should be
-            // enabled as well
-            if (hpx::util::get_entry_as<std::string>(
-                    *sec, "runtime_mode", "") != "console")
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    std::uint32_t runtime_configuration::get_first_used_core() const
-    {
-        if (util::section const* sec = get_section("hpx"); nullptr != sec)
-        {
-            return hpx::util::get_entry_as<std::uint32_t>(
-                *sec, "first_used_core", 0);
-        }
-        return 0;
-    }
-
-    void runtime_configuration::set_first_used_core(
-        std::uint32_t first_used_core)
-    {
-        if (util::section* sec = get_section("hpx"); nullptr != sec)
-        {
-            sec->add_entry("first_used_core", std::to_string(first_used_core));
-        }
-    }
-
-    std::size_t runtime_configuration::get_agas_local_cache_size(
-        std::size_t dflt) const
-    {
-        std::size_t cache_size = dflt;
-
-        if (util::section const* sec = get_section("hpx.agas"); nullptr != sec)
-        {
-            cache_size = hpx::util::get_entry_as<std::size_t>(
-                *sec, "local_cache_size", cache_size);
-        }
-
-        if (cache_size != std::size_t(~0x0ul) && cache_size < 16ul)
-        {
-            cache_size = 16;    // limit lower bound
-        }
-        return cache_size;
-    }
-
-    bool runtime_configuration::get_agas_caching_mode() const
-    {
-        if (util::section const* sec = get_section("hpx.agas"); nullptr != sec)
-        {
-            return hpx::util::get_entry_as<int>(*sec, "use_caching", 1) != 0;
-        }
-        return false;
-    }
-
-    bool runtime_configuration::get_agas_range_caching_mode() const
-    {
-        if (util::section const* sec = get_section("hpx.agas"); nullptr != sec)
-        {
-            return hpx::util::get_entry_as<int>(*sec, "use_range_caching", 1) !=
-                0;
-        }
-        return false;
-    }
-
-    std::size_t runtime_configuration::get_agas_max_pending_refcnt_requests()
-        const
-    {
-        if (util::section const* sec = get_section("hpx.agas"); nullptr != sec)
-        {
-            return hpx::util::get_entry_as<std::size_t>(*sec,
-                "max_pending_refcnt_requests",
-                HPX_INITIAL_AGAS_MAX_PENDING_REFCNT_REQUESTS);
-        }
-        return HPX_INITIAL_AGAS_MAX_PENDING_REFCNT_REQUESTS;
     }
 
     bool runtime_configuration::get_itt_notify_mode() const
@@ -827,18 +560,6 @@ namespace hpx { namespace util {
         return 2;    // the default size for all pools is 2
     }
 
-    // Return the endianness to be used for out-serialization
-    std::string runtime_configuration::get_endian_out() const
-    {
-        if (util::section const* sec = get_section("hpx.parcel");
-            nullptr != sec)
-        {
-            return sec->get_entry(
-                "endian_out", endian::native == endian::big ? "big" : "little");
-        }
-        return endian::native == endian::big ? "big" : "little";
-    }
-
     // Will return the stack size to use for all HPX-threads.
     std::ptrdiff_t runtime_configuration::init_stack_size(char const* entryname,
         char const* defaultvaluestr, std::ptrdiff_t defaultvalue) const
@@ -891,35 +612,6 @@ namespace hpx { namespace util {
     {
         return init_stack_size("huge_size",
             HPX_PP_STRINGIZE(HPX_HUGE_STACK_SIZE), HPX_HUGE_STACK_SIZE);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Return maximally allowed message size
-    std::uint64_t runtime_configuration::get_max_inbound_message_size() const
-    {
-        if (util::section const* sec = get_section("hpx.parcel");
-            nullptr != sec)
-        {
-            std::uint64_t maxsize = hpx::util::get_entry_as<std::uint64_t>(
-                *sec, "max_message_size", HPX_PARCEL_MAX_MESSAGE_SIZE);
-            if (maxsize > 0)
-                return maxsize;
-        }
-        return HPX_PARCEL_MAX_MESSAGE_SIZE;    // default is 1GByte
-    }
-
-    std::uint64_t runtime_configuration::get_max_outbound_message_size() const
-    {
-        if (util::section const* sec = get_section("hpx.parcel");
-            nullptr != sec)
-        {
-            std::uint64_t maxsize = hpx::util::get_entry_as<std::uint64_t>(*sec,
-                "max_outbound_message_size",
-                HPX_PARCEL_MAX_OUTBOUND_MESSAGE_SIZE);
-            if (maxsize > 0)
-                return maxsize;
-        }
-        return HPX_PARCEL_MAX_OUTBOUND_MESSAGE_SIZE;    // default is 1GByte
     }
 
     ///////////////////////////////////////////////////////////////////////////

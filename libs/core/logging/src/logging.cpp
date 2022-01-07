@@ -21,8 +21,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace hpx { namespace util {
-    HPX_DEFINE_LOG(agas, disable_all)
-    HPX_DEFINE_LOG(agas_console, disable_all)
     HPX_DEFINE_LOG(app, disable_all)
     HPX_DEFINE_LOG(app_console, disable_all)
     HPX_DEFINE_LOG(app_error, fatal)
@@ -32,8 +30,6 @@ namespace hpx { namespace util {
     HPX_DEFINE_LOG(hpx, disable_all)
     HPX_DEFINE_LOG(hpx_console, disable_all)
     HPX_DEFINE_LOG(hpx_error, fatal)
-    HPX_DEFINE_LOG(parcel, disable_all)
-    HPX_DEFINE_LOG(parcel_console, disable_all)
     HPX_DEFINE_LOG(timing, disable_all)
     HPX_DEFINE_LOG(timing_console, disable_all)
 

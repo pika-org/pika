@@ -622,30 +622,6 @@ namespace hpx { namespace local { namespace detail {
             ini_config.emplace_back("hpx.logging.level=5");
         }
 
-        if (vm.count("hpx:debug-agas-log"))
-        {
-            ini_config.emplace_back("hpx.logging.console.agas.destination=" +
-                detail::convert_to_log_file(
-                    vm["hpx:debug-agas-log"].as<std::string>()));
-            ini_config.emplace_back("hpx.logging.agas.destination=" +
-                detail::convert_to_log_file(
-                    vm["hpx:debug-agas-log"].as<std::string>()));
-            ini_config.emplace_back("hpx.logging.console.agas.level=5");
-            ini_config.emplace_back("hpx.logging.agas.level=5");
-        }
-
-        if (vm.count("hpx:debug-parcel-log"))
-        {
-            ini_config.emplace_back("hpx.logging.console.parcel.destination=" +
-                detail::convert_to_log_file(
-                    vm["hpx:debug-parcel-log"].as<std::string>()));
-            ini_config.emplace_back("hpx.logging.parcel.destination=" +
-                detail::convert_to_log_file(
-                    vm["hpx:debug-parcel-log"].as<std::string>()));
-            ini_config.emplace_back("hpx.logging.console.parcel.level=5");
-            ini_config.emplace_back("hpx.logging.parcel.level=5");
-        }
-
         if (vm.count("hpx:debug-timing-log"))
         {
             ini_config.emplace_back("hpx.logging.console.timing.destination=" +
@@ -671,9 +647,8 @@ namespace hpx { namespace local { namespace detail {
             ini_config.emplace_back("hpx.logging.application.level=5");
         }
 #else
-        if (vm.count("hpx:debug-hpx-log") || vm.count("hpx:debug-agas-log") ||
-            vm.count("hpx:debug-parcel-log") ||
-            vm.count("hpx:debug-timing-log") || vm.count("hpx:debug-app-log"))
+        if (vm.count("hpx:debug-hpx-log") || vm.count("hpx:debug-timing-log") ||
+            vm.count("hpx:debug-app-log"))
         {
             // clang-format off
             throw hpx::detail::command_line_error(

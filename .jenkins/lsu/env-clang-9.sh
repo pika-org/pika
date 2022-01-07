@@ -18,7 +18,6 @@ configure_extra_options+=" -DHPXLocal_WITH_MALLOC=system"
 configure_extra_options+=" -DHPXLocal_WITH_FETCH_ASIO=ON"
 configure_extra_options+=" -DHPXLocal_WITH_COMPILER_WARNINGS=ON"
 configure_extra_options+=" -DHPXLocal_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
-configure_extra_options+=" -DHPXLocal_WITH_PARCELPORT_MPI=ON"
 configure_extra_options+=" -DHPXLocal_WITH_LOGGING=OFF"
 
 # Make sure HWLOC does not report 'cores'. This is purely an option to enable

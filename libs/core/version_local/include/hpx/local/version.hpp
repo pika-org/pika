@@ -30,9 +30,6 @@ namespace hpx::local {
     // Returns the full HPX version.
     HPX_LOCAL_EXPORT std::string full_version_as_string();
 
-    // Returns the AGAS subsystem version.
-    HPX_LOCAL_EXPORT std::uint8_t agas_version();
-
     // Returns the tag.
     HPX_LOCAL_EXPORT std::string tag();
 
