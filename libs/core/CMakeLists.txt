@@ -54,7 +54,6 @@ set(_hpx_local_modules
     preprocessor
     program_options
     properties
-    resiliency
     resource_partitioner
     runtime_configuration
     runtime_local

@@ -57,7 +57,6 @@ Core modules
    /libs/core/preprocessor/docs/index.rst
    /libs/core/program_options/docs/index.rst
    /libs/core/properties/docs/index.rst
-   /libs/core/resiliency/docs/index.rst
    /libs/core/resource_partitioner/docs/index.rst
    /libs/core/runtime_configuration/docs/index.rst
    /libs/core/runtime_local/docs/index.rst
