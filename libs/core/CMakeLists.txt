@@ -21,7 +21,6 @@ set(_hpx_local_modules
     async_cuda
     async_local
     async_mpi
-    batch_environments
     cache
     command_line_handling_local
     concepts
