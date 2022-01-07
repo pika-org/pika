@@ -8,13 +8,13 @@
 #include <hpx/logging/level.hpp>
 
 #if defined(HPX_LOCAL_HAVE_LOGGING)
-#include <boost/utility/string_ref.hpp>
 
 #include <cstddef>
 #include <iomanip>
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace hpx { namespace util { namespace logging {
@@ -44,7 +44,7 @@ namespace hpx { namespace util { namespace logging {
         return '<' + std::to_string(static_cast<int>(value)) + '>';
     }
 
-    void format_value(std::ostream& os, boost::string_ref spec, level value)
+    void format_value(std::ostream& os, std::string_view spec, level value)
     {
         if (!spec.empty())
             throw std::runtime_error("Not a valid format specifier");

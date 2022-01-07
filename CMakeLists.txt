@@ -1821,6 +1821,7 @@ if(HPXLocal_WITH_PRECOMPILED_HEADERS)
       <stack>
       <stdexcept>
       <string>
+      <string_view>
       <system_error>
       <thread>
       <tuple>
@@ -1837,7 +1838,6 @@ if(HPXLocal_WITH_PRECOMPILED_HEADERS)
       <boost/lockfree/queue.hpp>
       <boost/optional.hpp>
       <boost/tokenizer.hpp>
-      <boost/utility/string_ref.hpp>
   )
 
   if(HPXLocal_WITH_CXX17_FILESYSTEM)
