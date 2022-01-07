@@ -6,7 +6,6 @@
 
 set(util_headers
     hpx/util/detail/reserve.hpp
-    hpx/util/calculate_fanout.hpp
     hpx/util/get_and_reset_value.hpp
     hpx/util/get_entry_as.hpp
     hpx/util/insert_checked.hpp
@@ -14,8 +13,6 @@ set(util_headers
     hpx/util/manage_config.hpp
     hpx/util/max.hpp
     hpx/util/min.hpp
-    hpx/util/regex_from_pattern.hpp
-    hpx/util/sed_transform.hpp
 )
 
 # cmake-format: off
@@ -24,7 +21,7 @@ set(util_compat_headers
 )
 # cmake-format: on
 
-set(util_sources manage_config.cpp regex_from_pattern.cpp sed_transform.cpp)
+set(util_sources manage_config.cpp)
 
 include(HPXLocal_AddModule)
 hpx_local_add_module(
