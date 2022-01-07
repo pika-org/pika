@@ -36,68 +36,7 @@ namespace hpx { namespace threads {
             numa_balanced = 0x08
         };
 
-        struct spec_type
-        {
-            enum type
-            {
-                unknown,
-                thread,
-                socket,
-                numanode,
-                core,
-                pu
-            };
-            HPX_LOCAL_EXPORT static char const* type_name(type t);
-
-            static std::int64_t all_entities() noexcept
-            {
-                return (std::numeric_limits<std::int64_t>::min)();
-            }
-
-            spec_type() noexcept
-              : type_(unknown)
-            {
-            }
-
-            spec_type(type t, std::int64_t min = all_entities(),
-                std::int64_t max = all_entities())
-              : type_(t)
-              , index_bounds_()
-            {
-                if (t != unknown)
-                {
-                    if (max == 0 || max == all_entities())
-                    {
-                        // one or all entities
-                        index_bounds_.push_back(min);
-                    }
-                    else if (min != all_entities())
-                    {
-                        // all entities between min and -max, or just min,max
-                        HPX_ASSERT(min >= 0);
-                        index_bounds_.push_back(min);
-                        index_bounds_.push_back(max);
-                    }
-                }
-            }
-
-            bool operator==(spec_type const& rhs) const noexcept
-            {
-                return type_ == rhs.type_ && index_bounds_ == rhs.index_bounds_;
-            }
-
-            type type_;
-            bounds_type index_bounds_;
-        };
-
-        typedef std::vector<spec_type> mapping_type;
-        typedef std::pair<spec_type, mapping_type> full_mapping_type;
-        typedef std::vector<full_mapping_type> mappings_spec_type;
-        typedef boost::variant<distribution_type, mappings_spec_type>
-            mappings_type;
-
-        HPX_LOCAL_EXPORT bounds_type extract_bounds(
-            spec_type const& m, std::size_t default_last, error_code& ec);
+        using mappings_type = distribution_type;
 
         HPX_LOCAL_EXPORT void parse_mappings(std::string const& spec,
             mappings_type& mappings, error_code& ec = throws);
