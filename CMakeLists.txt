@@ -264,7 +264,7 @@ endif()
 
 hpx_local_option(
   HPXLocal_WITH_UNITY_BUILD BOOL
-  "Enable unity build for certain build targets (default: OFF)" OFF ADVANCED
+  "Enable unity build for certain build targets (default: ON)" ON ADVANCED
 )
 if(HPXLocal_WITH_UNITY_BUILD)
   set(HPXLocal_WITH_UNITY_BUILD_OPTION UNITY_BUILD)
@@ -273,8 +273,8 @@ endif()
 hpx_local_option(
   HPXLocal_WITH_PRECOMPILED_HEADERS
   BOOL
-  "Enable precompiled headers for certain build targets (experimental) (default: OFF)"
-  OFF
+  "Enable precompiled headers for certain build targets (experimental) (default: ON)"
+  ON
   ADVANCED
 )
 if(HPXLocal_WITH_PRECOMPILED_HEADERS)
