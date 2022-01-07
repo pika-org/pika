@@ -1665,17 +1665,6 @@ endif()
 
 # ##############################################################################
 
-# ##############################################################################
-# HPX_PREFIX The prefix is the default search path for plugins
-# ##############################################################################
-if("${HPXLocal_PLATFORM_UC}" STREQUAL "ANDROID")
-  set(HPX_PREFIX "lib")
-  set(HPX_BUILD_PREFIX "lib")
-else()
-  set(HPX_PREFIX "${CMAKE_INSTALL_PREFIX}")
-  set(HPX_BUILD_PREFIX "${PROJECT_BINARY_DIR}")
-endif()
-
 # Note: on windows systems the ':' will be converted to a ';' at runtime
 hpx_local_add_config_cond_define(
   HPX_DEFAULT_COMPONENT_PATH_SUFFIXES

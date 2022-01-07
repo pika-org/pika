@@ -71,11 +71,7 @@ function(hpx_local_add_test category name)
 
   set(args "${${name}_UNPARSED_ARGUMENTS}" ${args})
 
-  if(HPXLocal_WITH_INSTALLED_VERSION)
-    set(_script_location ${HPX_PREFIX})
-  else()
-    set(_script_location ${PROJECT_BINARY_DIR})
-  endif()
+  set(_script_location ${PROJECT_BINARY_DIR})
 
   set(cmd ${_exe})
 

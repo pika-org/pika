@@ -109,11 +109,6 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-#if defined(HPX_PREFIX_DEFAULT) && !defined(HPX_PREFIX)
-#  define HPX_PREFIX HPX_PREFIX_DEFAULT
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 // Count number of empty (no HPX thread available) thread manager loop executions
 #if !defined(HPX_IDLE_LOOP_COUNT_MAX)
 #  define HPX_IDLE_LOOP_COUNT_MAX 200000

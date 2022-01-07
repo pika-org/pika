@@ -33,7 +33,6 @@ foreach(benchmark ${benchmarks})
     SOURCES ${sources} ${${benchmark}_FLAGS}
     DEPENDENCIES ${${benchmark}_LIBRARIES}
     EXCLUDE_FROM_ALL
-    HPX_PREFIX ${HPX_BUILD_PREFIX}
     FOLDER "Benchmarks/Local/HTTS v2"
   )
 

@@ -26,7 +26,6 @@ function(hpx_local_add_executable name)
       OUTPUT_SUFFIX
       INSTALL_SUFFIX
       LANGUAGE
-      HPX_PREFIX
   )
   set(multi_value_args SOURCES HEADERS AUXILIARY DEPENDENCIES COMPILE_FLAGS
                        LINK_FLAGS
@@ -240,6 +239,6 @@ function(hpx_local_add_executable name)
     COMPILE_FLAGS ${${name}_COMPILE_FLAGS}
     LINK_FLAGS ${${name}_LINK_FLAGS}
     DEPENDENCIES ${${name}_DEPENDENCIES}
-    HPX_PREFIX ${${name}_HPX_PREFIX} ${_target_flags}
+    ${_target_flags}
   )
 endfunction()

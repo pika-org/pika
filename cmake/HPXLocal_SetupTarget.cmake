@@ -30,7 +30,6 @@ function(hpx_local_setup_target target)
       NAME
       SOVERSION
       VERSION
-      HPX_PREFIX
       HEADER_ROOT
   )
   set(multi_value_args DEPENDENCIES COMPILE_FLAGS LINK_FLAGS INSTALL_FLAGS
@@ -106,16 +105,6 @@ function(hpx_local_setup_target target)
       ${target} PRIVATE "HPX_APPLICATION_NAME=${name}"
                         "HPX_APPLICATION_STRING=\"${name}\""
     )
-
-    if(target_HPX_PREFIX)
-      set(_prefix ${target_HPX_PREFIX})
-
-      if(MSVC)
-        string(REPLACE ";" ":" _prefix "${_prefix}")
-      endif()
-
-      target_compile_definitions(${target} PRIVATE "HPX_PREFIX=\"${_prefix}\"")
-    endif()
   endif()
 
   if("${_type}" STREQUAL "LIBRARY")

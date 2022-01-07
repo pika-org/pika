@@ -8,9 +8,6 @@
 
 #pragma once
 
-#if !defined(HPX_PREFIX)
-#define HPX_PREFIX "@HPX_DEFINES_PREFIX@"
-#endif
 @hpx_local_config_defines@
 #if defined(HPX_HAVE_MAX_CPU_COUNT) && (HPX_HAVE_MAX_CPU_COUNT > 64) &&       \
     !defined(HPX_HAVE_MORE_THAN_64_THREADS)

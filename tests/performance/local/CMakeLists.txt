@@ -127,7 +127,6 @@ foreach(benchmark ${benchmarks})
     ${benchmark}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${benchmark}_FLAGS} ${${benchmark}_HEADERS}
     EXCLUDE_FROM_ALL
-    HPX_PREFIX ${HPX_BUILD_PREFIX}
     FOLDER "Benchmarks/Local"
   )
 
