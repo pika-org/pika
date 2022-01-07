@@ -13,10 +13,7 @@
 #include <hpx/prefix/find_prefix.hpp>
 #include <hpx/preprocessor/expand.hpp>
 #include <hpx/preprocessor/stringize.hpp>
-#include <hpx/runtime_configuration/agas_service_mode.hpp>
-#include <hpx/runtime_configuration/component_registry_base.hpp>
 #include <hpx/runtime_configuration/init_ini_data.hpp>
-#include <hpx/runtime_configuration/plugin_registry_base.hpp>
 #include <hpx/runtime_configuration/runtime_configuration.hpp>
 #include <hpx/runtime_configuration/runtime_mode.hpp>
 #include <hpx/util/from_string.hpp>
@@ -96,7 +93,6 @@ namespace hpx { namespace util {
             // create system and application instance specific entries
             "[system]",
             "pid = " + std::to_string(getpid()),
-            "prefix = " + find_prefix(),
 #if defined(__linux) || defined(linux) || defined(__linux__)
             "executable_prefix = " + get_executable_prefix(argv0),
 #else
@@ -104,16 +100,9 @@ namespace hpx { namespace util {
 #endif
             // create default installation location and logging settings
             "[hpx]",
-            "location = ${HPX_LOCATION:$[system.prefix]}",
-            "component_paths = ${HPX_COMPONENT_PATHS}",
-            "component_base_paths = $[hpx.location]"    // NOLINT
-                HPX_INI_PATH_DELIMITER "$[system.executable_prefix]",
-            "component_path_suffixes = " +
-                detail::convert_delimiters(HPX_DEFAULT_COMPONENT_PATH_SUFFIXES),
-            "master_ini_path = $[hpx.location]" HPX_INI_PATH_DELIMITER
-            "$[system.executable_prefix]/",
-            "master_ini_path_suffixes = /share/" HPX_BASE_DIR_NAME
-                HPX_INI_PATH_DELIMITER "/../share/" HPX_BASE_DIR_NAME,
+            "master_ini_path = $[system.executable_prefix]/",
+            "master_ini_path_suffixes = /share/hpx" HPX_INI_PATH_DELIMITER
+                "/../share/hpx",
 #ifdef HPX_HAVE_ITTNOTIFY
             "use_itt_notify = ${HPX_HAVE_ITTNOTIFY:0}",
 #endif
@@ -303,34 +292,6 @@ namespace hpx { namespace util {
                 HPX_PP_EXPAND(HPX_AGAS_LOCAL_CACHE_SIZE)) "}",
             "use_range_caching = ${HPX_AGAS_USE_RANGE_CACHING:1}",
             "use_caching = ${HPX_AGAS_USE_CACHING:1}",
-
-            "[hpx.components]",
-            "load_external = ${HPX_LOAD_EXTERNAL_COMPONENTS:1}",
-
-            "[hpx.components.barrier]",
-            "name = hpx",
-            "path = $[hpx.location]/bin/" HPX_DLL_STRING,
-            "enabled = 1",
-
-            "[hpx.components.hpx_lcos_server_latch]",
-            "name = hpx",
-            "path = $[hpx.location]/bin/" HPX_DLL_STRING,
-            "enabled = 1",
-
-            "[hpx.components.raw_counter]",
-            "name = hpx",
-            "path = $[hpx.location]/bin/" HPX_DLL_STRING,
-            "enabled = 1",
-
-            "[hpx.components.average_count_counter]",
-            "name = hpx",
-            "path = $[hpx.location]/bin/" HPX_DLL_STRING,
-            "enabled = 1",
-
-            "[hpx.components.elapsed_time_counter]",
-            "name = hpx",
-            "path = $[hpx.location]/bin/" HPX_DLL_STRING,
-            "enabled = 1"
             // clang-format on
         };
 
@@ -365,7 +326,7 @@ namespace hpx { namespace util {
         std::vector<std::string> lines = {
         // clang-format off
 #define HPX_TIMEFORMAT "$hh:$mm.$ss.$mili"
-#define HPX_LOGFORMAT "(T%locality%/%hpxthread%.%hpxphase%/%hpxcomponent%) "
+#define HPX_LOGFORMAT "(T%locality%/%hpxthread%.%hpxphase%) "
 
             // general logging
             "[hpx.logging]",
@@ -493,187 +454,6 @@ namespace hpx { namespace util {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // load information about statically known components
-    void runtime_configuration::load_components_static(
-        std::vector<components::static_factory_load_data_type> const&
-            static_modules)
-    {
-        std::vector<std::shared_ptr<components::component_registry_base>>
-            registries;
-        for (components::static_factory_load_data_type const& d :
-            static_modules)
-        {
-            auto new_registries = util::load_component_factory_static(
-                *this, d.name, d.get_factory);
-            registries.reserve(registries.size() + new_registries.size());
-            std::copy(new_registries.begin(), new_registries.end(),
-                std::back_inserter(registries));
-        }
-
-        // read system and user ini files _again_, to allow the user to
-        // overwrite the settings from the default component ini's.
-        util::init_ini_data_base(*this, hpx_ini_file);
-
-        // let the command line override the config file.
-        if (!cmdline_ini_defs.empty())
-            parse("<command line definitions>", cmdline_ini_defs, true, false);
-
-        // merge all found ini files of all components
-        util::merge_component_inis(*this);
-
-        need_to_call_pre_initialize = true;
-
-        // invoke last reconfigure
-        reconfigure();
-        for (auto& registry : registries)
-        {
-            registry->register_component_type();
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // collect all directories where to use for the search for plugins
-    void runtime_configuration::load_component_path(
-        std::vector<std::shared_ptr<plugins::plugin_registry_base>>&
-            plugin_registries,
-        std::vector<std::shared_ptr<components::component_registry_base>>&
-            component_registries,
-        std::string const& path, std::set<std::string>& component_paths,
-        std::map<std::string, filesystem::path>& basenames)
-    {
-        namespace fs = filesystem;
-
-        using plugin_list_type =
-            std::vector<std::shared_ptr<plugins::plugin_registry_base>>;
-
-        if (!path.empty())
-        {
-            fs::path this_p(path);
-            std::error_code fsec;
-            fs::path canonical_p =
-                fs::canonical(this_p, fs::initial_path(), fsec);
-            if (fsec)
-                canonical_p = this_p;
-
-            std::pair<std::set<std::string>::iterator, bool> p =
-                component_paths.insert(canonical_p.string());
-
-            if (p.second)
-            {
-                // have all path elements, now find ini files in there...
-                fs::path this_path(*p.first);
-                if (fs::exists(this_path, fsec) && !fsec)
-                {
-                    plugin_list_type tmp_regs =
-                        util::init_ini_data_default(this_path.string(), *this,
-                            basenames, modules_, component_registries);
-
-                    std::copy(tmp_regs.begin(), tmp_regs.end(),
-                        std::back_inserter(plugin_registries));
-                }
-            }
-        }
-    }
-
-    void runtime_configuration::load_component_paths(
-        std::vector<std::shared_ptr<plugins::plugin_registry_base>>&
-            plugin_registries,
-        std::vector<std::shared_ptr<components::component_registry_base>>&
-            component_registries,
-        std::string const& component_base_paths,
-        std::string const& component_path_suffixes,
-        std::set<std::string>& component_paths,
-        std::map<std::string, filesystem::path>& basenames)
-    {
-        namespace fs = filesystem;
-
-        // try to build default ini structure from shared libraries in default
-        // installation location, this allows to install simple components
-        // without the need to install an ini file
-        // split of the separate paths from the given path list
-        typedef boost::tokenizer<boost::char_separator<char>> tokenizer_type;
-
-        boost::char_separator<char> sep(HPX_INI_PATH_DELIMITER);
-        tokenizer_type tok_path(component_base_paths, sep);
-        tokenizer_type tok_suffixes(component_path_suffixes, sep);
-        tokenizer_type::iterator end_path = tok_path.end();
-        tokenizer_type::iterator end_suffixes = tok_suffixes.end();
-
-        for (tokenizer_type::iterator it = tok_path.begin(); it != end_path;
-             ++it)
-        {
-            std::string const& path = *it;
-            if (tok_suffixes.begin() != tok_suffixes.end())
-            {
-                for (tokenizer_type::iterator jt = tok_suffixes.begin();
-                     jt != end_suffixes; ++jt)
-                {
-                    std::string p = path;
-                    p += *jt;
-                    load_component_path(plugin_registries, component_registries,
-                        p, component_paths, basenames);
-                }
-            }
-            else
-            {
-                load_component_path(plugin_registries, component_registries,
-                    path, component_paths, basenames);
-            }
-        }
-    }
-
-    // load information about dynamically discovered plugins
-    std::vector<std::shared_ptr<plugins::plugin_registry_base>>
-    runtime_configuration::load_modules(
-        std::vector<std::shared_ptr<components::component_registry_base>>&
-            component_registries)
-    {
-        typedef std::vector<std::shared_ptr<plugins::plugin_registry_base>>
-            plugin_list_type;
-
-        // protect against duplicate paths
-        std::set<std::string> component_paths;
-
-        // list of base names avoiding to load a module more than once
-        std::map<std::string, filesystem::path> basenames;
-
-        // plugin registry object
-        plugin_list_type plugin_registries;
-
-        // load plugin paths from component_base_paths and suffixes
-        std::string component_base_paths(
-            get_entry("hpx.component_base_paths", HPX_DEFAULT_COMPONENT_PATH));
-        std::string component_path_suffixes(
-            get_entry("hpx.component_path_suffixes", "/lib/hpx"));
-
-        load_component_paths(plugin_registries, component_registries,
-            component_base_paths, component_path_suffixes, component_paths,
-            basenames);
-
-        // load additional explicit plugin paths from plugin_paths key
-        std::string plugin_paths(get_entry("hpx.component_paths", ""));
-        load_component_paths(plugin_registries, component_registries,
-            plugin_paths, "", component_paths, basenames);
-
-        // read system and user ini files _again_, to allow the user to
-        // overwrite the settings from the default component ini's.
-        util::init_ini_data_base(*this, hpx_ini_file);
-
-        // let the command line override the config file.
-        if (!cmdline_ini_defs.empty())
-            parse("<command line definitions>", cmdline_ini_defs, true, false);
-
-        // merge all found ini files of all components
-        util::merge_component_inis(*this);
-
-        need_to_call_pre_initialize = true;
-
-        // invoke reconfigure
-        reconfigure();
-
-        return plugin_registries;
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     runtime_configuration::runtime_configuration(char const* argv0_,
         runtime_mode mode,

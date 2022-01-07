@@ -7,7 +7,6 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(runtime_local_headers
-    hpx/runtime_local/component_startup_shutdown_base.hpp
     hpx/runtime_local/config_entry.hpp
     hpx/runtime_local/custom_exception_info.hpp
     hpx/runtime_local/debugging.hpp
@@ -42,7 +41,6 @@ set(runtime_local_headers
 set(runtime_local_compat_headers
     hpx/custom_exception_info.hpp => hpx/modules/runtime_local.hpp
     hpx/parallel/executors/service_executors.hpp => hpx/include/parallel_executors.hpp
-    hpx/runtime/components/component_startup_shutdown_base.hpp => hpx/modules/runtime_local.hpp
     hpx/runtime/config_entry.hpp => hpx/modules/runtime_local.hpp
     hpx/runtime/get_locality_id.hpp => hpx/runtime.hpp
     hpx/runtime/get_num_localities.hpp => hpx/modules/runtime_local.hpp
@@ -98,7 +96,6 @@ hpx_local_add_module(
     hpx_futures
     hpx_io_service
     hpx_logging
-    hpx_plugin
     hpx_program_options
     hpx_resource_partitioner
     hpx_runtime_configuration

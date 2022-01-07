@@ -11,7 +11,6 @@
 #include <hpx/assert.hpp>
 #include <hpx/modules/errors.hpp>
 #include <hpx/modules/filesystem.hpp>
-#include <hpx/modules/plugin.hpp>
 #include <hpx/prefix/find_prefix.hpp>
 #include <hpx/string_util/classification.hpp>
 #include <hpx/string_util/split.hpp>
@@ -40,82 +39,6 @@
 #include <string>
 
 namespace hpx { namespace util {
-    static const char* prefix_ = nullptr;
-
-    void set_hpx_prefix(const char* prefix)
-    {
-        if (prefix_ == nullptr)
-            prefix_ = prefix;
-    }
-
-    char const* hpx_prefix()
-    {
-        return prefix_;
-    }
-
-    std::string find_prefix(std::string const& library)
-    {
-#if !defined(__ANDROID__) && !defined(ANDROID) && !defined(__MIC)
-        try
-        {
-            error_code ec(hpx::throwmode::lightweight);
-            hpx::util::plugin::dll dll(HPX_MAKE_DLL_STRING(library));
-
-            dll.load_library(ec);
-            if (ec)
-                return hpx_prefix();
-
-            using hpx::filesystem::path;
-
-            std::string const prefix =
-                path(dll.get_directory(ec)).parent_path().string();
-
-            if (ec || prefix.empty())
-                return hpx_prefix();
-
-            return prefix;
-        }
-        catch (std::logic_error const&)
-        {
-            ;    // just ignore loader problems
-        }
-#endif
-        return hpx_prefix();
-    }
-
-    std::string find_prefixes(
-        std::string const& suffix, std::string const& library)
-    {
-        std::string prefixes = find_prefix(library);
-        typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
-        boost::char_separator<char> sep(HPX_INI_PATH_DELIMITER);
-        tokenizer tokens(prefixes, sep);
-        std::string result;
-        for (tokenizer::iterator it = tokens.begin(); it != tokens.end(); ++it)
-        {
-            if (it != tokens.begin())
-                result += HPX_INI_PATH_DELIMITER;
-            result += *it;
-            result += suffix;
-
-#if defined(HPX_MSVC)
-            result += HPX_INI_PATH_DELIMITER;
-            result += *it;
-            result += "/bin";
-#endif
-
-            result += HPX_INI_PATH_DELIMITER;
-            result += *it;
-#if defined(HPX_MSVC)
-            result += "/bin";
-#else
-            result += "/lib";
-#endif
-            result += suffix;
-        }
-        return result;
-    }
-
     ///////////////////////////////////////////////////////////////////////////////
     std::string get_executable_prefix(char const* argv0)
     {

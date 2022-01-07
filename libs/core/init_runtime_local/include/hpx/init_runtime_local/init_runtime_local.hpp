@@ -30,10 +30,6 @@
 #include <utility>
 #include <vector>
 
-#if !defined(HPX_PREFIX)
-#define HPX_PREFIX ""
-#endif
-
 #if defined(HPX_APPLICATION_NAME_DEFAULT) && !defined(HPX_APPLICATION_NAME)
 #define HPX_APPLICATION_NAME HPX_APPLICATION_NAME_DEFAULT
 #endif
@@ -126,7 +122,6 @@ namespace hpx {
                     argv = dummy_argv;
                 }
 
-                util::set_hpx_prefix(HPX_PREFIX);
 #if defined(__FreeBSD__)
                 freebsd_environ = environ;
 #endif

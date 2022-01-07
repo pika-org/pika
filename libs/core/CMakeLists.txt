@@ -53,7 +53,6 @@ set(_hpx_local_modules
     memory
     mpi_base
     pack_traversal
-    plugin
     prefix
     preprocessor
     program_options

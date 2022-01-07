@@ -11,13 +11,10 @@
 #include <hpx/coroutines/thread_enums.hpp>
 #include <hpx/ini/ini.hpp>
 #include <hpx/modules/filesystem.hpp>
-#include <hpx/modules/plugin.hpp>
+#include <hpx/errors/error_code.hpp>
 #include <hpx/runtime_configuration/agas_service_mode.hpp>
-#include <hpx/runtime_configuration/component_registry_base.hpp>
-#include <hpx/runtime_configuration/plugin_registry_base.hpp>
 #include <hpx/runtime_configuration/runtime_configuration_fwd.hpp>
 #include <hpx/runtime_configuration/runtime_mode.hpp>
-#include <hpx/runtime_configuration/static_factory_data.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -51,15 +48,6 @@ namespace hpx { namespace util {
         // re-initialize all entries based on the additional information from
         // any explicit command line options
         void reconfigure(std::vector<std::string> const& ini_defs);
-
-        std::vector<std::shared_ptr<plugins::plugin_registry_base>>
-        load_modules(
-            std::vector<std::shared_ptr<components::component_registry_base>>&
-                component_registries);
-
-        void load_components_static(
-            std::vector<components::static_factory_load_data_type> const&
-                static_modules);
 
         // Returns the AGAS mode of this locality, returns either hosted (for
         // localities connecting to a remote AGAS server) or bootstrap for the
@@ -143,11 +131,6 @@ namespace hpx { namespace util {
         std::uint64_t get_max_inbound_message_size() const;
         std::uint64_t get_max_outbound_message_size() const;
 
-        std::map<std::string, hpx::util::plugin::dll>& modules()
-        {
-            return modules_;
-        }
-
     private:
         std::ptrdiff_t init_stack_size(char const* entryname,
             char const* defaultvaluestr, std::ptrdiff_t defaultvalue) const;
@@ -164,24 +147,6 @@ namespace hpx { namespace util {
 
         void reconfigure();
 
-        void load_component_paths(
-            std::vector<std::shared_ptr<plugins::plugin_registry_base>>&
-                plugin_registries,
-            std::vector<std::shared_ptr<components::component_registry_base>>&
-                component_registries,
-            std::string const& component_base_paths,
-            std::string const& component_path_suffixes,
-            std::set<std::string>& component_paths,
-            std::map<std::string, filesystem::path>& basenames);
-
-        void load_component_path(
-            std::vector<std::shared_ptr<plugins::plugin_registry_base>>&
-                plugin_registries,
-            std::vector<std::shared_ptr<components::component_registry_base>>&
-                component_registries,
-            std::string const& path, std::set<std::string>& component_paths,
-            std::map<std::string, filesystem::path>& basenames);
-
     public:
         runtime_mode mode_;
 
@@ -196,7 +161,5 @@ namespace hpx { namespace util {
 #if defined(__linux) || defined(linux) || defined(__linux__)
         char const* argv0;
 #endif
-
-        std::map<std::string, hpx::util::plugin::dll> modules_;
     };
 }}    // namespace hpx::util

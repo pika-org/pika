@@ -8,15 +8,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(runtime_configuration_headers
     hpx/runtime_configuration/agas_service_mode.hpp
-    hpx/runtime_configuration/component_commandline_base.hpp
-    hpx/runtime_configuration/component_factory_base.hpp
-    hpx/runtime_configuration/component_registry_base.hpp
     hpx/runtime_configuration/init_ini_data.hpp
-    hpx/runtime_configuration/plugin_registry_base.hpp
     hpx/runtime_configuration/runtime_configuration.hpp
     hpx/runtime_configuration/runtime_configuration_fwd.hpp
     hpx/runtime_configuration/runtime_mode.hpp
-    hpx/runtime_configuration/static_factory_data.hpp
 )
 
 # cmake-format: off
@@ -26,16 +21,12 @@ set(
   hpx/util/init_ini_data.hpp => hpx/modules/runtime_configuration.hpp
   hpx/util/runtime_configuration.hpp => hpx/modules/runtime_configuration.hpp
   hpx/plugins/plugin_registry_base.hpp => hpx/modules/runtime_configuration.hpp
-  hpx/runtime/components/component_commandline_base.hpp => hpx/modules/runtime_configuration.hpp
-  hpx/runtime/components/component_factory_base.hpp => hpx/modules/runtime_configuration.hpp
-  hpx/runtime/components/component_registry_base.hpp => hpx/modules/runtime_configuration.hpp
-  hpx/runtime/components/static_factory_data.hpp => hpx/modules/runtime_configuration.hpp
   hpx/runtime/runtime_mode.hpp => hpx/modules/runtime_configuration.hpp
 )
 # cmake-format: on
 
 set(runtime_configuration_sources init_ini_data.cpp runtime_configuration.cpp
-                                  runtime_mode.cpp static_factory_data.cpp
+                                  runtime_mode.cpp
 )
 
 include(HPXLocal_AddModule)
@@ -51,7 +42,6 @@ hpx_local_add_module(
     hpx_filesystem
     hpx_itt_notify
     hpx_logging
-    hpx_plugin
     hpx_ini
     hpx_prefix
     hpx_coroutines

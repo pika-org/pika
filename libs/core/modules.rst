@@ -56,7 +56,6 @@ Core modules
    /libs/core/memory/docs/index.rst
    /libs/core/mpi_base/docs/index.rst
    /libs/core/pack_traversal/docs/index.rst
-   /libs/core/plugin/docs/index.rst
    /libs/core/prefix/docs/index.rst
    /libs/core/preprocessor/docs/index.rst
    /libs/core/program_options/docs/index.rst

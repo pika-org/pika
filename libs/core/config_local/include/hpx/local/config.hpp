@@ -280,45 +280,6 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-// Set defaults for components
-#if !defined(HPX_COMPONENT_NAME_DEFAULT)
-#  define HPX_COMPONENT_NAME_DEFAULT hpx
-#endif
-
-#if !defined(HPX_COMPONENT_NAME)
-#  define HPX_COMPONENT_NAME HPX_COMPONENT_NAME_DEFAULT
-#endif
-
-#if !defined(HPX_COMPONENT_STRING)
-#  define HPX_COMPONENT_STRING HPX_PP_STRINGIZE(HPX_COMPONENT_NAME)
-#endif
-
-#if !defined(HPX_PLUGIN_COMPONENT_PREFIX)
-#  if defined(HPX_PLUGIN_NAME)
-#    define HPX_PLUGIN_COMPONENT_PREFIX HPX_MANGLE_NAME(HPX_PLUGIN_NAME)
-#  elif defined(HPX_COMPONENT_NAME)
-#    define HPX_PLUGIN_COMPONENT_PREFIX HPX_MANGLE_NAME(HPX_COMPONENT_NAME)
-#  endif
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
-#if !defined(HPX_PLUGIN_NAME_DEFAULT)
-#  define HPX_PLUGIN_NAME_DEFAULT hpx
-#endif
-
-#if !defined(HPX_PLUGIN_NAME)
-#  define HPX_PLUGIN_NAME HPX_PLUGIN_NAME_DEFAULT
-#endif
-
-#if !defined(HPX_PLUGIN_STRING)
-#  define HPX_PLUGIN_STRING HPX_PP_STRINGIZE(HPX_PLUGIN_NAME)
-#endif
-
-#if !defined(HPX_PLUGIN_PLUGIN_PREFIX)
-#  define HPX_PLUGIN_PLUGIN_PREFIX HPX_MANGLE_NAME(HPX_PLUGIN_NAME)
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 #if defined(HPX_PREFIX_DEFAULT) && !defined(HPX_PREFIX)
 #  define HPX_PREFIX HPX_PREFIX_DEFAULT
 #endif
