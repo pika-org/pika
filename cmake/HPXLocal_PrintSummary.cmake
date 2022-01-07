@@ -98,10 +98,4 @@ function(hpx_local_create_configuration_summary message module_name)
   )
 
   set(_base_dir_local "libs/${module_name}/src/")
-  set(_template "config_defines_entries_for_modules.cpp.in")
-
-  configure_file(
-    "${HPXLocal_SOURCE_DIR}/cmake/templates/${_template}"
-    "${CMAKE_CURRENT_BINARY_DIR}/src/config_entries.cpp" @ONLY
-  )
 endfunction()

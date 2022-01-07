@@ -21,7 +21,7 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN OFF
   SOURCES ${version_local_sources}
   HEADERS ${version_local_headers}
-  MODULE_DEPENDENCIES hpx_config_local hpx_config_registry hpx_format hpx_prefix
+  MODULE_DEPENDENCIES hpx_config_local hpx_format hpx_prefix
   DEPENDENCIES Hwloc::hwloc ${mpi_dependencies}
 )
 

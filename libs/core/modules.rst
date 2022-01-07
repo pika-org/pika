@@ -23,12 +23,10 @@ Core modules
    /libs/core/async_cuda/docs/index.rst
    /libs/core/async_local/docs/index.rst
    /libs/core/async_mpi/docs/index.rst
-   /libs/core/cache/docs/index.rst
    /libs/core/command_line_handling_local/docs/index.rst
    /libs/core/concepts/docs/index.rst
    /libs/core/concurrency/docs/index.rst
    /libs/core/config_local/docs/index.rst
-   /libs/core/config_registry/docs/index.rst
    /libs/core/coroutines/docs/index.rst
    /libs/core/datastructures/docs/index.rst
    /libs/core/debugging/docs/index.rst

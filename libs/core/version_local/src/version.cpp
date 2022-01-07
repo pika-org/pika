@@ -11,7 +11,6 @@
 #include <hpx/local/config/config_strings.hpp>
 #include <hpx/local/config/version.hpp>
 #include <hpx/local/version.hpp>
-#include <hpx/modules/config_registry.hpp>
 #include <hpx/modules/format.hpp>
 #include <hpx/prefix/find_prefix.hpp>
 #include <hpx/preprocessor/stringize.hpp>
@@ -155,25 +154,6 @@ namespace hpx::local {
         while (*p)
             strm << "  " << *p++ << "\n";
         strm << "\n";
-
-        // print module configurations
-        auto configs = hpx::config_registry::get_module_configs();
-        std::sort(configs.begin(), configs.end(),
-            [](auto& a, auto& b) { return a.module_name < b.module_name; });
-        for (auto& c : configs)
-        {
-            if (!c.config_entries.empty())
-            {
-                strm << "Module " << c.module_name << ":\n";
-
-                for (auto const& e : c.config_entries)
-                {
-                    strm << "  " << e << std::endl;
-                }
-
-                strm << "\n";
-            }
-        }
 
         return strm.str();
     }

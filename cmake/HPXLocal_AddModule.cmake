@@ -128,10 +128,6 @@ function(hpx_local_add_module libname modulename)
     set(generated_headers ${global_header})
   endif()
 
-  set(config_entries_source
-      "${CMAKE_CURRENT_BINARY_DIR}/src/config_entries.cpp"
-  )
-
   # generate configuration header for this module
   set(config_header
       "${CMAKE_CURRENT_BINARY_DIR}/include/hpx/${modulename}/config/defines.hpp"
@@ -183,12 +179,14 @@ function(hpx_local_add_module libname modulename)
     hpx_local_debug(${header_file})
   endforeach(header_file)
 
-  # NOTE: the modules belonging to libhpx still have cyclic dependencies. We
-  # keep those as static libraries.
-  if("${libname}" STREQUAL "full")
-    set(module_library_type STATIC)
-  else()
+  if (${modulename}_SOURCES)
     set(module_library_type OBJECT)
+    set(module_public_keyword PUBLIC)
+    set(module_private_keyword PRIVATE)
+  else()
+    set(module_library_type INTERFACE)
+    set(module_public_keyword INTERFACE)
+    set(module_private_keyword INTERFACE)
   endif()
 
   # create library modules
@@ -196,7 +194,6 @@ function(hpx_local_add_module libname modulename)
     hpx_${modulename}
     ${module_library_type}
     ${sources}
-    ${config_entries_source}
     ${${modulename}_OBJECTS}
     ${headers}
     ${generated_headers}
@@ -222,21 +219,21 @@ function(hpx_local_add_module libname modulename)
   endif()
 
   target_link_libraries(
-    hpx_${modulename} PUBLIC ${${modulename}_MODULE_DEPENDENCIES}
+    hpx_${modulename} ${module_public_keyword} ${${modulename}_MODULE_DEPENDENCIES}
   )
-  target_link_libraries(hpx_${modulename} PUBLIC ${${modulename}_DEPENDENCIES})
+  target_link_libraries(hpx_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES})
   target_include_directories(
     hpx_${modulename}
-    PUBLIC $<BUILD_INTERFACE:${HEADER_ROOT}>
+    ${module_public_keyword} $<BUILD_INTERFACE:${HEADER_ROOT}>
            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
            $<INSTALL_INTERFACE:include>
   )
 
   target_link_libraries(
     hpx_${modulename}
-    PUBLIC hpx_local_public_flags
-    PRIVATE hpx_local_private_flags
-    PUBLIC hpx_local_base_libraries
+    ${module_public_keyword} hpx_local_public_flags
+    ${module_private_keyword} hpx_local_private_flags
+    ${module_public_keyword} hpx_local_base_libraries
   )
 
   if(HPXLocal_WITH_PRECOMPILED_HEADERS)
@@ -245,25 +242,18 @@ function(hpx_local_add_module libname modulename)
     )
   endif()
 
-  # All local modules depend on the config registry
-  if("${libname}" STREQUAL "local" AND NOT "${modulename}" STREQUAL
-                                       "config_registry"
-  )
-    target_link_libraries(hpx_${modulename} PUBLIC hpx_config_registry)
-  endif()
-
   if(${modulename}_COMPAT_HEADERS)
     target_include_directories(
-      hpx_${modulename} PUBLIC $<BUILD_INTERFACE:${COMPAT_HEADER_ROOT}>
+      hpx_${modulename} ${module_public_keyword} $<BUILD_INTERFACE:${COMPAT_HEADER_ROOT}>
     )
   endif()
 
   target_compile_definitions(
-    hpx_${modulename} PRIVATE HPX_${libname_upper}_EXPORTS
+    hpx_${modulename} ${module_private_keyword} HPX_${libname_upper}_EXPORTS
   )
 
   target_include_directories(
-    hpx_${modulename} PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+    hpx_${modulename} ${module_public_keyword} $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
                              $<INSTALL_INTERFACE:include>
   )
 

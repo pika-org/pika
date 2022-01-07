@@ -114,6 +114,7 @@ hpx_local_add_module(
   HEADERS ${coroutines_headers}
   OBJECTS "${switch_to_fiber_object}"
   COMPAT_HEADERS ${coroutines_compat_headers}
+  DEPENDENCIES $<TARGET_NAME_IF_EXISTS:Valgrind::valgrind>
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_config_local
@@ -125,10 +126,6 @@ hpx_local_add_module(
     hpx_type_support
     hpx_util
   CMAKE_SUBDIRS examples tests
-)
-
-target_link_libraries(
-  hpx_coroutines PUBLIC $<TARGET_NAME_IF_EXISTS:Valgrind::valgrind>
 )
 
 if(MSVC AND HPXLocal_COROUTINES_WITH_SWAP_CONTEXT_EMULATION)
