@@ -65,7 +65,6 @@ Core modules
    /libs/core/runtime_local/docs/index.rst
    /libs/core/schedulers/docs/index.rst
    /libs/core/serialization/docs/index.rst
-   /libs/core/static_reinit/docs/index.rst
    /libs/core/string_util/docs/index.rst
    /libs/core/synchronization/docs/index.rst
    /libs/core/tag_invoke/docs/index.rst

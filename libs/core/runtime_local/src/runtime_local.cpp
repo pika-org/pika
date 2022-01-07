@@ -30,7 +30,6 @@
 #include <hpx/runtime_local/state.hpp>
 #include <hpx/runtime_local/thread_hooks.hpp>
 #include <hpx/runtime_local/thread_mapper.hpp>
-#include <hpx/static_reinit/static_reinit.hpp>
 #include <hpx/thread_support/set_thread_name.hpp>
 #include <hpx/threading_base/external_timer.hpp>
 #include <hpx/threading_base/scheduler_mode.hpp>
@@ -306,7 +305,6 @@ namespace hpx {
             threads::detail::network_background_callback_type{});
 
         init_global_data();
-        util::reinit_construct();
 
         if (initialize)
         {
@@ -341,7 +339,6 @@ namespace hpx {
       , stop_done_(false)
     {
         init_global_data();
-        util::reinit_construct();
 
         LPROGRESS_;
     }
@@ -446,7 +443,6 @@ namespace hpx {
         if (0 == instance_number_counter_)
             --instance_number_counter_;
 
-        util::reinit_destruct();
         resource::detail::delete_partitioner();
     }
 

@@ -62,7 +62,6 @@ set(_hpx_local_modules
     runtime_local
     schedulers
     serialization
-    static_reinit
     string_util
     synchronization
     tag_invoke

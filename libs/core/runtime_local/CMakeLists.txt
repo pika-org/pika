@@ -99,7 +99,6 @@ hpx_local_add_module(
     hpx_program_options
     hpx_resource_partitioner
     hpx_runtime_configuration
-    hpx_static_reinit
     hpx_threading
     hpx_threading_base
     hpx_threadmanager
