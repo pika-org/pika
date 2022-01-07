@@ -17,16 +17,21 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-template <unsigned id>
-unsigned make_unsigned_slowly()
+struct make_unsigned_slowly
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
-    return id;
-}
+    unsigned id;
+
+    unsigned operator()() const
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        return id;
+    }
+};
 
 template <class Container>
 void test_wait_each_from_list()
@@ -58,11 +63,8 @@ void test_wait_each_from_list()
 
     for (unsigned j = 0; j < count; ++j)
     {
-        futures1.push_back(
-            hpx::make_ready_future_after(std::chrono::milliseconds(100), j));
-
-        futures2.push_back(
-            hpx::make_ready_future_after(std::chrono::milliseconds(100), j));
+        futures1.push_back(hpx::async(make_unsigned_slowly{j}));
+        futures2.push_back(hpx::async(make_unsigned_slowly{j}));
     }
 
     hpx::wait_each(callback, futures1);
@@ -112,11 +114,8 @@ void test_wait_each_from_list_iterators()
 
     for (unsigned j = 0; j < count; ++j)
     {
-        futures1.push_back(
-            hpx::make_ready_future_after(std::chrono::milliseconds(100), j));
-
-        futures2.push_back(
-            hpx::make_ready_future_after(std::chrono::milliseconds(100), j));
+        futures1.push_back(hpx::async(make_unsigned_slowly{j}));
+        futures2.push_back(hpx::async(make_unsigned_slowly{j}));
     }
 
     hpx::wait_each(callback, futures1.begin(), futures1.end());
@@ -168,11 +167,8 @@ void test_wait_each_n_from_list_iterators()
 
     for (unsigned j = 0; j < count; ++j)
     {
-        futures1.push_back(
-            hpx::make_ready_future_after(std::chrono::milliseconds(100), j));
-
-        futures2.push_back(
-            hpx::make_ready_future_after(std::chrono::milliseconds(100), j));
+        futures1.push_back(hpx::async(make_unsigned_slowly{j}));
+        futures2.push_back(hpx::async(make_unsigned_slowly{j}));
     }
 
     hpx::wait_each_n(callback_n, futures1.begin(), n);
@@ -449,10 +445,10 @@ void test_wait_each_late_future()
         HPX_TEST_LT(id, count);
     };
 
-    hpx::lcos::local::futures_factory<unsigned()> pt0(make_unsigned_slowly<0>);
-    hpx::lcos::local::futures_factory<unsigned()> pt1(make_unsigned_slowly<1>);
-    hpx::lcos::local::futures_factory<unsigned()> pt2(make_unsigned_slowly<0>);
-    hpx::lcos::local::futures_factory<unsigned()> pt3(make_unsigned_slowly<1>);
+    hpx::lcos::local::futures_factory<unsigned()> pt0(make_unsigned_slowly{0});
+    hpx::lcos::local::futures_factory<unsigned()> pt1(make_unsigned_slowly{1});
+    hpx::lcos::local::futures_factory<unsigned()> pt2(make_unsigned_slowly{0});
+    hpx::lcos::local::futures_factory<unsigned()> pt3(make_unsigned_slowly{1});
 
     hpx::future<unsigned> f1 = pt0.get_future();
     hpx::future<unsigned> f2 = pt1.get_future();
@@ -505,14 +501,14 @@ void test_wait_each_deferred_futures()
     };
 
     hpx::future<unsigned> f1 =
-        hpx::async(hpx::launch::deferred, &make_unsigned_slowly<0>);
+        hpx::async(hpx::launch::deferred, make_unsigned_slowly{0});
     hpx::future<unsigned> f2 =
-        hpx::async(hpx::launch::deferred, &make_unsigned_slowly<1>);
+        hpx::async(hpx::launch::deferred, make_unsigned_slowly{1});
 
     hpx::future<unsigned> g1 =
-        hpx::async(hpx::launch::deferred, &make_unsigned_slowly<0>);
+        hpx::async(hpx::launch::deferred, make_unsigned_slowly{0});
     hpx::future<unsigned> g2 =
-        hpx::async(hpx::launch::deferred, &make_unsigned_slowly<1>);
+        hpx::async(hpx::launch::deferred, make_unsigned_slowly{1});
 
     hpx::wait_each(callback, std::move(f1), std::move(f2));
     hpx::wait_each(callback_with_index, std::move(g1), std::move(g2));

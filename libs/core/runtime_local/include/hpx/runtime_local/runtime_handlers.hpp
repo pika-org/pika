@@ -10,11 +10,8 @@
 #pragma once
 
 #include <hpx/local/config.hpp>
-#include <hpx/local/config/asio.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/threading_base/thread_pool_base.hpp>
-
-#include <asio/io_context.hpp>
 
 #include <cstddef>
 #include <string>
@@ -34,5 +31,4 @@ namespace hpx { namespace detail {
     HPX_LOCAL_EXPORT threads::thread_pool_base* get_default_pool();
     HPX_LOCAL_EXPORT threads::mask_cref_type get_pu_mask(
         threads::topology& topo, std::size_t thread_num);
-    HPX_LOCAL_EXPORT asio::io_context* get_default_timer_service();
 }}    // namespace hpx::detail

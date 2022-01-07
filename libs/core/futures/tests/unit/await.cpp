@@ -18,11 +18,12 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include <thread>
 
 ///////////////////////////////////////////////////////////////////////////////
 int just_wait(int result)
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return result;
 }
 

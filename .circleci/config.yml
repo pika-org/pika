@@ -184,7 +184,6 @@ jobs:
                 -DHPXLocal_WITH_GIT_COMMIT=${CIRCLE_SHA1} \
                 -DHPXLocal_WITH_GIT_BRANCH="${CIRCLE_BRANCH}" \
                 -DHPXLocal_WITH_GIT_TAG="${CIRCLE_TAG}" \
-                -DHPXLocal_WITH_FETCH_ASIO=Off \
                 -DHPXLocal_WITH_TOOLS=On \
                 -DHPXLocal_WITH_MALLOC=system \
                 -DHPXLocal_WITH_EXAMPLES=On \
@@ -218,7 +217,6 @@ jobs:
                 /hpx/source \
                 -G "Ninja" \
                 -DHPXLocal_WITH_MALLOC=system \
-                -DHPXLocal_WITH_FETCH_ASIO=Off \
                 -DHPXLocal_WITH_TESTS=On \
                 -DHPXLocal_WITH_EXAMPLES=Off
             rm -rf *
@@ -229,7 +227,6 @@ jobs:
                 /hpx/source \
                 -G "Ninja" \
                 -DHPXLocal_WITH_MALLOC=system \
-                -DHPXLocal_WITH_FETCH_ASIO=Off \
                 -DHPXLocal_WITH_TESTS=Off \
                 -DHPXLocal_WITH_EXAMPLES=On
             rm -rf *
@@ -240,7 +237,6 @@ jobs:
                 /hpx/source \
                 -G "Ninja" \
                 -DHPXLocal_WITH_MALLOC=system \
-                -DHPXLocal_WITH_FETCH_ASIO=Off \
                 -DHPXLocal_WITH_APEX=On \
                 -DHPXLocal_WITH_TESTS=On \
                 -DHPXLocal_WITH_EXAMPLES=On

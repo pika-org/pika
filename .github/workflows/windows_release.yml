@@ -30,7 +30,6 @@ jobs:
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_TOOLCHAIN_FILE='C:/projects/vcpkg/scripts/buildsystems/vcpkg.cmake' \
               -DHPXLocal_WITH_UNITY_BUILD=ON \
-              -DHPXLocal_WITH_FETCH_ASIO=ON \
               -DHPXLocal_WITH_EXAMPLES=ON \
               -DHPXLocal_WITH_TESTS=ON \
               -DHPXLocal_WITH_TESTS_UNIT=ON \

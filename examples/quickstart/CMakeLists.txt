@@ -18,7 +18,6 @@ set(example_programs
     fibonacci_local
     file_serialization
     hello_world
-    interval_timer
     latch_local
     local_channel
     local_channel_docs
@@ -26,10 +25,10 @@ set(example_programs
     pipeline1
     potpourri
     safe_object
-    shared_mutex
+    # shared_mutex # Disabled due to unavailable timed suspension
     simple_future_continuation
-    timed_futures
-    timed_wake
+    # timed_futures # Disabled due to unavailable timed suspension
+    # timed_wake # Disabled due to unavailable timed suspension
     use_main_thread
     vector_counting_dotproduct
     vector_zip_dotproduct
@@ -43,7 +42,6 @@ set(customize_async_PARAMETERS THREADS_PER_LOCALITY 4)
 set(enumerate_threads_PARAMETERS THREADS_PER_LOCALITY 4)
 set(event_synchronization_PARAMETERS THREADS_PER_LOCALITY 4)
 set(hello_world_PARAMETERS THREADS_PER_LOCALITY 4)
-set(interval_timer_PARAMETERS THREADS_PER_LOCALITY 4)
 set(local_channel_PARAMETERS THREADS_PER_LOCALITY 4)
 set(simple_future_continuation_PARAMETERS THREADS_PER_LOCALITY 4)
 set(timed_futures_PARAMETERS THREADS_PER_LOCALITY 4)

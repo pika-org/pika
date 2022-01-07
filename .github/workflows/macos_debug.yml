@@ -31,7 +31,6 @@ jobs:
               -GNinja \
               -DCMAKE_BUILD_TYPE=Debug \
               -DHPXLocal_WITH_UNITY_BUILD=ON \
-              -DHPXLocal_WITH_FETCH_ASIO=ON \
               -DHPXLocal_WITH_EXAMPLES=ON \
               -DHPXLocal_WITH_TESTS=ON \
               -DHPXLocal_WITH_TESTS_HEADERS=OFF \

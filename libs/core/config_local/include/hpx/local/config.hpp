@@ -60,16 +60,6 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This defines the default number of OS-threads created for the different
-/// internal thread pools
-#if !defined(HPX_NUM_IO_POOL_SIZE)
-#  define HPX_NUM_IO_POOL_SIZE 2
-#endif
-#if !defined(HPX_NUM_TIMER_POOL_SIZE)
-#  define HPX_NUM_TIMER_POOL_SIZE 2
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 /// By default, enable minimal thread deadlock detection in debug builds only.
 #if !defined(HPX_SPINLOCK_DEADLOCK_DETECTION_LIMIT)
 #  define HPX_SPINLOCK_DEADLOCK_DETECTION_LIMIT 1073741823

@@ -13,6 +13,7 @@
 
 #include <chrono>
 #include <mutex>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -110,7 +111,8 @@ void test_tss_with_custom_cleanup()
     // cleanup runs after the exit callbacks of a thread, which in this case
     // might cause the t.join() above to return before the TSS was actually
     // cleaned up.
-    hpx::this_thread::sleep_for(std::chrono::microseconds(100));
+    std::this_thread::sleep_for(std::chrono::microseconds(100));
+    pika::this_thread::yield();
 
     HPX_TEST(tss_cleanup_called);
 }

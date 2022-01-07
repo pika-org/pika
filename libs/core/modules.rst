@@ -17,7 +17,6 @@ Core modules
    /libs/core/affinity/docs/index.rst
    /libs/core/algorithms/docs/index.rst
    /libs/core/allocator_support/docs/index.rst
-   /libs/core/asio/docs/index.rst
    /libs/core/assertion/docs/index.rst
    /libs/core/async_base/docs/index.rst
    /libs/core/async_combinators/docs/index.rst
@@ -46,7 +45,6 @@ Core modules
    /libs/core/include_local/docs/index.rst
    /libs/core/ini/docs/index.rst
    /libs/core/init_runtime_local/docs/index.rst
-   /libs/core/io_service/docs/index.rst
    /libs/core/iterator_support/docs/index.rst
    /libs/core/itt_notify/docs/index.rst
    /libs/core/lcos_local/docs/index.rst
@@ -75,7 +73,6 @@ Core modules
    /libs/core/threading/docs/index.rst
    /libs/core/threading_base/docs/index.rst
    /libs/core/threadmanager/docs/index.rst
-   /libs/core/timed_execution/docs/index.rst
    /libs/core/timing/docs/index.rst
    /libs/core/topology/docs/index.rst
    /libs/core/type_support/docs/index.rst

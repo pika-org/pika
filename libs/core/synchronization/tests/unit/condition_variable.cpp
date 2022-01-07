@@ -226,15 +226,15 @@ void test_multiple_notify_one_calls_wakes_multiple_threads()
     hpx::thread thread1(wait_for_condvar_and_increase_count);
     hpx::thread thread2(wait_for_condvar_and_increase_count);
 
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(200));
+    hpx::this_thread::yield();
     multiple_wake_cond.notify_one();
 
     hpx::thread thread3(wait_for_condvar_and_increase_count);
 
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(200));
+    hpx::this_thread::yield();
     multiple_wake_cond.notify_one();
     multiple_wake_cond.notify_one();
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(200));
+    hpx::this_thread::yield();
 
     {
         std::unique_lock<hpx::lcos::local::mutex> lk(multiple_wake_mutex);
@@ -411,15 +411,15 @@ void test_notify_all_following_notify_one_wakes_all_threads()
     hpx::thread thread1(wait_for_condvar_and_increase_count);
     hpx::thread thread2(wait_for_condvar_and_increase_count);
 
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(200));
+    hpx::this_thread::yield();
     multiple_wake_cond.notify_one();
 
     hpx::thread thread3(wait_for_condvar_and_increase_count);
 
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(200));
+    hpx::this_thread::yield();
     multiple_wake_cond.notify_one();
     multiple_wake_cond.notify_all();
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(200));
+    hpx::this_thread::yield();
 
     {
         std::unique_lock<hpx::lcos::local::mutex> lk(multiple_wake_mutex);
@@ -538,7 +538,7 @@ void test_condition_waits()
 
         {
             hpx::util::unlock_guard<unique_lock> ul(lock);
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(1));
+            hpx::this_thread::yield();
         }
 
         data.notified++;
@@ -550,7 +550,7 @@ void test_condition_waits()
 
         {
             hpx::util::unlock_guard<unique_lock> ul(lock);
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(1));
+            hpx::this_thread::yield();
         }
 
         data.notified++;
@@ -562,7 +562,7 @@ void test_condition_waits()
 
         {
             hpx::util::unlock_guard<unique_lock> ul(lock);
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(1));
+            hpx::this_thread::yield();
         }
 
         data.notified++;
@@ -574,7 +574,7 @@ void test_condition_waits()
 
         {
             hpx::util::unlock_guard<unique_lock> ul(lock);
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(1));
+            hpx::this_thread::yield();
         }
 
         data.notified++;
@@ -586,7 +586,7 @@ void test_condition_waits()
 
         {
             hpx::util::unlock_guard<unique_lock> ul(lock);
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(1));
+            hpx::this_thread::yield();
         }
 
         data.notified++;

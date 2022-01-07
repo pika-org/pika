@@ -81,12 +81,6 @@ namespace hpx { namespace threads { namespace detail {
             thread_schedule_state new_state, thread_restart_state new_state_ex,
             thread_priority priority, error_code& ec) override;
 
-        thread_id_ref_type set_state(
-            hpx::chrono::steady_time_point const& abs_time,
-            thread_id_type const& id, thread_schedule_state newstate,
-            thread_restart_state newstate_ex, thread_priority priority,
-            error_code& ec) override;
-
         void report_error(
             std::size_t num, std::exception_ptr const& e) override;
 

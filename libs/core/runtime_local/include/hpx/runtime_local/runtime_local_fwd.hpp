@@ -12,7 +12,6 @@
 #include <hpx/local/config.hpp>
 #include <hpx/functional/function.hpp>
 #include <hpx/modules/errors.hpp>
-#include <hpx/modules/io_service.hpp>
 #include <hpx/modules/runtime_configuration.hpp>
 #include <hpx/runtime_local/config_entry.hpp>
 #include <hpx/runtime_local/detail/runtime_local_fwd.hpp>
@@ -77,10 +76,6 @@ namespace hpx {
 
     ///////////////////////////////////////////////////////////////////////////
     HPX_LOCAL_EXPORT hpx::util::runtime_configuration const& get_config();
-
-    ///////////////////////////////////////////////////////////////////////////
-    HPX_LOCAL_EXPORT hpx::util::io_service_pool* get_thread_pool(
-        char const* name, char const* pool_name_suffix = "");
 
     /// \endcond
 

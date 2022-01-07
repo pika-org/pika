@@ -60,7 +60,7 @@ foreach(test ${threading_tests})
     FOLDER "Tests/Unit/Modules/Local/Threading"
   )
 
-  hpx_local_add_unit_test("modules.threading" ${test})
+  hpx_local_add_unit_test("modules.threading" ${test} ${${test}_PARAMETERS})
 
 endforeach()
 

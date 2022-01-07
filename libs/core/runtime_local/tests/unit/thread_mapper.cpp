@@ -34,26 +34,9 @@ void enumerate_threads(std::size_t num_custom_threads)
         });
     HPX_TEST(result);
 
-    HPX_TEST_EQ(
-        counts[std::size_t(hpx::os_thread_type::main_thread)], std::size_t(1));
-
     std::size_t num_workers = hpx::get_num_worker_threads();
     HPX_TEST_EQ(
         counts[std::size_t(hpx::os_thread_type::worker_thread)], num_workers);
-
-#ifdef HPX_HAVE_IO_POOL
-    std::size_t num_io_threads = hpx::util::from_string<std::size_t>(
-        hpx::get_config_entry("hpx.threadpools.io_pool_size", "0"));
-    HPX_TEST_EQ(
-        counts[std::size_t(hpx::os_thread_type::io_thread)], num_io_threads);
-#endif
-
-#ifdef HPX_HAVE_TIMER_POOL
-    std::size_t num_timer_threads = hpx::util::from_string<std::size_t>(
-        hpx::get_config_entry("hpx.threadpools.timer_pool_size", "0"));
-    HPX_TEST_EQ(counts[std::size_t(hpx::os_thread_type::timer_thread)],
-        num_timer_threads);
-#endif
 
     HPX_TEST_EQ(counts[std::size_t(hpx::os_thread_type::custom_thread)],
         num_custom_threads);

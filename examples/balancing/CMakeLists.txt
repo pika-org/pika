@@ -4,7 +4,9 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(example_programs hpx_thread_phase os_thread_num)
+set(example_programs
+    # thread_phase # Disabled due to unavailable timed suspension
+    os_thread_num)
 
 set(os_thread_num_PARAMETERS THREADS_PER_LOCALITY 4)
 set(hpx_thread_phase_PARAMETERS THREADS_PER_LOCALITY 4)

@@ -14,13 +14,14 @@
 
 #include <atomic>
 #include <chrono>
+#include <thread>
 #include <utility>
 
 std::atomic<bool> was_run(false);
 
 void do_more_work()
 {
-    hpx::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     was_run = true;
 }
 

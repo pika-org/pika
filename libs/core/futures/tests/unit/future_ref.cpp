@@ -23,6 +23,7 @@ void test_make_ready_future()
     hpx::future<int&> f = hpx::make_ready_future(std::ref(global));
     HPX_TEST_EQ(&f.get(), &global);
 
+#if 0    // Timed make_ready_future is not supported
     hpx::future<int&> f_at = hpx::make_ready_future_at(
         std::chrono::system_clock::now() + std::chrono::seconds(1),
         std::ref(global));
@@ -31,6 +32,7 @@ void test_make_ready_future()
     hpx::future<int&> f_after =
         hpx::make_ready_future_after(std::chrono::seconds(1), std::ref(global));
     HPX_TEST_EQ(&f_after.get(), &global);
+#endif
 }
 
 void test_async()

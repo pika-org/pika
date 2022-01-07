@@ -15,6 +15,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -37,7 +38,8 @@ void test_interrupt_by_destructor()
                         throw "interrupted";
                     }
 
-                    hpx::this_thread::sleep_for(interval);
+                    std::this_thread::sleep_for(interval);
+                    hpx::this_thread::yield();
                 }
                 HPX_TEST(false);
             }
@@ -60,11 +62,11 @@ void test_interrupt_by_destructor()
         HPX_TEST(!t.get_stop_source().stop_requested());
 
         // call destructor after 4 times the interval (should signal the interrupt)
-        hpx::this_thread::sleep_for(4 * interval);
+        std::this_thread::sleep_for(4 * interval);
         HPX_TEST(!t.get_stop_source().stop_requested());
     }
 
-    // key HPX_TESTion: signaled interrupt was processed
+    // key assertion: signaled interrupt was processed
     HPX_TEST(was_interrupted);
 }
 
@@ -85,7 +87,7 @@ void test_interrupt_started_thread()
                     {
                         throw "interrupted";
                     }
-                    hpx::this_thread::sleep_for(interval);
+                    std::this_thread::sleep_for(interval);
                 }
                 HPX_TEST(false);
             }
@@ -95,7 +97,7 @@ void test_interrupt_started_thread()
             }
         });
 
-        hpx::this_thread::sleep_for(4 * interval);
+        std::this_thread::sleep_for(4 * interval);
         t.request_stop();
         HPX_TEST(t.get_stop_source().stop_requested());
         t.join();
@@ -113,17 +115,17 @@ void test_interrupt_started_thread_with_subthread()
             hpx::jthread t2([interval, stoken] {
                 while (!stoken.stop_requested())
                 {
-                    hpx::this_thread::sleep_for(interval);
+                    std::this_thread::sleep_for(interval);
                 }
             });
 
             while (!stoken.stop_requested())
             {
-                hpx::this_thread::sleep_for(interval);
+                std::this_thread::sleep_for(interval);
             }
         });
 
-        hpx::this_thread::sleep_for(4 * interval);
+        std::this_thread::sleep_for(4 * interval);
         t.request_stop();
         HPX_TEST(t.get_stop_source().stop_requested());
         t.join();
@@ -142,7 +144,7 @@ void test_basic_api_with_func()
         ssource = t.get_stop_source();
         HPX_TEST(ssource.stop_possible());
         HPX_TEST(!ssource.stop_requested());
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
     HPX_TEST(ssource.stop_possible());
@@ -173,7 +175,7 @@ void test_exchange_token()
                         }
                         pstoken.store(nullptr);
                     }
-                    hpx::this_thread::sleep_for(std::chrono::microseconds(100));
+                    std::this_thread::sleep_for(std::chrono::microseconds(100));
                 }
             }
             catch (...)
@@ -182,22 +184,22 @@ void test_exchange_token()
             }
         });
 
-        hpx::this_thread::sleep_for(interval);
+        std::this_thread::sleep_for(interval);
         t.request_stop();
 
-        hpx::this_thread::sleep_for(interval);
+        std::this_thread::sleep_for(interval);
         hpx::stop_token it;
         pstoken.store(&it);
 
-        hpx::this_thread::sleep_for(interval);
+        std::this_thread::sleep_for(interval);
         auto ssource2 = hpx::stop_source{};
         it = hpx::stop_token{ssource2.get_token()};
         pstoken.store(&it);
 
-        hpx::this_thread::sleep_for(interval);
+        std::this_thread::sleep_for(interval);
         ssource2.request_stop();
 
-        hpx::this_thread::sleep_for(interval);
+        std::this_thread::sleep_for(interval);
     }
 }
 
@@ -223,7 +225,7 @@ void test_concurrent_interrupt()
                     {
                         HPX_TEST(!stop_requested);
                     }
-                    hpx::this_thread::sleep_for(std::chrono::microseconds(100));
+                    std::this_thread::sleep_for(std::chrono::microseconds(100));
                 }
                 HPX_TEST(stop_requested);
             }
@@ -233,21 +235,21 @@ void test_concurrent_interrupt()
             }
         });
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         // starts thread concurrently calling request_stop() for the same token
         std::vector<hpx::jthread> tv;
         int num_requested_stops = 0;
         for (int i = 0; i < num_threads; ++i)
         {
-            hpx::this_thread::sleep_for(std::chrono::microseconds(100));
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
             hpx::jthread t([&t1, &num_requested_stops] {
                 for (int i = 0; i < 13; ++i)
                 {
                     // only first call to request_stop should return true
                     num_requested_stops += (t1.request_stop() ? 1 : 0);
                     HPX_TEST(!t1.request_stop());
-                    hpx::this_thread::sleep_for(std::chrono::microseconds(10));
+                    std::this_thread::sleep_for(std::chrono::microseconds(10));
                 }
             });
             tv.push_back(std::move(t));
@@ -272,7 +274,7 @@ void test_jthread_move()
         hpx::jthread t{[&interrupt_signalled](hpx::stop_token st) {
             while (!st.stop_requested())
             {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
             if (st.stop_requested())
             {

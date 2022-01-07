@@ -41,14 +41,14 @@ void test_jthread_without_token()
             // wait until loop is done (no interrupt checked)
             for (int c = 9; c >= 0; --c)
             {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                hpx::this_thread::yield();
             }
         });
 
         // wait until t has set all initial values
         for (int i = 0; !all_set.load(); ++i)
         {
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(10));
+            hpx::this_thread::yield();
         }
 
         // and check all values
@@ -82,7 +82,7 @@ void test_jthread_with_token()
                 // wait until interrupt is signaled
                 for (int i = 0; !stoptoken.stop_requested(); ++i)
                 {
-                    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    hpx::this_thread::yield();
                 }
 
                 done.store(true);
@@ -92,14 +92,14 @@ void test_jthread_with_token()
         // wait until t has set all initial values
         for (int i = 0; !all_set.load(); ++i)
         {
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(10));
+            hpx::this_thread::yield();
         }
 
         // and check all values
         HPX_TEST(t.joinable());
         HPX_TEST(id == t.get_id());
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        hpx::this_thread::yield();
 
         origsource = std::move(ssource);
         ssource = t.get_stop_source();
@@ -114,7 +114,7 @@ void test_jthread_with_token()
         HPX_TEST(!done.load());
         HPX_TEST(!origsource.stop_requested());
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        hpx::this_thread::yield();
         origsource.request_stop();
     }    // leave scope of t without join() or detach() (signals cancellation)
 
@@ -135,7 +135,7 @@ void test_join()
             // for the token)
             for (int i = 0; !stoken.stop_requested(); ++i)
             {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                hpx::this_thread::yield();
             }
         });
         ssource = t.get_stop_source();
@@ -143,7 +143,7 @@ void test_join()
         // let another thread signal cancellation after some time
         hpx::jthread t2([ssource]() mutable {
             // just wait for a while
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+            hpx::this_thread::yield();
 
             // signal interrupt to other thread
             ssource.request_stop();
@@ -188,7 +188,7 @@ void test_detach()
             // for the token)
             for (int i = 0; !stoken.stop_requested(); ++i)
             {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                hpx::this_thread::yield();
             }
 
             finally_interrupted.store(true);
@@ -197,7 +197,7 @@ void test_detach()
         // wait until t has set all initial values
         for (int i = 0; !all_set.load(); ++i)
         {
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(10));
+            hpx::this_thread::yield();
         }
 
         // and check all values
@@ -223,7 +223,7 @@ void test_detach()
     HPX_TEST(ssource.stop_requested());
     for (int i = 0; !finally_interrupted.load() && i < 100; ++i)
     {
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        hpx::this_thread::yield();
     }
 
     HPX_TEST(finally_interrupted.load());
@@ -252,7 +252,7 @@ void test_hpx_thread()
                 {
                     throw "interrupted";
                 }
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                hpx::this_thread::yield();
             }
             HPX_TEST(false);
         }
@@ -276,7 +276,7 @@ void test_hpx_thread()
     // wait until t has set all initial values
     for (int i = 0; !all_set.load(); ++i)
     {
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(10));
+        hpx::this_thread::yield();
     }
 
     // and check all values
@@ -317,7 +317,7 @@ void test_temporarily_disable_token()
                     {
                         throw "interrupted";
                     }
-                    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    hpx::this_thread::yield();
                 }
             }
             catch (...)
@@ -339,12 +339,12 @@ void test_temporarily_disable_token()
                     {
                         throw "interrupted";
                     }
-                    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    hpx::this_thread::yield();
                 }
 
                 for (int i = 0; i < 10; ++i)
                 {
-                    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    hpx::this_thread::yield();
                 }
             }
             catch (...)
@@ -373,10 +373,10 @@ void test_temporarily_disable_token()
 
         while (state.load() != State::disabled)
         {
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+            hpx::this_thread::yield();
         }
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(500));
+        hpx::this_thread::yield();
         tis = t.get_stop_source();
     }    // leave scope of t without join() or detach() (signals cancellation)
 
@@ -426,14 +426,14 @@ void test_jthread_api()
                 // wait until interrupt is signaled (due to destructor of t)
                 for (int i = 0; !stoken.stop_requested(); ++i)
                 {
-                    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    hpx::this_thread::yield();
                 }
             });
 
         // wait until t has set all initial values
         for (int i = 0; !all_set.load(); ++i)
         {
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(10));
+            hpx::this_thread::yield();
         }
 
         // and check all values

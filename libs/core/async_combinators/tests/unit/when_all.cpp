@@ -14,6 +14,7 @@
 #include <chrono>
 #include <deque>
 #include <list>
+#include <thread>
 #include <memory>
 #include <string>
 #include <utility>
@@ -22,7 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 int make_int_slowly()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 42;
 }
 

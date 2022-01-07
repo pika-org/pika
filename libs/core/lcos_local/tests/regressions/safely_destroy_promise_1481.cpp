@@ -13,6 +13,7 @@
 #include <hpx/modules/testing.hpp>
 
 #include <chrono>
+#include <thread>
 
 void test_safe_destruction()
 {
@@ -26,7 +27,7 @@ void test_safe_destruction()
         // Delay returning from p.set_value() below to destroy the promise
         // before set_value returns.
         outer = inner.then([](hpx::shared_future<void>&&) {
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         });
 
         // create a thread which will make the inner future ready

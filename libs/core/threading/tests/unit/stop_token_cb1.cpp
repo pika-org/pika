@@ -22,6 +22,7 @@
 #include <functional>
 #include <iostream>
 #include <mutex>
+#include <thread>
 #include <utility>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -186,7 +187,7 @@ void test_concurrent_callback_registration()
         hpx::thread waiter2{thread_loop, source.get_token()};
         hpx::thread waiter3{thread_loop, source.get_token()};
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(10));
+        pika::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         hpx::thread canceller{[&source] { source.request_stop(); }};
 
@@ -287,7 +288,7 @@ void test_callback_deregistration_blocks_until_callback_finishes()
                 callback_executing = true;
                 cv.notify_all();
                 lock.unlock();
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                hpx::this_thread::yield();
                 HPX_TEST(!callback_unregistered);
                 callback_about_to_return = true;
             };
@@ -424,7 +425,8 @@ int hpx_main()
     test_callback_executed_if_stop_requested_before_destruction();
     test_callback_executed_immediately_if_stop_already_requested();
     test_register_multiple_callbacks();
-    test_concurrent_callback_registration();
+    // Disabled due to unavailable timed suspension
+    // test_concurrent_callback_registration();
     test_callback_deregistered_from_within_callback_does_not_deadlock();
     test_callback_deregistration_doesnt_wait_for_others_to_finish_executing();
     test_callback_deregistration_blocks_until_callback_finishes();

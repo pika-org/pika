@@ -553,9 +553,8 @@ namespace hpx { namespace threads {
         // been initialized yet
         threads::topology& t = threads::create_topology();
 
-        detail::decode_distribution(
-            boost::get<detail::distribution_type>(mappings), t, affinities,
-            used_cores, max_cores, num_threads, num_pus, use_process_mask, ec);
+        detail::decode_distribution(mappings, t, affinities, used_cores,
+            max_cores, num_threads, num_pus, use_process_mask, ec);
         if (ec)
             return;
     }

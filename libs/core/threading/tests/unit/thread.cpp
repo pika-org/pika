@@ -14,6 +14,7 @@
 
 #include <chrono>
 #include <functional>
+#include <thread>
 
 using hpx::program_options::options_description;
 using hpx::program_options::variables_map;
@@ -82,7 +83,7 @@ void test_sleep()
 
     std::chrono::system_clock::time_point const now =
         std::chrono::system_clock::now();
-    hpx::this_thread::sleep_for(std::chrono::seconds(3));
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 
     // Ensure it's in a range instead of checking actual equality due to time
     // lapse

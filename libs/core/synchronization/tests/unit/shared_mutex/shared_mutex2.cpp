@@ -16,6 +16,7 @@
 #include <chrono>
 #include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "shared_mutex_locking_thread.hpp"
@@ -56,7 +57,7 @@ void test_only_one_upgrade_lock_permitted()
                     simultaneous_running_count, max_simultaneous_running));
         }
 
-        hpx::this_thread::sleep_for(std::chrono::seconds(1));
+        hpx::this_thread::yield();
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, 1u);
 
@@ -105,7 +106,7 @@ void test_can_lock_upgrade_if_currently_locked_shared()
                     simultaneous_running_count, max_simultaneous_running));
         }
 
-        hpx::this_thread::sleep_for(std::chrono::seconds(1));
+        hpx::this_thread::yield();
 
         pool.create_thread(
             test::locking_thread<hpx::upgrade_lock<shared_mutex_type>>(rw_mutex,
@@ -164,7 +165,7 @@ void test_if_other_thread_has_write_lock_try_lock_shared_returns_false()
     hpx::thread writer(test::simple_writing_thread(
         rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
 
-    hpx::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
     CHECK_LOCKED_VALUE_EQUAL(unblocked_mutex, unblocked_count, 1u);
 
@@ -192,7 +193,7 @@ void test_if_other_thread_has_write_lock_try_lock_upgrade_returns_false()
     hpx::thread writer(test::simple_writing_thread(
         rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
 
-    hpx::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
     CHECK_LOCKED_VALUE_EQUAL(unblocked_mutex, unblocked_count, 1u);
 
@@ -246,7 +247,7 @@ void test_if_other_thread_has_shared_lock_try_lock_shared_returns_true()
     hpx::thread writer(test::simple_reading_thread(
         rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
 
-    hpx::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
     CHECK_LOCKED_VALUE_EQUAL(unblocked_mutex, unblocked_count, 1u);
 
@@ -274,7 +275,7 @@ void test_if_other_thread_has_shared_lock_try_lock_upgrade_returns_true()
     hpx::thread writer(test::simple_reading_thread(
         rw_mutex, finish_mutex, unblocked_mutex, unblocked_count));
 
-    hpx::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
     CHECK_LOCKED_VALUE_EQUAL(unblocked_mutex, unblocked_count, 1u);
 

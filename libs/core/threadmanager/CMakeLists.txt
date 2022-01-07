@@ -35,7 +35,6 @@ hpx_local_add_module(
     hpx_schedulers
     hpx_async_combinators
     hpx_thread_pools
-    hpx_io_service
     hpx_thread_pool_util
   CMAKE_SUBDIRS examples tests
 )

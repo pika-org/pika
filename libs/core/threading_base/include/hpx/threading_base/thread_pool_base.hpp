@@ -245,12 +245,6 @@ namespace hpx { namespace threads {
             thread_schedule_state new_state, thread_restart_state new_state_ex,
             thread_priority priority, error_code& ec) = 0;
 
-        virtual thread_id_ref_type set_state(
-            hpx::chrono::steady_time_point const& abs_time,
-            thread_id_type const& id, thread_schedule_state newstate,
-            thread_restart_state newstate_ex, thread_priority priority,
-            error_code& ec) = 0;
-
         std::size_t get_pool_index() const
         {
             return id_.index();

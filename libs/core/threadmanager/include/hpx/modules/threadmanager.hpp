@@ -11,7 +11,6 @@
 #include <hpx/local/config.hpp>
 #include <hpx/concurrency/barrier.hpp>
 #include <hpx/concurrency/spinlock.hpp>
-#include <hpx/io_service/io_service_pool.hpp>
 #include <hpx/modules/errors.hpp>
 #include <hpx/resource_partitioner/detail/partitioner.hpp>
 #include <hpx/runtime_configuration/runtime_configuration.hpp>
@@ -58,9 +57,6 @@ namespace hpx { namespace threads {
         typedef std::vector<pool_type> pool_vector;
 
         threadmanager(hpx::util::runtime_configuration& rtcfg_,
-#ifdef HPX_HAVE_TIMER_POOL
-            util::io_service_pool& timer_pool,
-#endif
             notification_policy_type& notifier,
             detail::network_background_callback_type
                 network_background_callback =
@@ -399,9 +395,6 @@ namespace hpx { namespace threads {
         hpx::util::runtime_configuration& rtcfg_;
         std::vector<pool_id_type> threads_lookup_;
 
-#ifdef HPX_HAVE_TIMER_POOL
-        util::io_service_pool& timer_pool_;    // used for timed set_state
-#endif
         pool_vector pools_;
 
         notification_policy_type& notifier_;

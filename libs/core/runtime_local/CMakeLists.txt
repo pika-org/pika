@@ -18,16 +18,12 @@ set(runtime_local_headers
     hpx/runtime_local/get_os_thread_count.hpp
     hpx/runtime_local/get_thread_name.hpp
     hpx/runtime_local/get_worker_thread_num.hpp
-    hpx/runtime_local/interval_timer.hpp
     hpx/runtime_local/os_thread_type.hpp
-    hpx/runtime_local/pool_timer.hpp
     hpx/runtime_local/report_error.hpp
     hpx/runtime_local/run_as_hpx_thread.hpp
-    hpx/runtime_local/run_as_os_thread.hpp
     hpx/runtime_local/runtime_handlers.hpp
     hpx/runtime_local/runtime_local.hpp
     hpx/runtime_local/runtime_local_fwd.hpp
-    hpx/runtime_local/service_executors.hpp
     hpx/runtime_local/state.hpp
     hpx/runtime_local/shutdown_function.hpp
     hpx/runtime_local/startup_function.hpp
@@ -40,7 +36,6 @@ set(runtime_local_headers
 # cmake-format: off
 set(runtime_local_compat_headers
     hpx/custom_exception_info.hpp => hpx/modules/runtime_local.hpp
-    hpx/parallel/executors/service_executors.hpp => hpx/include/parallel_executors.hpp
     hpx/runtime/config_entry.hpp => hpx/modules/runtime_local.hpp
     hpx/runtime/get_locality_id.hpp => hpx/runtime.hpp
     hpx/runtime/get_num_localities.hpp => hpx/modules/runtime_local.hpp
@@ -52,14 +47,10 @@ set(runtime_local_compat_headers
     hpx/runtime/startup_function.hpp => hpx/runtime.hpp
     hpx/runtime/thread_hooks.hpp => hpx/modules/runtime_local.hpp
     hpx/runtime/thread_pool_helpers.hpp => hpx/modules/runtime_local.hpp
-    hpx/runtime/threads/executors/service_executors.hpp => hpx/modules/runtime_local.hpp
     hpx/runtime/threads/run_as_hpx_thread.hpp => hpx/include/run_as.hpp
-    hpx/runtime/threads/run_as_os_thread.hpp => hpx/include/run_as.hpp
     hpx/runtime_handlers.hpp => hpx/modules/runtime_local.hpp
-    hpx/util/pool_timer.hpp => hpx/modules/runtime_local.hpp
     hpx/util/debug/thread_stacktrace.hpp => hpx/modules/runtime_local.hpp
     hpx/util/debugging.hpp => hpx/modules/runtime_local.hpp
-    hpx/util/interval_timer.hpp => hpx/modules/runtime_local.hpp
     hpx/util/thread_mapper.hpp => hpx/modules/runtime_local.hpp
 )
 # cmake-format: on
@@ -67,10 +58,8 @@ set(runtime_local_compat_headers
 set(runtime_local_sources
     custom_exception_info.cpp
     debugging.cpp
-    interval_timer.cpp
     get_locality_name.cpp
     os_thread_type.cpp
-    pool_timer.cpp
     runtime_handlers.cpp
     runtime_local.cpp
     serialize_exception.cpp
@@ -94,7 +83,6 @@ hpx_local_add_module(
     hpx_execution
     hpx_format
     hpx_futures
-    hpx_io_service
     hpx_logging
     hpx_program_options
     hpx_resource_partitioner

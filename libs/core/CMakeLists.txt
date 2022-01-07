@@ -14,7 +14,6 @@ set(_hpx_local_modules
     affinity
     algorithms
     allocator_support
-    asio
     assertion
     async_base
     async_combinators
@@ -43,7 +42,6 @@ set(_hpx_local_modules
     include_local
     ini
     init_runtime_local
-    io_service
     iterator_support
     itt_notify
     lcos_local
@@ -72,7 +70,6 @@ set(_hpx_local_modules
     threading
     threading_base
     threadmanager
-    timed_execution
     timing
     topology
     type_support

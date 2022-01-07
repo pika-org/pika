@@ -16,7 +16,6 @@ set(tests
     polymorphic_executor
     scheduler_executor
     sequenced_executor
-    service_executors
     shared_parallel_executor
     standalone_thread_pool_executor
     thread_pool_scheduler

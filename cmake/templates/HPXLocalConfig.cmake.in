@@ -15,16 +15,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/HPXLocalCacheVariables.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/HPXLocalMacros.cmake")
 
 # include exported targets
-
-# Asio can be installed by HPXLocal or externally installed. In the first case we use
-# exported targets, in the second we find Asio again using find_package.
-if(HPXLocal_WITH_FETCH_ASIO)
-  include("${CMAKE_CURRENT_LIST_DIR}/HPXAsioTarget.cmake")
-else()
-  set(HPXLocal_ASIO_ROOT "@ASIO_ROOT@")
-  include(HPXLocal_SetupAsio)
-endif()
-
 include("${CMAKE_CURRENT_LIST_DIR}/HPXLocalInternalTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/HPXLocalTargets.cmake")
 

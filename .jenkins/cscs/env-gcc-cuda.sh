@@ -20,7 +20,6 @@ export CC=`which cc`
 
 configure_extra_options+=" -DHPXLocal_WITH_CXX_STANDARD=${CXX_STD}"
 configure_extra_options+=" -DHPXLocal_WITH_MALLOC=system"
-configure_extra_options+=" -DHPXLocal_WITH_FETCH_ASIO=ON"
 configure_extra_options+=" -DHPXLocal_WITH_CUDA=ON"
 configure_extra_options+=" -DHPXLocal_WITH_EXAMPLES_OPENMP=ON"
 configure_extra_options+=" -DHPXLocal_WITH_COMPILER_WARNINGS=ON"

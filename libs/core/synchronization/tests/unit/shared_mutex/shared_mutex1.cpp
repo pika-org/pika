@@ -113,7 +113,7 @@ void test_only_one_writer_permitted()
                     simultaneous_running_count, max_simultaneous_running));
         }
 
-        hpx::this_thread::sleep_for(std::chrono::seconds(1));
+        hpx::this_thread::yield();
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, 1u);
 
@@ -174,7 +174,7 @@ void test_reader_blocks_writer()
                 finish_mutex, simultaneous_running_count,
                 max_simultaneous_running));
 
-        hpx::this_thread::sleep_for(std::chrono::seconds(1));
+        hpx::this_thread::yield();
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, 1u);
 
@@ -223,7 +223,7 @@ void test_unlocking_writer_unblocks_all_readers()
                     simultaneous_running_count, max_simultaneous_running));
         }
 
-        hpx::this_thread::sleep_for(std::chrono::seconds(1));
+        hpx::this_thread::yield();
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, 0u);
 
@@ -289,7 +289,7 @@ void test_unlocking_last_reader_only_unblocks_one_writer()
                     simultaneous_running_readers, max_simultaneous_readers));
         }
 
-        hpx::this_thread::sleep_for(std::chrono::seconds(1));
+        hpx::this_thread::yield();
 
         for (unsigned i = 0; i != writer_count; ++i)
         {
@@ -309,7 +309,7 @@ void test_unlocking_last_reader_only_unblocks_one_writer()
             }
         }
 
-        hpx::this_thread::sleep_for(std::chrono::seconds(1));
+        hpx::this_thread::yield();
 
         CHECK_LOCKED_VALUE_EQUAL(
             unblocked_count_mutex, unblocked_count, reader_count);

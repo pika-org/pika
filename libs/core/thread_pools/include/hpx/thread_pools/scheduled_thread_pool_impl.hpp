@@ -24,7 +24,6 @@
 #include <hpx/threading_base/scheduler_mode.hpp>
 #include <hpx/threading_base/scheduler_state.hpp>
 #include <hpx/threading_base/set_thread_state.hpp>
-#include <hpx/threading_base/set_thread_state_timed.hpp>
 #include <hpx/threading_base/thread_data.hpp>
 #include <hpx/threading_base/thread_helpers.hpp>
 #include <hpx/threading_base/thread_num_tss.hpp>
@@ -651,20 +650,6 @@ namespace hpx { namespace threads { namespace detail {
             thread_schedule_hint(
                 static_cast<std::int16_t>(detail::get_local_thread_num_tss())),
             true, ec);
-    }
-
-    template <typename Scheduler>
-    thread_id_ref_type scheduled_thread_pool<Scheduler>::set_state(
-        hpx::chrono::steady_time_point const& abs_time,
-        thread_id_type const& id, thread_schedule_state newstate,
-        thread_restart_state newstate_ex, thread_priority priority,
-        error_code& ec)
-    {
-        return detail::set_thread_state_timed(sched_.get(), abs_time, id,
-            newstate, newstate_ex, priority,
-            thread_schedule_hint(
-                static_cast<std::int16_t>(detail::get_local_thread_num_tss())),
-            nullptr, true, ec);
     }
 
     ///////////////////////////////////////////////////////////////////////////

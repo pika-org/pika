@@ -15,7 +15,7 @@
 
 int hpx_main()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(10));
+    hpx::this_thread::yield();
 
     hpx::thread t([]() {});
     t.join();

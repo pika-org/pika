@@ -169,16 +169,6 @@ namespace hpx { namespace util {
             "use_guard_pages = ${HPX_USE_GUARD_PAGES:1}",
 #endif
 
-            "[hpx.threadpools]",
-#if defined(HPX_HAVE_IO_POOL)
-            "io_pool_size = ${HPX_NUM_IO_POOL_SIZE:" HPX_PP_STRINGIZE(
-                HPX_PP_EXPAND(HPX_NUM_IO_POOL_SIZE)) "}",
-#endif
-#if defined(HPX_HAVE_TIMER_POOL)
-            "timer_pool_size = ${HPX_NUM_TIMER_POOL_SIZE:" HPX_PP_STRINGIZE(
-                HPX_PP_EXPAND(HPX_NUM_TIMER_POOL_SIZE)) "}",
-#endif
-
             "[hpx.thread_queue]",
             "max_thread_count = ${HPX_THREAD_QUEUE_MAX_THREAD_COUNT:" HPX_PP_STRINGIZE(
                 HPX_PP_EXPAND(HPX_THREAD_QUEUE_MAX_THREAD_COUNT)) "}",

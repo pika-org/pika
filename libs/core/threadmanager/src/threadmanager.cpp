@@ -60,15 +60,9 @@ namespace hpx { namespace threads {
 
     ///////////////////////////////////////////////////////////////////////////
     threadmanager::threadmanager(hpx::util::runtime_configuration& rtcfg,
-#ifdef HPX_HAVE_TIMER_POOL
-        util::io_service_pool& timer_pool,
-#endif
         notification_policy_type& notifier,
         detail::network_background_callback_type network_background_callback)
       : rtcfg_(rtcfg)
-#ifdef HPX_HAVE_TIMER_POOL
-      , timer_pool_(timer_pool)
-#endif
       , notifier_(notifier)
       , network_background_callback_(network_background_callback)
     {
@@ -1012,11 +1006,6 @@ namespace hpx { namespace threads {
         auto& rp = hpx::resource::get_partitioner();
         init_tss(rp.get_num_threads());
 
-#ifdef HPX_HAVE_TIMER_POOL
-        LTM_(info).format("run: running timer pool");
-        timer_pool_.run(false);
-#endif
-
         for (auto& pool_iter : pools_)
         {
             std::size_t num_threads_in_pool =
@@ -1030,9 +1019,6 @@ namespace hpx { namespace threads {
 
             if (!pool_iter->run(lk, num_threads_in_pool))
             {
-#ifdef HPX_HAVE_TIMER_POOL
-                timer_pool_.stop();
-#endif
                 return false;
             }
 

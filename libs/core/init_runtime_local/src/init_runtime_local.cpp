@@ -42,7 +42,6 @@
 #include <hpx/string_util/classification.hpp>
 #include <hpx/string_util/split.hpp>
 #include <hpx/threading/thread.hpp>
-#include <hpx/threading_base/detail/get_default_timer_service.hpp>
 #include <hpx/type_support/pack.hpp>
 #include <hpx/type_support/unused.hpp>
 #include <hpx/util/from_string.hpp>
@@ -395,8 +394,6 @@ namespace hpx {
 #endif
                 hpx::threads::detail::set_get_default_pool(
                     &hpx::detail::get_default_pool);
-                hpx::threads::detail::set_get_default_timer_service(
-                    &hpx::detail::get_default_timer_service);
                 hpx::threads::detail::set_get_locality_id(&get_locality_id);
                 hpx::parallel::execution::detail::set_get_pu_mask(
                     &hpx::detail::get_pu_mask);

@@ -805,50 +805,10 @@ if(HPXLocal_WITH_SPINLOCK_DEADLOCK_DETECTION)
   hpx_local_add_config_define(HPX_HAVE_SPINLOCK_DEADLOCK_DETECTION)
 endif()
 
-# Options for automatically fetching Asio
-hpx_local_option(
-  HPXLocal_WITH_FETCH_ASIO
-  BOOL
-  "Use FetchContent to fetch Asio. By default an installed Asio will be used. (default: OFF)"
-  OFF
-  CATEGORY "Build Targets"
-  ADVANCED
-)
-hpx_local_option(
-  HPXLocal_WITH_ASIO_TAG STRING "Asio repository tag or branch" "asio-1-20-0"
-  CATEGORY "Build Targets"
-  ADVANCED
-)
-
 hpx_local_option(
   HPXLocal_WITH_ITTNOTIFY BOOL "Enable Amplifier (ITT) instrumentation support."
   OFF CATEGORY "Profiling"
 )
-
-# Experimental settings
-hpx_local_option(
-  HPXLocal_WITH_IO_POOL
-  BOOL
-  "Disable internal IO thread pool, do not change if not absolutely necessary (default: ON)"
-  ON
-  CATEGORY "Thread Manager"
-  ADVANCED
-)
-if(HPXLocal_WITH_IO_POOL)
-  hpx_local_add_config_define(HPX_HAVE_IO_POOL)
-endif()
-
-hpx_local_option(
-  HPXLocal_WITH_TIMER_POOL
-  BOOL
-  "Disable internal timer thread pool, do not change if not absolutely necessary (default: ON)"
-  ON
-  CATEGORY "Thread Manager"
-  ADVANCED
-)
-if(HPXLocal_WITH_TIMER_POOL)
-  hpx_local_add_config_define(HPX_HAVE_TIMER_POOL)
-endif()
 
 hpx_local_option(
   HPXLocal_WITH_ASYNC_MPI
@@ -1674,7 +1634,6 @@ endif()
 include(HPXLocal_SetupThreads)
 include(HPXLocal_SetupBoost)
 include(HPXLocal_SetupBoostFilesystem)
-include(HPXLocal_SetupAsio)
 include(HPXLocal_SetupAllocator)
 include(HPXLocal_SetupHwloc)
 include(HPXLocal_SetupMPI)
@@ -1873,11 +1832,7 @@ if(HPXLocal_WITH_PRECOMPILED_HEADERS)
       <variant>
       <vector>
       <hwloc.h>
-      <asio/basic_waitable_timer.hpp>
-      <asio/io_context.hpp>
-      <asio/ip/tcp.hpp>
       <boost/config.hpp>
-      <boost/fusion/include/vector.hpp>
       <boost/intrusive/slist.hpp>
       <boost/lockfree/queue.hpp>
       <boost/optional.hpp>
@@ -1891,7 +1846,7 @@ if(HPXLocal_WITH_PRECOMPILED_HEADERS)
 
   set(system_precompiled_headers_dependencies
       hpx_local_dependencies_boost hpx_local_private_flags
-      hpx_local_public_flags Asio::asio
+      hpx_local_public_flags
   )
 
   target_link_libraries(
@@ -1949,19 +1904,6 @@ install(
   PATTERN "packaging" EXCLUDE
   PATTERN ".git" EXCLUDE
 )
-
-# Remove all xeonphi support
-if("${HPXLocal_PLATFORM_UC}" STREQUAL "XEONPHI")
-  # FIXME: push changes upstream
-  install(
-    DIRECTORY external/asio/boost
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpx/external
-    COMPONENT core
-    FILES_MATCHING
-    PATTERN "*.hpp"
-    PATTERN ".git" EXCLUDE
-  )
-endif()
 
 install(
   FILES "${PROJECT_SOURCE_DIR}/LICENSE_1_0.txt"

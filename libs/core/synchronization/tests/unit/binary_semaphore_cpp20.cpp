@@ -11,6 +11,7 @@
 #include <hpx/modules/testing.hpp>
 
 #include <chrono>
+#include <thread>
 
 void test_semaphore_release_acquire()
 {
@@ -41,7 +42,7 @@ struct semaphore_acquire_and_release_test
 
     void acquire_and_release()
     {
-        hpx::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         sem_.release();
     }
 
@@ -167,7 +168,7 @@ void test_semaphore_try_acquire_for_until()
         auto start = std::chrono::steady_clock::now();
         auto timeout = start + std::chrono::milliseconds(100);
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         sema.release();
 

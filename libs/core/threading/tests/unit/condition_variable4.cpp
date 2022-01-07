@@ -16,6 +16,7 @@
 
 #include <chrono>
 #include <mutex>
+#include <thread>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -58,7 +59,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
                     item = next_value();
                     if (prod_sec > 0)
                     {
-                        hpx::this_thread::sleep_for(prod_sleep);
+                        std::this_thread::sleep_for(prod_sleep);
                     }
                 }
 
@@ -77,7 +78,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
                 hpx::util::unlock_guard<hpx::lcos::local::mutex> ul(items_mtx);
                 if (cons_sec > 0)
                 {
-                    hpx::this_thread::sleep_for(cons_sleep);
+                    std::this_thread::sleep_for(cons_sleep);
                 }
             }
 
@@ -109,7 +110,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
     {
         if (prod_sec > 0)
         {
-            hpx::this_thread::sleep_for(prod_sleep * 10);
+            std::this_thread::sleep_for(prod_sleep * 10);
         }
         ssource.request_stop();
     }

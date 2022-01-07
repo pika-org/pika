@@ -15,13 +15,14 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 int p1()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 1;
 }
 
@@ -29,7 +30,7 @@ int p2(hpx::future<int> f)
 {
     HPX_TEST(f.valid());
     int i = f.get();
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return 2 * i;
 }
 
@@ -38,7 +39,7 @@ void p3(hpx::future<int> f)
     HPX_TEST(f.valid());
     int i = f.get();
     (void) i;
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return;
 }
 

@@ -28,7 +28,6 @@ set(executors_headers
     hpx/executors/restricted_thread_pool_executor.hpp
     hpx/executors/scheduler_executor.hpp
     hpx/executors/sequenced_executor.hpp
-    hpx/executors/service_executors.hpp
     hpx/executors/std_execution_policy.hpp
     hpx/executors/sync.hpp
     hpx/executors/thread_pool_executor.hpp
@@ -81,7 +80,6 @@ hpx_local_add_module(
     hpx_execution
     hpx_futures
     hpx_hardware
-    hpx_io_service
     hpx_itt_notify
     hpx_properties
     hpx_threading

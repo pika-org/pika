@@ -56,14 +56,6 @@ int hpx_main()
         t2.get();
     }
 
-    // executing continuation cont2 on UI (main) thread
-    {
-        hpx::parallel::execution::main_pool_executor exec;
-        hpx::future<int> t = hpx::async(&func1);
-        hpx::future<int> t2 = t.then(exec, &cont2);
-        t2.get();
-    }
-
     return hpx::local::finalize();
 }
 

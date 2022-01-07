@@ -21,8 +21,6 @@
 #include <hpx/threading_base/thread_data.hpp>
 #include <hpx/threading_base/thread_pool_base.hpp>
 
-#include <asio/io_context.hpp>
-
 #include <cstddef>
 #include <iostream>
 #include <sstream>
@@ -144,19 +142,6 @@ namespace hpx { namespace detail {
         }
 
         return &rt->get_thread_manager().default_pool();
-    }
-
-    asio::io_context* get_default_timer_service()
-    {
-        hpx::runtime* rt = get_runtime_ptr();
-        if (rt == nullptr)
-        {
-            HPX_THROW_EXCEPTION(invalid_status,
-                "hpx::detail::get_default_timer_service",
-                "The runtime system is not active");
-        }
-
-        return &get_thread_pool("timer-pool")->get_io_service();
     }
 
     threads::mask_cref_type get_pu_mask(

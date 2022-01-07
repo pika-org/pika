@@ -30,7 +30,6 @@ hpx_local_add_module(
     hpx_config_local
     hpx_program_options
     hpx_runtime_configuration
-    hpx_asio
     hpx_debugging
     hpx_errors
     hpx_filesystem

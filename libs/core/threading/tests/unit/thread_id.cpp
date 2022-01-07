@@ -11,7 +11,9 @@
 #include <hpx/local/thread.hpp>
 #include <hpx/modules/testing.hpp>
 
+#include <chrono>
 #include <functional>
+#include <thread>
 
 using hpx::program_options::options_description;
 using hpx::program_options::variables_map;
@@ -20,7 +22,8 @@ using hpx::program_options::variables_map;
 void do_nothing(hpx::lcos::local::barrier& b1, hpx::lcos::local::barrier& b2)
 {
     b1.wait();
-    hpx::this_thread::suspend(100);    // wait for 100 ms
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(100));    // wait for 100 ms
     b2.wait();
 }
 

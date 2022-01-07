@@ -19,6 +19,7 @@
 #include <chrono>
 #include <functional>
 #include <mutex>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -71,7 +72,7 @@ void test_cv(bool call_notify)
                 HPX_TEST(call_notify != it.stop_requested());
             });
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         if (call_notify)
         {
             {
@@ -121,7 +122,7 @@ void test_cv_pred(bool call_notify)
                 HPX_TEST(call_notify != st.stop_requested());
             });
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         if (call_notify)
         {
             {
@@ -161,9 +162,9 @@ void test_cv_thread_no_pred(bool call_notify)
             }
         });
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         HPX_TEST(!is.stop_requested());
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         if (call_notify)
         {
@@ -209,9 +210,9 @@ void test_cv_thread_pred(bool call_notify)
                 HPX_TEST(call_notify != st.stop_requested());
             });
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         HPX_TEST(!is.stop_requested());
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         if (call_notify)
         {
@@ -261,7 +262,7 @@ void test_minimal_wait(int sec)
                 }
             });
 
-            hpx::this_thread::sleep_for(dur);
+            std::this_thread::sleep_for(dur);
         }    // leave scope of t1 without join() or detach() (signals cancellation)
     }
     catch (...)
@@ -305,7 +306,7 @@ void test_minimal_wait_for(int sec1, int sec2)
                 }
             });
 
-            hpx::this_thread::sleep_for(dur_int);
+            std::this_thread::sleep_for(dur_int);
         }    // leave scope of t1 without join() or detach() (signals cancellation)
     }
     catch (...)
@@ -364,7 +365,8 @@ void test_timed_cv(bool call_notify, bool /* call_interrupt */, Dur dur)
                 ready = true;
             }    // release lock
 
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            hpx::this_thread::yield();
             ready_cv.notify_one();
         }
         else
@@ -442,9 +444,9 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
             }
         });
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         HPX_TEST(!t1.get_stop_source().stop_requested());
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         if (call_notify)
         {
@@ -457,7 +459,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
             ready_cv.notify_one();
             while (t1_feedback != state::ready)
             {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(200));
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
             }
             HPX_TEST(std::chrono::steady_clock::now() <
                 t0 + std::chrono::seconds(5));
@@ -468,7 +470,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
             t1.request_stop();
             while (t1_feedback != state::interrupted)
             {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(200));
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
             }
             HPX_TEST(std::chrono::steady_clock::now() <
                 t0 + std::chrono::seconds(5));
@@ -478,7 +480,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
     auto t0 = std::chrono::steady_clock::now();
     while (t1_feedback == state::loop)
     {
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     HPX_TEST(std::chrono::steady_clock::now() < t0 + std::chrono::seconds(5));
 }
@@ -504,14 +506,14 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
             std::ref(ready_mtx), std::ref(ready_cv), call_notify));
         {
             auto t0ssource = t0.get_stop_source();
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
             // starts thread concurrently calling request_stop() for the same
             // token
             std::vector<hpx::jthread> vthreads;
             for (int idx = 0; idx < NumExtraCV; ++idx)
             {
-                hpx::this_thread::sleep_for(std::chrono::microseconds(100));
+                std::this_thread::sleep_for(std::chrono::microseconds(100));
                 hpx::jthread t([idx, t0stoken = t0ssource.get_token(),
                                    &arr_ready, &arr_ready_mtx, &arr_ready_cv,
                                    call_notify] {
@@ -523,7 +525,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
                 vthreads.push_back(std::move(t));
             }
 
-            hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
             if (call_notify)
             {

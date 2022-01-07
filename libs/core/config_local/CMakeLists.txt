@@ -8,7 +8,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(config_local_headers
     hpx/local/config.hpp
-    hpx/local/config/asio.hpp
     hpx/local/config/attributes.hpp
     hpx/local/config/autolink.hpp
     hpx/local/config/branch_hints.hpp

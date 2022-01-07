@@ -10,7 +10,6 @@
 #include <hpx/command_line_handling_local/parse_command_line_local.hpp>
 #include <hpx/functional/detail/reset_function.hpp>
 #include <hpx/local/version.hpp>
-#include <hpx/modules/asio.hpp>
 #include <hpx/modules/debugging.hpp>
 #include <hpx/modules/format.hpp>
 #include <hpx/modules/program_options.hpp>

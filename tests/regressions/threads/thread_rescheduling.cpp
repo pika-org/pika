@@ -37,7 +37,7 @@ using hpx::threads::thread_id_type;
 namespace detail {
     template <typename T1>
     std::uint64_t wait(std::vector<future<T1>> const& lazy_values,
-        std::int32_t suspend_for = 10)
+        std::int32_t /*suspend_for*/ = 10)
     {
         boost::dynamic_bitset<> handled(lazy_values.size());
         std::uint64_t handled_count = 0;
@@ -65,7 +65,8 @@ namespace detail {
             // suspend after one full loop over all values, 10ms should be fine
             // (default parameter)
             if (!suspended)
-                suspend(milliseconds(suspend_for));
+                // suspend(milliseconds(suspend_for));
+                suspend();
         }
         return handled.count();
     }

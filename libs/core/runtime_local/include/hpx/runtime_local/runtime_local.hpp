@@ -10,7 +10,6 @@
 #include <hpx/local/config.hpp>
 #include <hpx/assert.hpp>
 #include <hpx/futures/future.hpp>
-#include <hpx/io_service/io_service_pool.hpp>
 #include <hpx/modules/program_options.hpp>
 #include <hpx/modules/threadmanager.hpp>
 #include <hpx/modules/topology.hpp>
@@ -80,12 +79,6 @@ namespace hpx {
         explicit runtime(hpx::util::runtime_configuration& rtcfg);
 
         void set_notification_policies(notification_policy_type&& notifier,
-#ifdef HPX_HAVE_IO_POOL
-            notification_policy_type&& io_pool_notifier,
-#endif
-#ifdef HPX_HAVE_TIMER_POOL
-            notification_policy_type&& timer_pool_notifier,
-#endif
             threads::detail::network_background_callback_type
                 network_background_callback);
 
@@ -295,13 +288,6 @@ namespace hpx {
         ///             application (uninstall performance counters, etc.)
         virtual void add_shutdown_function(shutdown_function_type f);
 
-        /// Access one of the internal thread pools (io_service instances)
-        /// HPX is using to perform specific tasks. The three possible values
-        /// for the argument \p name are "main_pool", "io_pool", "parcel_pool",
-        /// and "timer_pool". For any other argument value the function will
-        /// return zero.
-        virtual hpx::util::io_service_pool* get_thread_pool(char const* name);
-
         /// \brief Register an external OS-thread with HPX
         ///
         /// This function should be called from any OS-thread which is external to
@@ -431,16 +417,6 @@ namespace hpx {
 
         std::exception_ptr exception_;
 
-        notification_policy_type main_pool_notifier_;
-        util::io_service_pool main_pool_;
-#ifdef HPX_HAVE_IO_POOL
-        notification_policy_type io_pool_notifier_;
-        util::io_service_pool io_pool_;
-#endif
-#ifdef HPX_HAVE_TIMER_POOL
-        notification_policy_type timer_pool_notifier_;
-        util::io_service_pool timer_pool_;
-#endif
         notification_policy_type notifier_;
         std::unique_ptr<hpx::threads::threadmanager> thread_manager_;
 

@@ -12,13 +12,14 @@
 #include <array>
 #include <chrono>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 hpx::tuple<> make_tuple0_slowly()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return hpx::make_tuple();
 }
 
@@ -36,7 +37,7 @@ void test_split_future0()
 ///////////////////////////////////////////////////////////////////////////////
 hpx::tuple<int> make_tuple1_slowly()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return hpx::make_tuple(42);
 }
 
@@ -54,7 +55,7 @@ void test_split_future1()
 ///////////////////////////////////////////////////////////////////////////////
 hpx::tuple<int, int> make_tuple2_slowly()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return hpx::make_tuple(42, 43);
 }
 
@@ -74,7 +75,7 @@ void test_split_future2()
 ///////////////////////////////////////////////////////////////////////////////
 hpx::tuple<int, int, int> make_tuple3_slowly()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return hpx::make_tuple(42, 43, 44);
 }
 
@@ -96,7 +97,7 @@ void test_split_future3()
 ///////////////////////////////////////////////////////////////////////////////
 std::pair<int, int> make_pair_slowly()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return std::make_pair(42, 43);
 }
 
@@ -116,7 +117,7 @@ void test_split_future_pair()
 ///////////////////////////////////////////////////////////////////////////////
 std::array<int, 0> make_array0_slowly()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return std::array<int, 0>();
 }
 
@@ -135,7 +136,7 @@ void test_split_future_array0()
 ///////////////////////////////////////////////////////////////////////////////
 std::array<int, 3> make_array_slowly()
 {
-    hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return std::array<int, 3>{{42, 43, 44}};
 }
 

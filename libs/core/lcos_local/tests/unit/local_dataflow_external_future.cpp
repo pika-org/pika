@@ -24,6 +24,7 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <thread>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -246,7 +247,7 @@ int hpx_main()
             // This represents an asynchronous operation which has an
             // out-of-band mechanism for signaling completion.
             hpx::apply([]() {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(500));
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 done = true;
             });
         });
@@ -267,7 +268,7 @@ int hpx_main()
             // This represents an asynchronous operation which has an
             // out-of-band mechanism for signaling completion.
             hpx::apply([]() {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(500));
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 done = true;
             });
 
@@ -291,7 +292,7 @@ int hpx_main()
             // This represents an asynchronous operation which has an
             // out-of-band mechanism for signaling completion.
             hpx::apply([]() {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(500));
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 done = true;
             });
         });
@@ -312,7 +313,7 @@ int hpx_main()
             // This represents an asynchronous operation which has an
             // out-of-band mechanism for signaling completion.
             hpx::apply([]() {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(500));
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 done = true;
             });
 

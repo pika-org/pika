@@ -14,7 +14,6 @@ set(threading_base_headers
     hpx/threading_base/detail/reset_backtrace.hpp
     hpx/threading_base/detail/reset_lco_description.hpp
     hpx/threading_base/detail/get_default_pool.hpp
-    hpx/threading_base/detail/get_default_timer_service.hpp
     hpx/threading_base/execution_agent.hpp
     hpx/threading_base/external_timer.hpp
     hpx/threading_base/network_background_callback.hpp
@@ -25,7 +24,6 @@ set(threading_base_headers
     hpx/threading_base/scheduler_state.hpp
     hpx/threading_base/scoped_annotation.hpp
     hpx/threading_base/set_thread_state.hpp
-    hpx/threading_base/set_thread_state_timed.hpp
     hpx/threading_base/thread_data.hpp
     hpx/threading_base/thread_data_stackful.hpp
     hpx/threading_base/thread_data_stackless.hpp
@@ -67,7 +65,6 @@ set(threading_base_sources
     execution_agent.cpp
     external_timer.cpp
     get_default_pool.cpp
-    get_default_timer_service.cpp
     print.cpp
     scheduler_base.cpp
     set_thread_state.cpp
@@ -94,7 +91,6 @@ hpx_local_add_module(
   SOURCES ${threading_base_sources}
   HEADERS ${threading_base_headers}
   COMPAT_HEADERS ${threading_base_compat_headers}
-  DEPENDENCIES Asio::asio
   MODULE_DEPENDENCIES
     hpx_affinity
     hpx_allocator_support

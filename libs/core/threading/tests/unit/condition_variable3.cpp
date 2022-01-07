@@ -17,6 +17,7 @@
 #include <chrono>
 #include <functional>
 #include <mutex>
+#include <thread>
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,7 +31,7 @@ void test_cv_callback()
     {
         hpx::jthread t1{[&](hpx::stop_token stoken) {
             auto f = [&] {
-                hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 cb_called = true;
             };
             hpx::stop_callback<std::function<void()>> cb(stoken, std::move(f));
@@ -39,7 +40,7 @@ void test_cv_callback()
             ready_cv.wait(lg, stoken, [&ready] { return ready; });
         }};
 
-        hpx::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }    // leave scope of t1 without join() or detach() (signals cancellation)
     HPX_TEST(cb_called);
 }
