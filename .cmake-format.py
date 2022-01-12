@@ -484,10 +484,6 @@ with section("parse"):
         "hpx_local_export_modules_targets": {"pargs": {"nargs": 0}},
         "hpx_local_export_targets": {"pargs": {"nargs": 0}},
         "hpx_local_force_out_of_tree_build": {"pargs": {"nargs": 1}},
-        "hpx_local_generate_pkgconfig_from_target": {
-            "kwargs": {"EXCLUDE": "+"},
-            "pargs": {"flags": [], "nargs": "3+"},
-        },
         "hpx_local_handle_component_dependencies": {"pargs": {"nargs": 1}},
         "hpx_local_info": {"pargs": {"nargs": 0}},
         "hpx_local_message": {"pargs": {"nargs": 1}},
