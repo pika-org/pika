@@ -10,36 +10,10 @@
 
 #include <hpx/local/config.hpp>
 
-#include <boost/bind/arg.hpp>
-
 #include <functional>
 #include <type_traits>
 
 namespace hpx { namespace traits {
-#if defined(DOXYGEN)
-    /// If \p T is a standard, Boost, or HPX placeholder (_1, _2, _3, ...) then
-    /// this template is derived from ``std::integral_constant<int, 1>``,
-    /// ``std::integral_constant<int, 2>``, ``std::integral_constant<int, 3>``,
-    /// respectively. Otherwise it is derived from ,
-    /// ``std::integral_constant<int, 0>``.
-    template <typename T>
-    struct is_placeholder;
-#else
-    template <typename T>
-    struct is_placeholder
-      : std::integral_constant<int,
-            std::is_placeholder<T>::value != 0 ?
-                std::is_placeholder<T>::value :
-                boost::is_placeholder<T>::value>
-    {
-    };
-
-    template <typename T>
-    struct is_placeholder<T const> : is_placeholder<T>
-    {
-    };
-
-    template <typename T>
-    inline constexpr int is_placeholder_v = is_placeholder<T>::value;
-#endif
+    using std::is_placeholder;
+    using std::is_placeholder_v;
 }}    // namespace hpx::traits

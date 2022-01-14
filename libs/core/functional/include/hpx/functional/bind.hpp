@@ -26,29 +26,8 @@
 #include <utility>
 
 namespace hpx { namespace util {
-
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        template <std::size_t I>
-        struct placeholder
-        {
-            static std::size_t const value = I;
-        };
-
-        template <>
-        struct placeholder<0>;    // not a valid placeholder
-    }                             // namespace detail
-
     namespace placeholders {
-        inline constexpr detail::placeholder<1> _1 = {};
-        inline constexpr detail::placeholder<2> _2 = {};
-        inline constexpr detail::placeholder<3> _3 = {};
-        inline constexpr detail::placeholder<4> _4 = {};
-        inline constexpr detail::placeholder<5> _5 = {};
-        inline constexpr detail::placeholder<6> _6 = {};
-        inline constexpr detail::placeholder<7> _7 = {};
-        inline constexpr detail::placeholder<8> _8 = {};
-        inline constexpr detail::placeholder<9> _9 = {};
+        using namespace std::placeholders;
     }    // namespace placeholders
 
     ///////////////////////////////////////////////////////////////////////////
@@ -262,13 +241,6 @@ namespace hpx { namespace traits {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-    template <std::size_t I>
-    struct is_placeholder<util::detail::placeholder<I>>
-      : std::integral_constant<int, I>
-    {
-    };
-
-    ///////////////////////////////////////////////////////////////////////////
 #if defined(HPX_HAVE_THREAD_DESCRIPTION)
     template <typename F, typename... Ts>
     struct get_function_address<util::detail::bound<F, Ts...>>
@@ -317,9 +289,9 @@ namespace hpx { namespace serialization {
     }
 
     // serialization of placeholders is trivial, just provide empty functions
-    template <typename Archive, std::size_t I>
+    template <typename Archive, int I>
     void serialize(Archive& /* ar */,
-        ::hpx::util::detail::placeholder<I>& /*placeholder*/
+        std::integral_constant<int, I>& /*placeholder*/
         ,
         unsigned int const /*version*/ = 0)
     {
