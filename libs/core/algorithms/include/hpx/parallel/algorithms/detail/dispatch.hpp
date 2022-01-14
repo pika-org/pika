@@ -8,7 +8,6 @@
 #pragma once
 
 #include <hpx/local/config.hpp>
-#include <hpx/algorithms/traits/segmented_iterator_traits.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/datastructures/tuple.hpp>
 #include <hpx/execution/executors/execution.hpp>
@@ -34,17 +33,14 @@ namespace hpx { namespace parallel { inline namespace v1 { namespace detail {
     template <typename Result>
     struct local_algorithm_result
     {
-        using type = typename hpx::traits::segmented_local_iterator_traits<
-            Result>::local_raw_iterator;
+        using type = Result;
     };
 
     template <typename Result1, typename Result2>
     struct local_algorithm_result<util::in_out_result<Result1, Result2>>
     {
-        using type1 = typename hpx::traits::segmented_local_iterator_traits<
-            Result1>::local_raw_iterator;
-        using type2 = typename hpx::traits::segmented_local_iterator_traits<
-            Result2>::local_raw_iterator;
+        using type1 = Result1;
+        using type2 = Result2;
 
         using type = util::in_out_result<type1, type2>;
     };
@@ -52,24 +48,14 @@ namespace hpx { namespace parallel { inline namespace v1 { namespace detail {
     template <typename Result>
     struct local_algorithm_result<util::min_max_result<Result>>
     {
-        using type1 = typename hpx::traits::segmented_local_iterator_traits<
-            Result>::local_raw_iterator;
-
-        using type = util::min_max_result<type1>;
+        using type = util::min_max_result<Result>;
     };
 
     template <typename Result1, typename Result2, typename Result3>
     struct local_algorithm_result<
         util::in_in_out_result<Result1, Result2, Result3>>
     {
-        using type1 = typename hpx::traits::segmented_local_iterator_traits<
-            Result1>::local_raw_iterator;
-        using type2 = typename hpx::traits::segmented_local_iterator_traits<
-            Result2>::local_raw_iterator;
-        using type3 = typename hpx::traits::segmented_local_iterator_traits<
-            Result3>::local_raw_iterator;
-
-        using type = util::in_in_out_result<type1, type2, type3>;
+        using type = util::in_in_out_result<Result1, Result2, Result3>;
     };
 
     template <>

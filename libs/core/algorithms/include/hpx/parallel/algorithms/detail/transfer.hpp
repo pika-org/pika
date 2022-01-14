@@ -8,10 +8,6 @@
 #pragma once
 
 #include <hpx/iterator_support/traits/is_iterator.hpp>
-#if !defined(HPX_COMPUTE_DEVICE_CODE)
-#include <hpx/algorithms/traits/segmented_iterator_traits.hpp>
-#endif
-
 #include <hpx/algorithms/traits/projected.hpp>
 #include <hpx/parallel/util/detail/algorithm_result.hpp>
 #include <hpx/parallel/util/result_types.hpp>
@@ -26,48 +22,16 @@ namespace hpx { namespace parallel { inline namespace v1 {
     // transfer
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
-        template <typename FwdIter, typename OutIter>
-        struct iterators_are_segmented
-          : std::integral_constant<bool,
-                hpx::traits::segmented_iterator_traits<
-                    FwdIter>::is_segmented_iterator::value &&
-                    hpx::traits::segmented_iterator_traits<
-                        OutIter>::is_segmented_iterator::value>
-        {
-        };
-
-        template <typename FwdIter, typename OutIter>
-        struct iterators_are_not_segmented
-          : std::integral_constant<bool,
-                !hpx::traits::segmented_iterator_traits<
-                    FwdIter>::is_segmented_iterator::value &&
-                    !hpx::traits::segmented_iterator_traits<
-                        OutIter>::is_segmented_iterator::value>
-        {
-        };
-
-        ///////////////////////////////////////////////////////////////////////
         // parallel version
         template <typename Algo, typename ExPolicy, typename FwdIter1,
             typename Sent1, typename FwdIter2>
         typename util::detail::algorithm_result<ExPolicy,
             util::in_out_result<FwdIter1, FwdIter2>>::type
-        transfer_(ExPolicy&& policy, FwdIter1 first, Sent1 last, FwdIter2 dest,
-            std::false_type)
+        transfer_(ExPolicy&& policy, FwdIter1 first, Sent1 last, FwdIter2 dest)
         {
             return Algo().call(
                 HPX_FORWARD(ExPolicy, policy), first, last, dest);
         }
-
-#if !defined(HPX_COMPUTE_DEVICE_CODE)
-        // forward declare segmented version
-        template <typename Algo, typename ExPolicy, typename FwdIter1,
-            typename Sent1, typename FwdIter2>
-        typename util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<FwdIter1, FwdIter2>>::type
-        transfer_(ExPolicy&& policy, FwdIter1 first, Sent1 last, FwdIter2 dest,
-            std::true_type);
-#endif
 
         // Executes transfer algorithm on the elements in the range [first, last),
         // to another range beginning at \a dest.
@@ -128,15 +92,8 @@ namespace hpx { namespace parallel { inline namespace v1 {
                         hpx::traits::is_output_iterator<FwdIter2>::value),
                 "Requires at least forward iterator or sequential execution.");
 
-#if defined(HPX_COMPUTE_DEVICE_CODE)
-            return transfer_<Algo>(HPX_FORWARD(ExPolicy, policy), first, last,
-                dest, std::false_type());
-#else
-            typedef hpx::traits::is_segmented_iterator<FwdIter1> is_segmented;
-
-            return transfer_<Algo>(HPX_FORWARD(ExPolicy, policy), first, last,
-                dest, is_segmented());
-#endif
+            return transfer_<Algo>(
+                HPX_FORWARD(ExPolicy, policy), first, last, dest);
         }
     }    // namespace detail
 }}}      // namespace hpx::parallel::v1

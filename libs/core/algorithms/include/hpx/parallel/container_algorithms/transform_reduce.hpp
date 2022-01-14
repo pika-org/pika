@@ -244,7 +244,6 @@ namespace hpx {
 #else    // DOXYGEN
 
 #include <hpx/local/config.hpp>
-#include <hpx/algorithms/traits/segmented_iterator_traits.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/functional/invoke_result.hpp>
 #include <hpx/functional/traits/is_invocable.hpp>

@@ -73,7 +73,6 @@ namespace hpx {
 #include <hpx/local/config.hpp>
 #include <hpx/iterator_support/traits/is_iterator.hpp>
 #include <hpx/parallel/util/detail/sender_util.hpp>
-#include <hpx/algorithms/traits/segmented_iterator_traits.hpp>
 #include <hpx/executors/execution_policy.hpp>
 #include <hpx/parallel/algorithms/copy.hpp>
 #include <hpx/parallel/algorithms/detail/dispatch.hpp>
@@ -154,26 +153,8 @@ namespace hpx { namespace parallel { inline namespace v1 {
         };
 
         ///////////////////////////////////////////////////////////////////////
-        template <typename FwdIter1, typename FwdIter2, typename Enable = void>
-        struct move;
-
         template <typename FwdIter1, typename FwdIter2>
-        struct move<FwdIter1, FwdIter2,
-            typename std::enable_if<
-                iterators_are_segmented<FwdIter1, FwdIter2>::value>::type>
-          : public move_pair<util::in_out_result<
-                typename hpx::traits::segmented_iterator_traits<
-                    FwdIter1>::local_iterator,
-                typename hpx::traits::segmented_iterator_traits<
-                    FwdIter2>::local_iterator>>
-        {
-        };
-
-        template <typename FwdIter1, typename FwdIter2>
-        struct move<FwdIter1, FwdIter2,
-            typename std::enable_if<
-                iterators_are_not_segmented<FwdIter1, FwdIter2>::value>::type>
-          : public move_pair<util::in_out_result<FwdIter1, FwdIter2>>
+        struct move : public move_pair<util::in_out_result<FwdIter1, FwdIter2>>
         {
         };
         /// \endcond

@@ -153,7 +153,6 @@ namespace hpx {
 #else    // DOXYGEN
 
 #include <hpx/local/config.hpp>
-#include <hpx/algorithms/traits/segmented_iterator_traits.hpp>
 #include <hpx/concepts/concepts.hpp>
 #include <hpx/functional/bind_back.hpp>
 #include <hpx/functional/invoke.hpp>

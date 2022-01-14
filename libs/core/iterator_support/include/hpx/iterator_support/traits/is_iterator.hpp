@@ -492,28 +492,6 @@ namespace hpx { namespace traits {
         is_random_access_iterator<Iter>::value;
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Iterator, typename Enable = void>
-    struct is_segmented_iterator;
-
-    template <typename Iter>
-    using is_segmented_iterator_t = typename is_segmented_iterator<Iter>::type;
-
-    template <typename Iter>
-    inline constexpr bool is_segmented_iterator_v =
-        is_segmented_iterator<Iter>::value;
-
-    template <typename Iterator, typename Enable = void>
-    struct is_segmented_local_iterator;
-
-    template <typename Iter>
-    using is_segmented_local_iterator_t =
-        typename is_segmented_local_iterator<Iter>::type;
-
-    template <typename Iter>
-    inline constexpr bool is_segmented_local_iterator_v =
-        is_segmented_local_iterator<Iter>::value;
-
-    ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename Enable = void>
     struct is_zip_iterator : std::false_type
     {

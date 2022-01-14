@@ -9,7 +9,8 @@
 
 #pragma once
 
-#include <hpx/algorithms/traits/segmented_iterator_traits.hpp>
+#include <hpx/iterator_support/traits/is_iterator.hpp>
+
 #include <cstddef>
 #include <iterator>
 

@@ -339,26 +339,8 @@ namespace hpx { namespace parallel { inline namespace v1 {
         };
 #else
         ///////////////////////////////////////////////////////////////////////
-        template <typename FwdIter1, typename FwdIter2, typename Enable = void>
-        struct copy_iter;
-
         template <typename FwdIter1, typename FwdIter2>
-        struct copy_iter<FwdIter1, FwdIter2,
-            std::enable_if_t<
-                iterators_are_segmented<FwdIter1, FwdIter2>::value>>
-          : public copy<util::in_out_result<
-                typename hpx::traits::segmented_iterator_traits<
-                    FwdIter1>::local_iterator,
-                typename hpx::traits::segmented_iterator_traits<
-                    FwdIter2>::local_iterator>>
-        {
-        };
-
-        template <typename FwdIter1, typename FwdIter2>
-        struct copy_iter<FwdIter1, FwdIter2,
-            std::enable_if_t<
-                iterators_are_not_segmented<FwdIter1, FwdIter2>::value>>
-          : public copy<util::in_out_result<FwdIter1, FwdIter2>>
+        struct copy_iter : public copy<util::in_out_result<FwdIter1, FwdIter2>>
         {
         };
 #endif

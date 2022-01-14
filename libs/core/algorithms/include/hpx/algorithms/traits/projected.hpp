@@ -7,7 +7,6 @@
 #pragma once
 
 #include <hpx/local/config.hpp>
-#include <hpx/algorithms/traits/segmented_iterator_traits.hpp>
 #include <hpx/execution/traits/is_execution_policy.hpp>
 #include <hpx/execution/traits/vector_pack_load_store.hpp>
 #include <hpx/execution/traits/vector_pack_type.hpp>
@@ -27,19 +26,6 @@ namespace hpx { namespace traits {
     struct projected_iterator
     {
         using type = typename std::decay<T>::type;
-    };
-
-    // For segmented iterators, we consider the local_raw_iterator instead of
-    // the given one.
-    template <typename Iterator>
-    struct projected_iterator<Iterator,
-        typename std::enable_if<is_segmented_iterator<Iterator>::value>::type>
-    {
-        using local_iterator =
-            typename segmented_iterator_traits<Iterator>::local_iterator;
-
-        using type = typename segmented_local_iterator_traits<
-            local_iterator>::local_raw_iterator;
     };
 
     template <typename Iterator>
