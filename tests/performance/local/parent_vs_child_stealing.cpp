@@ -4,13 +4,13 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#if !defined(HPX_COMPUTE_DEVICE_CODE)
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/modules/program_options.hpp>
-#include <hpx/modules/timing.hpp>
+#include <pika/local/config.hpp>
+#if !defined(PIKA_COMPUTE_DEVICE_CODE)
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/modules/program_options.hpp>
+#include <pika/modules/timing.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -33,56 +33,56 @@ void just_wait()
 template <typename Policy>
 double measure_one(Policy policy)
 {
-    std::vector<hpx::future<void>> threads;
+    std::vector<pika::future<void>> threads;
     threads.reserve(iterations);
 
-    std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+    std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
     for (std::size_t i = 0; i != iterations; ++i)
     {
-        threads.push_back(hpx::async(policy, &just_wait));
+        threads.push_back(pika::async(policy, &just_wait));
     }
 
-    hpx::wait_all(threads);
+    pika::wait_all(threads);
 
-    std::uint64_t stop = hpx::chrono::high_resolution_clock::now();
+    std::uint64_t stop = pika::chrono::high_resolution_clock::now();
     return static_cast<double>(stop - start) / 1e9;
 }
 
 template <typename Policy>
 double measure(Policy policy)
 {
-    std::size_t num_cores = hpx::get_os_thread_count();
-    std::vector<hpx::future<double>> cores;
+    std::size_t num_cores = pika::get_os_thread_count();
+    std::vector<pika::future<double>> cores;
     cores.reserve(num_cores);
 
     for (std::size_t i = 0; i != num_cores; ++i)
     {
-        cores.push_back(hpx::async(&measure_one<Policy>, policy));
+        cores.push_back(pika::async(&measure_one<Policy>, policy));
     }
 
-    std::vector<double> times = hpx::unwrap(cores);
+    std::vector<double> times = pika::unwrap(cores);
     return std::accumulate(times.begin(), times.end(), 0.0);
 }
 
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     bool print_header = vm.count("no-header") == 0;
     bool do_child = vm.count("no-child") == 0;      // fork only
     bool do_parent = vm.count("no-parent") == 0;    // async only
-    std::size_t num_cores = hpx::get_os_thread_count();
+    std::size_t num_cores = pika::get_os_thread_count();
     if (vm.count("num_cores") != 0)
         num_cores = vm["num_cores"].as<std::size_t>();
 
     // first collect child stealing times
     double child_stealing_time = 0;
     if (do_parent)
-        child_stealing_time = measure(hpx::launch::async);
+        child_stealing_time = measure(pika::launch::async);
 
     // now collect parent stealing times
     double parent_stealing_time = 0;
     if (do_child)
-        parent_stealing_time = measure(hpx::launch::fork);
+        parent_stealing_time = measure(pika::launch::fork);
 
     if (print_header)
     {
@@ -91,19 +91,19 @@ int hpx_main(hpx::program_options::variables_map& vm)
                   << std::endl;
     }
 
-    hpx::util::format_to(std::cout, "{},{},{},{}", num_cores, iterations,
+    pika::util::format_to(std::cout, "{},{},{},{}", num_cores, iterations,
         child_stealing_time, parent_stealing_time)
         << std::endl;
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
     // Configure application-specific options.
-    namespace po = hpx::program_options;
+    namespace po = pika::program_options;
     po::options_description cmdline(
-        "usage: " HPX_APPLICATION_STRING " [options]");
+        "usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     cmdline.add_options()
@@ -124,9 +124,9 @@ int main(int argc, char* argv[])
         ;
     // clang-format on
 
-    hpx::local::init_params init_args;
+    pika::local::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }
 #endif

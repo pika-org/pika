@@ -6,10 +6,10 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/thread.hpp>
-#include <hpx/modules/testing.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/thread.hpp>
+#include <pika/modules/testing.hpp>
 
 #include <boost/dynamic_bitset.hpp>
 
@@ -17,21 +17,21 @@
 #include <cstdint>
 #include <vector>
 
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::variables_map;
 
 using std::chrono::milliseconds;
 
-using hpx::threads::register_thread;
+using pika::threads::register_thread;
 
-using hpx::async;
-using hpx::future;
+using pika::async;
+using pika::future;
 
-using hpx::this_thread::suspend;
-using hpx::threads::set_thread_state;
-using hpx::threads::thread_id_ref_type;
-using hpx::threads::thread_id_type;
+using pika::this_thread::suspend;
+using pika::threads::set_thread_state;
+using pika::threads::thread_id_ref_type;
+using pika::threads::thread_id_type;
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace detail {
@@ -75,15 +75,15 @@ namespace detail {
 ///////////////////////////////////////////////////////////////////////////////
 void change_thread_state(thread_id_type thread)
 {
-    set_thread_state(thread, hpx::threads::thread_schedule_state::suspended);
+    set_thread_state(thread, pika::threads::thread_schedule_state::suspended);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void tree_boot(
     std::uint64_t count, std::uint64_t grain_size, thread_id_type thread)
 {
-    HPX_TEST(grain_size);
-    HPX_TEST(count);
+    PIKA_TEST(grain_size);
+    PIKA_TEST(count);
 
     std::vector<future<void>> promises;
 
@@ -123,10 +123,10 @@ void test_dummy_thread(std::uint64_t)
 {
     while (true)
     {
-        hpx::threads::thread_restart_state statex =
-            suspend(hpx::threads::thread_schedule_state::suspended);
+        pika::threads::thread_restart_state statex =
+            suspend(pika::threads::thread_schedule_state::suspended);
 
-        if (statex == hpx::threads::thread_restart_state::terminate)
+        if (statex == pika::threads::thread_restart_state::terminate)
         {
             woken = true;
             return;
@@ -135,18 +135,18 @@ void test_dummy_thread(std::uint64_t)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(variables_map& vm)
+int pika_main(variables_map& vm)
 {
     std::uint64_t const futures = vm["futures"].as<std::uint64_t>();
     std::uint64_t const grain_size = vm["grain-size"].as<std::uint64_t>();
 
     {
-        hpx::threads::thread_init_data data(
-            hpx::threads::make_thread_function_nullary(
-                hpx::util::deferred_call(&test_dummy_thread, futures)),
+        pika::threads::thread_init_data data(
+            pika::threads::make_thread_function_nullary(
+                pika::util::deferred_call(&test_dummy_thread, futures)),
             "test_dummy_thread");
         thread_id_ref_type thread_id = register_thread(data);
-        HPX_TEST_NEQ(thread_id, hpx::threads::invalid_thread_id);
+        PIKA_TEST_NEQ(thread_id, pika::threads::invalid_thread_id);
 
         // Flood the queues with suspension operations before the rescheduling
         // attempt.
@@ -154,8 +154,8 @@ int hpx_main(variables_map& vm)
             async(&tree_boot, futures, grain_size, thread_id.noref());
 
         set_thread_state(thread_id.noref(),
-            hpx::threads::thread_schedule_state::pending,
-            hpx::threads::thread_restart_state::signaled);
+            pika::threads::thread_schedule_state::pending,
+            pika::threads::thread_restart_state::signaled);
 
         // Flood the queues with suspension operations after the rescheduling
         // attempt.
@@ -166,11 +166,11 @@ int hpx_main(variables_map& vm)
         after.get();
 
         set_thread_state(thread_id.noref(),
-            hpx::threads::thread_schedule_state::pending,
-            hpx::threads::thread_restart_state::terminate);
+            pika::threads::thread_schedule_state::pending,
+            pika::threads::thread_restart_state::terminate);
     }
 
-    hpx::local::finalize();
+    pika::local::finalize();
 
     return 0;
 }
@@ -179,7 +179,7 @@ int hpx_main(variables_map& vm)
 int main(int argc, char* argv[])
 {
     // Configure application-specific options
-    options_description cmdline("Usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     cmdline.add_options()("futures", value<std::uint64_t>()->default_value(64),
         "number of futures to invoke before and after the rescheduling")
@@ -187,13 +187,13 @@ int main(int argc, char* argv[])
         ("grain-size", value<std::uint64_t>()->default_value(4),
             "grain size of the future tree");
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    HPX_TEST_EQ(0, hpx::local::init(hpx_main, argc, argv, init_args));
+    PIKA_TEST_EQ(0, pika::local::init(pika_main, argc, argv, init_args));
 
-    HPX_TEST(woken);
+    PIKA_TEST(woken);
 
-    return hpx::util::report_errors();
+    return pika::util::report_errors();
 }

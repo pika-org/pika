@@ -6,10 +6,10 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <hpx/concurrency/barrier.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/modules/program_options.hpp>
-#include <hpx/modules/timing.hpp>
+#include <pika/concurrency/barrier.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/modules/program_options.hpp>
+#include <pika/modules/timing.hpp>
 
 #include <boost/lockfree/stack.hpp>
 
@@ -28,15 +28,15 @@
 
 char const* benchmark_name = "Serial LIFO Overhead";
 
-using hpx::program_options::variables_map;
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::store;
-using hpx::program_options::command_line_parser;
-using hpx::program_options::notify;
+using pika::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::store;
+using pika::program_options::command_line_parser;
+using pika::program_options::notify;
 
-namespace compat = hpx::compat;
-using hpx::chrono::high_resolution_timer;
+namespace compat = pika::compat;
+using pika::chrono::high_resolution_timer;
 
 ///////////////////////////////////////////////////////////////////////////////
 std::uint64_t threads = 1;
@@ -90,7 +90,7 @@ void print_results(
     }
 
     if (iterations != 0)
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n",
             iterations,
             blocksize,
@@ -101,7 +101,7 @@ void print_results(
             (elapsed_control.second / (threads*iterations)) * 1e9
         );
     else
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n",
             iterations,
             blocksize,
@@ -185,7 +185,7 @@ bench_lifo(Lifo& lifo, std::uint64_t local_iterations)
 
 ///////////////////////////////////////////////////////////////////////////////
 void perform_iterations(
-    hpx::util::barrier& b
+    pika::util::barrier& b
   , std::pair<double, double>& elapsed_control
   , std::pair<double, double>& elapsed_lockfree
     )
@@ -220,7 +220,7 @@ int app_main(
     std::vector<std::pair<double, double> >
         elapsed_lockfree(threads, std::pair<double, double>(0.0, 0.0));
     std::vector<std::thread> workers;
-    hpx::util::barrier b(threads);
+    pika::util::barrier b(threads);
 
     for (std::uint32_t i = 0; i != threads; ++i)
         workers.push_back(std::thread(

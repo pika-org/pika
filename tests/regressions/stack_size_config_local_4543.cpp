@@ -4,8 +4,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/init.hpp>
-#include <hpx/local/thread.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/thread.hpp>
 
 #include <chrono>
 
@@ -13,26 +13,26 @@
 // slightly change all the stack sizes in the configuration to catch problems
 // with the used stack sizes not matching the configured sizes.
 
-int hpx_main()
+int pika_main()
 {
-    hpx::this_thread::yield();
+    pika::this_thread::yield();
 
-    hpx::thread t([]() {});
+    pika::thread t([]() {});
     t.join();
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    hpx::local::init_params p;
-    p.cfg = {"hpx.stacks.small_size=" +
-            std::to_string(HPX_SMALL_STACK_SIZE + 0x1000),
-        "hpx.stacks.medium_size=" +
-            std::to_string(HPX_MEDIUM_STACK_SIZE + 0x1000),
-        "hpx.stacks.large_size=" +
-            std::to_string(HPX_LARGE_STACK_SIZE + 0x1000),
-        "hpx.stacks.huge_size=" + std::to_string(HPX_HUGE_STACK_SIZE + 0x1000)};
+    pika::local::init_params p;
+    p.cfg = {"pika.stacks.small_size=" +
+            std::to_string(PIKA_SMALL_STACK_SIZE + 0x1000),
+        "pika.stacks.medium_size=" +
+            std::to_string(PIKA_MEDIUM_STACK_SIZE + 0x1000),
+        "pika.stacks.large_size=" +
+            std::to_string(PIKA_LARGE_STACK_SIZE + 0x1000),
+        "pika.stacks.huge_size=" + std::to_string(PIKA_HUGE_STACK_SIZE + 0x1000)};
 
-    return hpx::local::init(hpx_main, argc, argv, p);
+    return pika::local::init(pika_main, argc, argv, p);
 }

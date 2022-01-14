@@ -6,14 +6,14 @@
 //
 // Checking that #582 was fixed
 
-#include <hpx/local/exception.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/testing.hpp>
+#include <pika/local/exception.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/testing.hpp>
 
-int hpx_main()
+int pika_main()
 {
-    HPX_THROW_EXCEPTION(hpx::invalid_status, "hpx_main", "testing");
-    return hpx::local::finalize();
+    PIKA_THROW_EXCEPTION(pika::invalid_status, "pika_main", "testing");
+    return pika::local::finalize();
 }
 
 int main(int argc, char** argv)
@@ -21,18 +21,18 @@ int main(int argc, char** argv)
     bool caught_exception = false;
     try
     {
-        hpx::local::init(hpx_main, argc, argv);
+        pika::local::init(pika_main, argc, argv);
     }
-    catch (hpx::exception const& e)
+    catch (pika::exception const& e)
     {
-        HPX_TEST(e.get_error() == hpx::invalid_status);
+        PIKA_TEST(e.get_error() == pika::invalid_status);
         caught_exception = true;
     }
     catch (...)
     {
-        HPX_TEST(false);
+        PIKA_TEST(false);
     }
-    HPX_TEST(caught_exception);
+    PIKA_TEST(caught_exception);
 
-    return hpx::util::report_errors();
+    return pika::util::report_errors();
 }

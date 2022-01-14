@@ -8,7 +8,7 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
+#include <pika/local/config.hpp>
 
 #include "end_check.hpp"
 #include "function_hyper.hpp"
@@ -38,7 +38,7 @@ namespace boost
       const path & full_path,   // example: c:/foo/boost/filesystem/path.hpp
       const string & contents )     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "noend" ) != string::npos) return;
+      if (contents.find( "pikainspect:" "noend" ) != string::npos) return;
       char_separator<char> sep("\n", "", boost::keep_empty_tokens);
       tokenizer<char_separator<char>> tokens(contents, sep);
       const auto linenumb = std::distance(tokens.begin(), tokens.end());

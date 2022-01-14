@@ -5,7 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 export CRAYPE_LINK_TYPE=dynamic
-export APPS_ROOT="/apps/daint/SSL/HPX/packages"
+export APPS_ROOT="/apps/daint/SSL/pika/packages"
 export GCC_VER="11.1.0"
 export CXX_STD="20"
 export BOOST_VER="1.78.0"
@@ -22,11 +22,11 @@ module load daint-mc
 spack load cmake@3.18.6
 spack load ninja@1.10.0
 
-configure_extra_options+=" -DHPXLocal_WITH_CXX_STANDARD=${CXX_STD}"
-configure_extra_options+=" -DHPXLocal_WITH_MAX_CPU_COUNT=128"
-configure_extra_options+=" -DHPXLocal_WITH_MALLOC=system"
-configure_extra_options+=" -DHPXLocal_WITH_COMPILER_WARNINGS=ON"
-configure_extra_options+=" -DHPXLocal_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
-configure_extra_options+=" -DHPXLocal_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
-configure_extra_options+=" -DHPXLocal_WITH_TESTS_HEADERS=ON"
-configure_extra_options+=" -DHPXLocal_DATASTRUCTURES_WITH_ADAPT_STD_TUPLE=OFF"
+configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${CXX_STD}"
+configure_extra_options+=" -DPIKA_WITH_MAX_CPU_COUNT=128"
+configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
+configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"
+configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
+configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+configure_extra_options+=" -DPIKA_WITH_TESTS_HEADERS=ON"
+configure_extra_options+=" -DPIKA_DATASTRUCTURES_WITH_ADAPT_STD_TUPLE=OFF"

@@ -11,15 +11,13 @@
 
 ... Please be as specific as possible while describing how to reproduce your problem.
 
-  1.
-  1.
-  1.
+  #.
+  #.
+  #.
 
 ## Specifications
 
 ... Please describe your environment
 
-  - HPXLocal Version:
-  - (if applicable) HPX Version:
-  - Platform (compiler, OS):
-
+  - pika version (commit/tag):
+  - Platform (OS, compiler, etc.):

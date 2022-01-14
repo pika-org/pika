@@ -30,13 +30,13 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <hpx/local/config.hpp>
+#include <pika/local/config.hpp>
 
 #include "worker_timed.hpp"
 
-#include <hpx/assert.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/modules/timing.hpp>
+#include <pika/assert.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/modules/timing.hpp>
 
 #include <tbb/task.h>
 #include <tbb/task_scheduler_init.h>
@@ -46,16 +46,16 @@
 #include <stdexcept>
 #include <string>
 
-#include <hpx/modules/program_options.hpp>
+#include <pika/modules/program_options.hpp>
 
-using hpx::program_options::variables_map;
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::store;
-using hpx::program_options::command_line_parser;
-using hpx::program_options::notify;
+using pika::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::store;
+using pika::program_options::command_line_parser;
+using pika::program_options::notify;
 
-using hpx::chrono::high_resolution_timer;
+using pika::chrono::high_resolution_timer;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Command-line variables.
@@ -73,11 +73,11 @@ void print_results(
         std::cout << "OS-threads,Tasks,Delay (iterations),"
                      "Total Walltime (seconds),Walltime per Task (seconds)\n";
 
-    std::string const cores_str = hpx::util::format("{},", cores);
-    std::string const tasks_str = hpx::util::format("{},", tasks);
-    std::string const delay_str = hpx::util::format("{},", delay);
+    std::string const cores_str = pika::util::format("{},", cores);
+    std::string const tasks_str = pika::util::format("{},", tasks);
+    std::string const delay_str = pika::util::format("{},", delay);
 
-    hpx::util::format_to(std::cout,
+    pika::util::format_to(std::cout,
         "{:-21} {:-21} {:-21} {:10.12}, {:10.12}\n",
         cores_str, tasks_str, delay_str,
         walltime, walltime / tasks);
@@ -144,7 +144,7 @@ int main(
     // Parse command line.
     variables_map vm;
 
-    options_description cmdline("Usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     cmdline.add_options()
         ( "help,h"

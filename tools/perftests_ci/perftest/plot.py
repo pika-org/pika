@@ -96,10 +96,10 @@ class _ConfidenceInterval(typing.NamedTuple):
         plower, pupper = 100 * self.lower, 100 * self.upper
 
         if self.lower <= 0 and self.upper <= 0:
-            return f'{-pupper:3.1f}% – {-plower:3.1f}% faster'
+            return f'{-pupper:3.1f}% â {-plower:3.1f}% faster'
         if self.lower >= 0 and self.upper >= 0:
-            return f'{plower:3.1f}% – {pupper:3.1f}% slower'
-        return f'{-plower:3.1f}% faster – {pupper:3.1f}% slower'
+            return f'{plower:3.1f}% â {pupper:3.1f}% slower'
+        return f'{-plower:3.1f}% faster â {pupper:3.1f}% slower'
 
     @classmethod
     def compare_medians(cls, before, after, n=1000, alpha=0.05):
@@ -175,21 +175,21 @@ def _add_explanation_of_symbols(report):
                 row.fill(string, meaning)
 
         add_help('Symbol', 'MEANING')
-        add_help('=', 'No performance change (confidence interval within ±1%)')
+        add_help('=', 'No performance change (confidence interval within Â±1%)')
         add_help(
             '(=)',
-            'Probably no performance change (confidence interval within ±2%)')
+            'Probably no performance change (confidence interval within Â±2%)')
         add_help('(+)/(-)',
-                 'Very small performance improvement/degradation (≤1%)')
-        add_help('+/-', 'Small performance improvement/degradation (≤5%)')
-        add_help('++/--', 'Large performance improvement/degradation (≤10%)')
+                 'Very small performance improvement/degradation (â¤1%)')
+        add_help('+/-', 'Small performance improvement/degradation (â¤5%)')
+        add_help('++/--', 'Large performance improvement/degradation (â¤10%)')
         add_help('+++/---',
                  'Very large performance improvement/degradation (>10%)')
         add_help(
             '?', 'Probably no change, but quite large uncertainty '
-            '(confidence interval with ±5%)')
-        add_help('??', 'Unclear result, very large uncertainty (±10%)')
-        add_help('???', 'Something unexpected…')
+            '(confidence interval with Â±5%)')
+        add_help('??', 'Unclear result, very large uncertainty (Â±10%)')
+        add_help('???', 'Something unexpectedâ¦')
 
 
 def _histogram_plot(title, before, after, output):
@@ -226,13 +226,13 @@ def _add_info(report, labels, data):
             with table.row() as row:
                 row.cell(var._project_name + ' ' + k.title())
                 for d in data:
-                    row.cell(d[var._project_name].get(k, '—'))
+                    row.cell(d[var._project_name].get(k, 'â'))
 
         for k in {k for d in data for k in d['environment'].keys()}:
             with table.row() as row:
                 row.cell(k.title())
                 for d in data:
-                    row.cell(d['environment'].get(k, '—'))
+                    row.cell(d['environment'].get(k, 'â'))
 
 
 def compare_one(report, before, after, output):
@@ -278,7 +278,7 @@ class _Measurements(typing.NamedTuple):
 
 def _history_data(data, key, limit):
     def get_datetime(result):
-        source = 'hpx' if key == 'commit' else 'environment'
+        source = 'pika' if key == 'commit' else 'environment'
         return dateutil.parser.isoparse(result[source]['datetime'])
 
     data = sorted(data, key=get_datetime)
@@ -404,7 +404,7 @@ def _add_executor_comparison_plots(report, data):
 
 
 def compare_executors(data, output):
-    title = 'HPXLocal executors Comparison'
+    title = 'pika executors Comparison'
     with html.Report(output, title) as report:
         _add_executor_comparison_plots(report, data)
         _add_info(report, [f'Configuration {i + 1}' for i in range(len(data))],

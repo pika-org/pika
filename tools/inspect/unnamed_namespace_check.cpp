@@ -7,7 +7,7 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
+#include <pika/local/config.hpp>
 
 #include "boost/regex.hpp"
 #include "unnamed_namespace_check.hpp"
@@ -46,7 +46,7 @@ namespace boost
       const path & full_path,   // example: c:/foo/boost/filesystem/path.hpp
       const string & contents )     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "nounnamed" ) != string::npos) return;
+      if (contents.find( "pikainspect:" "nounnamed" ) != string::npos) return;
 
 
       boost::sregex_iterator cur(contents.begin(), contents.end(), unnamed_namespace_regex), end;

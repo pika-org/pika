@@ -4,12 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
+#include <pika/local/config.hpp>
 
-#include <hpx/concurrency/barrier.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/modules/program_options.hpp>
-#include <hpx/modules/timing.hpp>
+#include <pika/concurrency/barrier.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/modules/program_options.hpp>
+#include <pika/modules/timing.hpp>
 
 #include <cstdint>
 #include <functional>
@@ -17,14 +17,14 @@
 #include <thread>
 #include <vector>
 
-using hpx::program_options::variables_map;
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::store;
-using hpx::program_options::command_line_parser;
-using hpx::program_options::notify;
+using pika::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::store;
+using pika::program_options::command_line_parser;
+using pika::program_options::notify;
 
-using hpx::chrono::high_resolution_timer;
+using pika::chrono::high_resolution_timer;
 
 ///////////////////////////////////////////////////////////////////////////////
 // thread local globals
@@ -32,7 +32,7 @@ static thread_local double* global_scratch;
 
 ///////////////////////////////////////////////////////////////////////////////
 inline void worker(
-    hpx::util::barrier& b
+    pika::util::barrier& b
   , std::uint64_t updates
     )
 {
@@ -58,7 +58,7 @@ int main(
     // parse command line
     variables_map vm;
 
-    options_description cmdline("Usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     std::uint32_t threads, updates;
 
@@ -95,7 +95,7 @@ int main(
     // run the test
     std::vector<std::thread> workers;
 
-    hpx::util::barrier b(threads);
+    pika::util::barrier b(threads);
 
     high_resolution_timer t;
 
@@ -113,13 +113,13 @@ int main(
     ///////////////////////////////////////////////////////////////////////////
     // output results
     if (vm.count("csv"))
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "{1},{2},{3}\n",
             updates,
             threads,
             duration);
     else
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "ran {1} updates per OS-thread on {2} "
             "OS-threads in {3} seconds\n",
             updates,

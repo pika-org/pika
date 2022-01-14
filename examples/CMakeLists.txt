@@ -9,12 +9,12 @@
 set(subdirs 1d_stencil balancing future_reduce jacobi_smp quickstart transpose)
 
 foreach(subdir ${subdirs})
-  if(HPXLocal_WITH_TESTS AND HPXLocal_WITH_TESTS_EXAMPLES)
-    hpx_local_add_pseudo_target(tests.examples.${subdir})
-    hpx_local_add_pseudo_dependencies(tests.examples tests.examples.${subdir})
+  if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
+    pika_add_pseudo_target(tests.examples.${subdir})
+    pika_add_pseudo_dependencies(tests.examples tests.examples.${subdir})
   endif()
 
-  hpx_local_add_pseudo_target(examples.${subdir})
+  pika_add_pseudo_target(examples.${subdir})
   add_subdirectory(${subdir})
-  hpx_local_add_pseudo_dependencies(examples examples.${subdir})
+  pika_add_pseudo_dependencies(examples examples.${subdir})
 endforeach()

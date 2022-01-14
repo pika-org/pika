@@ -6,9 +6,9 @@
 
 #include "worker_timed.hpp"
 
-#include <hpx/concurrency/barrier.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/modules/timing.hpp>
+#include <pika/concurrency/barrier.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/modules/timing.hpp>
 
 #include <chrono>
 #include <cstdint>
@@ -20,18 +20,18 @@
 #include <thread>
 #include <vector>
 
-#include <hpx/modules/program_options.hpp>
+#include <pika/modules/program_options.hpp>
 
 char const* benchmark_name = "Delay Baseline";
 
-using hpx::program_options::variables_map;
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::store;
-using hpx::program_options::command_line_parser;
-using hpx::program_options::notify;
+using pika::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::store;
+using pika::program_options::command_line_parser;
+using pika::program_options::notify;
 
-using hpx::chrono::high_resolution_timer;
+using pika::chrono::high_resolution_timer;
 
 using std::cout;
 
@@ -79,10 +79,10 @@ void print_results(
                 ;
     }
 
-    std::string const tasks_str = hpx::util::format("{},", tasks);
-    std::string const delay_str = hpx::util::format("{},", delay);
+    std::string const tasks_str = pika::util::format("{},", tasks);
+    std::string const delay_str = pika::util::format("{},", delay);
 
-    hpx::util::format_to(cout, "{} {} {} {:.14g}\n",
+    pika::util::format_to(cout, "{} {} {} {:.14g}\n",
         delay, tasks, threads, mean_);
 }
 
@@ -115,7 +115,7 @@ void invoke_n_workers_nowait(
 }
 
 void invoke_n_workers(
-    hpx::util::barrier& b
+    pika::util::barrier& b
   , double& elapsed
   , std::uint64_t workers
     )
@@ -135,7 +135,7 @@ int app_main(
 
     std::vector<double> elapsed(threads - 1);
     std::vector<std::thread> workers;
-    hpx::util::barrier b(threads - 1);
+    pika::util::barrier b(threads - 1);
 
     for (std::uint32_t i = 0; i != threads - 1; ++i)
     {
@@ -176,7 +176,7 @@ int main(
     // Parse command line.
     variables_map vm;
 
-    options_description cmdline("Usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     cmdline.add_options()
         ( "help,h"

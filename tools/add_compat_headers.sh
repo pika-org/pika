@@ -15,16 +15,16 @@
 function extra_usage_message() {
     echo
     echo "- Can specify the --project_path if different from the environmental"
-    echo "variable \$HPX_ROOT"
+    echo "variable \$PIKA_ROOT"
     echo "- Can also specify some target files if no globbing (without any extension) with:"
     echo "--files \"<filename1> <filename2>\""
-    echo "Example with files: $0 -m module --files file -o hpx/util -n hpx/module -p \$PWD"
+    echo "Example with files: $0 -m module --files file -o pika/util -n pika/module -p \$PWD"
 }
 
 if [[ $# -lt 1 ]]; then
     arg=${BASH_SOURCE[0]}
     echo "Usage : "$arg" -m <module_name> --old_path <include_path> --new_path <include_path>"
-    echo "Example: "$arg" -m cache -o hpx/util/cache -n hpx/cache"
+    echo "Example: "$arg" -m cache -o pika/util/cache -n pika/cache"
     extra_usage_message
     exit
 fi
@@ -74,7 +74,7 @@ function parse_arguments() {
                 echo $"Usage: $0 [-m, --module <value>] [-o, --old_path <value>]"
                 echo "[-n, --new_path <value>] [-p, --project_path <value>]"
                 echo "[-f, --files \"<value1> <value2>\"]"
-                echo "Example: "$0" -m cache -o hpx/util/cache -n hpx/cache"
+                echo "Example: "$0" -m cache -o pika/util/cache -n pika/cache"
                 extra_usage_message
                 exit
         esac
@@ -86,7 +86,7 @@ function parse_arguments() {
 }
 
 # Default values which can be overwritten while parsing args
-project_path=$HPX_ROOT
+project_path=$PIKA_ROOT
 module=cache
 new_path_set=false
 old_path_set=false
@@ -105,17 +105,17 @@ module_path=$libs_path/${module}
 
 # Error handling
 if [[ "$old_path_set" = "false" ]]; then
-    old_path=hpx/util/${module}
+    old_path=pika/util/${module}
 fi
 if [[ "$new_path_set" = "false" ]]; then
-    new_path=hpx/${module}
+    new_path=pika/${module}
 fi
 if [[ "$old_path_set" = "false" && $all_files -eq 0 ]]; then
     echo "Attention only the basename of the files should be specified"
 fi
 # Project path not set (full specified path to be sure which source is used)
-if [[ -z $HPX_ROOT && -z $project_path ]]; then
-    "HPX_ROOT env var doesn't exists and project_path option not specified !"
+if [[ -z $PIKA_ROOT && -z $project_path ]]; then
+    "PIKA_ROOT env var doesn't exists and project_path option not specified !"
     exit
 fi
 
@@ -153,12 +153,12 @@ cat >${full_file} <<EOL
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/${module}/config/defines.hpp>
+#include <pika/local/config.hpp>
+#include <pika/${module}/config/defines.hpp>
 #include <${new_path}/${f}>
 
-#if HPX_LOCAL_HAVE_DEPRECATION_WARNINGS
-#if defined(HPX_MSVC)
+#if PIKA_HAVE_DEPRECATION_WARNINGS
+#if defined(PIKA_MSVC)
 #pragma message( \\
     "The header ${old_path}/${f} is deprecated, \\
     please include ${new_path}/${f} instead")

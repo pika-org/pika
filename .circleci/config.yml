@@ -6,7 +6,7 @@
 #  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 working_dir_default: &working_dir_default
-    working_directory: /hpx/build
+    working_directory: /pika/build
 
 docker_default: &docker_default
     docker:
@@ -22,7 +22,7 @@ convert_xml: &convert_xml
     command: |
         mkdir -p ${CIRCLE_JOB}
         xsltproc \
-          /hpx/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
+          /pika/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
           > ${CIRCLE_JOB}/Test.xml
 
 move_core_dump: &move_core_dump
@@ -50,38 +50,31 @@ add_github_to_known_hosts: &add_github_to_known_hosts
         command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >>~/.ssh/known_hosts
-configure_local_git: &configure_local_git
-    run:
-        name: Configure local Git
-        command: |
-            git config --global user.name "StellarBot"
-            git config --global user.email "contact@stellar-group.org"
-
 
 version: 2
 
 jobs:
   checkout_code:
     <<: *docker_default
-    working_directory: /hpx
+    working_directory: /pika
     steps:
       - checkout:
-          path: /hpx/source-full
+          path: /pika/source-full
       # Make a shallow clone of the current commit so that we don't have to copy
       # the whole repository between work steps.
       - run:
           name: Creating shallow clone
           command: |
-              git clone --depth=1 file:///hpx/source-full source
+              git clone --depth=1 file:///pika/source-full source
       - run:
           name: Downloading CTest XML to Junit XML
           command: |
               curl \
                 https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
                 --fail \
-                -o /hpx/conv.xsl
+                -o /pika/conv.xsl
       - persist_to_workspace:
-          root: /hpx
+          root: /pika
           paths:
             - ./source
             - ./conv.xsl
@@ -92,24 +85,24 @@ jobs:
     <<: *docker_default
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Check circular dependencies with cpp-dependencies
           command: |
               # Ignore compatibility headers (the last cut -c3- is to remove a
               # leading ./ in path names)
               cpp-dependencies \
-                  --dir /hpx/source/libs \
-                  --ignore $(find /hpx/source/libs -type d -wholename '*/include_compatibility' | cut -d'/' -f5-) \
+                  --dir /pika/source/libs \
+                  --ignore $(find /pika/source/libs -type d -wholename '*/include_compatibility' | cut -d'/' -f5-) \
                   --graph-cycles /tmp/circular_deps.dot
               dot /tmp/circular_deps.dot -Tsvg -o /tmp/circular_deps.svg
               if [[ $(wc -l /tmp/circular_deps.dot | awk '{print $1}') -gt 2 ]]; then exit 1; fi
       - store_artifacts:
           path: /tmp/circular_deps.dot
-          destination: /hpx/artifacts/circular_deps.dot
+          destination: /pika/artifacts/circular_deps.dot
       - store_artifacts:
           path: /tmp/circular_deps.svg
-          destination: /hpx/artifacts/circular_deps.svg
+          destination: /pika/artifacts/circular_deps.svg
 
   # Check if the files of the module are listed in the CMakeLists.txt
   # Check if all the module dependencies are listed
@@ -117,91 +110,91 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Check if the headers of the modules are listed in their CMakeLists.txt
           command: |
-              /hpx/source/tools/check_module_cmakelists.sh
+              /pika/source/tools/check_module_cmakelists.sh
               if [[ $(wc -l /tmp/missing_files.txt | awk '{print $1}') -gt 1 ]] \
                   || [[ $(wc -l /tmp/missing_deps.txt | awk '{print $1}') -gt 1 ]]; \
                   then exit 1; fi
       - store_artifacts:
           path: /tmp/missing_files.txt
-          destination: /hpx/artifacts/missing_files.txt
+          destination: /pika/artifacts/missing_files.txt
       - store_artifacts:
           path: /tmp/missing_deps.txt
-          destination: /hpx/artifacts/missing_deps.txt
+          destination: /pika/artifacts/missing_deps.txt
 
   # Ensure that the modules stay clang-formatted
   clang_format:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Check that the modules are well clang-formatted
           command: |
-              cd /hpx/source/libs && shopt -s globstar # to activate the ** globbing
+              cd /pika/source/libs && shopt -s globstar # to activate the ** globbing
               clang-format-11 --version
               clang-format-11 -i **/*.{cpp,hpp}
               git diff --exit-code > /tmp/modified_clang_format_files.txt
       - store_artifacts:
           path: /tmp/modified_clang_format_files.txt
-          destination: /hpx/artifacts/modified_clang_format_files.txt
+          destination: /pika/artifacts/modified_clang_format_files.txt
 
   # Ensure that CMake files stay cmake-formatted
   cmake_format:
     <<: *docker_default
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Check that CMake files are well cmake-formatted
           command: |
-              cd /hpx/source && shopt -s globstar # to activate the ** globbing
+              cd /pika/source && shopt -s globstar # to activate the ** globbing
               cmake-format --version
               cmake-format -i **/*.cmake **/CMakeLists.txt
               git diff --exit-code > /tmp/modified_cmake_format_files.txt
       - store_artifacts:
           path: /tmp/modified_cmake_format_files.txt
-          destination: /hpx/artifacts/modified_cmake_format_files.txt
+          destination: /pika/artifacts/modified_cmake_format_files.txt
 
   configure:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Running CMake
           command: |
             cmake --version
             cmake \
-                /hpx/source \
+                /pika/source \
                 -G "Ninja" \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DCMAKE_CXX_CLANG_TIDY=clang-tidy \
                 -DCMAKE_CXX_FLAGS="-fcolor-diagnostics" \
-                -DHPXLocal_WITH_GIT_COMMIT=${CIRCLE_SHA1} \
-                -DHPXLocal_WITH_GIT_BRANCH="${CIRCLE_BRANCH}" \
-                -DHPXLocal_WITH_GIT_TAG="${CIRCLE_TAG}" \
-                -DHPXLocal_WITH_TOOLS=On \
-                -DHPXLocal_WITH_MALLOC=system \
-                -DHPXLocal_WITH_EXAMPLES=On \
-                -DHPXLocal_WITH_TESTS=On \
-                -DHPXLocal_WITH_TESTS_HEADERS=On \
-                -DHPXLocal_WITH_DATAPAR_VC=On \
-                -DHPXLocal_WITH_COMPILER_WARNINGS=On \
-                -DHPXLocal_WITH_COMPILER_WARNINGS_AS_ERRORS=On \
-                -DHPXLocal_WITH_DEPRECATION_WARNINGS=On \
-                -DHPXLocal_WITH_THREAD_LOCAL_STORAGE=On \
-                -DHPXLocal_WITH_STACKTRACES_STATIC_SYMBOLS=On \
-                -DHPXLocal_WITH_STACKTRACES_DEMANGLE_SYMBOLS=Off \
-                -DHPXLocal_WITH_TESTS_DEBUG_LOG=On \
-                -DHPXLocal_WITH_TESTS_DEBUG_LOG_DESTINATION=/hpx/build/debug-log.txt \
-                -DHPXLocal_WITH_SPINLOCK_DEADLOCK_DETECTION=On \
-                -DHPXLocal_WITH_CHECK_MODULE_DEPENDENCIES=On
+                -DPIKA_WITH_GIT_COMMIT=${CIRCLE_SHA1} \
+                -DPIKA_WITH_GIT_BRANCH="${CIRCLE_BRANCH}" \
+                -DPIKA_WITH_GIT_TAG="${CIRCLE_TAG}" \
+                -DPIKA_WITH_TOOLS=On \
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_EXAMPLES=On \
+                -DPIKA_WITH_TESTS=On \
+                -DPIKA_WITH_TESTS_HEADERS=On \
+                -DPIKA_WITH_DATAPAR_VC=On \
+                -DPIKA_WITH_COMPILER_WARNINGS=On \
+                -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=On \
+                -DPIKA_WITH_DEPRECATION_WARNINGS=On \
+                -DPIKA_WITH_THREAD_LOCAL_STORAGE=On \
+                -DPIKA_WITH_STACKTRACES_STATIC_SYMBOLS=On \
+                -DPIKA_WITH_STACKTRACES_DEMANGLE_SYMBOLS=Off \
+                -DPIKA_WITH_TESTS_DEBUG_LOG=On \
+                -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=/pika/build/debug-log.txt \
+                -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=On \
+                -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - persist_to_workspace:
-          root: /hpx
+          root: /pika
           paths:
             - ./build
 
@@ -209,40 +202,40 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Running CMake with tests on and examples off
           command: |
             cmake \
-                /hpx/source \
+                /pika/source \
                 -G "Ninja" \
-                -DHPXLocal_WITH_MALLOC=system \
-                -DHPXLocal_WITH_TESTS=On \
-                -DHPXLocal_WITH_EXAMPLES=Off
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_TESTS=On \
+                -DPIKA_WITH_EXAMPLES=Off
             rm -rf *
       - run:
           name: Running CMake with tests off and examples on
           command: |
             cmake \
-                /hpx/source \
+                /pika/source \
                 -G "Ninja" \
-                -DHPXLocal_WITH_MALLOC=system \
-                -DHPXLocal_WITH_TESTS=Off \
-                -DHPXLocal_WITH_EXAMPLES=On
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_TESTS=Off \
+                -DPIKA_WITH_EXAMPLES=On
             rm -rf *
       - run:
           name: Running CMake with APEX on
           command: |
             cmake \
-                /hpx/source \
+                /pika/source \
                 -G "Ninja" \
-                -DHPXLocal_WITH_MALLOC=system \
-                -DHPXLocal_WITH_APEX=On \
-                -DHPXLocal_WITH_TESTS=On \
-                -DHPXLocal_WITH_EXAMPLES=On
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_APEX=On \
+                -DPIKA_WITH_TESTS=On \
+                -DPIKA_WITH_EXAMPLES=On
             rm -rf *
       - persist_to_workspace:
-          root: /hpx
+          root: /pika
           paths:
             - ./build
 
@@ -250,7 +243,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Building Inspect Tool
           command: |
@@ -258,22 +251,22 @@ jobs:
       - run:
           name: Running Inspect Tool
           command: |
-              ./bin/inspect_local --all --output=./hpx_inspect_report.html /hpx/source
+              ./bin/inspect_local --all --output=./pika_inspect_report.html /pika/source
       - run:
           name: Convert inspect HTML output to XML
           command: |
               mkdir -p /report
-              /hpx/source/tools/inspect/inspect_to_junit.py \
-                  ./hpx_inspect_report.html \
-                  /report/hpx_inspect.xml
+              /pika/source/tools/inspect/inspect_to_junit.py \
+                  ./pika_inspect_report.html \
+                  /report/pika_inspect.xml
           when: always
       - store_artifacts:
-          path: hpx_inspect_report.html
-          destination: hpx_inspect_report.html
+          path: pika_inspect_report.html
+          destination: pika_inspect_report.html
       - store_test_results:
           path: /report
       - persist_to_workspace:
-          root: /hpx
+          root: /pika
           paths:
             - ./build/bin/inspect_local
 
@@ -282,12 +275,12 @@ jobs:
     <<: *defaults
     steps:
       - checkout:
-          path: /hpx/source
+          path: /pika/source
       - run:
           name: Running codespell
           command: |
               if [[ -n "$CIRCLE_PULL_REQUEST" ]]; then
-                  cd /hpx/source
+                  cd /pika/source
                   codespell --version
                   codespell --ignore-words tools/.codespell_whitelist --skip='*.h5,*.png' $(git diff --name-only origin/master...) > /tmp/spelling_suggestions.txt
                   if [ -s /tmp/spelling_suggestions.txt ]; then exit 1; fi
@@ -297,19 +290,19 @@ jobs:
           when: always
       - store_artifacts:
           path: /tmp/spelling_suggestions.txt
-          destination: /hpx/artifacts/spelling_suggestions.txt
+          destination: /pika/artifacts/spelling_suggestions.txt
 
   core:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Building Core
           command: |
-              ninja -j3 -k 0 hpx_local
+              ninja -j3 -k 0 pika
       - persist_to_workspace:
-          root: /hpx
+          root: /pika
           paths:
             - ./build
 
@@ -317,7 +310,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Building Examples
           command: |
@@ -340,7 +333,7 @@ jobs:
       - store_artifacts:
           path: tests.examples
       - persist_to_workspace:
-          root: /hpx
+          root: /pika
           paths:
             - ./build
 
@@ -348,7 +341,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Building Unit Tests (Algorithms)
           command: |
@@ -385,7 +378,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Building Unit Tests (Container algorithms)
           command: |
@@ -418,7 +411,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Building Unit Tests
           command: |
@@ -455,7 +448,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Building Regressions Tests
           command: |
@@ -480,7 +473,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Building Header Tests
           command: |
@@ -497,7 +490,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - run:
           name: Building Performance Tests
           command: |
@@ -505,52 +498,35 @@ jobs:
 
   install:
     <<: *docker_default
-    environment:
-      TARGET_IMAGE_NAME: stellargroup/hpx:dev
     steps:
       - attach_workspace:
-          at: /hpx
+          at: /pika
       - setup_remote_docker
       - run:
           name: Installing
           command: |
-              ./bin/hello_world --hpx:bind=none
+              ./bin/hello_world --pika:bind=none
               # Disable Vc here as the target machine of the container image may
               # not support the same vector intrinsics as this machine. The
               # "Test Docker Image" below fails with "Illegal instruction" if VC
               # is enabled, and other machines may fail similarly.
-              cmake -DHPXLocal_WITH_DATAPAR_VC=Off .
+              cmake -DPIKA_WITH_DATAPAR_VC=Off .
               ninja -j3 install
-          working_directory: /hpx/build
+          working_directory: /pika/build
           when: always
           no_output_timeout: 30m
       - run:
           name: Testing build unit tests
           command: |
               ninja -j3 tests.unit.build
-          working_directory: /hpx/build
+          working_directory: /pika/build
           when: always
       - run:
-          name: Testing installed HPX
+          name: Testing installed pika
           command: |
-              hello_world --hpx:bind=none
-          working_directory: /hpx/build
+              hello_world --pika:bind=none
+          working_directory: /pika/build
           when: always
-      - run:
-          name: Create Docker Image
-          command: |
-              cp /hpx/source/tools/docker/Dockerfile .
-              VER="18.03.0-ce"
-              curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
-              tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-              mv /tmp/docker/* /usr/bin
-              docker build -t ${TARGET_IMAGE_NAME} .
-          working_directory: /usr/local
-      - run:
-          name: Test Docker Image
-          command: |
-              docker run ${TARGET_IMAGE_NAME} hello_world --hpx:bind=none
-          working_directory: /hpx
 
 workflows:
   version: 2

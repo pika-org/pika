@@ -4,21 +4,21 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(jacobi_smp_applications jacobi_hpx jacobi_nonuniform_hpx)
+set(jacobi_smp_applications jacobi_pika jacobi_nonuniform_pika)
 
-set(jacobi_hpx_PARAMETERS THREADS_PER_LOCALITY 4)
-set(jacobi_nonuniform_hpx_PARAMETERS THREADS_PER_LOCALITY 4)
+set(jacobi_pika_PARAMETERS THREADS_PER_LOCALITY 4)
+set(jacobi_nonuniform_pika_PARAMETERS THREADS_PER_LOCALITY 4)
 
-set(jacobi_hpx_sources jacobi.cpp)
-set(jacobi_nonuniform_hpx_sources jacobi_nonuniform.cpp)
+set(jacobi_pika_sources jacobi.cpp)
+set(jacobi_nonuniform_pika_sources jacobi_nonuniform.cpp)
 
 set(disabled_tests
     # Disabled because requires external input data. TODO: Download data when
     # running test.
-    jacobi_nonuniform_hpx
+    jacobi_nonuniform_pika
 )
 
-if(HPXLocal_WITH_EXAMPLES_OPENMP)
+if(PIKA_WITH_EXAMPLES_OPENMP)
   set(jacobi_smp_applications
       ${jacobi_smp_applications} jacobi_omp_static jacobi_omp_dynamic
       jacobi_nonuniform_omp_static jacobi_nonuniform_omp_dynamic
@@ -33,8 +33,8 @@ if(HPXLocal_WITH_EXAMPLES_OPENMP)
   )
 endif()
 
-set(jacobi_hpx_sources jacobi.cpp)
-set(jacobi_nonuniform_hpx_sources jacobi_nonuniform.cpp)
+set(jacobi_pika_sources jacobi.cpp)
+set(jacobi_nonuniform_pika_sources jacobi_nonuniform.cpp)
 
 foreach(jacobi_smp_application ${jacobi_smp_applications})
   set(sources ${${jacobi_smp_application}_sources}
@@ -44,30 +44,30 @@ foreach(jacobi_smp_application ${jacobi_smp_applications})
   source_group("Source Files" FILES ${sources})
 
   # add jacobi_smp executable
-  hpx_local_add_executable(
+  pika_add_executable(
     ${jacobi_smp_application} INTERNAL_FLAGS MODULE jacobi_smp
     SOURCES ${sources} ${${jacobi_smp_application}_FLAGS}
     FOLDER "Examples/Local/JacobiSMP"
   )
 
-  hpx_local_add_example_target_dependencies(
+  pika_add_example_target_dependencies(
     "jacobi_smp" ${jacobi_smp_application}
   )
 
-  if(HPXLocal_WITH_TESTS
-     AND HPXLocal_WITH_TESTS_EXAMPLES
+  if(PIKA_WITH_TESTS
+     AND PIKA_WITH_TESTS_EXAMPLES
      AND NOT ("${jacobi_smp_application}" IN_LIST disabled_tests)
   )
-    hpx_local_add_example_test(
+    pika_add_example_test(
       "jacobi_smp" ${jacobi_smp_application}
       ${${jacobi_smp_application}_PARAMETERS}
     )
   endif()
 endforeach()
 
-if(HPXLocal_WITH_EXAMPLES_OPENMP)
+if(PIKA_WITH_EXAMPLES_OPENMP)
   set_target_properties(
-    jacobi_omp_static PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_HPX
+    jacobi_omp_static PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_pika
   )
   set_target_properties(
     jacobi_omp_static PROPERTIES COMPILE_FLAGS
@@ -78,7 +78,7 @@ if(HPXLocal_WITH_EXAMPLES_OPENMP)
   )
 
   set_target_properties(
-    jacobi_omp_dynamic PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_HPX
+    jacobi_omp_dynamic PROPERTIES COMPILE_DEFINITIONS JACOBI_SMP_NO_pika
   )
   set_target_properties(
     jacobi_omp_dynamic PROPERTIES COMPILE_FLAGS
@@ -90,7 +90,7 @@ if(HPXLocal_WITH_EXAMPLES_OPENMP)
 
   set_target_properties(
     jacobi_nonuniform_omp_static PROPERTIES COMPILE_DEFINITIONS
-                                            JACOBI_SMP_NO_HPX
+                                            JACOBI_SMP_NO_pika
   )
   set_target_properties(
     jacobi_nonuniform_omp_static PROPERTIES COMPILE_FLAGS
@@ -102,7 +102,7 @@ if(HPXLocal_WITH_EXAMPLES_OPENMP)
 
   set_target_properties(
     jacobi_nonuniform_omp_dynamic PROPERTIES COMPILE_DEFINITIONS
-                                             JACOBI_SMP_NO_HPX
+                                             JACOBI_SMP_NO_pika
   )
   set_target_properties(
     jacobi_nonuniform_omp_dynamic

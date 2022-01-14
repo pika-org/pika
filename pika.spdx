@@ -1,0 +1,6 @@
+SPDXVersion: SPDX-2.1
+DataLicense: CC0-1.0
+PackageName: pika
+PackageOriginator: ETH Zurich
+PackageHomePage: https://github.com/pika-org/pika
+PackageLicenseDeclared: BSL-1.0

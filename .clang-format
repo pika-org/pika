@@ -6,7 +6,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 # This .clang-format file is a suggested configuration file for formatting
-# source code for the HPXLocal project.
+# source code for the pika project.
 #
 # Here are a couple of guidelines of how to use this file.
 #
@@ -71,17 +71,17 @@ DerivePointerAlignment: false
 FixNamespaceComments: true
 # ForEachMacros: ['']
 IncludeCategories:
-  - Regex:           '^<hpx/local/config\.hpp>'
+  - Regex:           '^<pika/local/config\.hpp>'
     Priority:        1
-  - Regex:           '^<hpx/local/config/defines\.hpp>'
+  - Regex:           '^<pika/local/config/defines\.hpp>'
     Priority:        2
-  - Regex:           '^<hpx/local/config/.*>'
+  - Regex:           '^<pika/local/config/.*>'
     Priority:        3
-  - Regex:           '^<hpx/.*/config\.hpp>'
+  - Regex:           '^<pika/.*/config\.hpp>'
     Priority:        4
-  - Regex:           '^<hpx/.*\.hpp>'
+  - Regex:           '^<pika/.*\.hpp>'
     Priority:        5
-  - Regex:           '^<hpx/parallel/.*\.hpp>'
+  - Regex:           '^<pika/parallel/.*\.hpp>'
     Priority:        6
   - Regex:           '^<.*'
     Priority:        7

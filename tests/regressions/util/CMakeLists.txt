@@ -13,13 +13,13 @@ foreach(test ${tests})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  hpx_local_add_executable(
+  pika_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
     FOLDER "Tests/Regressions/Modules/Local/Util"
   )
 
-  hpx_local_add_regression_test("util" ${test} ${${test}_PARAMETERS})
+  pika_add_regression_test("util" ${test} ${${test}_PARAMETERS})
 
 endforeach()

@@ -8,10 +8,10 @@
 
 #pragma once
 
-namespace hpx::local {
+namespace pika::local {
 
     char const* const config_strings[] =
-    {@hpx_local_config_information@
+    {@pika_config_information@
         nullptr
     };
 }

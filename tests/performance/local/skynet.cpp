@@ -17,9 +17,9 @@
 // This code implements two versions of the skynet micro benchmark: a 'normal'
 // and a futurized one.
 
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
 
 #include <cstdint>
 #include <iostream>
@@ -32,16 +32,16 @@ std::int64_t skynet(std::int64_t num, std::int64_t size, std::int64_t div)
     {
         size /= div;
 
-        std::vector<hpx::future<std::int64_t>> results;
+        std::vector<pika::future<std::int64_t>> results;
         results.reserve(div);
 
         for (std::int64_t i = 0; i != div; ++i)
         {
             std::int64_t sub_num = num + i * size;
-            results.push_back(hpx::async(skynet, sub_num, size, div));
+            results.push_back(pika::async(skynet, sub_num, size, div));
         }
 
-        hpx::wait_all(results);
+        pika::wait_all(results);
 
         std::int64_t sum = 0;
         for (auto& f : results)
@@ -52,24 +52,24 @@ std::int64_t skynet(std::int64_t num, std::int64_t size, std::int64_t div)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-hpx::future<std::int64_t> skynet_f(
+pika::future<std::int64_t> skynet_f(
     std::int64_t num, std::int64_t size, std::int64_t div)
 {
     if (size != 1)
     {
         size /= div;
 
-        std::vector<hpx::future<std::int64_t>> results;
+        std::vector<pika::future<std::int64_t>> results;
         results.reserve(div);
 
         for (std::int64_t i = 0; i != div; ++i)
         {
             std::int64_t sub_num = num + i * size;
-            results.push_back(hpx::async(skynet_f, sub_num, size, div));
+            results.push_back(pika::async(skynet_f, sub_num, size, div));
         }
 
-        return hpx::dataflow(
-            [](std::vector<hpx::future<std::int64_t>>&& sums) {
+        return pika::dataflow(
+            [](std::vector<pika::future<std::int64_t>>&& sums) {
                 std::int64_t sum = 0;
                 for (auto& f : sums)
                     sum += f.get();
@@ -77,31 +77,31 @@ hpx::future<std::int64_t> skynet_f(
             },
             results);
     }
-    return hpx::make_ready_future(num);
+    return pika::make_ready_future(num);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main()
+int pika_main()
 {
     {
-        std::uint64_t t = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t t = pika::chrono::high_resolution_clock::now();
 
-        hpx::future<std::int64_t> result = hpx::async(skynet, 0, 1000000, 10);
+        pika::future<std::int64_t> result = pika::async(skynet, 0, 1000000, 10);
         result.wait();
 
-        t = hpx::chrono::high_resolution_clock::now() - t;
+        t = pika::chrono::high_resolution_clock::now() - t;
 
         std::cout << "Result 1: " << result.get() << " in " << (t / 1e6)
                   << " ms.\n";
     }
 
     {
-        std::uint64_t t = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t t = pika::chrono::high_resolution_clock::now();
 
-        hpx::future<std::int64_t> result = hpx::async(skynet_f, 0, 1000000, 10);
+        pika::future<std::int64_t> result = pika::async(skynet_f, 0, 1000000, 10);
         result.wait();
 
-        t = hpx::chrono::high_resolution_clock::now() - t;
+        t = pika::chrono::high_resolution_clock::now() - t;
 
         std::cout << "Result 2: " << result.get() << " in " << (t / 1e6)
                   << " ms.\n";
@@ -111,5 +111,5 @@ int hpx_main()
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

@@ -4,9 +4,9 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/numeric.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/numeric.hpp>
 
 #include <boost/range/irange.hpp>
 
@@ -24,7 +24,7 @@ bool verbose = false;
 double test_results(std::uint64_t order, std::vector<double> const& trans);
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::uint64_t order = vm["matrix_size"].as<std::uint64_t>();
     std::uint64_t iterations = vm["iterations"].as<std::uint64_t>();
@@ -49,8 +49,8 @@ int hpx_main(hpx::program_options::variables_map& vm)
         std::cout << "Untiled\n";
     std::cout << "Number of iterations  = " << iterations << "\n";
 
-    using hpx::execution::par;
-    using hpx::ranges::for_each;
+    using pika::execution::par;
+    using pika::ranges::for_each;
 
     const std::uint64_t start = 0;
 
@@ -73,7 +73,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
                                   // one leap year should be enough
     for (std::uint64_t iter = 0; iter < iterations; ++iter)
     {
-        hpx::chrono::high_resolution_timer t;
+        pika::chrono::high_resolution_timer t;
         if (tile_size < order)
         {
             auto range = boost::irange(start, order + tile_size, tile_size);
@@ -142,12 +142,12 @@ int hpx_main(hpx::program_options::variables_map& vm)
         std::terminate();
     }
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
 
     options_description desc_commandline;
     // clang-format off
@@ -163,16 +163,16 @@ int main(int argc, char* argv[])
     ;
     // clang-format on
 
-    hpx::local::init_params init_args;
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }
 
 double test_results(std::uint64_t order, std::vector<double> const& trans)
 {
-    using hpx::transform_reduce;
-    using hpx::execution::par;
+    using pika::transform_reduce;
+    using pika::execution::par;
 
     const std::uint64_t start = 0;
 

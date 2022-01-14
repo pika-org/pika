@@ -5,7 +5,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/modules/program_options.hpp>
+#include <pika/modules/program_options.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -17,12 +17,12 @@
 #include <vector>
 #include <utility>
 
-using hpx::program_options::variables_map;
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::store;
-using hpx::program_options::command_line_parser;
-using hpx::program_options::notify;
+using pika::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::store;
+using pika::program_options::command_line_parser;
+using pika::program_options::notify;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Command-line variables.
@@ -163,7 +163,7 @@ int main(
     // Parse command line.
     variables_map vm;
 
-    options_description cmdline("Usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     cmdline.add_options()
         ( "help,h"

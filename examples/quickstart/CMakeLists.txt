@@ -49,7 +49,7 @@ set(vector_counting_dotproduct_PARAMETERS THREADS_PER_LOCALITY 4)
 set(vector_zip_dotproduct_PARAMETERS THREADS_PER_LOCALITY 4)
 
 # the following example fails compiling on someversions of MSVC
-if(HPXLocal_WITH_TUPLE_RVALUE_SWAP AND (NOT MSVC))
+if(PIKA_WITH_TUPLE_RVALUE_SWAP AND (NOT MSVC))
   list(APPEND example_programs sort_by_key_demo)
 endif()
 
@@ -59,7 +59,7 @@ foreach(example_program ${example_programs})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  hpx_local_add_executable(
+  pika_add_executable(
     ${example_program} INTERNAL_FLAGS
     SOURCES ${sources} ${${example_program}_FLAGS}
     FOLDER "Examples/Local/Quickstart"
@@ -68,13 +68,13 @@ foreach(example_program ${example_programs})
   target_link_libraries(
     ${example_program} PRIVATE ${${example_program}_LIBRARIES}
   )
-  hpx_local_add_example_target_dependencies("quickstart" ${example_program})
+  pika_add_example_target_dependencies("quickstart" ${example_program})
 
-  if(HPXLocal_WITH_TESTS
-     AND HPXLocal_WITH_TESTS_EXAMPLES
+  if(PIKA_WITH_TESTS
+     AND PIKA_WITH_TESTS_EXAMPLES
      AND NOT ("${example_program}" IN_LIST disabled_tests)
   )
-    hpx_local_add_example_test(
+    pika_add_example_test(
       "quickstart" ${example_program} ${${example_program}_PARAMETERS}
     )
   endif()

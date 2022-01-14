@@ -8,7 +8,7 @@ set -eu
 source $SPACK_ROOT/share/spack/setup-env.sh
 
 export CRAYPE_LINK_TYPE=dynamic
-export APPS_ROOT="/apps/daint/SSL/HPX/packages"
+export APPS_ROOT="/apps/daint/SSL/pika/packages"
 export CLANG_VER="11.0.0"
 export CXX_STD="17"
 export BOOST_VER="1.74.0"

@@ -4,9 +4,9 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/string_util.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/string_util.hpp>
 
 #include <iostream>
 #include <iterator>
@@ -25,27 +25,27 @@ struct pipeline
             if (std::regex_match(item, regex))
             {
                 auto trim = [](std::string const& s) {
-                    return hpx::string_util::trim_copy(s);
+                    return pika::string_util::trim_copy(s);
                 };
 
-                hpx::async(trim, std::move(item))
-                    .then(hpx::unwrapping([](std::string const& tc) {
+                pika::async(trim, std::move(item))
+                    .then(pika::unwrapping([](std::string const& tc) {
                         std::cout << "->" << tc << std::endl;
                     }));
             }
         };
 
-        std::vector<hpx::future<void>> tasks;
+        std::vector<pika::future<void>> tasks;
         for (auto s : input)
         {
-            tasks.push_back(hpx::async(grep, "Error.*", std::move(s)));
+            tasks.push_back(pika::async(grep, "Error.*", std::move(s)));
         }
 
-        hpx::wait_all(tasks);
+        pika::wait_all(tasks);
     }
 };
 
-int hpx_main()
+int pika_main()
 {
     std::string inputs[] = {"Error: foobar", "Error. foo", " Warning: barbaz",
         "Notice: qux", "\tError: abc"};
@@ -53,10 +53,10 @@ int hpx_main()
 
     pipeline::process(input);
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

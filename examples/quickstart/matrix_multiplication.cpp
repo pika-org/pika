@@ -8,9 +8,9 @@
 
 // Parallel implementation of matrix multiplication
 
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/execution.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/execution.hpp>
+#include <pika/local/init.hpp>
 
 #include <cstddef>
 #include <iostream>
@@ -35,8 +35,8 @@ void print_matrix(
 //]
 
 ///////////////////////////////////////////////////////////////////////////////
-//[mul_hpx_main
-int hpx_main(hpx::program_options::variables_map& vm)
+//[mul_pika_main
+int pika_main(pika::program_options::variables_map& vm)
 {
     using element_type = int;
 
@@ -68,14 +68,14 @@ int hpx_main(hpx::program_options::variables_map& vm)
     // Matrices have random values in the range [lower, upper]
     std::uniform_int_distribution<element_type> dis(lower, upper);
     auto generator = std::bind(dis, gen);
-    hpx::ranges::generate(A, generator);
-    hpx::ranges::generate(B, generator);
+    pika::ranges::generate(A, generator);
+    pika::ranges::generate(B, generator);
 
     // Perform matrix multiplication
-    hpx::for_loop(hpx::execution::par, 0, rowsA, [&](auto i) {
-        hpx::for_loop(0, colsB, [&](auto j) {
+    pika::for_loop(pika::execution::par, 0, rowsA, [&](auto i) {
+        pika::for_loop(0, colsB, [&](auto j) {
             R[i * colsR + j] = 0;
-            hpx::for_loop(0, rowsB, [&](auto k) {
+            pika::for_loop(0, rowsB, [&](auto k) {
                 R[i * colsR + j] += A[i * colsA + k] * B[k * colsB + j];
             });
         });
@@ -86,7 +86,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     print_matrix(B, rowsB, colsB, "B");
     print_matrix(R, rowsR, colsR, "R");
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 //]
 
@@ -94,33 +94,33 @@ int hpx_main(hpx::program_options::variables_map& vm)
 //[mul_main
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
-    options_description cmdline("usage: " HPX_APPLICATION_STRING " [options]");
+    using namespace pika::program_options;
+    options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
     // clang-format off
     cmdline.add_options()
         ("n",
-        hpx::program_options::value<std::size_t>()->default_value(2),
+        pika::program_options::value<std::size_t>()->default_value(2),
         "Number of rows of first matrix")
         ("m",
-        hpx::program_options::value<std::size_t>()->default_value(3),
+        pika::program_options::value<std::size_t>()->default_value(3),
         "Number of columns of first matrix (equal to the number of rows of "
         "second matrix)")
         ("k",
-        hpx::program_options::value<std::size_t>()->default_value(2),
+        pika::program_options::value<std::size_t>()->default_value(2),
         "Number of columns of second matrix")
         ("seed,s",
-        hpx::program_options::value<unsigned int>(),
+        pika::program_options::value<unsigned int>(),
         "The random number generator seed to use for this run")
         ("l",
-        hpx::program_options::value<std::size_t>()->default_value(0),
+        pika::program_options::value<std::size_t>()->default_value(0),
         "Lower limit of range of values")
         ("u",
-        hpx::program_options::value<std::size_t>()->default_value(10),
+        pika::program_options::value<std::size_t>()->default_value(10),
         "Upper limit of range of values");
     // clang-format on
-    hpx::local::init_params init_args;
+    pika::local::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }
 //]

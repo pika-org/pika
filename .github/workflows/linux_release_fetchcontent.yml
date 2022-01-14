@@ -23,14 +23,14 @@ jobs:
               -Bbuild \
               -GNinja \
               -DCMAKE_BUILD_TYPE=Release \
-              -DHPXLocal_REPOSITORY="file:////$(pwd)" \
-              -DHPXLocal_TAG="$GITHUB_SHA" \
-              -DHPXLocal_WITH_UNITY_BUILD=ON \
-              -DHPXLocal_WITH_MALLOC=system \
-              -DHPXLocal_WITH_EXAMPLES=ON \
-              -DHPXLocal_WITH_TESTS=OFF \
-              -DHPXLocal_WITH_CHECK_MODULE_DEPENDENCIES=On \
-              -DHPXLocal_WITH_APEX=ON
+              -DPIKA_REPOSITORY="file:////$(pwd)" \
+              -DPIKA_TAG="$GITHUB_SHA" \
+              -DPIKA_WITH_UNITY_BUILD=ON \
+              -DPIKA_WITH_MALLOC=system \
+              -DPIKA_WITH_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS=OFF \
+              -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On \
+              -DPIKA_WITH_APEX=ON
 
     - name: Build
       shell: bash

@@ -4,39 +4,39 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/functional/bind.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/testing.hpp>
+#include <pika/functional/bind.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/testing.hpp>
 
 #include <string>
 
 std::string expected;
 
-int hpx_init_test(std::string s, int, char**)
+int pika_init_test(std::string s, int, char**)
 {
-    HPX_TEST_EQ(s, expected);
-    return hpx::local::finalize();
+    PIKA_TEST_EQ(s, expected);
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    using hpx::util::placeholders::_1;
-    using hpx::util::placeholders::_2;
+    using pika::util::placeholders::_1;
+    using pika::util::placeholders::_2;
 
     expected = "first";
-    hpx::util::function_nonser<int(int, char**)> callback1 =
-        hpx::util::bind(&hpx_init_test, expected, _1, _2);
-    hpx::local::init(callback1, argc, argv);
+    pika::util::function_nonser<int(int, char**)> callback1 =
+        pika::util::bind(&pika_init_test, expected, _1, _2);
+    pika::local::init(callback1, argc, argv);
 
     expected = "second";
-    hpx::util::function_nonser<int(int, char**)> callback2 =
-        hpx::util::bind(&hpx_init_test, expected, _1, _2);
-    hpx::local::init(callback2, argc, argv);
+    pika::util::function_nonser<int(int, char**)> callback2 =
+        pika::util::bind(&pika_init_test, expected, _1, _2);
+    pika::local::init(callback2, argc, argv);
 
     expected = "third";
-    hpx::util::function_nonser<int(int, char**)> callback3 =
-        hpx::util::bind(&hpx_init_test, expected, _1, _2);
-    hpx::local::init(callback3, argc, argv);
+    pika::util::function_nonser<int(int, char**)> callback3 =
+        pika::util::bind(&pika_init_test, expected, _1, _2);
+    pika::local::init(callback3, argc, argv);
 
     return 0;
 }

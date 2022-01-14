@@ -10,16 +10,16 @@
 set -eux
 
 # Clean up old artifacts
-rm -f ./jenkins-hpx* ./*-Testing
+rm -f ./jenkins-pika* ./*-Testing
 
 source .jenkins/cscs-perftests/slurm-constraint-${configuration_name}.sh
 
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request
     export git_local_branch=$(echo ${GIT_BRANCH} | cut -f2 -d'/')
-    job_name="jenkins-hpx-${git_local_branch}-${configuration_name}"
+    job_name="jenkins-pika-${git_local_branch}-${configuration_name}"
 else
-    job_name="jenkins-hpx-${ghprbPullId}-${configuration_name}"
+    job_name="jenkins-pika-${ghprbPullId}-${configuration_name}"
 
     # Cancel currently running builds on the same branch, but only for pull
     # requests
@@ -35,19 +35,19 @@ sbatch \
     --partition="cscsci" \
     --account="djenkssl" \
     --time="01:30:00" \
-    --output="jenkins-hpx-${configuration_name}.out" \
-    --error="jenkins-hpx-${configuration_name}.err" \
+    --output="jenkins-pika-${configuration_name}.out" \
+    --error="jenkins-pika-${configuration_name}.err" \
     --wait .jenkins/cscs-perftests/batch.sh
 
 # Print slurm logs
 echo "= stdout =================================================="
-cat jenkins-hpx-${configuration_name}.out
+cat jenkins-pika-${configuration_name}.out
 
 echo "= stderr =================================================="
-cat jenkins-hpx-${configuration_name}.err
+cat jenkins-pika-${configuration_name}.err
 
 # Get build status
-status_file="jenkins-hpx-${configuration_name}-ctest-status.txt"
+status_file="jenkins-pika-${configuration_name}-ctest-status.txt"
 
 # Comment on the PR if any failures
 if [[ $(cat ${status_file}) != 0 ]]; then

@@ -6,11 +6,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/hpx_init.hpp>
-#include <hpx/hpx.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/string_util/split.hpp>
-#include <hpx/string_util/classification.hpp>
+#include <pika/pika_init.hpp>
+#include <pika/pika.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/string_util/split.hpp>
+#include <pika/string_util/classification.hpp>
 
 #include <chrono>
 #include <cstdint>
@@ -22,12 +22,12 @@
 
 #include "worker_timed.hpp"
 
-char const* benchmark_name = "Context Switching Overhead - HPX";
+char const* benchmark_name = "Context Switching Overhead - pika";
 
-using namespace hpx::program_options;
-using namespace hpx::threads;
+using namespace pika::program_options;
+using namespace pika::threads;
 
-using hpx::threads::coroutine_type;
+using pika::threads::coroutine_type;
 using std::cout;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ void print_results(
     {
         cout << "# BENCHMARK: " << benchmark_name << "\n";
 
-        cout << "# VERSION: " << HPX_LOCAL_HAVE_GIT_COMMIT << " "
+        cout << "# VERSION: " << PIKA_HAVE_GIT_COMMIT << " "
              << format_build_date() << "\n"
              << "#\n";
 
@@ -76,13 +76,13 @@ void print_results(
                 ;
     }
 
-    std::uint64_t const os_thread_count = hpx::get_os_thread_count();
+    std::uint64_t const os_thread_count = pika::get_os_thread_count();
 
     double w_T = iterations*payload*os_thread_count*1e-6;
 //     double E = w_T/w_M;
     double O = w_M-w_T;
 
-    hpx::util::format_to(cout, "{} {} {} {} {} {:.14g}",
+    pika::util::format_to(cout, "{} {} {} {} {} {:.14g}",
         payload,
         os_thread_count,
         contexts,
@@ -97,13 +97,13 @@ void print_results(
 ///////////////////////////////////////////////////////////////////////////////
 struct kernel
 {
-    hpx::threads::thread_result_type operator()(thread_restart_state) const
+    pika::threads::thread_result_type operator()(thread_restart_state) const
     {
         worker_timed(payload * 1000);
 
-        return hpx::threads::thread_result_type(
-            hpx::threads::thread_schedule_state::pending,
-            hpx::threads::invalid_thread_id);
+        return pika::threads::thread_result_type(
+            pika::threads::thread_schedule_state::pending,
+            pika::threads::invalid_thread_id);
     }
 
     bool operator!() const { return true; }
@@ -125,7 +125,7 @@ double perform_2n_iterations()
 
     for (std::uint64_t i = 0; i < contexts; ++i)
     {
-        coroutine_type* c = new coroutine_type(k, hpx::threads::invalid_thread_id);
+        coroutine_type* c = new coroutine_type(k, pika::threads::invalid_thread_id);
         coroutines.push_back(c);
     }
 
@@ -139,7 +139,7 @@ double perform_2n_iterations()
         (*coroutines[indices[i]])(wait_signaled);
     }
 
-    hpx::chrono::high_resolution_timer t;
+    pika::chrono::high_resolution_timer t;
 
     for (std::uint64_t i = 0; i < iterations; ++i)
     {
@@ -158,7 +158,7 @@ double perform_2n_iterations()
     return elapsed;
 }
 
-int hpx_main(
+int pika_main(
     variables_map& vm
     )
 {
@@ -169,17 +169,17 @@ int hpx_main(
         if (!seed)
             seed = std::uint64_t(std::time(nullptr));
 
-        std::uint64_t const os_thread_count = hpx::get_os_thread_count();
+        std::uint64_t const os_thread_count = pika::get_os_thread_count();
 
-        std::vector<hpx::shared_future<double> > futures;
+        std::vector<pika::shared_future<double> > futures;
 
-        std::uint64_t num_thread = hpx::get_worker_thread_num();
+        std::uint64_t num_thread = pika::get_worker_thread_num();
 
         for (std::uint64_t i = 0; i < os_thread_count; ++i)
         {
             if (num_thread == i) continue;
 
-            futures.push_back(hpx::async(&perform_2n_iterations));
+            futures.push_back(pika::async(&perform_2n_iterations));
         }
 
         double total_elapsed = perform_2n_iterations();
@@ -190,7 +190,7 @@ int hpx_main(
         print_results(total_elapsed);
     }
 
-    return hpx::finalize();
+    return pika::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -200,7 +200,7 @@ int main(
     )
 {
     // Configure application-specific options.
-    options_description cmdline("usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
     cmdline.add_options()
         ( "payload"
@@ -225,9 +225,9 @@ int main(
         , "do not print out the header")
         ;
 
-    // Initialize and run HPX.
-    hpx::init_params init_args;
+    // Initialize and run pika.
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return hpx::init(argc, argv, init_args);
+    return pika::init(argc, argv, init_args);
 }

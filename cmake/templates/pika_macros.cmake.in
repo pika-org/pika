@@ -1,0 +1,97 @@
+# Copyright (c) 2014 Thomas Heller
+# Copyright (c) 2015 Andreas Schaefer
+# Copyright (c) 2019 Patrick Diehl
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "@PIKA_CMAKE_MODULE_PATH@")
+
+include(GNUInstallDirs)
+include(pika_utils)
+
+function(pika_check_compiler_compatibility)
+  if(PIKA_IGNORE_COMPILER_COMPATIBILITY)
+    return()
+  endif()
+
+  if(PIKA_WITH_BUILD_BINARY_PACKAGE)
+    string(REGEX MATCH "[0-9]+" PIKA_MAJOR_VERSION "${PIKA_CXX_COMPILER_VERSION}")
+    string(REGEX MATCH "[0-9]+" CXX_MAJOR_VERSION "${CMAKE_CXX_COMPILER_VERSION}")
+
+    if(NOT (${CMAKE_CXX_COMPILER_ID} STREQUAL ${PIKA_CXX_COMPILER_ID} AND
+      ${PIKA_MAJOR_VERSION} STREQUAL ${CXX_MAJOR_VERSION}))
+      set(MESSAGE "Compilers do not match. In order to compile pika application it is"
+          " recommended to use the same major version of the compiler as you did for pika. "
+          "PIKA_CXX_COMPILER=${PIKA_CXX_COMPILER}, "
+          "CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}. "
+          "PIKA_CXX_COMPILER_ID=${PIKA_CXX_COMPILER_ID}, "
+          "CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}. "
+          "PIKA_CXX_MAJOR_VERSION=${PIKA_MAJOR_VERSION}, "
+          "CMAKE_CXX_COMPILER_VERSION=${CXX_MAJOR_VERSION}."
+          "To disable this message set PIKA_IGNORE_COMPILER_COMPATIBILITY to On.")
+
+      if(PIKA_FIND_REQUIRED)
+        pika_error("${MESSAGE}")
+      else()
+        pika_warn("${MESSAGE}")
+        set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "${MESSAGE}" PARENT_SCOPE)
+        set(${CMAKE_FIND_PACKAGE_NAME}_FOUND False PARENT_SCOPE)
+      endif()
+    endif()
+  else()
+    if(NOT (${CMAKE_CXX_COMPILER_ID} STREQUAL ${PIKA_CXX_COMPILER_ID} AND
+      ${CMAKE_CXX_COMPILER_VERSION} STREQUAL ${PIKA_CXX_COMPILER_VERSION}))
+      set(MESSAGE "Compilers do not match. In order to compile pika application it is"
+          " recommended to use the same compiler as you did for pika. "
+          "PIKA_CXX_COMPILER=${PIKA_CXX_COMPILER}, "
+          "CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}. "
+          "PIKA_CXX_COMPILER_ID=${PIKA_CXX_COMPILER_ID}, "
+          "CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}. "
+          "PIKA_CXX_COMPILER_VERSION=${PIKA_CXX_COMPILER_VERSION}, "
+          "CMAKE_CXX_COMPILER_VERSION=${CMAKE_CXX_COMPILER_VERSION}."
+          "To disable this message set PIKA_IGNORE_COMPILER_COMPATIBILITY to On.")
+
+      if(PIKA_FIND_REQUIRED)
+        pika_error("${MESSAGE}")
+      else()
+        pika_warn("${MESSAGE}")
+        set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "${MESSAGE}" PARENT_SCOPE)
+        set(${CMAKE_FIND_PACKAGE_NAME}_FOUND False PARENT_SCOPE)
+      endif()
+    endif()
+  endif()
+endfunction()
+
+function(pika_check_boost_compatibility)
+  if(PIKA_IGNORE_BOOST_COMPATIBILITY)
+    return()
+  endif()
+  if(NOT DEFINED BOOST_ROOT)
+    return()
+  endif()
+
+  # make sure paths are tested even if not string identical
+  get_filename_component(PATH1 "${PIKA_BOOST_ROOT}" ABSOLUTE)
+  get_filename_component(PATH2 "${BOOST_ROOT}" ABSOLUTE)
+
+  if(NOT PATH1 STREQUAL PATH2)
+    pika_error("The specified BOOST_ROOT differs from what has been used when"
+              " configuring and building pika. Please use the same Boost "
+              "versions. pika Boost is ${PIKA_BOOST_ROOT} and user's is ${BOOST_ROOT}. "
+              "To disable this message set PIKA_IGNORE_BOOST_COMPATIBILITY On."
+    )
+  endif()
+endfunction()
+
+function(pika_check_allocator_compatibility)
+  string(TOUPPER "${PIKA_WITH_MALLOC}" PIKA_MALLOC_UPPER)
+  string(TOUPPER "${PIKA_WITH_MALLOC_DEFAULT}" PIKA_MALLOC_DEFAULT_UPPER)
+  if(NOT (PIKA_MALLOC_UPPER STREQUAL PIKA_MALLOC_DEFAULT_UPPER))
+    pika_error("PIKA_WITH_MALLOC has been changed by this project. This project "
+      "has set PIKA_WITH_MALLOC='${PIKA_WITH_MALLOC}' and pika was configured "
+      "with '${PIKA_WITH_MALLOC_DEFAULT}'. PIKA_WITH_MALLOC is only provided for "
+      "informational purposes to dependent projects and should not be changed.")
+  endif()
+endfunction()

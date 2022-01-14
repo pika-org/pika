@@ -8,6 +8,6 @@
 
 #pragma once
 
-#include <hpx/local/config.hpp>
+#include <pika/local/config.hpp>
 
 @module_headers@

@@ -5,11 +5,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#if !defined(JACOBI_SMP_NO_HPX)
-#include <hpx/local/init.hpp>
+#if !defined(JACOBI_SMP_NO_pika)
+#include <pika/local/init.hpp>
 #endif
 
-#include <hpx/modules/program_options.hpp>
+#include <pika/modules/program_options.hpp>
 
 #include <boost/spirit/include/phoenix.hpp>
 #include <boost/spirit/include/qi_action.hpp>
@@ -27,11 +27,11 @@
 #include <string>
 #include <vector>
 
-using hpx::program_options::options_description;
-using hpx::program_options::parse_command_line;
-using hpx::program_options::store;
-using hpx::program_options::value;
-using hpx::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::parse_command_line;
+using pika::program_options::store;
+using pika::program_options::value;
+using pika::program_options::variables_map;
 
 #include "jacobi_nonuniform.hpp"
 
@@ -83,7 +83,7 @@ void add_entry(jacobi_smp::crs_matrix<double>& M, std::size_t& row,
     }
 }
 
-int hpx_main(variables_map& vm)
+int pika_main(variables_map& vm)
 {
     {
         std::size_t iterations = vm["iterations"].as<std::size_t>();
@@ -122,8 +122,8 @@ int hpx_main(variables_map& vm)
             {
                 std::cerr << "Parsed zero non zero values in matrix file "
                           << matrix << "\n";
-#if !defined(JACOBI_SMP_NO_HPX)
-                hpx::local::finalize();
+#if !defined(JACOBI_SMP_NO_pika)
+                pika::local::finalize();
 #endif
                 return 1;
             }
@@ -185,23 +185,23 @@ int hpx_main(variables_map& vm)
         else
         {
             std::cout << "Unknown mode " << mode << "\n";
-#if !defined(JACOBI_SMP_NO_HPX)
-            hpx::local::finalize();
+#if !defined(JACOBI_SMP_NO_pika)
+            pika::local::finalize();
 #endif
             return 1;
         }
     }
 
-#if defined(JACOBI_SMP_NO_HPX)
+#if defined(JACOBI_SMP_NO_pika)
     return 0;
 #else
-    return hpx::local::finalize();
+    return pika::local::finalize();
 #endif
 }
 
 int main(int argc, char** argv)
 {
-    options_description desc_cmd("usage: " HPX_APPLICATION_STRING " [options]");
+    options_description desc_cmd("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_cmd.add_options()
@@ -216,7 +216,7 @@ int main(int argc, char** argv)
         "Mode of the program, can be solve or statistics (default: solve)");
     // clang-format on
 
-#if defined(JACOBI_SMP_NO_HPX)
+#if defined(JACOBI_SMP_NO_pika)
     variables_map vm;
     desc_cmd.add_options()("help", "This help message");
     store(parse_command_line(argc, argv, desc_cmd), vm);
@@ -225,11 +225,11 @@ int main(int argc, char** argv)
         std::cout << desc_cmd;
         return 1;
     }
-    return hpx_main(vm);
+    return pika_main(vm);
 #else
-    hpx::local::init_params init_args;
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_cmd;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 #endif
 }

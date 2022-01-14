@@ -30,12 +30,12 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <hpx/assert.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/functional/bind.hpp>
-#include <hpx/modules/timing.hpp>
+#include <pika/assert.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/functional/bind.hpp>
+#include <pika/modules/timing.hpp>
 
-#include <hpx/modules/program_options.hpp>
+#include <pika/modules/program_options.hpp>
 
 #include <atomic>
 #include <cstdint>
@@ -52,14 +52,14 @@
 
 #include "worker_timed.hpp"
 
-using hpx::program_options::variables_map;
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::store;
-using hpx::program_options::command_line_parser;
-using hpx::program_options::notify;
+using pika::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::store;
+using pika::program_options::command_line_parser;
+using pika::program_options::notify;
 
-using hpx::chrono::high_resolution_timer;
+using pika::chrono::high_resolution_timer;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Applications globals.
@@ -84,18 +84,18 @@ void print_results(
                      "Maximum Delay (iterations),Total Delay (iterations),"
                      "Total Walltime (seconds),Walltime per Task (seconds)\n";
 
-    std::string const cores_str = hpx::util::format("{},", cores);
-    std::string const seed_str  = hpx::util::format("{},", seed);
-    std::string const tasks_str = hpx::util::format("{},", tasks);
+    std::string const cores_str = pika::util::format("{},", cores);
+    std::string const seed_str  = pika::util::format("{},", seed);
+    std::string const tasks_str = pika::util::format("{},", tasks);
 
     std::string const min_delay_str
-        = hpx::util::format("{},", min_delay);
+        = pika::util::format("{},", min_delay);
     std::string const max_delay_str
-        = hpx::util::format("{},", max_delay);
+        = pika::util::format("{},", max_delay);
     std::string const total_delay_str
-        = hpx::util::format("{},", total_delay);
+        = pika::util::format("{},", total_delay);
 
-    hpx::util::format_to(std::cout,
+    pika::util::format_to(std::cout,
         "{:-21} {:-21} {:-21} {:-21} {:-21} {:-21} {:10.12}\n",
         cores_str, seed_str, tasks_str,
         min_delay_str, max_delay_str, total_delay_str,
@@ -269,7 +269,7 @@ int main(
     // Parse command line.
     variables_map vm;
 
-    options_description cmdline("Usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     cmdline.add_options()
         ( "help,h"

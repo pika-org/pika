@@ -9,10 +9,10 @@
 // thread stealing for the duration of the execution of a parallel algorithm
 // it is used with.
 
-#include <hpx/assert.hpp>
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/execution.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/assert.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/execution.hpp>
+#include <pika/local/init.hpp>
 
 #include <algorithm>
 #include <atomic>
@@ -51,15 +51,15 @@ namespace executor_example {
         template <typename Parameters>
         static void mark_begin_execution(Parameters&&)
         {
-            hpx::threads::remove_scheduler_mode(
-                hpx::threads::policies::enable_stealing);
+            pika::threads::remove_scheduler_mode(
+                pika::threads::policies::enable_stealing);
         }
 
         template <typename Parameters>
         static void mark_end_execution(Parameters&&)
         {
-            hpx::threads::add_scheduler_mode(
-                hpx::threads::policies::enable_stealing);
+            pika::threads::add_scheduler_mode(
+                pika::threads::policies::enable_stealing);
         }
     };
 
@@ -73,7 +73,7 @@ namespace executor_example {
 
 ///////////////////////////////////////////////////////////////////////////////
 // simple forwarding implementations of executor traits
-namespace hpx { namespace parallel { namespace execution {
+namespace pika { namespace parallel { namespace execution {
 
     template <typename BaseExecutor>
     struct is_one_way_executor<
@@ -110,24 +110,24 @@ namespace hpx { namespace parallel { namespace execution {
       : is_bulk_two_way_executor<typename std::decay<BaseExecutor>::type>
     {
     };
-}}}    // namespace hpx::parallel::execution
+}}}    // namespace pika::parallel::execution
 
-int hpx_main()
+int pika_main()
 {
     std::vector<double> v(1000);
     std::iota(v.begin(), v.end(), 0.0);
 
     // The following for_loop will be executed while thread stealing is disabled
     auto exec = executor_example::make_disable_thread_stealing_executor(
-        hpx::execution::par.executor());
+        pika::execution::par.executor());
 
-    hpx::for_loop(
-        hpx::execution::par.on(exec), 0, v.size(), [](std::size_t) {});
+    pika::for_loop(
+        pika::execution::par.on(exec), 0, v.size(), [](std::size_t) {});
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

@@ -10,14 +10,14 @@
 // FIXME: Calling the tasks "workers" overloads the term worker-thread (which
 // refers to OS-threads).
 
-#include <hpx/hpx.hpp>
-#include <hpx/hpx_init.hpp>
+#include <pika/pika.hpp>
+#include <pika/pika_init.hpp>
 
-#include <hpx/functional/bind.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/modules/testing.hpp>
-#include <hpx/string_util/classification.hpp>
-#include <hpx/string_util/split.hpp>
+#include <pika/functional/bind.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/modules/testing.hpp>
+#include <pika/string_util/classification.hpp>
+#include <pika/string_util/split.hpp>
 
 #include <boost/integer/common_factor.hpp>
 
@@ -36,25 +36,25 @@
 #include "activate_counters.hpp"
 #include "worker_timed.hpp"
 
-char const* benchmark_name = "Homogeneous Timed Task Spawn - HPX";
+char const* benchmark_name = "Homogeneous Timed Task Spawn - pika";
 
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::variables_map;
 
-using hpx::get_os_thread_count;
+using pika::get_os_thread_count;
 
-using hpx::threads::make_thread_function_nullary;
-using hpx::threads::register_work;
-using hpx::threads::thread_init_data;
+using pika::threads::make_thread_function_nullary;
+using pika::threads::register_work;
+using pika::threads::thread_init_data;
 
-using hpx::this_thread::suspend;
-using hpx::threads::get_thread_count;
+using pika::this_thread::suspend;
+using pika::threads::get_thread_count;
 
-using hpx::chrono::high_resolution_timer;
+using pika::chrono::high_resolution_timer;
 
-using hpx::reset_active_counters;
-using hpx::stop_active_counters;
+using pika::reset_active_counters;
+using pika::stop_active_counters;
 
 using std::cout;
 using std::flush;
@@ -88,12 +88,12 @@ std::string format_build_date()
 ///////////////////////////////////////////////////////////////////////////////
 void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
     std::vector<std::string> const& counter_shortnames,
-    std::shared_ptr<hpx::util::activate_counters> ac)
+    std::shared_ptr<pika::util::activate_counters> ac)
 {
-    std::vector<hpx::performance_counters::counter_value> counter_values;
+    std::vector<pika::performance_counters::counter_value> counter_values;
 
     if (ac)
-        counter_values = ac->evaluate_counters(hpx::launch::sync);
+        counter_values = ac->evaluate_counters(pika::launch::sync);
 
     if (csv_header)
     {
@@ -112,7 +112,7 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
         cout << "# BENCHMARK: " << benchmark_name << " (" << scaling
              << " scaling, " << distribution << " distribution)\n";
 
-        cout << "# VERSION: " << HPX_LOCAL_HAVE_GIT_COMMIT << " "
+        cout << "# VERSION: " << PIKA_HAVE_GIT_COMMIT << " "
              << format_build_date() << "\n"
              << "#\n";
 
@@ -140,13 +140,13 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
         }
     }
 
-    hpx::util::format_to(cout, "{}, {}, {}, {}, {:.14g}, {:.14g}", delay, tasks,
+    pika::util::format_to(cout, "{}, {}, {}, {}, {:.14g}, {:.14g}", delay, tasks,
         suspended_tasks, cores, walltime, warmup_estimate);
 
     if (ac)
     {
         for (std::uint64_t i = 0; i < counter_shortnames.size(); ++i)
-            hpx::util::format_to(
+            pika::util::format_to(
                 cout, ", {:.14g}", counter_values[i].get_value<double>());
     }
 
@@ -155,23 +155,23 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
 
 ///////////////////////////////////////////////////////////////////////////////
 void wait_for_tasks(
-    hpx::lcos::local::barrier& finished, std::uint64_t suspended_tasks)
+    pika::lcos::local::barrier& finished, std::uint64_t suspended_tasks)
 {
     std::uint64_t const pending_count =
-        get_thread_count(hpx::threads::thread_priority::normal,
-            hpx::threads::thread_schedule_state::pending);
+        get_thread_count(pika::threads::thread_priority::normal,
+            pika::threads::thread_schedule_state::pending);
 
     if (pending_count == 0)
     {
         std::uint64_t const all_count =
-            get_thread_count(hpx::threads::thread_priority::normal);
+            get_thread_count(pika::threads::thread_priority::normal);
 
         if (all_count != suspended_tasks + 1)
         {
             thread_init_data data(
-                make_thread_function_nullary(hpx::util::bind(
+                make_thread_function_nullary(pika::util::bind(
                     &wait_for_tasks, std::ref(finished), suspended_tasks)),
-                "wait_for_tasks", hpx::threads::thread_priority::low);
+                "wait_for_tasks", pika::threads::thread_priority::low);
             register_work(data);
             return;
         }
@@ -181,29 +181,29 @@ void wait_for_tasks(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-hpx::threads::thread_result_type invoke_worker_timed_no_suspension(
-    hpx::threads::thread_restart_state ex =
-        hpx::threads::thread_restart_state::signaled)
+pika::threads::thread_result_type invoke_worker_timed_no_suspension(
+    pika::threads::thread_restart_state ex =
+        pika::threads::thread_restart_state::signaled)
 {
     worker_timed(delay * 1000);
-    return hpx::threads::thread_result_type(
-        hpx::threads::thread_schedule_state::terminated,
-        hpx::threads::invalid_thread_id);
+    return pika::threads::thread_result_type(
+        pika::threads::thread_schedule_state::terminated,
+        pika::threads::invalid_thread_id);
 }
 
-hpx::threads::thread_result_type invoke_worker_timed_suspension(
-    hpx::threads::thread_restart_state ex =
-        hpx::threads::thread_restart_state::signaled)
+pika::threads::thread_result_type invoke_worker_timed_suspension(
+    pika::threads::thread_restart_state ex =
+        pika::threads::thread_restart_state::signaled)
 {
     worker_timed(delay * 1000);
 
-    hpx::error_code ec(hpx::lightweight);
-    hpx::this_thread::suspend(
-        hpx::threads::thread_schedule_state::suspended, "suspend", ec);
+    pika::error_code ec(pika::lightweight);
+    pika::this_thread::suspend(
+        pika::threads::thread_schedule_state::suspended, "suspend", ec);
 
-    return hpx::threads::thread_result_type(
-        hpx::threads::thread_schedule_state::terminated,
-        hpx::threads::invalid_thread_id);
+    return pika::threads::thread_result_type(
+        pika::threads::thread_schedule_state::terminated,
+        pika::threads::invalid_thread_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -214,21 +214,21 @@ void stage_worker_static_balanced_stackbased(
 {
     if (suspend)
     {
-        hpx::threads::thread_init_data data(&invoke_worker_timed_suspension,
+        pika::threads::thread_init_data data(&invoke_worker_timed_suspension,
             "invoke_worker_timed_suspension",
-            hpx::threads::thread_priority::normal,
-            hpx::threads::thread_schedule_hint(
+            pika::threads::thread_priority::normal,
+            pika::threads::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)));
-        hpx::threads::register_work(data);
+        pika::threads::register_work(data);
     }
     else
     {
-        hpx::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
+        pika::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
             "invoke_worker_timed_no_suspension",
-            hpx::threads::thread_priority::normal,
-            hpx::threads::thread_schedule_hint(
+            pika::threads::thread_priority::normal,
+            pika::threads::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)));
-        hpx::threads::register_work(data);
+        pika::threads::register_work(data);
     }
 }
 
@@ -237,23 +237,23 @@ void stage_worker_static_balanced_stackless(
 {
     if (suspend)
     {
-        hpx::threads::thread_init_data data(&invoke_worker_timed_suspension,
+        pika::threads::thread_init_data data(&invoke_worker_timed_suspension,
             "invoke_worker_timed_suspension",
-            hpx::threads::thread_priority::normal,
-            hpx::threads::thread_schedule_hint(
+            pika::threads::thread_priority::normal,
+            pika::threads::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)),
-            hpx::threads::thread_stacksize::nostack);
-        hpx::threads::register_work(data);
+            pika::threads::thread_stacksize::nostack);
+        pika::threads::register_work(data);
     }
     else
     {
-        hpx::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
+        pika::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
             "invoke_worker_timed_no_suspension",
-            hpx::threads::thread_priority::normal,
-            hpx::threads::thread_schedule_hint(
+            pika::threads::thread_priority::normal,
+            pika::threads::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)),
-            hpx::threads::thread_stacksize::nostack);
-        hpx::threads::register_work(data);
+            pika::threads::thread_stacksize::nostack);
+        pika::threads::register_work(data);
     }
 }
 
@@ -261,19 +261,19 @@ void stage_worker_static_imbalanced(std::uint64_t target_thread, bool suspend)
 {
     if (suspend)
     {
-        hpx::threads::thread_init_data data(&invoke_worker_timed_suspension,
+        pika::threads::thread_init_data data(&invoke_worker_timed_suspension,
             "invoke_worker_timed_suspension",
-            hpx::threads::thread_priority::normal,
-            hpx::threads::thread_schedule_hint(0));
-        hpx::threads::register_work(data);
+            pika::threads::thread_priority::normal,
+            pika::threads::thread_schedule_hint(0));
+        pika::threads::register_work(data);
     }
     else
     {
-        hpx::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
+        pika::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
             "invoke_worker_timed_no_suspension",
-            hpx::threads::thread_priority::normal,
-            hpx::threads::thread_schedule_hint(0));
-        hpx::threads::register_work(data);
+            pika::threads::thread_priority::normal,
+            pika::threads::thread_schedule_hint(0));
+        pika::threads::register_work(data);
     }
 }
 
@@ -281,30 +281,30 @@ void stage_worker_round_robin(std::uint64_t target_thread, bool suspend)
 {
     if (suspend)
     {
-        hpx::threads::thread_init_data data(
+        pika::threads::thread_init_data data(
             &invoke_worker_timed_suspension, "invoke_worker_timed_suspension");
-        hpx::threads::register_work(data);
+        pika::threads::register_work(data);
     }
     else
     {
-        hpx::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
+        pika::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
             "invoke_worker_timed_no_suspension");
-        hpx::threads::register_work(data);
+        pika::threads::register_work(data);
     }
 }
 
 void stage_workers(std::uint64_t target_thread, std::uint64_t local_tasks,
     stage_worker_function stage_worker)
 {
-    std::uint64_t num_thread = hpx::get_worker_thread_num();
+    std::uint64_t num_thread = pika::get_worker_thread_num();
 
     if (num_thread != target_thread)
     {
         thread_init_data data(
-            make_thread_function_nullary(hpx::util::bind(
+            make_thread_function_nullary(pika::util::bind(
                 &stage_workers, target_thread, local_tasks, stage_worker)),
-            "stage_workers", hpx::threads::thread_priority::normal,
-            hpx::threads::thread_schedule_hint(
+            "stage_workers", pika::threads::thread_priority::normal,
+            pika::threads::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)));
         register_work(data);
         return;
@@ -326,7 +326,7 @@ void stage_workers(std::uint64_t target_thread, std::uint64_t local_tasks,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(variables_map& vm)
+int pika_main(variables_map& vm)
 {
     {
         if (vm.count("no-header"))
@@ -432,21 +432,21 @@ int hpx_main(variables_map& vm)
             for (auto& raw_counter : raw_counters)
             {
                 std::vector<std::string> entry;
-                hpx::string_util::split(entry, raw_counter,
-                    hpx::string_util::is_any_of(","),
-                    hpx::string_util::token_compress_mode::on);
+                pika::string_util::split(entry, raw_counter,
+                    pika::string_util::is_any_of(","),
+                    pika::string_util::token_compress_mode::on);
 
-                HPX_TEST_EQ(entry.size(), 2);
+                PIKA_TEST_EQ(entry.size(), 2);
 
                 counter_shortnames.push_back(entry[0]);
                 counters.push_back(entry[1]);
             }
         }
 
-        std::shared_ptr<hpx::util::activate_counters> ac;
+        std::shared_ptr<pika::util::activate_counters> ac;
         if (!counters.empty())
         {
-            ac = std::make_shared<hpx::util::activate_counters>(counters);
+            ac = std::make_shared<pika::util::activate_counters>(counters);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -460,7 +460,7 @@ int hpx_main(variables_map& vm)
         // This needs to stay here; we may have suspended as recently as the
         // performance counter reset (which is called just before the staging
         // function).
-        std::uint64_t const num_thread = hpx::get_worker_thread_num();
+        std::uint64_t const num_thread = pika::get_worker_thread_num();
 
         for (std::uint64_t i = 0; i < os_thread_count; ++i)
         {
@@ -468,10 +468,10 @@ int hpx_main(variables_map& vm)
                 continue;
 
             thread_init_data data(
-                make_thread_function_nullary(hpx::util::bind(
+                make_thread_function_nullary(pika::util::bind(
                     &stage_workers, i, tasks_per_feeder, stage_worker)),
-                "stage_workers", hpx::threads::thread_priority::normal,
-                hpx::threads::thread_schedule_hint(
+                "stage_workers", pika::threads::thread_priority::normal,
+                pika::threads::thread_schedule_hint(
                     static_cast<std::int16_t>(i)));
             register_work(data);
         }
@@ -483,12 +483,12 @@ int hpx_main(variables_map& vm)
         // Schedule a low-priority thread; when it is executed, it checks to
         // make sure all the tasks (which are normal priority) have been
         // executed, and then it
-        hpx::lcos::local::barrier finished(2);
+        pika::lcos::local::barrier finished(2);
 
         thread_init_data data(
-            make_thread_function_nullary(hpx::util::bind(
+            make_thread_function_nullary(pika::util::bind(
                 &wait_for_tasks, std::ref(finished), total_suspended_tasks)),
-            "wait_for_tasks", hpx::threads::thread_priority::low);
+            "wait_for_tasks", pika::threads::thread_priority::low);
         register_work(data);
 
         finished.wait();
@@ -503,16 +503,16 @@ int hpx_main(variables_map& vm)
     if (suspended_tasks != 0)
     {
         // Force termination of all suspended tasks.
-        hpx::get_runtime().get_thread_manager().abort_all_suspended_threads();
+        pika::get_runtime().get_thread_manager().abort_all_suspended_threads();
     }
-    return hpx::finalize();
+    return pika::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
     // Configure application-specific options.
-    options_description cmdline("usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     cmdline.add_options()
@@ -556,9 +556,9 @@ int main(int argc, char* argv[])
         ;
     // clang-format on
 
-    // Initialize and run HPX.
-    hpx::init_params init_args;
+    // Initialize and run pika.
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return hpx::init(argc, argv, init_args);
+    return pika::init(argc, argv, init_args);
 }

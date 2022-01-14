@@ -5,25 +5,25 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-# This project tests that HPXLocal can be built using FetchContent. It is built
+# This project tests that pika can be built using FetchContent. It is built
 # by the .github/workflows/linux_fetchcontent.yml GitHub actions workflow.
 
 cmake_minimum_required(VERSION 3.18)
-project(HPXFetchContent LANGUAGES CXX)
+project(pika-fetchcontent LANGUAGES CXX)
 
-# Test that HPX correctly handles having Boost Filesystem and ProgramOptions
-# found before setting up HPX, if they are available (do not REQUIRE these)
+# Test that pika correctly handles having Boost Filesystem and ProgramOptions
+# found before setting up pika, if they are available (do not REQUIRE these)
 find_package(Boost COMPONENTS filesystem program_options)
 
 include(FetchContent)
 
 fetchcontent_declare(
-  HPXLocal
-  GIT_REPOSITORY ${HPXLocal_REPOSITORY}
-  GIT_TAG ${HPXLocal_TAG}
+  pika
+  GIT_REPOSITORY ${PIKA_REPOSITORY}
+  GIT_TAG ${PIKA_TAG}
 )
-fetchcontent_getproperties(HPXLocal)
-if(NOT hpxlocal_POPULATED)
-  fetchcontent_populate(HPXLocal)
-  add_subdirectory(${hpxlocal_SOURCE_DIR} ${hpxlocal_BINARY_DIR})
+fetchcontent_getproperties(pika)
+if(NOT pika_POPULATED)
+  fetchcontent_populate(pika)
+  add_subdirectory(${pika_SOURCE_DIR} ${pika_BINARY_DIR})
 endif()

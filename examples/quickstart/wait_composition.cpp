@@ -6,43 +6,43 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/tuple.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/tuple.hpp>
 
 #include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////
 struct cout_continuation
 {
-    typedef hpx::tuple<hpx::future<int>, hpx::future<int>,
-        hpx::future<int>>
+    typedef pika::tuple<pika::future<int>, pika::future<int>,
+        pika::future<int>>
         data_type;
 
-    void operator()(hpx::future<data_type> data) const
+    void operator()(pika::future<data_type> data) const
     {
         data_type v = data.get();
-        std::cout << hpx::get<0>(v).get() << "\n";
-        std::cout << hpx::get<1>(v).get() << "\n";
-        std::cout << hpx::get<2>(v).get() << "\n";
+        std::cout << pika::get<0>(v).get() << "\n";
+        std::cout << pika::get<1>(v).get() << "\n";
+        std::cout << pika::get<2>(v).get() << "\n";
     }
 };
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main()
+int pika_main()
 {
     {
-        hpx::future<int> a = hpx::make_ready_future<int>(17);
-        hpx::future<int> b = hpx::make_ready_future<int>(42);
-        hpx::future<int> c = hpx::make_ready_future<int>(-1);
+        pika::future<int> a = pika::make_ready_future<int>(17);
+        pika::future<int> b = pika::make_ready_future<int>(42);
+        pika::future<int> c = pika::make_ready_future<int>(-1);
 
-        hpx::when_all(a, b, c).then(cout_continuation());
+        pika::when_all(a, b, c).then(cout_continuation());
     }
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);    // Initialize and run HPX.
+    return pika::local::init(pika_main, argc, argv);    // Initialize and run pika.
 }

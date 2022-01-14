@@ -11,4 +11,4 @@ leak:hwloc_topology_init
 
 # Tmp: Topology leak which appeared when changing the base image used for the
 # github action. Ignored temporarily as it is not related to bumping cmake
-leak:*hpx::threads::topology::topology*
+leak:*pika::threads::topology::topology*

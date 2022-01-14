@@ -6,7 +6,7 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
+#include <pika/local/config.hpp>
 
 #include "copyright_check.hpp"
 #include "function_hyper.hpp"
@@ -24,7 +24,7 @@ namespace boost
       const path & full_path,   // example: c:/foo/boost/filesystem/path.hpp
       const string & contents )     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "nocopyright" ) != string::npos) return;
+      if (contents.find( "pikainspect:" "nocopyright" ) != string::npos) return;
 
       if ( contents.find( "Copyright" ) == string::npos
         && contents.find( "copyright" ) == string::npos )

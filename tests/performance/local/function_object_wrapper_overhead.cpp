@@ -5,14 +5,14 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// make inspect happy: hpxinspect:nodeprecatedinclude hpxinspect:nodeprecatedname
+// make inspect happy: pikainspect:nodeprecatedinclude pikainspect:nodeprecatedname
 
-#include <hpx/hpx.hpp>
-#include <hpx/functional/function.hpp>
-#include <hpx/modules/timing.hpp>
+#include <pika/pika.hpp>
+#include <pika/functional/function.hpp>
+#include <pika/modules/timing.hpp>
 
 #include <boost/function.hpp>
-#include <hpx/modules/program_options.hpp>
+#include <pika/modules/program_options.hpp>
 
 #include <cstdint>
 #include <functional>
@@ -20,12 +20,12 @@
 
 #include "worker_timed.hpp"
 
-using hpx::program_options::variables_map;
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::store;
-using hpx::program_options::command_line_parser;
-using hpx::program_options::notify;
+using pika::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::store;
+using pika::program_options::command_line_parser;
+using pika::program_options::notify;
 
 std::uint64_t iterations = 500000;
 std::uint64_t delay = 5;
@@ -44,7 +44,7 @@ template <typename F>
 void run(F const & f, std::uint64_t local_iterations)
 {
     std::uint64_t i = 0;
-    hpx::chrono::high_resolution_timer t;
+    pika::chrono::high_resolution_timer t;
 
     for (; i < local_iterations; ++i)
         f();
@@ -64,13 +64,13 @@ int app_main(
         run(f, iterations);
     }
     {
-        hpx::util::function<void(), false> f = foo();
-        std::cout << "hpx::util::function (non-serializable)";
+        pika::util::function<void(), false> f = foo();
+        std::cout << "pika::util::function (non-serializable)";
         run(f, iterations);
     }
     {
-        hpx::util::function<void()> f = foo();
-        std::cout << "hpx::util::function (serializable)";
+        pika::util::function<void()> f = foo();
+        std::cout << "pika::util::function (serializable)";
         run(f, iterations);
     }
     {
@@ -97,7 +97,7 @@ int main(
     // Parse command line.
     variables_map vm;
 
-    options_description cmdline("Usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     cmdline.add_options()
         ( "help,h"

@@ -4,51 +4,51 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-include(HPXLocal_Message)
-include(HPXLocal_AddPseudoDependencies)
-include(HPXLocal_AddPseudoTarget)
+include(pika_message)
+include(pika_add_pseudo_dependencies)
+include(pika_add_pseudo_target)
 
 # add example pseudo targets needed for modules
-if(HPXLocal_WITH_EXAMPLES)
-  hpx_local_add_pseudo_target(examples.modules)
-  hpx_local_add_pseudo_dependencies(examples examples.modules)
+if(PIKA_WITH_EXAMPLES)
+  pika_add_pseudo_target(examples.modules)
+  pika_add_pseudo_dependencies(examples examples.modules)
 endif()
 
 # add test pseudo targets needed for modules
-# hpx_local_warn("HPXLocal_WITH_TESTS=${HPXLocal_WITH_TESTS}")
-if(HPXLocal_WITH_TESTS)
-  if(HPXLocal_WITH_TESTS_UNIT)
-    hpx_local_add_pseudo_target(tests.unit.modules)
-    hpx_local_add_pseudo_dependencies(tests.unit tests.unit.modules)
+# pika_warn("PIKA_WITH_TESTS=${PIKA_WITH_TESTS}")
+if(PIKA_WITH_TESTS)
+  if(PIKA_WITH_TESTS_UNIT)
+    pika_add_pseudo_target(tests.unit.modules)
+    pika_add_pseudo_dependencies(tests.unit tests.unit.modules)
   endif()
 
-  if(HPXLocal_WITH_EXAMPLES AND HPXLocal_WITH_TESTS_EXAMPLES)
-    hpx_local_add_pseudo_target(tests.examples.modules)
-    hpx_local_add_pseudo_dependencies(tests.examples tests.examples.modules)
+  if(PIKA_WITH_EXAMPLES AND PIKA_WITH_TESTS_EXAMPLES)
+    pika_add_pseudo_target(tests.examples.modules)
+    pika_add_pseudo_dependencies(tests.examples tests.examples.modules)
   endif()
 
-  if(HPXLocal_WITH_TESTS_REGRESSIONS)
-    hpx_local_add_pseudo_target(tests.regressions.modules)
-    hpx_local_add_pseudo_dependencies(
+  if(PIKA_WITH_TESTS_REGRESSIONS)
+    pika_add_pseudo_target(tests.regressions.modules)
+    pika_add_pseudo_dependencies(
       tests.regressions tests.regressions.modules
     )
   endif()
 
-  if(HPXLocal_WITH_TESTS_BENCHMARKS)
-    hpx_local_add_pseudo_target(tests.performance.modules)
-    hpx_local_add_pseudo_dependencies(
+  if(PIKA_WITH_TESTS_BENCHMARKS)
+    pika_add_pseudo_target(tests.performance.modules)
+    pika_add_pseudo_dependencies(
       tests.performance tests.performance.modules
     )
   endif()
 
-  if(HPXLocal_WITH_TESTS_HEADERS)
-    hpx_local_add_pseudo_target(tests.headers.modules)
-    hpx_local_add_pseudo_dependencies(tests.headers tests.headers.modules)
+  if(PIKA_WITH_TESTS_HEADERS)
+    pika_add_pseudo_target(tests.headers.modules)
+    pika_add_pseudo_dependencies(tests.headers tests.headers.modules)
   endif()
 endif()
 
-hpx_local_info("")
-hpx_local_info("Configuring modules:")
+pika_info("")
+pika_info("Configuring modules:")
 
 # Generate a file that lists all enabled modules for checks that might be
 # optional based on the presence of a module or not
@@ -60,58 +60,59 @@ set(CONFIG_STRINGS_MODULES_ENTRIES)
 
 if(MSVC AND MSVC14)
   # add natvis files to solution
-  hpx_local_add_library_sources(
-    hpx_natvis_files GLOB GLOBS "${PROJECT_SOURCE_DIR}/tools/VS/*.natvis"
+  pika_add_library_sources(
+    pika_natvis_files GLOB GLOBS "${PROJECT_SOURCE_DIR}/tools/VS/*.natvis"
   )
-  source_group("Natvis Files" FILES ${hpx_natvis_files_SOURCES})
+  source_group("Natvis Files" FILES ${pika_natvis_files_SOURCES})
 endif()
 
-string(TOUPPER local uppercase_lib)
-add_library(hpx_local SHARED src/dummy.cpp ${hpx_natvis_files_SOURCES})
-target_compile_definitions(hpx_local PRIVATE HPX_LOCAL_EXPORTS)
+set(pika_libs pika)
 
-set_target_properties(
-  hpx_local
-  PROPERTIES VERSION ${HPXLocal_VERSION}
-             SOVERSION ${HPXLocal_SOVERSION}
-             CLEAN_DIRECT_OUTPUT 1
-             OUTPUT_NAME hpx_local
-             FOLDER "Core"
-)
-install(
-  TARGETS hpx_local
-  EXPORT HPXLocalTargets
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT local
-)
-hpx_local_export_targets(hpx_local)
+foreach(lib ${pika_libs})
+  add_library(${lib} SHARED src/dummy.cpp ${pika_natvis_files_SOURCES})
+  set_target_properties(
+    ${lib}
+    PROPERTIES VERSION ${PIKA_VERSION}
+               SOVERSION ${PIKA_SOVERSION}
+               CLEAN_DIRECT_OUTPUT 1
+               OUTPUT_NAME ${lib}
+               FOLDER "Core"
+  )
+  install(
+    TARGETS ${lib}
+    EXPORT pika_targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${lib}
+  )
+  pika_export_targets(${lib})
 
-add_subdirectory(core)
+  add_subdirectory(${lib})
+endforeach()
 
-# hpx_local_add_module populates HPXLocal_ENABLED_MODULES
-foreach(module ${HPXLocal_ENABLED_MODULES})
+# pika_add_module populates PIKA_ENABLED_MODULES
+foreach(module ${PIKA_ENABLED_MODULES})
   string(TOUPPER ${module} uppercase_module)
 
   set(MODULE_ENABLED_MODULE_DEFINES
-      "${MODULE_ENABLED_MODULE_DEFINES}#define HPX_HAVE_MODULE_${uppercase_module}\n"
+      "${MODULE_ENABLED_MODULE_DEFINES}#define PIKA_HAVE_MODULE_${uppercase_module}\n"
   )
 endforeach()
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/cmake/templates/modules_enabled.hpp.in"
-  "${PROJECT_BINARY_DIR}/libs/core/config_local/include/hpx/local/config/modules_enabled.hpp"
+  "${PROJECT_BINARY_DIR}/libs/pika/config_local/include/pika/local/config/modules_enabled.hpp"
   @ONLY
 )
 
-if(MSVC AND HPXLocal_COROUTINES_WITH_SWAP_CONTEXT_EMULATION)
-  target_link_options(hpx_local PRIVATE "/EXPORT:switch_to_fiber")
+if(MSVC AND PIKA_COROUTINES_WITH_SWAP_CONTEXT_EMULATION)
+  target_link_options(pika PRIVATE "/EXPORT:switch_to_fiber")
 endif()
 
-if(HPXLocal_WITH_DATAPAR_VC)
-  target_link_libraries(hpx_local PUBLIC Vc::vc)
+if(PIKA_WITH_DATAPAR_VC)
+  target_link_libraries(pika PUBLIC Vc::vc)
 endif()
 
-if(HPXLocal_WITH_ITTNOTIFY)
-  target_link_libraries(hpx_local PUBLIC Amplifier::amplifier)
+if(PIKA_WITH_ITTNOTIFY)
+  target_link_libraries(pika PUBLIC Amplifier::amplifier)
 endif()

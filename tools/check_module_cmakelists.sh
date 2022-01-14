@@ -23,14 +23,14 @@ function check_module_dependencies() {
     non_module_files_list=$2
     tmp_group_list=$3
 
-    # Find the dependencies through the includes and remove hpx/hpx_* like
-    includes=($(grep -Erho 'hpx/modules/[_a-z]*\.hpp\>' --include=*.{hpp,cpp}\
-        include src 2> /dev/null | sort | uniq | grep -v hpx/hpx))
+    # Find the dependencies through the includes and remove pika/pika_* like
+    includes=($(grep -Erho 'pika/modules/[_a-z]*\.hpp\>' --include=*.{hpp,cpp}\
+        include src 2> /dev/null | sort | uniq | grep -v pika/pika))
 
     # Check if the dependency is inside the CMakeLists.txt
     for include in "${includes[@]}"
     do
-        # Exclude the headers from the main hpx/ dir
+        # Exclude the headers from the main pika/ dir
         if [[ ! "${non_module_files_list[@]}" =~ "$(basename $include)" ]]; then
             # Isolate the name of the module from the include
             module_deps=$(basename $include | cut -d'.' -f1)
@@ -39,7 +39,7 @@ function check_module_dependencies() {
             if [[ ! "$module_deps" == "$tmp_module_name" ]]; then
                 for group_module in ${tmp_group_list}; do
                     if [[ "$module_deps" == "$group_module" ]]; then
-                        check_failure "hpx_${module_deps}" $tmp_module CMakeLists.txt
+                        check_failure "pika_${module_deps}" $tmp_module CMakeLists.txt
                         break
                     fi
                 done
@@ -73,12 +73,12 @@ function check_cmakelists_files() {
 # Enable globbing
 shopt -s globstar
 
-# HPXLocal source directory
-source_dir=/hpx/source
+# pika source directory
+source_dir=/pika/source
 # Where to write the dependencies output files
 output_dir=/tmp
 # Helper to filter out the dependencies from other groups
-module_groups=(core)
+module_groups=(pika)
 
 pushd $source_dir/libs > /dev/null
 
@@ -95,8 +95,8 @@ done
 
 # Construct a list for each of the module groups
 
-# Find non module headers under the main hpx/ dir to exclude them later
-non_module_files_list=($(ls ../hpx | grep .hpp))
+# Find non module headers under the main pika/ dir to exclude them later
+non_module_files_list=($(ls ../pika | grep .hpp))
 
 echo "" > $output_dir/missing_files.txt
 echo "" > $output_dir/missing_deps.txt

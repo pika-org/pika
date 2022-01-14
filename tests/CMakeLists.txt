@@ -6,17 +6,17 @@
 
 set(subdirs "")
 
-if(HPXLocal_WITH_TESTS_BENCHMARKS)
+if(PIKA_WITH_TESTS_BENCHMARKS)
   set(subdirs ${subdirs} performance)
   set(performance_FLAGS ON)
 endif()
 
-if(HPXLocal_WITH_TESTS_REGRESSIONS)
+if(PIKA_WITH_TESTS_REGRESSIONS)
   set(subdirs ${subdirs} regressions)
   set(regressions_FLAGS ON)
 endif()
 
-if(HPXLocal_WITH_TESTS_UNIT)
+if(PIKA_WITH_TESTS_UNIT)
   set(subdirs ${subdirs} unit)
   set(unit_FLAGS ON)
 endif()

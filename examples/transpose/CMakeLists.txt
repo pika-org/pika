@@ -21,16 +21,16 @@ foreach(example_program ${example_programs})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  hpx_local_add_executable(
+  pika_add_executable(
     ${example_program} INTERNAL_FLAGS
     SOURCES ${sources} ${${example_program}_FLAGS}
     FOLDER "Examples/Local/Transpose"
   )
 
-  hpx_local_add_example_target_dependencies("transpose" ${example_program})
+  pika_add_example_target_dependencies("transpose" ${example_program})
 
-  if(HPXLocal_WITH_TESTS AND HPXLocal_WITH_TESTS_EXAMPLES)
-    hpx_local_add_example_test(
+  if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
+    pika_add_example_test(
       "transpose" ${example_program} ${${example_program}_PARAMETERS}
     )
   endif()

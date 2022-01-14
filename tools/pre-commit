@@ -18,7 +18,7 @@
 # cp tools/pre-commit .git/hooks/pre-commit
 # chmod +x .git/hooks/pre-commit
 
-# @todo : add support for the hpx inspect tool to be run as well
+# @todo : add support for the pika inspect tool to be run as well
 
 red=$(tput setaf 1)
 green=$(tput setaf 2)

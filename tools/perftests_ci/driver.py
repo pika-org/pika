@@ -52,10 +52,10 @@ def build(build_type, environment, target, source_dir, build_dir, install_dir,
         source_dir = os.path.abspath(os.path.join(script_dir, os.path.pardir))
 
     #env.set_cmake_arg('CMAKE_BUILD_TYPE', build_type.title())
-    env.set_cmake_arg('PYUTILS_HPXLocal_WITH_MALLOC', 'jemalloc')
-    env.set_cmake_arg('PYUTILS_HPXLocal_WITH_TESTS', 'ON')
-    env.set_cmake_arg('PYUTILS_HPXLocal_WITH_TESTS_BENCHMARKS', 'ON')
-    env.set_cmake_arg('PYUTILS_HPXLocal_WITH_UNITY_BUILD', 'ON')
+    env.set_cmake_arg('PYUTILS_PIKA_WITH_MALLOC', 'jemalloc')
+    env.set_cmake_arg('PYUTILS_PIKA_WITH_TESTS', 'ON')
+    env.set_cmake_arg('PYUTILS_PIKA_WITH_TESTS_BENCHMARKS', 'ON')
+    env.set_cmake_arg('PYUTILS_PIKA_WITH_UNITY_BUILD', 'ON')
     env.set_cmake_arg('PYUTILS_CMAKE_BUILD_TYPE', 'Release')
     env.set_cmake_arg('-GNinja', '')
 
@@ -124,7 +124,7 @@ if buildinfo:
               nargs='+',
               type=str,
               help='extra arguments to pass to the test\nWarning prefer = to \
-              space to assign values to hpx options')
+              space to assign values to pika options')
     def run(local, run_output, targets_and_opts):
         # options
         targets_and_opts = ' '.join(targets_and_opts).lstrip()

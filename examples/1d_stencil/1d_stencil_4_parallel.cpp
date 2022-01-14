@@ -9,18 +9,18 @@
 //
 // This example builds on example three. It futurizes the code from that
 // example. Compared to example two this code runs much more efficiently. It
-// allows for changing the amount of work executed in one HPX thread which
+// allows for changing the amount of work executed in one pika thread which
 // enables tuning the performance for the optimal grain size of the
 // computation. This example is still fully local but demonstrates nice
 // scalability on SMP machines.
 
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/iterator_support.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/iterator_support.hpp>
 
-#if !defined(HPX_HAVE_CXX17_SHARED_PTR_ARRAY)
+#if !defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
 #include <boost/shared_array.hpp>
 #else
 #include <memory>
@@ -78,7 +78,7 @@ struct partition_data
     }
 
 private:
-#if defined(HPX_HAVE_CXX17_SHARED_PTR_ARRAY)
+#if defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
     std::shared_ptr<double[]> data_;
 #else
     boost::shared_array<double> data_;
@@ -103,7 +103,7 @@ std::ostream& operator<<(std::ostream& os, partition_data const& c)
 struct stepper
 {
     // Our data for one time step
-    typedef hpx::shared_future<partition_data> partition;
+    typedef pika::shared_future<partition_data> partition;
     typedef std::vector<partition> space;
 
     // Our operator
@@ -120,11 +120,11 @@ struct stepper
         std::size_t size = middle.size();
         partition_data next(size);
 
-        typedef hpx::util::counting_iterator<std::size_t> iterator;
+        typedef pika::util::counting_iterator<std::size_t> iterator;
 
         next[0] = heat(left[size - 1], middle[0], middle[1]);
 
-        hpx::for_each(hpx::execution::par, iterator(1), iterator(size - 1),
+        pika::for_each(pika::execution::par, iterator(1), iterator(size - 1),
             [&next, &middle](std::size_t i) {
                 next[i] = heat(middle[i - 1], middle[i], middle[i + 1]);
             });
@@ -136,7 +136,7 @@ struct stepper
 
     // do all the work on 'np' partitions, 'nx' data points each, for 'nt'
     // time steps
-    hpx::future<space> do_work(std::size_t np, std::size_t nx, std::size_t nt)
+    pika::future<space> do_work(std::size_t np, std::size_t nx, std::size_t nt)
     {
         // U[t][i] is the state of position i at time t.
         std::vector<space> U(2);
@@ -145,9 +145,9 @@ struct stepper
 
         // Initial conditions: f(0, i) = i
         for (std::size_t i = 0; i != np; ++i)
-            U[0][i] = hpx::make_ready_future(partition_data(nx, double(i)));
+            U[0][i] = pika::make_ready_future(partition_data(nx, double(i)));
 
-        auto Op = hpx::unwrapping(&stepper::heat_part);
+        auto Op = pika::unwrapping(&stepper::heat_part);
 
         // Actual time step loop
         for (std::size_t t = 0; t != nt; ++t)
@@ -155,23 +155,23 @@ struct stepper
             space const& current = U[t % 2];
             space& next = U[(t + 1) % 2];
 
-            typedef hpx::util::counting_iterator<std::size_t> iterator;
+            typedef pika::util::counting_iterator<std::size_t> iterator;
 
-            hpx::for_each(hpx::execution::par, iterator(0), iterator(np),
+            pika::for_each(pika::execution::par, iterator(0), iterator(np),
                 [&next, &current, np, &Op](std::size_t i) {
-                    next[i] = hpx::dataflow(hpx::launch::async, Op,
+                    next[i] = pika::dataflow(pika::launch::async, Op,
                         current[idx(i - 1, np)], current[i],
                         current[idx(i + 1, np)]);
                 });
         }
 
         // Return the solution at time-step 'nt'.
-        return hpx::when_all(U[nt % 2]);
+        return pika::when_all(U[nt % 2]);
     }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::uint64_t np = vm["np"].as<std::uint64_t>();    // Number of partitions.
     std::uint64_t nx =
@@ -185,15 +185,15 @@ int hpx_main(hpx::program_options::variables_map& vm)
     stepper step;
 
     // Measure execution time.
-    std::uint64_t t = hpx::chrono::high_resolution_clock::now();
+    std::uint64_t t = pika::chrono::high_resolution_clock::now();
 
     // Execute nt time steps on nx grid points and print the final solution.
-    hpx::future<stepper::space> result = step.do_work(np, nx, nt);
+    pika::future<stepper::space> result = step.do_work(np, nx, nt);
 
     stepper::space solution = result.get();
-    hpx::wait_all(solution);
+    pika::wait_all(solution);
 
-    std::uint64_t elapsed = hpx::chrono::high_resolution_clock::now() - t;
+    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
 
     // Print the final solution
     if (vm.count("result"))
@@ -202,15 +202,15 @@ int hpx_main(hpx::program_options::variables_map& vm)
             std::cout << "U[" << i << "] = " << solution[i].get() << std::endl;
     }
 
-    std::uint64_t const os_thread_count = hpx::get_os_thread_count();
+    std::uint64_t const os_thread_count = pika::get_os_thread_count();
     print_time_results(os_thread_count, elapsed, nx, np, nt, header);
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
 
     options_description desc_commandline;
     // clang-format off
@@ -232,9 +232,9 @@ int main(int argc, char* argv[])
     ;
     // clang-format on
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

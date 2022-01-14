@@ -7,9 +7,9 @@
 // This example demonstrates the use of a channel which is very similar to the
 // equally named feature in the Go language.
 
-#include <hpx/local/channel.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/local/channel.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
 
 #include <iostream>
 #include <numeric>
@@ -17,7 +17,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-void sum(std::vector<int> const& s, hpx::lcos::local::channel<int> c)
+void sum(std::vector<int> const& s, pika::lcos::local::channel<int> c)
 {
     c.set(std::accumulate(s.begin(), s.end(), 0));    // send sum to channel
 }
@@ -25,53 +25,53 @@ void sum(std::vector<int> const& s, hpx::lcos::local::channel<int> c)
 void calculate_sum()
 {
     std::vector<int> s = {7, 2, 8, -9, 4, 0};
-    hpx::lcos::local::channel<int> c;
+    pika::lcos::local::channel<int> c;
 
-    hpx::apply(&sum, std::vector<int>(s.begin(), s.begin() + s.size() / 2), c);
-    hpx::apply(&sum, std::vector<int>(s.begin() + s.size() / 2, s.end()), c);
+    pika::apply(&sum, std::vector<int>(s.begin(), s.begin() + s.size() / 2), c);
+    pika::apply(&sum, std::vector<int>(s.begin() + s.size() / 2, s.end()), c);
 
-    int x = c.get(hpx::launch::sync);    // receive from c
-    int y = c.get(hpx::launch::sync);
+    int x = c.get(pika::launch::sync);    // receive from c
+    int y = c.get(pika::launch::sync);
 
     std::cout << "sum: " << x + y << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void ping(
-    hpx::lcos::local::send_channel<std::string> pings, std::string const& msg)
+    pika::lcos::local::send_channel<std::string> pings, std::string const& msg)
 {
     pings.set(msg);
 }
 
-void pong(hpx::lcos::local::receive_channel<std::string> pings,
-    hpx::lcos::local::send_channel<std::string> pongs)
+void pong(pika::lcos::local::receive_channel<std::string> pings,
+    pika::lcos::local::send_channel<std::string> pongs)
 {
-    std::string msg = pings.get(hpx::launch::sync);
+    std::string msg = pings.get(pika::launch::sync);
     pongs.set(msg);
 }
 
 void pingpong()
 {
-    hpx::lcos::local::channel<std::string> pings;
-    hpx::lcos::local::channel<std::string> pongs;
+    pika::lcos::local::channel<std::string> pings;
+    pika::lcos::local::channel<std::string> pongs;
 
     ping(pings, "passed message");
     pong(pings, pongs);
 
-    std::cout << "ping-ponged: " << pongs.get(hpx::launch::sync) << std::endl;
+    std::cout << "ping-ponged: " << pongs.get(pika::launch::sync) << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void pingpong1()
 {
-    hpx::lcos::local::one_element_channel<std::string> pings;
-    hpx::lcos::local::one_element_channel<std::string> pongs;
+    pika::lcos::local::one_element_channel<std::string> pings;
+    pika::lcos::local::one_element_channel<std::string> pongs;
 
     for (int i = 0; i != 10; ++i)
     {
         ping(pings, "passed message");
         pong(pings, pongs);
-        pongs.get(hpx::launch::sync);
+        pongs.get(pika::launch::sync);
     }
 
     std::cout << "ping-ponged 10 times\n";
@@ -79,17 +79,17 @@ void pingpong1()
 
 void pingpong2()
 {
-    hpx::lcos::local::one_element_channel<std::string> pings;
-    hpx::lcos::local::one_element_channel<std::string> pongs;
+    pika::lcos::local::one_element_channel<std::string> pings;
+    pika::lcos::local::one_element_channel<std::string> pongs;
 
     ping(pings, "passed message");
-    hpx::future<void> f1 = hpx::async([=]() { pong(pings, pongs); });
+    pika::future<void> f1 = pika::async([=]() { pong(pings, pongs); });
 
     ping(pings, "passed message");
-    hpx::future<void> f2 = hpx::async([=]() { pong(pings, pongs); });
+    pika::future<void> f2 = pika::async([=]() { pong(pings, pongs); });
 
-    pongs.get(hpx::launch::sync);
-    pongs.get(hpx::launch::sync);
+    pongs.get(pika::launch::sync);
+    pongs.get(pika::launch::sync);
 
     f1.get();
     f2.get();
@@ -100,14 +100,14 @@ void pingpong2()
 ///////////////////////////////////////////////////////////////////////////////
 void dispatch_work()
 {
-    hpx::lcos::local::channel<int> jobs;
-    hpx::lcos::local::channel<> done;
+    pika::lcos::local::channel<int> jobs;
+    pika::lcos::local::channel<> done;
 
-    hpx::apply([jobs, done]() mutable {
+    pika::apply([jobs, done]() mutable {
         while (true)
         {
-            hpx::error_code ec(hpx::lightweight);
-            int value = jobs.get(hpx::launch::sync, ec);
+            pika::error_code ec(pika::lightweight);
+            int value = jobs.get(pika::launch::sync, ec);
             if (!ec)
             {
                 std::cout << "received job: " << value << std::endl;
@@ -130,13 +130,13 @@ void dispatch_work()
     jobs.close();
     std::cout << "sent all jobs" << std::endl;
 
-    done.get(hpx::launch::sync);
+    done.get(pika::launch::sync);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void channel_range()
 {
-    hpx::lcos::local::channel<std::string> queue;
+    pika::lcos::local::channel<std::string> queue;
 
     queue.set("one");
     queue.set("two");
@@ -147,7 +147,7 @@ void channel_range()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main()
+int pika_main()
 {
     calculate_sum();
     pingpong();
@@ -156,10 +156,10 @@ int hpx_main()
     dispatch_work();
     channel_range();
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

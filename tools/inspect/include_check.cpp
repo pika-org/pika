@@ -8,8 +8,8 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/util/to_string.hpp>
+#include <pika/local/config.hpp>
+#include <pika/util/to_string.hpp>
 
 #include <algorithm>
 
@@ -241,24 +241,24 @@ namespace boost
         {"(\\bstd\\s*::\\s*system_error\\b)", "std::system_error",
             "system_error"},
         // boost
-        {"(\\bhpx\\s*::\\s*intrusive_ptr\\b)", "hpx::intrusive_ptr",
-            "hpx/modules/memory.hpp"},
-        {"(\\bhpx\\s*::\\s*util\\s*::\\s*from_string\\b)",
-            "hpx::util::from_string", "hpx/util/from_string.hpp"},
-        {"(\\bhpx\\s*::\\s*util\\s*::\\s*to_string\\b)",
-            "hpx::util::to_string", "hpx/util/to_string.hpp"},
+        {"(\\bpika\\s*::\\s*intrusive_ptr\\b)", "pika::intrusive_ptr",
+            "pika/modules/memory.hpp"},
+        {"(\\bpika\\s*::\\s*util\\s*::\\s*from_string\\b)",
+            "pika::util::from_string", "pika/util/from_string.hpp"},
+        {"(\\bpika\\s*::\\s*util\\s*::\\s*to_string\\b)",
+            "pika::util::to_string", "pika/util/to_string.hpp"},
         // macros
-        {"(\\bHPX_PP_CAT\\b)", "HPX_PP_CAT", "hpx/preprocessor/cat.hpp"},
-        {"(\\bHPX_PP_EXPAND\\b)", "HPX_PP_EXPAND",
-            "hpx/preprocessor/expand.hpp"},
-        {"(\\bHPX_PP_NARGS\\b)", "HPX_PP_NARGS", "hpx/preprocessor/nargs.hpp"},
-        {"(\\bHPX_PP_STRINGIZE\\b)", "HPX_PP_STRINGIZE",
-            "hpx/preprocessor/stringize.hpp"},
-        {"(\\bHPX_PP_STRIP_PARENS\\b)", "HPX_PP_STRIP_PARENS",
-            "hpx/preprocessor/strip_parens.hpp"},
+        {"(\\bPIKA_PP_CAT\\b)", "PIKA_PP_CAT", "pika/preprocessor/cat.hpp"},
+        {"(\\bPIKA_PP_EXPAND\\b)", "PIKA_PP_EXPAND",
+            "pika/preprocessor/expand.hpp"},
+        {"(\\bPIKA_PP_NARGS\\b)", "PIKA_PP_NARGS", "pika/preprocessor/nargs.hpp"},
+        {"(\\bPIKA_PP_STRINGIZE\\b)", "PIKA_PP_STRINGIZE",
+            "pika/preprocessor/stringize.hpp"},
+        {"(\\bPIKA_PP_STRIP_PARENS\\b)", "PIKA_PP_STRIP_PARENS",
+            "pika/preprocessor/strip_parens.hpp"},
         //
-        {"(\\HPX_ASSERT\\b)", "HPX_ASSERT", "hpx/assert.hpp"},
-        {"(\\HPX_ASSERT_MSG\\b)", "HPX_ASSERT_MSG", "hpx/assert.hpp"},
+        {"(\\bPIKA_ASSERT\\b)", "PIKA_ASSERT", "pika/assert.hpp"},
+        {"(\\bPIKA_ASSERT_MSG\\b)", "PIKA_ASSERT_MSG", "pika/assert.hpp"},
         {nullptr, nullptr, nullptr}};
 
     //  include_check constructor  -------------------------------------------//
@@ -302,7 +302,7 @@ namespace boost
       const path & full_path,      // example: c:/foo/boost/filesystem/path.hpp
       const string & contents)     // contents of file to be inspected
     {
-      std::string::size_type p = contents.find( "hpxinspect:" "noinclude" );
+      std::string::size_type p = contents.find( "pikainspect:" "noinclude" );
       if (p != string::npos)
       {
         // ignore this directive here (it is handled below) if it is followed
@@ -328,8 +328,8 @@ namespace boost
           includes.insert(std::string(m[2].first, m[2].second));
       }
 
-      // if one of the includes is <hpx/hpx.hpp> assume all is well
-      if (includes.find("hpx/hpx.hpp") != includes.end())
+      // if one of the includes is <pika/pika.hpp> assume all is well
+      if (includes.find("pika/pika.hpp") != includes.end())
         return;
 
       // for all given names, check whether corresponding include was found
@@ -355,7 +355,7 @@ namespace boost
                 continue;
             found_names.insert(found_name);
 
-            std::string tag("hpxinspect:" "noinclude:" + found_name);
+            std::string tag("pikainspect:" "noinclude:" + found_name);
             if (contents.find(tag) != string::npos)
                 continue;
 
@@ -383,7 +383,7 @@ namespace boost
                   + m.format(d.data->include)
                   + ") for symbol "
                   + m.format(d.data->name) + " on line "
-                  + linelink(full_path, hpx::util::to_string(line_number)));
+                  + linelink(full_path, pika::util::to_string(line_number)));
             }
             checked_includes.insert(m.format(d.data->include));
           }

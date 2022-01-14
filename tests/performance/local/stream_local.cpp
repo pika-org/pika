@@ -9,16 +9,16 @@
 // This code is based on the STREAM benchmark:
 // https://www.cs.virginia.edu/stream/ref.html
 //
-// We adopted the code and HPXifyed it.
+// We adopted the code and pikaifyed it.
 //
 
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/execution.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/thread.hpp>
-#include <hpx/local/version.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/type_support/unused.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/execution.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/thread.hpp>
+#include <pika/local/version.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/type_support/unused.hpp>
 
 #include <cstddef>
 #include <iostream>
@@ -35,16 +35,16 @@ bool csv = false;
 bool header = false;
 
 ///////////////////////////////////////////////////////////////////////////////
-hpx::threads::topology& retrieve_topology()
+pika::threads::topology& retrieve_topology()
 {
-    static hpx::threads::topology& topo = hpx::threads::create_topology();
+    static pika::threads::topology& topo = pika::threads::create_topology();
     return topo;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 double mysecond()
 {
-    return hpx::chrono::high_resolution_clock::now() * 1e-9;
+    return pika::chrono::high_resolution_clock::now() * 1e-9;
 }
 
 int checktick()
@@ -83,9 +83,9 @@ void check_results(std::size_t iterations, Vector const& a_res,
     std::vector<STREAM_TYPE> b(b_res.size());
     std::vector<STREAM_TYPE> c(c_res.size());
 
-    hpx::copy(hpx::execution::par, a_res.begin(), a_res.end(), a.begin());
-    hpx::copy(hpx::execution::par, b_res.begin(), b_res.end(), b.begin());
-    hpx::copy(hpx::execution::par, c_res.begin(), c_res.end(), c.begin());
+    pika::copy(pika::execution::par, a_res.begin(), a_res.end(), a.begin());
+    pika::copy(pika::execution::par, b_res.begin(), b_res.end(), b.begin());
+    pika::copy(pika::execution::par, c_res.begin(), c_res.end(), c.begin());
 
     STREAM_TYPE aj, bj, cj, scalar;
     STREAM_TYPE aSumErr, bSumErr, cSumErr;
@@ -131,7 +131,7 @@ void check_results(std::size_t iterations, Vector const& a_res,
     }
     else
     {
-        hpx::util::format_to(std::cout, "WEIRD: sizeof(STREAM_TYPE) = {}\n",
+        pika::util::format_to(std::cout, "WEIRD: sizeof(STREAM_TYPE) = {}\n",
             sizeof(STREAM_TYPE));
         epsilon = 1.e-6;
     }
@@ -140,10 +140,10 @@ void check_results(std::size_t iterations, Vector const& a_res,
     if (std::abs(aAvgErr / aj) > epsilon)
     {
         err++;
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "Failed Validation on array a[], AvgRelAbsErr > epsilon ({})\n",
             epsilon);
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}\n", aj,
             aAvgErr, std::abs(aAvgErr) / aj);
         ierr = 0;
@@ -155,7 +155,7 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #ifdef VERBOSE
                 if (ierr < 10)
                 {
-                    hpx::util::format_to(std::cout,
+                    pika::util::format_to(std::cout,
                         "         array a: index: {}, expected: {}, "
                         "observed: {}, relative error: {}\n",
                         (unsigned long) j, aj, a[j],
@@ -164,19 +164,19 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #endif
             }
         }
-        hpx::util::format_to(
+        pika::util::format_to(
             std::cout, "     For array a[], {} errors were found.\n", ierr);
     }
     if (std::abs(bAvgErr / bj) > epsilon)
     {
         err++;
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "Failed Validation on array b[], AvgRelAbsErr > epsilon ({})\n",
             epsilon);
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}\n", bj,
             bAvgErr, std::abs(bAvgErr) / bj);
-        hpx::util::format_to(
+        pika::util::format_to(
             std::cout, "     AvgRelAbsErr > Epsilon ({})\n", epsilon);
         ierr = 0;
         for (std::size_t j = 0; j < a.size(); j++)
@@ -187,7 +187,7 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #ifdef VERBOSE
                 if (ierr < 10)
                 {
-                    hpx::util::format_to(std::cout,
+                    pika::util::format_to(std::cout,
                         "         array b: index: {}, expected: {}, "
                         "observed: {}, relative error: {}\n",
                         (unsigned long) j, bj, b[j],
@@ -196,19 +196,19 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #endif
             }
         }
-        hpx::util::format_to(
+        pika::util::format_to(
             std::cout, "     For array b[], {} errors were found.\n", ierr);
     }
     if (std::abs(cAvgErr / cj) > epsilon)
     {
         err++;
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "Failed Validation on array c[], AvgRelAbsErr > epsilon ({})\n",
             epsilon);
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}\n", cj,
             cAvgErr, std::abs(cAvgErr) / cj);
-        hpx::util::format_to(
+        pika::util::format_to(
             std::cout, "     AvgRelAbsErr > Epsilon ({})\n", epsilon);
         ierr = 0;
         for (std::size_t j = 0; j < a.size(); j++)
@@ -219,7 +219,7 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #ifdef VERBOSE
                 if (ierr < 10)
                 {
-                    hpx::util::format_to(std::cout,
+                    pika::util::format_to(std::cout,
                         "         array c: index: {}, expected: {}, "
                         "observed: {}, relative error: {}\n",
                         (unsigned long) j, cj, c[j],
@@ -228,26 +228,26 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #endif
             }
         }
-        hpx::util::format_to(
+        pika::util::format_to(
             std::cout, "     For array c[], {} errors were found.\n", ierr);
     }
     if (err == 0)
     {
         if (!csv)
         {
-            hpx::util::format_to(std::cout,
+            pika::util::format_to(std::cout,
                 "Solution Validates: avg error less than {} on all three "
                 "arrays\n",
                 epsilon);
         }
     }
 #ifdef VERBOSE
-    hpx::util::format_to(std::cout, "Results Validation Verbose Results:\n");
-    hpx::util::format_to(
+    pika::util::format_to(std::cout, "Results Validation Verbose Results:\n");
+    pika::util::format_to(
         std::cout, "    Expected a(1), b(1), c(1): {} {} {}\n", aj, bj, cj);
-    hpx::util::format_to(std::cout, "    Observed a(1), b(1), c(1): {} {} {}\n",
+    pika::util::format_to(std::cout, "    Observed a(1), b(1), c(1): {} {} {}\n",
         a[1], b[1], c[1]);
-    hpx::util::format_to(std::cout, "    Rel Errors on a, b, c:     {} {} {}\n",
+    pika::util::format_to(std::cout, "    Rel Errors on a, b, c:     {} {} {}\n",
         (double) std::abs(aAvgErr / aj), (double) std::abs(bAvgErr / bj),
         (double) std::abs(cAvgErr / cj));
 #endif
@@ -267,7 +267,7 @@ struct multiply_step
     //         (used in invoke()) to get the return type
 
     template <typename U>
-    HPX_HOST_DEVICE HPX_FORCEINLINE T operator()(U val) const
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE T operator()(U val) const
     {
         return val * factor_;
     }
@@ -283,7 +283,7 @@ struct add_step
     //         (used in invoke()) to get the return type
 
     template <typename U>
-    HPX_HOST_DEVICE HPX_FORCEINLINE T operator()(U val1, U val2) const
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE T operator()(U val1, U val2) const
     {
         return val1 + val2;
     }
@@ -302,7 +302,7 @@ struct triad_step
     //         (used in invoke()) to get the return type
 
     template <typename U>
-    HPX_HOST_DEVICE HPX_FORCEINLINE T operator()(U val1, U val2) const
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE T operator()(U val1, U val2) const
     {
         return val1 + val2 * factor_;
     }
@@ -323,13 +323,13 @@ std::vector<std::vector<double>> run_benchmark(std::size_t warmup_iterations,
     vector_type c(size);
 
     // Initialize arrays
-    hpx::fill(policy, a.begin(), a.end(), 1.0);
-    hpx::fill(policy, b.begin(), b.end(), 2.0);
-    hpx::fill(policy, c.begin(), c.end(), 0.0);
+    pika::fill(policy, a.begin(), a.end(), 1.0);
+    pika::fill(policy, b.begin(), b.end(), 2.0);
+    pika::fill(policy, c.begin(), c.end(), 0.0);
 
     // Check clock ticks ...
     double t = mysecond();
-    hpx::transform(
+    pika::transform(
         policy, a.begin(), a.end(), a.begin(), multiply_step<STREAM_TYPE>(2.0));
     t = 1.0E6 * (mysecond() - t);
 
@@ -381,26 +381,26 @@ std::vector<std::vector<double>> run_benchmark(std::size_t warmup_iterations,
     for (std::size_t iteration = 0; iteration != warmup_iterations; ++iteration)
     {
         // Copy
-        hpx::copy(policy, a.begin(), a.end(), c.begin());
+        pika::copy(policy, a.begin(), a.end(), c.begin());
 
         // Scale
-        hpx::transform(policy, c.begin(), c.end(), b.begin(),
+        pika::transform(policy, c.begin(), c.end(), b.begin(),
             multiply_step<STREAM_TYPE>(scalar));
 
         // Add
-        hpx::ranges::transform(policy, a.begin(), a.end(), b.begin(), b.end(),
+        pika::ranges::transform(policy, a.begin(), a.end(), b.begin(), b.end(),
             c.begin(), add_step<STREAM_TYPE>());
 
         // Triad
-        hpx::ranges::transform(policy, b.begin(), b.end(), c.begin(), c.end(),
+        pika::ranges::transform(policy, b.begin(), b.end(), c.begin(), c.end(),
             a.begin(), triad_step<STREAM_TYPE>(scalar));
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // Reinitialize arrays (if needed)
-    hpx::fill(policy, a.begin(), a.end(), 1.0);
-    hpx::fill(policy, b.begin(), b.end(), 2.0);
-    hpx::fill(policy, c.begin(), c.end(), 0.0);
+    pika::fill(policy, a.begin(), a.end(), 1.0);
+    pika::fill(policy, b.begin(), b.end(), 2.0);
+    pika::fill(policy, c.begin(), c.end(), 0.0);
 
     ///////////////////////////////////////////////////////////////////////////
     // Main timing loop
@@ -409,24 +409,24 @@ std::vector<std::vector<double>> run_benchmark(std::size_t warmup_iterations,
     {
         // Copy
         timing[0][iteration] = mysecond();
-        hpx::copy(policy, a.begin(), a.end(), c.begin());
+        pika::copy(policy, a.begin(), a.end(), c.begin());
         timing[0][iteration] = mysecond() - timing[0][iteration];
 
         // Scale
         timing[1][iteration] = mysecond();
-        hpx::transform(policy, c.begin(), c.end(), b.begin(),
+        pika::transform(policy, c.begin(), c.end(), b.begin(),
             multiply_step<STREAM_TYPE>(scalar));
         timing[1][iteration] = mysecond() - timing[1][iteration];
 
         // Add
         timing[2][iteration] = mysecond();
-        hpx::ranges::transform(policy, a.begin(), a.end(), b.begin(), b.end(),
+        pika::ranges::transform(policy, a.begin(), a.end(), b.begin(), b.end(),
             c.begin(), add_step<STREAM_TYPE>());
         timing[2][iteration] = mysecond() - timing[2][iteration];
 
         // Triad
         timing[3][iteration] = mysecond();
-        hpx::ranges::transform(policy, b.begin(), b.end(), c.begin(), c.end(),
+        pika::ranges::transform(policy, b.begin(), b.end(), c.begin(), c.end(),
             a.begin(), triad_step<STREAM_TYPE>(scalar));
         timing[3][iteration] = mysecond() - timing[3][iteration];
     }
@@ -445,7 +445,7 @@ std::vector<std::vector<double>> run_benchmark(std::size_t warmup_iterations,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::size_t vector_size = vm["vector_size"].as<std::size_t>();
     std::size_t offset = vm["offset"].as<std::size_t>();
@@ -456,19 +456,19 @@ int hpx_main(hpx::program_options::variables_map& vm)
     csv = vm.count("csv") > 0;
     header = vm.count("header") > 0;
 
-    HPX_UNUSED(chunk_size);
+    PIKA_UNUSED(chunk_size);
 
     std::string chunker = vm["chunker"].as<std::string>();
 
     if (vector_size < 1)
     {
-        HPX_THROW_EXCEPTION(hpx::commandline_option_error, "hpx_main",
+        PIKA_THROW_EXCEPTION(pika::commandline_option_error, "pika_main",
             "Invalid vector size, must be at least 1");
     }
 
     if (iterations < 1)
     {
-        HPX_THROW_EXCEPTION(hpx::commandline_option_error, "hpx_main",
+        PIKA_THROW_EXCEPTION(pika::commandline_option_error, "pika_main",
             "Invalid number of iterations given, must be at least 1");
     }
 
@@ -477,8 +477,8 @@ int hpx_main(hpx::program_options::variables_map& vm)
     {
         std::cout
             << "-------------------------------------------------------------\n"
-            << "Modified STREAM benchmark based on\nHPXLocal version: "
-                << hpx::local::build_string() << "\n"
+            << "Modified STREAM benchmark based on\npika version: "
+                << pika::local::build_string() << "\n"
             << "-------------------------------------------------------------\n"
             << "This system uses " << sizeof(STREAM_TYPE)
                 << " bytes per array element.\n"
@@ -495,7 +495,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
             << " will be used to compute the reported bandwidth.\n"
             << "-------------------------------------------------------------\n"
             << "Number of Threads requested = "
-                << hpx::get_os_thread_count() << "\n"
+                << pika::get_os_thread_count() << "\n"
             << "Chunking policy requested: " << chunker << "\n"
             << "Executor requested: " << executor << "\n"
             << "-------------------------------------------------------------\n"
@@ -510,32 +510,32 @@ int hpx_main(hpx::program_options::variables_map& vm)
     {
         // Default parallel policy with serial allocator.
         timing = run_benchmark<>(
-            warmup_iterations, iterations, vector_size, hpx::execution::par);
+            warmup_iterations, iterations, vector_size, pika::execution::par);
     }
     else if (executor == 1)
     {
         // Fork-join executor.
-        using executor_type = hpx::execution::experimental::fork_join_executor;
+        using executor_type = pika::execution::experimental::fork_join_executor;
 
         executor_type exec;
-        auto policy = hpx::execution::par.on(exec);
+        auto policy = pika::execution::par.on(exec);
         timing = run_benchmark<>(
             warmup_iterations, iterations, vector_size, std::move(policy));
     }
     else if (executor == 2)
     {
         // thread_pool_scheduler used through a scheduler_executor.
-        using executor_type = hpx::execution::experimental::scheduler_executor<
-            hpx::execution::experimental::thread_pool_scheduler>;
+        using executor_type = pika::execution::experimental::scheduler_executor<
+            pika::execution::experimental::thread_pool_scheduler>;
 
         executor_type exec;
-        auto policy = hpx::execution::par.on(exec);
+        auto policy = pika::execution::par.on(exec);
         timing = run_benchmark<>(
             warmup_iterations, iterations, vector_size, std::move(policy));
     }
     else
     {
-        HPX_THROW_EXCEPTION(hpx::commandline_option_error, "hpx_main",
+        PIKA_THROW_EXCEPTION(pika::commandline_option_error, "pika_main",
             "Invalid executor id given (0-4 allowed");
     }
     time_total = mysecond() - time_total;
@@ -583,7 +583,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     {
         if (header)
         {
-            hpx::util::format_to(std::cout,
+            pika::util::format_to(std::cout,
                 "executor,threads,vector_size,copy_bytes,copy_bw,copy_avg,copy_"
                 "min,copy_max,scale_bytes,scale_bw,scale_avg,scale_min,scale_"
                 "max,add_bytes,add_bw,add_avg,add_min,add_max,triad_bytes,"
@@ -592,12 +592,12 @@ int hpx_main(hpx::program_options::variables_map& vm)
         std::size_t const num_executors = 5;
         const char* executors[num_executors] = {"parallel-serial", "block",
             "parallel-parallel", "fork_join_executor", "scheduler_executor"};
-        hpx::util::format_to(std::cout, "{},{},{},", executors[executor],
-            hpx::get_os_thread_count(), vector_size);
+        pika::util::format_to(std::cout, "{},{},{},", executors[executor],
+            pika::get_os_thread_count(), vector_size);
     }
     else
     {
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "Function    Best Rate MB/s  Avg time     Min time     Max time\n");
     }
 
@@ -607,13 +607,13 @@ int hpx_main(hpx::program_options::variables_map& vm)
 
         if (csv)
         {
-            hpx::util::format_to(std::cout, "{:.0},{:.2},{:.9},{:.9},{:.9}{}",
+            pika::util::format_to(std::cout, "{:.0},{:.2},{:.9},{:.9},{:.9}{}",
                 bytes[j], 1.0E-06 * bytes[j] / mintime[j], avgtime[j],
                 mintime[j], maxtime[j], j < num_stream_tests - 1 ? "," : "\n");
         }
         else
         {
-            hpx::util::format_to(std::cout,
+            pika::util::format_to(std::cout,
                 "{}{:12.1}  {:11.6}  {:11.6}  {:11.6}\n", label[j],
                 1.0E-06 * bytes[j] / mintime[j], avgtime[j], mintime[j],
                 maxtime[j]);
@@ -633,45 +633,45 @@ int hpx_main(hpx::program_options::variables_map& vm)
         // clang-format on
     }
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
 
-    options_description cmdline("usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     cmdline.add_options()
         (   "csv", "output results as csv")
         (   "header", "print header for csv results")
         (   "vector_size",
-            hpx::program_options::value<std::size_t>()->default_value(1024),
+            pika::program_options::value<std::size_t>()->default_value(1024),
             "size of vector (default: 1024)")
         (   "offset",
-            hpx::program_options::value<std::size_t>()->default_value(0),
+            pika::program_options::value<std::size_t>()->default_value(0),
             "offset (default: 0)")
         (   "iterations",
-            hpx::program_options::value<std::size_t>()->default_value(10),
+            pika::program_options::value<std::size_t>()->default_value(10),
             "number of iterations to repeat each test. (default: 10)")
         (   "warmup_iterations",
-            hpx::program_options::value<std::size_t>()->default_value(1),
+            pika::program_options::value<std::size_t>()->default_value(1),
             "number of warmup iterations to perform before timing. (default: 1)")
         (   "chunker",
-            hpx::program_options::value<std::string>()->default_value("default"),
+            pika::program_options::value<std::string>()->default_value("default"),
             "Which chunker to use for the parallel algorithms. "
             "possible values: dynamic, auto, guided. (default: default)")
         (   "chunk_size",
-             hpx::program_options::value<std::size_t>()->default_value(0),
+             pika::program_options::value<std::size_t>()->default_value(0),
             "size of vector (default: 1024)")
         (   "executor",
-            hpx::program_options::value<std::size_t>()->default_value(2),
+            pika::program_options::value<std::size_t>()->default_value(2),
             "executor to use (0-2) (default: 0, parallel_executor)")
         ;
     // clang-format on
 
-    // parse command line here to extract the necessary settings for HPX
+    // parse command line here to extract the necessary settings for pika
     parsed_options opts = command_line_parser(argc, argv)
                               .allow_unregistered()
                               .options(cmdline)
@@ -682,12 +682,12 @@ int main(int argc, char* argv[])
     store(opts, vm);
 
     std::vector<std::string> cfg = {
-        "hpx.numa_sensitive=2"    // no-cross NUMA stealing
+        "pika.numa_sensitive=2"    // no-cross NUMA stealing
     };
 
-    hpx::local::init_params init_args;
+    pika::local::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

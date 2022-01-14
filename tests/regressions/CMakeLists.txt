@@ -8,9 +8,9 @@
 set(subdirs threads util)
 
 foreach(subdir ${subdirs})
-  hpx_local_add_pseudo_target(tests.regressions.${subdir})
+  pika_add_pseudo_target(tests.regressions.${subdir})
   add_subdirectory(${subdir})
-  hpx_local_add_pseudo_dependencies(
+  pika_add_pseudo_dependencies(
     tests.regressions tests.regressions.${subdir}
   )
 endforeach()
@@ -27,13 +27,13 @@ foreach(test ${tests})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  hpx_local_add_executable(
+  pika_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
     FOLDER "Tests/Regressions/Modules/Local/"
   )
 
-  hpx_local_add_regression_test("" ${test} ${${test}_PARAMETERS})
+  pika_add_regression_test("" ${test} ${${test}_PARAMETERS})
 
 endforeach()

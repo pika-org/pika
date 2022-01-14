@@ -9,7 +9,7 @@ set(example_programs
     os_thread_num)
 
 set(os_thread_num_PARAMETERS THREADS_PER_LOCALITY 4)
-set(hpx_thread_phase_PARAMETERS THREADS_PER_LOCALITY 4)
+set(thread_phase_PARAMETERS THREADS_PER_LOCALITY 4)
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)
@@ -17,16 +17,16 @@ foreach(example_program ${example_programs})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  hpx_local_add_executable(
+  pika_add_executable(
     ${example_program} INTERNAL_FLAGS
     SOURCES ${sources} ${${example_program}_FLAGS}
     FOLDER "Examples/Local/Balancing"
   )
 
-  hpx_local_add_example_target_dependencies("balancing" ${example_program})
+  pika_add_example_target_dependencies("balancing" ${example_program})
 
-  if(HPXLocal_WITH_TESTS AND HPXLocal_WITH_TESTS_EXAMPLES)
-    hpx_local_add_example_test(
+  if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
+    pika_add_example_test(
       "balancing" ${example_program} ${${example_program}_PARAMETERS}
     )
   endif()

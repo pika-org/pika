@@ -8,9 +8,9 @@
 // make_ready_future_after to orchestrate timed operations with 'normal'
 // asynchronous work.
 
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -20,11 +20,11 @@ void wake_up_after_2_seconds()
 {
     std::cout << "waiting for 2 seconds\n";
 
-    hpx::chrono::high_resolution_timer t;
+    pika::chrono::high_resolution_timer t;
 
     // Schedule a wakeup after 2 seconds.
     using std::chrono::seconds;
-    hpx::future<void> f = hpx::make_ready_future_after(seconds(2));
+    pika::future<void> f = pika::make_ready_future_after(seconds(2));
 
     // ... do other things while waiting for the future to get ready
 
@@ -38,12 +38,12 @@ int return_int_at_time()
 {
     std::cout << "generating an 'int' value 2 seconds from now\n";
 
-    hpx::chrono::high_resolution_timer t;
+    pika::chrono::high_resolution_timer t;
 
     // Schedule a wakeup 2 seconds from now.
     using namespace std::chrono;
-    hpx::future<int> f =
-        hpx::make_ready_future_at(steady_clock::now() + seconds(2), 42);
+    pika::future<int> f =
+        pika::make_ready_future_at(steady_clock::now() + seconds(2), 42);
 
     // ... do other things while waiting for the future to get ready
 
@@ -58,16 +58,16 @@ int return_int_at_time()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main()
+int pika_main()
 {
     wake_up_after_2_seconds();
     return_int_at_time();
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-    // Initialize and run HPX.
-    return hpx::local::init(hpx_main, argc, argv);
+    // Initialize and run pika.
+    return pika::local::init(pika_main, argc, argv);
 }

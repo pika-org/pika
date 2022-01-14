@@ -8,8 +8,8 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/util/to_string.hpp>
+#include <pika/local/config.hpp>
+#include <pika/util/to_string.hpp>
 
 #include <algorithm>
 
@@ -70,7 +70,7 @@ namespace boost
       const path & full_path,      // example: c:/foo/boost/filesystem/path.hpp
       const string & contents)     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "nominmax" ) != string::npos) return;
+      if (contents.find( "pikainspect:" "nominmax" ) != string::npos) return;
 
       boost::sregex_iterator cur(contents.begin(), contents.end(), minmax_regex), end;
 
@@ -95,7 +95,7 @@ namespace boost
           ++m_errors;
           error( library_name, full_path, string(name())
               + " violation of Boost min/max guidelines on line "
-              + linelink(full_path, hpx::util::to_string(line_number)));
+              + linelink(full_path, pika::util::to_string(line_number)));
         }
 
       }

@@ -8,7 +8,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include "htts2.hpp"
-#include <hpx/modules/format.hpp>
+#include <pika/modules/format.hpp>
 
 #include <chrono>
 #include <cstdint>
@@ -181,7 +181,7 @@ struct payload_precision_driver : htts2::driver
                 << "Amortized Overhead per Task Uncertainty [nanoseconds/task]"
                 << "\n";
 
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "{},{},{},{:.14g},{:.14g},{:.14g},{:.14g}\n",
             this->osthreads_,
             this->tasks_,

@@ -9,9 +9,9 @@
 set -eux
 
 orig_src_dir="$(pwd)"
-src_dir="/dev/shm/hpx/src"
-build_dir="/dev/shm/hpx/build"
-install_dir="/dev/shm/hpx/install"
+src_dir="/dev/shm/pika/src"
+build_dir="/dev/shm/pika/build"
+install_dir="/dev/shm/pika/install"
 
 # Copy source directory to /dev/shm for faster builds
 mkdir -p "${build_dir}"
@@ -57,5 +57,5 @@ if [[ -f ${build_dir}/Testing/TAG ]]; then
 fi
 ctest_status=$(( ctest_exit_code + file_errors + configure_errors + build_errors + test_errors ))
 
-echo "${ctest_status}" > "jenkins-hpx-${configuration_name_with_build_type}-ctest-status.txt"
+echo "${ctest_status}" > "jenkins-pika-${configuration_name_with_build_type}-ctest-status.txt"
 exit $ctest_status

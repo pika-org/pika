@@ -23,16 +23,16 @@ jobs:
               -Bbuild \
               -GNinja \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DHPXLocal_WITH_UNITY_BUILD=ON \
-              -DHPXLocal_WITH_MALLOC=system \
-              -DHPXLocal_WITH_EXAMPLES=ON \
-              -DHPXLocal_WITH_TESTS=ON \
-              -DHPXLocal_WITH_TESTS_UNIT=ON \
-              -DHPXLocal_WITH_TESTS_BENCHMARKS=ON \
-              -DHPXLocal_WITH_TESTS_REGRESSIONS=ON \
-              -DHPXLocal_WITH_TESTS_EXAMPLES=ON \
-              -DHPXLocal_WITH_TESTS_MAX_THREADS_PER_LOCALITY=2 \
-              -DHPXLocal_WITH_CHECK_MODULE_DEPENDENCIES=On
+              -DPIKA_WITH_UNITY_BUILD=ON \
+              -DPIKA_WITH_MALLOC=system \
+              -DPIKA_WITH_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS=ON \
+              -DPIKA_WITH_TESTS_UNIT=ON \
+              -DPIKA_WITH_TESTS_BENCHMARKS=ON \
+              -DPIKA_WITH_TESTS_REGRESSIONS=ON \
+              -DPIKA_WITH_TESTS_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS_MAX_THREADS_PER_LOCALITY=2 \
+              -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
     - name: Build
       shell: bash
       run: |

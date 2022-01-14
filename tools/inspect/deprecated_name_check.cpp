@@ -9,8 +9,8 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/util/to_string.hpp>
+#include <pika/local/config.hpp>
+#include <pika/util/to_string.hpp>
 
 #include <algorithm>
 
@@ -31,17 +31,17 @@ namespace boost
       // boost::xyz
       { "(\\bboost\\s*::\\s*move\\b)", "std::move" },
       { "(\\bboost\\s*::\\s*forward\\b)", "std::forward" },
-      { "(\\bboost\\s*::\\s*noncopyable\\b)", "HPX_NON_COPYABLE" },
+      { "(\\bboost\\s*::\\s*noncopyable\\b)", "PIKA_NON_COPYABLE" },
       { "(\\bboost\\s*::\\s*result_of\\b)", "std::result_of" },
       { "(\\bboost\\s*::\\s*decay\\b)", "std::decay" },
       { "(\\bboost\\s*::\\s*enable_if\\b)", "std::enable_if" },
       { "(\\bboost\\s*::\\s*disable_if\\b)", "std::enable_if" },
       { "(\\bboost\\s*::\\s*enable_if_c\\b)", "std::enable_if" },
       { "(\\bboost\\s*::\\s*disable_if_c\\b)", "std::enable_if" },
-      { "(\\bboost\\s*::\\s*lazy_enable_if\\b)", "hpx::util::lazy_enable_if" },
-      { "(\\bboost\\s*::\\s*lazy_disable_if\\b)", "hpx::util::lazy_enable_if" },
-      { "(\\bboost\\s*::\\s*lazy_enable_if_c\\b)", "hpx::util::lazy_enable_if" },
-      { "(\\bboost\\s*::\\s*lazy_disable_if_c\\b)", "hpx::util::lazy_enable_if" },
+      { "(\\bboost\\s*::\\s*lazy_enable_if\\b)", "pika::util::lazy_enable_if" },
+      { "(\\bboost\\s*::\\s*lazy_disable_if\\b)", "pika::util::lazy_enable_if" },
+      { "(\\bboost\\s*::\\s*lazy_enable_if_c\\b)", "pika::util::lazy_enable_if" },
+      { "(\\bboost\\s*::\\s*lazy_disable_if_c\\b)", "pika::util::lazy_enable_if" },
       { "(\\bboost\\s*::\\s*mpl\\b)", "no specific replacement" },
       { "(\\bboost\\s*::\\s*(is_[^\\s]*?\\b))", "std::\\2" },
       { "(\\bboost\\s*::\\s*(add_[^\\s]*?\\b))", "std::\\2" },
@@ -53,14 +53,14 @@ namespace boost
       { "(\\bboost\\s*::\\s*unordered_set\\b)", "std::unordered_set" },
       { "(\\bboost\\s*::\\s*unordered_multiset\\b)", "std::unordered_multiset" },
       { "(\\bboost\\s*::\\s*detail\\s*::\\s*atomic_count\\b)",
-        "hpx::util::atomic_count" },
-      { "(\\bboost\\s*::\\s*function\\b)", "hpx::util::function_nonser" },
-      { R"((\bboost\s*::\s*intrusive_ptr\b))", "hpx::intrusive_ptr" },
+        "pika::util::atomic_count" },
+      { "(\\bboost\\s*::\\s*function\\b)", "pika::util::function_nonser" },
+      { R"((\bboost\s*::\s*intrusive_ptr\b))", "pika::intrusive_ptr" },
       { "(\\bboost\\s*::\\s*shared_ptr\\b)", "std::shared_ptr" },
       { "(\\bboost\\s*::\\s*make_shared\\b)", "std::make_shared" },
       { "(\\bboost\\s*::\\s*enable_shared_from_this\\b)",
         "std::enable_shared_from_this" },
-      { "(\\bboost\\s*::\\s*bind\\b)", "hpx::util::bind" },
+      { "(\\bboost\\s*::\\s*bind\\b)", "pika::util::bind" },
       { "(\\bboost\\s*::\\s*unique_lock\\b)", "std::unique_lock" },
       { "(\\bboost\\s*::\\s*chrono\\b)", "std::chrono" },
       { "(\\bboost\\s*::\\s*reference_wrapper\\b)", "std::reference_wrapper" },
@@ -70,31 +70,31 @@ namespace boost
       { "(\\bboost\\s*::\\s*copy_exception\\b)", "std::make_exception_ptr" },
       { "(\\bboost\\s*::\\s*current_exception\\b)", "std::current_exception" },
       { "(\\bboost\\s*::\\s*rethrow_exception\\b)", "std::rethrow_exception" },
-      { "(\\bboost\\s*::\\s*enable_error_info\\b)", "hpx::throw_with_info" },
-      { "(\\bboost\\s*::\\s*iterator_range\\b)", "hpx::util::iterator_range" },
-      { "(\\bboost\\s*::\\s*make_iterator_range\\b)", "hpx::util::make_iterator_range" },
+      { "(\\bboost\\s*::\\s*enable_error_info\\b)", "pika::throw_with_info" },
+      { "(\\bboost\\s*::\\s*iterator_range\\b)", "pika::util::iterator_range" },
+      { "(\\bboost\\s*::\\s*make_iterator_range\\b)", "pika::util::make_iterator_range" },
       { "(\\bboost\\s*::\\s*atomic_flag\\b)", "std::atomic_flag" },
       { "(\\bboost\\s*::\\s*atomic\\b)", "std::atomic" },
       { "(\\bboost\\s*::\\s*memory_order_((relaxed)|(acquire)|(release)|"
         "(acq_rel)|(seq_cst))\\b)", "std::memory_order_\\2" },
       { "(\\bboost\\s*::\\s*random\\s*::\\s*([^\\s]*)\\b)", "std::\\2" },
-      { "(\\bboost\\s*::\\s*format\\b)", "hpx::util::format[_to]" },
+      { "(\\bboost\\s*::\\s*format\\b)", "pika::util::format[_to]" },
       { "(\\bboost\\s*::\\s*(regex[^\\s]*)\\b)", "std::\\2" },
-      { "(\\bboost\\s*::\\s*lexical_cast\\b)", "hpx::util::((from_string)|(to_string))" },
+      { "(\\bboost\\s*::\\s*lexical_cast\\b)", "pika::util::((from_string)|(to_string))" },
       { "(\\bboost\\s*::\\s*system\\s*::\\s*error_code\\b)", "std::error_code" },
       { "(\\bboost\\s*::\\s*system\\s*::\\s*error_condition\\b)", "std::error_condition" },
       { "(\\bboost\\s*::\\s*system\\s*::\\s*error_category\\b)", "std::error_category" },
       { "(\\bboost\\s*::\\s*system\\s*::\\s*system_error\\b)", "std::system_error" },
       /////////////////////////////////////////////////////////////////////////
-      { "((\\bhpx::\\b)?\\btraits\\s*::\\bis_callable\\b)", "\\2is_invocable[_r]" },
-      { "((\\bhpx::\\b)?\\butil\\s*::\\bresult_of\\b)", "\\2util::invoke_result" },
-      { "((\\bhpx::\\b)?\\butil\\s*::\\bdecay\\b)", "std::decay" },
+      { "((\\bpika::\\b)?\\btraits\\s*::\\bis_callable\\b)", "\\2is_invocable[_r]" },
+      { "((\\bpika::\\b)?\\butil\\s*::\\bresult_of\\b)", "\\2util::invoke_result" },
+      { "((\\bpika::\\b)?\\butil\\s*::\\bdecay\\b)", "std::decay" },
       { "(\\bNULL\\b)", "nullptr" },
       // Boost preprocessor macros
-      { "\\b(BOOST_PP_CAT)\\b", "HPX_PP_CAT" },
-      { "\\b(BOOST_PP_STRINGIZE)\\b", "HPX_PP_STRINGIZE" },
-      { "\\b(BOOST_STRINGIZE)\\b", "HPX_PP_STRINGIZE(HPX_PP_EXPAND())" },
-      { "\\b(BOOST_ASSERT)\\b", "HPX_ASSERT" },
+      { "\\b(BOOST_PP_CAT)\\b", "PIKA_PP_CAT" },
+      { "\\b(BOOST_PP_STRINGIZE)\\b", "PIKA_PP_STRINGIZE" },
+      { "\\b(BOOST_STRINGIZE)\\b", "PIKA_PP_STRINGIZE(PIKA_PP_EXPAND())" },
+      { "\\b(BOOST_ASSERT)\\b", "PIKA_ASSERT" },
       { nullptr, nullptr }
     };
 
@@ -139,7 +139,7 @@ namespace boost
       const path & full_path,      // example: c:/foo/boost/filesystem/path.hpp
       const string & contents)     // contents of file to be inspected
     {
-      std::string::size_type p = contents.find( "hpxinspect:" "nodeprecatedname" );
+      std::string::size_type p = contents.find( "pikainspect:" "nodeprecatedname" );
       if (p != string::npos)
       {
         // ignore this directive here (it is handled below) if it is followed
@@ -167,7 +167,7 @@ namespace boost
 
             if (found_names.find(found_name) == found_names.end())
             {
-              std::string tag("hpxinspect:" "nodeprecatedname:" + found_name);
+              std::string tag("pikainspect:" "nodeprecatedname:" + found_name);
               if (contents.find(tag) != string::npos)
                 continue;
 
@@ -193,7 +193,7 @@ namespace boost
                   + " deprecated name ("
                   + found_name
                   + ") on line "
-                  + linelink(full_path, hpx::util::to_string(line_number))
+                  + linelink(full_path, pika::util::to_string(line_number))
                   + ", use " + m.format(d.data->use_instead)
                   + " instead");
             }

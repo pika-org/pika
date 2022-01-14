@@ -9,7 +9,7 @@
 
 #include "htts2.hpp"
 
-#include <hpx/modules/program_options.hpp>
+#include <pika/modules/program_options.hpp>
 
 #include <cstdint>
 #include <iostream>
@@ -27,9 +27,9 @@ driver::driver(int argc, char** argv, bool allow_unregistered)
   , argv_(argv)
   , allow_unregistered_(allow_unregistered)
 {
-    hpx::program_options::variables_map vm;
+    pika::program_options::variables_map vm;
 
-    hpx::program_options::options_description cmdline
+    pika::program_options::options_description cmdline
         (std::string("Usage: ") + argv[0] + " [options]");
 
     cmdline.add_options()
@@ -37,17 +37,17 @@ driver::driver(int argc, char** argv, bool allow_unregistered)
         , "print out program usage (this message)")
 
         ( "osthreads,t"
-        , hpx::program_options::value<std::uint64_t>
+        , pika::program_options::value<std::uint64_t>
                 (&osthreads_)->default_value(1)
         , "number of OS-threads to use")
 
         ( "tasks"
-        , hpx::program_options::value<std::uint64_t>
+        , pika::program_options::value<std::uint64_t>
                 (&tasks_)->default_value(500000)
         , "number of tasks per OS-thread to invoke")
 
         ( "payload"
-        , hpx::program_options::value<std::uint64_t>
+        , pika::program_options::value<std::uint64_t>
                 (&payload_duration_)->default_value(5000)
         , "duration of payload in nanoseconds")
 
@@ -57,18 +57,18 @@ driver::driver(int argc, char** argv, bool allow_unregistered)
 
     if (allow_unregistered_)
     {
-        hpx::program_options::store(
-            hpx::program_options::command_line_parser(argc, argv)
+        pika::program_options::store(
+            pika::program_options::command_line_parser(argc, argv)
                 .options(cmdline).allow_unregistered().run(), vm);
     }
     else
     {
-        hpx::program_options::store(
-            hpx::program_options::command_line_parser(argc, argv)
+        pika::program_options::store(
+            pika::program_options::command_line_parser(argc, argv)
                 .options(cmdline).run(), vm);
     }
 
-    hpx::program_options::notify(vm);
+    pika::program_options::notify(vm);
 
     // Print help screen.
     if (vm.count("help"))

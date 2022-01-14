@@ -4,25 +4,25 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// The purpose of this demo is to show how it is possible to start HPX without
+// The purpose of this demo is to show how it is possible to start pika without
 // blocking the main thread.
 
-#include <hpx/local/init.hpp>
+#include <pika/local/init.hpp>
 
 #include <iostream>
 
-// Our main HPX thread does nothing except for signalling to the runtime to
+// Our main pika thread does nothing except for signalling to the runtime to
 // finalize.
-int hpx_main()
+int pika_main()
 {
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    hpx::local::start(hpx_main, argc, argv);
+    pika::local::start(pika_main, argc, argv);
 
     std::cout << "Hello from the main thread!" << std::endl;
 
-    return hpx::local::stop();
+    return pika::local::stop();
 }

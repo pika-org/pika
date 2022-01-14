@@ -9,10 +9,10 @@
 // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3564.pdf). The
 // necessary transformations are performed by hand.
 
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/functional.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/functional.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -25,7 +25,7 @@
 std::uint64_t threshold = 2;
 
 ///////////////////////////////////////////////////////////////////////////////
-HPX_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
+PIKA_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 {
     if (n < 2)
         return n;
@@ -34,25 +34,25 @@ HPX_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// hpx::future<std::uint64_t> fibonacci(std::uint64_t) resumable
+// pika::future<std::uint64_t> fibonacci(std::uint64_t) resumable
 // {
-//     if (n < 2) return hpx::make_ready_future(n);
-//     if (n < threshold) return hpx::make_ready_future(fibonacci_serial(n));
+//     if (n < 2) return pika::make_ready_future(n);
+//     if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
 //
-//     hpx::future<std::uint64_t> lhs = hpx::async(&fibonacci, n-1);
-//     hpx::future<std::uint64_t> rhs = fibonacci(n-2);
+//     pika::future<std::uint64_t> lhs = pika::async(&fibonacci, n-1);
+//     pika::future<std::uint64_t> rhs = fibonacci(n-2);
 //
 //     return await lhs + await rhs;
 // }
 //
 
-hpx::future<std::uint64_t> fibonacci(std::uint64_t n);
+pika::future<std::uint64_t> fibonacci(std::uint64_t n);
 
 struct _fibonacci_frame
 {
     int state_;
-    hpx::future<std::uint64_t> result_;
-    hpx::lcos::local::promise<std::uint64_t> result_promise_;
+    pika::future<std::uint64_t> result_;
+    pika::lcos::local::promise<std::uint64_t> result_promise_;
 
     _fibonacci_frame(std::uint64_t n)
       : state_(0)
@@ -64,8 +64,8 @@ struct _fibonacci_frame
 
     // local variables
     std::uint64_t n_;
-    hpx::future<std::uint64_t> lhs_;
-    hpx::future<std::uint64_t> rhs_;
+    pika::future<std::uint64_t> lhs_;
+    pika::future<std::uint64_t> rhs_;
     std::uint64_t lhs_result_;
     std::uint64_t rhs_result_;
 };
@@ -83,33 +83,33 @@ void _fibonacci(std::shared_ptr<_fibonacci_frame> const& frame_)
         goto L2;
     }
 
-    // if (n < 2) return hpx::make_ready_future(n);
+    // if (n < 2) return pika::make_ready_future(n);
     if (frame->n_ < 2)
     {
         if (state == 0)
             // never paused
-            frame->result_ = hpx::make_ready_future(frame->n_);
+            frame->result_ = pika::make_ready_future(frame->n_);
         else
             frame->result_promise_.set_value(frame->n_);
         return;
     }
 
-    // if (n < threshold) return hpx::make_ready_future(fibonacci_serial(n));
+    // if (n < threshold) return pika::make_ready_future(fibonacci_serial(n));
     if (frame->n_ < threshold)
     {
         if (state == 0)
             // never paused
             frame->result_ =
-                hpx::make_ready_future(fibonacci_serial(frame->n_));
+                pika::make_ready_future(fibonacci_serial(frame->n_));
         else
             frame->result_promise_.set_value(fibonacci_serial(frame->n_));
         return;
     }
 
-    // hpx::future<std::uint64_t> lhs = hpx::async(&fibonacci, n-1);
-    frame->lhs_ = hpx::async(&fibonacci, frame->n_ - 1);
+    // pika::future<std::uint64_t> lhs = pika::async(&fibonacci, n-1);
+    frame->lhs_ = pika::async(&fibonacci, frame->n_ - 1);
 
-    // hpx::future<std::uint64_t> rhs = fibonacci(n-2);
+    // pika::future<std::uint64_t> rhs = fibonacci(n-2);
     frame->rhs_ = fibonacci(frame->n_ - 2);
 
     if (!frame->lhs_.is_ready())
@@ -117,7 +117,7 @@ void _fibonacci(std::shared_ptr<_fibonacci_frame> const& frame_)
         frame->state_ = 1;
         if (!frame->result_.valid())
             frame->result_ = frame->result_promise_.get_future();
-        frame->lhs_.then(hpx::util::bind(&_fibonacci, frame_));
+        frame->lhs_.then(pika::util::bind(&_fibonacci, frame_));
         return;
     }
 
@@ -129,7 +129,7 @@ L1:
         frame->state_ = 2;
         if (!frame->result_.valid())
             frame->result_ = frame->result_promise_.get_future();
-        frame->rhs_.then(hpx::util::bind(&_fibonacci, frame_));
+        frame->rhs_.then(pika::util::bind(&_fibonacci, frame_));
         return;
     }
 
@@ -139,14 +139,14 @@ L2:
     if (state == 0)
         // never paused
         frame->result_ =
-            hpx::make_ready_future(frame->lhs_result_ + frame->rhs_result_);
+            pika::make_ready_future(frame->lhs_result_ + frame->rhs_result_);
     else
         frame->result_promise_.set_value(
             frame->lhs_result_ + frame->rhs_result_);
     return;
 }
 
-hpx::future<std::uint64_t> fibonacci(std::uint64_t n)
+pika::future<std::uint64_t> fibonacci(std::uint64_t n)
 {
     std::shared_ptr<_fibonacci_frame> frame =
         std::make_shared<_fibonacci_frame>(n);
@@ -157,7 +157,7 @@ hpx::future<std::uint64_t> fibonacci(std::uint64_t n)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     // extract command line argument, i.e. fib(N)
     std::uint64_t n = vm["n-value"].as<std::uint64_t>();
@@ -169,7 +169,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
         std::cerr << "fibonacci_await: wrong command line argument value for "
                      "option 'n-runs', should not be zero"
                   << std::endl;
-        return hpx::local::finalize();    // Handles HPX shutdown
+        return pika::local::finalize();    // Handles pika shutdown
     }
 
     threshold = vm["threshold"].as<unsigned int>();
@@ -179,7 +179,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
                      "option 'threshold', should be in between 2 and n-value"
                      ", value specified: "
                   << threshold << std::endl;
-        return hpx::local::finalize();    // Handles HPX shutdown
+        return pika::local::finalize();    // Handles pika shutdown
     }
 
     bool executed_one = false;
@@ -188,7 +188,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "0")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -196,11 +196,11 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_serial(n);
         }
 
-        // double d = double(hpx::chrono::high_resolution_clock::now() - start) / 1.e9;
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        // double d = double(pika::chrono::high_resolution_clock::now() - start) / 1.e9;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt = "fibonacci_serial({1}) == {2},"
                           "elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -208,7 +208,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "1")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -217,11 +217,11 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci(n).get();
         }
 
-        // double d = double(hpx::chrono::high_resolution_clock::now() - start) / 1.e9;
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        // double d = double(pika::chrono::high_resolution_clock::now() - start) / 1.e9;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt = "fibonacci_await({1}) == {2},"
                           "elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -235,17 +235,17 @@ int hpx_main(hpx::program_options::variables_map& vm)
                   << test << std::endl;
     }
 
-    return hpx::local::finalize();    // Handles HPX shutdown
+    return pika::local::finalize();    // Handles pika shutdown
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
     // Configure application-specific options
-    hpx::program_options::options_description desc_commandline(
-        "Usage: " HPX_APPLICATION_STRING " [options]");
+    pika::program_options::options_description desc_commandline(
+        "Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    using hpx::program_options::value;
+    using pika::program_options::value;
     // clang-format off
     desc_commandline.add_options()
         ("n-value", value<std::uint64_t>()->default_value(10),
@@ -258,9 +258,9 @@ int main(int argc, char* argv[])
         "select tests to execute (0-1, default: all)");
     // clang-format on
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

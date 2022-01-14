@@ -7,9 +7,9 @@
 set(subdirs local)
 
 foreach(subdir ${subdirs})
-  hpx_local_add_pseudo_target(tests.performance.${subdir})
+  pika_add_pseudo_target(tests.performance.${subdir})
   add_subdirectory(${subdir})
-  hpx_local_add_pseudo_dependencies(
+  pika_add_pseudo_dependencies(
     tests.performance tests.performance.${subdir}
   )
 endforeach()

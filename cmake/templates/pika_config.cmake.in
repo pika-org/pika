@@ -1,0 +1,113 @@
+# Copyright (c) 2014 Thomas Heller
+# Copyright (c) 2015 Andreas Schaefer
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+set(PIKA_FIND_PACKAGE ON)
+cmake_policy(VERSION 3.18)
+
+# Forward PIKA_* cache variables
+include("${CMAKE_CURRENT_LIST_DIR}/pika_cache_variables.cmake")
+
+# include pika cmake utilities
+include("${CMAKE_CURRENT_LIST_DIR}/pika_macros.cmake")
+
+# include exported targets
+include("${CMAKE_CURRENT_LIST_DIR}/pika_internal_targets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/pika_targets.cmake")
+
+get_filename_component(
+  _pika_root_dir "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE
+)
+
+set(PIKA_VERSION_STRING "@PIKA_VERSION@")
+set(PIKA_VERSION_MAJOR @PIKA_VERSION_MAJOR@)
+set(PIKA_VERSION_MINOR @PIKA_VERSION_MINOR@)
+set(PIKA_VERSION_SUBMINOR @PIKA_VERSION_SUBMINOR@)
+
+set(PIKA_DEBUG_POSTFIX "@PIKA_DEBUG_POSTFIX@")
+set(PIKA_BUILD_TYPE "@CMAKE_BUILD_TYPE@")
+# We explicitly set the default to 98 to force CMake to emit a -std=c++XX flag.
+# Some compilers (clang) have a different default standard for cpp and cu files,
+# but CMake does not know about this difference. If the standard is set to the
+# .cpp default in CMake, CMake will omit the flag, resulting in the wrong
+# standard for .cu files.
+set(CMAKE_CXX_STANDARD_DEFAULT 98)
+
+set(PIKA_GIT_COMMIT
+    "@PIKA_WITH_GIT_COMMIT@"
+    CACHE STRING "Revision of pika from Git" FORCE
+)
+
+set(PIKA_CXX_COMPILER
+    "@CMAKE_CXX_COMPILER@"
+    CACHE STRING "CXX compiler for pika" FORCE
+)
+set(PIKA_CXX_COMPILER_ID
+    "@CMAKE_CXX_COMPILER_ID@"
+    CACHE STRING "CXX compiler id for pika" FORCE
+)
+set(PIKA_CXX_COMPILER_VERSION
+    "@CMAKE_CXX_COMPILER_VERSION@"
+    CACHE STRING "CXX compiler version for pika" FORCE
+)
+
+# ##############################################################################
+# Setup the imported libraries (publicly linked) #
+
+# Allocator
+set(PIKA_JEMALLOC_ROOT "@JEMALLOC_ROOT@")
+set(PIKA_TCMALLOC_ROOT "@TCMALLOC_ROOT@")
+set(PIKA_TBBMALLOC_ROOT "@TBBMALLOC_ROOT@")
+# Special handle for mimalloc cause we can't specify PIKA_MIMALLOC_ROOT as a HINT
+# to find_package
+set(PIKA_MIMALLOC_ROOT "@MIMALLOC_ROOT@")
+if(NOT MIMALLOC_ROOT AND NOT "$ENV{MIMALLOC_ROOT}")
+  set(MIMALLOC_ROOT ${PIKA_MIMALLOC_ROOT})
+endif()
+include(pika_setup_allocator)
+
+include(pika_setup_threads)
+
+# Boost Separate boost targets to be unarily linked to some modules
+set(PIKA_BOOST_ROOT "@BOOST_ROOT@")
+# By default BOOST_ROOT is set to PIKA_BOOST_ROOT (not necessary for PAPI or
+# HWLOC cause we are specifying PIKA_<lib>_ROOT as an HINT to find_package)
+if(NOT BOOST_ROOT AND NOT "$ENV{BOOST_ROOT}")
+  set(BOOST_ROOT ${PIKA_BOOST_ROOT})
+endif()
+include(pika_setup_boost)
+include(pika_setup_boost_filesystem)
+
+# HIP
+include(pika_setup_hip)
+
+# Hwloc
+set(PIKA_HWLOC_ROOT "@HWLOC_ROOT@")
+include(pika_setup_hwloc)
+
+# CUDA
+include(pika_setup_cuda)
+
+include(pika_setup_mpi)
+
+set(PIKA_WITH_MALLOC_DEFAULT @PIKA_WITH_MALLOC@)
+
+if(PIKA_WITH_DATAPAR_VC AND NOT Vc_DIR)
+  set(Vc_DIR "@Vc_DIR@")
+endif()
+include(pika_setup_vc)
+
+if(NOT PIKA_CMAKE_LOGLEVEL)
+  set(PIKA_CMAKE_LOGLEVEL "WARN")
+endif()
+
+pika_check_compiler_compatibility()
+pika_check_boost_compatibility()
+pika_check_allocator_compatibility()
+
+if(NOT DEFINED ${CMAKE_FIND_PACKAGE_NAME}_FOUND)
+  set(${CMAKE_FIND_PACKAGE_NAME}_FOUND true)
+endif()

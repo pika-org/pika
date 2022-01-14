@@ -1,5 +1,5 @@
 //  deprecated macro check implementation  ---------------------------------------------//
-//  Protect against ourself: hpxinspect:nodeprecated_macros
+//  Protect against ourself: pikainspect:nodeprecated_macros
 
 //  Copyright Eric Niebler 2010.
 //  Based on the assert_macro_check checker by Marshall Clow
@@ -9,15 +9,15 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/modules/filesystem.hpp>
+#include <pika/local/config.hpp>
+#include <pika/modules/filesystem.hpp>
 
 #include "deprecated_macro_check.hpp"
 #include <functional>
 #include "function_hyper.hpp"
 #include "boost/regex.hpp"
 
-namespace fs = hpx::filesystem;
+namespace fs = pika::filesystem;
 
 namespace
 {
@@ -112,7 +112,7 @@ namespace boost
       const path & full_path,   // example: c:/foo/boost/filesystem/path.hpp
       const string & contents )     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "nodeprecated_macros" ) != string::npos)
+      if (contents.find( "pikainspect:" "nodeprecated_macros" ) != string::npos)
         return;
 
       const char **ptr;

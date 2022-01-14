@@ -5,7 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 export CRAYPE_LINK_TYPE=dynamic
-export APPS_ROOT="/apps/daint/SSL/HPX/packages"
+export APPS_ROOT="/apps/daint/SSL/pika/packages"
 export CLANG_VER="12.0.0"
 export CXX_STD="20"
 export BOOST_VER="1.77.0"
@@ -23,18 +23,18 @@ module load daint-mc
 spack load cmake@3.18.6
 spack load ninja@1.10.0
 
-configure_extra_options+=" -DHPXLocal_WITH_CXX_STANDARD=${CXX_STD}"
-configure_extra_options+=" -DHPXLocal_WITH_MALLOC=system"
-configure_extra_options+=" -DHPXLocal_WITH_COMPILER_WARNINGS=ON"
-configure_extra_options+=" -DHPXLocal_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
-configure_extra_options+=" -DHPXLocal_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
-configure_extra_options+=" -DHPXLocal_WITH_UNITY_BUILD=ON"
+configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${CXX_STD}"
+configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
+configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"
+configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
+configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+configure_extra_options+=" -DPIKA_WITH_UNITY_BUILD=ON"
 
 # enable extra counters to verify everything compiles
-configure_extra_options+=" -DHPXLocal_WITH_BACKGROUND_THREAD_COUNTERS=ON"
-configure_extra_options+=" -DHPXLocal_WITH_COROUTINE_COUNTERS=ON"
-configure_extra_options+=" -DHPXLocal_WITH_THREAD_IDLE_RATES=ON"
-configure_extra_options+=" -DHPXLocal_WITH_THREAD_CREATION_AND_CLEANUP_RATES=ON"
-configure_extra_options+=" -DHPXLocal_WITH_THREAD_CUMULATIVE_COUNTS=ON"
-configure_extra_options+=" -DHPXLocal_WITH_THREAD_QUEUE_WAITTIME=ON"
-configure_extra_options+=" -DHPXLocal_WITH_THREAD_STEALING_COUNTS=ON"
+configure_extra_options+=" -DPIKA_WITH_BACKGROUND_THREAD_COUNTERS=ON"
+configure_extra_options+=" -DPIKA_WITH_COROUTINE_COUNTERS=ON"
+configure_extra_options+=" -DPIKA_WITH_THREAD_IDLE_RATES=ON"
+configure_extra_options+=" -DPIKA_WITH_THREAD_CREATION_AND_CLEANUP_RATES=ON"
+configure_extra_options+=" -DPIKA_WITH_THREAD_CUMULATIVE_COUNTS=ON"
+configure_extra_options+=" -DPIKA_WITH_THREAD_QUEUE_WAITTIME=ON"
+configure_extra_options+=" -DPIKA_WITH_THREAD_STEALING_COUNTS=ON"

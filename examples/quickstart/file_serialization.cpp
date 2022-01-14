@@ -4,11 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// This example demonstrates how the HPX serialization archives could be used
+// This example demonstrates how the pika serialization archives could be used
 // to directly store/load to/from a file.
 
-#include <hpx/local/init.hpp>
-#include <hpx/modules/serialization.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/serialization.hpp>
 
 #include <cstddef>
 #include <cstring>
@@ -72,7 +72,7 @@ private:
     std::ios_base::openmode mode_;
 };
 
-namespace hpx { namespace traits {
+namespace pika { namespace traits {
     template <>
     struct serialization_access_data<file_wrapper>
       : default_serialization_access_data<file_wrapper>
@@ -100,16 +100,16 @@ namespace hpx { namespace traits {
             cont.read(address, count, current);
         }
     };
-}}    // namespace hpx::traits
+}}    // namespace pika::traits
 
-int hpx_main()
+int pika_main()
 {
     std::size_t size = 0;
     std::vector<double> os;
     {
         file_wrapper buffer("file_serialization_test.archive",
             std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
-        hpx::serialization::output_archive oarchive(buffer);
+        pika::serialization::output_archive oarchive(buffer);
         for (double c = -100.0; c < +100.0; c += 1.3)
         {
             os.push_back(c);
@@ -121,7 +121,7 @@ int hpx_main()
     {
         file_wrapper buffer("file_serialization_test.archive",
             std::ios_base::in | std::ios_base::binary);
-        hpx::serialization::input_archive iarchive(buffer, size);
+        pika::serialization::input_archive iarchive(buffer, size);
         std::vector<double> is;
         iarchive >> is;
         for (std::size_t i = 0; i < os.size(); ++i)
@@ -133,10 +133,10 @@ int hpx_main()
             }
         }
     }
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

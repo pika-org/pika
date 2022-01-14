@@ -5,21 +5,21 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 ///////////////////////////////////////////////////////////////////////////////
-// The purpose of this example is to execute a HPX-thread printing
+// The purpose of this example is to execute a pika-thread printing
 // "Hello World!" once. That's all.
 
-#include <hpx/local/init.hpp>
+#include <pika/local/init.hpp>
 
 #include <iostream>
 
-int hpx_main()
+int pika_main()
 {
     // Say hello to the world!
     std::cout << "Hello World!\n" << std::flush;
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

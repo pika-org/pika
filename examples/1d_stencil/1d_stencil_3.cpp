@@ -13,10 +13,10 @@
 // The purpose is to be able to control the amount of work performed. The
 // example is still fully serial, no parallelization is performed.
 
-#include <hpx/assert.hpp>
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/assert.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -39,7 +39,7 @@ inline std::size_t idx(std::size_t i, int dir, std::size_t size)
     if (i == size - 1 && dir == +1)
         return 0;
 
-    HPX_ASSERT((i + dir) < size);
+    PIKA_ASSERT((i + dir) < size);
 
     return i + dir;
 }
@@ -153,7 +153,7 @@ struct stepper
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::uint64_t np = vm["np"].as<std::uint64_t>();    // Number of partitions.
     std::uint64_t nx =
@@ -167,12 +167,12 @@ int hpx_main(hpx::program_options::variables_map& vm)
     stepper step;
 
     // Measure execution time.
-    std::uint64_t t = hpx::chrono::high_resolution_clock::now();
+    std::uint64_t t = pika::chrono::high_resolution_clock::now();
 
     // Execute nt time steps on nx grid points and print the final solution.
     stepper::space solution = step.do_work(np, nx, nt);
 
-    std::uint64_t elapsed = hpx::chrono::high_resolution_clock::now() - t;
+    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
 
     // Print the final solution
     if (vm.count("results"))
@@ -181,15 +181,15 @@ int hpx_main(hpx::program_options::variables_map& vm)
             std::cout << "U[" << i << "] = " << solution[i] << std::endl;
     }
 
-    std::uint64_t const os_thread_count = hpx::get_os_thread_count();
+    std::uint64_t const os_thread_count = pika::get_os_thread_count();
     print_time_results(os_thread_count, elapsed, nx, np, nt, header);
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    namespace po = hpx::program_options;
+    namespace po = pika::program_options;
 
     po::options_description desc_commandline;
     // clang-format off
@@ -211,9 +211,9 @@ int main(int argc, char* argv[])
     ;
     // clang-format on
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

@@ -4,10 +4,10 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/numeric.hpp>
-#include <hpx/modules/iterator_support.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/numeric.hpp>
+#include <pika/modules/iterator_support.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -16,7 +16,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main()
+int pika_main()
 {
     // lets say we have two vectors that simulate.. 10007D
     std::vector<double> xvalues(10007);
@@ -24,24 +24,24 @@ int hpx_main()
     std::fill(std::begin(xvalues), std::end(xvalues), 1.0);
     std::fill(std::begin(yvalues), std::end(yvalues), 1.0);
 
-    double result = hpx::transform_reduce(hpx::execution::par,
-        hpx::util::counting_iterator<size_t>(0),
-        hpx::util::counting_iterator<size_t>(10007), 0.0, std::plus<double>(),
+    double result = pika::transform_reduce(pika::execution::par,
+        pika::util::counting_iterator<size_t>(0),
+        pika::util::counting_iterator<size_t>(10007), 0.0, std::plus<double>(),
         [&xvalues, &yvalues](size_t i) { return xvalues[i] * yvalues[i]; });
     // print the result
     std::cout << result << std::endl;
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
     // By default this should run on all available cores
-    std::vector<std::string> const cfg = {"hpx.os_threads=all"};
+    std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.cfg = cfg;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }
