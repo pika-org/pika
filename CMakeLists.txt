@@ -46,15 +46,6 @@ project(HPXLocal CXX)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # ##############################################################################
-# Special handling for building tests/examples against a previously installed
-# version of HPX
-# ##############################################################################
-if(HPXLocal_WITH_INSTALLED_VERSION)
-  include(cmake/installed_hpx.cmake)
-  return()
-endif()
-
-# ##############################################################################
 # Build all of HPX
 # ##############################################################################
 set(HPXLocal_VERSION_MAJOR 0)
