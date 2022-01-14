@@ -13,14 +13,6 @@ set(resource_partitioner_headers
     hpx/resource_partitioner/partitioner_fwd.hpp
 )
 
-# cmake-format: off
-set(resource_partitioner_compat_headers
-    hpx/resource_partitioner.hpp => hpx/include/resource_partitioner.hpp
-    hpx/runtime/resource/partitioner.hpp => hpx/include/resource_partitioner.hpp
-    hpx/runtime/resource/partitioner_fwd.hpp => hpx/include/resource_partitioner.hpp
-)
-# cmake-format: on
-
 set(resource_partitioner_sources detail_partitioner.cpp partitioner.cpp)
 
 include(HPXLocal_AddModule)
@@ -29,7 +21,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${resource_partitioner_sources}
   HEADERS ${resource_partitioner_headers}
-  COMPAT_HEADERS ${resource_partitioner_compat_headers}
   MODULE_DEPENDENCIES
     hpx_affinity
     hpx_config_local

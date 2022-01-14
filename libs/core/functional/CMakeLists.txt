@@ -42,28 +42,6 @@ set(functional_headers
     hpx/functional/traits/is_placeholder.hpp
 )
 
-# Default location is $HPX_ROOT/libs/functional/include_compatibility
-# cmake-format: off
-set(functional_compat_headers
-    hpx/util/bind.hpp => hpx/functional.hpp
-    hpx/util/bind_back.hpp => hpx/functional.hpp
-    hpx/util/bind_front.hpp => hpx/functional.hpp
-    hpx/util/deferred_call.hpp => hpx/functional.hpp
-    hpx/util/first_argument.hpp => hpx/functional.hpp
-    hpx/util/function.hpp => hpx/functional.hpp
-    hpx/util/function_ref.hpp => hpx/functional.hpp
-    hpx/util/invoke.hpp => hpx/functional.hpp
-    hpx/util/invoke_fused.hpp => hpx/functional.hpp
-    hpx/util/mem_fn.hpp => hpx/functional.hpp
-    hpx/util/one_shot.hpp => hpx/functional.hpp
-    hpx/util/protect.hpp => hpx/functional.hpp
-    hpx/util/result_of.hpp => hpx/functional.hpp
-    hpx/util/serializable_function.hpp => hpx/functional.hpp
-    hpx/util/serializable_unique_function.hpp => hpx/functional.hpp
-    hpx/util/unique_function.hpp => hpx/functional.hpp
-)
-# cmake-format: on
-
 # Default location is $HPX_ROOT/libs/functional/src
 set(functional_sources basic_function.cpp empty_function.cpp)
 
@@ -79,7 +57,6 @@ hpx_local_add_module(
     "hpx/functional/traits/is_placeholder.hpp"
   SOURCES ${functional_sources}
   HEADERS ${functional_headers}
-  COMPAT_HEADERS ${functional_compat_headers}
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_config_local

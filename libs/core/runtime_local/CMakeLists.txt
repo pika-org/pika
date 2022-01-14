@@ -33,28 +33,6 @@ set(runtime_local_headers
     hpx/runtime_local/thread_stacktrace.hpp
 )
 
-# cmake-format: off
-set(runtime_local_compat_headers
-    hpx/custom_exception_info.hpp => hpx/modules/runtime_local.hpp
-    hpx/runtime/config_entry.hpp => hpx/modules/runtime_local.hpp
-    hpx/runtime/get_locality_id.hpp => hpx/runtime.hpp
-    hpx/runtime/get_num_localities.hpp => hpx/modules/runtime_local.hpp
-    hpx/runtime/get_os_thread_count.hpp => hpx/runtime.hpp
-    hpx/runtime/get_thread_name.hpp => hpx/runtime.hpp
-    hpx/runtime/get_worker_thread_num.hpp => hpx/runtime.hpp
-    hpx/runtime/report_error.hpp => hpx/modules/runtime_local.hpp
-    hpx/runtime/shutdown_function.hpp => hpx/runtime.hpp
-    hpx/runtime/startup_function.hpp => hpx/runtime.hpp
-    hpx/runtime/thread_hooks.hpp => hpx/modules/runtime_local.hpp
-    hpx/runtime/thread_pool_helpers.hpp => hpx/modules/runtime_local.hpp
-    hpx/runtime/threads/run_as_hpx_thread.hpp => hpx/include/run_as.hpp
-    hpx/runtime_handlers.hpp => hpx/modules/runtime_local.hpp
-    hpx/util/debug/thread_stacktrace.hpp => hpx/modules/runtime_local.hpp
-    hpx/util/debugging.hpp => hpx/modules/runtime_local.hpp
-    hpx/util/thread_mapper.hpp => hpx/modules/runtime_local.hpp
-)
-# cmake-format: on
-
 set(runtime_local_sources
     custom_exception_info.cpp
     debugging.cpp
@@ -75,7 +53,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${runtime_local_sources}
   HEADERS ${runtime_local_headers}
-  COMPAT_HEADERS ${runtime_local_compat_headers}
   MODULE_DEPENDENCIES
     hpx_command_line_handling_local
     hpx_debugging

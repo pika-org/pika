@@ -10,8 +10,6 @@ set(thread_pool_util_headers
     hpx/thread_pool_util/thread_pool_suspension_helpers.hpp
 )
 
-set(thread_pool_util_compat_headers)
-
 set(thread_pool_util_sources thread_pool_suspension_helpers.cpp)
 
 include(HPXLocal_AddModule)

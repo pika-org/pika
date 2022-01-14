@@ -15,12 +15,6 @@ set(util_headers
     hpx/util/min.hpp
 )
 
-# cmake-format: off
-set(util_compat_headers
-    hpx/util.hpp => hpx/include/util.hpp
-)
-# cmake-format: on
-
 set(util_sources manage_config.cpp)
 
 include(HPXLocal_AddModule)
@@ -29,7 +23,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${util_sources}
   HEADERS ${util_headers}
-  COMPAT_HEADERS ${util_compat_headers}
   MODULE_DEPENDENCIES hpx_config_local hpx_concepts hpx_errors hpx_format
                       hpx_iterator_support
   CMAKE_SUBDIRS examples tests

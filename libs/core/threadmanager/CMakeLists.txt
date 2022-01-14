@@ -10,13 +10,6 @@ set(threadmanager_headers hpx/modules/threadmanager.hpp
                           hpx/threadmanager/threadmanager_fwd.hpp
 )
 
-# cmake-format: off
-set(threadmanager_compat_headers
-    hpx/threadmanager.hpp => hpx/modules/threadmanager.hpp
-    hpx/runtime/threads/threadmanager.hpp => hpx/include/threadmanager.hpp
-)
-# cmake-format: on
-
 set(threadmanager_sources threadmanager.cpp)
 
 include(HPXLocal_AddModule)
@@ -25,7 +18,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN OFF
   SOURCES ${threadmanager_sources}
   HEADERS ${threadmanager_headers}
-  COMPAT_HEADERS ${threadmanager_compat_headers}
   MODULE_DEPENDENCIES
     hpx_program_options
     hpx_resource_partitioner

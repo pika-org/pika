@@ -23,23 +23,6 @@ set(schedulers_headers
     hpx/modules/schedulers.hpp
 )
 
-# cmake-format: off
-set(schedulers_compat_headers
-    hpx/runtime/threads/policies/deadlock_detection.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/local_priority_queue_scheduler.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/local_queue_scheduler.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/lockfree_queue_backends.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/maintain_queue_wait_times.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/queue_helpers.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/shared_priority_queue_scheduler.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/static_priority_queue_scheduler.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/static_queue_scheduler.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/thread_queue.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/thread_queue_mc.hpp => hpx/modules/schedulers.hpp
-    hpx/runtime/threads/policies/schedulers.hpp => hpx/modules/schedulers.hpp
-)
-# cmake-format: on
-
 set(schedulers_sources deadlock_detection.cpp maintain_queue_wait_times.cpp)
 
 include(HPXLocal_AddModule)
@@ -48,7 +31,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN OFF
   SOURCES ${schedulers_sources}
   HEADERS ${schedulers_headers}
-  COMPAT_HEADERS ${schedulers_compat_headers}
   SOURCES ${schedulers_sources}
   MODULE_DEPENDENCIES
     hpx_config_local

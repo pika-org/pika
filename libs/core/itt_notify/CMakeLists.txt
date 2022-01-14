@@ -11,13 +11,6 @@ set(itt_notify_headers hpx/modules/itt_notify.hpp
                        hpx/itt_notify/thread_name.hpp
 )
 
-# Default location is $HPX_ROOT/libs/itt_notify/include_compatibility
-# cmake-format: off
-set(itt_notify_compat_headers
-    hpx/util/itt_notify.hpp => hpx/modules/itt_notify.hpp
-)
-# cmake-format: on
-
 set(itt_notify_sources itt_notify.cpp thread_name.cpp)
 
 if(TARGET Amplifier::amplifier)
@@ -30,7 +23,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN OFF
   SOURCES ${itt_notify_sources}
   HEADERS ${itt_notify_headers}
-  COMPAT_HEADERS ${itt_notify_compat_headers}
   DEPENDENCIES ${itt_notify_optional_dependencies}
   MODULE_DEPENDENCIES hpx_config_local
   CMAKE_SUBDIRS examples tests

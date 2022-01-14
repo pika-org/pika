@@ -11,18 +11,11 @@ endif()
 
 set(filesystem_headers hpx/modules/filesystem.hpp)
 
-# cmake-format: off
-set(filesystem_compat_headers
-    hpx/filesystem.hpp => hpx/modules/filesystem.hpp
-)
-# cmake-format: on
-
 include(HPXLocal_AddModule)
 hpx_local_add_module(
   local filesystem
   GLOBAL_HEADER_GEN OFF
   HEADERS ${filesystem_headers}
-  COMPAT_HEADERS ${filesystem_compat_headers}
   MODULE_DEPENDENCIES hpx_config_local
   DEPENDENCIES ${__boost_filesystem}
   CMAKE_SUBDIRS examples tests

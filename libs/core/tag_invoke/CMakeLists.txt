@@ -15,13 +15,6 @@ set(tag_invoke_headers
     hpx/functional/traits/is_invocable.hpp
 )
 
-# cmake-format: off
-set(tag_invoke_compat_headers
-    hpx/functional/result_of.hpp => hpx/functional/invoke_result.hpp
-    hpx/functional/traits/is_callable.hpp => hpx/functional/traits/is_invocable.hpp
-)
-# cmake-format: on
-
 set(tag_invoke_sources)
 
 include(HPXLocal_AddModule)
@@ -30,7 +23,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${tag_invoke_sources}
   HEADERS ${tag_invoke_headers}
-  COMPAT_HEADERS ${tag_invoke_compat_headers}
   MODULE_DEPENDENCIES hpx_config_local hpx_type_support
   CMAKE_SUBDIRS examples tests
 )

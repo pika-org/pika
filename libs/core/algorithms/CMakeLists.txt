@@ -198,23 +198,12 @@ set(algorithms_headers
     hpx/parallel/util/zip_iterator.hpp
 )
 
-# cmake-format: off
-set(algorithms_compat_headers
-    hpx/algorithms.hpp => hpx/algorithm.hpp
-    hpx/parallel/traits/projected.hpp => hpx/algorithms/traits/projected.hpp
-    hpx/parallel/traits/projected_range.hpp => hpx/algorithms/traits/projected_range.hpp
-    hpx/traits/is_value_proxy.hpp => hpx/algorithms/traits/is_value_proxy.hpp
-    hpx/traits/pointer_category.hpp => hpx/algorithms/traits/pointer_category.hpp
-)
-# cmake-format: on
-
 set(algorithms_sources handle_exception_termination_handler.cpp task_group.cpp)
 
 include(HPXLocal_AddModule)
 hpx_local_add_module(
   local algorithms
   HEADERS ${algorithms_headers}
-  COMPAT_HEADERS ${algorithms_compat_headers}
   SOURCES ${algorithms_sources}
   MODULE_DEPENDENCIES
     hpx_async_combinators

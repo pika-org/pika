@@ -33,27 +33,6 @@ set(synchronization_headers
     hpx/synchronization/stop_token.hpp
 )
 
-# Default location is $HPX_ROOT/libs/synchronization/include_compatibility
-# cmake-format: off
-set(synchronization_compat_headers
-    hpx/lcos/local/barrier.hpp => hpx/barrier.hpp
-    hpx/lcos/local/condition_variable.hpp => hpx/condition_variable.hpp
-    hpx/lcos/local/counting_semaphore.hpp => hpx/counting_semaphore.hpp
-    hpx/lcos/local/event.hpp => hpx/modules/synchronization.hpp
-    hpx/lcos/local/latch.hpp => hpx/latch.hpp
-    hpx/lcos/local/mutex.hpp => hpx/mutex.hpp
-    hpx/lcos/local/no_mutex.hpp => hpx/mutex.hpp
-    hpx/lcos/local/once.hpp => hpx/mutex.hpp
-    hpx/lcos/local/recursive_mutex.hpp => hpx/mutex.hpp
-    hpx/lcos/local/shared_mutex.hpp => hpx/shared_mutex.hpp
-    hpx/lcos/local/sliding_semaphore.hpp => hpx/modules/synchronization.hpp
-    hpx/lcos/local/spinlock.hpp => hpx/mutex.hpp
-    hpx/lcos/local/spinlock_no_backoff.hpp => hpx/modules/synchronization.hpp
-    hpx/lcos/local/spinlock_pool.hpp => hpx/modules/synchronization.hpp
-    hpx/synchronization.hpp => hpx/modules/synchronization.hpp
-)
-# cmake-format: on
-
 set(synchronization_sources
     detail/condition_variable.cpp detail/counting_semaphore.cpp
     detail/sliding_semaphore.cpp local_barrier.cpp mutex.cpp stop_token.cpp
@@ -65,7 +44,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${synchronization_sources}
   HEADERS ${synchronization_headers}
-  COMPAT_HEADERS ${synchronization_compat_headers}
   MODULE_DEPENDENCIES
     hpx_config_local
     hpx_assertion

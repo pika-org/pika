@@ -8,12 +8,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(threading_headers hpx/threading/jthread.hpp hpx/threading/thread.hpp)
 
-# cmake-format: off
-set(threading_compat_headers
-    hpx/runtime/threads/thread.hpp => hpx/thread.hpp
-)
-# cmake-format: on
-
 set(threading_sources thread.cpp)
 
 include(HPXLocal_AddModule)
@@ -22,7 +16,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${threading_sources}
   HEADERS ${threading_headers}
-  COMPAT_HEADERS ${threading_compat_headers}
   MODULE_DEPENDENCIES hpx_errors hpx_futures hpx_lock_registration hpx_memory
   CMAKE_SUBDIRS examples tests
 )

@@ -20,24 +20,6 @@ set(logging_headers
     hpx/logging/message.hpp
 )
 
-# Default location is $HPX_ROOT/libs/logging/include_compatibility
-# cmake-format: off
-set(logging_compat_headers
-    hpx/logging.hpp => hpx/modules/logging.hpp
-    hpx/util/logging.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/writer/format_write.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/writer/named_write.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/logging.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/format/formatter/high_precision_time.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/format/formatter/defaults.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/format/formatter/thread_id.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/format/named_write.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/format/destination/defaults.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/format/destination/file.hpp => hpx/modules/logging.hpp
-    hpx/util/logging/format/optimize.hpp => hpx/modules/logging.hpp
-)
-# cmake-format: on
-
 # Default location is $HPX_ROOT/libs/logging/src
 set(logging_sources
     level.cpp
@@ -57,7 +39,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN OFF
   SOURCES ${logging_sources}
   HEADERS ${logging_headers}
-  COMPAT_HEADERS ${logging_compat_headers}
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_config_local

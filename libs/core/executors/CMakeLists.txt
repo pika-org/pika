@@ -35,34 +35,6 @@ set(executors_headers
     hpx/executors/thread_pool_scheduler_bulk.hpp
 )
 
-# Default location is $HPX_ROOT/libs/executors/include_compatibility
-# cmake-format: off
-set(executors_compat_headers
-    hpx/execution/datapar/execution_policy_fwd.hpp => hpx/include/parallel_executors.hpp
-    hpx/execution/datapar/execution_policy.hpp => hpx/include/parallel_executors.hpp
-    hpx/execution/executors.hpp => hpx/include/parallel_executors.hpp
-    hpx/execution/execution_policy_fwd.hpp => hpx/execution.hpp
-    hpx/execution/execution_policy.hpp => hpx/execution.hpp
-    hpx/execution/executors/current_executor.hpp => hpx/execution.hpp
-    hpx/execution/executors/guided_pool_executor.hpp => hpx/include/parallel_executors.hpp
-    hpx/execution/executors/limiting_executor.hpp => hpx/include/parallel_executors.hpp
-    hpx/execution/executors/parallel_executor.hpp => hpx/execution.hpp
-    hpx/execution/executors/parallel_executor_aggregated.hpp => hpx/include/parallel_executors.hpp
-    hpx/execution/executors/restricted_thread_pool_executor.hpp => hpx/include/parallel_executors.hpp
-    hpx/execution/executors/sequenced_executor.hpp => hpx/include/parallel_executors.hpp
-    hpx/parallel/datapar/execution_policy_fwd.hpp => hpx/include/parallel_executors.hpp
-    hpx/parallel/datapar/execution_policy.hpp => hpx/include/parallel_executors.hpp
-    hpx/parallel/executors.hpp => hpx/include/parallel_executors.hpp
-    hpx/parallel/exception_list.hpp => hpx/execution.hpp
-    hpx/parallel/execution_policy_fwd.hpp => hpx/execution.hpp
-    hpx/parallel/execution_policy.hpp => hpx/execution.hpp
-    hpx/parallel/executors/parallel_executor.hpp => hpx/execution.hpp
-    hpx/parallel/executors/parallel_executor_aggregated.hpp => hpx/include/parallel_executors.hpp
-    hpx/parallel/executors/sequenced_executor.hpp => hpx/execution.hpp
-    hpx/parallel/executors/thread_pool_executor.hpp => hpx/execution.hpp
-)
-# cmake-format: on
-
 set(executors_sources current_executor.cpp exception_list_callbacks.cpp
                       fork_join_executor.cpp
 )
@@ -73,7 +45,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${executors_sources}
   HEADERS ${executors_headers}
-  COMPAT_HEADERS ${executors_compat_headers}
   MODULE_DEPENDENCIES
     hpx_async_base
     hpx_config_local

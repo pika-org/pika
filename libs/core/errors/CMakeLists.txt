@@ -18,19 +18,6 @@ set(errors_headers
     hpx/errors/try_catch_exception_ptr.hpp
 )
 
-# Default location is $HPX_ROOT/libs/errors/include_compatibility
-# cmake-format: off
-set(errors_compat_headers
-    hpx/error.hpp => hpx/system_error.hpp
-    hpx/error_code.hpp => hpx/system_error.hpp
-    hpx/errors.hpp => hpx/modules/errors.hpp
-    hpx/exception_fwd.hpp => hpx/exception.hpp
-    hpx/exception_info.hpp => hpx/modules/errors.hpp
-    hpx/exception_list.hpp => hpx/modules/errors.hpp
-    hpx/throw_exception.hpp => hpx/exception.hpp
-)
-# cmake-format: on
-
 # Default location is $HPX_ROOT/libs/errors/src
 set(errors_sources error_code.cpp exception.cpp exception_list.cpp
                    throw_exception.cpp
@@ -42,7 +29,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${errors_sources}
   HEADERS ${errors_headers}
-  COMPAT_HEADERS ${errors_compat_headers}
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_config_local

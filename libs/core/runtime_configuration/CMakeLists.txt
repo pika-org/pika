@@ -13,16 +13,6 @@ set(runtime_configuration_headers
     hpx/runtime_configuration/runtime_mode.hpp
 )
 
-# cmake-format: off
-set(
-  runtime_configuration_compat_headers
-  hpx/util/ini.hpp => hpx/modules/runtime_configuration.hpp
-  hpx/util/init_ini_data.hpp => hpx/modules/runtime_configuration.hpp
-  hpx/util/runtime_configuration.hpp => hpx/modules/runtime_configuration.hpp
-  hpx/runtime/runtime_mode.hpp => hpx/modules/runtime_configuration.hpp
-)
-# cmake-format: on
-
 set(runtime_configuration_sources init_ini_data.cpp runtime_configuration.cpp
                                   runtime_mode.cpp
 )
@@ -33,7 +23,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${runtime_configuration_sources}
   HEADERS ${runtime_configuration_headers}
-  COMPAT_HEADERS ${runtime_configuration_compat_headers}
   MODULE_DEPENDENCIES
     hpx_program_options
     hpx_errors

@@ -22,22 +22,6 @@ set(type_support_headers
     hpx/type_support/void_guard.hpp
 )
 
-# cmake-format: off
-set(type_support_compat_headers
-    hpx/type_support.hpp => hpx/modules/type_support.hpp
-    hpx/util/always_void.hpp => hpx/modules/type_support.hpp
-    hpx/util/decay.hpp => hpx/modules/type_support.hpp
-    hpx/util/detected.hpp => hpx/modules/type_support.hpp
-    hpx/util/identity.hpp => hpx/modules/type_support.hpp
-    hpx/util/lazy_conditional.hpp => hpx/modules/type_support.hpp
-    hpx/util/lazy_enable_if.hpp => hpx/modules/type_support.hpp
-    hpx/util/static.hpp => hpx/modules/type_support.hpp
-    hpx/util/unwrap_ref.hpp => hpx/modules/type_support.hpp
-    hpx/util/unused.hpp => hpx/modules/type_support.hpp
-    hpx/util/void_guard.hpp => hpx/modules/type_support.hpp
-)
-# cmake-format: on
-
 set(type_support_sources)
 
 include(HPXLocal_AddModule)
@@ -46,7 +30,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${type_support_sources}
   HEADERS ${type_support_headers}
-  COMPAT_HEADERS ${type_support_compat_headers}
   MODULE_DEPENDENCIES hpx_assertion hpx_config_local
   CMAKE_SUBDIRS examples tests
 )

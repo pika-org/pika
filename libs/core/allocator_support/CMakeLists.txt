@@ -11,14 +11,6 @@ set(allocator_support_headers
     hpx/allocator_support/traits/is_allocator.hpp
 )
 
-# cmake-format: off
-set(allocator_support_compat_headers
-    hpx/allocator_support.hpp => hpx/modules/allocator_support.hpp
-    hpx/util/allocator_deleter.hpp => hpx/modules/allocator_support.hpp
-    hpx/util/internal_allocator.hpp => hpx/modules/allocator_support.hpp
-)
-# cmake-format: on
-
 set(allocator_support_sources)
 
 include(HPXLocal_AddModule)
@@ -27,7 +19,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${allocator_support_sources}
   HEADERS ${allocator_support_headers}
-  COMPAT_HEADERS ${allocator_support_compat_headers}
   DEPENDENCIES hpx_local_dependencies_allocator
   MODULE_DEPENDENCIES hpx_concepts hpx_config_local hpx_preprocessor
   CMAKE_SUBDIRS examples tests

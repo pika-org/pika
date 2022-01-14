@@ -38,16 +38,6 @@ set(coroutines_headers
     hpx/coroutines/thread_id_type.hpp
 )
 
-# cmake-format: off
-set(coroutines_compat_headers
-    hpx/coroutines.hpp => hpx/modules/coroutines.hpp
-    hpx/runtime/threads/coroutines/coroutine.hpp => hpx/modules/coroutines.hpp
-    hpx/runtime/threads/coroutines/coroutine_fwd.hpp => hpx/modules/coroutines.hpp
-    hpx/runtime/threads/thread_enums.hpp => hpx/modules/coroutines.hpp
-    hpx/runtime/threads/thread_id_type.hpp => hpx/modules/coroutines.hpp
-)
-# cmake-format: on
-
 set(coroutines_sources
     detail/context_base.cpp
     detail/context_posix.cpp
@@ -113,7 +103,6 @@ hpx_local_add_module(
   SOURCES ${coroutines_sources}
   HEADERS ${coroutines_headers}
   OBJECTS "${switch_to_fiber_object}"
-  COMPAT_HEADERS ${coroutines_compat_headers}
   DEPENDENCIES $<TARGET_NAME_IF_EXISTS:Valgrind::valgrind>
   MODULE_DEPENDENCIES
     hpx_assertion

@@ -152,53 +152,6 @@ if(HPXLocal_SERIALIZATION_WITH_BOOST_TYPES)
   )
 endif()
 
-# Default location is $HPX_ROOT/libs/serialization/include_compatibility
-# cmake-format: off
-set(serialization_compat_headers
-    hpx/runtime/serialization/array.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/bitset.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/complex.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/container.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/datapar.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/deque.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/dynamic_bitset.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/list.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/map.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/multi_array.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/optional.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/serialize_buffer.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/set.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/string.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/tuple.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/vector.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/variant.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/valarray.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/intrusive_ptr.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/shared_ptr.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/unique_ptr.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/unordered_map.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/access.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/base_object.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/basic_archive.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/binary_filter.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/brace_initializable.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/brace_initializable_fwd.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/input_archive.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/input_container.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/output_archive.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/output_container.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/serialization_chunk.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/serialization_fwd.hpp => hpx/serialization.hpp
-    hpx/runtime/serialization/serialize.hpp => hpx/serialization.hpp
-    hpx/traits/brace_initializable_traits.hpp => hpx/serialization.hpp
-    hpx/traits/is_bitwise_serializable.hpp => hpx/serialization.hpp
-    hpx/traits/needs_automatic_registration.hpp => hpx/serialization.hpp
-    hpx/traits/polymorphic_traits.hpp => hpx/serialization.hpp
-    hpx/traits/serialization_access_data.hpp => hpx/serialization.hpp
-    hpx/util/serializable_any.hpp => hpx/serialization.hpp
-)
-# cmake-format: on
-
 # Default location is $HPX_ROOT/libs/serialization/src
 set(serialization_sources
     detail/pointer.cpp
@@ -219,7 +172,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${serialization_sources}
   HEADERS ${serialization_headers}
-  COMPAT_HEADERS ${serialization_compat_headers}
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_config_local

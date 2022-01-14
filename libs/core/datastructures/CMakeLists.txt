@@ -32,17 +32,6 @@ set(datastructures_headers
     hpx/datastructures/variant_helper.hpp
 )
 
-# cmake-format: off
-set(datastructures_compat_headers
-    hpx/datastructures.hpp => hpx/modules/datastructures.hpp
-    hpx/traits/supports_streaming_with_any.hpp => hpx/modules/datastructures.hpp
-    hpx/traits/is_tuple_like.hpp => hpx/modules/datastructures.hpp
-    hpx/util/any.hpp => hpx/any.hpp
-    hpx/util/optional.hpp => hpx/optional.hpp
-    hpx/util/tuple.hpp => hpx/tuple.hpp
-)
-# cmake-format: on
-
 set(datastructures_sources)
 
 include(HPXLocal_AddModule)
@@ -51,7 +40,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${datastructures_sources}
   HEADERS ${datastructures_headers}
-  COMPAT_HEADERS ${datastructures_compat_headers}
   EXCLUDE_FROM_GLOBAL_HEADER "hpx/datastructures/variant_helper.hpp"
   MODULE_DEPENDENCIES hpx_assertion hpx_config_local hpx_concepts
                       hpx_type_support

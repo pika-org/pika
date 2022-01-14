@@ -8,15 +8,6 @@ set(concepts_headers hpx/concepts/concepts.hpp hpx/concepts/has_member_xxx.hpp
                      hpx/concepts/has_xxx.hpp
 )
 
-# cmake-format: off
-set(concepts_compat_headers
-    hpx/concepts.hpp => hpx/modules/concepts.hpp
-    hpx/traits/concepts.hpp => hpx/modules/concepts.hpp
-    hpx/traits/has_member_xxx.hpp => hpx/modules/concepts.hpp
-    hpx/traits/has_xxx.hpp => hpx/modules/concepts.hpp
-)
-# cmake-format: on
-
 set(concepts_sources)
 
 include(HPXLocal_AddModule)
@@ -25,7 +16,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${concepts_sources}
   HEADERS ${concepts_headers}
-  COMPAT_HEADERS ${concepts_compat_headers}
   MODULE_DEPENDENCIES hpx_config_local hpx_preprocessor hpx_type_support
   CMAKE_SUBDIRS examples tests
 )

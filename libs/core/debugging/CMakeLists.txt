@@ -10,15 +10,6 @@ set(debugging_headers
     hpx/debugging/environ.hpp hpx/debugging/print.hpp
 )
 
-# cmake-format: off
-set(debugging_compat_headers
-    hpx/debugging.hpp => hpx/modules/debugging.hpp
-    hpx/util/backtrace.hpp => hpx/modules/debugging.hpp
-    hpx/util/backtrace/backtrace.hpp => hpx/modules/debugging.hpp
-    hpx/util/debug/demangle_helper.hpp => hpx/modules/debugging.hpp
-)
-# cmake-format: on
-
 set(debugging_sources attach_debugger.cpp backtrace.cpp print.cpp)
 
 include(HPXLocal_AddModule)
@@ -27,7 +18,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${debugging_sources}
   HEADERS ${debugging_headers}
-  COMPAT_HEADERS ${debugging_compat_headers}
   EXCLUDE_FROM_GLOBAL_HEADER "hpx/debugging/backtrace/backtrace.hpp"
   MODULE_DEPENDENCIES hpx_config_local
   CMAKE_SUBDIRS examples tests

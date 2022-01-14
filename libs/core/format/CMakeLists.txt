@@ -12,13 +12,6 @@ set(format_headers
     hpx/util/from_string.hpp hpx/util/to_string.hpp
 )
 
-# Default location is $HPX_ROOT/libs/format/include_compatibility
-# cmake-format: off
-set(format_compat_headers
-    hpx/util/format.hpp => hpx/format.hpp
-)
-# cmake-format: on
-
 # Default location is $HPX_ROOT/libs/format/src
 set(format_sources format.cpp util/bad_lexical_cast.cpp)
 
@@ -28,7 +21,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN OFF
   SOURCES ${format_sources}
   HEADERS ${format_headers}
-  COMPAT_HEADERS ${format_compat_headers}
   MODULE_DEPENDENCIES hpx_assertion hpx_config_local hpx_type_support
   CMAKE_SUBDIRS examples tests
 )

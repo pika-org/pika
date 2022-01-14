@@ -73,36 +73,6 @@ set(execution_sources execution_parameter_callbacks.cpp
                       polymorphic_executor.cpp
 )
 
-# cmake-format: off
-set(execution_compat_headers
-    hpx/async_launch_policy_dispatch.hpp => hpx/execution.hpp
-    hpx/parallel/execution.hpp => hpx/execution.hpp
-    hpx/parallel/executor_parameters.hpp => hpx/execution.hpp
-    hpx/parallel/executors/auto_chunk_size.hpp => hpx/execution.hpp
-    hpx/parallel/executors/dynamic_chunk_size.hpp => hpx/execution.hpp
-    hpx/parallel/executors/execution.hpp => hpx/execution.hpp
-    hpx/parallel/executors/execution_information_fwd.hpp => hpx/execution.hpp
-    hpx/parallel/executors/execution_information.hpp => hpx/execution.hpp
-    hpx/parallel/executors/execution_parameters_fwd.hpp => hpx/execution.hpp
-    hpx/parallel/executors/execution_parameters.hpp => hpx/execution.hpp
-    hpx/parallel/executors/fused_bulk_execute.hpp => hpx/execution.hpp
-    hpx/parallel/executors/guided_chunk_size.hpp => hpx/execution.hpp
-    hpx/parallel/executors/persistent_auto_chunk_size.hpp => hpx/execution.hpp
-    hpx/parallel/executors/post_policy_dispatch.hpp => hpx/execution.hpp
-    hpx/parallel/executors/rebind_executor.hpp => hpx/execution.hpp
-    hpx/parallel/executors/static_chunk_size.hpp => hpx/execution.hpp
-    hpx/parallel/traits/vector_pack_alignment_size.hpp => hpx/execution.hpp
-    hpx/parallel/traits/vector_pack_all_any_none.hpp => hpx/execution.hpp
-    hpx/parallel/traits/vector_pack_find.hpp => hpx/execution.hpp
-    hpx/parallel/traits/vector_pack_count_bits.hpp => hpx/execution.hpp
-    hpx/parallel/traits/vector_pack_load_store.hpp => hpx/execution.hpp
-    hpx/parallel/traits/vector_pack_type.hpp => hpx/execution.hpp
-    hpx/sync_launch_policy_dispatch.hpp => hpx/execution.hpp
-    hpx/traits/executor_traits.hpp => hpx/execution.hpp
-    hpx/traits/is_execution_policy.hpp => hpx/execution.hpp
-)
-# cmake-format: on
-
 if(TARGET Vc::vc)
   set(execution_optional_dependencies Vc::vc)
 endif()
@@ -112,7 +82,6 @@ hpx_local_add_module(
   local execution
   SOURCES ${execution_sources}
   HEADERS ${execution_headers}
-  COMPAT_HEADERS ${execution_compat_headers}
   DEPENDENCIES ${execution_optional_dependencies}
   MODULE_DEPENDENCIES
     hpx_async_base

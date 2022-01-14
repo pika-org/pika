@@ -8,12 +8,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(prefix_headers hpx/prefix/find_prefix.hpp)
 
-# cmake-format: off
-set(prefix_compat_headers
-    hpx/util/find_prefix.hpp => hpx/modules/prefix.hpp
-)
-# cmake-format: on
-
 set(prefix_sources find_prefix.cpp)
 
 include(HPXLocal_AddModule)
@@ -22,7 +16,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${prefix_sources}
   HEADERS ${prefix_headers}
-  COMPAT_HEADERS ${prefix_compat_headers}
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_config_local

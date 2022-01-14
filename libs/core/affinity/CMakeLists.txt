@@ -11,14 +11,6 @@ set(affinity_headers
     hpx/affinity/parse_affinity_options.hpp
 )
 
-# cmake-format: off
-set(affinity_compat_headers
-    hpx/affinity.hpp => hpx/modules/affinity.hpp
-    hpx/runtime/threads/policies/affinity_data.hpp => hpx/modules/affinity.hpp
-    hpx/runtime/threads/policies/parse_affinity_options.hpp => hpx/modules/affinity.hpp
-)
-# cmake-format: on
-
 set(affinity_sources affinity_data.cpp parse_affinity_options.cpp)
 
 include(HPXLocal_AddModule)
@@ -27,7 +19,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${affinity_sources}
   HEADERS ${affinity_headers}
-  COMPAT_HEADERS ${affinity_compat_headers}
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_config_local

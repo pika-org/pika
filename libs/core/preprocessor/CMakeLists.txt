@@ -17,13 +17,6 @@ set(preprocessor_headers
     hpx/preprocessor/strip_parens.hpp
 )
 
-# Default location is $HPX_ROOT/libs/preprocessor/include_compatibility
-# cmake-format: off
-set(preprocessor_compat_headers
-    hpx/preprocessor.hpp => hpx/modules/preprocessor.hpp
-)
-# cmake-format: on
-
 # Default location is $HPX_ROOT/libs/preprocessor/src
 set(preprocessor_sources)
 
@@ -32,6 +25,5 @@ hpx_local_add_module(
   local preprocessor
   SOURCES ${preprocessor_sources}
   HEADERS ${preprocessor_headers}
-  COMPAT_HEADERS ${preprocessor_compat_headers}
   CMAKE_SUBDIRS tests
 )

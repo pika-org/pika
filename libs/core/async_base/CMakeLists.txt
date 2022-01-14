@@ -18,19 +18,11 @@ set(async_base_headers
 
 set(async_base_sources launch_policy.cpp)
 
-# cmake-format: off
-set(async_base_compat_headers
-    hpx/runtime/launch_policy.hpp => hpx/future.hpp
-    hpx/traits/is_launch_policy.hpp => hpx/future.hpp
-)
-# cmake-format: on
-
 include(HPXLocal_AddModule)
 hpx_local_add_module(
   local async_base
   GLOBAL_HEADER_GEN ON
   HEADERS ${async_base_headers}
-  COMPAT_HEADERS ${async_base_compat_headers}
   SOURCES ${async_base_sources}
   MODULE_DEPENDENCIES hpx_allocator_support hpx_config_local hpx_coroutines
                       hpx_tag_invoke

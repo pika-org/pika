@@ -13,13 +13,6 @@ set(thread_pools_headers
     hpx/thread_pools/scheduling_loop.hpp
 )
 
-# cmake-format: off
-set(thread_pools_compat_headers
-    hpx/runtime/threads/thread_pools.hpp => hpx/modules/thread_pools.hpp
-    hpx/runtime/threads/scoped_background_timer.hpp => hpx/modules/thread_pools.hpp
-)
-# cmake-format: on
-
 set(thread_pools_sources scheduled_thread_pool.cpp)
 
 include(HPXLocal_AddModule)
@@ -28,7 +21,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${thread_pools_sources}
   HEADERS ${thread_pools_headers}
-  COMPAT_HEADERS ${thread_pools_compat_headers}
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_config_local

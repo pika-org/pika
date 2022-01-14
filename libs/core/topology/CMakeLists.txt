@@ -31,16 +31,6 @@ endif()
 # Default location is $HPX_ROOT/libs/topology/include
 set(topology_headers hpx/topology/cpu_mask.hpp hpx/topology/topology.hpp)
 
-# Default location is $HPX_ROOT/libs/topology/include_compatibility
-# cmake-format: off
-set(topology_compat_headers
-    hpx/topology.hpp => hpx/modules/topology.hpp
-    hpx/runtime/threads/cpu_mask.hpp => hpx/modules/topology.hpp
-    hpx/runtime/threads/topology.hpp => hpx/modules/topology.hpp
-    hpx/util/cache_aligned_data.hpp => hpx/modules/topology.hpp
-)
-# cmake-format: on
-
 # Default location is $HPX_ROOT/libs/topology/src
 set(topology_sources cpu_mask.cpp topology.cpp)
 
@@ -50,7 +40,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${topology_sources}
   HEADERS ${topology_headers}
-  COMPAT_HEADERS ${topology_compat_headers}
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_config_local

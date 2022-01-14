@@ -19,19 +19,6 @@ set(concurrency_headers
     hpx/concurrency/spinlock_pool.hpp
 )
 
-# Default location is $HPX_ROOT/libs/concurrency/include_compatibility
-# cmake-format: off
-set(concurrency_compat_headers
-    hpx/compat/barrier.hpp => hpx/modules/concurrency.hpp
-    hpx/concurrency.hpp => hpx/modules/concurrency.hpp
-    hpx/util/lockfree/concurrentqueue.hpp => hpx/modules/concurrency.hpp
-    hpx/util/lockfree/deque.hpp => hpx/modules/concurrency.hpp
-    hpx/util/lockfree/freelist.hpp => hpx/modules/concurrency.hpp
-    hpx/util/spinlock.hpp => hpx/modules/concurrency.hpp
-    hpx/util/spinlock_pool.hpp => hpx/modules/concurrency.hpp
-)
-# cmake-format: on
-
 # Default location is $HPX_ROOT/libs/concurrency/src
 set(concurrency_sources barrier.cpp)
 
@@ -41,7 +28,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${concurrency_sources}
   HEADERS ${concurrency_headers}
-  COMPAT_HEADERS ${concurrency_compat_headers}
   MODULE_DEPENDENCIES
     hpx_assertion
     hpx_concepts

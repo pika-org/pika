@@ -30,27 +30,6 @@ set(futures_headers
     hpx/futures/traits/promise_remote_result.hpp
 )
 
-# cmake-format: off
-set(futures_compat_headers
-    hpx/lcos/future.hpp => hpx/future.hpp
-    hpx/lcos/local/futures_factory.hpp => hpx/future.hpp
-    hpx/lcos/local/packaged_task.hpp => hpx/future.hpp
-    hpx/lcos/local/packaged_continuation.hpp => hpx/future.hpp
-    hpx/lcos/local/promise.hpp => hpx/future.hpp
-    hpx/traits/acquire_future.hpp => hpx/future.hpp
-    hpx/traits/acquire_shared_state.hpp => hpx/future.hpp
-    hpx/traits/future_access.hpp => hpx/future.hpp
-    hpx/traits/future_then_result.hpp => hpx/future.hpp
-    hpx/traits/future_traits.hpp => hpx/future.hpp
-    hpx/traits/get_remote_result.hpp => hpx/future.hpp
-    hpx/traits/is_future.hpp => hpx/future.hpp
-    hpx/traits/is_future_range.hpp => hpx/future.hpp
-    hpx/traits/is_future_tuple.hpp => hpx/future.hpp
-    hpx/traits/promise_local_result.hpp => hpx/future.hpp
-    hpx/traits/promise_remote_result.hpp => hpx/future.hpp
-)
-# cmake-format: on
-
 set(futures_sources future_data.cpp)
 
 include(HPXLocal_AddModule)
@@ -59,7 +38,6 @@ hpx_local_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${futures_sources}
   HEADERS ${futures_headers}
-  COMPAT_HEADERS ${futures_compat_headers}
   EXCLUDE_FROM_GLOBAL_HEADER "hpx/futures/detail/future_data.hpp"
                              "hpx/futures/detail/future_transforms.hpp"
   MODULE_DEPENDENCIES hpx_async_base hpx_config_local hpx_allocator_support

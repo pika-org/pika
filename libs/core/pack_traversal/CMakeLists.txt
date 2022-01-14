@@ -17,21 +17,11 @@ set(pack_traversal_headers
     hpx/pack_traversal/unwrap.hpp
 )
 
-# cmake-format: off
-set(pack_traversal_compat_headers
-    hpx/traits/pack_traversal_rebind_container.hpp => hpx/modules/pack_traversal.hpp
-    hpx/util/pack_traversal.hpp => hpx/modules/pack_traversal.hpp
-    hpx/util/pack_traversal_async.hpp => hpx/modules/pack_traversal.hpp
-    hpx/util/unwrap.hpp => hpx/modules/pack_traversal.hpp
-)
-# cmake-format: on
-
 include(HPXLocal_AddModule)
 hpx_local_add_module(
   local pack_traversal
   GLOBAL_HEADER_GEN ON
   HEADERS ${pack_traversal_headers}
-  COMPAT_HEADERS ${pack_traversal_compat_headers}
   MODULE_DEPENDENCIES hpx_futures hpx_memory
   CMAKE_SUBDIRS examples tests
 )
