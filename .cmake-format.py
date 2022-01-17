@@ -276,7 +276,6 @@ with section("parse"):
                     "AUTOGLOB",
                     "INTERNAL_FLAGS",
                     "NOLIBS",
-                    "NOPIKA_INIT",
                 ],
                 "nargs": "1+",
             },

@@ -10,9 +10,7 @@ include(pika_option)
 if(PIKA_WITH_TESTS)
   if(PIKA_WITH_TESTS_UNIT)
     pika_add_pseudo_target(tests.unit.modules.concepts)
-    pika_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.concepts
-    )
+    pika_add_pseudo_dependencies(tests.unit.modules tests.unit.modules.concepts)
     add_subdirectory(unit)
   endif()
 
@@ -36,7 +34,7 @@ if(PIKA_WITH_TESTS)
     pika_add_header_tests(
       modules.concepts
       HEADERS ${concepts_headers}
-      HEADER_ROOT ${PROJECT_SOURCE_DIR}/include NOPIKA_INIT
+      HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       NOLIBS
       DEPENDENCIES pika_concepts
     )

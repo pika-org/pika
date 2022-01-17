@@ -41,7 +41,7 @@ if(PIKA_WITH_TESTS)
     pika_add_header_tests(
       modules.iterator_support
       HEADERS ${iterator_support_headers}
-      HEADER_ROOT ${PROJECT_SOURCE_DIR}/include NOPIKA_INIT
+      HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       NOLIBS
       DEPENDENCIES pika_iterator_support
     )

@@ -36,7 +36,7 @@ if(PIKA_WITH_TESTS)
     pika_add_header_tests(
       modules.datastructures
       HEADERS ${datastructures_headers}
-      HEADER_ROOT ${PROJECT_SOURCE_DIR}/include NOPIKA_INIT
+      HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       NOLIBS
       DEPENDENCIES pika_datastructures
     )
