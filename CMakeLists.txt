@@ -1772,7 +1772,6 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
       <ctime>
       <deque>
       <exception>
-      <execution>
       <forward_list>
       <fstream>
       <functional>
@@ -1819,6 +1818,10 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
 
   if(PIKA_WITH_CXX17_FILESYSTEM)
     list(APPEND system_precompiled_headers <filesystem>)
+  endif()
+
+  if(PIKA_WITH_CXX17_STD_EXECUTION_POLICIES)
+    list(APPEND system_precompiled_headers <execution>)
   endif()
 
   set(system_precompiled_headers_dependencies
