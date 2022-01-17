@@ -261,8 +261,8 @@ endif()
 pika_option(
   PIKA_WITH_PRECOMPILED_HEADERS
   BOOL
-  "Enable precompiled headers for certain build targets (experimental) (default: ON)"
-  ON
+  "Enable precompiled headers for certain build targets (experimental) (default: OFF)"
+  OFF
   ADVANCED
 )
 if(PIKA_WITH_PRECOMPILED_HEADERS)
