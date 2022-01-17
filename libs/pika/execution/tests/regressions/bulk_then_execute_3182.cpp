@@ -6,9 +6,9 @@
 
 // #3182: bulk_then_execute has unexpected return type/does not compile
 
-#include <pika/local/algorithm.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
+#include <pika/algorithm.hpp>
+#include <pika/execution.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <algorithm>

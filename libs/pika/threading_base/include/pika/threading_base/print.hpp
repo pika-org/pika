@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/debugging/print.hpp>
 #include <pika/threading_base/thread_data.hpp>
 

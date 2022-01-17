@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/iterator_support/zip_iterator.hpp>

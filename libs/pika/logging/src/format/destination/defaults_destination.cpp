@@ -16,7 +16,7 @@
 
 #include <pika/logging/format/destinations.hpp>
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/logging/message.hpp>
 
 #include <iostream>

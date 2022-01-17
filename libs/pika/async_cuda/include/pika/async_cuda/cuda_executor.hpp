@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_future.hpp>
 #include <pika/async_cuda/target.hpp>

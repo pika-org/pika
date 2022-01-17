@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/execution_base/agent_ref.hpp>
 #include <pika/execution_base/this_thread.hpp>

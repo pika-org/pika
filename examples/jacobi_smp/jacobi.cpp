@@ -6,7 +6,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #if !defined(JACOBI_SMP_NO_pika)
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #endif
 
 #include <pika/modules/program_options.hpp>
@@ -72,7 +72,8 @@ int pika_main(variables_map& vm)
 
 int main(int argc, char** argv)
 {
-    options_description desc_cmd("usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_cmd(
+        "usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_cmd.add_options()

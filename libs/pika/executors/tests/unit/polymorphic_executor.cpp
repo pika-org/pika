@@ -5,8 +5,8 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/functional/bind.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/execution.hpp>
 #include <pika/modules/executors.hpp>
 #include <pika/modules/testing.hpp>

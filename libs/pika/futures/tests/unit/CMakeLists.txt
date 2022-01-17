@@ -9,8 +9,8 @@ set(tests
     future
     future_ref
     future_then
-    local_promise_allocator
-    local_use_allocator
+    promise_allocator
+    use_allocator
     make_future
     make_ready_future
     shared_future

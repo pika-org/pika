@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/futures_factory.hpp>
@@ -22,285 +22,177 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos {
-
-    namespace detail {
-        template <typename Future>
-        struct wait_acquire_future
+namespace pika { namespace lcos { namespace detail {
+    template <typename Future>
+    struct wait_acquire_future
+    {
+        template <typename R>
+        PIKA_FORCEINLINE pika::future<R> operator()(
+            pika::future<R>& future) const
         {
-            template <typename R>
-            PIKA_FORCEINLINE pika::future<R> operator()(
-                pika::future<R>& future) const
-            {
-                return PIKA_MOVE(future);
-            }
+            return PIKA_MOVE(future);
+        }
 
-            template <typename R>
-            PIKA_FORCEINLINE pika::shared_future<R> operator()(
-                pika::shared_future<R>& future) const
-            {
-                return future;
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        // This version has a callback to be invoked for each future when it
-        // gets ready.
-        template <typename Future, typename F>
-        struct wait_each
+        template <typename R>
+        PIKA_FORCEINLINE pika::shared_future<R> operator()(
+            pika::shared_future<R>& future) const
         {
-        protected:
-            void on_future_ready_(pika::execution_base::agent_ref ctx)
-            {
-                std::size_t oldcount = ready_count_.fetch_add(1);
-                PIKA_ASSERT(oldcount < lazy_values_.size());
+            return future;
+        }
+    };
 
-                if (oldcount + 1 == lazy_values_.size())
-                {
-                    // reactivate waiting thread only if it's not us
-                    if (ctx != pika::execution_base::this_thread::agent())
-                        ctx.resume();
-                    else
-                        goal_reached_on_calling_thread_ = true;
-                }
+    ///////////////////////////////////////////////////////////////////////
+    // This version has a callback to be invoked for each future when it
+    // gets ready.
+    template <typename Future, typename F>
+    struct wait_each
+    {
+    protected:
+        void on_future_ready_(pika::execution_base::agent_ref ctx)
+        {
+            std::size_t oldcount = ready_count_.fetch_add(1);
+            PIKA_ASSERT(oldcount < lazy_values_.size());
+
+            if (oldcount + 1 == lazy_values_.size())
+            {
+                // reactivate waiting thread only if it's not us
+                if (ctx != pika::execution_base::this_thread::agent())
+                    ctx.resume();
+                else
+                    goal_reached_on_calling_thread_ = true;
+            }
+        }
+
+        template <typename Index>
+        void on_future_ready(
+            std::false_type, Index i, pika::execution_base::agent_ref ctx)
+        {
+            if (lazy_values_[i].has_value())
+            {
+                if (success_counter_)
+                    ++*success_counter_;
+                // invoke callback function
+                f_(i, lazy_values_[i].get());
             }
 
-            template <typename Index>
-            void on_future_ready(
-                std::false_type, Index i, pika::execution_base::agent_ref ctx)
-            {
-                if (lazy_values_[i].has_value())
-                {
-                    if (success_counter_)
-                        ++*success_counter_;
-                    // invoke callback function
-                    f_(i, lazy_values_[i].get());
-                }
+            // keep track of ready futures
+            on_future_ready_(ctx);
+        }
 
-                // keep track of ready futures
-                on_future_ready_(ctx);
+        template <typename Index>
+        void on_future_ready(
+            std::true_type, Index i, pika::execution_base::agent_ref ctx)
+        {
+            if (lazy_values_[i].has_value())
+            {
+                if (success_counter_)
+                    ++*success_counter_;
+                // invoke callback function
+                f_(i);
             }
 
-            template <typename Index>
-            void on_future_ready(
-                std::true_type, Index i, pika::execution_base::agent_ref ctx)
+            // keep track of ready futures
+            on_future_ready_(ctx);
+        }
+
+    public:
+        using argument_type = std::vector<Future>;
+
+        template <typename F_>
+        wait_each(argument_type const& lazy_values, F_&& f,
+            std::atomic<std::size_t>* success_counter)
+          : lazy_values_(lazy_values)
+          , ready_count_(0)
+          , f_(PIKA_FORWARD(F, f))
+          , success_counter_(success_counter)
+          , goal_reached_on_calling_thread_(false)
+        {
+        }
+
+        template <typename F_>
+        wait_each(argument_type&& lazy_values, F_&& f,
+            std::atomic<std::size_t>* success_counter)
+          : lazy_values_(PIKA_MOVE(lazy_values))
+          , ready_count_(0)
+          , f_(PIKA_FORWARD(F, f))
+          , success_counter_(success_counter)
+          , goal_reached_on_calling_thread_(false)
+        {
+        }
+
+        wait_each(wait_each&& rhs)
+          : lazy_values_(PIKA_MOVE(rhs.lazy_values_))
+          , ready_count_(rhs.ready_count_.load())
+          , f_(PIKA_MOVE(rhs.f_))
+          , success_counter_(rhs.success_counter_)
+          , goal_reached_on_calling_thread_(rhs.goal_reached_on_calling_thread_)
+        {
+            rhs.success_counter_ = nullptr;
+            rhs.goal_reached_on_calling_thread_ = false;
+        }
+
+        wait_each& operator=(wait_each&& rhs)
+        {
+            if (this != &rhs)
             {
-                if (lazy_values_[i].has_value())
-                {
-                    if (success_counter_)
-                        ++*success_counter_;
-                    // invoke callback function
-                    f_(i);
-                }
-
-                // keep track of ready futures
-                on_future_ready_(ctx);
-            }
-
-        public:
-            using argument_type = std::vector<Future>;
-
-            template <typename F_>
-            wait_each(argument_type const& lazy_values, F_&& f,
-                std::atomic<std::size_t>* success_counter)
-              : lazy_values_(lazy_values)
-              , ready_count_(0)
-              , f_(PIKA_FORWARD(F, f))
-              , success_counter_(success_counter)
-              , goal_reached_on_calling_thread_(false)
-            {
-            }
-
-            template <typename F_>
-            wait_each(argument_type&& lazy_values, F_&& f,
-                std::atomic<std::size_t>* success_counter)
-              : lazy_values_(PIKA_MOVE(lazy_values))
-              , ready_count_(0)
-              , f_(PIKA_FORWARD(F, f))
-              , success_counter_(success_counter)
-              , goal_reached_on_calling_thread_(false)
-            {
-            }
-
-            wait_each(wait_each&& rhs)
-              : lazy_values_(PIKA_MOVE(rhs.lazy_values_))
-              , ready_count_(rhs.ready_count_.load())
-              , f_(PIKA_MOVE(rhs.f_))
-              , success_counter_(rhs.success_counter_)
-              , goal_reached_on_calling_thread_(
-                    rhs.goal_reached_on_calling_thread_)
-            {
+                lazy_values_ = PIKA_MOVE(rhs.lazy_values_);
+                ready_count_.store(rhs.ready_count_.load());
+                rhs.ready_count_ = 0;
+                f_ = PIKA_MOVE(rhs.f_);
+                success_counter_ = rhs.success_counter_;
                 rhs.success_counter_ = nullptr;
+                goal_reached_on_calling_thread_ =
+                    rhs.goal_reached_on_calling_thread_;
                 rhs.goal_reached_on_calling_thread_ = false;
             }
+            return *this;
+        }
 
-            wait_each& operator=(wait_each&& rhs)
+        std::vector<Future> operator()()
+        {
+            ready_count_.store(0);
+            goal_reached_on_calling_thread_ = false;
+
+            // set callback functions to executed when future is ready
+            std::size_t size = lazy_values_.size();
+            auto ctx = pika::execution_base::this_thread::agent();
+            for (std::size_t i = 0; i != size; ++i)
             {
-                if (this != &rhs)
-                {
-                    lazy_values_ = PIKA_MOVE(rhs.lazy_values_);
-                    ready_count_.store(rhs.ready_count_.load());
-                    rhs.ready_count_ = 0;
-                    f_ = PIKA_MOVE(rhs.f_);
-                    success_counter_ = rhs.success_counter_;
-                    rhs.success_counter_ = nullptr;
-                    goal_reached_on_calling_thread_ =
-                        rhs.goal_reached_on_calling_thread_;
-                    rhs.goal_reached_on_calling_thread_ = false;
-                }
-                return *this;
+                typedef
+                    typename traits::detail::shared_state_ptr_for<Future>::type
+                        shared_state_ptr;
+                shared_state_ptr current =
+                    traits::detail::get_shared_state(lazy_values_[i]);
+
+                current->execute_deferred();
+                current->set_on_completed(
+                    [PIKA_CXX20_CAPTURE_THIS(=)]() -> void {
+                        using is_void = std::is_void<
+                            typename traits::future_traits<Future>::type>;
+                        return on_future_ready(is_void{}, i, ctx);
+                    });
             }
 
-            std::vector<Future> operator()()
+            // If all of the requested futures are already set then our
+            // callback above has already been called, otherwise we suspend
+            // ourselves.
+            if (!goal_reached_on_calling_thread_)
             {
-                ready_count_.store(0);
-                goal_reached_on_calling_thread_ = false;
-
-                // set callback functions to executed when future is ready
-                std::size_t size = lazy_values_.size();
-                auto ctx = pika::execution_base::this_thread::agent();
-                for (std::size_t i = 0; i != size; ++i)
-                {
-                    typedef typename traits::detail::shared_state_ptr_for<
-                        Future>::type shared_state_ptr;
-                    shared_state_ptr current =
-                        traits::detail::get_shared_state(lazy_values_[i]);
-
-                    current->execute_deferred();
-                    current->set_on_completed(
-                        [PIKA_CXX20_CAPTURE_THIS(=)]() -> void {
-                            using is_void = std::is_void<
-                                typename traits::future_traits<Future>::type>;
-                            return on_future_ready(is_void{}, i, ctx);
-                        });
-                }
-
-                // If all of the requested futures are already set then our
-                // callback above has already been called, otherwise we suspend
-                // ourselves.
-                if (!goal_reached_on_calling_thread_)
-                {
-                    // wait for all of the futures to return to become ready
-                    pika::execution_base::this_thread::suspend(
-                        "pika::lcos::detail::wait_each::operator()");
-                }
-
-                // all futures should be ready
-                PIKA_ASSERT(ready_count_ == size);
-
-                return PIKA_MOVE(lazy_values_);
+                // wait for all of the futures to return to become ready
+                pika::execution_base::this_thread::suspend(
+                    "pika::lcos::detail::wait_each::operator()");
             }
 
-            std::vector<Future> lazy_values_;
-            std::atomic<std::size_t> ready_count_;
-            typename std::remove_reference<F>::type f_;
-            std::atomic<std::size_t>* success_counter_;
-            bool goal_reached_on_calling_thread_;
-        };
-    }    // namespace detail
+            // all futures should be ready
+            PIKA_ASSERT(ready_count_ == size);
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Asynchronous versions.
+            return PIKA_MOVE(lazy_values_);
+        }
 
-    /// The one argument version is special in the sense that it returns the
-    /// expected value directly (without wrapping it into a tuple).
-    template <typename Future, typename F>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use "
-        "pika::wait_each "
-        "instead.")
-    std::enable_if_t<!std::is_void_v<traits::future_traits_t<Future>>,
-        std::size_t> wait(Future&& f1, F&& f)
-    {
-        f(0, f1.get());
-        return 1;
-    }
-
-    template <typename Future, typename F>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use "
-        "pika::wait_each "
-        "instead.")
-    std::enable_if_t<std::is_void_v<traits::future_traits_t<Future>>,
-        std::size_t> wait(Future&& f1, F&& f)
-    {
-        f1.get();
-        f(0);
-        return 1;
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    // This overload of wait() will make sure that the passed function will be
-    // invoked as soon as a value becomes available, it will not wait for all
-    // results to be there.
-    template <typename Future, typename F>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use "
-        "pika::wait_each "
-        "instead.")
-    inline std::size_t wait(std::vector<Future>& lazy_values, F&& f,
-        std::int32_t /* suspend_for */ = 10)
-    {
-        typedef std::vector<Future> return_type;
-
-        if (lazy_values.empty())
-            return 0;
-
-        return_type lazy_values_;
-        lazy_values_.reserve(lazy_values.size());
-        std::transform(lazy_values.begin(), lazy_values.end(),
-            std::back_inserter(lazy_values_),
-            detail::wait_acquire_future<Future>());
-
-        std::atomic<std::size_t> success_counter(0);
-        lcos::local::futures_factory<return_type()> p(
-            detail::wait_each<Future, F>(
-                PIKA_MOVE(lazy_values_), PIKA_FORWARD(F, f), &success_counter));
-
-        p.apply();
-        p.get_future().get();
-
-        return success_counter.load();
-    }
-
-    template <typename Future, typename F>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use "
-        "pika::wait_each "
-        "instead.")
-    inline std::size_t wait(
-        std::vector<Future>&& lazy_values, F&& f, std::int32_t suspend_for = 10)
-    {
-        return wait(lazy_values, PIKA_FORWARD(F, f), suspend_for);
-    }
-
-    template <typename Future, typename F>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use "
-        "pika::wait_each "
-        "instead.")
-    inline std::size_t wait(std::vector<Future> const& lazy_values, F&& f,
-        std::int32_t /* suspend_for */ = 10)
-    {
-        typedef std::vector<Future> return_type;
-
-        if (lazy_values.empty())
-            return 0;
-
-        return_type lazy_values_;
-        lazy_values_.reserve(lazy_values.size());
-        std::transform(lazy_values.begin(), lazy_values.end(),
-            std::back_inserter(lazy_values_),
-            detail::wait_acquire_future<Future>());
-
-        std::atomic<std::size_t> success_counter(0);
-        lcos::local::futures_factory<return_type()> p(
-            detail::wait_each<Future, F>(
-                PIKA_MOVE(lazy_values_), PIKA_FORWARD(F, f), &success_counter));
-
-        p.apply();
-        p.get_future().get();
-
-        return success_counter.load();
-    }
-}}    // namespace pika::lcos
+        std::vector<Future> lazy_values_;
+        std::atomic<std::size_t> ready_count_;
+        typename std::remove_reference<F>::type f_;
+        std::atomic<std::size_t>* success_counter_;
+        bool goal_reached_on_calling_thread_;
+    };
+}}}    // namespace pika::lcos::detail

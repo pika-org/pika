@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/concepts/has_member_xxx.hpp>
 #include <pika/execution/detail/execution_parameter_callbacks.hpp>

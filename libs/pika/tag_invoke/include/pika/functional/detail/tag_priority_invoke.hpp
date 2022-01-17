@@ -104,7 +104,7 @@ namespace pika::functional::detail {
 }    // namespace pika::functional::detail
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/functional/tag_invoke.hpp>

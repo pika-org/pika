@@ -13,7 +13,7 @@ async_base
 
 The async_base module defines the basic functionality for spawning tasks on
 thread pools. This module does not implement any functionality on its own, but
-is extended by :ref:`modules_async_local` and :ref:`modules_async_distributed` with
+is extended by :ref:`modules_async` and :ref:`modules_async_distributed` with
 implementations for the local and distributed cases.
 
 See the :ref:`API reference <modules_async_base_api>` of this module for more

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/futures/traits/is_future.hpp>
 
 #include <type_traits>

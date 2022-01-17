@@ -7,12 +7,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <pika/barrier.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
-#include <pika/local/barrier.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/optional.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/optional.hpp>
 #include <pika/program_options.hpp>
 
 #include <algorithm>

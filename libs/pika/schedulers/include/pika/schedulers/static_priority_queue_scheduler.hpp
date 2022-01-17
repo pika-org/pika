@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <pika/assert.hpp>
 #include <pika/schedulers/local_priority_queue_scheduler.hpp>
@@ -19,7 +19,7 @@
 #include <mutex>
 #include <string>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads { namespace policies {
@@ -80,4 +80,4 @@ namespace pika { namespace threads { namespace policies {
     };
 }}}    // namespace pika::threads::policies
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

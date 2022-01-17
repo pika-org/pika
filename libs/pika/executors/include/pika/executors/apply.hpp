@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_base/apply.hpp>
 #include <pika/execution/executors/execution.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>

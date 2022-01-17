@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(PIKA_WINDOWS)
 

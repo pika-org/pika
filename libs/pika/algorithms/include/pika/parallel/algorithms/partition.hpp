@@ -444,14 +444,14 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/modules/async_local.hpp>
+#include <pika/modules/async.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/type_support/unused.hpp>
 
@@ -705,43 +705,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename BidirIter, typename F,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<BidirIter> &&
-            traits::is_projected_v<Proj, BidirIter> &&
-            traits::is_indirect_callable_v<ExPolicy, F,
-                            traits::projected<Proj, BidirIter>>
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::stable_partition is deprecated, use "
-        "pika::stable_partition instead")
-        util::detail::algorithm_result_t<ExPolicy, BidirIter> stable_partition(
-            ExPolicy&& policy, BidirIter first, BidirIter last, F&& f,
-            Proj&& proj = Proj())
-    {
-        static_assert((pika::traits::is_bidirectional_iterator_v<BidirIter>),
-            "Requires at least bidirectional iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        using is_seq = std::integral_constant<bool,
-            pika::is_sequenced_execution_policy_v<ExPolicy> ||
-                !pika::traits::is_random_access_iterator_v<BidirIter>>;
-
-        return detail::stable_partition<BidirIter>().call2(
-            PIKA_FORWARD(ExPolicy, policy), is_seq(), first, last,
-            PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
 
     /////////////////////////////////////////////////////////////////////////////
     // partition
@@ -1461,38 +1424,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename Pred,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<FwdIter> &&
-            traits::is_projected_v<Proj, FwdIter> &&
-            traits::is_indirect_callable_v<ExPolicy,
-                    Pred, traits::projected<Proj, FwdIter>>
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::partition is deprecated, use "
-        "pika::partition instead")
-        util::detail::algorithm_result_t<ExPolicy, FwdIter> partition(
-            ExPolicy&& policy, FwdIter first, FwdIter last, Pred&& pred,
-            Proj&& proj = Proj())
-    {
-        static_assert((pika::traits::is_forward_iterator_v<FwdIter>),
-            "Required at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::partition<FwdIter>().call(PIKA_FORWARD(ExPolicy, policy),
-            first, last, PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
 
     /////////////////////////////////////////////////////////////////////////////
     // partition_copy

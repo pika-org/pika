@@ -4,12 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/barrier.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/runtime.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/barrier.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/allocator_support.hpp>
 #include <pika/modules/format.hpp>
+#include <pika/runtime.hpp>
+#include <pika/thread.hpp>
 
 #include <boost/lockfree/queue.hpp>
 

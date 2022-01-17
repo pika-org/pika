@@ -15,12 +15,12 @@ set(example_programs
     fibonacci_await
     fibonacci_dataflow
     fibonacci_futures
-    fibonacci_local
+    fibonacci
     file_serialization
     hello_world
-    latch_local
-    local_channel
-    local_channel_docs
+    latch
+    channel
+    channel_docs
     matrix_multiplication
     pipeline1
     potpourri
@@ -42,7 +42,7 @@ set(customize_async_PARAMETERS THREADS_PER_LOCALITY 4)
 set(enumerate_threads_PARAMETERS THREADS_PER_LOCALITY 4)
 set(event_synchronization_PARAMETERS THREADS_PER_LOCALITY 4)
 set(hello_world_PARAMETERS THREADS_PER_LOCALITY 4)
-set(local_channel_PARAMETERS THREADS_PER_LOCALITY 4)
+set(channel_PARAMETERS THREADS_PER_LOCALITY 4)
 set(simple_future_continuation_PARAMETERS THREADS_PER_LOCALITY 4)
 set(timed_futures_PARAMETERS THREADS_PER_LOCALITY 4)
 set(vector_counting_dotproduct_PARAMETERS THREADS_PER_LOCALITY 4)

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/errors/error.hpp>
 #include <pika/errors/error_code.hpp>
 #include <pika/errors/exception_fwd.hpp>
@@ -22,7 +22,7 @@
 #include <string>
 #include <system_error>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
@@ -528,4 +528,4 @@ namespace pika {
 
 #include <pika/errors/throw_exception.hpp>
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

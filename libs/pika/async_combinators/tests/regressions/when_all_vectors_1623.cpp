@@ -7,8 +7,8 @@
 // This test case demonstrates the issue described in #1623: pika::wait_all()
 // invoked with two vector<future<T>> fails
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <vector>

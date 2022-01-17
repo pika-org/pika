@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/errors/exception_list.hpp>
 #include <pika/execution/detail/async_launch_policy_dispatch.hpp>
 #include <pika/execution/detail/sync_launch_policy_dispatch.hpp>
@@ -137,13 +137,6 @@ namespace pika { namespace execution {
         /// \endcond
     };
 }}    // namespace pika::execution
-
-namespace pika { namespace parallel { namespace execution {
-    using sequenced_executor PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::sequenced_executor is deprecated. Use "
-        "pika::execution::sequenced_executor instead.") =
-        pika::execution::sequenced_executor;
-}}}    // namespace pika::parallel::execution
 
 namespace pika { namespace parallel { namespace execution {
     /// \cond NOINTERNAL

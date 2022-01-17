@@ -17,7 +17,7 @@ pika_add_module(
   HEADERS ${ini_headers}
   MODULE_DEPENDENCIES
     pika_assertion
-    pika_config_local
+    pika_config
     pika_errors
     pika_serialization
     pika_string_util

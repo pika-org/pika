@@ -59,7 +59,7 @@ pika_add_module(
   HEADERS ${functional_headers}
   MODULE_DEPENDENCIES
     pika_assertion
-    pika_config_local
+    pika_config
     pika_datastructures
     pika_debugging
     pika_errors

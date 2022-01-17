@@ -16,6 +16,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${concepts_sources}
   HEADERS ${concepts_headers}
-  MODULE_DEPENDENCIES pika_config_local pika_preprocessor pika_type_support
+  MODULE_DEPENDENCIES pika_config pika_preprocessor pika_type_support
   CMAKE_SUBDIRS examples tests
 )

@@ -10,9 +10,9 @@
 // thread_stacksize::minimal and thread_stacksize::maximal when a thread has been
 // created.
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 
-#include <pika/modules/async_local.hpp>
+#include <pika/modules/async.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/threading_base.hpp>
 

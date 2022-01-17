@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/has_member_xxx.hpp>
 #include <pika/execution/traits/executor_traits.hpp>
 #include <pika/execution_base/execution.hpp>
@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 // --------------------------------------------------------------------
 //
@@ -355,4 +355,4 @@ namespace pika { namespace parallel { namespace execution {
     };
 }}}    // namespace pika::parallel::execution
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

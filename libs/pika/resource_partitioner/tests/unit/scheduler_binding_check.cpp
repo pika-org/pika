@@ -9,14 +9,14 @@
 // Tasks should always report the right core number when they run.
 
 #include <pika/debugging/print.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/runtime.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/runtime.hpp>
+#include <pika/thread.hpp>
 
 #include <atomic>
 #include <cstddef>

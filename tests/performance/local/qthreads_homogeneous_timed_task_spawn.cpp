@@ -32,7 +32,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <pika/modules/format.hpp>
 #include <pika/modules/timing.hpp>
@@ -47,12 +47,12 @@
 
 #include <qthread/qthread.h>
 
-using pika::program_options::variables_map;
-using pika::program_options::options_description;
-using pika::program_options::value;
-using pika::program_options::store;
 using pika::program_options::command_line_parser;
 using pika::program_options::notify;
+using pika::program_options::options_description;
+using pika::program_options::store;
+using pika::program_options::value;
+using pika::program_options::variables_map;
 
 using pika::chrono::high_resolution_timer;
 
@@ -66,12 +66,9 @@ std::uint64_t delay = 0;
 bool header = true;
 
 // delay in seconds
-double delay_sec=0;
+double delay_sec = 0;
 ///////////////////////////////////////////////////////////////////////////////
-void print_results(
-    std::uint64_t cores
-  , double walltime
-    )
+void print_results(std::uint64_t cores, double walltime)
 {
     if (header)
         std::cout << "OS-threads,Tasks,Delay (micro-seconds),"
@@ -82,24 +79,22 @@ void print_results(
     std::string const delay_str = pika::util::format("{},", delay);
 
     pika::util::format_to(std::cout,
-        "{:-21} {:-21} {:-21} {:10.12}, {:10.12}\n",
-        cores_str, tasks_str, delay_str,
-        walltime, walltime / tasks);
+        "{:-21} {:-21} {:-21} {:10.12}, {:10.12}\n", cores_str, tasks_str,
+        delay_str, walltime, walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-extern "C" aligned_t worker(
-    void*
-    )
+extern "C" aligned_t worker(void*)
 {
     int volatile i = 0;
 
     //start timer
     high_resolution_timer td;
 
-    while(true) {
-        if(td.elapsed() > delay_sec)
-          break;
+    while (true)
+    {
+        if (td.elapsed() > delay_sec)
+            break;
         else
             ++i;
     }
@@ -110,15 +105,13 @@ extern "C" aligned_t worker(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int qthreads_main(
-    variables_map& vm
-    )
+int qthreads_main(variables_map& vm)
 {
     if (vm.count("no-header"))
         header = false;
 
     //time in seconds
-    delay_sec = (delay) * 1.0E-6;
+    delay_sec = (delay) *1.0E-6;
 
     {
         // Validate command line.
@@ -132,7 +125,8 @@ int qthreads_main(
             qthread_fork(&worker, nullptr, nullptr);
 
         // Yield until all our null qthreads are done.
-        do {
+        do
+        {
             qthread_yield();
         } while (donecount != tasks);
 
@@ -143,40 +137,28 @@ int qthreads_main(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int main(
-    int argc
-  , char** argv
-    )
+int main(int argc, char** argv)
 {
     // Parse command line.
     variables_map vm;
 
     options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    cmdline.add_options()
-       ( "help,h"
-       , "print out program usage (this message)")
+    cmdline.add_options()("help,h", "print out program usage (this message)")
 
-        ( "shepherds,s"
-        , value<std::uint64_t>()->default_value(1),
-         "number of shepherds to use")
+        ("shepherds,s", value<std::uint64_t>()->default_value(1),
+            "number of shepherds to use")
 
-        ( "workers-per-shepherd,w"
-        , value<std::uint64_t>()->default_value(1),
-         "number of worker OS-threads per shepherd")
+            ("workers-per-shepherd,w", value<std::uint64_t>()->default_value(1),
+                "number of worker OS-threads per shepherd")
 
-        ( "tasks"
-        , value<std::uint64_t>(&tasks)->default_value(500000)
-        , "number of tasks (e.g. qthreads) to invoke")
+                ("tasks", value<std::uint64_t>(&tasks)->default_value(500000),
+                    "number of tasks (e.g. qthreads) to invoke")
 
-        ( "delay"
-        , value<std::uint64_t>(&delay)->default_value(0)
-        , "delay in micro-seconds for the loop")
+                    ("delay", value<std::uint64_t>(&delay)->default_value(0),
+                        "delay in micro-seconds for the loop")
 
-
-        ( "no-header"
-        , "do not print out the csv header row")
-        ;
+                        ("no-header", "do not print out the csv header row");
     ;
 
     store(command_line_parser(argc, argv).options(cmdline).run(), vm);
@@ -191,10 +173,10 @@ int main(
     }
 
     // Set qthreads environment variables.
-    std::string const shepherds = std::to_string
-        (vm["shepherds"].as<std::uint64_t>());
-    std::string const workers = std::to_string
-        (vm["workers-per-shepherd"].as<std::uint64_t>());
+    std::string const shepherds =
+        std::to_string(vm["shepherds"].as<std::uint64_t>());
+    std::string const workers =
+        std::to_string(vm["workers-per-shepherd"].as<std::uint64_t>());
 
     setenv("QT_NUM_SHEPHERDS", shepherds.c_str(), 1);
     setenv("QT_NUM_WORKERS_PER_SHEPHERD", workers.c_str(), 1);
@@ -205,4 +187,3 @@ int main(
 
     return qthreads_main(vm);
 }
-

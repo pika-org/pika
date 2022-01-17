@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/concurrency/cache_line_data.hpp>

@@ -1,11 +1,12 @@
 //  Copyright (c) 2014-2017 Hartmut Kaiser
+//  Copyright (c) 2021 Giannis Gonidelis
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/init.hpp>
 #include <pika/iterator_support/iterator_range.hpp>
-#include <pika/local/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/transform.hpp>
 
@@ -19,6 +20,40 @@
 #include "test_utils.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
+template <typename IteratorTag>
+void test_transform_binary(IteratorTag)
+{
+    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+
+    test_vector c1(10007);
+    test_vector c2(10007);
+    std::vector<std::size_t> d1(c1.size());    //-V656
+    std::iota(std::begin(c1), std::end(c1), std::rand());
+    std::iota(std::begin(c2), std::end(c2), std::rand());
+
+    auto add = [](std::size_t v1, std::size_t v2) { return v1 + v2; };
+
+    auto result = pika::ranges::transform(c1, c2, std::begin(d1), add);
+
+    PIKA_TEST(result.in1 == std::end(c1));
+    PIKA_TEST(result.in2 == std::end(c2));
+    PIKA_TEST(result.out == std::end(d1));
+
+    // verify values
+    std::vector<std::size_t> d2(c1.size());
+    std::transform(
+        std::begin(c1), std::end(c1), std::begin(c2), std::begin(d2), add);
+
+    std::size_t count = 0;
+    PIKA_TEST(std::equal(std::begin(d1), std::end(d1), std::begin(d2),
+        [&count](std::size_t v1, std::size_t v2) -> bool {
+            PIKA_TEST_EQ(v1, v2);
+            ++count;
+            return v1 == v2;
+        }));
+    PIKA_TEST_EQ(count, d2.size());
+}
+
 template <typename ExPolicy, typename IteratorTag>
 void test_transform_binary(ExPolicy policy, IteratorTag)
 {
@@ -35,8 +70,7 @@ void test_transform_binary(ExPolicy policy, IteratorTag)
 
     auto add = [](std::size_t v1, std::size_t v2) { return v1 + v2; };
 
-    auto result = pika::parallel::transform(
-        policy, c1, std::begin(c2), std::begin(d1), add);
+    auto result = pika::ranges::transform(policy, c1, c2, std::begin(d1), add);
 
     PIKA_TEST(result.in1 == std::end(c1));
     PIKA_TEST(result.in2 == std::end(c2));
@@ -63,19 +97,17 @@ void test_transform_binary_async(ExPolicy p, IteratorTag)
     typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
 
     test_vector c1(10007);
-    test_vector c2(c1.size());
+    test_vector c2(10007);
     std::vector<std::size_t> d1(c1.size());    //-V656
     std::iota(std::begin(c1), std::end(c1), std::rand());
     std::iota(std::begin(c2), std::end(c2), std::rand());
 
     auto add = [](std::size_t v1, std::size_t v2) { return v1 + v2; };
 
-    auto f =
-        pika::parallel::transform(p, c1, std::begin(c2), std::begin(d1), add);
+    auto f = pika::ranges::transform(p, c1, c2, std::begin(d1), add);
     f.wait();
 
     auto result = f.get();
-
     PIKA_TEST(result.in1 == std::end(c1));
     PIKA_TEST(result.in2 == std::end(c2));
     PIKA_TEST(result.out == std::end(d1));
@@ -100,6 +132,7 @@ void test_transform_binary()
 {
     using namespace pika::execution;
 
+    test_transform_binary(IteratorTag());
     test_transform_binary(seq, IteratorTag());
     test_transform_binary(par, IteratorTag());
     test_transform_binary(par_unseq, IteratorTag());
@@ -115,6 +148,44 @@ void transform_binary_test()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+template <typename IteratorTag>
+void test_transform_binary_exception(IteratorTag)
+{
+    typedef std::vector<std::size_t>::iterator base_iterator;
+    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+
+    std::vector<std::size_t> c1(10007);
+    std::vector<std::size_t> c2(c1.size());
+    std::vector<std::size_t> d1(c1.size());    //-V656
+    std::iota(std::begin(c1), std::end(c1), std::rand());
+    std::iota(std::begin(c2), std::end(c2), std::rand());
+
+    bool caught_exception = false;
+    try
+    {
+        pika::ranges::transform(
+            pika::util::make_iterator_range(
+                iterator(std::begin(c1)), iterator(std::end(c1))),
+            c2, std::begin(d1), [](std::size_t v1, std::size_t v2) {
+                return throw std::runtime_error("test"), v1 + v2;
+            });
+
+        PIKA_TEST(false);
+    }
+    catch (pika::exception_list const& e)
+    {
+        caught_exception = true;
+        test::test_num_exceptions<pika::execution::sequenced_policy,
+            IteratorTag>::call(pika::execution::seq, e);
+    }
+    catch (...)
+    {
+        PIKA_TEST(false);
+    }
+
+    PIKA_TEST(caught_exception);
+}
+
 template <typename ExPolicy, typename IteratorTag>
 void test_transform_binary_exception(ExPolicy policy, IteratorTag)
 {
@@ -133,10 +204,11 @@ void test_transform_binary_exception(ExPolicy policy, IteratorTag)
     bool caught_exception = false;
     try
     {
-        pika::parallel::transform(policy,
+        pika::ranges::transform(policy,
             pika::util::make_iterator_range(
                 iterator(std::begin(c1)), iterator(std::end(c1))),
-            std::begin(c2), std::begin(d1), [](std::size_t v1, std::size_t v2) {
+            pika::util::make_iterator_range(std::begin(c2), std::end(c2)),
+            std::begin(d1), [](std::size_t v1, std::size_t v2) {
                 return throw std::runtime_error("test"), v1 + v2;
             });
 
@@ -171,10 +243,11 @@ void test_transform_binary_exception_async(ExPolicy p, IteratorTag)
     bool returned_from_algorithm = false;
     try
     {
-        auto f = pika::parallel::transform(p,
+        auto f = pika::ranges::transform(p,
             pika::util::make_iterator_range(
                 iterator(std::begin(c1)), iterator(std::end(c1))),
-            std::begin(c2), std::begin(d1), [](std::size_t v1, std::size_t v2) {
+            pika::util::make_iterator_range(std::begin(c2), std::end(c2)),
+            std::begin(d1), [](std::size_t v1, std::size_t v2) {
                 return throw std::runtime_error("test"), v1 + v2;
             });
         returned_from_algorithm = true;
@@ -204,6 +277,7 @@ void test_transform_binary_exception()
     // If the execution policy object is of type vector_execution_policy,
     // std::terminate shall be called. therefore we do not test exceptions
     // with a vector execution policy
+    test_transform_binary_exception(IteratorTag());
     test_transform_binary_exception(seq, IteratorTag());
     test_transform_binary_exception(par, IteratorTag());
 
@@ -236,10 +310,11 @@ void test_transform_binary_bad_alloc(ExPolicy policy, IteratorTag)
     bool caught_bad_alloc = false;
     try
     {
-        pika::parallel::transform(policy,
+        pika::ranges::transform(policy,
             pika::util::make_iterator_range(
                 iterator(std::begin(c1)), iterator(std::end(c1))),
-            std::begin(c2), std::begin(d1), [](std::size_t v1, std::size_t v2) {
+            pika::util::make_iterator_range(std::begin(c2), std::end(c2)),
+            std::begin(d1), [](std::size_t v1, std::size_t v2) {
                 return throw std::bad_alloc(), v1 + v2;
             });
 
@@ -273,10 +348,11 @@ void test_transform_binary_bad_alloc_async(ExPolicy p, IteratorTag)
     bool returned_from_algorithm = false;
     try
     {
-        auto f = pika::parallel::transform(p,
+        auto f = pika::ranges::transform(p,
             pika::util::make_iterator_range(
                 iterator(std::begin(c1)), iterator(std::end(c1))),
-            std::begin(c2), std::begin(d1), [](std::size_t v1, std::size_t v2) {
+            pika::util::make_iterator_range(std::begin(c2), std::end(c2)),
+            std::begin(d1), [](std::size_t v1, std::size_t v2) {
                 return throw std::bad_alloc(), v1 + v2;
             });
         returned_from_algorithm = true;

@@ -86,7 +86,7 @@ pika_add_module(
   MODULE_DEPENDENCIES
     pika_async_base
     pika_async_combinators
-    pika_config_local
+    pika_config
     pika_threading
     pika_pack_traversal
     pika_errors

@@ -7,8 +7,8 @@
 // Making sure the continuations of a shared_future are invoked in the same
 // order as they have been attached.
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <atomic>

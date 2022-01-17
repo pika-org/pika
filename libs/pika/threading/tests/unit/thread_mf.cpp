@@ -6,10 +6,10 @@
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
 
-#include <pika/local/init.hpp>
-#include <pika/local/runtime.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/runtime.hpp>
+#include <pika/thread.hpp>
 
 #include <functional>
 

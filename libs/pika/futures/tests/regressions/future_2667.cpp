@@ -7,10 +7,10 @@
 // This test case demonstrates the issue described in #2667: Ambiguity of
 // nested pika::future<void>'s
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 
 #include <atomic>
 #include <chrono>

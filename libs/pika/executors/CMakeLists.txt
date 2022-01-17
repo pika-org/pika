@@ -47,7 +47,7 @@ pika_add_module(
   HEADERS ${executors_headers}
   MODULE_DEPENDENCIES
     pika_async_base
-    pika_config_local
+    pika_config
     pika_execution
     pika_futures
     pika_hardware

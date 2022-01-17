@@ -10,9 +10,9 @@
 // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3564.pdf). The
 // necessary transformations are performed by hand.
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/format.hpp>
 
 #include <cstdint>

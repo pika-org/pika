@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/type_support/void_guard.hpp>

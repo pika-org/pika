@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/modules/iterator_support.hpp>
 
 #include <algorithm>

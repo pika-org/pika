@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_DATAPAR)
 #include <pika/async_base/traits/is_launch_policy.hpp>

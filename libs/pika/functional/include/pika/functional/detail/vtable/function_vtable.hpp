@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/detail/vtable/callable_vtable.hpp>
 #include <pika/functional/detail/vtable/copyable_vtable.hpp>
 #include <pika/functional/detail/vtable/vtable.hpp>

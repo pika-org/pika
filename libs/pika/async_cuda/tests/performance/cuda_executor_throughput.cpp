@@ -25,9 +25,9 @@
 // Currently, nvcc does not handle lambda functions properly and it is simpler to use
 // cudaMalloc/cudaMemcpy etc, so we do not #define PIKA_CUBLAS_DEMO_WITH_ALLOCATOR
 
-#include <pika/local/algorithm.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
+#include <pika/algorithm.hpp>
+#include <pika/execution.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/async_cuda.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/timing.hpp>

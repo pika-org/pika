@@ -9,8 +9,8 @@
 //
 // This test is supposed to fail compiling.
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 
 #include <chrono>
 #include <utility>

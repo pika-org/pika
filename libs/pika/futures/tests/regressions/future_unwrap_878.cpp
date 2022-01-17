@@ -7,8 +7,8 @@
 // This test case demonstrates the issue described in #878: `future::unwrap`
 // triggers assertion
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <exception>

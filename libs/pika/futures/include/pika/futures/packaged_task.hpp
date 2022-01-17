@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
 #include <pika/functional/unique_function.hpp>

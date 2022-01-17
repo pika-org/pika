@@ -101,7 +101,6 @@ set(tests
     transform_range
     transform_range_binary
     transform_range2
-    transform_range_binary2
     transform_exclusive_scan_range
     transform_inclusive_scan_range
     transform_reduce_binary_bad_alloc_range
@@ -122,9 +121,6 @@ set(tests
     unique_copy_range
 )
 
-set(transform_range_binary_FLAGS COMPILE_FLAGS
-                                 -DPIKA_HAVE_DEPRECATION_WARNINGS_V0_1=0
-)
 foreach(test ${tests})
   set(sources ${test}.cpp)
 

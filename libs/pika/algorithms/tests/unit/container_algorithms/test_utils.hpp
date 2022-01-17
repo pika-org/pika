@@ -9,9 +9,9 @@
 #pragma once
 
 #include <pika/concepts/concepts.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/runtime.hpp>
+#include <pika/execution.hpp>
 #include <pika/modules/iterator_support.hpp>
+#include <pika/runtime.hpp>
 
 #include <atomic>
 #include <cstddef>

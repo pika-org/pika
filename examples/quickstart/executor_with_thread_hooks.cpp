@@ -10,10 +10,10 @@
 // to associate custom thread data with the tasks that are created by the
 // underlying executor.
 
+#include <pika/algorithm.hpp>
 #include <pika/assert.hpp>
-#include <pika/local/algorithm.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
+#include <pika/execution.hpp>
+#include <pika/init.hpp>
 
 #include <algorithm>
 #include <atomic>

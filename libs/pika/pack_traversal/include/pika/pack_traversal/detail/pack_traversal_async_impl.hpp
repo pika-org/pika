@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/assert.hpp>
 #include <pika/datastructures/tuple.hpp>

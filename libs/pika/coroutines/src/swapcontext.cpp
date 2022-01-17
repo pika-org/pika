@@ -5,7 +5,7 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if !defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES)
 

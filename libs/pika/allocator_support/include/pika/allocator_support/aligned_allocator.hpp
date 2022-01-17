@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <cstddef>
 #include <limits>
@@ -99,7 +99,7 @@ inline void __aligned_free(void* p) noexcept
 
 #endif
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
 
@@ -197,4 +197,4 @@ namespace pika { namespace util {
     }
 }}    // namespace pika::util
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

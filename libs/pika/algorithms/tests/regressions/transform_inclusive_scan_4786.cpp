@@ -7,7 +7,7 @@
 // see #4786: transform_inclusive_scan tries to implicitly convert between
 //            types, instead of using the provided `conv` function
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/transform_inclusive_scan.hpp>
 

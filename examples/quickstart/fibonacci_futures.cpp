@@ -7,9 +7,9 @@
 // This is a purely local version demonstrating different versions of making
 // the calculation of a fibonacci asynchronous.
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/format.hpp>
 
 #include <cstddef>
@@ -30,7 +30,8 @@ PIKA_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-std::uint64_t add(pika::future<std::uint64_t> f1, pika::future<std::uint64_t> f2)
+std::uint64_t add(
+    pika::future<std::uint64_t> f1, pika::future<std::uint64_t> f2)
 {
     return f1.get() + f2.get();
 }
@@ -38,7 +39,8 @@ std::uint64_t add(pika::future<std::uint64_t> f1, pika::future<std::uint64_t> f2
 ///////////////////////////////////////////////////////////////////////////////
 struct when_all_wrapper
 {
-    typedef pika::tuple<pika::future<std::uint64_t>, pika::future<std::uint64_t>>
+    typedef pika::tuple<pika::future<std::uint64_t>,
+        pika::future<std::uint64_t>>
         data_type;
 
     std::uint64_t operator()(pika::future<data_type> data) const

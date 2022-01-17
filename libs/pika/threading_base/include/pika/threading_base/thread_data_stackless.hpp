@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/coroutines/stackless_coroutine.hpp>
@@ -21,7 +21,7 @@
 #include <cstddef>
 #include <utility>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads {
@@ -166,4 +166,4 @@ namespace pika { namespace threads {
     }
 }}    // namespace pika::threads
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

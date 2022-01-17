@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/synchronization/detail/counting_semaphore.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/timing/steady_clock.hpp>

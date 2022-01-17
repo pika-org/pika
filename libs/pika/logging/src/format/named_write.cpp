@@ -16,7 +16,7 @@
 
 #include <pika/logging/format/named_write.hpp>
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/logging/format/destinations.hpp>
 #include <pika/logging/format/formatters.hpp>

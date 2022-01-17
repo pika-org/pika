@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/parallel/util/loop.hpp>

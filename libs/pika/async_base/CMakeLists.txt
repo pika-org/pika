@@ -24,7 +24,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   HEADERS ${async_base_headers}
   SOURCES ${async_base_sources}
-  MODULE_DEPENDENCIES pika_allocator_support pika_config_local pika_coroutines
+  MODULE_DEPENDENCIES pika_allocator_support pika_config pika_coroutines
                       pika_tag_invoke
   CMAKE_SUBDIRS examples tests
 )

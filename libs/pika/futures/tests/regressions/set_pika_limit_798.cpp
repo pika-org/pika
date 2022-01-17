@@ -7,10 +7,10 @@
 // This test case demonstrates the issue described in #798: PIKA_LIMIT does not
 // work for local dataflow
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/pack_traversal/unwrap.hpp>
 

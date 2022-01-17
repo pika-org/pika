@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
-#include <pika/runtime_local/runtime_local_fwd.hpp>
+#include <pika/runtime/runtime_fwd.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 
 #include <string>

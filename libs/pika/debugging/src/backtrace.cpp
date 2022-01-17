@@ -9,7 +9,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_STACKTRACES)
 

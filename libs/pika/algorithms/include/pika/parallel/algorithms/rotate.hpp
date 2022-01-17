@@ -178,8 +178,8 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
-#include <pika/async_local/dataflow.hpp>
+#include <pika/config.hpp>
+#include <pika/async/dataflow.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -267,31 +267,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<FwdIter>
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::rotate is deprecated, use pika::rotate instead ")
-        typename util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<FwdIter, FwdIter>>::type
-        rotate(
-            ExPolicy&& policy, FwdIter first, FwdIter new_first, FwdIter last)
-    {
-        static_assert((pika::traits::is_forward_iterator_v<FwdIter>),
-            "Requires at least forward iterator.");
-
-        using is_seq = std::integral_constant<bool,
-            pika::is_sequenced_execution_policy_v<ExPolicy> ||
-                !pika::traits::is_bidirectional_iterator_v<FwdIter>>;
-
-        return detail::rotate<util::in_out_result<FwdIter, FwdIter>>().call2(
-            PIKA_FORWARD(ExPolicy, policy), is_seq(), first, new_first, last);
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // rotate_copy
     namespace detail {
@@ -368,36 +343,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::traits::is_iterator_v<FwdIter1> &&
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<FwdIter2>
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::rotate_copy is deprecated, use pika::rotate_copy "
-        "instead ") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<FwdIter1, FwdIter2>>::type
-        rotate_copy(ExPolicy&& policy, FwdIter1 first, FwdIter1 new_first,
-            FwdIter1 last, FwdIter2 dest_first)
-    {
-        static_assert((pika::traits::is_forward_iterator_v<FwdIter1>),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
-            "Requires at least forward iterator.");
-
-        using is_seq = std::integral_constant<bool,
-            pika::is_sequenced_execution_policy_v<ExPolicy> ||
-                !pika::traits::is_bidirectional_iterator_v<FwdIter1>>;
-
-        return detail::rotate_copy<util::in_out_result<FwdIter1, FwdIter2>>()
-            .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first, new_first,
-                last, dest_first);
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 // create new APIs, tag_fallback_invoke overloads.
 namespace pika {

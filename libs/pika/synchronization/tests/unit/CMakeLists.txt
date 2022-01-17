@@ -18,12 +18,12 @@ set(tests
     counting_semaphore
     counting_semaphore_cpp20
     latch_cpp20
-    local_latch
-    local_barrier
-    local_barrier_count_up
-    local_barrier_reset
-    local_event
-    local_mutex
+    latch
+    barrier
+    barrier_count_up
+    barrier_reset
+    event
+    mutex
     sliding_semaphore
     stop_token
     stop_token_cb2
@@ -43,10 +43,10 @@ set(counting_semaphore_PARAMETERS THREADS_PER_LOCALITY 4)
 set(counting_semaphore_cpp20_PARAMETERS THREADS_PER_LOCALITY 4)
 
 set(latch_cpp20_PARAMETERS THREADS_PER_LOCALITY 4)
-set(local_barrier_PARAMETERS THREADS_PER_LOCALITY 4)
-set(local_latch_PARAMETERS THREADS_PER_LOCALITY 4)
-set(local_event_PARAMETERS THREADS_PER_LOCALITY 4)
-set(local_mutex_PARAMETERS THREADS_PER_LOCALITY 4)
+set(barrier_PARAMETERS THREADS_PER_LOCALITY 4)
+set(latch_PARAMETERS THREADS_PER_LOCALITY 4)
+set(event_PARAMETERS THREADS_PER_LOCALITY 4)
+set(mutex_PARAMETERS THREADS_PER_LOCALITY 4)
 
 set(sliding_semaphore_PARAMETERS THREADS_PER_LOCALITY 4)
 

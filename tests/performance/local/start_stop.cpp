@@ -7,10 +7,10 @@
 // This example benchmarks the time it takes to start and stop the pika runtime.
 // This is meant to be compared to resume_suspend and openmp_parallel_region.
 
+#include <pika/chrono.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/testing.hpp>
 

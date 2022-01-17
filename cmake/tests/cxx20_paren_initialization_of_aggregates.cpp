@@ -15,7 +15,7 @@ struct S
 int main()
 {
     S s(1, 2.0f);
-    (void)s.x;
-    (void)s.y;
+    (void) s.x;
+    (void) s.y;
     return 0;
 }

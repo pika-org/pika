@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(JENKINS_HASH_HAS_SERIALIZATION_SUPPORT)
 #include <pika/serialization/serialize.hpp>

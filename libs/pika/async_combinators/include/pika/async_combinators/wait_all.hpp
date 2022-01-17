@@ -123,7 +123,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_combinators/detail/throw_if_exceptional.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/futures/detail/future_data.hpp>
@@ -581,25 +581,4 @@ namespace pika {
         pika::detail::throw_if_exceptional(PIKA_FORWARD(Ts, ts)...);
     }
 }    // namespace pika
-
-namespace pika::lcos {
-    template <typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_all is deprecated. Use pika::wait_all instead.")
-    void wait_all(Ts&&... ts)
-    {
-        pika::wait_all(PIKA_FORWARD(Ts, ts)...);
-    }
-
-    template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait_all_n is deprecated. Use pika::wait_all_n instead.")
-    void wait_all_n(Iterator begin, std::size_t count)
-    {
-        pika::wait_all_n(begin, count);
-    }
-}    // namespace pika::lcos
-
 #endif    // DOXYGEN

@@ -9,9 +9,9 @@
 // processing unit) for a thread which is created by calling pika::apply() or
 // pika::async().
 
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -75,7 +75,8 @@ int pika_main()
             pika::threads::thread_priority::high,
             pika::threads::thread_stacksize::large);
 
-        pika::future<void> f = pika::async(fancy_executor, &run_with_large_stack);
+        pika::future<void> f =
+            pika::async(fancy_executor, &run_with_large_stack);
         f.wait();
     }
 

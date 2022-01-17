@@ -7,8 +7,8 @@
 
 #include "jacobi.hpp"
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
 
 #include <cstddef>
 #include <functional>
@@ -81,8 +81,9 @@ namespace jacobi_smp {
                 (*deps_new)[j] =
                     pika::when_all(std::move(trigger))
                         .then(pika::launch::async,
-                            pika::util::bind(jacobi_kernel_wrap, range(y, y_end),
-                                n, std::ref(*grid_new), std::cref(*grid_old)));
+                            pika::util::bind(jacobi_kernel_wrap,
+                                range(y, y_end), n, std::ref(*grid_new),
+                                std::cref(*grid_old)));
             }
 
             std::swap(grid_new, grid_old);

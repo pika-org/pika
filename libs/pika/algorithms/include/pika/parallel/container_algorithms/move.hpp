@@ -128,7 +128,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -230,66 +230,4 @@ namespace pika { namespace ranges {
     } move{};
 
 }}    // namespace pika::ranges
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename Sent1,
-        typename FwdIter,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter1>::value &&
-            pika::traits::is_sentinel_for<Sent1, FwdIter1>::value &&
-            pika::traits::is_iterator<FwdIter>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::move is deprecated, use pika::ranges::move instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            ranges::move_result<FwdIter1, FwdIter>>::type
-        move(ExPolicy&& policy, FwdIter1 iter, Sent1 sent, FwdIter dest)
-    {
-        using move_iter_t = detail::move<FwdIter1, FwdIter>;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::transfer<move_iter_t>(
-            PIKA_FORWARD(ExPolicy, policy), iter, sent, dest);
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename FwdIter,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            pika::traits::is_iterator<FwdIter>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::move is deprecated, use pika::ranges::move instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            ranges::move_result<
-                typename pika::traits::range_traits<Rng>::iterator_type,
-                FwdIter>>::type move(ExPolicy&& policy, Rng&& rng, FwdIter dest)
-    {
-        using move_iter_t = detail::move<
-            typename pika::traits::range_traits<Rng>::iterator_type, FwdIter>;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::transfer<move_iter_t>(PIKA_FORWARD(ExPolicy, policy),
-            pika::util::begin(rng), pika::util::end(rng), dest);
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
-
 #endif    // DOXYGEN

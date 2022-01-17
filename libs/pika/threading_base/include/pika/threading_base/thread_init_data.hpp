@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>

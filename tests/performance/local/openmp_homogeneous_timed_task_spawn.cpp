@@ -30,7 +30,7 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/modules/format.hpp>
 #include <pika/modules/program_options.hpp>
@@ -71,8 +71,9 @@ void print_results(int cores, double walltime)
     std::string const tasks_str = pika::util::format("{},", tasks);
     std::string const delay_str = pika::util::format("{},", delay);
 
-    pika::util::format_to(std::cout, "{:-21} {:-21} {:-21} {:10.12}, {:10.12}\n",
-        cores_str, tasks_str, delay_str, walltime, walltime / tasks);
+    pika::util::format_to(std::cout,
+        "{:-21} {:-21} {:-21} {:10.12}, {:10.12}\n", cores_str, tasks_str,
+        delay_str, walltime, walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

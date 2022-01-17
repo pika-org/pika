@@ -9,7 +9,7 @@
 // intended for inclusion in the documentation.
 
 //[body
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 
 #include <iostream>

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pika/local/config/forward.hpp>
-#include <pika/local/config/move.hpp>
+#include <pika/config/forward.hpp>
+#include <pika/config/move.hpp>
 
 #include <algorithm>
 #include <functional>

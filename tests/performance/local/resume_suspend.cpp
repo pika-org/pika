@@ -8,10 +8,10 @@
 // runtime. This is meant to be compared to start_stop and
 // openmp_parallel_region.
 
+#include <pika/chrono.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <pika/modules/program_options.hpp>

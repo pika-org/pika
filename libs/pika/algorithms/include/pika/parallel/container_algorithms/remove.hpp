@@ -467,7 +467,7 @@ namespace pika { namespace ranges {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/iterator_range.hpp>
 #include <pika/iterator_support/range.hpp>
@@ -483,56 +483,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename T,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value&&
-            pika::traits::is_range<Rng>::value&&
-            traits::is_projected_range<Proj, Rng>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::remove is deprecated, use pika::ranges::remove "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        typename pika::traits::range_iterator<Rng>::type>::type
-        remove(
-            ExPolicy&& policy, Rng&& rng, T const& value, Proj&& proj = Proj())
-    {
-        return pika::parallel::v1::detail::remove_if<
-            typename pika::traits::range_iterator<Rng>::type>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), value, PIKA_FORWARD(Proj, proj));
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename Pred,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value&&
-            pika::traits::is_range<Rng>::value&&
-            traits::is_projected_range<Proj, Rng>::value&&
-            traits::is_indirect_callable<ExPolicy,
-                Pred, traits::projected_range<Proj, Rng>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::remove is deprecated, use pika::ranges::remove "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        typename pika::traits::range_iterator<Rng>::type>::type
-        remove_if(
-            ExPolicy&& policy, Rng&& rng, Pred&& pred, Proj&& proj = Proj())
-    {
-        return pika::parallel::v1::detail::remove_if<
-            typename pika::traits::range_iterator<Rng>::type>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), PIKA_FORWARD(Pred, pred),
-                PIKA_FORWARD(Proj, proj));
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
     ///////////////////////////////////////////////////////////////////////////

@@ -9,10 +9,10 @@
 // `ignore_all_while_checking` can be used instead to ignore all locks
 // (including the ones that are not supported by `ignore_while_checking`).
 
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/synchronization.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 
 #include <atomic>
 #include <functional>

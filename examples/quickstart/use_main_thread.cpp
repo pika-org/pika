@@ -7,7 +7,7 @@
 // The purpose of this demo is to show how it is possible to start pika without
 // blocking the main thread.
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 
 #include <iostream>
 

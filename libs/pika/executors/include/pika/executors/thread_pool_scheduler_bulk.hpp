@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
 #include <pika/coroutines/thread_enums.hpp>

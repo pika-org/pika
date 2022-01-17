@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/synchronization/detail/sliding_semaphore.hpp>
 #include <pika/synchronization/spinlock.hpp>
 

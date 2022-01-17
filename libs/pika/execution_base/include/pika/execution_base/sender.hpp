@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config/constexpr.hpp>
+#include <pika/config/constexpr.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/functional/invoke_result.hpp>

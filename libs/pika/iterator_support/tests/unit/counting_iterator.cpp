@@ -7,8 +7,8 @@
 //  This code is based on boost::iterators::counting_iterator
 // (C) Copyright David Abrahams 2001.
 
+#include <pika/init.hpp>
 #include <pika/iterator_support/tests/iterator_tests.hpp>
-#include <pika/local/init.hpp>
 #include <pika/modules/iterator_support.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/testing.hpp>

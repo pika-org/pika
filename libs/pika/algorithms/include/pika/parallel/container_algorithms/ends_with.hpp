@@ -271,7 +271,7 @@ namespace pika { namespace ranges {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/iterator_support/range.hpp>

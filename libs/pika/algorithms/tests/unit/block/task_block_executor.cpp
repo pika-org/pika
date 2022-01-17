@@ -4,11 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/task_block.hpp>
+#include <pika/execution.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
-#include <pika/runtime_local/custom_exception_info.hpp>
+#include <pika/runtime/custom_exception_info.hpp>
+#include <pika/task_block.hpp>
 
 #include <iostream>
 #include <string>

@@ -40,7 +40,7 @@ pika_add_module(
   HEADERS ${futures_headers}
   EXCLUDE_FROM_GLOBAL_HEADER "pika/futures/detail/future_data.hpp"
                              "pika/futures/detail/future_transforms.hpp"
-  MODULE_DEPENDENCIES pika_async_base pika_config_local pika_allocator_support
+  MODULE_DEPENDENCIES pika_async_base pika_config pika_allocator_support
                       pika_errors pika_memory pika_synchronization
   CMAKE_SUBDIRS examples tests
 )

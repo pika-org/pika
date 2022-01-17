@@ -35,7 +35,7 @@ set(synchronization_headers
 
 set(synchronization_sources
     detail/condition_variable.cpp detail/counting_semaphore.cpp
-    detail/sliding_semaphore.cpp local_barrier.cpp mutex.cpp stop_token.cpp
+    detail/sliding_semaphore.cpp barrier.cpp mutex.cpp stop_token.cpp
 )
 
 include(pika_add_module)
@@ -45,7 +45,7 @@ pika_add_module(
   SOURCES ${synchronization_sources}
   HEADERS ${synchronization_headers}
   MODULE_DEPENDENCIES
-    pika_config_local
+    pika_config
     pika_assertion
     pika_execution_base
     pika_concurrency

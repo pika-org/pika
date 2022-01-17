@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/execution/traits/vector_pack_load_store.hpp>
 #include <pika/execution/traits/vector_pack_type.hpp>

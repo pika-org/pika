@@ -7,12 +7,12 @@
 // Simple test verifying basic resource_partitioner functionality.
 
 #include <pika/assert.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 #include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 

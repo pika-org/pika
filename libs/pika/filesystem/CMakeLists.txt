@@ -16,7 +16,7 @@ pika_add_module(
   pika filesystem
   GLOBAL_HEADER_GEN OFF
   HEADERS ${filesystem_headers}
-  MODULE_DEPENDENCIES pika_config_local
+  MODULE_DEPENDENCIES pika_config
   DEPENDENCIES ${__boost_filesystem}
   CMAKE_SUBDIRS examples tests
 )

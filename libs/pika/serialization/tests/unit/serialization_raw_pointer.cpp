@@ -10,9 +10,9 @@
 // allow for const tuple members
 #define PIKA_SERIALIZATION_HAVE_ALLOW_CONST_TUPLE_MEMBERS
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/tuple.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/serialization/input_archive.hpp>
 #include <pika/serialization/output_archive.hpp>
 #include <pika/serialization/serialize.hpp>

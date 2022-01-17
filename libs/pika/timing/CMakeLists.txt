@@ -24,6 +24,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${timing_sources}
   HEADERS ${timing_headers}
-  MODULE_DEPENDENCIES pika_config_local pika_hardware pika_type_support
+  MODULE_DEPENDENCIES pika_config pika_hardware pika_type_support
   CMAKE_SUBDIRS examples tests
 )

@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/type_support/identity.hpp>

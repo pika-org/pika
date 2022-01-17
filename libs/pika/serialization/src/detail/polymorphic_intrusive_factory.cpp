@@ -8,7 +8,7 @@
 
 #include <pika/serialization/detail/polymorphic_intrusive_factory.hpp>
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/type_support/static.hpp>
 

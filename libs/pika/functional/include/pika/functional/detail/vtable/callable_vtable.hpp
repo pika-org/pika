@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/detail/empty_function.hpp>
 #include <pika/functional/detail/vtable/vtable.hpp>
 #include <pika/functional/invoke.hpp>

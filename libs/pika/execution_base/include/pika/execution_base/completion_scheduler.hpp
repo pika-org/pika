@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/tag_invoke.hpp>
 

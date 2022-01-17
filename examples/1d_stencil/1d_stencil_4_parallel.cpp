@@ -14,10 +14,10 @@
 // computation. This example is still fully local but demonstrates nice
 // scalability on SMP machines.
 
-#include <pika/local/algorithm.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/algorithm.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/iterator_support.hpp>
 
 #if !defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)

@@ -171,7 +171,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #include <pika/functional/traits/get_function_address.hpp>
@@ -410,33 +410,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename F, typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<FwdIter1> &&
-            pika::traits::is_iterator_v<FwdIter2> &&
-            traits::is_projected_v<Proj, FwdIter1> &&
-            traits::is_indirect_callable_v<ExPolicy, F,
-                traits::projected<Proj, FwdIter1>>
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::transform is deprecated, use pika::transform "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<FwdIter1, FwdIter2>>::type
-        transform(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,
-            FwdIter2 dest, F&& f, Proj&& proj = Proj())
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
-            "Requires at least forward iterator.");
-
-        return detail::transform<util::in_out_result<FwdIter1, FwdIter2>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // transform binary predicate
     namespace detail {
@@ -649,52 +622,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename FwdIter3, typename F,
-        typename Proj1 = util::projection_identity,
-        typename Proj2 = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<FwdIter1> &&
-            pika::traits::is_iterator_v<FwdIter2> &&
-            pika::traits::is_iterator_v<FwdIter3> &&
-            traits::is_projected_v<Proj1, FwdIter1> &&
-            traits::is_projected_v<Proj2, FwdIter2> &&
-            traits::is_indirect_callable_v<ExPolicy, F,
-                traits::projected<Proj1, FwdIter1>,
-                traits::projected<Proj2, FwdIter2>>
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::transform is deprecated, use pika::transform instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            util::in_in_out_result<FwdIter1, FwdIter2, FwdIter3>>::type
-        transform(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
-            FwdIter2 first2, FwdIter3 dest, F&& f, Proj1&& proj1 = Proj1(),
-            Proj2&& proj2 = Proj2())
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
-            "Requires at least forward iterator.");
-        static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
-            "Requires at least forward iterator.");
-
-        using result_type =
-            util::in_in_out_result<FwdIter1, FwdIter2, FwdIter3>;
-
-        return detail::transform_binary<result_type>().call(
-            PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, dest,
-            PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
-            PIKA_FORWARD(Proj2, proj2));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // transform binary predicate
     namespace detail {
@@ -773,53 +700,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename FwdIter3, typename F,
-        typename Proj1 = util::projection_identity,
-        typename Proj2 = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<FwdIter1> &&
-            pika::traits::is_iterator_v<FwdIter2> &&
-            pika::traits::is_iterator_v<FwdIter3> &&
-            traits::is_projected_v<Proj1, FwdIter1> &&
-            traits::is_projected_v<Proj2, FwdIter2> &&
-            traits::is_indirect_callable_v<ExPolicy, F,
-                traits::projected<Proj1, FwdIter1>,
-                traits::projected<Proj2, FwdIter2>>
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::transform is deprecated, use pika::transform instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            util::in_in_out_result<FwdIter1, FwdIter2, FwdIter3>>::type
-        transform(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
-            FwdIter2 first2, FwdIter2 last2, FwdIter3 dest, F&& f,
-            Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
-            "Requires at least forward iterator.");
-        static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
-            "Requires at least forward iterator.");
-
-        using result_type =
-            util::in_in_out_result<FwdIter1, FwdIter2, FwdIter3>;
-
-        return detail::transform_binary2<result_type>().call(
-            PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2, dest,
-            PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
-            PIKA_FORWARD(Proj2, proj2));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 namespace pika { namespace traits {

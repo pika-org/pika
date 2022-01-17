@@ -7,10 +7,10 @@
 // This test demonstrates the issue described in #1422: pika:threads=all
 // allocates too many os threads
 
-#include <pika/local/init.hpp>
-#include <pika/local/runtime.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/runtime.hpp>
+#include <pika/thread.hpp>
 
 #include <cstddef>
 #include <iostream>

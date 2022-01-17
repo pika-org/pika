@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assertion/current_function.hpp>
 #include <pika/errors/error.hpp>
 #include <pika/errors/exception_fwd.hpp>
@@ -22,7 +22,7 @@
 #include <string>
 #include <system_error>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 /// \cond NODETAIL
 namespace pika { namespace detail {
@@ -178,4 +178,4 @@ namespace pika {
     pika::detail::throws_if(ec, errcode, pika::util::format(__VA_ARGS__), f,   \
         __FILE__, __LINE__) /**/
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

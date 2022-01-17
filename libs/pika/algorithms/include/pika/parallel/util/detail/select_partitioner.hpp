@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/futures/future.hpp>
 
 #include <pika/executors/execution_policy.hpp>

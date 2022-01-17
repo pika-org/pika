@@ -4,12 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
 #include <pika/functional/bind.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
-#include <pika/runtime_local/config_entry.hpp>
+#include <pika/runtime/config_entry.hpp>
 
 #include <atomic>
 #include <string>

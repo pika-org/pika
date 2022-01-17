@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <pika/local/runtime.hpp>
 #include <pika/modules/threadmanager.hpp>
+#include <pika/runtime.hpp>
 
 #include <iostream>
 

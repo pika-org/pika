@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/chrono.hpp>
+#include <pika/chrono.hpp>
 
 #include <cstddef>
 #include <cstdint>

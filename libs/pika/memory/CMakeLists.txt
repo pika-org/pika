@@ -20,6 +20,6 @@ pika_add_module(
   EXCLUDE_FROM_GLOBAL_HEADER "pika/memory/serialization/intrusive_ptr.hpp"
   SOURCES ${memory_sources}
   HEADERS ${memory_headers}
-  MODULE_DEPENDENCIES pika_config_local pika_assertion pika_serialization
+  MODULE_DEPENDENCIES pika_config pika_assertion pika_serialization
   CMAKE_SUBDIRS examples tests
 )

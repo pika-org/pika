@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/timing/high_resolution_clock.hpp>
 
 #include <cstdint>
@@ -79,10 +79,3 @@ namespace pika { namespace chrono {
         std::uint64_t start_time_;
     };
 }}    // namespace pika::chrono
-
-namespace pika { namespace util {
-    using high_resolution_timer PIKA_DEPRECATED_V(0, 1,
-        "pika::util::high_resolution_timer is deprecated. Use "
-        "pika::chrono::high_resolution_timer instead.") =
-        pika::chrono::high_resolution_timer;
-}}    // namespace pika::util

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 // Necessary to avoid circular include
 #include <pika/execution_base/execution.hpp>
 

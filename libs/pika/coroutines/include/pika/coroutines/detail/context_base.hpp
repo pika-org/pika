@@ -38,7 +38,7 @@
  * we will play it safe and use an atomic count. The overhead shouldn't
  * be big.
  */
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 // This needs to be first for building on Macs
 #include <pika/coroutines/detail/context_impl.hpp>

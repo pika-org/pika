@@ -213,7 +213,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_sentinel_for.hpp>
@@ -289,96 +289,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
-        typename T, typename F,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_sentinel_for<FwdIterE, FwdIterB>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::reduce is deprecated, use pika::ranges::reduce "
-        "instead") typename util::detail::algorithm_result<ExPolicy, T>::type
-        reduce(ExPolicy&& policy, FwdIterB first, FwdIterE last, T init, F&& f)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIterB>::value,
-            "Requires at least forward iterator.");
-
-        static_assert(pika::traits::is_forward_iterator<FwdIterE>::value,
-            "Requires at least forward iterator.");
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::reduce<T>().call(PIKA_FORWARD(ExPolicy, policy), first,
-            last, PIKA_MOVE(init), PIKA_FORWARD(F, f));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
-        typename T,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_sentinel_for<FwdIterE, FwdIterB>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::reduce is deprecated, use pika::ranges::reduce "
-        "instead") typename util::detail::algorithm_result<ExPolicy, T>::type
-        reduce(ExPolicy&& policy, FwdIterB first, FwdIterE last, T init)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIterB>::value,
-            "Requires at least forward iterator.");
-
-        static_assert(pika::traits::is_forward_iterator<FwdIterE>::value,
-            "Requires at least forward iterator.");
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::reduce<T>().call(PIKA_FORWARD(ExPolicy, policy), first,
-            last, PIKA_MOVE(init), std::plus<T>());
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_sentinel_for<FwdIterE, FwdIterB>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::reduce is deprecated, use pika::ranges::reduce "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        typename std::iterator_traits<FwdIterB>::value_type>::type
-        reduce(ExPolicy&& policy, FwdIterB first, FwdIterE last)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIterB>::value,
-            "Requires at least forward iterator.");
-
-        static_assert(pika::traits::is_forward_iterator<FwdIterE>::value,
-            "Requires at least forward iterator.");
-
-        using value_type = typename std::iterator_traits<FwdIterB>::value_type;
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::reduce<value_type>().call(PIKA_FORWARD(ExPolicy, policy),
-            first, last, value_type{}, std::plus<value_type>());
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
 

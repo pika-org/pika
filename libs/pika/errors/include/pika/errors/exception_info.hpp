@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/errors/error_code.hpp>
 #include <pika/errors/exception_info.hpp>
 

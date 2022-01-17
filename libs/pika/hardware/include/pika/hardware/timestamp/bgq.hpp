@@ -15,7 +15,7 @@
 
 #include <hwi/include/bqc/A2_inlines.h>
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <cstdint>
 

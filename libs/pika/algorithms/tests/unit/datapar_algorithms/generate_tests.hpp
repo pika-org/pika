@@ -9,7 +9,7 @@
 #pragma once
 
 #include <pika/execution/traits/vector_pack_type.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/generate.hpp>
 #include <pika/parallel/datapar.hpp>

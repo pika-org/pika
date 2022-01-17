@@ -18,6 +18,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${thread_pool_util_sources}
   HEADERS ${thread_pool_util_headers}
-  MODULE_DEPENDENCIES pika_async_local pika_futures pika_functional
+  MODULE_DEPENDENCIES pika_async pika_futures pika_functional
   CMAKE_SUBDIRS examples tests
 )

@@ -10,7 +10,7 @@
 //  (http://creativecommons.org/licenses/by/4.0/).
 
 #include <pika/datastructures/optional.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/threading.hpp>
 

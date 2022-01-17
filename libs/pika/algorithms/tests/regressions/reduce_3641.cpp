@@ -8,8 +8,8 @@
 // #3641: Trouble with using ranges-v3 and pika::parallel::reduce
 // #3646: Parallel algorithms should accept iterator/sentinel pairs
 
+#include <pika/init.hpp>
 #include <pika/iterator_support/tests/iter_sent.hpp>
-#include <pika/local/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/reduce.hpp>
 

@@ -9,7 +9,7 @@
 // (C) Copyright 2008 Anthony Williams
 // (C) Copyright 2011-2012 Vicente J. Botet Escriba
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
 #include <pika/assert.hpp>
 #include <pika/coroutines/coroutine.hpp>

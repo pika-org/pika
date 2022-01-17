@@ -7,8 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <pika/assert.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/synchronization.hpp>
 
 #include <cstddef>

@@ -14,7 +14,7 @@
 #include <set>
 #include <string>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace program_options {
 
@@ -209,4 +209,4 @@ namespace pika { namespace program_options {
 
 }}    // namespace pika::program_options
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

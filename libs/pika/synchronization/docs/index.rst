@@ -29,7 +29,7 @@ the C++ standard ones in |pika| threads:
 * :cpp:class:`pika::lcos::local::spinlock_no_backoff` (`boost::mutex` compatible spinlock)
 * :cpp:class:`pika::lcos::local::spinlock_pool`
 
-See :ref:`modules_lcos_local`, :ref:`modules_async_combinators`, and :ref:`modules_async`
+See :ref:`modules_lcos`, :ref:`modules_async_combinators`, and :ref:`modules_async`
 for higher level synchronization facilities.
 
 See the :ref:`API reference <modules_synchronization_api>` of this module for more

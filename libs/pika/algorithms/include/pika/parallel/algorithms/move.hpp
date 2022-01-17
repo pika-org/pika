@@ -70,7 +70,7 @@ namespace pika {
 
 #else // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
 #include <pika/executors/execution_policy.hpp>
@@ -159,23 +159,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter1>::value &&
-            pika::traits::is_iterator<FwdIter2>::value)>
-    // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::move is deprecated, use pika::move instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<FwdIter1, FwdIter2>>::type
-        move(ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest)
-    {
-        return detail::transfer<detail::move<FwdIter1, FwdIter2>>(
-            PIKA_FORWARD(ExPolicy, policy), first, last, dest);
-    }
 }}}    // namespace pika::parallel::v1
 
 namespace pika {

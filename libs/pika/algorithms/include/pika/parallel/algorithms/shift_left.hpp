@@ -104,8 +104,8 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
-#include <pika/async_local/dataflow.hpp>
+#include <pika/config.hpp>
+#include <pika/async/dataflow.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>

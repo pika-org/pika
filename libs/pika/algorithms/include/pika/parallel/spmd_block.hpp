@@ -170,8 +170,8 @@ namespace pika { namespace lcos { namespace local {
 
     // Asynchronous version
     template <typename ExPolicy, typename F, typename... Args,
-        typename = typename std::enable_if<pika::parallel::execution::
-                is_async_execution_policy<ExPolicy>::value>::type>
+        typename = typename std::enable_if<
+            pika::is_async_execution_policy<ExPolicy>::value>::type>
     std::vector<pika::future<void>> define_spmd_block(
         ExPolicy&& policy, std::size_t num_images, F&& f, Args&&... args)
     {
@@ -258,8 +258,8 @@ namespace pika { namespace parallel { inline namespace v2 {
 
     // Asynchronous version
     template <typename ExPolicy, typename F, typename... Args,
-        typename = typename std::enable_if<pika::parallel::execution::
-                is_async_execution_policy<ExPolicy>::value>::type>
+        typename = typename std::enable_if<
+            pika::is_async_execution_policy<ExPolicy>::value>::type>
     std::vector<pika::future<void>> define_spmd_block(
         ExPolicy&& policy, std::size_t num_images, F&& f, Args&&... args)
     {

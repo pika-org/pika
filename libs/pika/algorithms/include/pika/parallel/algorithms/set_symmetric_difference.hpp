@@ -113,7 +113,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -265,58 +265,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename FwdIter3, typename Pred = detail::less,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter1>::value &&
-            pika::traits::is_iterator<FwdIter2>::value &&
-            pika::traits::is_iterator<FwdIter3>::value &&
-            pika::is_invocable_v<Pred,
-                typename std::iterator_traits<FwdIter1>::value_type,
-                typename std::iterator_traits<FwdIter2>::value_type
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::set_symmetric_difference is deprecated, use "
-        "pika::set_symmetric_difference instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter3>::type
-        set_symmetric_difference(ExPolicy&& policy, FwdIter1 first1,
-            FwdIter1 last1, FwdIter2 first2, FwdIter2 last2, FwdIter3 dest,
-            Pred&& op = Pred())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter1>::value),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator<FwdIter3>::value),
-            "Requires at least forward iterator.");
-
-        using is_seq = std::integral_constant<bool,
-            pika::is_sequenced_execution_policy<ExPolicy>::value ||
-                !pika::traits::is_random_access_iterator<FwdIter1>::value ||
-                !pika::traits::is_random_access_iterator<FwdIter2>::value>;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        using result_type =
-            parallel::util::in_in_out_result<FwdIter1, FwdIter2, FwdIter3>;
-
-        return util::get_third_element(
-            detail::set_symmetric_difference<result_type>().call2(
-                PIKA_FORWARD(ExPolicy, policy), is_seq(), first1, last1, first2,
-                last2, dest, PIKA_FORWARD(Pred, op),
-                util::projection_identity(), util::projection_identity()));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
 

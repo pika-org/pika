@@ -7,11 +7,11 @@
 //  accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 
 #include <chrono>
 #include <memory>

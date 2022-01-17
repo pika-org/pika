@@ -15,7 +15,7 @@
 
 // Include before any Boost header and avoid issues with Intel14/libstdc++4.4
 // nullptr
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/modules/program_options.hpp>
 
 #include <chrono>

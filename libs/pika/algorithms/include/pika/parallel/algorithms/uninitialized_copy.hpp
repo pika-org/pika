@@ -190,7 +190,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -360,34 +360,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::uninitialized_copy is deprecated, use "
-        "pika::uninitialized_copy "
-        "instead")
-    inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type>::type
-        uninitialized_copy(
-            ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
-            "Required at least forward iterator.");
-        static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
-            "Requires at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return parallel::util::get_second_element(
-            detail::uninitialized_copy<
-                util::in_out_result<FwdIter1, FwdIter2>>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
     /////////////////////////////////////////////////////////////////////////////
     // uninitialized_copy_sent
     namespace detail {
@@ -483,43 +455,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    template <typename ExPolicy, typename FwdIter1, typename Size,
-        typename FwdIter2>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::uninitialized_copy_n is deprecated, use "
-        "pika::uninitialized_copy_n "
-        "instead")
-    inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type>::type
-        uninitialized_copy_n(
-            ExPolicy&& policy, FwdIter1 first, Size count, FwdIter2 dest)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
-            "Required at least forward iterator.");
-        static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
-            "Requires at least forward iterator.");
-
-        // if count is representing a negative value, we do nothing
-        if (detail::is_negative(count))
-        {
-            return util::detail::algorithm_result<ExPolicy, FwdIter2>::get(
-                PIKA_MOVE(dest));
-        }
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return parallel::util::get_second_element(
-            detail::uninitialized_copy_n<
-                util::in_out_result<FwdIter1, FwdIter2>>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
-                    dest));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

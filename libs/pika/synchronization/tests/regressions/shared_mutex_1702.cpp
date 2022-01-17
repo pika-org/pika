@@ -7,7 +7,7 @@
 // This test case demonstrates the issue described in #1702: Shared_mutex does
 // not compile with no_mutex cond_var
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/synchronization/shared_mutex.hpp>
 

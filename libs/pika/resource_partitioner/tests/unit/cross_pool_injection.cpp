@@ -13,14 +13,14 @@
 // cross pool injection of tasks does not cause segfaults or other
 // problems such as lockups.
 
-#include <pika/local/execution.hpp>
-#include <pika/local/functional.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/execution.hpp>
+#include <pika/functional.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/threadmanager.hpp>
+#include <pika/thread.hpp>
 
 #include <atomic>
 #include <cstddef>

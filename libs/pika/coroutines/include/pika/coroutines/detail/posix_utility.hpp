@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have the

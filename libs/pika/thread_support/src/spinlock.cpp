@@ -7,7 +7,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <pika/local/config/compiler_fence.hpp>
+#include <pika/config/compiler_fence.hpp>
 #include <pika/thread_support/spinlock.hpp>
 
 #include <chrono>

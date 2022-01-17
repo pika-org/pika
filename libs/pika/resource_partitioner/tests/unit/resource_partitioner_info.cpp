@@ -7,10 +7,10 @@
 // Simple test verifying basic resource_partitioner functionality.
 
 #include <pika/assert.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 
 #include <cstddef>
 #include <string>

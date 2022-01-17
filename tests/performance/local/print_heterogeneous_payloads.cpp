@@ -14,15 +14,15 @@
 #include <numeric>
 #include <random>
 #include <stdexcept>
-#include <vector>
 #include <utility>
+#include <vector>
 
-using pika::program_options::variables_map;
-using pika::program_options::options_description;
-using pika::program_options::value;
-using pika::program_options::store;
 using pika::program_options::command_line_parser;
 using pika::program_options::notify;
+using pika::program_options::options_description;
+using pika::program_options::store;
+using pika::program_options::value;
+using pika::program_options::variables_map;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Command-line variables.
@@ -33,25 +33,19 @@ std::uint64_t total_delay = 0;
 std::uint64_t seed = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
-std::uint64_t shuffler(
-    std::mt19937_64& prng
-  , std::uint64_t high
-    )
+std::uint64_t shuffler(std::mt19937_64& prng, std::uint64_t high)
 {
     if (high == 0)
         throw std::logic_error("high value was 0");
 
     // Our range is [0, x).
-    std::uniform_int_distribution<std::uint64_t>
-        dist(0, high - 1);
+    std::uniform_int_distribution<std::uint64_t> dist(0, high - 1);
 
     return dist(prng);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int app_main(
-    variables_map&
-    )
+int app_main(variables_map&)
 {
     ///////////////////////////////////////////////////////////////////////
     // Initialize the PRNG seed.
@@ -101,24 +95,23 @@ int app_main(
     {
         // Credit to Spencer Ruport for putting this algorithm on
         // stackoverflow.
-        std::uint64_t const low_calc
-            = (total_delay - current_sum) - (max_delay * (tasks - 1 - i));
+        std::uint64_t const low_calc =
+            (total_delay - current_sum) - (max_delay * (tasks - 1 - i));
 
-        bool const negative
-            = (total_delay - current_sum) < (max_delay * (tasks - 1 - i));
+        bool const negative =
+            (total_delay - current_sum) < (max_delay * (tasks - 1 - i));
 
-        std::uint64_t const low
-            = (negative || (low_calc < min_delay)) ? min_delay : low_calc;
+        std::uint64_t const low =
+            (negative || (low_calc < min_delay)) ? min_delay : low_calc;
 
-        std::uint64_t const high_calc
-            = (total_delay - current_sum) - (min_delay * (tasks - 1 - i));
+        std::uint64_t const high_calc =
+            (total_delay - current_sum) - (min_delay * (tasks - 1 - i));
 
-        std::uint64_t const high
-            = (high_calc > max_delay) ? max_delay : high_calc;
+        std::uint64_t const high =
+            (high_calc > max_delay) ? max_delay : high_calc;
 
         // Our range is [low, high].
-        std::uniform_int_distribution<std::uint64_t>
-            dist(low, high);
+        std::uniform_int_distribution<std::uint64_t> dist(low, high);
 
         std::uint64_t const payload = dist(prng);
 
@@ -154,10 +147,7 @@ int app_main(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int main(
-    int argc
-  , char* argv[]
-    )
+int main(int argc, char* argv[])
 {
     ///////////////////////////////////////////////////////////////////////////
     // Parse command line.
@@ -165,31 +155,26 @@ int main(
 
     options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    cmdline.add_options()
-        ( "help,h"
-        , "print out program usage (this message)")
+    cmdline.add_options()("help,h", "print out program usage (this message)")
 
-        ( "tasks"
-        , value<std::uint64_t>(&tasks)->default_value(500000)
-        , "number of tasks to invoke")
+        ("tasks", value<std::uint64_t>(&tasks)->default_value(500000),
+            "number of tasks to invoke")
 
-        ( "min-delay"
-        , value<std::uint64_t>(&min_delay)->default_value(0)
-        , "minimum number of iterations in the delay loop")
+            ("min-delay", value<std::uint64_t>(&min_delay)->default_value(0),
+                "minimum number of iterations in the delay loop")
 
-        ( "max-delay"
-        , value<std::uint64_t>(&max_delay)->default_value(0)
-        , "maximum number of iterations in the delay loop")
+                ("max-delay",
+                    value<std::uint64_t>(&max_delay)->default_value(0),
+                    "maximum number of iterations in the delay loop")
 
-        ( "total-delay"
-        , value<std::uint64_t>(&total_delay)->default_value(0)
-        , "total number of delay iterations to be executed")
+                    ("total-delay",
+                        value<std::uint64_t>(&total_delay)->default_value(0),
+                        "total number of delay iterations to be executed")
 
-        ( "seed"
-        , value<std::uint64_t>(&seed)->default_value(0)
-        , "seed for the pseudo random number generator (if 0, a seed is "
-          "chosen based on the current system time)")
-        ;
+                        ("seed", value<std::uint64_t>(&seed)->default_value(0),
+                            "seed for the pseudo random number generator (if "
+                            "0, a seed is "
+                            "chosen based on the current system time)");
 
     store(command_line_parser(argc, argv).options(cmdline).run(), vm);
 
@@ -204,4 +189,3 @@ int main(
 
     return app_main(vm);
 }
-

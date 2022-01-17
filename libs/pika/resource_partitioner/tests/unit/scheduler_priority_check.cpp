@@ -9,12 +9,12 @@
 // The test is intended to be used with a task plotting/profiling
 // tool to verify that high priority tasks run before low ones.
 
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/program_options.hpp>
+#include <pika/thread.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 
 #include <atomic>

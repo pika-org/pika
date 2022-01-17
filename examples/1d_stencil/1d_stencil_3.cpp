@@ -14,9 +14,9 @@
 // example is still fully serial, no parallelization is performed.
 
 #include <pika/assert.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 
 #include <cstddef>
 #include <cstdint>

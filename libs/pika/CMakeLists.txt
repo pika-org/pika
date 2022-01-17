@@ -18,12 +18,12 @@ set(_pika_modules
     async_base
     async_combinators
     async_cuda
-    async_local
+    async
     async_mpi
-    command_line_handling_local
+    command_line_handling
     concepts
     concurrency
-    config_local
+    config
     coroutines
     datastructures
     debugging
@@ -37,12 +37,12 @@ set(_pika_modules
     futures
     hardware
     hashing
-    include_local
+    include
     ini
-    init_runtime_local
+    init_runtime
     iterator_support
     itt_notify
-    lcos_local
+    lcos
     lock_registration
     logging
     memory
@@ -54,7 +54,7 @@ set(_pika_modules
     properties
     resource_partitioner
     runtime_configuration
-    runtime_local
+    runtime
     schedulers
     serialization
     string_util
@@ -71,7 +71,7 @@ set(_pika_modules
     topology
     type_support
     util
-    version_local
+    version
 )
 # cmake-format: on
 

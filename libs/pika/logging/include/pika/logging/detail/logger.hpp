@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/logging/format/named_write.hpp>
 #include <pika/logging/level.hpp>
 #include <pika/modules/format.hpp>

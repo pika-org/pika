@@ -35,7 +35,7 @@
 #pragma warning(disable : 4355)    //this used in base member initializer
 #endif
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/coroutines/coroutine_fwd.hpp>
 #include <pika/coroutines/detail/context_base.hpp>

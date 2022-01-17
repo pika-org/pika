@@ -383,7 +383,7 @@ namespace pika { namespace ranges {
 
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/iterator_support/range.hpp>
@@ -399,49 +399,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_range<Rng>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::rotate is deprecated, use pika::ranges::rotate "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<pika::traits::range_iterator_t<Rng>,
-            pika::traits::range_iterator_t<Rng>>>::type
-        rotate(ExPolicy&& policy, Rng&& rng,
-            pika::traits::range_iterator_t<Rng> middle)
-    {
-        return rotate(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            middle, pika::util::end(rng));
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename OutIter,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_range<Rng>::value &&
-            pika::traits::is_iterator_v<OutIter>
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::rotate_copy is deprecated, use "
-        "pika::ranges::rotate_copy instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<pika::traits::range_iterator_t<Rng>,
-                OutIter>>::type rotate_copy(ExPolicy&& policy, Rng&& rng,
-            pika::traits::range_iterator_t<Rng> middle, OutIter dest_first)
-    {
-        return rotate_copy(PIKA_FORWARD(ExPolicy, policy),
-            pika::util::begin(rng), middle, pika::util::end(rng), dest_first);
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
     ///////////////////////////////////////////////////////////////////////////

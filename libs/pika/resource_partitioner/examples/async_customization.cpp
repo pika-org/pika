@@ -7,14 +7,14 @@
 #define GUIDED_EXECUTOR_DEBUG 1
 
 #include <pika/debugging/demangle_helper.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/functional.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/tuple.hpp>
+#include <pika/execution.hpp>
+#include <pika/functional.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/pack_traversal/pack_traversal.hpp>
+#include <pika/tuple.hpp>
 
 #include <chrono>
 #include <complex>

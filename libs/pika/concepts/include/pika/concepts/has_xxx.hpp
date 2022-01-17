@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/preprocessor/cat.hpp>
 #include <pika/type_support/always_void.hpp>
 

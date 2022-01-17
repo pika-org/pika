@@ -106,7 +106,7 @@ namespace pika {
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 
 #include <pika/executors/execution_policy.hpp>
@@ -220,32 +220,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::transform_exclusive_scan is deprecated, use "
-        "pika::transform_exclusive_scan instead")
-    inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type>::type
-        swap_ranges(
-            ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1, FwdIter2 first2)
-    {
-        static_assert((pika::traits::is_forward_iterator_v<FwdIter1>),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
-            "Requires at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::swap_ranges<FwdIter2>().call(
-            PIKA_FORWARD(ExPolicy, policy), first1, last1, first2);
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

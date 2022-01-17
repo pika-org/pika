@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_base/scheduling_properties.hpp>
 #include <pika/async_base/traits/is_launch_policy.hpp>
 #include <pika/concepts/has_member_xxx.hpp>

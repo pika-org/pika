@@ -7,7 +7,7 @@
 // This example demonstrates how the pika serialization archives could be used
 // to directly store/load to/from a file.
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/serialization.hpp>
 
 #include <cstddef>

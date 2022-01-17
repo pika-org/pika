@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <pika/local/algorithm.hpp>
-#include <pika/local/execution.hpp>
+#include <pika/algorithm.hpp>
+#include <pika/execution.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <cstddef>

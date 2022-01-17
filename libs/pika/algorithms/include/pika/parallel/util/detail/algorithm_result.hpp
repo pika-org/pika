@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/executors/execution_policy_fwd.hpp>
 #include <pika/functional/detail/invoke.hpp>

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <type_traits>
 
@@ -167,44 +167,3 @@ namespace pika {
         is_vectorpack_execution_policy<T>::value;
     /// \endcond
 }    // namespace pika
-
-namespace pika { namespace parallel { namespace execution {
-
-    template <typename T>
-    using is_execution_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::is_execution_policy is deprecated, use "
-        "pika::is_execution_policy instead") = pika::is_execution_policy<T>;
-
-    template <typename T>
-    using is_parallel_execution_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::is_parallel_execution_policy is "
-        "deprecated, "
-        "use pika::is_parallel_execution_policy instead") =
-        pika::is_parallel_execution_policy<T>;
-
-    template <typename T>
-    using is_sequenced_execution_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::is_sequenced_execution_policy is "
-        "deprecated, use pika::is_sequenced_execution_policy instead") =
-        pika::is_sequenced_execution_policy<T>;
-
-    /// \cond
-    template <typename T>
-    using is_async_execution_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::is_async_execution_policy is deprecated, "
-        "use pika::is_async_execution_policy instead") =
-        pika::is_async_execution_policy<T>;
-
-    template <typename T>
-    using is_rebound_execution_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::is_rebound_execution_policy is deprecated, "
-        "use pika::is_rebound_execution_policy instead") =
-        pika::is_rebound_execution_policy<T>;
-
-    template <typename T>
-    using is_vectorpack_execution_policy PIKA_DEPRECATED_V(0, 1,
-        "pika:parallel::execution:::is_vectorpack_execution_policy is "
-        "deprecated, use pika::is_vectorpack_execution_policy instead") =
-        pika::is_vectorpack_execution_policy<T>;
-    /// \endcond
-}}}    // namespace pika::parallel::execution

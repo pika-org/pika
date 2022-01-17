@@ -22,6 +22,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN OFF
   SOURCES ${assertion_sources}
   HEADERS ${assertion_headers}
-  MODULE_DEPENDENCIES pika_config_local pika_preprocessor
+  MODULE_DEPENDENCIES pika_config pika_preprocessor
   CMAKE_SUBDIRS examples tests
 )

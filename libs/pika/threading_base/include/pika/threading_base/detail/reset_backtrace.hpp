@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
 

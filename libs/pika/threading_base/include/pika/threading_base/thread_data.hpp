@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/concurrency/spinlock_pool.hpp>
 #include <pika/coroutines/coroutine.hpp>
@@ -37,7 +37,7 @@
 #include <string>
 #include <utility>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads {
@@ -745,7 +745,7 @@ namespace pika { namespace threads {
     PIKA_EXPORT std::uint64_t get_self_component_id();
 }}    // namespace pika::threads
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>
 
 #include <pika/threading_base/thread_data_stackful.hpp>
 #include <pika/threading_base/thread_data_stackless.hpp>

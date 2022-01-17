@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/execution/detail/async_launch_policy_dispatch.hpp>

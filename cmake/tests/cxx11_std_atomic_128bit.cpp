@@ -15,7 +15,7 @@ void test_atomic()
     std::atomic<T> a;
     a.store(T{});
     T i = a.load();
-    (void)i;
+    (void) i;
 }
 
 struct uint128_type

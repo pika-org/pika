@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/serialization/detail/non_default_constructible.hpp>
 #include <pika/serialization/serialization_fwd.hpp>
 
@@ -15,7 +15,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace serialization { namespace detail {
 
@@ -53,4 +53,4 @@ namespace pika { namespace serialization { namespace detail {
     };
 }}}    // namespace pika::serialization::detail
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

@@ -20,6 +20,6 @@ pika_add_module(
   SOURCES ${allocator_support_sources}
   HEADERS ${allocator_support_headers}
   DEPENDENCIES pika_dependencies_allocator
-  MODULE_DEPENDENCIES pika_concepts pika_config_local pika_preprocessor
+  MODULE_DEPENDENCIES pika_concepts pika_config pika_preprocessor
   CMAKE_SUBDIRS examples tests
 )

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/topology/topology.hpp>
 
@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace threads { namespace policies { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
@@ -107,4 +107,4 @@ namespace pika { namespace threads { namespace policies { namespace detail {
     };
 }}}}    // namespace pika::threads::policies::detail
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

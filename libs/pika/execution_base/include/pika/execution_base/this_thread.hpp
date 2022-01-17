@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution_base/agent_base.hpp>
 #include <pika/execution_base/agent_ref.hpp>
 #include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>

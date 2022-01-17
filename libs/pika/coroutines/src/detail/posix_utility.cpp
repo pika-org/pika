@@ -5,7 +5,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if defined(__linux) || defined(linux) || defined(__linux__) ||                \
     defined(__FreeBSD__) || defined(__APPLE__)
 #include <pika/coroutines/detail/posix_utility.hpp>

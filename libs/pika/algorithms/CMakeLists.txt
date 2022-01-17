@@ -207,15 +207,15 @@ pika_add_module(
   SOURCES ${algorithms_sources}
   MODULE_DEPENDENCIES
     pika_async_combinators
-    pika_async_local
+    pika_async
     pika_concepts
-    pika_config_local
+    pika_config
     pika_errors
     pika_execution
     pika_executors
     pika_iterator_support
     pika_futures
-    pika_lcos_local
+    pika_lcos
     pika_pack_traversal
     pika_serialization
     pika_threading_base

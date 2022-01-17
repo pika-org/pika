@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/executors/execution_policy.hpp>
-#include <pika/modules/async_local.hpp>
+#include <pika/modules/async.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/parallel/util/detail/handle_exception_termination_handler.hpp>
 

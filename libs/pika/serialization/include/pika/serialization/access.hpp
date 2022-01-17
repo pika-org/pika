@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/serialization/brace_initializable_fwd.hpp>
 #include <pika/serialization/serialization_fwd.hpp>
 #include <pika/serialization/traits/brace_initializable_traits.hpp>

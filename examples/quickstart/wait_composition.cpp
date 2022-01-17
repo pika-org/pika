@@ -6,17 +6,16 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/tuple.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
+#include <pika/tuple.hpp>
 
 #include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////
 struct cout_continuation
 {
-    typedef pika::tuple<pika::future<int>, pika::future<int>,
-        pika::future<int>>
+    typedef pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>>
         data_type;
 
     void operator()(pika::future<data_type> data) const
@@ -44,5 +43,6 @@ int pika_main()
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);    // Initialize and run pika.
+    return pika::local::init(
+        pika_main, argc, argv);    // Initialize and run pika.
 }

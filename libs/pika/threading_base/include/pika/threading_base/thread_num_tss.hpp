@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/modules/errors.hpp>
 
 #include <cstddef>
@@ -14,7 +14,7 @@
 #include <tuple>
 #include <utility>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace threads { namespace detail {
     /// Set the global thread id to thread local storage.
@@ -169,4 +169,4 @@ namespace pika {
     PIKA_EXPORT std::size_t get_thread_pool_num(error_code& ec);
 }    // namespace pika
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

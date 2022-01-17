@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/execution_base/execution.hpp>
 #include <pika/functional/deferred_call.hpp>

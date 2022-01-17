@@ -7,7 +7,7 @@
 // verify #706 is fixed (`pika::init` removes portions of non-option command
 // line arguments before last `=` sign)
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 char const* argv[] = {"command_line_argument_test",

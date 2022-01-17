@@ -10,7 +10,7 @@
 //# define SHARED_PRIORITY_SCHEDULER_DEBUG 1
 #endif
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/debugging/print.hpp>
 #include <pika/execution_base/this_thread.hpp>
@@ -40,7 +40,7 @@
 #include <type_traits>
 #include <vector>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 #if !defined(SHARED_PRIORITY_SCHEDULER_DEBUG)
 #if defined(PIKA_DEBUG)
@@ -1413,4 +1413,4 @@ namespace pika { namespace threads { namespace policies {
     };
 }}}    // namespace pika::threads::policies
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
+#include <pika/algorithm.hpp>
+#include <pika/chrono.hpp>
+#include <pika/execution.hpp>
 #include <pika/executors/parallel_executor_aggregated.hpp>
-#include <pika/local/algorithm.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 
 #include "worker_timed.hpp"
 

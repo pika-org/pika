@@ -11,8 +11,8 @@
 // This example provides a serial base line implementation. No parallelization
 // is performed.
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/init.hpp>
 
 #include <cstddef>
 #include <cstdint>

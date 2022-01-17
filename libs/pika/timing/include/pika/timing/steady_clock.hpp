@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <chrono>
 
@@ -76,14 +76,3 @@ namespace pika { namespace chrono {
         value_type _rel_time;
     };
 }}    // namespace pika::chrono
-
-namespace pika { namespace util {
-    using steady_time_point PIKA_DEPRECATED_V(0, 1,
-        "pika::util::steady_time_point is deprecated. Use "
-        "pika::chrono::steady_time_point instead.") =
-        pika::chrono::steady_time_point;
-    using steady_duration PIKA_DEPRECATED_V(0, 1,
-        "pika::util::steady_duration is deprecated. Use "
-        "pika::chrono::steady_duration instead.") =
-        pika::chrono::steady_duration;
-}}    // namespace pika::util

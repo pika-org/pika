@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config/forward.hpp>
+#include <pika/config/forward.hpp>
 
 #include <algorithm>
 #include <cctype>

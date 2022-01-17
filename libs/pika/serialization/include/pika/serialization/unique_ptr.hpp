@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/serialization/detail/pointer.hpp>
 #include <pika/serialization/serialization_fwd.hpp>
 #include <pika/serialization/serialize.hpp>

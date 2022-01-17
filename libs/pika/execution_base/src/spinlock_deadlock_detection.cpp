@@ -8,7 +8,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>
 
 #include <cstddef>

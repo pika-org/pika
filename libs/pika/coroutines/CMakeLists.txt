@@ -106,7 +106,7 @@ pika_add_module(
   DEPENDENCIES $<TARGET_NAME_IF_EXISTS:Valgrind::valgrind>
   MODULE_DEPENDENCIES
     pika_assertion
-    pika_config_local
+    pika_config
     pika_errors
     pika_format
     pika_functional

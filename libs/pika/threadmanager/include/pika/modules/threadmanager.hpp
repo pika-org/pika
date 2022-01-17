@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concurrency/barrier.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/modules/errors.hpp>
@@ -37,7 +37,7 @@
 #include <utility>
 #include <vector>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace threads {
     ///////////////////////////////////////////////////////////////////////////
@@ -402,4 +402,4 @@ namespace pika { namespace threads {
     };
 }}    // namespace pika::threads
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

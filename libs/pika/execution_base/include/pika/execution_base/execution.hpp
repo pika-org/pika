@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
@@ -57,26 +57,6 @@ namespace pika { namespace execution {
         constexpr non_task_policy_tag() = default;
     };
 }}    // namespace pika::execution
-
-namespace pika { namespace parallel { namespace execution {
-
-    using parallel_execution_tag PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_execution_tag is deprecated. Use "
-        "pika::execution::parallel_execution_tag instead.") =
-        pika::execution::parallel_execution_tag;
-    using sequenced_execution_tag PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::sequenced_execution_tag is deprecated. Use "
-        "pika::execution::sequenced_execution_tag instead.") =
-        pika::execution::sequenced_execution_tag;
-    using task_policy_tag PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::task_policy_tag is deprecated. Use "
-        "pika::execution::task_policy_tag instead.") =
-        pika::execution::task_policy_tag;
-    using unsequenced_execution_tag PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::unsequenced_execution_tag is deprecated. "
-        "Use pika::execution::unsequenced_execution_tag instead.") =
-        pika::execution::unsequenced_execution_tag;
-}}}    // namespace pika::parallel::execution
 /// \endcond
 
 namespace pika { namespace parallel { namespace execution {

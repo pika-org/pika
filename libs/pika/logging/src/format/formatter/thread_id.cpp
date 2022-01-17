@@ -16,7 +16,7 @@
 
 #include <pika/logging/format/formatters.hpp>
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/modules/format.hpp>
 
 #include <memory>

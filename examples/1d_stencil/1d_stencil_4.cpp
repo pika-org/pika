@@ -15,11 +15,11 @@
 // computation. This example is still fully local but demonstrates nice
 // scalability on SMP machines.
 
+#include <pika/algorithm.hpp>
 #include <pika/assert.hpp>
-#include <pika/local/algorithm.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/synchronization.hpp>
 
 #include <boost/range/irange.hpp>

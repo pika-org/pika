@@ -8,7 +8,7 @@
 
 #pragma once
 //
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution/executors/execution.hpp>
 //
 #include <pika/datastructures/tuple.hpp>

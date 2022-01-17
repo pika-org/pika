@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/preprocessor/stringize.hpp>
@@ -24,7 +24,7 @@
 #include <type_traits>
 #include <vector>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace serialization { namespace detail {
     class id_registry
@@ -177,7 +177,7 @@ namespace pika { namespace serialization { namespace detail {
 
 }}}    // namespace pika::serialization::detail
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>
 
 #define PIKA_SERIALIZATION_ADD_CONSTANT_ENTRY(String, Id)                      \
     namespace pika { namespace serialization { namespace detail {              \

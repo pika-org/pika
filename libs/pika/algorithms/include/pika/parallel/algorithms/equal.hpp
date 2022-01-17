@@ -171,7 +171,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/iterator_support/range.hpp>
@@ -316,42 +316,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename Pred = detail::equal_to,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter1>::value &&
-            pika::traits::is_iterator<FwdIter2>::value &&
-            pika::is_invocable_v<Pred,
-                typename std::iterator_traits<FwdIter1>::value_type,
-                typename std::iterator_traits<FwdIter2>::value_type
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::equal is deprecated, use pika::equal instead")
-        typename util::detail::algorithm_result<ExPolicy, bool>::type
-        equal(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
-            FwdIter2 first2, FwdIter2 last2, Pred&& op = Pred())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter1>::value),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
-            "Requires at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::equal_binary().call(PIKA_FORWARD(ExPolicy, policy),
-            first1, last1, first2, last2, PIKA_FORWARD(Pred, op),
-            util::projection_identity{}, util::projection_identity{});
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // equal
     namespace detail {
@@ -419,43 +383,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename Pred = detail::equal_to,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter1>::value &&
-            pika::traits::is_iterator<FwdIter2>::value &&
-            pika::is_invocable_v<Pred,
-                typename std::iterator_traits<FwdIter1>::value_type,
-                typename std::iterator_traits<FwdIter2>::value_type
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::equal is deprecated, use pika::equal instead")
-        typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            bool>::type equal(ExPolicy&& policy, FwdIter1 first1,
-            FwdIter1 last1, FwdIter2 first2, Pred&& op = Pred())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter1>::value),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
-            "Requires at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return pika::parallel::v1::detail::equal().call(
-            PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-            PIKA_FORWARD(Pred, op));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
 

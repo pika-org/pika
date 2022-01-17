@@ -31,7 +31,7 @@ pika_add_module(
   MODULE_DEPENDENCIES
     pika_assertion
     pika_concepts
-    pika_config_local
+    pika_config
     pika_datastructures
     pika_execution_base
     pika_errors

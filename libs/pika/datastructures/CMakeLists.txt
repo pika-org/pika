@@ -41,7 +41,7 @@ pika_add_module(
   SOURCES ${datastructures_sources}
   HEADERS ${datastructures_headers}
   EXCLUDE_FROM_GLOBAL_HEADER "pika/datastructures/variant_helper.hpp"
-  MODULE_DEPENDENCIES pika_assertion pika_config_local pika_concepts
+  MODULE_DEPENDENCIES pika_assertion pika_config pika_concepts
                       pika_type_support
   CMAKE_SUBDIRS examples tests
 )

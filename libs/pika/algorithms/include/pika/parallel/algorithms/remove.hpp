@@ -208,7 +208,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -412,63 +412,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename Pred,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter>::value &&
-            traits::is_projected<Proj,FwdIter>::value &&
-            traits::is_indirect_callable<ExPolicy,
-                Pred, traits::projected<Proj, FwdIter>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::remove_if is deprecated, use pika::remove_if instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        remove_if(ExPolicy&& policy, FwdIter first, FwdIter last, Pred&& pred,
-            Proj&& proj = Proj())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Required at least forward iterator.");
-
-        return detail::remove_if<FwdIter>().call(PIKA_FORWARD(ExPolicy, policy),
-            first, last, PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename T,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter>::value &&
-            traits::is_projected<Proj, FwdIter>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::remove is deprecated, use pika::remove instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        remove(ExPolicy&& policy, FwdIter first, FwdIter last, T const& value,
-            Proj&& proj = Proj())
-    {
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        using value_type = typename std::iterator_traits<FwdIter>::value_type;
-
-        // Just utilize existing parallel remove_if.
-        return detail::remove_if<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last,
-            [value](value_type const& a) -> bool { return value == a; },
-            PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

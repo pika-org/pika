@@ -178,7 +178,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
@@ -259,27 +259,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename BidirIter,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<BidirIter>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::reverse is deprecated, use pika::reverse "
-        "instead")
-        typename util::detail::algorithm_result<ExPolicy, BidirIter>::type
-        reverse(ExPolicy&& policy, BidirIter first, BidirIter last)
-    {
-        static_assert(
-            (pika::traits::is_bidirectional_iterator<BidirIter>::value),
-            "Requires at least bidirectional iterator.");
-
-        return detail::reverse<BidirIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last);
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // reverse_copy
     namespace detail {
@@ -338,32 +317,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename BidirIter, typename FwdIter,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::traits::is_iterator<BidirIter>::value &&
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::reverse_copy is deprecated, use pika::reverse_copy "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<BidirIter, FwdIter>>::type
-        reverse_copy(ExPolicy&& policy, BidirIter first, BidirIter last,
-            FwdIter dest_first)
-    {
-        static_assert(
-            (pika::traits::is_bidirectional_iterator<BidirIter>::value),
-            "Requires at least bidirectional iterator.");
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-
-        return detail::reverse_copy<util::in_out_result<BidirIter, FwdIter>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest_first);
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

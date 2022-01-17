@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <cstddef>    // for size_t

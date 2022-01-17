@@ -8,9 +8,9 @@
 // make_ready_future_after to orchestrate timed operations with 'normal'
 // asynchronous work.
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 
 #include <chrono>
 #include <iostream>

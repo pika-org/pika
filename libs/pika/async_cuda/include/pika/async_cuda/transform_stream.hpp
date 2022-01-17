@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/custom_gpu_api.hpp>

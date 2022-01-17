@@ -5,12 +5,12 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/functional/protect.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/iterator_support/iterator_range.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
 
 #include <cstddef>
 #include <iostream>

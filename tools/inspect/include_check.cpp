@@ -8,24 +8,23 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/util/to_string.hpp>
 
 #include <algorithm>
 
-#include "include_check.hpp"
 #include "boost/regex.hpp"
 #include "function_hyper.hpp"
+#include "include_check.hpp"
 
-namespace boost
-{
-  namespace inspect
-  {
-    boost::regex include_regex(
-      "^\\s*#\\s*include\\s*<([^\n>]*)>(\\s|//[^\\n]*|/\\*.*?\\*/)*$"     // # include <foobar>
-      "|"
-      "^\\s*#\\s*include\\s*\"([^\n\"]*)\"(\\s|//[^\\n]*|/\\*.*?\\*/)*$"  // # include "foobar"
-      , boost::regex::normal);
+namespace boost { namespace inspect {
+    boost::regex include_regex("^\\s*#\\s*include\\s*<([^\n>]*)>(\\s|//"
+                               "[^\\n]*|/\\*.*?\\*/)*$"    // # include <foobar>
+                               "|"
+                               "^\\s*#\\s*include\\s*\"([^\n\"]*)\"(\\s|//"
+                               "[^\\n]*|/\\*.*?\\*/)*$"    // # include "foobar"
+        ,
+        boost::regex::normal);
 
     names_includes const names[] = {
         {"(\\bstd\\s*::\\s*make_shared\\b)", "std::make_shared", "memory"},
@@ -251,7 +250,8 @@ namespace boost
         {"(\\bPIKA_PP_CAT\\b)", "PIKA_PP_CAT", "pika/preprocessor/cat.hpp"},
         {"(\\bPIKA_PP_EXPAND\\b)", "PIKA_PP_EXPAND",
             "pika/preprocessor/expand.hpp"},
-        {"(\\bPIKA_PP_NARGS\\b)", "PIKA_PP_NARGS", "pika/preprocessor/nargs.hpp"},
+        {"(\\bPIKA_PP_NARGS\\b)", "PIKA_PP_NARGS",
+            "pika/preprocessor/nargs.hpp"},
         {"(\\bPIKA_PP_STRINGIZE\\b)", "PIKA_PP_STRINGIZE",
             "pika/preprocessor/stringize.hpp"},
         {"(\\bPIKA_PP_STRIP_PARENS\\b)", "PIKA_PP_STRIP_PARENS",
@@ -266,131 +266,133 @@ namespace boost
     include_check::include_check()
       : m_errors(0)
     {
-      // C/C++ source code...
-      register_signature( ".c" );
-      register_signature( ".cpp" );
-      register_signature( ".cu" );
-      register_signature( ".cxx" );
-      register_signature( ".h" );
-      register_signature( ".hpp" );
-      register_signature( ".hxx" );
-      register_signature( ".inc" );
-      register_signature( ".ipp" );
+        // C/C++ source code...
+        register_signature(".c");
+        register_signature(".cpp");
+        register_signature(".cu");
+        register_signature(".cxx");
+        register_signature(".h");
+        register_signature(".hpp");
+        register_signature(".hxx");
+        register_signature(".inc");
+        register_signature(".ipp");
 
-      for (names_includes const* names_it = &names[0];
-           names_it->name_regex != nullptr;
-           ++names_it)
-      {
-        std::string rx(names_it->name_regex);
-        rx +=
-          "|"                   // or (ignored)
-          "("
-          "//[^\\n]*"           // single line comments (//)
-          "|"
-          "/\\*.*?\\*/"         // multi line comments (/**/)
-          "|"
-          "\"([^\"\\\\]|\\\\.)*\"" // string literals
-          ")";
-        regex_data.push_back(names_regex_data(names_it, rx));
-      }
+        for (names_includes const* names_it = &names[0];
+             names_it->name_regex != nullptr; ++names_it)
+        {
+            std::string rx(names_it->name_regex);
+            rx += "|"    // or (ignored)
+                  "("
+                  "//[^\\n]*"    // single line comments (//)
+                  "|"
+                  "/\\*.*?\\*/"    // multi line comments (/**/)
+                  "|"
+                  "\"([^\"\\\\]|\\\\.)*\""    // string literals
+                  ")";
+            regex_data.push_back(names_regex_data(names_it, rx));
+        }
     }
 
     //  inspect ( C++ source files )  ---------------------------------------//
 
-    void include_check::inspect(
-      const string & library_name,
-      const path & full_path,      // example: c:/foo/boost/filesystem/path.hpp
-      const string & contents)     // contents of file to be inspected
+    void include_check::inspect(const string& library_name,
+        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const string& contents)    // contents of file to be inspected
     {
-      std::string::size_type p = contents.find( "pikainspect:" "noinclude" );
-      if (p != string::npos)
-      {
-        // ignore this directive here (it is handled below) if it is followed
-        // by a ':'
-        if (p == contents.size() - 20 ||
-            (contents.size() > p + 20 && contents[p + 20] != ':'))
+        std::string::size_type p = contents.find("pikainspect:"
+                                                 "noinclude");
+        if (p != string::npos)
         {
-          return;
-        }
-      }
-
-      // first, collect all #includes in this file
-      std::set<std::string> includes;
-
-      boost::sregex_iterator cur(contents.begin(), contents.end(), include_regex), end;
-
-      for( ; cur != end; ++cur /*, ++m_errors*/ )
-      {
-        auto m = *cur;
-        if (m[1].matched)
-          includes.insert(std::string(m[1].first, m[1].second));
-        else if (m[2].matched)
-          includes.insert(std::string(m[2].first, m[2].second));
-      }
-
-      // if one of the includes is <pika/pika.hpp> assume all is well
-      if (includes.find("pika/pika.hpp") != includes.end())
-        return;
-
-      // for all given names, check whether corresponding include was found
-      std::set<std::string> checked_includes;
-      std::set<std::string> found_names;
-      for (names_regex_data const& d : regex_data)
-      {
-        boost::sregex_iterator cur(contents.begin(), contents.end(), d.pattern), end;
-        for(/**/; cur != end; ++cur)
-        {
-          auto m = *cur;
-          if (m[1].matched)
-          {
-            // avoid checking the same include twice
-            auto checked_includes_it =
-                checked_includes.find(m.format(d.data->include));
-            if (checked_includes_it != checked_includes.end())
-               continue;
-
-            // avoid errors to be reported twice
-            std::string found_name(m[1].first, m[1].second);
-            if (found_names.find(found_name) != found_names.end())
-                continue;
-            found_names.insert(found_name);
-
-            std::string tag("pikainspect:" "noinclude:" + found_name);
-            if (contents.find(tag) != string::npos)
-                continue;
-
-            auto include_it = includes.find(m.format(d.data->include));
-            if (include_it == includes.end())
+            // ignore this directive here (it is handled below) if it is followed
+            // by a ':'
+            if (p == contents.size() - 20 ||
+                (contents.size() > p + 20 && contents[p + 20] != ':'))
             {
-              // include is missing
-              auto it = contents.begin();
-              auto match_it = m[1].first;
-              auto line_start = it;
-
-              string::size_type line_number = 1;
-              for (/**/; it != match_it; ++it)
-              {
-                if (string::traits_type::eq(*it, '\n'))
-                {
-                  ++line_number;
-                  line_start = it + 1; // could be end()
-                }
-              }
-
-              ++m_errors;
-              error(library_name, full_path, string(name())
-                  + " missing #include ("
-                  + m.format(d.data->include)
-                  + ") for symbol "
-                  + m.format(d.data->name) + " on line "
-                  + linelink(full_path, pika::util::to_string(line_number)));
+                return;
             }
-            checked_includes.insert(m.format(d.data->include));
-          }
         }
-      }
+
+        // first, collect all #includes in this file
+        std::set<std::string> includes;
+
+        boost::sregex_iterator cur(
+            contents.begin(), contents.end(), include_regex),
+            end;
+
+        for (; cur != end; ++cur /*, ++m_errors*/)
+        {
+            auto m = *cur;
+            if (m[1].matched)
+                includes.insert(std::string(m[1].first, m[1].second));
+            else if (m[2].matched)
+                includes.insert(std::string(m[2].first, m[2].second));
+        }
+
+        // if one of the includes is <pika/pika.hpp> assume all is well
+        if (includes.find("pika/pika.hpp") != includes.end())
+            return;
+
+        // for all given names, check whether corresponding include was found
+        std::set<std::string> checked_includes;
+        std::set<std::string> found_names;
+        for (names_regex_data const& d : regex_data)
+        {
+            boost::sregex_iterator cur(
+                contents.begin(), contents.end(), d.pattern),
+                end;
+            for (/**/; cur != end; ++cur)
+            {
+                auto m = *cur;
+                if (m[1].matched)
+                {
+                    // avoid checking the same include twice
+                    auto checked_includes_it =
+                        checked_includes.find(m.format(d.data->include));
+                    if (checked_includes_it != checked_includes.end())
+                        continue;
+
+                    // avoid errors to be reported twice
+                    std::string found_name(m[1].first, m[1].second);
+                    if (found_names.find(found_name) != found_names.end())
+                        continue;
+                    found_names.insert(found_name);
+
+                    std::string tag("pikainspect:"
+                                    "noinclude:" +
+                        found_name);
+                    if (contents.find(tag) != string::npos)
+                        continue;
+
+                    auto include_it = includes.find(m.format(d.data->include));
+                    if (include_it == includes.end())
+                    {
+                        // include is missing
+                        auto it = contents.begin();
+                        auto match_it = m[1].first;
+                        auto line_start = it;
+
+                        string::size_type line_number = 1;
+                        for (/**/; it != match_it; ++it)
+                        {
+                            if (string::traits_type::eq(*it, '\n'))
+                            {
+                                ++line_number;
+                                line_start = it + 1;    // could be end()
+                            }
+                        }
+
+                        ++m_errors;
+                        error(library_name, full_path,
+                            string(name()) + " missing #include (" +
+                                m.format(d.data->include) + ") for symbol " +
+                                m.format(d.data->name) + " on line " +
+                                linelink(full_path,
+                                    pika::util::to_string(line_number)));
+                    }
+                    checked_includes.insert(m.format(d.data->include));
+                }
+            }
+        }
     }
 
-  } // namespace inspect
-} // namespace boost
-
+}}    // namespace boost::inspect

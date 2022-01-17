@@ -243,7 +243,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/functional/traits/is_invocable.hpp>

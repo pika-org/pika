@@ -6,7 +6,7 @@
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cuda_exception.hpp>

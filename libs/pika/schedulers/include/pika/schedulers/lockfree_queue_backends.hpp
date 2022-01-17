@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
 #include <pika/concurrency/deque.hpp>

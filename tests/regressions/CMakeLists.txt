@@ -13,11 +13,11 @@ foreach(subdir ${subdirs})
   pika_add_pseudo_dependencies(tests.regressions tests.regressions.${subdir})
 endforeach()
 
-set(tests multiple_init_local multiple_init_local_2918
-          stack_size_config_local_4543 unhandled_exception_local_582
+set(tests multiple_init multiple_init_2918
+          stack_size_config_4543 unhandled_exception_582
 )
 
-set(unhandled_exception_local_582_PARAMETERS THREADS_PER_LOCALITY 1)
+set(unhandled_exception_582_PARAMETERS THREADS_PER_LOCALITY 1)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

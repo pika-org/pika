@@ -8,7 +8,7 @@
 // The purpose of this example is to execute a pika-thread printing
 // "Hello World!" once. That's all.
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 
 #include <iostream>
 

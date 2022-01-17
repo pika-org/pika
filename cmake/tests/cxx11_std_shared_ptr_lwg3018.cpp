@@ -9,17 +9,17 @@
 
 #include <memory>
 
-typedef void (function_type)();
+typedef void(function_type)();
 
 void test() {}
 
 struct deleter
 {
-     void operator()(function_type*) {}
+    void operator()(function_type*) {}
 };
 
 int main()
 {
     auto sp = std::shared_ptr<function_type>(&test, deleter{});
-    (void)sp;
+    (void) sp;
 }

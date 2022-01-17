@@ -469,7 +469,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -552,32 +552,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename T1, typename T2,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter>::value &&
-            traits::is_projected<Proj,FwdIter>::value &&
-            traits::is_indirect_callable<ExPolicy,std::equal_to<T1>,
-                traits::projected<Proj, FwdIter>,
-                traits::projected<Proj, T1 const*>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::replace is deprecated, use pika::replace "
-        "instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        replace(ExPolicy&& policy, FwdIter first, FwdIter last,
-            T1 const& old_value, T2 const& new_value, Proj&& proj = Proj())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Required at least forward iterator.");
-
-        return detail::replace<FwdIter>().call(PIKA_FORWARD(ExPolicy, policy),
-            first, last, old_value, new_value, PIKA_FORWARD(Proj, proj));
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // replace_if
     namespace detail {
@@ -641,31 +615,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename F, typename T,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter>::value &&
-            traits::is_projected<Proj,FwdIter>::value &&
-            traits::is_indirect_callable<ExPolicy, F,
-                traits::projected<Proj, FwdIter>>::value)>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::replace_if is deprecated, use pika::replace_if "
-        "instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        replace_if(ExPolicy&& policy, FwdIter first, FwdIter last, F&& f,
-            T const& new_value, Proj&& proj = Proj())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Required at least forward iterator.");
-
-        return detail::replace_if<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-            new_value, PIKA_FORWARD(Proj, proj));
-    }
 
     ///////////////////////////////////////////////////////////////////////////
     // replace_copy
@@ -738,38 +687,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1,
-        typename FwdIter2, typename T1, typename T2,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter1>::value &&
-            traits::is_projected<Proj, FwdIter1>::value &&
-            traits::is_indirect_callable<ExPolicy, std::equal_to<T1>,
-                traits::projected<Proj, FwdIter1>,
-                traits::projected<Proj, T1 const*>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::replace_copy is deprecated, use "
-        "pika::replace_copy "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<FwdIter1, FwdIter2>>::type
-        replace_copy(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,
-            FwdIter2 dest, T1 const& old_value, T2 const& new_value,
-            Proj&& proj = Proj())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter1>::value),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
-            "Requires at least forward iterator.");
-
-        return detail::replace_copy<util::in_out_result<FwdIter1, FwdIter2>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest, old_value,
-                new_value, PIKA_FORWARD(Proj, proj));
-    }
 
     ///////////////////////////////////////////////////////////////////////////
     // replace_copy_if
@@ -850,37 +767,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename F, typename T, typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter1>::value &&
-            traits::is_projected<Proj, FwdIter1>::value &&
-            traits::is_indirect_callable<ExPolicy, F,
-                traits::projected<Proj, FwdIter1>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::replace_copy_if is deprecated, use "
-        "pika::replace_copy_if "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<FwdIter1, FwdIter2>>::type
-        replace_copy_if(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,
-            FwdIter2 dest, F&& f, T const& new_value, Proj&& proj = Proj())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter1>::value),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
-            "Requires at least forward iterator.");
-
-        return detail::replace_copy_if<
-            util::in_out_result<FwdIter1, FwdIter2>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                PIKA_FORWARD(F, f), new_value, PIKA_FORWARD(Proj, proj));
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

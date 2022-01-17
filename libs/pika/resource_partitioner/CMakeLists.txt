@@ -23,7 +23,7 @@ pika_add_module(
   HEADERS ${resource_partitioner_headers}
   MODULE_DEPENDENCIES
     pika_affinity
-    pika_config_local
+    pika_config
     pika_runtime_configuration
     pika_errors
     pika_format

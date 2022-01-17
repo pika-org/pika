@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/assert.hpp>
@@ -29,7 +29,7 @@
 #include <utility>
 #include <vector>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace cuda { namespace experimental {
 
@@ -176,11 +176,4 @@ namespace pika { namespace cuda { namespace experimental {
     PIKA_EXPORT target& get_default_target();
 }}}    // namespace pika::cuda::experimental
 
-namespace pika { namespace compute { namespace cuda {
-    using target PIKA_DEPRECATED_V(0, 1,
-        "pika::compute::cuda::target is deprecated. Please use "
-        "pika::cuda::experimental::target instead.") =
-        pika::cuda::experimental::target;
-}}}    // namespace pika::compute::cuda
-
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

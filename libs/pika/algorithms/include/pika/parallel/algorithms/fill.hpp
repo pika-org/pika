@@ -106,7 +106,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/algorithms/traits/is_value_proxy.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -194,32 +194,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename T,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_forward_iterator<FwdIter>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::fill is deprecated, use pika::fill instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        fill(ExPolicy&& policy, FwdIter first, FwdIter last, T const& value)
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::fill<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, value);
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // fill_n
     namespace detail {
@@ -254,40 +228,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename Size, typename T,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_forward_iterator<FwdIter>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::fill_n is deprecated, use pika::fill_n instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        fill_n(ExPolicy&& policy, FwdIter first, Size count, T const& value)
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-
-        // if count is representing a negative value, we do nothing
-        if (detail::is_negative(count))
-        {
-            return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
-                PIKA_MOVE(first));
-        }
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::fill_n<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count), value);
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
 

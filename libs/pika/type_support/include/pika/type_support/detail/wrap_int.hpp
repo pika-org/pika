@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 namespace pika { namespace traits { namespace detail {
     // wraps int so that int argument is favored over wrap_int

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/type_support/always_void.hpp>
 
@@ -70,16 +70,4 @@ namespace pika {
 
     template <typename R, typename F, typename... Ts>
     inline constexpr bool is_invocable_r_v = is_invocable_r<R, F, Ts...>::value;
-
-    namespace traits {
-        template <typename F, typename... Ts>
-        using is_invocable PIKA_DEPRECATED_V(0, 1,
-            "pika::traits::is_invocable is deprecated, use pika::is_invocable "
-            "instead") = pika::is_invocable<F, Ts...>;
-
-        template <typename R, typename F, typename... Ts>
-        using is_invocable_r PIKA_DEPRECATED_V(0, 1,
-            "pika::traits::is_invocable_r is deprecated, use "
-            "pika::is_invocable_r instead") = pika::is_invocable_r<R, F, Ts...>;
-    }    // namespace traits
 }    // namespace pika

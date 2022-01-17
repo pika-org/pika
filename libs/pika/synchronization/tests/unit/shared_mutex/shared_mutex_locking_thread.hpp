@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
 #include <pika/synchronization/shared_mutex.hpp>

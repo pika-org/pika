@@ -23,7 +23,7 @@
 
 //#define GUIDED_POOL_EXECUTOR_FAKE_NOOP
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 #if !defined(GUIDED_POOL_EXECUTOR_DEBUG)
 #define GUIDED_POOL_EXECUTOR_DEBUG false
@@ -626,4 +626,4 @@ namespace pika { namespace parallel { namespace execution {
 
 }}}    // namespace pika::parallel::execution
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

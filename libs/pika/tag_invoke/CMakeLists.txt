@@ -23,6 +23,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${tag_invoke_sources}
   HEADERS ${tag_invoke_headers}
-  MODULE_DEPENDENCIES pika_config_local pika_type_support
+  MODULE_DEPENDENCIES pika_config pika_type_support
   CMAKE_SUBDIRS examples tests
 )

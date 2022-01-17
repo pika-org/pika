@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <climits>
 #include <condition_variable>
 #include <cstddef>
 #include <mutex>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
     class PIKA_EXPORT barrier
@@ -41,4 +41,4 @@ namespace pika { namespace util {
     };
 }}    // namespace pika::util
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

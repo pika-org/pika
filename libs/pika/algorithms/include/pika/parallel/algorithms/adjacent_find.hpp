@@ -119,7 +119,7 @@ namespace pika {
 }    // namespace pika
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -225,28 +225,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    template <typename ExPolicy, typename FwdIter,
-        typename Pred = detail::equal_to>
-    PIKA_DEPRECATED_V(0, 1, "Please use pika::adjacent_find instead.")
-    inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type>::type
-        adjacent_find(ExPolicy&& policy, FwdIter first, FwdIter last,
-            Pred&& pred = Pred())
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::adjacent_find<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last,
-            PIKA_FORWARD(Pred, pred),
-            pika::parallel::util::projection_identity{});
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     inline constexpr struct adjacent_find_t final

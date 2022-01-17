@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(__bgq__)
 #include <hwi/include/bqc/A2_inlines.h>
@@ -51,10 +51,3 @@ namespace pika { namespace chrono {
         }
     };
 }}    // namespace pika::chrono
-
-namespace pika { namespace util {
-    using high_resolution_clock PIKA_DEPRECATED_V(0, 1,
-        "pika::util::high_resolution_clock is deprecated. Use "
-        "pika::chrono::high_resolution_clock instead.") =
-        pika::chrono::high_resolution_clock;
-}}    // namespace pika::util

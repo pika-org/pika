@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_mpi/mpi_exception.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/futures/future.hpp>
@@ -15,7 +15,7 @@
 #include <pika/modules/memory.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi.hpp>
-#include <pika/runtime_local/thread_pool_helpers.hpp>
+#include <pika/runtime/thread_pool_helpers.hpp>
 
 #include <atomic>
 #include <cstddef>

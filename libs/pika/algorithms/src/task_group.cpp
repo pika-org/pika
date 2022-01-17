@@ -4,10 +4,10 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/futures/traits/future_access.hpp>
-#include <pika/lcos_local/detail/preprocess_future.hpp>
+#include <pika/lcos/detail/preprocess_future.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/serialization.hpp>
 #include <pika/parallel/task_group.hpp>

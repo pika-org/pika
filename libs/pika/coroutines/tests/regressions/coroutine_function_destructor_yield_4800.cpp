@@ -6,11 +6,11 @@
 
 // This test verifies that the destructor of a thread function may yield.
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/threading.hpp>
+#include <pika/thread.hpp>
 
 #include <utility>
 

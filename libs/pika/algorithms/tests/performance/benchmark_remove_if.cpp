@@ -6,7 +6,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/format.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/testing.hpp>

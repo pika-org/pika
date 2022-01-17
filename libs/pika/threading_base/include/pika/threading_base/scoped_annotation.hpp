@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #include <pika/threading_base/thread_description.hpp>
@@ -162,10 +162,3 @@ namespace pika {
     };
 #endif
 }    // namespace pika
-
-namespace pika::util {
-    using annotate_function PIKA_DEPRECATED_V(
-        0, 1, "Please use pika::scoped_annotation instead.") =
-        pika::scoped_annotation;
-
-}    // namespace pika::util

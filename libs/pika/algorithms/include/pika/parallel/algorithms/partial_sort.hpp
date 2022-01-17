@@ -100,9 +100,9 @@ namespace pika {
 
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/async_local/dataflow.hpp>
+#include <pika/async/dataflow.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>

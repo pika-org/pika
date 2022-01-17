@@ -7,8 +7,8 @@
 // This test case demonstrates the issue described in #1613: Dataflow causes
 // stack overflow
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <atomic>

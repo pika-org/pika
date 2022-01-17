@@ -5,7 +5,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/is_heap.hpp>
 
@@ -55,8 +55,6 @@ struct user_defined_type
 template <typename DataType>
 void test_is_heap_until(DataType)
 {
-    using pika::util::get;
-
     std::size_t const size = 10007;
     std::vector<DataType> c(size);
     std::iota(std::begin(c), std::end(c), DataType(std::rand()));
@@ -76,8 +74,6 @@ void test_is_heap_until(ExPolicy&& policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
-
     std::size_t const size = 10007;
     std::vector<DataType> c(size);
     std::iota(std::begin(c), std::end(c), DataType(std::rand()));
@@ -96,8 +92,6 @@ void test_is_heap_until_async(ExPolicy&& policy, DataType)
 {
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
-
-    using pika::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size);

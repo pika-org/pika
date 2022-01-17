@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 namespace pika { namespace threads { namespace policies {
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION

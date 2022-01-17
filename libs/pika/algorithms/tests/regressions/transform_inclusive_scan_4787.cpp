@@ -7,7 +7,7 @@
 // see #4787: `transform_inclusive_scan` gives incorrect results for
 //            non-commutative operator
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/transform_inclusive_scan.hpp>
 

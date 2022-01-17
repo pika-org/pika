@@ -9,7 +9,7 @@
 //
 // See http://www.boost.org/libs/container for documentation.
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/modules/testing.hpp>

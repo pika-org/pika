@@ -4,11 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/runtime.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
+#include <pika/runtime.hpp>
+#include <pika/thread.hpp>
 
 #include <iostream>
 
@@ -19,14 +19,16 @@ int get_id(int i)
 
 int func1()
 {
-    std::cout << "func1 thread id: " << pika::this_thread::get_id() << std::endl;
+    std::cout << "func1 thread id: " << pika::this_thread::get_id()
+              << std::endl;
     return get_id(1) ? 123 : 0;
 }
 
 // this continuation function will be executed by an pika thread
 int cont1(pika::future<int> f)
 {
-    std::cout << "cont1 thread id: " << pika::this_thread::get_id() << std::endl;
+    std::cout << "cont1 thread id: " << pika::this_thread::get_id()
+              << std::endl;
     std::cout << "Status code (pika thread): " << f.get() << std::endl;
     std::cout << std::flush;
     return 1;

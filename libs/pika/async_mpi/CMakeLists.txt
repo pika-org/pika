@@ -41,7 +41,7 @@ pika_add_module(
     pika_memory
     pika_threading_base
     pika_mpi_base
-    pika_runtime_local
-    pika_config_local
+    pika_runtime
+    pika_config
   CMAKE_SUBDIRS examples tests
 )

@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/datastructures/traits/supports_streaming_with_any.hpp>
 
@@ -57,12 +57,6 @@ namespace pika {
         const char* to;
     };
 }    // namespace pika
-
-namespace pika { namespace util {
-    using bad_any_cast PIKA_DEPRECATED_V(0, 1,
-        "pika::util::bad_any_cast is deprecated. Use pika::bad_any_cast "
-        "instead.") = pika::bad_any_cast;
-}}    // namespace pika::util
 
 namespace pika { namespace util { namespace detail { namespace any {
 
@@ -1580,27 +1574,6 @@ namespace pika {
 namespace pika { namespace util {
     ////////////////////////////////////////////////////////////////////////////
     // make copyable any
-    template <typename T, typename... Ts>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::make_any_nonser is deprecated. Please use "
-        "pika::make_any_nonser instead.")
-    basic_any<void, void, void, std::true_type> make_any_nonser(Ts&&... ts)
-    {
-        return basic_any<void, void, void, std::true_type>(
-            std::in_place_type<T>, PIKA_FORWARD(Ts, ts)...);
-    }
-
-    template <typename T, typename U, typename... Ts>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::make_any_nonser is deprecated. Please use "
-        "pika::make_any_nonser instead.")
-    basic_any<void, void, void, std::true_type> make_any_nonser(
-        std::initializer_list<U> il, Ts&&... ts)
-    {
-        return basic_any<void, void, void, std::true_type>(
-            std::in_place_type<T>, il, PIKA_FORWARD(Ts, ts)...);
-    }
-
     template <typename T, typename Char, typename... Ts>
     basic_any<void, void, Char, std::true_type> make_streamable_any_nonser(
         Ts&&... ts)
@@ -1619,28 +1592,6 @@ namespace pika { namespace util {
 
     ////////////////////////////////////////////////////////////////////////////
     // make unique_any
-    template <typename T, typename... Ts>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::make_unique_any_nonser is deprecated. Please use "
-        "pika::make_unique_any_nonser instead.")
-    basic_any<void, void, void, std::false_type> make_unique_any_nonser(
-        Ts&&... ts)
-    {
-        return basic_any<void, void, void, std::false_type>(
-            std::in_place_type<T>, PIKA_FORWARD(Ts, ts)...);
-    }
-
-    template <typename T, typename U, typename... Ts>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::make_unique_any_nonser is deprecated. Please use "
-        "pika::make_unique_any_nonser instead.")
-    basic_any<void, void, void, std::false_type> make_unique_any_nonser(
-        std::initializer_list<U> il, Ts&&... ts)
-    {
-        return basic_any<void, void, void, std::false_type>(
-            std::in_place_type<T>, il, PIKA_FORWARD(Ts, ts)...);
-    }
-
     template <typename T, typename Char, typename... Ts>
     basic_any<void, void, Char, std::false_type>
     make_streamable_unique_any_nonser(Ts&&... ts)
@@ -1658,15 +1609,6 @@ namespace pika { namespace util {
     }
 
     // make copyable any
-    template <typename T>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::make_any_nonser is deprecated. Please use "
-        "pika::make_any_nonser instead.")
-    basic_any<void, void, void, std::true_type> make_any_nonser(T&& t)
-    {
-        return basic_any<void, void, void, std::true_type>(PIKA_FORWARD(T, t));
-    }
-
     template <typename T, typename Char>
     basic_any<void, void, Char, std::true_type> make_streamable_any_nonser(
         T&& t)
@@ -1675,15 +1617,6 @@ namespace pika { namespace util {
     }
 
     // make unique_any
-    template <typename T>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::make_unique_any_nonser is deprecated. Please use "
-        "pika::make_unique_any_nonser instead.")
-    basic_any<void, void, void, std::false_type> make_unique_any_nonser(T&& t)
-    {
-        return basic_any<void, void, void, std::false_type>(PIKA_FORWARD(T, t));
-    }
-
     template <typename T, typename Char>
     basic_any<void, void, Char, std::false_type>
     make_streamable_unique_any_nonser(T&& t)
@@ -1691,23 +1624,9 @@ namespace pika { namespace util {
         return basic_any<void, void, Char, std::false_type>(PIKA_FORWARD(T, t));
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // better names for copyable any
-    using any_nonser PIKA_DEPRECATED_V(0, 1,
-        "pika::util::any_nonser is deprecated. Please use pika::any_nonser "
-        "instead.") = basic_any<void, void, void, std::true_type>;
-
     using streamable_any_nonser = basic_any<void, void, char, std::true_type>;
     using streamable_wany_nonser =
         basic_any<void, void, wchar_t, std::true_type>;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // better names for unique_any
-    using unique_any_nonser PIKA_DEPRECATED_V(0, 1,
-        "pika::util::unique_any_nonser is deprecated. Please use "
-        "pika::unique_any_nonser instead.") =
-        basic_any<void, void, void, std::false_type>;
-
     using streamable_unique_any_nonser =
         basic_any<void, void, char, std::false_type>;
     using streamable_unique_wany_nonser =

@@ -6,8 +6,8 @@
 
 // This compile-only test case verifies that #2035 remains fixed
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <array>

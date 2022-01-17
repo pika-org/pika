@@ -9,6 +9,6 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/serialization/detail/serializable_basic_function.hpp>
 #include <pika/functional/unique_function.hpp>

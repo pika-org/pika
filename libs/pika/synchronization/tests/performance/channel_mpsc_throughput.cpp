@@ -6,11 +6,11 @@
 
 //  This work is inspired by https://github.com/aprell/tasking-2.0
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/synchronization/channel_mpsc.hpp>
+#include <pika/thread.hpp>
 
 #include <cstddef>
 #include <cstdint>

@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/logging/format/destinations.hpp>
 #include <pika/logging/format/formatters.hpp>
 

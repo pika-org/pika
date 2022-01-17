@@ -31,7 +31,7 @@ pika_add_module(
   HEADERS ${errors_headers}
   MODULE_DEPENDENCIES
     pika_assertion
-    pika_config_local
+    pika_config
     pika_filesystem
     pika_format
     pika_logging

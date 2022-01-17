@@ -8,7 +8,7 @@
 // intended for inclusion in the documentation.
 
 //[body
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 
 int pika_main()
 {

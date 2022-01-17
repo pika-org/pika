@@ -6,8 +6,8 @@
 
 // This tests verifies that #2032 remains fixed
 
+#include <pika/future.hpp>
 #include <pika/iterator_support/iterator_range.hpp>
-#include <pika/local/future.hpp>
 
 #include <vector>
 

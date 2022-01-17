@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/coroutines/coroutine_fwd.hpp>
 #include <pika/coroutines/thread_id_type.hpp>
 #include <pika/modules/errors.hpp>

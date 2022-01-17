@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/execution.hpp>
+#include <pika/execution.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/is_sorted.hpp>
 

@@ -6,13 +6,13 @@
 
 // Simple test verifying basic resource_partitioner functionality.
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/runtime.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/threadmanager.hpp>
+#include <pika/runtime.hpp>
+#include <pika/thread.hpp>
 
 #include <cstddef>
 #include <string>

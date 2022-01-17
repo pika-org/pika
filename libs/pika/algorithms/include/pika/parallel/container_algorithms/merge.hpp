@@ -382,7 +382,7 @@ namespace pika { namespace ranges {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -398,119 +398,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    ///////////////////////////////////////////////////////////////////////////
-    // TODO: Support forward and bidirectional iterator. (#2826)
-    // For now, only support random access iterator.
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng1, typename Rng2,
-        typename RandIter3, typename Comp = detail::less,
-        typename Proj1 = util::projection_identity,
-        typename Proj2 = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng1>::value &&
-            pika::parallel::traits::is_projected_range<Proj1, Rng1>::value &&
-            pika::traits::is_range<Rng2>::value &&
-            pika::parallel::traits::is_projected_range<Proj2, Rng2>::value &&
-            pika::traits::is_iterator<RandIter3>::value &&
-            pika::parallel::traits::is_indirect_callable<ExPolicy, Comp,
-                pika::parallel::traits::projected_range<Proj1, Rng1>,
-                pika::parallel::traits::projected_range<Proj2, Rng2>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::merge is deprecated, use pika::ranges::merge instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            pika::parallel::util::in_in_out_result<
-                typename pika::traits::range_iterator<Rng1>::type,
-                typename pika::traits::range_iterator<Rng2>::type,
-                RandIter3>>::type merge(ExPolicy&& policy, Rng1&& rng1,
-            Rng2&& rng2, RandIter3 dest, Comp&& comp = Comp(),
-            Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
-    {
-        using iterator_type1 =
-            typename pika::traits::range_iterator<Rng1>::type;
-        using iterator_type2 =
-            typename pika::traits::range_iterator<Rng2>::type;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        static_assert(
-            pika::traits::is_random_access_iterator<iterator_type1>::value,
-            "Required at least random access iterator.");
-        static_assert(
-            pika::traits::is_random_access_iterator<iterator_type2>::value,
-            "Requires at least random access iterator.");
-        static_assert(
-            (pika::traits::is_random_access_iterator<RandIter3>::value),
-            "Requires at least random access iterator.");
-
-        using result_type =
-            pika::parallel::util::in_in_out_result<iterator_type1,
-                iterator_type2, RandIter3>;
-
-        return pika::parallel::v1::detail::merge<result_type>().call(
-            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
-            pika::util::end(rng1), pika::util::begin(rng2),
-            pika::util::end(rng2), dest, PIKA_FORWARD(Comp, comp),
-            PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // TODO: Support bidirectional iterator. (#2826)
-    // For now, only support random access iterator.
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename RandIter,
-        typename Comp = detail::less, typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-            pika::traits::is_iterator<RandIter>::value &&
-            pika::parallel::traits::is_projected<Proj, RandIter>::value &&
-            pika::parallel::traits::is_indirect_callable<ExPolicy, Comp,
-                pika::parallel::traits::projected_range<Proj, Rng>,
-                pika::parallel::traits::projected_range<Proj, Rng>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::inplace_merge is deprecated, use "
-        "pika::ranges::inplace_merge instead")
-        typename util::detail::algorithm_result<ExPolicy, RandIter>::type
-        inplace_merge(ExPolicy&& policy, Rng&& rng, RandIter middle,
-            Comp&& comp = Comp(), Proj&& proj = Proj())
-    {
-        using iterator_type = typename pika::traits::range_iterator<Rng>::type;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        static_assert(
-            pika::traits::is_random_access_iterator<iterator_type>::value,
-            "Required at least random access iterator.");
-
-        return pika::parallel::v1::detail::inplace_merge<RandIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng), middle,
-            pika::util::end(rng), PIKA_FORWARD(Comp, comp),
-            PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

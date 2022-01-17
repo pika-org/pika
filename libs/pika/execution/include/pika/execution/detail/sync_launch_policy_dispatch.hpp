@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/traits/is_action.hpp>
