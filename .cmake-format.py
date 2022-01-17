@@ -483,7 +483,6 @@ with section("parse"):
         "pika_export_modules_targets": {"pargs": {"nargs": 0}},
         "pika_export_targets": {"pargs": {"nargs": 0}},
         "pika_force_out_of_tree_build": {"pargs": {"nargs": 1}},
-        "pika_handle_component_dependencies": {"pargs": {"nargs": 1}},
         "pika_info": {"pargs": {"nargs": 0}},
         "pika_message": {"pargs": {"nargs": 1}},
         "pika_option": {
