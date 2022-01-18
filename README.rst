@@ -10,7 +10,7 @@ pika
 ====
 
 pika is a C++ library for concurrency and parallelism. It implements
-senders/receivers (as proposed in `P2300 <https://wg21.link/p2300>`) for CPU
+senders/receivers (as proposed in `P2300 <https://wg21.link/p2300>`_) for CPU
 thread pools, MPI, and CUDA.
 
 Acknowledgements
