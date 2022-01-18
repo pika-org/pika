@@ -14,7 +14,7 @@ set(CMAKE_DIR
 )
 
 write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/pika/pika_config_version.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/pika/pika-config-version.cmake"
   VERSION ${PIKA_VERSION}
   COMPATIBILITY AnyNewerVersion
 )
@@ -66,8 +66,8 @@ configure_file(
 )
 # Build dir
 configure_file(
-  cmake/templates/pika_config.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/pika/pika_config.cmake"
+  cmake/templates/pika-config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/pika/pika-config.cmake"
   ESCAPE_QUOTES
   @ONLY
 )

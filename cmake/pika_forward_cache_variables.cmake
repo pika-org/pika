@@ -6,7 +6,7 @@
 
 # The goal is to store all PIKA_* cache variables in a file, so that they
 # would be forwarded to projects using pika (the file is included in the
-# pika_config.cmake)
+# pika-config.cmake)
 
 get_cmake_property(cache_vars CACHE_VARIABLES)
 
