@@ -17,14 +17,14 @@
 
 //  See http://www.boost.org/tools/inspect/ for more information.
 
-const char* hpx_no_inspect = "hpx-" "no-inspect";
+const char* pika_no_inspect = "pika-" "no-inspect";
 
-//  Directories with a file name of the hpx_no_inspect value are not inspected.
-//  Files that contain the hpx_no_inspect value are not inspected.
+//  Directories with a file name of the pika_no_inspect value are not inspected.
+//  Files that contain the pika_no_inspect value are not inspected.
 
-#include <hpx/local/config.hpp>
-#include <hpx/modules/filesystem.hpp>
-#include <hpx/modules/program_options.hpp>
+#include <pika/local/config.hpp>
+#include <pika/modules/filesystem.hpp>
+#include <pika/modules/program_options.hpp>
 
 #include <algorithm>
 #include <cstddef>
@@ -86,7 +86,7 @@ const char* hpx_no_inspect = "hpx-" "no-inspect";
 #include "boost/test/included/prg_exec_monitor.hpp"
 #endif
 
-namespace fs = hpx::filesystem;
+namespace fs = pika::filesystem;
 
 using namespace boost::inspect;
 
@@ -257,7 +257,7 @@ namespace
       && local.find("doc/xml") != 0
       && local.find("doc\\xml") != 0
       // ignore if tag file present
-      && !hpx::filesystem::exists(pth / hpx_no_inspect)
+      && !pika::filesystem::exists(pth / pika_no_inspect)
       ;
   }
 
@@ -362,7 +362,7 @@ namespace
         ++file_count;
         string content;
         load_content( *itr, content );
-        if (content.find(hpx_no_inspect) == string::npos)
+        if (content.find(pika_no_inspect) == string::npos)
           check_( lib.empty() ? library_from_content( content ) : lib,
                  *itr, content, insps );
       }
@@ -812,7 +812,7 @@ void print_output(std::ostream& out, inspector_list const& inspectors);
 
 int cpp_main( int argc_param, char * argv_param[] )
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
     options_description desc_commandline(
         "Usage: inspect [dir [dir ...]] [options]");
 
@@ -897,12 +897,12 @@ int cpp_main( int argc_param, char * argv_param[] )
         ;
 
     positional_options_description pd;
-    pd.add("hpx:positional", -1);
+    pd.add("pika:positional", -1);
 
     options_description cmdline;
     cmdline.add(desc_commandline);
     cmdline.add_options()
-        ("hpx:positional", value<std::vector<std::string> >()->composing(),
+        ("pika:positional", value<std::vector<std::string> >()->composing(),
             "positional options")
         ;
 
@@ -935,9 +935,9 @@ int cpp_main( int argc_param, char * argv_param[] )
     }
 
     std::vector<fs::path> search_roots;
-    if (vm.count("hpx:positional"))
+    if (vm.count("pika:positional"))
     {
-        for (auto const& s: vm["hpx:positional"].as<std::vector<std::string> >())
+        for (auto const& s: vm["pika:positional"].as<std::vector<std::string> >())
             search_roots.push_back(fs::canonical(s, fs::initial_path()));
     }
     else
@@ -1089,14 +1089,14 @@ void print_output(std::ostream& out, inspector_list const& inspectors)
 
   if (display_format == display_text)
   {
-      out << "HPXLocal Inspection Report\n"
+      out << "pika Inspection Report\n"
              "Run Date: "
           << run_date
           << "\n"
              "Commit: "
-          << "<a href = \"https://github.com/STEllAR-GROUP/hpx-local/commit/"
-          << HPX_LOCAL_HAVE_GIT_COMMIT << "\">"
-          << std::string(HPX_LOCAL_HAVE_GIT_COMMIT, 10)
+          << "<a href = \"https://github.com/pika-org/pika/commit/"
+          << PIKA_HAVE_GIT_COMMIT << "\">"
+          << std::string(PIKA_HAVE_GIT_COMMIT, 10)
           << "</a>\n"
              "\n";
 
@@ -1115,7 +1115,7 @@ void print_output(std::ostream& out, inspector_list const& inspectors)
     out << "<html>\n"
            "<head>\n"
            "<style> body { font-family: sans-serif; } </style>\n"
-           "<title>HPXLocal Inspection Report</title>\n"
+           "<title>pika Inspection Report</title>\n"
            "</head>\n"
 
            "<body>\n"
@@ -1123,28 +1123,27 @@ void print_output(std::ostream& out, inspector_list const& inspectors)
            "<table>\n"
            "<tr>\n"
            "<td>"
-           "<a href = \"https://github.com/STEllAR-GROUP/hpx-local\">"
-           "<img src=\"http://stellar.cct.lsu.edu/files/stellar100.png\""
-           " alt=\"STE||AR logo\" />"
+           "<a href = \"https://github.com/pika-org/pika\">"
+           "pika-org/pika"
            "</a>\n"
            "</td>\n"
            "<td>\n"
-           "<h1>HPXLocal Inspection Report</h1>\n"
+           "<h1>pika Inspection Report</h1>\n"
            "<b>Run Date:</b> "
         << run_date
         << "<br>\n"
            //"&nbsp;&nbsp;/ " << validator_link( "validate me" ) << " /\n"
            "<b>Commit:</b> "
-        << "<a href = \"https://github.com/STEllAR-GROUP/hpx-local/commit/"
-        << HPX_LOCAL_HAVE_GIT_COMMIT << "\">"
-        << std::string(HPX_LOCAL_HAVE_GIT_COMMIT, 10)
+        << "<a href = \"https://github.com/pika-org/pika/commit/"
+        << PIKA_HAVE_GIT_COMMIT << "\">"
+        << std::string(PIKA_HAVE_GIT_COMMIT, 10)
         << "</a>\n"
            "</td>\n"
            "</tr>\n"
            "</table>\n"
 
            "<p>This report is generated by an inspection "
-           "program that checks files for the problems noted below. The HPXLocal "
+           "program that checks files for the problems noted below. The pika "
            "inspect "
            "tool is based on the <a "
            "href=\"http://www.boost.org/tools/inspect/\">"
@@ -1204,16 +1203,16 @@ void print_output(std::ostream& out, inspector_list const& inspectors)
     if (display_format == display_text)
     {
       out << "Details:\n" << inspector_keys;
-      out << "\nDirectories with a file named \"" << hpx_no_inspect
+      out << "\nDirectories with a file named \"" << pika_no_inspect
           << "\" will not be inspected.\n" "Files containing \""
-          << hpx_no_inspect << "\" will not be inspected.\n";
+          << pika_no_inspect << "\" will not be inspected.\n";
    }
     else
     {
       out << "<h2>Details</h2>\n" << inspector_keys;
-      out << "\n<p>Directories with a file named \"" << hpx_no_inspect
+      out << "\n<p>Directories with a file named \"" << pika_no_inspect
           << "\" will not be inspected.<br>\n" "Files containing \""
-          << hpx_no_inspect << "\" will not be inspected.</p>\n";
+          << pika_no_inspect << "\" will not be inspected.</p>\n";
     }
     display_details(out);
   }

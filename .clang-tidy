@@ -22,9 +22,9 @@ Checks: >
     misc-use-after-move
     misc-virtual-near-miss
 WarningsAsErrors: '*'
-HeaderFilterRegex: '.*hpx.*'
+HeaderFilterRegex: '.*pika.*'
 CheckOptions:
   - key: bugprone-assert-side-effect.CheckFunctionCalls
     value: 1
   - key: bugprone-assert-side-effect.AssertMacros
-    value: 'HPX_ASSERT'
+    value: 'PIKA_ASSERT'

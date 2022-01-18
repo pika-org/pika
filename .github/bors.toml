@@ -8,7 +8,3 @@ status = [ "Bors" ]
 required_approvals = 0
 delete_merged_branches = true
 use_squash_merge = false
-
-[committer]
-name = "StellarBot"
-email = "contact@stellar-group.org"

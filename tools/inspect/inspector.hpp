@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <hpx/modules/filesystem.hpp>
+#include <pika/modules/filesystem.hpp>
 
 #include <cstddef>
 #include <iostream>
@@ -21,7 +21,7 @@
 
 
 using std::string;
-using hpx::filesystem::path;
+using pika::filesystem::path;
 
 namespace boost
 {

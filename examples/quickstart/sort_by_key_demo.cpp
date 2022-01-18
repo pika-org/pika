@@ -4,9 +4,9 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/execution.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/parallel/algorithms/sort_by_key.hpp>
+#include <pika/local/execution.hpp>
+#include <pika/local/init.hpp>
+#include <pika/parallel/algorithms/sort_by_key.hpp>
 
 #include <cstddef>
 #include <iostream>
@@ -25,7 +25,7 @@ void print_sequence(
     std::cout << std::endl;
 }
 
-int hpx_main()
+int pika_main()
 {
     {
         std::vector<int> keys = {1, 4, 2, 8, 5, 7, 1, 4, 2, 8, 5, 7, 1, 4, 2, 8,
@@ -38,18 +38,18 @@ int hpx_main()
         std::cout << "unsorted sequence: {";
         print_sequence(keys, values);
 
-        hpx::parallel::sort_by_key(
-            hpx::execution::par, keys.begin(), keys.end(), values.begin());
+        pika::parallel::sort_by_key(
+            pika::execution::par, keys.begin(), keys.end(), values.begin());
 
         std::cout << "sorted sequence:   {";
         print_sequence(keys, values);
     }
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);    // Initialize and run HPX
+    return pika::local::init(pika_main, argc, argv);    // Initialize and run pika
 }

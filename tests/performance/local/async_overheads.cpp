@@ -4,10 +4,10 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/testing.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/testing.hpp>
 
 #include "worker_timed.hpp"
 
@@ -29,9 +29,9 @@ void test_func()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-hpx::future<void> spawn_level(std::size_t num_tasks)
+pika::future<void> spawn_level(std::size_t num_tasks)
 {
-    std::vector<hpx::future<void>> tasks;
+    std::vector<pika::future<void>> tasks;
     tasks.reserve(num_tasks);
 
     // spawn sub-levels
@@ -52,20 +52,20 @@ hpx::future<void> spawn_level(std::size_t num_tasks)
             num_tasks -= sub_spawn;
 
             // force unwrapping
-            hpx::future<void> f = hpx::async(&spawn_level, sub_spawn);
+            pika::future<void> f = pika::async(&spawn_level, sub_spawn);
             tasks.push_back(std::move(f));
         }
     }
 
     // then spawn required number of tasks on this level
     for (std::size_t i = 0; i != num_tasks; ++i)
-        tasks.push_back(hpx::async(&test_func));
+        tasks.push_back(pika::async(&test_func));
 
-    return hpx::when_all(tasks);
+    return pika::when_all(tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::size_t num_tasks = 128;
     if (vm.count("tasks"))
@@ -74,43 +74,43 @@ int hpx_main(hpx::program_options::variables_map& vm)
     double seqential_time_per_task = 0;
 
     {
-        std::vector<hpx::future<void>> tasks;
+        std::vector<pika::future<void>> tasks;
         tasks.reserve(num_tasks);
 
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != num_tasks; ++i)
-            tasks.push_back(hpx::async(&test_func));
+            tasks.push_back(pika::async(&test_func));
 
-        hpx::wait_all(tasks);
+        pika::wait_all(tasks);
 
-        std::uint64_t end = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t end = pika::chrono::high_resolution_clock::now();
 
         seqential_time_per_task =
             static_cast<double>(end - start) / 1e9 / num_tasks;
         std::cout << "Elapsed sequential time: "
                   << static_cast<double>(end - start) / 1e9 << " [s], ("
                   << seqential_time_per_task << " [s])" << std::endl;
-        hpx::util::print_cdash_timing(
+        pika::util::print_cdash_timing(
             "AsyncSequential", seqential_time_per_task);
     }
 
     double hierarchical_time_per_task = 0;
 
     {
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
-        hpx::future<void> f = hpx::async(&spawn_level, num_tasks);
-        hpx::wait_all(f);
+        pika::future<void> f = pika::async(&spawn_level, num_tasks);
+        pika::wait_all(f);
 
-        std::uint64_t end = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t end = pika::chrono::high_resolution_clock::now();
 
         hierarchical_time_per_task =
             static_cast<double>(end - start) / 1e9 / num_tasks;
         std::cout << "Elapsed hierarchical time: "
                   << static_cast<double>(end - start) / 1e9 << " [s], ("
                   << hierarchical_time_per_task << " [s])" << std::endl;
-        hpx::util::print_cdash_timing(
+        pika::util::print_cdash_timing(
             "AsyncHierarchical", hierarchical_time_per_task);
     }
 
@@ -118,17 +118,17 @@ int hpx_main(hpx::program_options::variables_map& vm)
               << seqential_time_per_task / hierarchical_time_per_task
               << std::endl;
 
-    hpx::util::print_cdash_timing(
+    pika::util::print_cdash_timing(
         "AsyncSpeedup", seqential_time_per_task / hierarchical_time_per_task);
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
     options_description desc_commandline(
-        "Usage: " HPX_APPLICATION_STRING " [options]");
+        "Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_commandline.add_options()
@@ -142,9 +142,9 @@ int main(int argc, char* argv[])
         "time spent in the delay loop [ns]");
     // clang-format on
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

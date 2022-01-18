@@ -6,10 +6,10 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <hpx/assert.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/synchronization.hpp>
+#include <pika/assert.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/synchronization.hpp>
 
 #include <cstddef>
 #include <functional>
@@ -18,7 +18,7 @@
 struct data
 {
     ///< For synchronizing two-phase initialization.
-    hpx::lcos::local::event init;
+    pika::lcos::local::event init;
 
     char const* msg;
 
@@ -31,14 +31,14 @@ struct data
     void initialize(char const* p)
     {
         // We can only be called once.
-        HPX_ASSERT(!init.occurred());
+        PIKA_ASSERT(!init.occurred());
         msg = p;
         init.set();
     }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-void worker(std::size_t i, data& d, hpx::lcos::local::counting_semaphore& sem)
+void worker(std::size_t i, data& d, pika::lcos::local::counting_semaphore& sem)
 {
     d.init.wait();
     std::cout << d.msg << ": " << i << "\n" << std::flush;
@@ -46,23 +46,23 @@ void worker(std::size_t i, data& d, hpx::lcos::local::counting_semaphore& sem)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main()
+int pika_main()
 {
     data d;
-    hpx::lcos::local::counting_semaphore sem;
+    pika::lcos::local::counting_semaphore sem;
 
     for (std::size_t i = 0; i < 10; ++i)
-        hpx::apply(&worker, i, std::ref(d), std::ref(sem));
+        pika::apply(&worker, i, std::ref(d), std::ref(sem));
 
     d.initialize("initialized");    // signal the event
 
     // Wait for all threads to finish executing.
     sem.wait(10);
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

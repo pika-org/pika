@@ -4,29 +4,29 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/init.hpp>
-#include <hpx/local/thread.hpp>
-#include <hpx/modules/testing.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/thread.hpp>
+#include <pika/modules/testing.hpp>
 
 void stackless_thread()
 {
-    HPX_TEST_NEQ(hpx::threads::get_self_id(), hpx::threads::invalid_thread_id);
+    PIKA_TEST_NEQ(pika::threads::get_self_id(), pika::threads::invalid_thread_id);
 }
 
-int hpx_main()
+int pika_main()
 {
-    hpx::threads::thread_init_data data(
-        hpx::threads::make_thread_function_nullary(stackless_thread),
-        "stackless_thread", hpx::threads::thread_priority::default_,
-        hpx::threads::thread_schedule_hint(),
-        hpx::threads::thread_stacksize::nostack);
-    hpx::threads::register_work(data);
-    return hpx::local::finalize();
+    pika::threads::thread_init_data data(
+        pika::threads::make_thread_function_nullary(stackless_thread),
+        "stackless_thread", pika::threads::thread_priority::default_,
+        pika::threads::thread_schedule_hint(),
+        pika::threads::thread_stacksize::nostack);
+    pika::threads::register_work(data);
+    return pika::local::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    hpx::local::init(hpx_main, argc, argv);
+    pika::local::init(pika_main, argc, argv);
 
-    return hpx::util::report_errors();
+    return pika::util::report_errors();
 }

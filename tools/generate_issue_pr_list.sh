@@ -13,9 +13,9 @@
 # notes, specify --limit as an argument of this script, this makes the request
 # quicker.
 
-VERSION_MAJOR=$(sed -n 's/set(HPX_VERSION_MAJOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_MINOR=$(sed -n 's/set(HPX_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_SUBMINOR=$(sed -n 's/set(HPX_VERSION_SUBMINOR \(.*\))/\1/p' CMakeLists.txt)
+VERSION_MAJOR=$(sed -n 's/set(PIKA_VERSION_MAJOR \(.*\))/\1/p' CMakeLists.txt)
+VERSION_MINOR=$(sed -n 's/set(PIKA_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
+VERSION_SUBMINOR=$(sed -n 's/set(PIKA_VERSION_SUBMINOR \(.*\))/\1/p' CMakeLists.txt)
 VERSION_FULL_NOTAG=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_SUBMINOR
 
 if ! which hub > /dev/null 2>&1; then
@@ -54,9 +54,9 @@ echo "============="
 echo ""
 
 if [[ "$1" = "--limit" ]]; then
-    hub issue --limit 50 --state=closed --milestone="${VERSION_MILESTONE_ID}" --format="* :hpx-issue:\`%I\` - %t%n"
+    hub issue --limit 50 --state=closed --milestone="${VERSION_MILESTONE_ID}" --format="* :pika-issue:\`%I\` - %t%n"
 else
-    hub issue --state=closed --milestone="${VERSION_MILESTONE_ID}" --format="* :hpx-issue:\`%I\` - %t%n"
+    hub issue --state=closed --milestone="${VERSION_MILESTONE_ID}" --format="* :pika-issue:\`%I\` - %t%n"
 fi
 
 echo ""
@@ -69,9 +69,9 @@ echo ""
 # a milestone, filter out the unwanted PRs, and remove the printed milestone
 # from every PR instead.
 if [[ "$1" = "--limit" ]]; then
-    hub pr list --limit 50 --state=closed --format="[%Mn]* :hpx-pr:\`%I\` - %t%n" |
+    hub pr list --limit 50 --state=closed --format="[%Mn]* :pika-pr:\`%I\` - %t%n" |
     sed -n "s/^\[${VERSION_MILESTONE_ID}\]\(.*\)/\1/p"
 else
-    hub pr list  --state=closed --format="[%Mn]* :hpx-pr:\`%I\` - %t%n" |
+    hub pr list  --state=closed --format="[%Mn]* :pika-pr:\`%I\` - %t%n" |
     sed -n "s/^\[${VERSION_MILESTONE_ID}\]\(.*\)/\1/p"
 fi

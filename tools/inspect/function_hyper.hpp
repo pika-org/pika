@@ -8,25 +8,25 @@
 
 #pragma once
 
-#include <hpx/local/config.hpp>
-#include <hpx/modules/filesystem.hpp>
+#include <pika/local/config.hpp>
+#include <pika/modules/filesystem.hpp>
 
 #include "inspector.hpp"
 
 #include <string>
 
-using hpx::filesystem::path;
+using pika::filesystem::path;
 
 // When you have a specific line and the line is the location of the link
 inline std::string linelink(path const& full_path, std::string const& linenumb)
 {
-    std::string commit = HPX_LOCAL_HAVE_GIT_COMMIT;
+    std::string commit = PIKA_HAVE_GIT_COMMIT;
     std::string location = boost::inspect::relative_to(
         full_path, boost::inspect::search_root_path() );
-    //The erase function for location is to get rid of the first /hpx-local that will always
+    //The erase function for location is to get rid of the first /pika that will always
     //be present in any full path this tool is used for (repeated in wordlink and
     // loclink)
-    std::string total = "<a href = \"https://github.com/STEllAR-GROUP/hpx-local/blob/"
+    std::string total = "<a href = \"https://github.com/pika-org/pika/blob/"
         + commit + location + "#L" + linenumb + "\">";
     total = total + linenumb;
     total = total + "</a>";
@@ -37,10 +37,10 @@ inline std::string linelink(path const& full_path, std::string const& linenumb)
 inline std::string wordlink(
     path const& full_path, std::string const& linenumb, std::string const& word)
 {
-    std::string commit = HPX_LOCAL_HAVE_GIT_COMMIT;
+    std::string commit = PIKA_HAVE_GIT_COMMIT;
     std::string location = boost::inspect::relative_to(
         full_path, boost::inspect::search_root_path() );
-    std::string total = "<a href = \"https://github.com/STEllAR-GROUP/hpx-local/blob/"
+    std::string total = "<a href = \"https://github.com/pika-org/pika/blob/"
         + commit + location + "#L" + linenumb + "\">";
     total = total + word;
     total = total + "</a>";
@@ -50,10 +50,10 @@ inline std::string wordlink(
 // When you don't have a specific line
 inline std::string loclink(path const& full_path, std::string const& word)
 {
-    std::string commit = HPX_LOCAL_HAVE_GIT_COMMIT;
+    std::string commit = PIKA_HAVE_GIT_COMMIT;
     std::string location = boost::inspect::relative_to(
         full_path, boost::inspect::search_root_path() );
-    std::string total = "<a href = \"https://github.com/STEllAR-GROUP/hpx-local/blob/"
+    std::string total = "<a href = \"https://github.com/pika-org/pika/blob/"
         + commit + location + "\">";
     total = total + word;
     total = total + "</a>";

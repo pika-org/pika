@@ -4,11 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/assert.hpp>
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/execution.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/runtime.hpp>
+#include <pika/assert.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/execution.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/runtime.hpp>
 
 #include <cstddef>
 #include <cstdlib>
@@ -23,7 +23,7 @@ struct safe_object
 {
 public:
     safe_object()
-      : data_(hpx::get_os_thread_count())
+      : data_(pika::get_os_thread_count())
     {
     }
 
@@ -41,15 +41,15 @@ public:
 
     T& get()
     {
-        std::size_t idx = hpx::get_worker_thread_num();
-        HPX_ASSERT(idx < hpx::get_os_thread_count());
+        std::size_t idx = pika::get_worker_thread_num();
+        PIKA_ASSERT(idx < pika::get_os_thread_count());
         return data_[idx];
     }
 
     T const& get() const
     {
-        std::size_t idx = hpx::get_worker_thread_num();
-        HPX_ASSERT(idx < hpx::get_os_thread_count());
+        std::size_t idx = pika::get_worker_thread_num();
+        PIKA_ASSERT(idx < pika::get_os_thread_count());
         return data_[idx];
     }
 
@@ -79,10 +79,10 @@ inline bool satisfies_criteria(int d)
     return d > 500 && (d % 7) == 0;
 }
 
-int hpx_main()
+int pika_main()
 {
-    using hpx::execution::par;
-    using hpx::ranges::for_each;
+    using pika::execution::par;
+    using pika::ranges::for_each;
 
     // initialize data
     std::vector<int> data = random_fill(1000);
@@ -110,11 +110,11 @@ int hpx_main()
         }
     }
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    // Initialize and run HPX
-    return hpx::local::init(hpx_main, argc, argv);
+    // Initialize and run pika
+    return pika::local::init(pika_main, argc, argv);
 }

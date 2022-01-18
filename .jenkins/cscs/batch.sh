@@ -9,16 +9,16 @@
 set -eux
 
 orig_src_dir="$(pwd)"
-src_dir="/dev/shm/hpx/src"
-build_dir="/dev/shm/hpx/build"
-install_dir="/dev/shm/hpx/install"
+src_dir="/dev/shm/pika/src"
+build_dir="/dev/shm/pika/build"
+install_dir="/dev/shm/pika/install"
 
 # Copy source directory to /dev/shm for faster builds
 mkdir -p "${build_dir}"
 cp -r "${orig_src_dir}" "${src_dir}"
 
-source ${src_dir}/.jenkins/cscs/env-common.sh
-source ${src_dir}/.jenkins/cscs/env-${configuration_name}.sh
+source "${src_dir}/.jenkins/cscs/env-common.sh"
+source "${src_dir}/.jenkins/cscs/env-${configuration_name}.sh"
 
 set +e
 ctest \
@@ -28,6 +28,10 @@ ctest \
     -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name_with_build_type}" \
     -DCTEST_SOURCE_DIRECTORY="${src_dir}" \
     -DCTEST_BINARY_DIRECTORY="${build_dir}"
+ls -la ${install_dir}
+ls -la /dev/shm/pika/install/lib64
+ls -la /dev/shm/pika/install/lib64/cmake
+ls -la /dev/shm/pika/install/lib64/cmake/pika
 set -e
 
 # Copy the testing directory for saving as an artifact
@@ -39,7 +43,7 @@ file_errors=1
 configure_errors=1
 build_errors=1
 test_errors=1
-if [[ -f ${build_dir}/Testing/TAG ]]; then
+if [[ -f "${build_dir}/Testing/TAG" ]]; then
     file_errors=0
     tag="$(head -n 1 ${build_dir}/Testing/TAG)"
 
@@ -57,5 +61,5 @@ if [[ -f ${build_dir}/Testing/TAG ]]; then
 fi
 ctest_status=$(( ctest_exit_code + file_errors + configure_errors + build_errors + test_errors ))
 
-echo "${ctest_status}" > "jenkins-hpx-${configuration_name_with_build_type}-ctest-status.txt"
+echo "${ctest_status}" > "jenkins-pika-${configuration_name_with_build_type}-ctest-status.txt"
 exit $ctest_status

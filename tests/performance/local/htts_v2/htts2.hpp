@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <hpx/local/config.hpp>
-#include <hpx/assert.hpp>
+#include <pika/local/config.hpp>
+#include <pika/assert.hpp>
 
 #include <chrono>
 #include <cmath>
@@ -43,7 +43,7 @@ struct clocksource
         duration d = std::chrono::duration_cast<duration>(
             base_clock::now().time_since_epoch());
         rep t = d.count();
-        HPX_ASSERT(t >= 0);
+        PIKA_ASSERT(t >= 0);
         return t;
     }
 

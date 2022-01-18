@@ -8,7 +8,7 @@ Distributed under the Boost Software License, Version 1.0. (See accompanying
 file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 create_module_skeleton.py - A tool to generate a module skeleton to be used
-as a component of HPX
+as a component of pika
 '''
 
 import sys, os
@@ -24,14 +24,14 @@ module_name = sys.argv[2]
 header_str = '=' * len(module_name)
 
 
-cmake_root_header = f'''# Copyright (c) 2019-2021 The STE||AR-Group
+cmake_root_header = f'''# Copyright (c) 2021-2022 ETH Zurich
 #
 # SPDX-License-Identifier: BSL-1.0
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 
-cmake_header = f'''# Copyright (c) 2020-2021 The STE||AR-Group
+cmake_header = f'''# Copyright (c) 2021-2022 ETH Zurich
 #
 # SPDX-License-Identifier: BSL-1.0
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -40,7 +40,7 @@ cmake_header = f'''# Copyright (c) 2020-2021 The STE||AR-Group
 
 readme_template = f'''
 ..
-    Copyright (c) 2020-2021 The STE||AR-Group
+    Copyright (c) 2021-2022 ETH Zurich
 
     SPDX-License-Identifier: BSL-1.0
     Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -50,14 +50,11 @@ readme_template = f'''
 {module_name}
 {header_str}
 
-This module is part of HPX.
-
-Documentation can be found `here
-<https://hpx-docs.stellar-group.org/latest/html/modules/{module_name}/docs/index.html>`__.
+This module is part of pika.
 '''
 
 index_rst = f'''..
-    Copyright (c) 2020-2021 The STE||AR-Group
+    Copyright (c) 2021-2022 ETH Zurich
 
     SPDX-License-Identifier: BSL-1.0
     Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -87,8 +84,8 @@ set({module_name}_compat_headers)
 
 set({module_name}_sources)
 
-include(HPXLocal_AddModule)
-hpx_local_add_module(
+include(pika_add_module)
+pika_add_module(
   {lib_name} {module_name}
   GLOBAL_HEADER_GEN ON
   SOURCES ${{{module_name}_sources}}
@@ -100,12 +97,12 @@ hpx_local_add_module(
 '''
 
 examples_cmakelists_template = cmake_header + f'''
-if(HPXLocal_WITH_EXAMPLES)
-  hpx_local_add_pseudo_target(examples.modules.{module_name})
-  hpx_local_add_pseudo_dependencies(examples.modules examples.modules.{module_name})
-  if(HPXLocal_WITH_TESTS AND HPXLocal_WITH_TESTS_EXAMPLES)
-    hpx_local_add_pseudo_target(tests.examples.modules.{module_name})
-    hpx_local_add_pseudo_dependencies(
+if(PIKA_WITH_EXAMPLES)
+  pika_add_pseudo_target(examples.modules.{module_name})
+  pika_add_pseudo_dependencies(examples.modules examples.modules.{module_name})
+  if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
+    pika_add_pseudo_target(tests.examples.modules.{module_name})
+    pika_add_pseudo_dependencies(
       tests.examples.modules tests.examples.modules.{module_name}
     )
   endif()
@@ -113,39 +110,39 @@ endif()
 '''
 
 tests_cmakelists_template = cmake_header + f'''
-include(HPXLocal_Message)
+include(pika_message)
 
-if(HPXLocal_WITH_TESTS)
-  if(HPXLocal_WITH_TESTS_UNIT)
-    hpx_local_add_pseudo_target(tests.unit.modules.{module_name})
-    hpx_local_add_pseudo_dependencies(
+if(PIKA_WITH_TESTS)
+  if(PIKA_WITH_TESTS_UNIT)
+    pika_add_pseudo_target(tests.unit.modules.{module_name})
+    pika_add_pseudo_dependencies(
       tests.unit.modules tests.unit.modules.{module_name}
     )
     add_subdirectory(unit)
   endif()
 
-  if(HPXLocal_WITH_TESTS_REGRESSIONS)
-    hpx_local_add_pseudo_target(tests.regressions.modules.{module_name})
-    hpx_local_add_pseudo_dependencies(
+  if(PIKA_WITH_TESTS_REGRESSIONS)
+    pika_add_pseudo_target(tests.regressions.modules.{module_name})
+    pika_add_pseudo_dependencies(
       tests.regressions.modules tests.regressions.modules.{module_name}
     )
     add_subdirectory(regressions)
   endif()
 
-  if(HPXLocal_WITH_TESTS_BENCHMARKS)
-    hpx_local_add_pseudo_target(tests.performance.modules.{module_name})
-    hpx_local_add_pseudo_dependencies(
+  if(PIKA_WITH_TESTS_BENCHMARKS)
+    pika_add_pseudo_target(tests.performance.modules.{module_name})
+    pika_add_pseudo_dependencies(
       tests.performance.modules tests.performance.modules.{module_name}
     )
     add_subdirectory(performance)
   endif()
 
-  if(HPXLocal_WITH_TESTS_HEADERS)
-    hpx_local_add_header_tests(
+  if(PIKA_WITH_TESTS_HEADERS)
+    pika_add_header_tests(
       modules.{module_name}
       HEADERS ${{{module_name}_headers}}
       HEADER_ROOT ${{PROJECT_SOURCE_DIR}}/include
-      DEPENDENCIES hpx_{module_name}
+      DEPENDENCIES pika_{module_name}
     )
   endif()
 endif()
@@ -166,7 +163,7 @@ if module_name != '--recreate-index':
     # Generate include directory structure
     # Normalize path...
     include_path = ''.join(module_name)
-    path = os.path.join(lib_name, module_name, 'include', 'hpx', include_path)
+    path = os.path.join(lib_name, module_name, 'include', 'pika', include_path)
     mkdir(path)
     path = os.path.join(lib_name, module_name, 'tests', 'unit')
     mkdir(path)
@@ -229,10 +226,10 @@ modules_cmakelists = cmake_header + f'''
 '''
 
 modules_cmakelists += f'''
-include(HPXLocal_Message)
+include(pika_message)
 
 # cmake-format: off
-set(_hpx_local_{lib_name}_modules
+set(_pika_{lib_name}_modules
 '''
 for module in modules:
     if not module.startswith('_'):
@@ -240,10 +237,10 @@ for module in modules:
 modules_cmakelists += ')\n# cmake-format: on\n'
 
 modules_cmakelists += f'''
-hpx_local_info("")
-hpx_local_info("  Configuring libhpx{"_" + lib_name if lib_name != "full" else ""} modules:")
+pika_info("")
+pika_info("  Configuring libpika{"_" + lib_name if lib_name != "full" else ""} modules:")
 
-foreach(module ${{_hpx_local_{lib_name}_modules}})
+foreach(module ${{_pika_{lib_name}_modules}})
   add_subdirectory(${{module}})
 endforeach()
 '''
@@ -251,11 +248,11 @@ endforeach()
 f = open(os.path.join(cwd, lib_name, 'CMakeLists.txt'), 'w')
 f.write(modules_cmakelists)
 
-header_name_str = "Main |hpx| modules" if lib_name == "full" else lib_name.capitalize() + " modules"
+header_name_str = "Main |pika| modules" if lib_name == "full" else lib_name.capitalize() + " modules"
 header_underline_str = '=' * len(header_name_str)
 
 modules_rst = f'''..
-    Copyright (c) 2018-2021 The STE||AR-Group
+    Copyright (c) 2021-2022 ETH Zurich
 
     SPDX-License-Identifier: BSL-1.0
     Distributed under the Boost Software License, Version 1.0. (See accompanying

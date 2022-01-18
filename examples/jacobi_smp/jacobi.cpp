@@ -5,21 +5,21 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#if !defined(JACOBI_SMP_NO_HPX)
-#include <hpx/local/init.hpp>
+#if !defined(JACOBI_SMP_NO_pika)
+#include <pika/local/init.hpp>
 #endif
 
-#include <hpx/modules/program_options.hpp>
+#include <pika/modules/program_options.hpp>
 
 #include <cstddef>
 #include <iostream>
 #include <string>
 
-using hpx::program_options::command_line_parser;
-using hpx::program_options::options_description;
-using hpx::program_options::store;
-using hpx::program_options::value;
-using hpx::program_options::variables_map;
+using pika::program_options::command_line_parser;
+using pika::program_options::options_description;
+using pika::program_options::store;
+using pika::program_options::value;
+using pika::program_options::variables_map;
 
 #include "jacobi.hpp"
 
@@ -27,7 +27,7 @@ namespace jacobi_smp {
 
     void jacobi_kernel(double* dst, const double* src, std::size_t n)
     {
-#ifdef HPX_INTEL_VERSION
+#ifdef PIKA_INTEL_VERSION
 #pragma vector always
 #pragma unroll(4)
 #endif
@@ -43,7 +43,7 @@ namespace jacobi_smp {
     }
 }    // namespace jacobi_smp
 
-int hpx_main(variables_map& vm)
+int pika_main(variables_map& vm)
 {
     {
         std::size_t n = vm["n"].as<std::size_t>();
@@ -59,20 +59,20 @@ int hpx_main(variables_map& vm)
         jacobi_smp::jacobi(n, iterations, block_size, output_filename);
     }
 
-#if defined(JACOBI_SMP_NO_HPX)
+#if defined(JACOBI_SMP_NO_pika)
     return 0;
 #else
-    return hpx::local::finalize();
+    return pika::local::finalize();
 #endif
 }
 
-#if !defined(HPX_APPLICATION_STRING)
-#define HPX_APPLICATION_STRING "jacobi"
+#if !defined(PIKA_APPLICATION_STRING)
+#define PIKA_APPLICATION_STRING "jacobi"
 #endif
 
 int main(int argc, char** argv)
 {
-    options_description desc_cmd("usage: " HPX_APPLICATION_STRING " [options]");
+    options_description desc_cmd("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_cmd.add_options()
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
         "Filename of the result (if empty no result is written)");
     // clang-format on
 
-#if defined(JACOBI_SMP_NO_HPX)
+#if defined(JACOBI_SMP_NO_pika)
     variables_map vm;
     desc_cmd.add_options()("help", "This help message");
     store(command_line_parser(argc, argv)
@@ -99,11 +99,11 @@ int main(int argc, char** argv)
         std::cout << desc_cmd;
         return 1;
     }
-    return hpx_main(vm);
+    return pika_main(vm);
 #else
-    hpx::local::init_params init_args;
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_cmd;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 #endif
 }

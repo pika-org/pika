@@ -11,10 +11,10 @@
 Overview
 ========
 
-|hpx| is organized into different sub-libraries and those in turn into modules.
+|pika| is organized into different sub-libraries and those in turn into modules.
 The libraries and modules are independent, with clear dependencies and no
 cycles. As an end-user, the use of these libraries is completely transparent. If
-you use e.g. ``add_hpx_executable`` to create a target in your project you will
+you use e.g. ``add_pika_executable`` to create a target in your project you will
 automatically get all modules as dependencies. See below for a list of the
 available libraries and modules. Currently these are nothing more than an
 internal grouping and do not affect usage. They cannot be consumed individually

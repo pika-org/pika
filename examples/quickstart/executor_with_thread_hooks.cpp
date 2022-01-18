@@ -10,10 +10,10 @@
 // to associate custom thread data with the tasks that are created by the
 // underlying executor.
 
-#include <hpx/assert.hpp>
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/execution.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/assert.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/execution.hpp>
+#include <pika/local/init.hpp>
 
 #include <algorithm>
 #include <atomic>
@@ -52,7 +52,7 @@ namespace executor_example {
             decltype(auto) operator()(Ts&&... ts)
             {
                 on_exit _{exec_};
-                return hpx::util::invoke(f_, std::forward<Ts>(ts)...);
+                return pika::util::invoke(f_, std::forward<Ts>(ts)...);
             }
 
             executor_with_thread_hooks const& exec_;
@@ -92,7 +92,7 @@ namespace executor_example {
         template <typename F, typename... Ts>
         decltype(auto) sync_execute(F&& f, Ts&&... ts) const
         {
-            return hpx::parallel::execution::sync_execute(exec_,
+            return pika::parallel::execution::sync_execute(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)},
                 std::forward<Ts>(ts)...);
         }
@@ -101,7 +101,7 @@ namespace executor_example {
         template <typename F, typename... Ts>
         decltype(auto) async_execute(F&& f, Ts&&... ts) const
         {
-            return hpx::parallel::execution::async_execute(exec_,
+            return pika::parallel::execution::async_execute(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)},
                 std::forward<Ts>(ts)...);
         }
@@ -110,7 +110,7 @@ namespace executor_example {
         decltype(auto) then_execute(
             F&& f, Future&& predecessor, Ts&&... ts) const
         {
-            return hpx::parallel::execution::then_execute(exec_,
+            return pika::parallel::execution::then_execute(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)},
                 std::forward<Future>(predecessor), std::forward<Ts>(ts)...);
         }
@@ -119,7 +119,7 @@ namespace executor_example {
         template <typename F, typename... Ts>
         void post(F&& f, Ts&&... ts) const
         {
-            hpx::parallel::execution::post(exec_,
+            pika::parallel::execution::post(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)},
                 std::forward<Ts>(ts)...);
         }
@@ -129,7 +129,7 @@ namespace executor_example {
         decltype(auto) bulk_sync_execute(
             F&& f, S const& shape, Ts&&... ts) const
         {
-            return hpx::parallel::execution::bulk_sync_execute(exec_,
+            return pika::parallel::execution::bulk_sync_execute(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)}, shape,
                 std::forward<Ts>(ts)...);
         }
@@ -139,7 +139,7 @@ namespace executor_example {
         decltype(auto) bulk_async_execute(
             F&& f, S const& shape, Ts&&... ts) const
         {
-            return hpx::parallel::execution::bulk_async_execute(exec_,
+            return pika::parallel::execution::bulk_async_execute(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)}, shape,
                 std::forward<Ts>(ts)...);
         }
@@ -148,13 +148,13 @@ namespace executor_example {
         decltype(auto) bulk_then_execute(
             F&& f, S const& shape, Future&& predecessor, Ts&&... ts) const
         {
-            return hpx::parallel::execution::bulk_then_execute(exec_,
+            return pika::parallel::execution::bulk_then_execute(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)}, shape,
                 std::forward<Future>(predecessor), std::forward<Ts>(ts)...);
         }
 
     private:
-        using thread_hook = hpx::util::function_nonser<void()>;
+        using thread_hook = pika::util::function_nonser<void()>;
 
         BaseExecutor& exec_;
         thread_hook on_start_;
@@ -172,7 +172,7 @@ namespace executor_example {
 
 ///////////////////////////////////////////////////////////////////////////////
 // simple forwarding implementations of executor traits
-namespace hpx { namespace parallel { namespace execution {
+namespace pika { namespace parallel { namespace execution {
 
     template <typename BaseExecutor>
     struct is_one_way_executor<
@@ -209,9 +209,9 @@ namespace hpx { namespace parallel { namespace execution {
       : is_bulk_two_way_executor<typename std::decay<BaseExecutor>::type>
     {
     };
-}}}    // namespace hpx::parallel::execution
+}}}    // namespace pika::parallel::execution
 
-int hpx_main()
+int pika_main()
 {
     std::vector<double> v(1000);
     std::iota(v.begin(), v.end(), 0.0);
@@ -223,21 +223,21 @@ int hpx_main()
     auto on_stop = [&]() { ++stops; };
 
     auto exec = executor_example::make_executor_with_thread_hooks(
-        hpx::execution::par.executor(), on_start, on_stop);
+        pika::execution::par.executor(), on_start, on_stop);
 
-    hpx::for_loop(
-        hpx::execution::par.on(exec), 0, v.size(), [](std::size_t) {});
+    pika::for_loop(
+        pika::execution::par.on(exec), 0, v.size(), [](std::size_t) {});
 
     std::cout << "Executed " << starts.load() << " starts and " << stops.load()
               << " stops\n";
 
-    HPX_ASSERT(starts.load() != 0);
-    HPX_ASSERT(stops.load() != 0);
+    PIKA_ASSERT(starts.load() != 0);
+    PIKA_ASSERT(stops.load() != 0);
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

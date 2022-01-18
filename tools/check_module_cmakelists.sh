@@ -20,30 +20,26 @@ function check_failure {
 function check_module_dependencies() {
     tmp_module=$1
     tmp_module_name=$(basename $tmp_module)
-    non_module_files_list=$2
     tmp_group_list=$3
 
-    # Find the dependencies through the includes and remove hpx/hpx_* like
-    includes=($(grep -Erho 'hpx/modules/[_a-z]*\.hpp\>' --include=*.{hpp,cpp}\
-        include src 2> /dev/null | sort | uniq | grep -v hpx/hpx))
+    # Find the dependencies through the includes and remove pika/pika_* like
+    includes=($(grep -Erho 'pika/modules/[_a-z]*\.hpp\>' --include=*.{hpp,cpp}\
+        include src 2> /dev/null | sort | uniq | grep -v pika/pika))
 
     # Check if the dependency is inside the CMakeLists.txt
     for include in "${includes[@]}"
     do
-        # Exclude the headers from the main hpx/ dir
-        if [[ ! "${non_module_files_list[@]}" =~ "$(basename $include)" ]]; then
-            # Isolate the name of the module from the include
-            module_deps=$(basename $include | cut -d'.' -f1)
-            # Check if the name is not the current module and check if it is
-            # contained in the current module group
-            if [[ ! "$module_deps" == "$tmp_module_name" ]]; then
-                for group_module in ${tmp_group_list}; do
-                    if [[ "$module_deps" == "$group_module" ]]; then
-                        check_failure "hpx_${module_deps}" $tmp_module CMakeLists.txt
-                        break
-                    fi
-                done
-            fi
+        # Isolate the name of the module from the include
+        module_deps=$(basename $include | cut -d'.' -f1)
+        # Check if the name is not the current module and check if it is
+        # contained in the current module group
+        if [[ ! "$module_deps" == "$tmp_module_name" ]]; then
+            for group_module in ${tmp_group_list}; do
+                if [[ "$module_deps" == "$group_module" ]]; then
+                    check_failure "pika_${module_deps}" $tmp_module CMakeLists.txt
+                    break
+                fi
+            done
         fi
     done
 }
@@ -73,12 +69,12 @@ function check_cmakelists_files() {
 # Enable globbing
 shopt -s globstar
 
-# HPXLocal source directory
-source_dir=/hpx/source
+# pika source directory
+source_dir=/pika/source
 # Where to write the dependencies output files
 output_dir=/tmp
 # Helper to filter out the dependencies from other groups
-module_groups=(core)
+module_groups=(pika)
 
 pushd $source_dir/libs > /dev/null
 
@@ -95,9 +91,6 @@ done
 
 # Construct a list for each of the module groups
 
-# Find non module headers under the main hpx/ dir to exclude them later
-non_module_files_list=($(ls ../hpx | grep .hpp))
-
 echo "" > $output_dir/missing_files.txt
 echo "" > $output_dir/missing_deps.txt
 
@@ -108,7 +101,7 @@ do
 
         module_group=$(dirname $module)
         group_list=${group_modules[$module_group]}
-        check_module_dependencies $module $non_module_files_list "${group_list[@]}" >> $output_dir/missing_deps.txt
+        check_module_dependencies $module "${group_list[@]}" >> $output_dir/missing_deps.txt
         check_cmakelists_files $module include >> $output_dir/missing_files.txt
         check_cmakelists_files $module src >> $output_dir/missing_files.txt
 

@@ -6,7 +6,7 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
+#include <pika/local/config.hpp>
 
 #include "boost/regex.hpp"
 #include "pragma_once_check.hpp"
@@ -35,7 +35,7 @@ namespace boost
       const path & full_path,   // example: c:/foo/boost/filesystem/path.hpp
       const string & contents )     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "nopragmaonce" ) != string::npos) return;
+      if (contents.find( "pikainspect:" "nopragmaonce" ) != string::npos) return;
 
       if ( !boost::regex_search( contents, pragma_once_regex ) )
       {

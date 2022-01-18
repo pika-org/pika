@@ -6,12 +6,12 @@
 
 // The purpose of this example is to demonstrate how to customize certain
 // parameters (such like thread priority, the stacksize, or the targeted
-// processing unit) for a thread which is created by calling hpx::apply() or
-// hpx::async().
+// processing unit) for a thread which is created by calling pika::apply() or
+// pika::async().
 
-#include <hpx/local/execution.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/local/execution.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -29,11 +29,11 @@ void run_with_large_stack()
     std::fill(large_array, &large_array[array_size], '\0');
 
     std::cout << "This thread runs with a "
-              << hpx::threads::get_stack_size_name(
-                     hpx::this_thread::get_stack_size())
+              << pika::threads::get_stack_size_name(
+                     pika::this_thread::get_stack_size())
               << " stack and "
-              << hpx::threads::get_thread_priority_name(
-                     hpx::this_thread::get_priority())
+              << pika::threads::get_thread_priority_name(
+                     pika::this_thread::get_priority())
               << " priority." << std::endl;
 }
 
@@ -41,48 +41,48 @@ void run_with_large_stack()
 void run_with_high_priority()
 {
     std::cout << "This thread runs with "
-              << hpx::threads::get_thread_priority_name(
-                     hpx::this_thread::get_priority())
+              << pika::threads::get_thread_priority_name(
+                     pika::this_thread::get_priority())
               << " priority." << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main()
+int pika_main()
 {
     // run a thread on a large stack
     {
-        hpx::execution::parallel_executor large_stack_executor(
-            hpx::threads::thread_stacksize::large);
+        pika::execution::parallel_executor large_stack_executor(
+            pika::threads::thread_stacksize::large);
 
-        hpx::future<void> f =
-            hpx::async(large_stack_executor, &run_with_large_stack);
+        pika::future<void> f =
+            pika::async(large_stack_executor, &run_with_large_stack);
         f.wait();
     }
 
     // run a thread with high priority
     {
-        hpx::execution::parallel_executor high_priority_executor(
-            hpx::threads::thread_priority::high);
+        pika::execution::parallel_executor high_priority_executor(
+            pika::threads::thread_priority::high);
 
-        hpx::future<void> f =
-            hpx::async(high_priority_executor, &run_with_high_priority);
+        pika::future<void> f =
+            pika::async(high_priority_executor, &run_with_high_priority);
         f.wait();
     }
 
     // combine both
     {
-        hpx::execution::parallel_executor fancy_executor(
-            hpx::threads::thread_priority::high,
-            hpx::threads::thread_stacksize::large);
+        pika::execution::parallel_executor fancy_executor(
+            pika::threads::thread_priority::high,
+            pika::threads::thread_stacksize::large);
 
-        hpx::future<void> f = hpx::async(fancy_executor, &run_with_large_stack);
+        pika::future<void> f = pika::async(fancy_executor, &run_with_large_stack);
         f.wait();
     }
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

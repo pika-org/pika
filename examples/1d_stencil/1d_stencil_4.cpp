@@ -10,17 +10,17 @@
 //
 // This example builds on example three. It futurizes the code from that
 // example. Compared to example two this code runs much more efficiently. It
-// allows for changing the amount of work executed in one HPX thread which
+// allows for changing the amount of work executed in one pika thread which
 // enables tuning the performance for the optimal grain size of the
 // computation. This example is still fully local but demonstrates nice
 // scalability on SMP machines.
 
-#include <hpx/assert.hpp>
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/synchronization.hpp>
+#include <pika/assert.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/synchronization.hpp>
 
 #include <boost/range/irange.hpp>
 
@@ -47,7 +47,7 @@ inline std::size_t idx(std::size_t i, int dir, std::size_t size)
     if (i == size - 1 && dir == +1)
         return 0;
 
-    HPX_ASSERT((i + dir) < size);
+    PIKA_ASSERT((i + dir) < size);
 
     return i + dir;
 }
@@ -114,7 +114,7 @@ std::ostream& operator<<(std::ostream& os, partition_data const& c)
 struct stepper
 {
     // Our data for one time step
-    typedef hpx::shared_future<partition_data> partition;
+    typedef pika::shared_future<partition_data> partition;
     typedef std::vector<partition> space;
 
     // Our operator
@@ -145,11 +145,11 @@ struct stepper
 
     // do all the work on 'np' partitions, 'nx' data points each, for 'nt'
     // time steps, limit depth of dependency tree to 'nd'
-    hpx::future<space> do_work(
+    pika::future<space> do_work(
         std::size_t np, std::size_t nx, std::size_t nt, std::uint64_t nd)
     {
-        using hpx::dataflow;
-        using hpx::unwrapping;
+        using pika::dataflow;
+        using pika::unwrapping;
 
         // U[t][i] is the state of position i at time t.
         std::vector<space> U(2);
@@ -159,13 +159,13 @@ struct stepper
         // Initial conditions: f(0, i) = i
         std::size_t b = 0;
         auto range = boost::irange(b, np);
-        using hpx::execution::par;
-        hpx::ranges::for_each(par, range, [&U, nx](std::size_t i) {
-            U[0][i] = hpx::make_ready_future(partition_data(nx, double(i)));
+        using pika::execution::par;
+        pika::ranges::for_each(par, range, [&U, nx](std::size_t i) {
+            U[0][i] = pika::make_ready_future(partition_data(nx, double(i)));
         });
 
         // limit depth of dependency tree
-        hpx::lcos::local::sliding_semaphore sem(nd);
+        pika::lcos::local::sliding_semaphore sem(nd);
 
         auto Op = unwrapping(&stepper::heat_part);
 
@@ -178,7 +178,7 @@ struct stepper
             for (std::size_t i = 0; i != np; ++i)
             {
                 next[i] =
-                    dataflow(hpx::launch::async, Op, current[idx(i, -1, np)],
+                    dataflow(pika::launch::async, Op, current[idx(i, -1, np)],
                         current[i], current[idx(i, +1, np)]);
             }
 
@@ -198,12 +198,12 @@ struct stepper
         }
 
         // Return the solution at time-step 'nt'.
-        return hpx::when_all(U[nt % 2]);
+        return pika::when_all(U[nt % 2]);
     }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::uint64_t np = vm["np"].as<std::uint64_t>();    // Number of partitions.
     std::uint64_t nx =
@@ -219,15 +219,15 @@ int hpx_main(hpx::program_options::variables_map& vm)
     stepper step;
 
     // Measure execution time.
-    std::uint64_t t = hpx::chrono::high_resolution_clock::now();
+    std::uint64_t t = pika::chrono::high_resolution_clock::now();
 
     // Execute nt time steps on nx grid points and print the final solution.
-    hpx::future<stepper::space> result = step.do_work(np, nx, nt, nd);
+    pika::future<stepper::space> result = step.do_work(np, nx, nt, nd);
 
     stepper::space solution = result.get();
-    hpx::wait_all(solution);
+    pika::wait_all(solution);
 
-    std::uint64_t elapsed = hpx::chrono::high_resolution_clock::now() - t;
+    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
 
     // Print the final solution
     if (vm.count("results"))
@@ -236,15 +236,15 @@ int hpx_main(hpx::program_options::variables_map& vm)
             std::cout << "U[" << i << "] = " << solution[i].get() << std::endl;
     }
 
-    std::uint64_t const os_thread_count = hpx::get_os_thread_count();
+    std::uint64_t const os_thread_count = pika::get_os_thread_count();
     print_time_results(os_thread_count, elapsed, nx, np, nt, header);
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
 
     // Configure application-specific options.
     options_description desc_commandline;
@@ -270,9 +270,9 @@ int main(int argc, char* argv[])
     ;
     // clang-format on
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

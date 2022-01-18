@@ -4,8 +4,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/init.hpp>
 
 #include <algorithm>
 #include <cstdint>
@@ -28,7 +28,7 @@ double test_results(std::uint64_t order, std::uint64_t block_order,
     std::vector<block> const& trans);
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::uint64_t order = vm["matrix_size"].as<std::uint64_t>();
     std::uint64_t iterations = vm["iterations"].as<std::uint64_t>();
@@ -81,7 +81,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
                                   // one leap year should be enough
     for (std::uint64_t iter = 0; iter < iterations; ++iter)
     {
-        hpx::chrono::high_resolution_timer t;
+        pika::chrono::high_resolution_timer t;
 
         for (std::uint64_t b = 0; b < num_blocks; ++b)
         {
@@ -133,12 +133,12 @@ int hpx_main(hpx::program_options::variables_map& vm)
         std::terminate();
     }
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
 
     options_description desc_commandline;
     // clang-format off
@@ -156,15 +156,15 @@ int main(int argc, char* argv[])
         ("verbose", "Verbose output");
     // clang-format on
 
-    // Initialize and run HPX, this example is serial and therefore only needs
-    // one thread. We just use hpx::init to parse our command line arguments
-    std::vector<std::string> const cfg = {"hpx.os_threads!=1"};
+    // Initialize and run pika, this example is serial and therefore only needs
+    // one thread. We just use pika::init to parse our command line arguments
+    std::vector<std::string> const cfg = {"pika.os_threads!=1"};
 
-    hpx::local::init_params init_args;
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }
 
 void transpose(sub_block A, sub_block B, std::uint64_t block_order,

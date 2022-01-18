@@ -8,9 +8,9 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/modules/filesystem.hpp>
-#include <hpx/util/to_string.hpp>
+#include <pika/local/config.hpp>
+#include <pika/modules/filesystem.hpp>
+#include <pika/util/to_string.hpp>
 
 #include "path_name_check.hpp"
 #include "function_hyper.hpp"
@@ -65,7 +65,7 @@ namespace boost
       // We want to inspect some of the hidden dirs
 
       ////  rules for dot characters differ slightly for directories and files
-      //if ( hpx::filesystem::is_directory( full_path ) )
+      //if ( pika::filesystem::is_directory( full_path ) )
       //{
       //  if ( std::strchr( leaf.c_str(), '.' ) )
       //  {
@@ -97,7 +97,7 @@ namespace boost
         error( library_name, full_path,
             loclink(full_path, string(name()))
             + " path will exceed "
-            + hpx::util::to_string(max_relative_path)
+            + pika::util::to_string(max_relative_path)
             + " characters in a directory tree with a root in the form "
             + generic_root + ", and this exceeds ISO 9660:1999 limit of 207"  )
             ;

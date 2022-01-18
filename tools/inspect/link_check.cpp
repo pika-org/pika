@@ -7,9 +7,9 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/modules/filesystem.hpp>
-#include <hpx/modules/string_util.hpp>
+#include <pika/local/config.hpp>
+#include <pika/modules/filesystem.hpp>
+#include <pika/modules/string_util.hpp>
 
 #include "link_check.hpp"
 #include "function_hyper.hpp"
@@ -19,7 +19,7 @@
 
 // #include <iostream>
 
-namespace fs = hpx::filesystem;
+namespace fs = pika::filesystem;
 
 namespace
 {
@@ -137,11 +137,11 @@ namespace boost
       const path & full_path,   // example: c:/foo/boost/filesystem/path.hpp
       const string & contents )     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "nounlinked" ) != string::npos)
+      if (contents.find( "pikainspect:" "nounlinked" ) != string::npos)
           m_paths[ relative_to( full_path, search_root_path() ) ] |= m_nounlinked_errors;
 
       bool no_link_errors =
-          (contents.find( "hpxinspect:" "nolink" ) != string::npos);
+          (contents.find( "pikainspect:" "nolink" ) != string::npos);
 
       // build bookmarks databases
       bookmarks.clear();
@@ -165,9 +165,9 @@ namespace boost
           if (a_what[4].matched)
           {
             string tag( a_what[1].first, a_what[1].second );
-            hpx::string_util::to_lower(tag);
+            pika::string_util::to_lower(tag);
             string attribute( a_what[2].first, a_what[2].second );
-            hpx::string_util::to_lower(attribute);
+            pika::string_util::to_lower(attribute);
             string bookmark( a_what[4].first, a_what[4].second );
 
             bool name_following_id = ( attribute == "name" && previous_id == bookmark );
@@ -182,7 +182,7 @@ namespace boost
               // w3.org recommends case-insensitive checking for duplicate bookmarks
               // since some browsers do a case-insensitive match.
               string bookmark_lowercase( bookmark );
-              hpx::string_util::to_lower(bookmark_lowercase);
+              pika::string_util::to_lower(bookmark_lowercase);
 
               std::pair<bookmark_set::iterator, bool> result
                 = bookmarks_lowercase.insert( bookmark_lowercase );
@@ -220,7 +220,7 @@ namespace boost
           if(what[3].matched)
           {
             string type( what[1].first, what[1].second );
-            hpx::string_util::to_lower(type);
+            pika::string_util::to_lower(type);
 
             // TODO: Complain if 'link' tags use external stylesheets.
             do_url( string( what[3].first, what[3].second ),

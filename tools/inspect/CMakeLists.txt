@@ -6,20 +6,20 @@
 
 # add inpect executable
 
-include(HPXLocal_SetupBoostRegex)
+include(pika_setup_boost_regex)
 
-hpx_local_add_executable(
+pika_add_executable(
   inspect_local INTERNAL_FLAGS AUTOGLOB NOLIBS FOLDER "Tools/Local/Inspect"
 )
 
 if(NOT Boost_REGEX_FOUND)
-  hpx_local_error("HPXLocal inspect tool requires Boost.Regex")
+  pika_error("pika inspect tool requires Boost.Regex")
 endif()
 
-# Set the basic search paths for the generated HPX headers
+# Set the basic search paths for the generated pika headers
 target_link_libraries(
-  inspect_local PRIVATE Boost::regex hpx_local_dependencies_boost hpx_local
+  inspect_local PRIVATE Boost::regex pika_dependencies_boost pika
 )
 
 # add dependencies to pseudo-target
-hpx_local_add_pseudo_dependencies(tools.inspect inspect_local)
+pika_add_pseudo_dependencies(tools.inspect inspect_local)

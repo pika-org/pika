@@ -6,20 +6,20 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/hpx_init.hpp>
-#include <hpx/include/apply.hpp>
-#include <hpx/include/async.hpp>
-#include <hpx/include/parallel_executors.hpp>
-#include <hpx/include/parallel_for_loop.hpp>
-#include <hpx/include/threads.hpp>
-#include <hpx/iostream.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/modules/testing.hpp>
-#include <hpx/modules/timing.hpp>
-#include <hpx/threading_base/annotated_function.hpp>
+#include <pika/pika_init.hpp>
+#include <pika/include/apply.hpp>
+#include <pika/include/async.hpp>
+#include <pika/include/parallel_executors.hpp>
+#include <pika/include/parallel_for_loop.hpp>
+#include <pika/include/threads.hpp>
+#include <pika/iostream.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/modules/testing.hpp>
+#include <pika/modules/timing.hpp>
+#include <pika/threading_base/annotated_function.hpp>
 
-#include <hpx/include/parallel_execution.hpp>
-#include <hpx/modules/synchronization.hpp>
+#include <pika/include/parallel_execution.hpp>
+#include <pika/modules/synchronization.hpp>
 
 #include <cds/gc/hp.h>    // for cds::HP (Hazard Pointer) SMR
 #include <cds/init.h>     // for cds::Initialize and cds::Terminate
@@ -35,21 +35,21 @@
 #include <type_traits>
 #include <vector>
 
-using hpx::program_options::options_description;
-using hpx::program_options::value;
-using hpx::program_options::variables_map;
+using pika::program_options::options_description;
+using pika::program_options::value;
+using pika::program_options::variables_map;
 
-using hpx::find_here;
-using hpx::naming::id_type;
+using pika::find_here;
+using pika::naming::id_type;
 
-using hpx::apply;
-using hpx::async;
-using hpx::future;
+using pika::apply;
+using pika::async;
+using pika::future;
 
-using hpx::chrono::high_resolution_timer;
+using pika::chrono::high_resolution_timer;
 
-using hpx::cout;
-using hpx::flush;
+using pika::cout;
+using pika::flush;
 
 // global vars we stick here to make printouts easy for plotting
 static std::string queuing = "default";
@@ -65,7 +65,7 @@ void print_stats(const char* title, const char* wait, const char* exec,
     double us = 1e6 * duration / count;
     if (csv)
     {
-        hpx::util::format_to(temp,
+        pika::util::format_to(temp,
             "{1}, {:27}, {:15}, {:28}, {:8}, {:8}, {:20}, {:4}, {:4}, "
             "{:20}, {:4}",
             count, title, wait, exec, duration, us, queuing, numa_sensitive,
@@ -73,7 +73,7 @@ void print_stats(const char* title, const char* wait, const char* exec,
     }
     else
     {
-        hpx::util::format_to(temp,
+        pika::util::format_to(temp,
             "invoked {:1} futures, {:27} {:15} {:28} in {:8} seconds : {:8} "
             "us/future, queue {:20}, numa {:4}, threads {:4}, info {:20}"
             ", libcds {:4}",
@@ -82,16 +82,16 @@ void print_stats(const char* title, const char* wait, const char* exec,
     }
     std::cout << temp.str() << std::endl;
     // CDash graph plotting
-    //hpx::util::print_cdash_timing(title, duration);
+    //pika::util::print_cdash_timing(title, duration);
 }
 
-const char* exec_name(hpx::execution::parallel_executor const& exec)
+const char* exec_name(pika::execution::parallel_executor const& exec)
 {
     return "parallel_executor";
 }
 
 const char* exec_name(
-    hpx::parallel::execution::parallel_executor_aggregated const& exec)
+    pika::parallel::execution::parallel_executor_aggregated const& exec)
 {
     return "parallel_executor_aggregated";
 }
@@ -150,62 +150,62 @@ struct scratcher
 void measure_function_futures_create_thread_hierarchical_placement(
     std::uint64_t count, bool csv, bool uselibcds)
 {
-    hpx::lcos::local::latch l(count);
+    pika::lcos::local::latch l(count);
 
-    auto sched = hpx::threads::get_self_id_data()->get_scheduler_base();
+    auto sched = pika::threads::get_self_id_data()->get_scheduler_base();
 
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
     {
         sched->add_remove_scheduler_mode(
-            hpx::threads::policies::scheduler_mode(
-                hpx::threads::policies::assign_work_thread_parent),
-            hpx::threads::policies::scheduler_mode(
-                hpx::threads::policies::enable_stealing |
-                hpx::threads::policies::enable_stealing_numa |
-                hpx::threads::policies::assign_work_round_robin |
-                hpx::threads::policies::steal_after_local |
-                hpx::threads::policies::steal_high_priority_first));
+            pika::threads::policies::scheduler_mode(
+                pika::threads::policies::assign_work_thread_parent),
+            pika::threads::policies::scheduler_mode(
+                pika::threads::policies::enable_stealing |
+                pika::threads::policies::enable_stealing_numa |
+                pika::threads::policies::assign_work_round_robin |
+                pika::threads::policies::steal_after_local |
+                pika::threads::policies::steal_high_priority_first));
     }
     auto const func = [&]() {
         null_function(uselibcds);
         l.count_down(1);
     };
     auto const thread_func =
-        hpx::threads::detail::thread_function_nullary<decltype(func)>{func};
-    auto desc = hpx::util::thread_description();
-    auto prio = hpx::threads::thread_priority::normal;
-    auto stack_size = hpx::threads::thread_stacksize::small_;
-    auto num_threads = hpx::get_num_worker_threads();
-    hpx::error_code ec;
+        pika::threads::detail::thread_function_nullary<decltype(func)>{func};
+    auto desc = pika::util::thread_description();
+    auto prio = pika::threads::thread_priority::normal;
+    auto stack_size = pika::threads::thread_stacksize::small_;
+    auto num_threads = pika::get_num_worker_threads();
+    pika::error_code ec;
 
     // start the clock
     high_resolution_timer walltime;
     for (std::size_t t = 0; t < num_threads; ++t)
     {
         auto const hint =
-            hpx::threads::thread_schedule_hint(static_cast<std::int16_t>(t));
+            pika::threads::thread_schedule_hint(static_cast<std::int16_t>(t));
         auto spawn_func = [&thread_func, sched, hint, t, count, num_threads,
                               desc, prio, stack_size]() {
             std::uint64_t const count_start = t * count / num_threads;
             std::uint64_t const count_end = (t + 1) * count / num_threads;
-            hpx::error_code ec;
+            pika::error_code ec;
             for (std::uint64_t i = count_start; i < count_end; ++i)
             {
-                hpx::threads::thread_init_data init(
-                    hpx::threads::thread_function_type(thread_func), desc, prio,
+                pika::threads::thread_init_data init(
+                    pika::threads::thread_function_type(thread_func), desc, prio,
                     hint, stack_size,
-                    hpx::threads::thread_schedule_state::pending, false, sched);
+                    pika::threads::thread_schedule_state::pending, false, sched);
                 sched->create_thread(init, nullptr, ec);
             }
         };
         auto const thread_spawn_func =
-            hpx::threads::detail::thread_function_nullary<decltype(spawn_func)>{
+            pika::threads::detail::thread_function_nullary<decltype(spawn_func)>{
                 spawn_func};
 
-        hpx::threads::thread_init_data init(
-            hpx::threads::thread_function_type(thread_spawn_func), desc, prio,
-            hint, stack_size, hpx::threads::thread_schedule_state::pending,
+        pika::threads::thread_init_data init(
+            pika::threads::thread_function_type(thread_spawn_func), desc, prio,
+            hint, stack_size, pika::threads::thread_schedule_state::pending,
             false, sched);
         sched->create_thread(init, nullptr, ec);
     }
@@ -233,16 +233,16 @@ struct libcds_wrapper
     }
 };
 
-int hpx_main(variables_map& vm)
+int pika_main(variables_map& vm)
 {
     // Initialize libcds
     libcds_wrapper wrapper;
 
     {
-        if (vm.count("hpx:queuing"))
-            queuing = vm["hpx:queuing"].as<std::string>();
+        if (vm.count("pika:queuing"))
+            queuing = vm["pika:queuing"].as<std::string>();
 
-        if (vm.count("hpx:numa-sensitive"))
+        if (vm.count("pika:numa-sensitive"))
             numa_sensitive = 1;
         else
             numa_sensitive = 0;
@@ -252,19 +252,19 @@ int hpx_main(variables_map& vm)
         if (vm.count("info"))
             info_string = vm["info"].as<std::string>();
 
-        num_threads = hpx::get_num_worker_threads();
+        num_threads = pika::get_num_worker_threads();
 
         num_iterations = vm["delay-iterations"].as<std::uint64_t>();
 
         const std::uint64_t count = vm["futures"].as<std::uint64_t>();
         bool csv = vm.count("csv") != 0;
-        if (HPX_UNLIKELY(0 == count))
+        if (PIKA_UNLIKELY(0 == count))
             throw std::logic_error("error: count of 0 futures specified\n");
 
         cds::gc::HP hpGC;
 
-        hpx::execution::parallel_executor par;
-        hpx::parallel::execution::parallel_executor_aggregated par_agg;
+        pika::execution::parallel_executor par;
+        pika::parallel::execution::parallel_executor_aggregated par_agg;
 
         for (int i = 0; i < repetitions; i++)
         {
@@ -276,14 +276,14 @@ int hpx_main(variables_map& vm)
         }
     }
 
-    return hpx::finalize();
+    return pika::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
     // Configure application-specific options.
-    options_description cmdline("usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     cmdline.add_options()
@@ -302,9 +302,9 @@ int main(int argc, char* argv[])
             "extra info for plot output (e.g. branch name)");
     // clang-format on
 
-    // Initialize and run HPX.
-    hpx::init_params init_args;
+    // Initialize and run pika.
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return hpx::init(argc, argv, init_args);
+    return pika::init(argc, argv, init_args);
 }

@@ -7,11 +7,11 @@
 // This example was released to the public domain by Stephan T. Lavavej
 // (see: https://channel9.msdn.com/Shows/C9-GoingNative/GoingNative-40-Updated-STL-in-VS-2015-feat-STL)
 
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/shared_mutex.hpp>
-#include <hpx/local/thread.hpp>
-#include <hpx/type_support/unused.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/shared_mutex.hpp>
+#include <pika/local/thread.hpp>
+#include <pika/type_support/unused.hpp>
 
 #include <atomic>
 #include <chrono>
@@ -29,11 +29,11 @@ int const cycles = 10;
 
 using std::chrono::milliseconds;
 
-int hpx_main()
+int pika_main()
 {
-    std::vector<hpx::thread> threads;
+    std::vector<pika::thread> threads;
     std::atomic<bool> ready(false);
-    hpx::lcos::local::shared_mutex stm;
+    pika::lcos::local::shared_mutex stm;
 
     for (int i = 0; i < writers; ++i)
     {
@@ -47,15 +47,15 @@ int hpx_main()
 
             for (int j = 0; j < cycles; ++j)
             {
-                std::unique_lock<hpx::lcos::local::shared_mutex> ul(stm);
+                std::unique_lock<pika::lcos::local::shared_mutex> ul(stm);
 
                 std::cout << "^^^ Writer " << i << " starting..." << std::endl;
-                hpx::this_thread::sleep_for(milliseconds(dist(urng)));
+                pika::this_thread::sleep_for(milliseconds(dist(urng)));
                 std::cout << "vvv Writer " << i << " finished." << std::endl;
 
                 ul.unlock();
 
-                hpx::this_thread::sleep_for(milliseconds(dist(urng)));
+                pika::this_thread::sleep_for(milliseconds(dist(urng)));
             }
         });
     }
@@ -64,7 +64,7 @@ int hpx_main()
     {
         int k = writers + i;
         threads.emplace_back([&ready, &stm, k, i] {
-            HPX_UNUSED(k);
+            PIKA_UNUSED(k);
             std::mt19937 urng(static_cast<std::uint32_t>(std::time(nullptr)));
             std::uniform_int_distribution<int> dist(1, 1000);
 
@@ -74,15 +74,15 @@ int hpx_main()
 
             for (int j = 0; j < cycles; ++j)
             {
-                std::shared_lock<hpx::lcos::local::shared_mutex> sl(stm);
+                std::shared_lock<pika::lcos::local::shared_mutex> sl(stm);
 
                 std::cout << "Reader " << i << " starting..." << std::endl;
-                hpx::this_thread::sleep_for(milliseconds(dist(urng)));
+                pika::this_thread::sleep_for(milliseconds(dist(urng)));
                 std::cout << "Reader " << i << " finished." << std::endl;
 
                 sl.unlock();
 
-                hpx::this_thread::sleep_for(milliseconds(dist(urng)));
+                pika::this_thread::sleep_for(milliseconds(dist(urng)));
             }
         });
     }
@@ -91,10 +91,10 @@ int hpx_main()
     for (auto& t : threads)
         t.join();
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return hpx::local::init(hpx_main, argc, argv);
+    return pika::local::init(pika_main, argc, argv);
 }

@@ -8,19 +8,18 @@ cmake_minimum_required(VERSION 3.18)
 
 project(hello_world CXX)
 
-if(EXISTS "${HPXLocal_DIR}")
-  find_package(HPXLocal REQUIRED)
+if(EXISTS "${pika_DIR}")
+  find_package(pika REQUIRED)
 
   add_executable(hello_world hello_world.cpp)
   target_include_directories(hello_world PRIVATE ${test_SOURCE_DIR})
-  target_link_libraries(hello_world PRIVATE HPX::hpx_local)
+  target_link_libraries(hello_world PRIVATE pika::pika)
 
   if(MSVC)
     # Only for the purposes of testing we output the executable and libraries to
-    # the output directory of HPX
+    # the output directory of pika
     set_target_properties(
-      hello_world PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                             ${HPXLocal_OUTPUT_DIRECTORY}
+      hello_world PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PIKA_OUTPUT_DIRECTORY}
     )
   endif()
 
@@ -29,8 +28,8 @@ if(EXISTS "${HPXLocal_DIR}")
 else()
   message(
     WARNING
-      "Skipping build test because HPXLocal_DIR=${HPXLocal_DIR} does not exist. This \
-      last test requires HPX to be installed.  Did you forget to run the \
+      "Skipping build test because pika_DIR=${pika_DIR} does not exist. This \
+      last test requires pika to be installed.  Did you forget to run the \
       install rule?"
   )
 endif()

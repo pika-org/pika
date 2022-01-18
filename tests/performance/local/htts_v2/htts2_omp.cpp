@@ -8,7 +8,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include "htts2.hpp"
-#include <hpx/modules/format.hpp>
+#include <pika/modules/format.hpp>
 
 #include <chrono>
 #include <cstdint>
@@ -83,7 +83,7 @@ struct omp_driver : htts2::driver
                 << "Total Walltime [nanoseconds]"
                 << "\n";
 
-        hpx::util::format_to(std::cout, "{},{},{},{:.14g}\n",
+        pika::util::format_to(std::cout, "{},{},{},{:.14g}\n",
             this->osthreads_,
             this->tasks_,
             this->payload_duration_,

@@ -4,12 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/algorithm.hpp>
-#include <hpx/assert.hpp>
-#include <hpx/hpx.hpp>
-#include <hpx/init.hpp>
-#include <hpx/modules/serialization.hpp>
-#include <hpx/numeric.hpp>
+#include <pika/algorithm.hpp>
+#include <pika/assert.hpp>
+#include <pika/pika.hpp>
+#include <pika/init.hpp>
+#include <pika/modules/serialization.hpp>
+#include <pika/numeric.hpp>
 
 #include <boost/range/irange.hpp>
 
@@ -87,47 +87,47 @@ struct sub_block
 
     double operator[](std::size_t i) const
     {
-        HPX_ASSERT(data_);
+        PIKA_ASSERT(data_);
         return data_[i];
     }
 
     double& operator[](std::size_t i)
     {
-        HPX_ASSERT(data_);
-        HPX_ASSERT(mode_ == reference);
+        PIKA_ASSERT(data_);
+        PIKA_ASSERT(mode_ == reference);
         return data_[i];
     }
 
-    void load(hpx::serialization::input_archive& ar, unsigned)
+    void load(pika::serialization::input_archive& ar, unsigned)
     {
         ar& size_;
         if (size_ > 0)
         {
             data_ = new double[size_];
-            hpx::serialization::array<double> arr(data_, size_);
+            pika::serialization::array<double> arr(data_, size_);
             ar >> arr;
             mode_ = owning;
         }
     }
 
-    void save(hpx::serialization::output_archive& ar, unsigned) const
+    void save(pika::serialization::output_archive& ar, unsigned) const
     {
         ar& size_;
         if (size_ > 0)
         {
-            hpx::serialization::array<double> arr(data_, size_);
+            pika::serialization::array<double> arr(data_, size_);
             ar << arr;
         }
     }
 
-    HPX_SERIALIZATION_SPLIT_MEMBER()
+    PIKA_SERIALIZATION_SPLIT_MEMBER()
 
     std::uint64_t size_;
     double* data_;
     mode mode_;
 };
 
-struct block_component : hpx::components::component_base<block_component>
+struct block_component : pika::components::component_base<block_component>
 {
     block_component() {}
 
@@ -138,52 +138,52 @@ struct block_component : hpx::components::component_base<block_component>
 
     sub_block get_sub_block(std::uint64_t offset, std::uint64_t size)
     {
-        HPX_ASSERT(!data_.empty());
+        PIKA_ASSERT(!data_.empty());
         return sub_block(&data_[offset], size);
     }
 
-    HPX_DEFINE_COMPONENT_ACTION(block_component, get_sub_block);
+    PIKA_DEFINE_COMPONENT_ACTION(block_component, get_sub_block);
 
     std::vector<double> data_;
 };
 
-struct block : hpx::components::client_base<block, block_component>
+struct block : pika::components::client_base<block, block_component>
 {
-    typedef hpx::components::client_base<block, block_component> base_type;
+    typedef pika::components::client_base<block, block_component> base_type;
     block() {}
 
     block(std::uint64_t id, const char* base_name)
-      : base_type(hpx::find_from_basename(base_name, id))
+      : base_type(pika::find_from_basename(base_name, id))
     {
         get_id();
     }
 
     block(std::uint64_t id, std::uint64_t size, const char* base_name)
-      : base_type(hpx::new_<block_component>(hpx::find_here(), size))
+      : base_type(pika::new_<block_component>(pika::find_here(), size))
     {
-        hpx::register_with_basename(base_name, get_id(), id);
+        pika::register_with_basename(base_name, get_id(), id);
     }
 
-    hpx::future<sub_block> get_sub_block(
+    pika::future<sub_block> get_sub_block(
         std::uint64_t offset, std::uint64_t size) const
     {
         block_component::get_sub_block_action act;
-        return hpx::async(act, get_id(), offset, size);
+        return pika::async(act, get_id(), offset, size);
     }
 };
 
 // The macros below are necessary to generate the code required for exposing
 // our block_component type remotely.
 //
-// HPX_REGISTER_COMPONENT() exposes the component creation
-// through hpx::new_<>().
-typedef hpx::components::component<block_component> block_component_type;
-HPX_REGISTER_COMPONENT(block_component_type, block_component)
+// PIKA_REGISTER_COMPONENT() exposes the component creation
+// through pika::new_<>().
+typedef pika::components::component<block_component> block_component_type;
+PIKA_REGISTER_COMPONENT(block_component_type, block_component)
 
-// HPX_REGISTER_ACTION() exposes the component member function for remote
+// PIKA_REGISTER_ACTION() exposes the component member function for remote
 // invocation.
 typedef block_component::get_sub_block_action get_sub_block_action;
-HPX_REGISTER_ACTION(get_sub_block_action)
+PIKA_REGISTER_ACTION(get_sub_block_action)
 
 void transpose(sub_block const A, sub_block B, std::uint64_t block_order,
     std::uint64_t tile_size);
@@ -195,7 +195,7 @@ double test_results(std::uint64_t order, std::uint64_t block_order,
 ///////////////////////////////////////////////////////////////////////////////
 // The returned value type has to be the same as the return type used for
 // co_await below
-hpx::future<sub_block> transpose_phase(std::vector<block> const& A,
+pika::future<sub_block> transpose_phase(std::vector<block> const& A,
     std::vector<block>& B, std::uint64_t block_order, std::uint64_t b,
     std::uint64_t num_blocks, std::uint64_t /* num_local_blocks */,
     std::uint64_t block_size, std::uint64_t tile_size)
@@ -209,9 +209,9 @@ hpx::future<sub_block> transpose_phase(std::vector<block> const& A,
         const std::uint64_t from_block = phase;
         const std::uint64_t B_offset = phase * block_size;
 
-        hpx::future<sub_block> from =
+        pika::future<sub_block> from =
             A[from_block].get_sub_block(A_offset, block_size);
-        hpx::future<sub_block> to = B[b].get_sub_block(B_offset, block_size);
+        pika::future<sub_block> to = B[b].get_sub_block(B_offset, block_size);
 
         transpose(co_await from, co_await to, block_order, tile_size);
     }
@@ -220,13 +220,13 @@ hpx::future<sub_block> transpose_phase(std::vector<block> const& A,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     {
-        hpx::id_type here = hpx::find_here();
-        bool root = here == hpx::find_root_locality();
+        pika::id_type here = pika::find_here();
+        bool root = here == pika::find_root_locality();
 
-        std::uint64_t num_localities = hpx::get_num_localities().get();
+        std::uint64_t num_localities = pika::get_num_localities().get();
 
         std::uint64_t order = vm["matrix_size"].as<std::uint64_t>();
         std::uint64_t iterations = vm["iterations"].as<std::uint64_t>();
@@ -246,7 +246,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
         std::uint64_t block_order = order / num_blocks;
         std::uint64_t col_block_size = order * block_order;
 
-        std::uint64_t id = hpx::get_locality_id();
+        std::uint64_t id = pika::get_locality_id();
 
         std::vector<block> A(num_blocks);
         std::vector<block> B(num_blocks);
@@ -273,7 +273,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
 
         if (root)
         {
-            std::cout << "Distributed HPX Matrix transpose (await): B = A^T\n"
+            std::cout << "Distributed pika Matrix transpose (await): B = A^T\n"
                       << "Matrix order          = " << order << "\n"
                       << "Matrix local columns  = " << block_order << "\n"
                       << "Number of blocks      = " << num_blocks << "\n"
@@ -284,16 +284,16 @@ int hpx_main(hpx::program_options::variables_map& vm)
                 std::cout << "Untiled\n";
             std::cout << "Number of iterations  = " << iterations << "\n";
         }
-        using hpx::execution::par;
-        using hpx::ranges::for_each;
+        using pika::execution::par;
+        using pika::ranges::for_each;
 
         // Fill the original matrix, set transpose to known garbage value.
         auto range = boost::irange(blocks_start, blocks_end);
         for_each(par, range, [&](std::uint64_t b) {
             std::shared_ptr<block_component> A_ptr =
-                hpx::get_ptr<block_component>(A[b].get_id()).get();
+                pika::get_ptr<block_component>(A[b].get_id()).get();
             std::shared_ptr<block_component> B_ptr =
-                hpx::get_ptr<block_component>(B[b].get_id()).get();
+                pika::get_ptr<block_component>(B[b].get_id()).get();
 
             for (std::uint64_t i = 0; i != order; ++i)
             {
@@ -315,7 +315,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
                                       // one leap year should be enough
         for (std::uint64_t iter = 0; iter < iterations; ++iter)
         {
-            hpx::chrono::high_resolution_timer t;
+            pika::chrono::high_resolution_timer t;
 
             auto range = boost::irange(blocks_start, blocks_end);
 
@@ -363,17 +363,17 @@ int hpx_main(hpx::program_options::variables_map& vm)
             {
                 std::cout << "ERROR: Aggregate squared error " << errsq
                           << " exceeds threshold " << epsilon << "\n";
-                hpx::terminate();
+                pika::terminate();
             }
         }
     }
 
-    return hpx::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
 
     options_description desc_commandline;
     // clang-format off
@@ -392,15 +392,15 @@ int main(int argc, char* argv[])
     ;
     // clang-format on
 
-    // Initialize and run HPX, this example requires to run hpx_main on all
+    // Initialize and run pika, this example requires to run pika_main on all
     // localities
-    std::vector<std::string> const cfg = {"hpx.run_hpx_main!=1"};
+    std::vector<std::string> const cfg = {"pika.run_pika_main!=1"};
 
-    hpx::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    return hpx::init(argc, argv, init_args);
+    return pika::init(argc, argv, init_args);
 }
 
 void transpose(sub_block const A, sub_block B, std::uint64_t block_order,
@@ -441,8 +441,8 @@ double test_results(std::uint64_t order, std::uint64_t block_order,
     std::vector<block>& trans, std::uint64_t blocks_start,
     std::uint64_t blocks_end)
 {
-    using hpx::transform_reduce;
-    using hpx::execution::par;
+    using pika::transform_reduce;
+    using pika::execution::par;
 
     // Fill the original matrix, set transpose to known garbage value.
     auto range = boost::irange(blocks_start, blocks_end);

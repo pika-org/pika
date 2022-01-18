@@ -7,8 +7,8 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/modules/filesystem.hpp>
+#include <pika/local/config.hpp>
+#include <pika/modules/filesystem.hpp>
 
 #include "length_check.hpp"
 #include "function_hyper.hpp"
@@ -23,7 +23,7 @@
 #include <string>
 
 using namespace std;
-namespace fs = hpx::filesystem;
+namespace fs = pika::filesystem;
 
 namespace boost
 {
@@ -65,7 +65,7 @@ namespace boost
             const path & full_path,   // ex: c:/foo/boost/filesystem/path.hpp
             const string & contents)     // contents of file to be inspected
         {
-            if (contents.find("hpxinspect:" "linelength") != string::npos)
+            if (contents.find("pikainspect:" "linelength") != string::npos)
                 return;
 
             string pathname = full_path.string();

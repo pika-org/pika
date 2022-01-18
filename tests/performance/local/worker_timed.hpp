@@ -9,21 +9,21 @@
 
 #pragma once
 
-#include <hpx/modules/timing.hpp>
+#include <pika/modules/timing.hpp>
 
 #include <cstdint>
 
-HPX_FORCEINLINE void worker_timed(std::uint64_t delay_ns) noexcept
+PIKA_FORCEINLINE void worker_timed(std::uint64_t delay_ns) noexcept
 {
     if (delay_ns == 0)
         return;
 
-    std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+    std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
     while (true)
     {
         // Check if we've reached the specified delay.
-        if ((hpx::chrono::high_resolution_clock::now() - start) >= delay_ns)
+        if ((pika::chrono::high_resolution_clock::now() - start) >= delay_ns)
             break;
     }
 }

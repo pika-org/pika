@@ -4,14 +4,14 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#if !defined(HPX_COMPUTE_DEVICE_CODE)
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/format.hpp>
-#include <hpx/modules/program_options.hpp>
-#include <hpx/modules/testing.hpp>
-#include <hpx/modules/timing.hpp>
+#include <pika/local/config.hpp>
+#if !defined(PIKA_COMPUTE_DEVICE_CODE)
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/format.hpp>
+#include <pika/modules/program_options.hpp>
+#include <pika/modules/testing.hpp>
+#include <pika/modules/timing.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -20,21 +20,21 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-std::vector<hpx::future<void>> create_tasks(
+std::vector<pika::future<void>> create_tasks(
     std::size_t num_tasks, std::size_t delay)
 {
-    std::vector<hpx::future<void>> tasks;
+    std::vector<pika::future<void>> tasks;
     tasks.reserve(num_tasks);
     for (std::size_t i = 0; i != num_tasks; ++i)
     {
         if (delay == 0)
         {
-            tasks.push_back(hpx::make_ready_future());
+            tasks.push_back(pika::make_ready_future());
         }
         else
         {
             tasks.push_back(
-                hpx::make_ready_future_after(std::chrono::microseconds(delay)));
+                pika::make_ready_future_after(std::chrono::microseconds(delay)));
         }
     }
     return tasks;
@@ -51,7 +51,7 @@ double wait_tasks(std::size_t num_samples, std::size_t num_tasks,
 
     for (std::size_t k = 0; k != num_samples; ++k)
     {
-        std::vector<std::vector<hpx::future<void>>> chunks;
+        std::vector<std::vector<pika::future<void>>> chunks;
         chunks.reserve(num_chunks);
         for (std::size_t c = 0; c != num_chunks - 1; ++c)
         {
@@ -59,23 +59,23 @@ double wait_tasks(std::size_t num_samples, std::size_t num_tasks,
         }
         chunks.push_back(create_tasks(last_num_chunk_tasks, delay));
 
-        std::vector<hpx::future<void>> chunk_results;
+        std::vector<pika::future<void>> chunk_results;
         chunk_results.reserve(num_chunks);
 
         // wait of tasks in chunks
-        hpx::chrono::high_resolution_timer t;
+        pika::chrono::high_resolution_timer t;
         if (num_chunks == 1)
         {
-            hpx::wait_all(chunks[0]);
+            pika::wait_all(chunks[0]);
         }
         else
         {
             for (std::size_t c = 0; c != num_chunks; ++c)
             {
                 chunk_results.push_back(
-                    hpx::async([&chunks, c]() { hpx::wait_all(chunks[c]); }));
+                    pika::async([&chunks, c]() { pika::wait_all(chunks[c]); }));
             }
-            hpx::wait_all(chunk_results);
+            pika::wait_all(chunk_results);
         }
         result += t.elapsed();
     }
@@ -84,7 +84,7 @@ double wait_tasks(std::size_t num_samples, std::size_t num_tasks,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::size_t num_samples = 1000;
     std::size_t num_tasks = 100;
@@ -121,36 +121,36 @@ int hpx_main(hpx::program_options::variables_map& vm)
             << std::endl;
     }
 
-    std::string const tasks_str = hpx::util::format("{}", num_tasks);
-    std::string const chunks_str = hpx::util::format("{}", num_chunks);
-    std::string const delay_str = hpx::util::format("{}", delay);
+    std::string const tasks_str = pika::util::format("{}", num_tasks);
+    std::string const chunks_str = pika::util::format("{}", num_chunks);
+    std::string const delay_str = pika::util::format("{}", delay);
 
-    hpx::util::format_to(std::cout, "{:10},{:10},{:10},{:10},{:10.12}\n",
+    pika::util::format_to(std::cout, "{:10},{:10},{:10},{:10},{:10.12}\n",
         tasks_str, std::string("1"), delay_str, elapsed_seq,
         elapsed_seq / num_tasks)
         << std::endl;
-    hpx::util::print_cdash_timing("WaitAll", elapsed_seq / num_tasks);
+    pika::util::print_cdash_timing("WaitAll", elapsed_seq / num_tasks);
 
     if (num_chunks != 1)
     {
-        hpx::util::format_to(std::cout,
+        pika::util::format_to(std::cout,
             "{:10},{:10},{:10},{:10},{:10.12},{:10.12}\n", tasks_str,
             chunks_str, delay_str, elapsed_chunks, elapsed_chunks / num_tasks)
             << std::endl;
-        hpx::util::print_cdash_timing(
+        pika::util::print_cdash_timing(
             "WaitAllChunks", elapsed_chunks / num_tasks);
     }
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-    namespace po = hpx::program_options;
+    namespace po = pika::program_options;
 
     // Configure application-specific options.
     po::options_description cmdline(
-        "usage: " HPX_APPLICATION_STRING " [options]");
+        "usage: " PIKA_APPLICATION_STRING " [options]");
     cmdline.add_options()("samples,s",
         po::value<std::size_t>()->default_value(1000),
         "number of tasks to concurrently wait for (default: 1000)")("futures,f",
@@ -163,10 +163,10 @@ int main(int argc, char* argv[])
         po::value<bool>()->default_value(true),
         "do not print out the csv header row");
 
-    // Initialize and run HPX.
-    hpx::local::init_params init_args;
+    // Initialize and run pika.
+    pika::local::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }
 #endif

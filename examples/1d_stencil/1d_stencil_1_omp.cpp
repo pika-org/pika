@@ -15,8 +15,8 @@
 
 // Include before any Boost header and avoid issues with Intel14/libstdc++4.4
 // nullptr
-#include <hpx/local/config.hpp>
-#include <hpx/modules/program_options.hpp>
+#include <pika/local/config.hpp>
+#include <pika/modules/program_options.hpp>
 
 #include <chrono>
 #include <cstddef>
@@ -93,7 +93,7 @@ struct stepper
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::uint64_t nx =
         vm["nx"].as<std::uint64_t>();    // Number of grid points.
@@ -128,7 +128,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
 
 int main(int argc, char* argv[])
 {
-    namespace po = hpx::program_options;
+    namespace po = pika::program_options;
 
     po::options_description desc_commandline;
     // clang-format off
@@ -156,5 +156,5 @@ int main(int argc, char* argv[])
         vm);
     po::notify(vm);
 
-    return hpx_main(vm);
+    return pika_main(vm);
 }

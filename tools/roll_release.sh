@@ -12,16 +12,15 @@
 
 set -o errexit
 
-VERSION_MAJOR=$(sed -n 's/set(HPXLocal_VERSION_MAJOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_MINOR=$(sed -n 's/set(HPXLocal_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_SUBMINOR=$(sed -n 's/set(HPXLocal_VERSION_SUBMINOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_TAG=$(sed -n 's/set(HPXLocal_VERSION_TAG "\(.*\)")/\1/p' CMakeLists.txt)
+VERSION_MAJOR=$(sed -n 's/set(PIKA_VERSION_MAJOR \(.*\))/\1/p' CMakeLists.txt)
+VERSION_MINOR=$(sed -n 's/set(PIKA_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
+VERSION_SUBMINOR=$(sed -n 's/set(PIKA_VERSION_SUBMINOR \(.*\))/\1/p' CMakeLists.txt)
+VERSION_TAG=$(sed -n 's/set(PIKA_VERSION_TAG "\(.*\)")/\1/p' CMakeLists.txt)
 VERSION_FULL_NOTAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_SUBMINOR}
 VERSION_FULL_TAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_SUBMINOR}${VERSION_TAG}
 VERSION_FULL_NOTAG_UNDERSCORE=${VERSION_MAJOR}_${VERSION_MINOR}_${VERSION_SUBMINOR}
-VERSION_TITLE="HPXLocal V${VERSION_FULL_NOTAG}: The C++ Standards Library for Parallelism and Concurrency"
-VERSION_RELEASE_NOTES_URL="https://hpx-docs.stellar-group.org/tags/${VERSION_FULL_TAG}/html/releases/whats_new_${VERSION_FULL_NOTAG_UNDERSCORE}.html"
-VERSION_DESCRIPTION="[Release notes](${VERSION_RELEASE_NOTES_URL})"
+VERSION_TITLE="pika ${VERSION_FULL_NOTAG}"
+VERSION_DESCRIPTION="" # TODO
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 if ! which hub > /dev/null 2>&1; then
@@ -93,14 +92,8 @@ else
 fi
 
 echo ""
-echo "Setting the signing key for signing the release. It is up to you to change it back to your own afterwards."
-git config user.signingkey E18AE35E86BB194F
-git config user.email "contact@stellar-group.org"
-git config user.name "STE||AR Group"
-
-echo ""
 echo "Tagging release."
-git tag --sign --annotate "${VERSION_FULL_TAG}" --message="${VERSION_TITLE}"
+git tag --annotate "${VERSION_FULL_TAG}" --message="${VERSION_TITLE}"
 git push origin "${VERSION_FULL_TAG}"
 
 echo ""
@@ -110,11 +103,3 @@ hub release create \
     --message "${VERSION_TITLE}" \
     --message "${VERSION_DESCRIPTION}"
     "${VERSION_FULL_TAG}"
-
-# Unset the local config used for the release
-git config --unset user.signingkey
-git config --unset user.name
-git config --unset user.email
-
-echo ""
-echo "Now add the above URL to the downloads pages on stellar.cct.lsu.edu and stellar-group.org."

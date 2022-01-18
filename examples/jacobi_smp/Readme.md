@@ -9,14 +9,14 @@ It based on the dataflow ideas as presented in this paper:
 http://dl.acm.org/citation.cfm?id=2467126
 
 The example consists of 2 parts, each of the part provides a jacobi smoother
-implemented in HPX and OpenMP, while the OpenMP variant includes one with
+implemented in pika and OpenMP, while the OpenMP variant includes one with
 static and one with dynamic scheduling policies.
 
 The first variant smoothes a regular two-dimensional grid with a simple
 5 point stencil. The parameters are the number of grid points in one dimension
-and for the HPX version, a block-size parameter which determines the
+and for the pika version, a block-size parameter which determines the
 granularity of the work done. The relevant executables are:
-  * jacobi_hpx
+  * jacobi_pika
   * jacobi_omp_static
   * jacobi_omp_dynamic
 
@@ -26,7 +26,7 @@ An example matrix can be obtained here:
 http://www.cise.ufl.edu/research/sparse/matrices/Janna/Serena.html
 Other matrices from that portal work as well.
 The relevant executables are:
-  * jacobi_nonuniform_hpx
+  * jacobi_nonuniform_pika
   * jacobi_nonuniform_omp_static
   * jacobi_nonuniform_omp_dynamic
 

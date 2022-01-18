@@ -9,8 +9,8 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/util/to_string.hpp>
+#include <pika/local/config.hpp>
+#include <pika/util/to_string.hpp>
 
 #include <algorithm>
 
@@ -32,30 +32,30 @@ namespace boost
       { "boost/unordered_map\\.hpp", "unordered_map" },
       { "boost/unordered_set\\.hpp", "unordered_set" },
       { "boost/utility/enable_if\\.hpp", "type_traits" },
-      { "boost/detail/atomic_count\\.hpp", "hpx/thread_support/atomic_count.hpp" },
-      { "boost/function\\.hpp", "hpx/util/function.hpp" },
+      { "boost/detail/atomic_count\\.hpp", "pika/thread_support/atomic_count.hpp" },
+      { "boost/function\\.hpp", "pika/util/function.hpp" },
       { "boost/shared_ptr\\.hpp", "memory" },
-      { "boost/intrusive_ptr\\.hpp", "hpx/modules/memory.hpp" },
+      { "boost/intrusive_ptr\\.hpp", "pika/modules/memory.hpp" },
       { "boost/make_shared\\.hpp", "memory" },
       { "boost/enable_shared_from_this\\.hpp", "memory" },
-      { "boost/bind\\.hpp", "hpx/util/bind.hpp" },
+      { "boost/bind\\.hpp", "pika/util/bind.hpp" },
       { "boost/(chrono/)?chrono\\.hpp", "chrono" },
       { "boost/(core/)?ref\\.hpp", "functional" },
       { "boost/cstdint\\.hpp", "cstdint" },
-      { "boost/thread/barrier\\.hpp", "hpx/util/barrier.hpp" },
+      { "boost/thread/barrier\\.hpp", "pika/util/barrier.hpp" },
       { "boost/exception_ptr\\.hpp", "exception" },
-      { "boost/range/iterator_range\\.hpp", "hpx/iterator_support/iterator_range.hpp" },
-      { "hpx/hpx_fwd\\.hpp", "nothing (remove unconditionally)" },
-      { "boost/preprocessor/cat\\.hpp", "hpx/util/detail/pp/cat.hpp" },
-      { "boost/preprocessor/stringize\\.hpp", "hpx/util/detail/pp/stringize.hpp" },
+      { "boost/range/iterator_range\\.hpp", "pika/iterator_support/iterator_range.hpp" },
+      { "pika/pika_fwd\\.hpp", "nothing (remove unconditionally)" },
+      { "boost/preprocessor/cat\\.hpp", "pika/util/detail/pp/cat.hpp" },
+      { "boost/preprocessor/stringize\\.hpp", "pika/util/detail/pp/stringize.hpp" },
       { "boost/atomic\\.hpp", "atomic" },
       { "boost/nondet_random.hpp", "random" },
       { "boost/random/([^\\s]*)\\.hpp", "random" },
-      { "boost/format\\.hpp", "hpx/util/format.hpp" },
+      { "boost/format\\.hpp", "pika/util/format.hpp" },
       { "boost/regex.hpp", "regex" },
-      { "boost/program_options([^\\s]*)\\.hpp", "hpx/program_options\\2.hpp" },
-      { "boost/filesystem([^\\s]*)\\.hpp", "hpx/modules/filesystem.hpp" },
-      { "boost/lexical_cast\\.hpp", "hpx/util/((from_string)|(to_string)).hpp" },
+      { "boost/program_options([^\\s]*)\\.hpp", "pika/program_options\\2.hpp" },
+      { "boost/filesystem([^\\s]*)\\.hpp", "pika/modules/filesystem.hpp" },
+      { "boost/lexical_cast\\.hpp", "pika/util/((from_string)|(to_string)).hpp" },
       { "boost/system([^\\s]*)\\.hpp", "system_error" },
       { nullptr, nullptr }
     };
@@ -100,7 +100,7 @@ namespace boost
       const path & full_path,      // example: c:/foo/boost/filesystem/path.hpp
       const string & contents)     // contents of file to be inspected
     {
-      std::string::size_type p = contents.find( "hpxinspect:" "nodeprecatedinclude" );
+      std::string::size_type p = contents.find( "pikainspect:" "nodeprecatedinclude" );
       if (p != string::npos)
       {
         // ignore this directive here (it is handled below) if it is followed
@@ -129,7 +129,7 @@ namespace boost
             std::string found_include(m[1].first, m[1].second);
             if (found_includes.find(found_include) == found_includes.end())
             {
-              std::string tag("hpxinspect:" "nodeprecatedinclude:" + found_include);
+              std::string tag("pikainspect:" "nodeprecatedinclude:" + found_include);
               if (contents.find(tag) != string::npos)
                 continue;
 
@@ -156,7 +156,7 @@ namespace boost
                   + " deprecated #include ("
                   + found_include
                   + ") on line "
-                  + linelink(full_path, hpx::util::to_string(line_number))
+                  + linelink(full_path, pika::util::to_string(line_number))
                   + " use " + m.format(d.data->use_instead) + " instead");
             }
           }

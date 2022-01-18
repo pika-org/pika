@@ -8,10 +8,10 @@
 // parallel region. This is meant to be compared to resume_suspend and
 // start_stop.
 
-#include <hpx/execution_base/this_thread.hpp>
-#include <hpx/modules/program_options.hpp>
-#include <hpx/modules/timing.hpp>
-#include <hpx/type_support/unused.hpp>
+#include <pika/execution_base/this_thread.hpp>
+#include <pika/modules/program_options.hpp>
+#include <pika/modules/timing.hpp>
+#include <pika/type_support/unused.hpp>
 
 #include <omp.h>
 
@@ -21,14 +21,14 @@
 
 int main(int argc, char** argv)
 {
-    hpx::program_options::options_description desc_commandline;
+    pika::program_options::options_description desc_commandline;
     desc_commandline.add_options()("repetitions",
-        hpx::program_options::value<std::uint64_t>()->default_value(100),
+        pika::program_options::value<std::uint64_t>()->default_value(100),
         "Number of repetitions");
 
-    hpx::program_options::variables_map vm;
-    hpx::program_options::store(
-        hpx::program_options::command_line_parser(argc, argv)
+    pika::program_options::variables_map vm;
+    pika::program_options::store(
+        pika::program_options::command_line_parser(argc, argv)
             .allow_unregistered()
             .options(desc_commandline)
             .run(),
@@ -42,13 +42,13 @@ int main(int argc, char** argv)
     {
         x += 1;
     }
-    HPX_UNUSED(x);
+    PIKA_UNUSED(x);
 
     std::size_t threads = omp_get_max_threads();
 
     std::cout << "threads, parallel region [s]" << std::endl;
 
-    hpx::chrono::high_resolution_timer timer;
+    pika::chrono::high_resolution_timer timer;
 
     for (std::size_t i = 0; i < repetitions; ++i)
     {

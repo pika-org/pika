@@ -9,7 +9,7 @@ set(example_programs 1d_stencil_1 1d_stencil_2 1d_stencil_3 1d_stencil_4
                      1d_stencil_4_parallel
 )
 
-if(HPXLocal_WITH_EXAMPLES_OPENMP)
+if(PIKA_WITH_EXAMPLES_OPENMP)
   set(example_programs ${example_programs} 1d_stencil_1_omp 1d_stencil_3_omp)
 endif()
 
@@ -26,23 +26,23 @@ foreach(example_program ${example_programs})
   source_group("Source Files" FILES ${sources})
 
   # add example executable
-  hpx_local_add_executable(
+  pika_add_executable(
     ${example_program} INTERNAL_FLAGS
     SOURCES ${sources} ${${example_program}_FLAGS}
     FOLDER "Examples/Local/1D Stencil"
   )
 
-  hpx_local_add_example_target_dependencies("1d_stencil" ${example_program})
+  pika_add_example_target_dependencies("1d_stencil" ${example_program})
 
-  if(HPXLocal_WITH_TESTS AND HPXLocal_WITH_TESTS_EXAMPLES)
-    hpx_local_add_example_test(
+  if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
+    pika_add_example_test(
       "1d_stencil" ${example_program} ${${example_program}_PARAMETERS}
     )
   endif()
 
 endforeach()
 
-if(HPXLocal_WITH_EXAMPLES_OPENMP)
+if(PIKA_WITH_EXAMPLES_OPENMP)
   set_target_properties(
     1d_stencil_1_omp PROPERTIES COMPILE_FLAGS "${OpenMP_CXX_FLAGS}"
   )

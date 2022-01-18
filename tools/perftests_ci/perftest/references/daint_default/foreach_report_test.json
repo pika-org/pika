@@ -15019,14 +15019,14 @@
       ]
     }
   ],
-  "HPXLocal": {
+  "pika": {
     "commit": "01e4980e2184ca113b853ae3a36869f713fcc4b9",
     "datetime": "2021-12-21T15:01:46+00:00"
   },
   "environment": {
     "hostname": "nid00932",
     "clustername": "daint",
-    "compiler": "/apps/daint/SSL/HPX/packages/llvm-11.0.0/bin/clang++ 11.0.0",
+    "compiler": "/apps/daint/SSL/pika/packages/llvm-11.0.0/bin/clang++ 11.0.0",
     "datetime": "2021-12-21T16:09:15.238666+01:00",
     "envfile": null
   }

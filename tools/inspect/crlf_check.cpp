@@ -9,7 +9,7 @@
 
 //  Contributed by Joerg Walter
 
-#include <hpx/local/config.hpp>
+#include <pika/local/config.hpp>
 
 #include "crlf_check.hpp"
 #include "function_hyper.hpp"
@@ -27,7 +27,7 @@ namespace boost
       const path & full_path,   // example: c:/foo/boost/filesystem/path.hpp
       const string & contents )     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "nocrlf" ) != string::npos) return;
+      if (contents.find( "pikainspect:" "nocrlf" ) != string::npos) return;
 
       // this file deliberately contains errors
       const char test_file_name[] = "wrong_line_ends_test.cpp";

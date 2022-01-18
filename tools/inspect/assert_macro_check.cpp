@@ -8,9 +8,9 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/modules/filesystem.hpp>
-#include <hpx/util/to_string.hpp>
+#include <pika/local/config.hpp>
+#include <pika/modules/filesystem.hpp>
+#include <pika/util/to_string.hpp>
 
 #include "assert_macro_check.hpp"
 #include "function_hyper.hpp"
@@ -18,7 +18,7 @@
 
 #include <functional>
 
-namespace fs = hpx::filesystem;
+namespace fs = pika::filesystem;
 
 namespace
 {
@@ -67,7 +67,7 @@ namespace boost
       const path & full_path,   // example: c:/foo/boost/filesystem/path.hpp
       const string & contents )     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "noassert_macro" ) != string::npos)
+      if (contents.find( "pikainspect:" "noassert_macro" ) != string::npos)
         return;
 
       long errors = 0;
@@ -90,7 +90,7 @@ namespace boost
               }
           }
           std::string lineloc = linelink (full_path,
-              hpx::util::to_string(line_number));
+              pika::util::to_string(line_number));
           ++errors;
           error( library_name, full_path, "C-style assert macro on line "
             + lineloc );

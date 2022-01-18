@@ -2,7 +2,7 @@
 //  Do not check in modified versions of this file,
 //  This file may be customised by the end user, but not by boost.
 
-// hpx-no-inspect
+// pika-no-inspect
 
 // This file is used for compiling with the Cray clang compiler in CUDA mode.
 // It's a concatenation of the nvcc and clang compiler configuration headers,

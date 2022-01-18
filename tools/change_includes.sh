@@ -17,12 +17,12 @@
 
 # Not used in default mode (globbing), used if --files option specified
 old_filenames=(
-  hpx/util/cache/local_cache.hpp
-  hpx/util/cache/lru_cache.hpp
+  pika/util/cache/local_cache.hpp
+  pika/util/cache/lru_cache.hpp
 )
 new_filenames=(
-  hpx/cache/local_cache.hpp
-  hpx/cache/lru_cache.hpp
+  pika/cache/local_cache.hpp
+  pika/cache/lru_cache.hpp
 )
 
 function extra_usage_message() {

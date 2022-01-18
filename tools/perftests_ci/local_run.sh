@@ -7,7 +7,7 @@
 
 # To execute from the build directory
 
-src_dir=${1:-~/projects/hpx_perftests_ci}
+src_dir=${1:-~/projects/pika_perftests_ci}
 build_dir=$PWD
 
 # Clean old artifacts if any
@@ -15,7 +15,7 @@ rm -rf ${build_dir}/reports/reference-comparison
 
 # Setup the environment (libs + python)
 source ${src_dir}/.jenkins/cscs-perftests/env-perftests.sh
-source /apps/daint/SSL/HPX/virtual_envs/perftests_env/bin/activate
+source /apps/daint/SSL/pika/virtual_envs/perftests_env/bin/activate
 
 # Variables
 mkdir -p ${build_dir}/tools

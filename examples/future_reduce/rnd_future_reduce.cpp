@@ -4,10 +4,10 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/runtime.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/runtime.hpp>
 //
 #include <iostream>
 #include <random>
@@ -38,11 +38,11 @@ std::uniform_int_distribution<int> dist(0, 99);    // interval [0,100)
 #define USE_LAMBDA
 
 //----------------------------------------------------------------------------
-int reduce(hpx::future<std::vector<hpx::future<int>>>&& futvec)
+int reduce(pika::future<std::vector<pika::future<int>>>&& futvec)
 {
     int res = TEST_SUCCESS;
-    std::vector<hpx::future<int>> vfs = futvec.get();
-    for (hpx::future<int>& f : vfs)
+    std::vector<pika::future<int>> vfs = futvec.get();
+    for (pika::future<int>& f : vfs)
     {
         if (f.get() == TEST_FAIL)
             return TEST_FAIL;
@@ -63,28 +63,28 @@ int generate_one()
 }
 
 //----------------------------------------------------------------------------
-hpx::future<int> test_reduce()
+pika::future<int> test_reduce()
 {
-    std::vector<hpx::future<int>> req_futures;
+    std::vector<pika::future<int>> req_futures;
     //
     for (int i = 0; i < SAMPLES_PER_LOOP; i++)
     {
         // generate random sequence of pass/fails using % fail rate per incident
-        hpx::future<int> result = hpx::async(generate_one);
+        pika::future<int> result = pika::async(generate_one);
         req_futures.push_back(std::move(result));
     }
 
-    hpx::future<std::vector<hpx::future<int>>> all_ready =
-        hpx::when_all(req_futures);
+    pika::future<std::vector<pika::future<int>>> all_ready =
+        pika::when_all(req_futures);
 
 #ifdef USE_LAMBDA
-    hpx::future<int> result = all_ready.then(
-        [](hpx::future<std::vector<hpx::future<int>>>&& futvec) -> int {
+    pika::future<int> result = all_ready.then(
+        [](pika::future<std::vector<pika::future<int>>>&& futvec) -> int {
             // futvec is ready or the lambda would not be called
-            std::vector<hpx::future<int>> vfs = futvec.get();
+            std::vector<pika::future<int>> vfs = futvec.get();
             // all futures in v are ready as fut is ready
             int res = TEST_SUCCESS;
-            for (hpx::future<int>& f : vfs)
+            for (pika::future<int>& f : vfs)
             {
                 if (f.get() == TEST_FAIL)
                     return TEST_FAIL;
@@ -92,16 +92,16 @@ hpx::future<int> test_reduce()
             return res;
         });
 #else
-    hpx::future<int> result = all_ready.then(reduce);
+    pika::future<int> result = all_ready.then(reduce);
 #endif
     //
     return result;
 }
 
 //----------------------------------------------------------------------------
-int hpx_main()
+int pika_main()
 {
-    hpx::chrono::high_resolution_timer htimer;
+    pika::chrono::high_resolution_timer htimer;
     // run N times and see if we get approximately the right amount of fails
     int count = 0;
     for (int i = 0; i < TEST_LOOPS; i++)
@@ -118,12 +118,12 @@ int hpx_main()
               << "\n " << htimer.elapsed() << " seconds \n"
               << std::flush;
     // Initiate shutdown of the runtime system.
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 //----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-    // Initialize and run HPX.
-    return hpx::local::init(hpx_main, argc, argv);
+    // Initialize and run pika.
+    return pika::local::init(pika_main, argc, argv);
 }

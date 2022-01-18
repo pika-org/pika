@@ -7,10 +7,10 @@
 // This is a purely local version demonstrating different versions of making
 // the calculation of a fibonacci asynchronous.
 
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/format.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/format.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -22,7 +22,7 @@
 std::uint64_t threshold = 2;
 
 ///////////////////////////////////////////////////////////////////////////////
-HPX_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
+PIKA_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 {
     if (n < 2)
         return n;
@@ -30,7 +30,7 @@ HPX_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-std::uint64_t add(hpx::future<std::uint64_t> f1, hpx::future<std::uint64_t> f2)
+std::uint64_t add(pika::future<std::uint64_t> f1, pika::future<std::uint64_t> f2)
 {
     return f1.get() + f2.get();
 }
@@ -38,18 +38,18 @@ std::uint64_t add(hpx::future<std::uint64_t> f1, hpx::future<std::uint64_t> f2)
 ///////////////////////////////////////////////////////////////////////////////
 struct when_all_wrapper
 {
-    typedef hpx::tuple<hpx::future<std::uint64_t>, hpx::future<std::uint64_t>>
+    typedef pika::tuple<pika::future<std::uint64_t>, pika::future<std::uint64_t>>
         data_type;
 
-    std::uint64_t operator()(hpx::future<data_type> data) const
+    std::uint64_t operator()(pika::future<data_type> data) const
     {
         data_type v = data.get();
-        return hpx::get<0>(v).get() + hpx::get<1>(v).get();
+        return pika::get<0>(v).get() + pika::get<1>(v).get();
     }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-hpx::future<std::uint64_t> fibonacci_future_one(std::uint64_t n);
+pika::future<std::uint64_t> fibonacci_future_one(std::uint64_t n);
 
 struct fibonacci_future_one_continuation
 {
@@ -58,7 +58,7 @@ struct fibonacci_future_one_continuation
     {
     }
 
-    std::uint64_t operator()(hpx::future<std::uint64_t> res) const
+    std::uint64_t operator()(pika::future<std::uint64_t> res) const
     {
         return add(fibonacci_future_one(n_ - 2), std::move(res));
     }
@@ -71,18 +71,18 @@ std::uint64_t fib(std::uint64_t n)
     return fibonacci_future_one(n).get();
 }
 
-hpx::future<std::uint64_t> fibonacci_future_one(std::uint64_t n)
+pika::future<std::uint64_t> fibonacci_future_one(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
     if (n < 2)
-        return hpx::make_ready_future(n);
+        return pika::make_ready_future(n);
     if (n < threshold)
-        return hpx::make_ready_future(fibonacci_serial(n));
+        return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the calculation of one of the sub-terms
     // attach a continuation to this future which is called asynchronously on
     // its completion and which calculates the other sub-term
-    return hpx::async(&fib, n - 1).then(fibonacci_future_one_continuation(n));
+    return pika::async(&fib, n - 1).then(fibonacci_future_one_continuation(n));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ std::uint64_t fibonacci(std::uint64_t n)
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    hpx::future<std::uint64_t> f = hpx::async(&fibonacci, n - 1);
+    pika::future<std::uint64_t> f = pika::async(&fibonacci, n - 1);
     std::uint64_t r = fibonacci(n - 2);
 
     return f.get() + r;
@@ -113,120 +113,120 @@ std::uint64_t fibonacci_fork(std::uint64_t n)
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    hpx::future<std::uint64_t> f =
-        hpx::async(hpx::launch::fork, &fibonacci_fork, n - 1);
+    pika::future<std::uint64_t> f =
+        pika::async(pika::launch::fork, &fibonacci_fork, n - 1);
     std::uint64_t r = fibonacci_fork(n - 2);
 
     return f.get() + r;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-hpx::future<std::uint64_t> fibonacci_future(std::uint64_t n)
+pika::future<std::uint64_t> fibonacci_future(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
     if (n < 2)
-        return hpx::make_ready_future(n);
+        return pika::make_ready_future(n);
     if (n < threshold)
-        return hpx::make_ready_future(fibonacci_serial(n));
+        return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    hpx::future<std::uint64_t> f = hpx::async(&fibonacci_future, n - 1);
-    hpx::future<std::uint64_t> r = fibonacci_future(n - 2);
+    pika::future<std::uint64_t> f = pika::async(&fibonacci_future, n - 1);
+    pika::future<std::uint64_t> r = fibonacci_future(n - 2);
 
-    return hpx::async(&add, std::move(f), std::move(r));
+    return pika::async(&add, std::move(f), std::move(r));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-hpx::future<std::uint64_t> fibonacci_future_fork(std::uint64_t n)
+pika::future<std::uint64_t> fibonacci_future_fork(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
     if (n < 2)
-        return hpx::make_ready_future(n);
+        return pika::make_ready_future(n);
     if (n < threshold)
-        return hpx::make_ready_future(fibonacci_serial(n));
+        return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    hpx::future<std::uint64_t> f =
-        hpx::async(hpx::launch::fork, &fibonacci_future_fork, n - 1);
-    hpx::future<std::uint64_t> r = fibonacci_future_fork(n - 2);
+    pika::future<std::uint64_t> f =
+        pika::async(pika::launch::fork, &fibonacci_future_fork, n - 1);
+    pika::future<std::uint64_t> r = fibonacci_future_fork(n - 2);
 
-    return hpx::async(&add, std::move(f), std::move(r));
+    return pika::async(&add, std::move(f), std::move(r));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-hpx::future<std::uint64_t> fibonacci_future_when_all(std::uint64_t n)
+pika::future<std::uint64_t> fibonacci_future_when_all(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
     if (n < 2)
-        return hpx::make_ready_future(n);
+        return pika::make_ready_future(n);
     if (n < threshold)
-        return hpx::make_ready_future(fibonacci_serial(n));
+        return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    hpx::future<hpx::future<std::uint64_t>> f =
-        hpx::async(&fibonacci_future, n - 1);
-    hpx::future<std::uint64_t> r = fibonacci_future(n - 2);
+    pika::future<pika::future<std::uint64_t>> f =
+        pika::async(&fibonacci_future, n - 1);
+    pika::future<std::uint64_t> r = fibonacci_future(n - 2);
 
-    return hpx::when_all(f.get(), r).then(when_all_wrapper());
+    return pika::when_all(f.get(), r).then(when_all_wrapper());
 }
 
-hpx::future<std::uint64_t> fibonacci_future_unwrapped_when_all(std::uint64_t n)
+pika::future<std::uint64_t> fibonacci_future_unwrapped_when_all(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
     if (n < 2)
-        return hpx::make_ready_future(n);
+        return pika::make_ready_future(n);
     if (n < threshold)
-        return hpx::make_ready_future(fibonacci_serial(n));
+        return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the creation of one of the sub-terms of the
     // execution graph
-    hpx::future<std::uint64_t> f = hpx::async(&fibonacci_future, n - 1);
-    hpx::future<std::uint64_t> r = fibonacci_future(n - 2);
+    pika::future<std::uint64_t> f = pika::async(&fibonacci_future, n - 1);
+    pika::future<std::uint64_t> r = fibonacci_future(n - 2);
 
-    return hpx::when_all(f, r).then(when_all_wrapper());
+    return pika::when_all(f, r).then(when_all_wrapper());
 }
 
 /////////////////////////////////////////////////////////////////////////////
-hpx::future<std::uint64_t> fibonacci_future_all(std::uint64_t n)
+pika::future<std::uint64_t> fibonacci_future_all(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
     if (n < 2)
-        return hpx::make_ready_future(n);
+        return pika::make_ready_future(n);
     if (n < threshold)
-        return hpx::make_ready_future(fibonacci_serial(n));
+        return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the calculation of both of the sub-terms
-    hpx::future<std::uint64_t> f1 = fibonacci_future_all(n - 1);
-    hpx::future<std::uint64_t> f2 = fibonacci_future_all(n - 2);
+    pika::future<std::uint64_t> f1 = fibonacci_future_all(n - 1);
+    pika::future<std::uint64_t> f2 = fibonacci_future_all(n - 2);
 
     // create a future representing the successful calculation of both sub-terms
-    return hpx::async(&add, std::move(f1), std::move(f2));
+    return pika::async(&add, std::move(f1), std::move(f2));
 }
 
 /////////////////////////////////////////////////////////////////////////////
-hpx::future<std::uint64_t> fibonacci_future_all_when_all(std::uint64_t n)
+pika::future<std::uint64_t> fibonacci_future_all_when_all(std::uint64_t n)
 {
     // if we know the answer, we return a future encapsulating the final value
     if (n < 2)
-        return hpx::make_ready_future(n);
+        return pika::make_ready_future(n);
     if (n < threshold)
-        return hpx::make_ready_future(fibonacci_serial(n));
+        return pika::make_ready_future(fibonacci_serial(n));
 
     // asynchronously launch the calculation of both of the sub-terms
-    hpx::future<std::uint64_t> f1 = fibonacci_future_all(n - 1);
-    hpx::future<std::uint64_t> f2 = fibonacci_future_all(n - 2);
+    pika::future<std::uint64_t> f1 = fibonacci_future_all(n - 1);
+    pika::future<std::uint64_t> f2 = fibonacci_future_all(n - 2);
 
     // create a future representing the successful calculation of both sub-terms
     // attach a continuation to this future which is called asynchronously on
     // its completion and which calculates the final result
-    return hpx::when_all(f1, f2).then(when_all_wrapper());
+    return pika::when_all(f1, f2).then(when_all_wrapper());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     // extract command line argument, i.e. fib(N)
     std::uint64_t n = vm["n-value"].as<std::uint64_t>();
@@ -238,7 +238,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
         std::cerr << "fibonacci_futures: wrong command line argument value for "
                      "option 'n-runs', should not be zero"
                   << std::endl;
-        return hpx::local::finalize();    // Handles HPX shutdown
+        return pika::local::finalize();    // Handles pika shutdown
     }
 
     threshold = vm["threshold"].as<unsigned int>();
@@ -248,7 +248,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
                      "option 'threshold', should be in between 2 and n-value"
                      ", value specified: "
                   << threshold << std::endl;
-        return hpx::local::finalize();    // Handles HPX shutdown
+        return pika::local::finalize();    // Handles pika shutdown
     }
 
     bool executed_one = false;
@@ -257,7 +257,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "0")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -266,10 +266,10 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_serial(n);
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt = "fibonacci_serial({1}) == {2},"
                           "elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -277,7 +277,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "1")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -286,10 +286,10 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_future_one(n).get();
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt = "fibonacci_future_one({1}) == {2},"
                           "elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -297,7 +297,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "2")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -306,9 +306,9 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci(n);
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt = "fibonacci({1}) == {2},elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -316,7 +316,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "9")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -325,9 +325,9 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_fork(n);
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt = "fibonacci_fork({1}) == {2},elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -335,7 +335,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "3")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -344,10 +344,10 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_future(n).get();
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt =
             "fibonacci_future({1}) == {2},elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -355,7 +355,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "8")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -364,10 +364,10 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_future_fork(n).get();
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt =
             "fibonacci_future_fork({1}) == {2},elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -375,7 +375,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "6")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -384,10 +384,10 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_future_when_all(n).get();
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt =
             "fibonacci_future_when_all({1}) == {2},elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -395,7 +395,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "7")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -404,10 +404,10 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_future_unwrapped_when_all(n).get();
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt = "fibonacci_future_unwrapped_when_all({1}) == "
                           "{2},elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -415,7 +415,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "4")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -424,10 +424,10 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_future_all(n).get();
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt =
             "fibonacci_future_all({1}) == {2},elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -435,7 +435,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     if (test == "all" || test == "5")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = hpx::chrono::high_resolution_clock::now();
+        std::uint64_t start = pika::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -444,10 +444,10 @@ int hpx_main(hpx::program_options::variables_map& vm)
             r = fibonacci_future_all_when_all(n).get();
         }
 
-        std::uint64_t d = hpx::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
         char const* fmt =
             "fibonacci_future_all_when_all({1}) == {2},elapsed time:,{3},[s]\n";
-        hpx::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -461,17 +461,17 @@ int hpx_main(hpx::program_options::variables_map& vm)
                   << test << std::endl;
     }
 
-    return hpx::local::finalize();    // Handles HPX shutdown
+    return pika::local::finalize();    // Handles pika shutdown
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
     // Configure application-specific options
-    hpx::program_options::options_description desc_commandline(
-        "Usage: " HPX_APPLICATION_STRING " [options]");
+    pika::program_options::options_description desc_commandline(
+        "Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    using hpx::program_options::value;
+    using pika::program_options::value;
     // clang-format off
     desc_commandline.add_options()
         ("n-value", value<std::uint64_t>()->default_value(10),
@@ -484,9 +484,9 @@ int main(int argc, char* argv[])
         "select tests to execute (0-9, default: all)");
     // clang-format on
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

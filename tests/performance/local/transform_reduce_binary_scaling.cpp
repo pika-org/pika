@@ -4,11 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/algorithm.hpp>
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/execution.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/local/numeric.hpp>
+#include <pika/local/algorithm.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/execution.hpp>
+#include <pika/local/init.hpp>
+#include <pika/local/numeric.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -43,7 +43,7 @@ template <typename ExPolicy>
 float measure_inner_product(ExPolicy&& policy, std::vector<float> const& data1,
     std::vector<float> const& data2)
 {
-    return hpx::transform_reduce(policy, std::begin(data1), std::end(data1),
+    return pika::transform_reduce(policy, std::begin(data1), std::end(data1),
         std::begin(data2), 0.0f, ::multiplies(), ::plus());
 }
 
@@ -51,15 +51,15 @@ template <typename ExPolicy>
 std::int64_t measure_inner_product(int count, ExPolicy&& policy,
     std::vector<float> const& data1, std::vector<float> const& data2)
 {
-    std::int64_t start = hpx::chrono::high_resolution_clock::now();
+    std::int64_t start = pika::chrono::high_resolution_clock::now();
 
     for (int i = 0; i != count; ++i)
         measure_inner_product(policy, data1, data2);
 
-    return (hpx::chrono::high_resolution_clock::now() - start) / count;
+    return (pika::chrono::high_resolution_clock::now() - start) / count;
 }
 
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     unsigned int seed = (unsigned int) std::random_device{}();
     if (vm.count("seed"))
@@ -85,13 +85,13 @@ int hpx_main(hpx::program_options::variables_map& vm)
     else
     {
         // warm up caches
-        measure_inner_product(hpx::execution::par, data1, data2);
+        measure_inner_product(pika::execution::par, data1, data2);
 
         // do measurements
         std::uint64_t tr_time_datapar = measure_inner_product(
-            test_count, hpx::execution::par_simd, data1, data2);
+            test_count, pika::execution::par_simd, data1, data2);
         std::uint64_t tr_time_par = measure_inner_product(
-            test_count, hpx::execution::par, data1, data2);
+            test_count, pika::execution::par, data1, data2);
 
         if (csvoutput)
         {
@@ -109,39 +109,39 @@ int hpx_main(hpx::program_options::variables_map& vm)
         }
     }
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    std::vector<std::string> const cfg = {"hpx.os_threads=all"};
+    std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
-    hpx::program_options::options_description cmdline(
-        "usage: " HPX_APPLICATION_STRING " [options]");
+    pika::program_options::options_description cmdline(
+        "usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     cmdline.add_options()
         ("vector_size"
-        , hpx::program_options::value<std::size_t>()->default_value(1024)
+        , pika::program_options::value<std::size_t>()->default_value(1024)
         , "size of vector")
 
         ("csv_output"
-        , hpx::program_options::value<int>()->default_value(0)
+        , pika::program_options::value<int>()->default_value(0)
         , "print results in csv format")
 
         ("test_count"
-        , hpx::program_options::value<int>()->default_value(10)
+        , pika::program_options::value<int>()->default_value(10)
         , "number of tests to take average from")
 
         ("seed,s"
-        , hpx::program_options::value<unsigned int>()
+        , pika::program_options::value<unsigned int>()
         , "the random number generator seed to use for this run")
         ;
     // clang-format on
 
-    hpx::local::init_params init_args;
+    pika::local::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

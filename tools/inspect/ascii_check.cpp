@@ -9,7 +9,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 //  ? -- this is a test.
 
-#include <hpx/local/config.hpp>
+#include <pika/local/config.hpp>
 
 #include "ascii_check.hpp"
 #include "function_hyper.hpp"
@@ -96,7 +96,7 @@ namespace boost
       const path & full_path,   // example: c:/foo/boost/filesystem/path.hpp
       const string & contents )     // contents of file to be inspected
     {
-      if (contents.find( "hpxinspect:" "noascii" ) != string::npos) return;
+      if (contents.find( "pikainspect:" "noascii" ) != string::npos) return;
       string::const_iterator bad_char = std::find_if ( contents.begin (),
           contents.end (), non_ascii ());
       if ( bad_char != contents.end ())

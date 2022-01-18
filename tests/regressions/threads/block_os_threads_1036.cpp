@@ -7,13 +7,13 @@
 // This test demonstrates the issue described in #1036: Scheduler hangs when
 // user code attempts to "block" OS-threads
 
-#include <hpx/functional/bind.hpp>
-#include <hpx/local/barrier.hpp>
-#include <hpx/local/init.hpp>
-#include <hpx/modules/testing.hpp>
-#include <hpx/modules/timing.hpp>
-#include <hpx/threading_base/thread_helpers.hpp>
-#include <hpx/topology/topology.hpp>
+#include <pika/functional/bind.hpp>
+#include <pika/local/barrier.hpp>
+#include <pika/local/init.hpp>
+#include <pika/modules/testing.hpp>
+#include <pika/modules/timing.hpp>
+#include <pika/threading_base/thread_helpers.hpp>
+#include <pika/topology/topology.hpp>
 
 #include <atomic>
 #include <cstdint>
@@ -23,29 +23,29 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-void blocker(hpx::barrier<>& exit_barrier, std::atomic<std::uint64_t>& entered,
+void blocker(pika::barrier<>& exit_barrier, std::atomic<std::uint64_t>& entered,
     std::atomic<std::uint64_t>& started,
     std::unique_ptr<std::atomic<std::uint64_t>[]>& blocked_threads,
     std::uint64_t worker)
 {
     // reschedule if we are not on the correct OS thread...
-    if (worker != hpx::get_worker_thread_num())
+    if (worker != pika::get_worker_thread_num())
     {
-        hpx::threads::thread_init_data data(
-            hpx::threads::make_thread_function_nullary(hpx::util::bind(&blocker,
+        pika::threads::thread_init_data data(
+            pika::threads::make_thread_function_nullary(pika::util::bind(&blocker,
                 std::ref(exit_barrier), std::ref(entered), std::ref(started),
                 std::ref(blocked_threads), worker)),
-            "blocker", hpx::threads::thread_priority::normal,
-            hpx::threads::thread_schedule_hint(worker));
-        hpx::threads::register_work(data);
+            "blocker", pika::threads::thread_priority::normal,
+            pika::threads::thread_schedule_hint(worker));
+        pika::threads::register_work(data);
         return;
     }
 
-    blocked_threads[hpx::get_worker_thread_num()].fetch_add(1);
+    blocked_threads[pika::get_worker_thread_num()].fetch_add(1);
 
     entered.fetch_add(1);
 
-    HPX_TEST_EQ(worker, hpx::get_worker_thread_num());
+    PIKA_TEST_EQ(worker, pika::get_worker_thread_num());
 
     while (started.load() != 1)
         continue;
@@ -56,7 +56,7 @@ void blocker(hpx::barrier<>& exit_barrier, std::atomic<std::uint64_t>& entered,
 ///////////////////////////////////////////////////////////////////////////////
 std::uint64_t delay = 100;
 
-int hpx_main()
+int pika_main()
 {
     {
         ///////////////////////////////////////////////////////////////////////
@@ -64,9 +64,9 @@ int hpx_main()
         std::atomic<std::uint64_t> entered(0);
         std::atomic<std::uint64_t> started(0);
 
-        std::uint64_t const os_thread_count = hpx::get_os_thread_count();
+        std::uint64_t const os_thread_count = pika::get_os_thread_count();
 
-        hpx::barrier<> exit_barrier(os_thread_count);
+        pika::barrier<> exit_barrier(os_thread_count);
 
         std::unique_ptr<std::atomic<std::uint64_t>[]> blocked_threads(
             new std::atomic<std::uint64_t>[os_thread_count]);
@@ -77,26 +77,26 @@ int hpx_main()
         std::uint64_t scheduled = 0;
         for (std::uint64_t i = 0; i < os_thread_count; ++i)
         {
-            if (i == hpx::get_worker_thread_num())
+            if (i == pika::get_worker_thread_num())
                 continue;
 
-            hpx::threads::thread_init_data data(
-                hpx::threads::make_thread_function_nullary(hpx::util::bind(
+            pika::threads::thread_init_data data(
+                pika::threads::make_thread_function_nullary(pika::util::bind(
                     &blocker, std::ref(exit_barrier), std::ref(entered),
                     std::ref(started), std::ref(blocked_threads), i)),
-                "blocker", hpx::threads::thread_priority::normal,
-                hpx::threads::thread_schedule_hint(i));
-            hpx::threads::register_work(data);
+                "blocker", pika::threads::thread_priority::normal,
+                pika::threads::thread_schedule_hint(i));
+            pika::threads::register_work(data);
             ++scheduled;
         }
-        HPX_TEST_EQ(scheduled, os_thread_count - 1);
+        PIKA_TEST_EQ(scheduled, os_thread_count - 1);
 
         while (entered.load() != (os_thread_count - 1))
             continue;
 
         {
             double delay_sec = delay * 1e-6;
-            hpx::chrono::high_resolution_timer td;
+            pika::chrono::high_resolution_timer td;
 
             while (true)
             {
@@ -108,33 +108,33 @@ int hpx_main()
         started.fetch_add(1);
 
         for (std::uint64_t i = 0; i < os_thread_count; ++i)
-            HPX_TEST_LTE(blocked_threads[i].load(), std::uint64_t(1));
+            PIKA_TEST_LTE(blocked_threads[i].load(), std::uint64_t(1));
 
         exit_barrier.arrive_and_wait();
     }
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
 
     // Configure application-specific options.
-    options_description cmdline("usage: " HPX_APPLICATION_STRING " [options]");
+    options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");
 
     cmdline.add_options()("delay",
         value<std::uint64_t>(&delay)->default_value(100),
         "time in micro-seconds for the delay loop");
 
     // We force this test to use all available threads by default.
-    std::vector<std::string> const cfg = {"hpx.os_threads=all"};
+    std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
-    // Initialize and run HPX.
-    hpx::local::init_params init_args;
+    // Initialize and run pika.
+    pika::local::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

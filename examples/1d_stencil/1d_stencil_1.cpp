@@ -11,8 +11,8 @@
 // This example provides a serial base line implementation. No parallelization
 // is performed.
 
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/init.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -76,7 +76,7 @@ struct stepper
 };
 //]
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::uint64_t nx =
         vm["nx"].as<std::uint64_t>();    // Number of grid points.
@@ -89,7 +89,7 @@ int hpx_main(hpx::program_options::variables_map& vm)
     stepper step;
 
     // Measure execution time.
-    std::uint64_t t = hpx::chrono::high_resolution_clock::now();
+    std::uint64_t t = pika::chrono::high_resolution_clock::now();
 
     // Execute nt time steps on nx grid points.
     stepper::space solution = step.do_work(nx, nt);
@@ -101,17 +101,17 @@ int hpx_main(hpx::program_options::variables_map& vm)
             std::cout << "U[" << i << "] = " << solution[i] << std::endl;
     }
 
-    std::uint64_t elapsed = hpx::chrono::high_resolution_clock::now() - t;
+    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
 
-    std::uint64_t const os_thread_count = hpx::get_os_thread_count();
+    std::uint64_t const os_thread_count = pika::get_os_thread_count();
     print_time_results(os_thread_count, elapsed, nx, nt, header);
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    namespace po = hpx::program_options;
+    namespace po = pika::program_options;
 
     // clang-format off
     po::options_description desc_commandline;
@@ -131,9 +131,9 @@ int main(int argc, char* argv[])
     ;
     // clang-format on
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

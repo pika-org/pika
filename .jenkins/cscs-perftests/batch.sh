@@ -14,18 +14,18 @@ status_computation_and_artifacts_storage() {
     ctest_status=$(( ctest_exit_code + configure_build_errors + test_errors + plot_errors ))
 
     # Copy the testing directory for saving as an artifact
-    cp -r ${build_dir}/Testing ${orig_src_dir}/${configuration_name}-Testing
-    cp -r ${build_dir}/reports ${orig_src_dir}/${configuration_name}-reports
+    cp -r "${build_dir}/Testing" "${orig_src_dir}/${configuration_name}-Testing"
+    cp -r "${build_dir}/reports" "${orig_src_dir}/${configuration_name}-reports"
 
-    echo "${ctest_status}" > "jenkins-hpx-${configuration_name}-ctest-status.txt"
+    echo "${ctest_status}" > "jenkins-pika-${configuration_name}-ctest-status.txt"
     exit $ctest_status
 }
 
 trap "status_computation_and_artifacts_storage" EXIT
 
 orig_src_dir="$(pwd)"
-src_dir="/dev/shm/hpx/src"
-build_dir="/dev/shm/hpx/build"
+src_dir="/dev/shm/pika/src"
+build_dir="/dev/shm/pika/build"
 
 mkdir -p ${build_dir}/tools
 # Copy source directory to /dev/shm for faster builds and copy the perftest
@@ -37,10 +37,10 @@ cp -r "${orig_src_dir}" "${src_dir}" && \
 perftests_dir=${build_dir}/tools/perftests_ci
 envfile=${src_dir}/.jenkins/cscs-perftests/env-${configuration_name}.sh
 mkdir -p ${build_dir}/reports
-logfile=${build_dir}/reports/jenkins-hpx-${configuration_name}.log
+logfile=${build_dir}/reports/jenkins-pika-${configuration_name}.log
 
 # Load python packages
-source /apps/daint/SSL/HPX/virtual_envs/perftests_env/bin/activate
+source /apps/daint/SSL/pika/virtual_envs/perftests_env/bin/activate
 
 # Things went alright by default
 configure_build_errors=0
@@ -51,13 +51,13 @@ plot_errors=0
 wait
 
 # Build and Run the perftests
-source ${src_dir}/.jenkins/cscs-perftests/launch_perftests.sh
+source "${src_dir}/.jenkins/cscs-perftests/launch_perftests.sh"
 
 # Dummy ctest to upload the html report of the perftest
 set +e
 ctest \
     --verbose \
-    -S ${src_dir}/.jenkins/cscs-perftests/ctest.cmake \
+    -S "${src_dir}/.jenkins/cscs-perftests/ctest.cmake" \
     -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name}" \
     -DCTEST_SOURCE_DIRECTORY="${src_dir}" \
     -DCTEST_BINARY_DIRECTORY="${build_dir}"

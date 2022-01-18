@@ -14,14 +14,14 @@
 // overall structure of the algorithm), the achieved performance is bad (a lot
 // slower than example one). This is caused by the large amount of overheads
 // introduced by wrapping each and every grid point into its own future object.
-// The amount of work performed by each of the created HPX threads (one thread
+// The amount of work performed by each of the created pika threads (one thread
 // for every grid point and time step) is too small compared to the imposed
 // overheads.
 
-#include <hpx/assert.hpp>
-#include <hpx/local/chrono.hpp>
-#include <hpx/local/future.hpp>
-#include <hpx/local/init.hpp>
+#include <pika/assert.hpp>
+#include <pika/local/chrono.hpp>
+#include <pika/local/future.hpp>
+#include <pika/local/init.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -44,7 +44,7 @@ inline std::size_t idx(std::size_t i, int dir, std::size_t size)
     if (i == size - 1 && dir == +1)
         return 0;
 
-    HPX_ASSERT((i + dir) < size);
+    PIKA_ASSERT((i + dir) < size);
 
     return i + dir;
 }
@@ -54,7 +54,7 @@ inline std::size_t idx(std::size_t i, int dir, std::size_t size)
 struct stepper
 {
     // Our partition type
-    typedef hpx::shared_future<double> partition;
+    typedef pika::shared_future<double> partition;
 
     // Our data for one time step
     typedef std::vector<partition> space;
@@ -66,10 +66,10 @@ struct stepper
     }
 
     // do all the work on 'nx' data points for 'nt' time steps
-    hpx::future<space> do_work(std::size_t nx, std::size_t nt)
+    pika::future<space> do_work(std::size_t nx, std::size_t nt)
     {
-        using hpx::dataflow;
-        using hpx::unwrapping;
+        using pika::dataflow;
+        using pika::unwrapping;
 
         // U[t][i] is the state of position i at time t.
         std::vector<space> U(2);
@@ -78,7 +78,7 @@ struct stepper
 
         // Initial conditions: f(0, i) = i
         for (std::size_t i = 0; i != nx; ++i)
-            U[0][i] = hpx::make_ready_future(double(i));
+            U[0][i] = pika::make_ready_future(double(i));
 
         auto Op = unwrapping(&stepper::heat);
 
@@ -93,7 +93,7 @@ struct stepper
             for (std::size_t i = 0; i != nx; ++i)
             {
                 next[i] =
-                    dataflow(hpx::launch::async, Op, current[idx(i, -1, nx)],
+                    dataflow(pika::launch::async, Op, current[idx(i, -1, nx)],
                         current[i], current[idx(i, +1, nx)]);
             }
         }
@@ -104,12 +104,12 @@ struct stepper
         // are ready and hardware is available.
 
         // Return the solution at time-step 'nt'.
-        return hpx::when_all(U[nt % 2]);
+        return pika::when_all(U[nt % 2]);
     }
 };
 //]
 ///////////////////////////////////////////////////////////////////////////////
-int hpx_main(hpx::program_options::variables_map& vm)
+int pika_main(pika::program_options::variables_map& vm)
 {
     std::uint64_t nx =
         vm["nx"].as<std::uint64_t>();    // Number of grid points.
@@ -122,15 +122,15 @@ int hpx_main(hpx::program_options::variables_map& vm)
     stepper step;
 
     // Measure execution time.
-    std::uint64_t t = hpx::chrono::high_resolution_clock::now();
+    std::uint64_t t = pika::chrono::high_resolution_clock::now();
 
     // Execute nt time steps on nx grid points.
-    hpx::future<stepper::space> result = step.do_work(nx, nt);
+    pika::future<stepper::space> result = step.do_work(nx, nt);
 
     stepper::space solution = result.get();
-    hpx::wait_all(solution);
+    pika::wait_all(solution);
 
-    std::uint64_t elapsed = hpx::chrono::high_resolution_clock::now() - t;
+    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
 
     // Print the final solution
     if (vm.count("results"))
@@ -139,15 +139,15 @@ int hpx_main(hpx::program_options::variables_map& vm)
             std::cout << "U[" << i << "] = " << solution[i].get() << std::endl;
     }
 
-    std::uint64_t const os_thread_count = hpx::get_os_thread_count();
+    std::uint64_t const os_thread_count = pika::get_os_thread_count();
     print_time_results(os_thread_count, elapsed, nx, nt, header);
 
-    return hpx::local::finalize();
+    return pika::local::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    using namespace hpx::program_options;
+    using namespace pika::program_options;
 
     options_description desc_commandline;
     // clang-format off
@@ -167,9 +167,9 @@ int main(int argc, char* argv[])
     ;
     // clang-format on
 
-    // Initialize and run HPX
-    hpx::local::init_params init_args;
+    // Initialize and run pika
+    pika::local::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return hpx::local::init(hpx_main, argc, argv, init_args);
+    return pika::local::init(pika_main, argc, argv, init_args);
 }

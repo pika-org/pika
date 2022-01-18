@@ -7,8 +7,8 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hpx/local/config.hpp>
-#include <hpx/modules/filesystem.hpp>
+#include <pika/local/config.hpp>
+#include <pika/modules/filesystem.hpp>
 
 #include "endline_whitespace_check.hpp"
 #include "function_hyper.hpp"
@@ -21,7 +21,7 @@
 
 
 using namespace std;
-namespace fs = hpx::filesystem;
+namespace fs = pika::filesystem;
 
 namespace boost
 {
@@ -49,7 +49,7 @@ namespace boost
             const path & full_path,   // ex: c:/foo/boost/filesystem/path.hpp
             const string & contents)     // contents of file to be inspected
         {
-            if (contents.find("hpxinspect:" "endlinewhitespace") != string::npos)
+            if (contents.find("pikainspect:" "endlinewhitespace") != string::npos)
                 return;
 
             string whitespace(" \t\f\v\r\n"), total, linenum;
