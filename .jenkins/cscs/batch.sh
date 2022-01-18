@@ -28,6 +28,10 @@ ctest \
     -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name_with_build_type}" \
     -DCTEST_SOURCE_DIRECTORY="${src_dir}" \
     -DCTEST_BINARY_DIRECTORY="${build_dir}"
+ls -la ${install_dir}
+ls -la /dev/shm/pika/install/lib64
+ls -la /dev/shm/pika/install/lib64/cmake
+ls -la /dev/shm/pika/install/lib64/cmake/pika
 set -e
 
 # Copy the testing directory for saving as an artifact
