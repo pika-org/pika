@@ -179,14 +179,20 @@ function(pika_add_module libname modulename)
     pika_debug(${header_file})
   endforeach(header_file)
 
-  if (${modulename}_SOURCES)
-    set(module_library_type OBJECT)
-    set(module_public_keyword PUBLIC)
-    set(module_private_keyword PRIVATE)
+  if(sources)
+    set(module_is_interface_library FALSE)
   else()
+    set(module_is_interface_library TRUE)
+  endif()
+
+  if(module_is_interface_library)
     set(module_library_type INTERFACE)
     set(module_public_keyword INTERFACE)
     set(module_private_keyword INTERFACE)
+  else()
+    set(module_library_type OBJECT)
+    set(module_public_keyword PUBLIC)
+    set(module_private_keyword PRIVATE)
   endif()
 
   pika_warn("pika_${modulename} library type: ${module_library_type}")
@@ -198,13 +204,8 @@ function(pika_add_module libname modulename)
 
   # create library modules
   add_library(
-    pika_${modulename}
-    ${module_library_type}
-    ${sources}
-    ${${modulename}_OBJECTS}
-    ${headers}
-    ${generated_headers}
-    ${compat_headers}
+    pika_${modulename} ${module_library_type} ${sources}
+                       ${${modulename}_OBJECTS}
   )
 
   if(PIKA_WITH_CHECK_MODULE_DEPENDENCIES)
@@ -226,21 +227,28 @@ function(pika_add_module libname modulename)
   endif()
 
   target_link_libraries(
-    pika_${modulename} ${module_public_keyword} ${${modulename}_MODULE_DEPENDENCIES}
+    pika_${modulename} ${module_public_keyword}
+    ${${modulename}_MODULE_DEPENDENCIES}
   )
-  target_link_libraries(pika_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES})
+  target_link_libraries(
+    pika_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES}
+  )
   target_include_directories(
     pika_${modulename}
-    ${module_public_keyword} $<BUILD_INTERFACE:${HEADER_ROOT}>
-           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-           $<INSTALL_INTERFACE:include>
+    ${module_public_keyword}
+    $<BUILD_INTERFACE:${HEADER_ROOT}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+    $<INSTALL_INTERFACE:include>
   )
 
   target_link_libraries(
     pika_${modulename}
-    ${module_public_keyword} pika_public_flags
-    ${module_private_keyword} pika_private_flags
-    ${module_public_keyword} pika_base_libraries
+    ${module_public_keyword}
+    pika_public_flags
+    ${module_private_keyword}
+    pika_private_flags
+    ${module_public_keyword}
+    pika_base_libraries
   )
 
   if(PIKA_WITH_PRECOMPILED_HEADERS)
@@ -251,7 +259,8 @@ function(pika_add_module libname modulename)
 
   if(${modulename}_COMPAT_HEADERS)
     target_include_directories(
-      pika_${modulename} ${module_public_keyword} $<BUILD_INTERFACE:${COMPAT_HEADER_ROOT}>
+      pika_${modulename} ${module_public_keyword}
+      $<BUILD_INTERFACE:${COMPAT_HEADER_ROOT}>
     )
   endif()
 
@@ -260,8 +269,8 @@ function(pika_add_module libname modulename)
   )
 
   target_include_directories(
-    pika_${modulename} ${module_public_keyword} $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
-                             $<INSTALL_INTERFACE:include>
+    pika_${modulename} ${module_public_keyword}
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> $<INSTALL_INTERFACE:include>
   )
 
   pika_add_source_group(
@@ -305,12 +314,14 @@ function(pika_add_module libname modulename)
   string(TOUPPER ${first_letter} first_letter)
   string(REGEX REPLACE "^.(.*)" "${first_letter}\\1" libname_cap "${libname}")
 
-  set_target_properties(
-    pika_${modulename} PROPERTIES FOLDER "Core/Modules/${libname_cap}"
-                                 POSITION_INDEPENDENT_CODE ON
-  )
+  if(NOT module_is_interface_library)
+    set_target_properties(
+      pika_${modulename} PROPERTIES FOLDER "Core/Modules/${libname_cap}"
+                                    POSITION_INDEPENDENT_CODE ON
+    )
+  endif()
 
-  if(PIKA_WITH_UNITY_BUILD)
+  if(PIKA_WITH_UNITY_BUILD AND NOT module_is_interface_library)
     set_target_properties(pika_${modulename} PROPERTIES UNITY_BUILD ON)
   endif()
 
