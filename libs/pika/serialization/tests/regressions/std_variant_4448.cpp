@@ -19,7 +19,7 @@ struct thing
     std::variant<std::string, double, std::int64_t> w;
 
     template <typename Archive>
-    void serialize(Archive& ar, unsigned version)
+    void serialize(Archive& ar, unsigned /*version*/)
     {
         // clang-format off
         ar & v;
@@ -28,7 +28,7 @@ struct thing
     }
 };
 
-int main(int argc, char* argv[])
+int main()
 {
     std::vector<std::byte> cont;
     pika::serialization::output_archive ar(cont);
