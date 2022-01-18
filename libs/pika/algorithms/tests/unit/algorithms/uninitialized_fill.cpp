@@ -28,7 +28,8 @@ void test_uninitialized_fill(IteratorTag)
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), std::rand());
 
-    pika::uninitialized_fill(iterator(std::begin(c)), iterator(std::end(c)), 10);
+    pika::uninitialized_fill(
+        iterator(std::begin(c)), iterator(std::end(c)), 10);
 
     // verify values
     std::size_t count = 0;

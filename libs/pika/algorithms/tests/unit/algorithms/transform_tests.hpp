@@ -57,8 +57,8 @@ void test_transform(IteratorTag)
     std::vector<int> d(c.size());
     std::iota(std::begin(c), std::end(c), std::rand());
 
-    auto result = pika::transform(iterator(std::begin(c)), iterator(std::end(c)),
-        std::begin(d), add_one());
+    auto result = pika::transform(iterator(std::begin(c)),
+        iterator(std::end(c)), std::begin(d), add_one());
     PIKA_TEST(result == std::end(d));
 
     // verify values

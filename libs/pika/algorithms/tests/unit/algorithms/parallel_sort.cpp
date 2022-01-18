@@ -104,8 +104,8 @@ void test2()
     for (std::uint32_t i = 0; i < 1000; ++i)
         A.push_back(0);
 
-    pika::sort(pika::execution::par, A.begin() + 1000, A.begin() + (1000 + NELEM),
-        comp);
+    pika::sort(pika::execution::par, A.begin() + 1000,
+        A.begin() + (1000 + NELEM), comp);
     for (iter_t it = A.begin() + 1000; it != A.begin() + (1000 + NELEM); ++it)
     {
         PIKA_TEST((*(it - 1)) <= (*it));
@@ -122,8 +122,8 @@ void test2()
     for (std::uint32_t i = 0; i < 1000; ++i)
         A.push_back(999999999);
 
-    pika::sort(pika::execution::par, A.begin() + 1000, A.begin() + (1000 + NELEM),
-        comp);
+    pika::sort(pika::execution::par, A.begin() + 1000,
+        A.begin() + (1000 + NELEM), comp);
 
     for (iter_t it = A.begin() + 1001; it != A.begin() + (1000 + NELEM); ++it)
     {

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/algorithms/traits/projected.hpp>
+#include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/result_types.hpp>
 

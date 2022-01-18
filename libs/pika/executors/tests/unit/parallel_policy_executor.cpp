@@ -123,11 +123,11 @@ void test_bulk_async(bool sync)
     executor exec;
     pika::when_all(
         pika::parallel::execution::bulk_async_execute(exec,
-            pika::util::bind(sync ? &bulk_test_s : &bulk_test_a, _1, tid, _2), v,
-            42))
+            pika::util::bind(sync ? &bulk_test_s : &bulk_test_a, _1, tid, _2),
+            v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                      exec, sync ? &bulk_test_s : &bulk_test_a, v, tid, 42))
+                       exec, sync ? &bulk_test_s : &bulk_test_a, v, tid, 42))
         .get();
 }
 

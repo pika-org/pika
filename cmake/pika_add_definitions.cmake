@@ -13,13 +13,10 @@ function(pika_add_config_define definition)
   list(LENGTH Args ArgsLen)
   if(ArgsLen GREATER 0)
     set_property(
-      GLOBAL APPEND PROPERTY PIKA_CONFIG_DEFINITIONS
-                             "${definition} ${ARGN}"
+      GLOBAL APPEND PROPERTY PIKA_CONFIG_DEFINITIONS "${definition} ${ARGN}"
     )
   else()
-    set_property(
-      GLOBAL APPEND PROPERTY PIKA_CONFIG_DEFINITIONS "${definition}"
-    )
+    set_property(GLOBAL APPEND PROPERTY PIKA_CONFIG_DEFINITIONS "${definition}")
   endif()
 
 endfunction()

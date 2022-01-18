@@ -29,16 +29,12 @@ if(PIKA_WITH_TESTS)
 
   if(PIKA_WITH_TESTS_REGRESSIONS)
     pika_add_pseudo_target(tests.regressions.modules)
-    pika_add_pseudo_dependencies(
-      tests.regressions tests.regressions.modules
-    )
+    pika_add_pseudo_dependencies(tests.regressions tests.regressions.modules)
   endif()
 
   if(PIKA_WITH_TESTS_BENCHMARKS)
     pika_add_pseudo_target(tests.performance.modules)
-    pika_add_pseudo_dependencies(
-      tests.performance tests.performance.modules
-    )
+    pika_add_pseudo_dependencies(tests.performance tests.performance.modules)
   endif()
 
   if(PIKA_WITH_TESTS_HEADERS)

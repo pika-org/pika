@@ -302,8 +302,8 @@ void test_is_heap_exception(
     {
         if (test_for_is_heap)
         {
-            pika::is_heap(policy, iterator(std::begin(c)), iterator(std::end(c)),
-                throw_always());
+            pika::is_heap(policy, iterator(std::begin(c)),
+                iterator(std::end(c)), throw_always());
         }
         else
         {
@@ -430,8 +430,8 @@ void test_is_heap_bad_alloc(
     {
         if (test_for_is_heap)
         {
-            pika::is_heap(policy, iterator(std::begin(c)), iterator(std::end(c)),
-                throw_bad_alloc());
+            pika::is_heap(policy, iterator(std::begin(c)),
+                iterator(std::end(c)), throw_bad_alloc());
         }
         else
         {

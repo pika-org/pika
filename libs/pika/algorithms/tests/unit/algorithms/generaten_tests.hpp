@@ -102,7 +102,7 @@ void test_generate_n_exception(IteratorTag)
     try
     {
         pika::generate_n(decorated_iterator(std::begin(c),
-                            []() { throw std::runtime_error("test"); }),
+                             []() { throw std::runtime_error("test"); }),
             c.size(), gen);
         PIKA_TEST(false);
     }

@@ -67,8 +67,8 @@ void test_minmax_element_sent(ExPolicy policy)
     auto c1 = std::vector<size_t>{5, 7, 8};
     ref = std::minmax_element(
         std::begin(c1), std::begin(c1) + 2, std::greater<std::size_t>());
-    r = pika::ranges::minmax_element(policy, std::begin(c1), sentinel<size_t>{8},
-        std::greater<std::size_t>());
+    r = pika::ranges::minmax_element(policy, std::begin(c1),
+        sentinel<size_t>{8}, std::greater<std::size_t>());
 
     PIKA_TEST((r.min == ref.first) && (r.max == ref.second));
 

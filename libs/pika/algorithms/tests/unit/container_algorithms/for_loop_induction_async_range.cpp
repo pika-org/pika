@@ -160,7 +160,8 @@ void test_for_loop_induction()
 {
     test_for_loop_induction(pika::execution::seq(pika::execution::task));
     test_for_loop_induction_stride(pika::execution::seq(pika::execution::task));
-    test_for_loop_induction_life_out(pika::execution::par(pika::execution::task));
+    test_for_loop_induction_life_out(
+        pika::execution::par(pika::execution::task));
     test_for_loop_induction_stride_life_out(
         pika::execution::par(pika::execution::task));
 }

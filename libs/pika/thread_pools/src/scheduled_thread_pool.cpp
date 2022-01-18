@@ -19,8 +19,7 @@ template class PIKA_EXPORT pika::threads::policies::local_queue_scheduler<>;
 template class PIKA_EXPORT pika::threads::detail::scheduled_thread_pool<
     pika::threads::policies::local_queue_scheduler<>>;
 
-template class PIKA_EXPORT
-    pika::threads::policies::static_queue_scheduler<>;
+template class PIKA_EXPORT pika::threads::policies::static_queue_scheduler<>;
 template class PIKA_EXPORT pika::threads::detail::scheduled_thread_pool<
     pika::threads::policies::static_queue_scheduler<>>;
 

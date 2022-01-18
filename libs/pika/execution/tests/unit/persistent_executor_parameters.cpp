@@ -73,8 +73,8 @@ void test_persistent_executitor_parameters_ref()
 
     {
         pika::execution::persistent_auto_chunk_size p;
-        test_for_each(
-            pika::execution::par.on(par_exec).with(std::ref(p)), iterator_tag());
+        test_for_each(pika::execution::par.on(par_exec).with(std::ref(p)),
+            iterator_tag());
     }
 
     {

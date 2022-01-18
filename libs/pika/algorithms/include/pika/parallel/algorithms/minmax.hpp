@@ -899,7 +899,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::minmax_element is deprecated, use pika::minmax_element "
+        "pika::parallel::minmax_element is deprecated, use "
+        "pika::minmax_element "
         "instead") pika::parallel::util::detail::algorithm_result_t<ExPolicy,
         minmax_element_result<FwdIter>> minmax_element(ExPolicy&& policy,
         FwdIter first, FwdIter last, F&& f = F(), Proj&& proj = Proj())

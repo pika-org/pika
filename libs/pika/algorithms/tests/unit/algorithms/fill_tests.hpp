@@ -103,7 +103,7 @@ void test_fill_exception(IteratorTag)
     try
     {
         pika::fill(decorated_iterator(std::begin(c),
-                      []() { throw std::runtime_error("test"); }),
+                       []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), 10);
         PIKA_TEST(false);
     }

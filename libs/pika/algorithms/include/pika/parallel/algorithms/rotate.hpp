@@ -225,7 +225,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     f1.get();
                     f2.get();
 
-                    pika::future<FwdIter> f = r.call2(p, non_seq(), first, last);
+                    pika::future<FwdIter> f =
+                        r.call2(p, non_seq(), first, last);
                     return f.then([=](pika::future<FwdIter>&& f) mutable
                         -> util::in_out_result<FwdIter, Sent> {
                         f.get();    // propagate exceptions
@@ -259,8 +260,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 ExPolicy&& policy, FwdIter first, FwdIter new_first, Sent last)
             {
                 return util::detail::algorithm_result<ExPolicy, IterPair>::get(
-                    rotate_helper(
-                        PIKA_FORWARD(ExPolicy, policy), first, new_first, last));
+                    rotate_helper(PIKA_FORWARD(ExPolicy, policy), first,
+                        new_first, last));
             }
         };
         /// \endcond
@@ -311,9 +312,9 @@ namespace pika { namespace parallel { inline namespace v1 {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2>
-        pika::future<util::in_out_result<FwdIter1, FwdIter2>> rotate_copy_helper(
-            ExPolicy policy, FwdIter1 first, FwdIter1 new_first, Sent last,
-            FwdIter2 dest_first)
+        pika::future<util::in_out_result<FwdIter1, FwdIter2>>
+        rotate_copy_helper(ExPolicy policy, FwdIter1 first, FwdIter1 new_first,
+            Sent last, FwdIter2 dest_first)
         {
             using non_seq = std::false_type;
 

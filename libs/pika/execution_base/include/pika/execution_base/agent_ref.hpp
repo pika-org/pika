@@ -84,8 +84,8 @@ namespace pika { namespace execution_base {
 
         void sleep_for(pika::chrono::steady_duration const& sleep_duration,
             char const* desc);
-        void sleep_until(
-            pika::chrono::steady_time_point const& sleep_time, char const* desc);
+        void sleep_until(pika::chrono::steady_time_point const& sleep_time,
+            char const* desc);
 
         friend constexpr bool operator==(
             agent_ref const& lhs, agent_ref const& rhs)

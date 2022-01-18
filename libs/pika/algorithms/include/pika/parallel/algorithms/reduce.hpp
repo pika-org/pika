@@ -254,8 +254,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             static T sequential(
                 ExPolicy, InIterB first, InIterE last, T_&& init, Reduce&& r)
             {
-                return detail::accumulate(
-                    first, last, PIKA_FORWARD(T_, init), PIKA_FORWARD(Reduce, r));
+                return detail::accumulate(first, last, PIKA_FORWARD(T_, init),
+                    PIKA_FORWARD(Reduce, r));
             }
 
             template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
@@ -280,8 +280,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     PIKA_FORWARD(ExPolicy, policy), first,
                     detail::distance(first, last), PIKA_MOVE(f1),
                     pika::unwrapping([init = PIKA_FORWARD(T_, init),
-                                        r = PIKA_FORWARD(Reduce, r)](
-                                        std::vector<T>&& results) -> T {
+                                         r = PIKA_FORWARD(Reduce, r)](
+                                         std::vector<T>&& results) -> T {
                         return util::accumulate_n(pika::util::begin(results),
                             pika::util::size(results), init, r);
                     }));
@@ -328,8 +328,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::reduce is deprecated, use pika::ranges::reduce instead")
-        typename util::detail::algorithm_result<ExPolicy, T>::type
+        "pika::parallel::reduce is deprecated, use pika::ranges::reduce "
+        "instead") typename util::detail::algorithm_result<ExPolicy, T>::type
         reduce(ExPolicy&& policy, FwdIterB first, FwdIterE last, T init)
     {
         static_assert(pika::traits::is_forward_iterator<FwdIterB>::value,
@@ -356,9 +356,9 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::reduce is deprecated, use pika::ranges::reduce instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            typename std::iterator_traits<FwdIterB>::value_type>::type
+        "pika::parallel::reduce is deprecated, use pika::ranges::reduce "
+        "instead") typename util::detail::algorithm_result<ExPolicy,
+        typename std::iterator_traits<FwdIterB>::value_type>::type
         reduce(ExPolicy&& policy, FwdIterB first, FwdIterE last)
     {
         static_assert(pika::traits::is_forward_iterator<FwdIterB>::value,

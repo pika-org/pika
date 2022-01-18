@@ -27,8 +27,8 @@ set(example_programs
     safe_object
     # shared_mutex # Disabled due to unavailable timed suspension
     simple_future_continuation
-    # timed_futures # Disabled due to unavailable timed suspension
-    # timed_wake # Disabled due to unavailable timed suspension
+    # timed_futures # Disabled due to unavailable timed suspension timed_wake #
+    # Disabled due to unavailable timed suspension
     use_main_thread
     vector_counting_dotproduct
     vector_zip_dotproduct

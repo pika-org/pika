@@ -75,8 +75,8 @@ void threadLoop()
     do
     {
         pika::this_thread::yield();
-        pika::deb_schbin.debug(
-            pika::debug::str<15>("count_down"), pika::debug::dec<4>(count_down));
+        pika::deb_schbin.debug(pika::debug::str<15>("count_down"),
+            pika::debug::dec<4>(count_down));
     } while (count_down > 0);
 
     pika::deb_schbin.debug(
@@ -86,7 +86,8 @@ void threadLoop()
 
 int pika_main()
 {
-    auto const current = pika::threads::get_self_id_data()->get_scheduler_base();
+    auto const current =
+        pika::threads::get_self_id_data()->get_scheduler_base();
     std::cout << "Scheduler is " << current->get_description() << std::endl;
     if (std::string("core-shared_priority_queue_scheduler") !=
         current->get_description())

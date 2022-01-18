@@ -111,7 +111,8 @@ int pika_main()
         {
             std::vector<pika::future<void>> fs;
 
-            fs.push_back(pika::threads::suspend_processing_unit(tp, thread_num));
+            fs.push_back(
+                pika::threads::suspend_processing_unit(tp, thread_num));
             fs.push_back(pika::threads::resume_processing_unit(tp, thread_num));
 
             pika::wait_all(fs);
@@ -164,7 +165,8 @@ int pika_main()
             {
                 if (thread_num < pika::resource::get_num_threads("default") - 1)
                 {
-                    pika::threads::suspend_processing_unit(tp, thread_num).get();
+                    pika::threads::suspend_processing_unit(tp, thread_num)
+                        .get();
                 }
 
                 ++thread_num;

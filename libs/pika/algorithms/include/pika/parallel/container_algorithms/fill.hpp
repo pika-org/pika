@@ -141,8 +141,9 @@ namespace pika { namespace parallel { inline namespace v1 {
         static_assert(pika::traits::is_forward_iterator<iterator_type>::value,
             "Requires at least forward iterator.");
 
-        return detail::fill<iterator_type>().call(PIKA_FORWARD(ExPolicy, policy),
-            pika::util::begin(rng), pika::util::end(rng), value);
+        return detail::fill<iterator_type>().call(
+            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+            pika::util::end(rng), value);
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -156,9 +157,9 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::fill_n is deprecated, use pika::ranges::fill_n instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            typename pika::traits::range_traits<Rng>::iterator_type>::type
+        "pika::parallel::fill_n is deprecated, use pika::ranges::fill_n "
+        "instead") typename util::detail::algorithm_result<ExPolicy,
+        typename pika::traits::range_traits<Rng>::iterator_type>::type
         fill_n(ExPolicy&& policy, Rng& rng, Size count, T value)
     {
         using iterator_type =
@@ -172,7 +173,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             "Requires at least forward iterator.");
 
         return detail::fill_n<iterator_type>().call(
-            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng), count, value);
+            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng), count,
+            value);
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -253,8 +255,8 @@ namespace pika { namespace ranges {
                 "Requires at least forward iterator.");
 
             return pika::parallel::v1::detail::fill<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                value);
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), value);
         }
 
         // clang-format off

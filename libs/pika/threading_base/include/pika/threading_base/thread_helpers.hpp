@@ -98,8 +98,7 @@ namespace pika { namespace threads {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    PIKA_EXPORT thread_id_ref_type set_thread_state(
-        thread_id_type const& id,
+    PIKA_EXPORT thread_id_ref_type set_thread_state(thread_id_type const& id,
         pika::chrono::steady_time_point const& abs_time,
         std::atomic<bool>* started,
         thread_schedule_state state = thread_schedule_state::pending,
@@ -624,8 +623,7 @@ namespace pika { namespace this_thread {
     ///         If this function is called while the thread-manager is not
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
-    PIKA_EXPORT threads::thread_pool_base* get_pool(
-        error_code& ec = throws);
+    PIKA_EXPORT threads::thread_pool_base* get_pool(error_code& ec = throws);
 
     /// \cond NOINTERNAL
     // returns the remaining available stack space

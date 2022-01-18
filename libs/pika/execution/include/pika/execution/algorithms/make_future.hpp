@@ -124,10 +124,9 @@ namespace pika { namespace execution { namespace experimental {
         {
             using allocator_type = Allocator;
 
-            using value_types =
-                typename pika::execution::experimental::sender_traits<
-                    std::decay_t<Sender>>::template value_types<pika::util::pack,
-                    pika::util::pack>;
+            using value_types = typename pika::execution::experimental::
+                sender_traits<std::decay_t<Sender>>::template value_types<
+                    pika::util::pack, pika::util::pack>;
             using result_type =
                 std::decay_t<detail::single_result_t<value_types>>;
             using operation_state_type = pika::util::invoke_result_t<
@@ -168,8 +167,9 @@ namespace pika { namespace execution { namespace experimental {
                 pika::traits::is_allocator_v<Allocator>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(make_future_t,
-            Sender&& sender, Allocator const& allocator = Allocator{})
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            make_future_t, Sender&& sender,
+            Allocator const& allocator = Allocator{})
         {
             return detail::make_future(PIKA_FORWARD(Sender, sender), allocator);
         }

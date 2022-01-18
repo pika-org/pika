@@ -130,7 +130,8 @@ namespace pika { namespace traits {
             }
 
             template <typename Iter>
-            PIKA_FORCEINLINE type operator()(Iter begin, std::size_t count) const
+            PIKA_FORCEINLINE type operator()(
+                Iter begin, std::size_t count) const
             {
                 type values;
                 values.reserve(count);

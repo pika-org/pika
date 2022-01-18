@@ -21,8 +21,6 @@ foreach(test ${tests})
   )
 
   target_link_libraries(${test}_test PRIVATE ${${test}_LIBRARIES})
-  pika_add_regression_test(
-    "modules.lcos_local" ${test} ${${test}_PARAMETERS}
-  )
+  pika_add_regression_test("modules.lcos_local" ${test} ${${test}_PARAMETERS})
 
 endforeach()

@@ -433,8 +433,10 @@ namespace pika { namespace parallel { inline namespace v1 {
             Rng2&& rng2, RandIter3 dest, Comp&& comp = Comp(),
             Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
     {
-        using iterator_type1 = typename pika::traits::range_iterator<Rng1>::type;
-        using iterator_type2 = typename pika::traits::range_iterator<Rng2>::type;
+        using iterator_type1 =
+            typename pika::traits::range_iterator<Rng1>::type;
+        using iterator_type2 =
+            typename pika::traits::range_iterator<Rng2>::type;
 
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic push
@@ -456,9 +458,9 @@ namespace pika { namespace parallel { inline namespace v1 {
 
         return pika::parallel::v1::detail::merge<result_type>().call(
             PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
-            pika::util::end(rng1), pika::util::begin(rng2), pika::util::end(rng2),
-            dest, PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj1, proj1),
-            PIKA_FORWARD(Proj2, proj2));
+            pika::util::end(rng1), pika::util::begin(rng2),
+            pika::util::end(rng2), dest, PIKA_FORWARD(Comp, comp),
+            PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif

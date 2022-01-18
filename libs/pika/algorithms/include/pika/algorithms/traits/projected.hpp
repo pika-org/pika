@@ -192,8 +192,8 @@ namespace pika { namespace parallel { namespace traits {
 
         template <typename ExPolicy, typename F, typename... Projected>
         struct is_indirect_callable<ExPolicy, F, pika::util::pack<Projected...>,
-            typename std::enable_if<
-                pika::util::all_of<is_projected_indirect<Projected>...>::value &&
+            typename std::enable_if<pika::util::all_of<is_projected_indirect<
+                                        Projected>...>::value &&
                 (!pika::is_vectorpack_execution_policy<ExPolicy>::value ||
                     !pika::util::all_of<
                         is_projected_zip_iterator<Projected>...>::value)>::type>
@@ -208,8 +208,8 @@ namespace pika { namespace parallel { namespace traits {
         // reference type.
         template <typename ExPolicy, typename F, typename... Projected>
         struct is_indirect_callable<ExPolicy, F, pika::util::pack<Projected...>,
-            typename std::enable_if<
-                pika::util::all_of<is_projected_indirect<Projected>...>::value &&
+            typename std::enable_if<pika::util::all_of<is_projected_indirect<
+                                        Projected>...>::value &&
                 pika::is_vectorpack_execution_policy<ExPolicy>::value &&
                 pika::util::all_of<
                     is_projected_zip_iterator<Projected>...>::value>::type>

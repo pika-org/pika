@@ -118,8 +118,8 @@ void test_sorted2_async(ExPolicy p, IteratorTag)
         return behind > ahead && behind != ignore;
     };
 
-    pika::future<bool> f =
-        pika::is_sorted(p, iterator(std::begin(c)), iterator(std::end(c)), pred);
+    pika::future<bool> f = pika::is_sorted(
+        p, iterator(std::begin(c)), iterator(std::end(c)), pred);
     f.wait();
 
     PIKA_TEST(f.get());
@@ -307,7 +307,7 @@ void test_sorted_exception_seq(IteratorTag)
     try
     {
         pika::is_sorted(decorated_iterator(std::begin(c),
-                           []() { throw std::runtime_error("test"); }),
+                            []() { throw std::runtime_error("test"); }),
             decorated_iterator(
                 std::end(c), []() { throw std::runtime_error("test"); }));
     }

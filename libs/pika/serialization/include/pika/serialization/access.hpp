@@ -157,8 +157,8 @@ namespace pika { namespace serialization {
             template <typename T1,
                 typename = decltype(
                     std::declval<typename std::remove_const<T1>::type&>()
-                        .serialize(
-                            std::declval<pika::serialization::output_archive&>(),
+                        .serialize(std::declval<
+                                       pika::serialization::output_archive&>(),
                             0u))>
             static std::true_type test(int);
 

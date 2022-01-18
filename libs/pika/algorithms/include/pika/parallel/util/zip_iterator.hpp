@@ -68,7 +68,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
 
     template <typename ZipIter>
     pika::future<std::pair<typename pika::tuple_element<0,
-                              typename ZipIter::iterator_tuple_type>::type,
+                               typename ZipIter::iterator_tuple_type>::type,
         typename pika::tuple_element<1,
             typename ZipIter::iterator_tuple_type>::type>>
     get_iter_pair(pika::future<ZipIter>&& zipiter)

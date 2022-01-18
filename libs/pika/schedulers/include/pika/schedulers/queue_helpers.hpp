@@ -50,7 +50,8 @@ namespace pika { namespace threads { namespace policies {
                 return false;
 
             // attempt to output possibly deadlocked threads occasionally only
-            if (PIKA_LIKELY((idle_loop_count++ % PIKA_IDLE_LOOP_COUNT_MAX) != 0))
+            if (PIKA_LIKELY(
+                    (idle_loop_count++ % PIKA_IDLE_LOOP_COUNT_MAX) != 0))
                 return false;
 
             bool result = false;

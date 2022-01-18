@@ -17,8 +17,8 @@
 
 #include <chrono>
 #include <string>
-#include <vector>
 #include <thread>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 int just_wait(int result)

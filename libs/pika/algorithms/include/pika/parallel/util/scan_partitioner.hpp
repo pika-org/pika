@@ -237,8 +237,8 @@ namespace pika { namespace parallel { namespace util {
                         finalitems.reserve(size + 1);
 
                         pika::shared_future<Result1> curr = workitems[1];
-                        workitems[1] =
-                            dataflow(pika::launch::sync, f2, workitems[0], curr);
+                        workitems[1] = dataflow(
+                            pika::launch::sync, f2, workitems[0], curr);
                         tested = true;
                     }
                     else
@@ -282,8 +282,8 @@ namespace pika { namespace parallel { namespace util {
                         FwdIter it = pika::get<0>(elem);
                         std::size_t size = pika::get<1>(elem);
 
-                        finalitems.push_back(dataflow(pika::launch::sync, f3, it,
-                            size, workitems[0], workitems[1]));
+                        finalitems.push_back(dataflow(pika::launch::sync, f3,
+                            it, size, workitems[0], workitems[1]));
                     }
 
                     PIKA_ASSERT(finalitems.size() >= 1);
@@ -300,8 +300,8 @@ namespace pika { namespace parallel { namespace util {
                         // Wait the completion of f3 on previous partition.
                         finalitems.back().wait();
 
-                        finalitems.push_back(dataflow(pika::launch::sync, f3, it,
-                            size, workitems[widx], workitems[widx + 1]));
+                        finalitems.push_back(dataflow(pika::launch::sync, f3,
+                            it, size, workitems[widx], workitems[widx + 1]));
                     }
 
                     scoped_params.mark_end_of_scheduling();

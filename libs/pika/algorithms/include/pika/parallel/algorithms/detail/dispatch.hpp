@@ -149,7 +149,8 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             else if constexpr (std::is_void_v<local_result_type>)
             {
                 execution::sync_execute(PIKA_MOVE(exec), derived(),
-                    PIKA_FORWARD(ExPolicy, policy), PIKA_FORWARD(Args, args)...);
+                    PIKA_FORWARD(ExPolicy, policy),
+                    PIKA_FORWARD(Args, args)...);
                 return result_handler::get();
             }
             else

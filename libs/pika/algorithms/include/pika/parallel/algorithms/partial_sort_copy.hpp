@@ -412,8 +412,8 @@ namespace pika {
 
             return parallel::util::get_second_element(
                 parallel::v1::detail::partial_sort_copy<result_type>().call(
-                    PIKA_FORWARD(ExPolicy, policy), first, last, d_first, d_last,
-                    PIKA_FORWARD(Comp, comp),
+                    PIKA_FORWARD(ExPolicy, policy), first, last, d_first,
+                    d_last, PIKA_FORWARD(Comp, comp),
                     parallel::util::projection_identity{},
                     parallel::util::projection_identity{}));
         }

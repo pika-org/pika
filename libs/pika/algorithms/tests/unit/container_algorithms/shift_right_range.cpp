@@ -50,7 +50,8 @@ void test_shift_right_sent(IteratorTag)
     std::move_backward(std::begin(d), std::end(d) - n - 1, std::end(d) - 1);
 
     // verify values
-    PIKA_TEST(std::equal(std::begin(c) + n, std::end(c) - 1, std::begin(d) + n));
+    PIKA_TEST(
+        std::equal(std::begin(c) + n, std::end(c) - 1, std::begin(d) + n));
 
     // ensure shift by more than n does not crash
     pika::ranges::shift_right(std::begin(c),
@@ -84,7 +85,8 @@ void test_shift_right_sent(ExPolicy policy, IteratorTag)
     std::move_backward(std::begin(d), std::end(d) - n - 1, std::end(d) - 1);
 
     // verify values
-    PIKA_TEST(std::equal(std::begin(c) + n, std::end(c) - 1, std::begin(d) + n));
+    PIKA_TEST(
+        std::equal(std::begin(c) + n, std::end(c) - 1, std::begin(d) + n));
 
     // ensure shift by more than n does not crash
     pika::ranges::shift_right(policy, std::begin(c),

@@ -187,8 +187,8 @@ namespace pika { namespace parallel { namespace util {
                         std::current_exception(), errors);
                 }
                 return reduce(PIKA_MOVE(scoped_params), PIKA_MOVE(inititems),
-                    PIKA_MOVE(workitems), PIKA_MOVE(errors), PIKA_FORWARD(F2, f2),
-                    PIKA_MOVE(last));
+                    PIKA_MOVE(workitems), PIKA_MOVE(errors),
+                    PIKA_FORWARD(F2, f2), PIKA_MOVE(last));
             }
 
         private:

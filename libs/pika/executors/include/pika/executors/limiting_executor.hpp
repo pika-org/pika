@@ -258,7 +258,8 @@ namespace pika { namespace execution { namespace experimental {
         decltype(auto) bulk_then_execute(
             F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
         {
-            return pika::parallel::execution::bulk_then_execute(executor_, shape,
+            return pika::parallel::execution::bulk_then_execute(executor_,
+                shape,
                 throttling_wrapper<F>(*this, executor_, PIKA_FORWARD(F, f)),
                 PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
         }

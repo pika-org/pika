@@ -180,7 +180,7 @@ int pika_main()
         auto s1 = ex::just(1);
         auto s2 = cu::transform_stream(std::move(s1), dummy{});
         PIKA_TEST_EQ(ex::sync_wait(ex::transfer(
-                        std::move(s2), ex::thread_pool_scheduler{})),
+                         std::move(s2), ex::thread_pool_scheduler{})),
             2.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -197,7 +197,7 @@ int pika_main()
         auto s3 = cu::transform_stream(std::move(s2), dummy{});
         auto s4 = cu::transform_stream(std::move(s3), dummy{});
         PIKA_TEST_EQ(ex::sync_wait(ex::transfer(
-                        std::move(s4), ex::thread_pool_scheduler{})),
+                         std::move(s4), ex::thread_pool_scheduler{})),
             4.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
@@ -216,7 +216,7 @@ int pika_main()
         auto s4 = ex::then(std::move(s3), dummy{});
         auto s5 = cu::transform_stream(std::move(s4), dummy{});
         PIKA_TEST_EQ(ex::sync_wait(ex::transfer(
-                        std::move(s5), ex::thread_pool_scheduler{})),
+                         std::move(s5), ex::thread_pool_scheduler{})),
             4.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));

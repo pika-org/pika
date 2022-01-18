@@ -47,8 +47,8 @@ namespace pika { namespace execution { namespace experimental {
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        if constexpr (std::is_void_v<
-                                          pika::util::invoke_result_t<F, Ts...>>)
+                        if constexpr (std::is_void_v<pika::util::
+                                              invoke_result_t<F, Ts...>>)
                         {
                         // Certain versions of GCC with optimizations fail on
                         // the move with an internal compiler error.
@@ -68,8 +68,8 @@ namespace pika { namespace execution { namespace experimental {
                             auto&& result = PIKA_INVOKE(
                                 std::move(f), PIKA_FORWARD(Ts, ts)...);
 #else
-                            auto&& result =
-                                PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
+                            auto&& result = PIKA_INVOKE(
+                                PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
 #endif
                             pika::execution::experimental::set_value(
                                 PIKA_MOVE(receiver), PIKA_MOVE(result));
@@ -147,7 +147,8 @@ namespace pika { namespace execution { namespace experimental {
             friend auto tag_invoke(
                 connect_t, then_sender&& s, Receiver&& receiver)
             {
-                return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
+                return pika::execution::experimental::connect(
+                    PIKA_MOVE(s.sender),
                     then_receiver<Receiver, F>{
                         PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f)});
             }
@@ -181,7 +182,8 @@ namespace pika { namespace execution { namespace experimental {
         }
 
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(then_t, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            then_t, F&& f)
         {
             return detail::partial_algorithm<then_t, F>{PIKA_FORWARD(F, f)};
         }

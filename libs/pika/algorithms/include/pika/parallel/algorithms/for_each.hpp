@@ -271,7 +271,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             Proj& proj_;
 
             template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(Iter curr)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
+                Iter curr)
             {
                 using value_type = std::decay_t<
                     typename std::iterator_traits<Iter>::reference>;
@@ -304,7 +305,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             F& f_;
 
             template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(Iter curr)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
+                Iter curr)
             {
                 using value_type = std::decay_t<
                     typename std::iterator_traits<Iter>::reference>;
@@ -494,7 +496,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             static constexpr InIterB sequential(ExPolicy&& policy,
                 InIterB first, InIterE last, F&& f, Proj&& proj)
             {
-                if constexpr (pika::traits::is_random_access_iterator_v<InIterB>)
+                if constexpr (pika::traits::is_random_access_iterator_v<
+                                  InIterB>)
                 {
                     PIKA_UNUSED(policy);
                     return util::loop_n<std::decay_t<ExPolicy>>(first,
@@ -513,7 +516,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             static constexpr InIterB sequential(ExPolicy&& policy,
                 InIterB first, InIterE last, F&& f, util::projection_identity)
             {
-                if constexpr (pika::traits::is_random_access_iterator_v<InIterB>)
+                if constexpr (pika::traits::is_random_access_iterator_v<
+                                  InIterB>)
                 {
                     PIKA_UNUSED(policy);
                     return util::loop_n_ind<std::decay_t<ExPolicy>>(first,
@@ -690,8 +694,8 @@ namespace pika {
                 return result::get();
             }
 
-            return pika::parallel::util::detail::algorithm_result<ExPolicy>::get(
-                pika::parallel::v1::detail::for_each<FwdIter>().call(
+            return pika::parallel::util::detail::algorithm_result<ExPolicy>::
+                get(pika::parallel::v1::detail::for_each<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(F, f),
                     pika::parallel::util::projection_identity()));
@@ -735,8 +739,8 @@ namespace pika {
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
             FwdIter>::type
-        tag_fallback_invoke(pika::for_each_n_t, ExPolicy&& policy, FwdIter first,
-            Size count, F&& f)
+        tag_fallback_invoke(pika::for_each_n_t, ExPolicy&& policy,
+            FwdIter first, Size count, F&& f)
         {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Requires at least forward iterator.");

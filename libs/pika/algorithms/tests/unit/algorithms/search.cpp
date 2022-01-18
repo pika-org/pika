@@ -33,8 +33,8 @@ void test_search1_without_expolicy(IteratorTag)
 
     std::size_t h[] = {1, 2};
 
-    iterator index = pika::search(iterator(std::begin(c)), iterator(std::end(c)),
-        std::begin(h), std::end(h));
+    iterator index = pika::search(iterator(std::begin(c)),
+        iterator(std::end(c)), std::begin(h), std::end(h));
 
     base_iterator test_index = std::begin(c) + c.size() / 2;
 
@@ -129,8 +129,8 @@ void test_search2_without_expolicy(IteratorTag)
 
     std::size_t h[] = {1, 2};
 
-    iterator index = pika::search(iterator(std::begin(c)), iterator(std::end(c)),
-        std::begin(h), std::end(h));
+    iterator index = pika::search(iterator(std::begin(c)),
+        iterator(std::end(c)), std::begin(h), std::end(h));
 
     base_iterator test_index = std::begin(c);
 

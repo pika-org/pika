@@ -489,10 +489,12 @@ namespace pika { namespace ranges {
             using iterator_type2 =
                 typename pika::traits::range_traits<Rng2>::iterator_type;
 
-            static_assert(pika::traits::is_input_iterator<iterator_type1>::value,
+            static_assert(
+                pika::traits::is_input_iterator<iterator_type1>::value,
                 "Requires at least input iterator.");
 
-            static_assert(pika::traits::is_input_iterator<iterator_type2>::value,
+            static_assert(
+                pika::traits::is_input_iterator<iterator_type2>::value,
                 "Requires at least input iterator.");
 
             return pika::parallel::v1::detail::lexicographical_compare().call(
@@ -539,9 +541,10 @@ namespace pika { namespace ranges {
                 "Requires at least forward iterator.");
 
             return pika::parallel::v1::detail::lexicographical_compare().call(
-                PIKA_FORWARD(ExPolicy, policy), std::begin(rng1), std::end(rng1),
-                std::begin(rng2), std::end(rng2), PIKA_FORWARD(Pred, pred),
-                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
+                PIKA_FORWARD(ExPolicy, policy), std::begin(rng1),
+                std::end(rng1), std::begin(rng2), std::end(rng2),
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
         }
     } lexicographical_compare{};
 }}    // namespace pika::ranges

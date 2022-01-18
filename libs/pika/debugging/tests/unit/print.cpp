@@ -66,8 +66,8 @@ int main()
     // ---------------------------------------------------------
     // Test that scoped log messages behave as expected
     {
-        auto s_enabled = p_enabled.scope(
-            "scoped block", PIKA_DP_LAZY(increment(enabled_counter), p_enabled));
+        auto s_enabled = p_enabled.scope("scoped block",
+            PIKA_DP_LAZY(increment(enabled_counter), p_enabled));
         auto s_disabled = p_disabled.scope("scoped block",
             PIKA_DP_LAZY(increment(disabled_counter), p_disabled));
         (void) s_disabled;    // silence warning about unused var

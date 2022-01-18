@@ -141,10 +141,12 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             detail::reverse<FwdIter> r;
             return dataflow(
-                [=](pika::future<FwdIter>&& f1) mutable -> pika::future<FwdIter> {
+                [=](pika::future<FwdIter>&& f1) mutable
+                -> pika::future<FwdIter> {
                     f1.get();
 
-                    pika::future<FwdIter> f = r.call2(p, non_seq(), first, last);
+                    pika::future<FwdIter> f =
+                        r.call2(p, non_seq(), first, last);
                     return f.then(
                         [=](pika::future<FwdIter>&& f) mutable -> FwdIter {
                             f.get();

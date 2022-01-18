@@ -46,8 +46,7 @@ namespace pika { namespace lcos { namespace local {
 
         PIKA_EXPORT ~mutex();
 
-        PIKA_EXPORT void lock(
-            char const* description, error_code& ec = throws);
+        PIKA_EXPORT void lock(char const* description, error_code& ec = throws);
 
         void lock(error_code& ec = throws)
         {

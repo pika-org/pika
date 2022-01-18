@@ -260,8 +260,8 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend FwdIter2 tag_fallback_invoke(pika::swap_ranges_t, FwdIter1 first1,
-            FwdIter1 last1, FwdIter2 first2)
+        friend FwdIter2 tag_fallback_invoke(pika::swap_ranges_t,
+            FwdIter1 first1, FwdIter1 last1, FwdIter2 first2)
         {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter1>,
                 "Requires at least forward iterator.");

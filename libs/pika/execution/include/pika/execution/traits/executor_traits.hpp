@@ -105,9 +105,9 @@ namespace pika { namespace parallel { namespace execution {
         using execution_category = typename T::execution_category;
 
     public:
-        using type =
-            pika::util::detected_or_t<pika::execution::unsequenced_execution_tag,
-                execution_category, Executor>;
+        using type = pika::util::detected_or_t<
+            pika::execution::unsequenced_execution_tag, execution_category,
+            Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -147,8 +147,9 @@ namespace pika { namespace parallel { namespace execution {
         using parameters_type = typename T::parameters_type;
 
     public:
-        using type = pika::util::detected_or_t<pika::execution::static_chunk_size,
-            parameters_type, Executor>;
+        using type =
+            pika::util::detected_or_t<pika::execution::static_chunk_size,
+                parameters_type, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////

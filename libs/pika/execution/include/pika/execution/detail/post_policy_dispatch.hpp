@@ -77,7 +77,8 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
             pika::util::thread_description const& /* desc */,
             threads::thread_pool_base* /* pool */, F&& f, Ts&&... ts)
         {
-            pika::detail::call_sync(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            pika::detail::call_sync(
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename... Ts>
@@ -85,7 +86,8 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
             pika::util::thread_description const& /* desc */, F&& f,
             Ts&&... ts) noexcept
         {
-            pika::detail::call_sync(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            pika::detail::call_sync(
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
     };
 

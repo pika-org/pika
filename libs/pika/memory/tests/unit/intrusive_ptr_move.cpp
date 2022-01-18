@@ -208,7 +208,8 @@ int main()
 
         X* px2 = px.get();
 
-        pika::intrusive_ptr<Y> py = pika::dynamic_pointer_cast<Y>(std::move(px));
+        pika::intrusive_ptr<Y> py =
+            pika::dynamic_pointer_cast<Y>(std::move(px));
         PIKA_TEST_EQ(py.get(), px2);
         // NOLINTNEXTLINE(bugprone-use-after-move)
         PIKA_TEST(px.get() == nullptr);
@@ -222,7 +223,8 @@ int main()
 
         X* px2 = px.get();
 
-        pika::intrusive_ptr<Y> py = pika::dynamic_pointer_cast<Y>(std::move(px));
+        pika::intrusive_ptr<Y> py =
+            pika::dynamic_pointer_cast<Y>(std::move(px));
         PIKA_TEST(py.get() == nullptr);
         // NOLINTNEXTLINE(bugprone-use-after-move)
         PIKA_TEST_EQ(px.get(), px2);

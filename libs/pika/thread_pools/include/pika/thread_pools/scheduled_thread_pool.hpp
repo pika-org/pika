@@ -251,7 +251,7 @@ namespace pika { namespace threads { namespace detail {
 
         std::int64_t get_cumulative_duration(std::size_t, bool) override;
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
         std::int64_t get_background_work_duration(std::size_t, bool) override;
         std::int64_t get_background_overhead(std::size_t, bool) override;
@@ -354,7 +354,7 @@ namespace pika { namespace threads { namespace detail {
             std::int64_t tfunc_times_;
             std::int64_t reset_tfunc_times_;
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
             // overall counters for background work
             std::int64_t background_duration_;

@@ -46,7 +46,9 @@ struct dummy_agent : pika::execution_base::agent_base
     void suspend(char const*) override {}
     void resume(char const*) override {}
     void abort(char const*) override {}
-    void sleep_for(pika::chrono::steady_duration const&, char const*) override {}
+    void sleep_for(pika::chrono::steady_duration const&, char const*) override
+    {
+    }
     void sleep_until(
         pika::chrono::steady_time_point const&, char const*) override
     {

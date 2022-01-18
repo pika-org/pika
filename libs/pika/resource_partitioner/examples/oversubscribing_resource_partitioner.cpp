@@ -81,7 +81,8 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
 
     // create an executor with high priority for important tasks
     pika::execution::parallel_executor high_priority_executor(
-        pika::this_thread::get_pool(), pika::threads::thread_priority::critical);
+        pika::this_thread::get_pool(),
+        pika::threads::thread_priority::critical);
     pika::execution::parallel_executor normal_priority_executor;
 
     pika::execution::parallel_executor mpi_executor;
@@ -125,8 +126,8 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
             {
                 if (i % 2 == 0)
                 {
-                    future_4 =
-                        pika::async(mpi_executor, &do_stuff, async_count, false);
+                    future_4 = pika::async(
+                        mpi_executor, &do_stuff, async_count, false);
                 }
                 else
                 {

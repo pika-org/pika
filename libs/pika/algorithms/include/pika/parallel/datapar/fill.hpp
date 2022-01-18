@@ -29,8 +29,8 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             util::detail::iterator_datapar_compatible<Iter>::value, Iter>::type
         call(ExPolicy&& policy, Iter first, Sent last, T const& val)
         {
-            pika::parallel::util::loop_ind(PIKA_FORWARD(ExPolicy, policy), first,
-                last, [&val](auto& v) { v = val; });
+            pika::parallel::util::loop_ind(PIKA_FORWARD(ExPolicy, policy),
+                first, last, [&val](auto& v) { v = val; });
             return first;
         }
     };

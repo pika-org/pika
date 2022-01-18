@@ -135,7 +135,7 @@ namespace pika { namespace util { namespace detail {
     template <typename F>
     using invoke = typename dispatch_invoke<F>::type;
 
-#define PIKA_INVOKE(F, ...)                                                     \
+#define PIKA_INVOKE(F, ...)                                                    \
     (::pika::util::detail::invoke<decltype((F))>(F)(__VA_ARGS__))
 
 }}}    // namespace pika::util::detail

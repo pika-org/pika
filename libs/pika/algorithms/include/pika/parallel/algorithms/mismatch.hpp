@@ -207,8 +207,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             Proj1&& proj1, Proj2&& proj2)
         {
             while (first1 != last1 && first2 != last2 &&
-                PIKA_INVOKE(
-                    f, PIKA_INVOKE(proj1, *first1), PIKA_INVOKE(proj2, *first2)))
+                PIKA_INVOKE(f, PIKA_INVOKE(proj1, *first1),
+                    PIKA_INVOKE(proj2, *first2)))
             {
                 (void) ++first1, ++first2;
             }

@@ -37,13 +37,14 @@ namespace pika { namespace util {
         }
 
         template <typename T>
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type(T const&) noexcept
+        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type(
+            T const&) noexcept
         {
         }
 
         template <typename T>
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const& operator=(
-            T const&) const noexcept
+        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const&
+        operator=(T const&) const noexcept
         {
             return *this;
         }
@@ -54,13 +55,13 @@ namespace pika { namespace util {
             return *this;
         }
 
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const& operator=(
-            unused_type const&) const noexcept
+        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const&
+        operator=(unused_type const&) const noexcept
         {
             return *this;
         }
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const& operator=(
-            unused_type&&) const noexcept
+        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type const&
+        operator=(unused_type&&) const noexcept
         {
             return *this;
         }

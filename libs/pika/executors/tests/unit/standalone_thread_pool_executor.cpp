@@ -106,10 +106,10 @@ void test_bulk_async(Executor& exec)
     using pika::util::placeholders::_2;
 
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                      exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42))
+                       exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                      exec, &bulk_test, v, tid, 42))
+                       exec, &bulk_test, v, tid, 42))
         .get();
 }
 
@@ -178,9 +178,9 @@ int main()
             num_threads, ad, num_threads, thread_queue_init, "my_scheduler");
         pika::threads::detail::network_background_callback_type
             network_callback{};
-        pika::threads::thread_pool_init_parameters thread_pool_init("my_pool", 0,
-            pika::threads::policies::scheduler_mode::default_mode, num_threads,
-            0, notifier, ad, network_callback, 0,
+        pika::threads::thread_pool_init_parameters thread_pool_init("my_pool",
+            0, pika::threads::policies::scheduler_mode::default_mode,
+            num_threads, 0, notifier, ad, network_callback, 0,
             (std::numeric_limits<std::int64_t>::max)(),
             (std::numeric_limits<std::int64_t>::max)());
 

@@ -61,9 +61,9 @@ void test_transform_binary2(IteratorTag)
     std::iota(std::begin(c2), std::end(c2),
         std::rand() % ((std::numeric_limits<int>::max)() / 2));
 
-    auto result =
-        pika::ranges::transform(iterator(std::begin(c1)), iterator(std::end(c1)),
-            std::begin(c2), std::end(c2), std::begin(d1), add());
+    auto result = pika::ranges::transform(iterator(std::begin(c1)),
+        iterator(std::end(c1)), std::begin(c2), std::end(c2), std::begin(d1),
+        add());
 
     PIKA_TEST(result.in1 == iterator(std::end(c1)));
     PIKA_TEST(result.in2 == std::end(c2));
@@ -179,8 +179,9 @@ void test_transform_binary2_exception(IteratorTag)
     bool caught_exception = false;
     try
     {
-        pika::ranges::transform(iterator(std::begin(c1)), iterator(std::end(c1)),
-            std::begin(c2), std::end(c2), std::begin(d1), throw_always());
+        pika::ranges::transform(iterator(std::begin(c1)),
+            iterator(std::end(c1)), std::begin(c2), std::end(c2),
+            std::begin(d1), throw_always());
 
         PIKA_TEST(false);
     }

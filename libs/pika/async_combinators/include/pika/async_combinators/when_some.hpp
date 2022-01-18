@@ -484,7 +484,8 @@ namespace pika {
         return pika::when_some(n, PIKA_MOVE(values));
     }
 
-    inline pika::future<when_some_result<pika::tuple<>>> when_some(std::size_t n)
+    inline pika::future<when_some_result<pika::tuple<>>> when_some(
+        std::size_t n)
     {
         using result_type = pika::tuple<>;
 
@@ -544,8 +545,8 @@ namespace pika {
 namespace pika::lcos {
 
     template <typename Range>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
     std::enable_if_t<traits::is_future_range_v<Range>,
         pika::future<
             when_some_result<std::decay_t<Range>>>> when_some(std::size_t n,
@@ -559,8 +560,8 @@ namespace pika::lcos {
             typename lcos::detail::future_iterator_traits<Iterator>::type>,
         typename Enable =
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
     pika::future<when_some_result<Container>> when_some(
         std::size_t n, Iterator begin, Iterator end, error_code& = throws)
     {
@@ -580,8 +581,8 @@ namespace pika::lcos {
         return pika::when_some(n, begin, count);
     }
 
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
     inline pika::future<when_some_result<pika::tuple<>>> when_some(
         std::size_t n, error_code& = throws)
     {
@@ -589,8 +590,8 @@ namespace pika::lcos {
     }
 
     template <typename T, typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
     std::enable_if_t<!(traits::is_future_range_v<T> && sizeof...(Ts) == 0),
         pika::future<when_some_result<pika::tuple<traits::acquire_future_t<T>,
             traits::acquire_future_t<Ts>...>>>> when_some(std::size_t n, T&& t,
@@ -600,8 +601,8 @@ namespace pika::lcos {
     }
 
     template <typename T, typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::when_some is deprecated. Use pika::when_some instead.")
     std::enable_if_t<!(traits::is_future_range_v<T> && sizeof...(Ts) == 0),
         pika::future<when_some_result<pika::tuple<traits::acquire_future_t<T>,
             traits::acquire_future_t<Ts>...>>>> when_some(std::size_t n,
@@ -612,7 +613,8 @@ namespace pika::lcos {
 
     template <typename Container>
     using when_some_result PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::when_some_result is deprecated. Use pika::when_some_result "
+        "pika::lcos::when_some_result is deprecated. Use "
+        "pika::when_some_result "
         "instead.") = pika::when_some_result<Container>;
 }    // namespace pika::lcos
 

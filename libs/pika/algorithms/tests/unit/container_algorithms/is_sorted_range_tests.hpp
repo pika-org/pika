@@ -607,8 +607,8 @@ void test_sorted_exception_async(ExPolicy p, IteratorTag)
     caught_exception = false;
     try
     {
-        pika::future<bool> f = pika::ranges::is_sorted(p, iterator(std::begin(c)),
-            iterator(std::end(c)),
+        pika::future<bool> f = pika::ranges::is_sorted(p,
+            iterator(std::begin(c)), iterator(std::end(c)),
             [](int, int) -> bool { throw std::runtime_error("test"); });
         f.get();
 
@@ -631,8 +631,8 @@ void test_sorted_exception_async(ExPolicy p, IteratorTag)
     caught_exception = false;
     try
     {
-        pika::future<bool> f = pika::ranges::is_sorted(p, iterator(std::begin(c)),
-            iterator(std::end(c)), std::less<int>(),
+        pika::future<bool> f = pika::ranges::is_sorted(p,
+            iterator(std::begin(c)), iterator(std::end(c)), std::less<int>(),
             [](int) -> int { throw std::runtime_error("test"); });
         f.get();
 
@@ -665,7 +665,7 @@ void test_sorted_exception_seq(IteratorTag)
     try
     {
         pika::ranges::is_sorted(decorated_iterator(std::begin(c),
-                                   []() { throw std::runtime_error("test"); }),
+                                    []() { throw std::runtime_error("test"); }),
             decorated_iterator(
                 std::end(c), []() { throw std::runtime_error("test"); }));
     }
@@ -969,8 +969,8 @@ void test_sorted_bad_alloc_async(ExPolicy p, IteratorTag)
     caught_bad_alloc = false;
     try
     {
-        pika::future<bool> f = pika::ranges::is_sorted(p, iterator(std::begin(c)),
-            iterator(std::end(c)),
+        pika::future<bool> f = pika::ranges::is_sorted(p,
+            iterator(std::begin(c)), iterator(std::end(c)),
             [](int, int) -> bool { throw std::runtime_error("test"); });
         f.get();
 
@@ -992,8 +992,8 @@ void test_sorted_bad_alloc_async(ExPolicy p, IteratorTag)
     caught_bad_alloc = false;
     try
     {
-        pika::future<bool> f = pika::ranges::is_sorted(p, iterator(std::begin(c)),
-            iterator(std::end(c)), std::less<int>(),
+        pika::future<bool> f = pika::ranges::is_sorted(p,
+            iterator(std::begin(c)), iterator(std::end(c)), std::less<int>(),
             [](int) -> int { throw std::runtime_error("test"); });
         f.get();
 
@@ -1025,7 +1025,7 @@ void test_sorted_bad_alloc_seq(IteratorTag)
     try
     {
         pika::ranges::is_sorted(decorated_iterator(std::begin(c),
-                                   []() { throw std::runtime_error("test"); }),
+                                    []() { throw std::runtime_error("test"); }),
             decorated_iterator(
                 std::end(c), []() { throw std::runtime_error("test"); }));
     }

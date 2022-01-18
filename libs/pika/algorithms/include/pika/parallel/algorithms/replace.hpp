@@ -523,8 +523,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             static InIter sequential(ExPolicy, InIter first, InIter last,
                 T1 const& old_value, T2 const& new_value, Proj&& proj)
             {
-                return sequential_replace(
-                    first, last, old_value, new_value, PIKA_FORWARD(Proj, proj));
+                return sequential_replace(first, last, old_value, new_value,
+                    PIKA_FORWARD(Proj, proj));
             }
 
             template <typename ExPolicy, typename FwdIter, typename T1,
@@ -662,8 +662,9 @@ namespace pika { namespace parallel { inline namespace v1 {
         static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
             "Required at least forward iterator.");
 
-        return detail::replace_if<FwdIter>().call(PIKA_FORWARD(ExPolicy, policy),
-            first, last, PIKA_FORWARD(F, f), new_value, PIKA_FORWARD(Proj, proj));
+        return detail::replace_if<FwdIter>().call(
+            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
+            new_value, PIKA_FORWARD(Proj, proj));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -925,8 +926,8 @@ namespace pika {
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
             void>::type
-        tag_fallback_invoke(pika::replace_if_t, ExPolicy&& policy, FwdIter first,
-            FwdIter last, Pred&& pred, T const& new_value)
+        tag_fallback_invoke(pika::replace_if_t, ExPolicy&& policy,
+            FwdIter first, FwdIter last, Pred&& pred, T const& new_value)
         {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
@@ -1009,8 +1010,9 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend OutIter tag_fallback_invoke(pika::replace_copy_if_t, InIter first,
-            InIter last, OutIter dest, Pred&& pred, T const& new_value)
+        friend OutIter tag_fallback_invoke(pika::replace_copy_if_t,
+            InIter first, InIter last, OutIter dest, Pred&& pred,
+            T const& new_value)
         {
             static_assert((pika::traits::is_input_iterator<InIter>::value),
                 "Required at least input iterator.");
@@ -1021,8 +1023,8 @@ namespace pika {
             return parallel::util::get_second_element(
                 pika::parallel::v1::detail::replace_copy_if<
                     pika::parallel::util::in_out_result<InIter, OutIter>>()
-                    .call(pika::execution::sequenced_policy{}, first, last, dest,
-                        PIKA_FORWARD(Pred, pred), new_value,
+                    .call(pika::execution::sequenced_policy{}, first, last,
+                        dest, PIKA_FORWARD(Pred, pred), new_value,
                         pika::parallel::util::projection_identity()));
         }
 

@@ -237,7 +237,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
 
             template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(Iter curr,
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
+                Iter curr,
                 typename std::iterator_traits<Iter>::difference_type& ret)
             {
                 ret += traits::count_bits(
@@ -293,11 +294,13 @@ namespace pika { namespace parallel { inline namespace v1 {
                 return util::partitioner<ExPolicy, difference_type>::call(
                     PIKA_FORWARD(ExPolicy, policy), first,
                     detail::distance(first, last), PIKA_MOVE(f1),
-                    pika::unwrapping([](std::vector<difference_type>&& results) {
-                        return util::accumulate_n(pika::util::begin(results),
-                            pika::util::size(results), difference_type(0),
-                            std::plus<difference_type>());
-                    }));
+                    pika::unwrapping(
+                        [](std::vector<difference_type>&& results) {
+                            return util::accumulate_n(
+                                pika::util::begin(results),
+                                pika::util::size(results), difference_type(0),
+                                std::plus<difference_type>());
+                        }));
             }
         };
         /// \endcond
@@ -386,11 +389,13 @@ namespace pika { namespace parallel { inline namespace v1 {
                 return util::partitioner<ExPolicy, difference_type>::call(
                     PIKA_FORWARD(ExPolicy, policy), first,
                     detail::distance(first, last), PIKA_MOVE(f1),
-                    pika::unwrapping([](std::vector<difference_type>&& results) {
-                        return util::accumulate_n(pika::util::begin(results),
-                            pika::util::size(results), difference_type(0),
-                            std::plus<difference_type>());
-                    }));
+                    pika::unwrapping(
+                        [](std::vector<difference_type>&& results) {
+                            return util::accumulate_n(
+                                pika::util::begin(results),
+                                pika::util::size(results), difference_type(0),
+                                std::plus<difference_type>());
+                        }));
             }
         };
         /// \endcond

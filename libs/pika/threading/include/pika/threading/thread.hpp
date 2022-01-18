@@ -65,7 +65,8 @@ namespace pika {
             auto thrd_data = threads::get_self_id_data();
             PIKA_ASSERT(thrd_data);
             start_thread(thrd_data->get_scheduler_base()->get_parent_pool(),
-                util::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
+                util::deferred_call(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
         }
 
         template <typename F>
@@ -78,7 +79,8 @@ namespace pika {
         thread(threads::thread_pool_base* pool, F&& f, Ts&&... vs)
         {
             start_thread(pool,
-                util::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
+                util::deferred_call(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
         }
 
         ~thread();
@@ -279,8 +281,7 @@ namespace pika {
         PIKA_EXPORT std::size_t get_libcds_data();
         PIKA_EXPORT std::size_t set_libcds_data(std::size_t);
         PIKA_EXPORT std::size_t get_libcds_hazard_pointer_data();
-        PIKA_EXPORT std::size_t set_libcds_hazard_pointer_data(
-            std::size_t);
+        PIKA_EXPORT std::size_t set_libcds_hazard_pointer_data(std::size_t);
         PIKA_EXPORT std::size_t get_libcds_dynamic_hazard_pointer_data();
         PIKA_EXPORT std::size_t set_libcds_dynamic_hazard_pointer_data(
             std::size_t);

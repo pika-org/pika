@@ -385,9 +385,9 @@ namespace pika { namespace ranges {
                 >::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(pika::ranges::starts_with_t, Rng1&& rng1,
-            Rng2&& rng2, Pred&& pred = Pred(), Proj1&& proj1 = Proj1(),
-            Proj2&& proj2 = Proj2())
+        friend bool tag_fallback_invoke(pika::ranges::starts_with_t,
+            Rng1&& rng1, Rng2&& rng2, Pred&& pred = Pred(),
+            Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
         {
             using iterator_type1 =
                 typename pika::traits::range_iterator<Rng1>::type;

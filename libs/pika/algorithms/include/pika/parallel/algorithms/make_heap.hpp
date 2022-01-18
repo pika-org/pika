@@ -165,8 +165,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 ++child;
             }
 
-            if (PIKA_INVOKE(
-                    comp, PIKA_INVOKE(proj, *child_i), PIKA_INVOKE(proj, *start)))
+            if (PIKA_INVOKE(comp, PIKA_INVOKE(proj, *child_i),
+                    PIKA_INVOKE(proj, *start)))
                 return;
 
             typename std::iterator_traits<RndIter>::value_type top = *start;
@@ -395,8 +395,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 typename Proj>
             static typename util::detail::algorithm_result<
                 pika::execution::parallel_task_policy, RndIter>::type
-            parallel(pika::execution::parallel_task_policy policy, RndIter first,
-                Sent last, Comp&& comp, Proj&& proj)
+            parallel(pika::execution::parallel_task_policy policy,
+                RndIter first, Sent last, Comp&& comp, Proj&& proj)
             {
                 return execution::async_execute(policy.executor(),
                     [=, comp = PIKA_FORWARD(Comp, comp),
@@ -437,8 +437,8 @@ namespace pika {
                 pika::traits::is_random_access_iterator<RndIter>::value,
                 "Requires random access iterator.");
 
-            return pika::parallel::util::detail::algorithm_result<ExPolicy>::get(
-                pika::parallel::v1::detail::make_heap<RndIter>().call(
+            return pika::parallel::util::detail::algorithm_result<ExPolicy>::
+                get(pika::parallel::v1::detail::make_heap<RndIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity{}));
@@ -463,8 +463,8 @@ namespace pika {
             using value_type =
                 typename std::iterator_traits<RndIter>::value_type;
 
-            return pika::parallel::util::detail::algorithm_result<ExPolicy>::get(
-                pika::parallel::v1::detail::make_heap<RndIter>().call(
+            return pika::parallel::util::detail::algorithm_result<ExPolicy>::
+                get(pika::parallel::v1::detail::make_heap<RndIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     std::less<value_type>(),
                     pika::parallel::util::projection_identity{}));

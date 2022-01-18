@@ -24,14 +24,7 @@ function(pika_setup_target target)
       NOTLLKEYWORD
       UNITY_BUILD
   )
-  set(one_value_args
-      TYPE
-      FOLDER
-      NAME
-      SOVERSION
-      VERSION
-      HEADER_ROOT
-  )
+  set(one_value_args TYPE FOLDER NAME SOVERSION VERSION HEADER_ROOT)
   set(multi_value_args DEPENDENCIES COMPILE_FLAGS LINK_FLAGS INSTALL_FLAGS
                        INSTALL_PDB
   )
@@ -111,8 +104,8 @@ function(pika_setup_target target)
     if(DEFINED PIKA_LIBRARY_VERSION AND DEFINED PIKA_SOVERSION)
       # set properties of generated shared library
       set_target_properties(
-        ${target} PROPERTIES VERSION ${PIKA_LIBRARY_VERSION}
-                             SOVERSION ${PIKA_SOVERSION}
+        ${target} PROPERTIES VERSION ${PIKA_LIBRARY_VERSION} SOVERSION
+                                                             ${PIKA_SOVERSION}
       )
     endif()
     if(NOT target_NONAMEPREFIX)

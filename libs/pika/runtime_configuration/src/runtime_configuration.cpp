@@ -418,7 +418,8 @@ namespace pika { namespace util {
 #if PIKA_HAVE_ITTNOTIFY != 0
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::util::get_entry_as<int>(*sec, "use_itt_notify", 0) != 0;
+            return pika::util::get_entry_as<int>(*sec, "use_itt_notify", 0) !=
+                0;
         }
 #endif
         return false;
@@ -430,7 +431,8 @@ namespace pika { namespace util {
 #ifdef PIKA_HAVE_VERIFY_LOCKS
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::util::get_entry_as<int>(*sec, "lock_detection", 0) != 0;
+            return pika::util::get_entry_as<int>(*sec, "lock_detection", 0) !=
+                0;
         }
 #endif
         return false;

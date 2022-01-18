@@ -166,9 +166,8 @@ namespace pika { namespace serialization { namespace detail {
             }
 
             // we don't call f directly to avoid possible stack overflow.
-            auto& shared_state_ =
-                pika::traits::future_access<pika::future<void>>::get_shared_state(
-                    fut);
+            auto& shared_state_ = pika::traits::future_access<
+                pika::future<void>>::get_shared_state(fut);
             shared_state_->set_on_completed([this, f = PIKA_MOVE(f)]() {
                 reset();
                 f();    // this invokes the next round of the fixed-point

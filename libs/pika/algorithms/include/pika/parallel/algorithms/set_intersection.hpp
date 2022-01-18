@@ -273,8 +273,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         return util::get_third_element(
             detail::set_intersection<result_type>().call2(
                 PIKA_FORWARD(ExPolicy, policy), is_seq(), first1, last1, first2,
-                last2, dest, PIKA_FORWARD(Pred, op), util::projection_identity(),
-                util::projection_identity()));
+                last2, dest, PIKA_FORWARD(Pred, op),
+                util::projection_identity(), util::projection_identity()));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -362,11 +362,11 @@ namespace pika {
                 FwdIter2, FwdIter3>;
 
             return pika::parallel::util::get_third_element(
-                pika::parallel::v1::detail::set_intersection<result_type>().call(
-                    pika::execution::seq, first1, last1, first2, last2, dest,
-                    PIKA_FORWARD(Pred, op),
-                    pika::parallel::util::projection_identity(),
-                    pika::parallel::util::projection_identity()));
+                pika::parallel::v1::detail::set_intersection<result_type>()
+                    .call(pika::execution::seq, first1, last1, first2, last2,
+                        dest, PIKA_FORWARD(Pred, op),
+                        pika::parallel::util::projection_identity(),
+                        pika::parallel::util::projection_identity()));
         }
     } set_intersection{};
 }    // namespace pika

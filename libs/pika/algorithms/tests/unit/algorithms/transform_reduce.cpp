@@ -109,8 +109,8 @@ void test_transform_reduce_async(ExPolicy&& p, IteratorTag)
     auto op = [val](std::size_t v1, std::size_t v2) { return v1 + v2 + val; };
 
     pika::future<std::size_t> f =
-        pika::transform_reduce(p, iterator(std::begin(c)), iterator(std::end(c)),
-            val, op, [](std::size_t v) { return v; });
+        pika::transform_reduce(p, iterator(std::begin(c)),
+            iterator(std::end(c)), val, op, [](std::size_t v) { return v; });
     f.wait();
 
     // verify values

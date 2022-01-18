@@ -440,7 +440,8 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(is_heap_t, ExPolicy&& policy, Iter first, Sent last,
             Comp&& comp = Comp(), Proj&& proj = Proj())
         {
-            static_assert((pika::traits::is_random_access_iterator<Iter>::value),
+            static_assert(
+                (pika::traits::is_random_access_iterator<Iter>::value),
                 "Requires a random access iterator.");
 
             return pika::parallel::v1::detail::is_heap<Iter>().call(
@@ -473,8 +474,9 @@ namespace pika { namespace ranges {
                 "Requires a random access iterator.");
 
             return pika::parallel::v1::detail::is_heap<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Comp, comp),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -493,7 +495,8 @@ namespace pika { namespace ranges {
         friend bool tag_fallback_invoke(is_heap_t, Iter first, Sent last,
             Comp&& comp = Comp(), Proj&& proj = Proj())
         {
-            static_assert((pika::traits::is_random_access_iterator<Iter>::value),
+            static_assert(
+                (pika::traits::is_random_access_iterator<Iter>::value),
                 "Requires a random access iterator.");
 
             return pika::parallel::v1::detail::is_heap<Iter>().call(
@@ -558,7 +561,8 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(is_heap_until_t, ExPolicy&& policy, Iter first,
             Sent last, Comp&& comp = Comp(), Proj&& proj = Proj())
         {
-            static_assert((pika::traits::is_random_access_iterator<Iter>::value),
+            static_assert(
+                (pika::traits::is_random_access_iterator<Iter>::value),
                 "Requires a random access iterator.");
 
             return pika::parallel::v1::detail::is_heap_until<Iter>().call(
@@ -613,7 +617,8 @@ namespace pika { namespace ranges {
         friend Iter tag_fallback_invoke(is_heap_until_t, Iter first, Sent last,
             Comp&& comp = Comp(), Proj&& proj = Proj())
         {
-            static_assert((pika::traits::is_random_access_iterator<Iter>::value),
+            static_assert(
+                (pika::traits::is_random_access_iterator<Iter>::value),
                 "Requires a random access iterator.");
 
             return pika::parallel::v1::detail::is_heap_until<Iter>().call(

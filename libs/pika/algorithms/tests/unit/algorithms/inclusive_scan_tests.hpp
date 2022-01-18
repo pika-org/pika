@@ -108,8 +108,8 @@ void test_inclusive_scan1(ExPolicy&& policy, IteratorTag)
     std::size_t const val(0);
     auto op = [](std::size_t v1, std::size_t v2) { return v1 + v2; };
 
-    pika::inclusive_scan(std::forward<ExPolicy>(policy), iterator(std::begin(c)),
-        iterator(std::end(c)), std::begin(d), op, val);
+    pika::inclusive_scan(std::forward<ExPolicy>(policy),
+        iterator(std::begin(c)), iterator(std::end(c)), std::begin(d), op, val);
 
     // verify values
     std::vector<std::size_t> e(c.size());

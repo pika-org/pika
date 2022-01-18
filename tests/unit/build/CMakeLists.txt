@@ -11,8 +11,8 @@ if(NOT PIKA_WITH_TESTS_EXTERNAL_BUILD)
 endif()
 
 # Try building an external cmake based project ...
-function(pika_create_cmake_test name using_install_dir pika_dir
-         build_type test_dir
+function(pika_create_cmake_test name using_install_dir pika_dir build_type
+         test_dir
 )
   set(build_dir "${CMAKE_CURRENT_BINARY_DIR}/${name}")
   if(CMAKE_TOOLCHAIN_FILE)
@@ -86,8 +86,8 @@ if(NOT MSVC)
 
     pika_create_cmake_test(
       cmake_${build_type_lc}_install_dir_test TRUE
-      "${CMAKE_INSTALL_FULL_LIBDIR}/cmake/pika"
-      ${build_type} "examples/hello_world_standalone"
+      "${CMAKE_INSTALL_FULL_LIBDIR}/cmake/pika" ${build_type}
+      "examples/hello_world_standalone"
     )
   endforeach()
 endif()

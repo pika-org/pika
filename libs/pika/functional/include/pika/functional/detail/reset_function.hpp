@@ -23,7 +23,8 @@ namespace pika { namespace util { namespace detail {
     }
 
     template <typename Sig, bool Serializable>
-    inline void reset_function(pika::util::unique_function<Sig, Serializable>& f)
+    inline void reset_function(
+        pika::util::unique_function<Sig, Serializable>& f)
     {
         f.reset();
     }

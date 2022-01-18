@@ -254,8 +254,9 @@ int main(void)
     ++zip_it_run;
     zip_it_run_copy += 2;
 
-    PIKA_TEST(zip_it_run <= zip_it_run_copy && zip_it_run <= --zip_it_run_copy &&
-        !(zip_it_run <= --zip_it_run_copy) && zip_it_run <= zip_it_run);
+    PIKA_TEST(zip_it_run <= zip_it_run_copy &&
+        zip_it_run <= --zip_it_run_copy && !(zip_it_run <= --zip_it_run_copy) &&
+        zip_it_run <= zip_it_run);
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -278,8 +279,8 @@ int main(void)
 
     // Note: zip_it_run == zip_it_run_copy + 1
     //
-    PIKA_TEST(zip_it_run >= zip_it_run_copy && --zip_it_run >= zip_it_run_copy &&
-        !(zip_it_run >= ++zip_it_run_copy));
+    PIKA_TEST(zip_it_run >= zip_it_run_copy &&
+        --zip_it_run >= zip_it_run_copy && !(zip_it_run >= ++zip_it_run_copy));
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -306,7 +307,8 @@ int main(void)
     --zip_it_run_copy;
     --zip_it_run_copy;
 
-    PIKA_TEST(zip_it_run == zip_it_run_copy && (zip_it_run - 1) == zip_it_begin);
+    PIKA_TEST(
+        zip_it_run == zip_it_run_copy && (zip_it_run - 1) == zip_it_begin);
 
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -354,7 +356,8 @@ int main(void)
 
     std::copy(pika::util::make_zip_iterator(
                   pika::make_tuple(vect1.begin(), vect2.begin())),
-        pika::util::make_zip_iterator(pika::make_tuple(vect1.end(), vect2.end())),
+        pika::util::make_zip_iterator(
+            pika::make_tuple(vect1.end(), vect2.end())),
         vect_of_tuples.begin());
 
     PIKA_TEST(42. == pika::get<0>(*vect_of_tuples.begin()) &&

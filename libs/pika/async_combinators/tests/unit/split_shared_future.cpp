@@ -43,11 +43,12 @@ pika::tuple<int> make_tuple1_slowly()
 
 void test_split_future1()
 {
-    pika::lcos::local::futures_factory<pika::tuple<int>()> pt(make_tuple1_slowly);
+    pika::lcos::local::futures_factory<pika::tuple<int>()> pt(
+        make_tuple1_slowly);
     pt.apply();
 
-    pika::tuple<pika::future<int>> result =
-        pika::split_future(pika::shared_future<pika::tuple<int>>(pt.get_future()));
+    pika::tuple<pika::future<int>> result = pika::split_future(
+        pika::shared_future<pika::tuple<int>>(pt.get_future()));
 
     PIKA_TEST_EQ(pika::get<0>(result).get(), 42);
 }
@@ -65,8 +66,9 @@ void test_split_future2()
         make_tuple2_slowly);
     pt.apply();
 
-    pika::tuple<pika::future<int>, pika::future<int>> result = pika::split_future(
-        pika::shared_future<pika::tuple<int, int>>(pt.get_future()));
+    pika::tuple<pika::future<int>, pika::future<int>> result =
+        pika::split_future(
+            pika::shared_future<pika::tuple<int, int>>(pt.get_future()));
 
     PIKA_TEST_EQ(pika::get<0>(result).get(), 42);
     PIKA_TEST_EQ(pika::get<1>(result).get(), 43);
@@ -85,8 +87,8 @@ void test_split_future3()
         make_tuple3_slowly);
     pt.apply();
 
-    pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>> result =
-        pika::split_future(
+    pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>>
+        result = pika::split_future(
             pika::shared_future<pika::tuple<int, int, int>>(pt.get_future()));
 
     PIKA_TEST_EQ(pika::get<0>(result).get(), 42);
@@ -146,7 +148,8 @@ void test_split_future_array()
         make_array_slowly);
     pt.apply();
 
-    std::array<pika::future<int>, 3> result = pika::split_future(pt.get_future());
+    std::array<pika::future<int>, 3> result =
+        pika::split_future(pt.get_future());
 
     PIKA_TEST_EQ(result[0].get(), 42);
     PIKA_TEST_EQ(result[1].get(), 43);

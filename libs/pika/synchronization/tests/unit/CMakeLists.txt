@@ -67,9 +67,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Local/Synchronization"
   )
 
-  pika_add_unit_test(
-    "modules.synchronization" ${test} ${${test}_PARAMETERS}
-  )
+  pika_add_unit_test("modules.synchronization" ${test} ${${test}_PARAMETERS})
 
 endforeach()
 

@@ -73,8 +73,8 @@ struct non_copyable_sender
         std::decay_t<R> r;
         pika::tuple<std::decay_t<Ts>...> ts;
 
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             pika::util::invoke_fused(
                 pika::util::bind_front(
@@ -129,8 +129,8 @@ struct sender
         std::decay_t<R> r;
         pika::tuple<std::decay_t<Ts>...> ts;
 
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             pika::util::invoke_fused(
                 pika::util::bind_front(
@@ -224,8 +224,8 @@ struct error_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             try
             {

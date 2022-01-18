@@ -238,8 +238,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                         result.in, part_first2, result.out};
                 };
 
-                auto last = set_operation(PIKA_FORWARD(ExPolicy, policy), first1,
-                    last1, first2, last2, dest, PIKA_FORWARD(F, f),
+                auto last = set_operation(PIKA_FORWARD(ExPolicy, policy),
+                    first1, last1, first2, last2, dest, PIKA_FORWARD(F, f),
                     PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2),
                     PIKA_MOVE(f1), PIKA_MOVE(f2));
 
@@ -269,7 +269,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::set_difference is deprecated, use pika::set_difference "
+        "pika::parallel::set_difference is deprecated, use "
+        "pika::set_difference "
         "instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter3>::type
         set_difference(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,

@@ -183,8 +183,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             if (nth == first)
             {
                 RandomIt it = detail::min_element<RandomIt>().call(
-                    pika::execution::seq, first, end, PIKA_FORWARD(Compare, comp),
-                    PIKA_FORWARD(Proj, proj));
+                    pika::execution::seq, first, end,
+                    PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
 
                 if (it != first)
                 {
@@ -291,8 +291,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                         partitionIter =
                             pika::parallel::v1::detail::partition<RandomIt>()
                                 .call(
-                                    policy(pika::execution::non_task), first + 1,
-                                    last_iter,
+                                    policy(pika::execution::non_task),
+                                    first + 1, last_iter,
                                     [val = PIKA_INVOKE(proj, *first), &pred](
                                         value_type const& elem) {
                                         return PIKA_INVOKE(pred, elem, val);
@@ -365,7 +365,8 @@ namespace pika {
                 "Requires at least random iterator.");
 
             pika::parallel::v1::detail::nth_element<RandomIt>().call(
-                pika::execution::seq, first, nth, last, PIKA_FORWARD(Pred, pred),
+                pika::execution::seq, first, nth, last,
+                PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity{});
         }
 

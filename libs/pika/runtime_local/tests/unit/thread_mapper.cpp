@@ -28,7 +28,7 @@ void enumerate_threads(std::size_t num_custom_threads)
 
                 ++counts[std::size_t(data.type_)];
                 PIKA_TEST(data.label_.find(pika::get_os_thread_type_name(
-                             data.type_)) != std::string::npos);
+                              data.type_)) != std::string::npos);
             }
             return true;
         });

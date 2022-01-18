@@ -95,7 +95,8 @@ namespace pika { namespace serialization {
         using use_optimized = std::integral_constant<bool,
             std::is_default_constructible_v<element_type> &&
                 (pika::traits::is_bitwise_serializable_v<element_type> ||
-                    !pika::traits::is_not_bitwise_serializable_v<element_type>)>;
+                    !pika::traits::is_not_bitwise_serializable_v<
+                        element_type>)>;
 
         v.clear();
 
@@ -174,7 +175,8 @@ namespace pika { namespace serialization {
         using use_optimized = std::integral_constant<bool,
             std::is_default_constructible_v<element_type> &&
                 (pika::traits::is_bitwise_serializable_v<element_type> ||
-                    !pika::traits::is_not_bitwise_serializable_v<element_type>)>;
+                    !pika::traits::is_not_bitwise_serializable_v<
+                        element_type>)>;
 
         std::uint64_t size = v.size();
         ar << size;

@@ -57,8 +57,8 @@ struct additional_argument_executor
     }
 
     template <typename A, typename... Ts>
-    void post(
-        pika::lcos::detail::dataflow_finalization<A>&& f, pika::tuple<Ts...>&& t)
+    void post(pika::lcos::detail::dataflow_finalization<A>&& f,
+        pika::tuple<Ts...>&& t)
     {
         additional_argument a;
         pika::apply(f, pika::tuple_cat(pika::tie(a), std::move(t)));

@@ -56,8 +56,7 @@ namespace pika { namespace serialization { namespace detail {
             return max_id;
         }
 
-        PIKA_EXPORT std::vector<std::string> get_unassigned_typenames()
-            const;
+        PIKA_EXPORT std::vector<std::string> get_unassigned_typenames() const;
 
         PIKA_EXPORT static id_registry& instance();
 
@@ -117,8 +116,7 @@ namespace pika { namespace serialization { namespace detail {
             return static_cast<T*>(ctor());
         }
 
-        PIKA_EXPORT static std::uint32_t get_id(
-            const std::string& type_name);
+        PIKA_EXPORT static std::uint32_t get_id(const std::string& type_name);
 
     private:
         polymorphic_id_factory() {}
@@ -181,12 +179,12 @@ namespace pika { namespace serialization { namespace detail {
 
 #include <pika/local/config/warnings_suffix.hpp>
 
-#define PIKA_SERIALIZATION_ADD_CONSTANT_ENTRY(String, Id)                       \
-    namespace pika { namespace serialization { namespace detail {               \
+#define PIKA_SERIALIZATION_ADD_CONSTANT_ENTRY(String, Id)                      \
+    namespace pika { namespace serialization { namespace detail {              \
                 template <>                                                    \
                 std::string get_constant_entry_name<Id>()                      \
                 {                                                              \
-                    return PIKA_PP_STRINGIZE(String);                           \
+                    return PIKA_PP_STRINGIZE(String);                          \
                 }                                                              \
                 template add_constant_entry<Id>                                \
                     add_constant_entry<Id>::instance;                          \

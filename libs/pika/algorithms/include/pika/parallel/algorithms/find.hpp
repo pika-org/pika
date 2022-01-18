@@ -456,9 +456,9 @@ namespace pika { namespace parallel { inline namespace v1 {
                         });
                 };
 
-                auto f2 =
-                    [tok, count, first, last](
-                        std::vector<pika::future<void>>&& data) mutable -> Iter {
+                auto f2 = [tok, count, first, last](
+                              std::vector<pika::future<void>>&& data) mutable
+                    -> Iter {
                     // make sure iterators embedded in function object that is
                     // attached to futures are invalidated
                     data.clear();
@@ -563,9 +563,9 @@ namespace pika { namespace parallel { inline namespace v1 {
                         });
                 };
 
-                auto f2 =
-                    [tok, count, first, last](
-                        std::vector<pika::future<void>>&& data) mutable -> Iter {
+                auto f2 = [tok, count, first, last](
+                              std::vector<pika::future<void>>&& data) mutable
+                    -> Iter {
                     // make sure iterators embedded in function object that is
                     // attached to futures are invalidated
                     data.clear();
@@ -601,8 +601,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             >
         )>
     // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::find_if is deprecated, use pika::find_If instead")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::parallel::find_if is deprecated, use pika::find_If instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
         find_if(ExPolicy&& policy, FwdIter first, FwdIter last, F&& f)
     {
@@ -676,9 +676,9 @@ namespace pika { namespace parallel { inline namespace v1 {
                         });
                 };
 
-                auto f2 =
-                    [tok, count, first, last](
-                        std::vector<pika::future<void>>&& data) mutable -> Iter {
+                auto f2 = [tok, count, first, last](
+                              std::vector<pika::future<void>>&& data) mutable
+                    -> Iter {
                     // make sure iterators embedded in function object that is
                     // attached to futures are invalidated
                     data.clear();
@@ -869,7 +869,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                                 for (; local_count != diff;
                                      (void) ++local_count, ++mid, ++mid2)
                                 {
-                                    if (!PIKA_INVOKE(op, PIKA_INVOKE(proj1, mid),
+                                    if (!PIKA_INVOKE(op,
+                                            PIKA_INVOKE(proj1, mid),
                                             pika::util::invoke(proj2, *mid2)))
                                     {
                                         break;
@@ -1052,8 +1053,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 };
 
                 return util::partitioner<ExPolicy, FwdIter,
-                    void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), first,
-                    count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
+                    void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
+                    first, count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
             }
         };
     }    // namespace detail

@@ -587,8 +587,8 @@ namespace pika {
                 pika::traits::is_forward_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            pika::uninitialized_copy_n_t, InIter first, Size count, FwdIter dest)
+        friend FwdIter tag_fallback_invoke(pika::uninitialized_copy_n_t,
+            InIter first, Size count, FwdIter dest)
         {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");

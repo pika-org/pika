@@ -5,8 +5,8 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-# This project tests that pika can be built using FetchContent. It is built
-# by the .github/workflows/linux_fetchcontent.yml GitHub actions workflow.
+# This project tests that pika can be built using FetchContent. It is built by
+# the .github/workflows/linux_fetchcontent.yml GitHub actions workflow.
 
 cmake_minimum_required(VERSION 3.18)
 project(pika-fetchcontent LANGUAGES CXX)

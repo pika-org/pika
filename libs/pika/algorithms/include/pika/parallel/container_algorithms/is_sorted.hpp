@@ -125,7 +125,8 @@ namespace pika { namespace ranges {
     template <typename ExPolicy, typename FwdIter, typename Sent,
         typename Pred = pika::parallel::v1::detail::less,
         typename Proj = pika::parallel::util::projection_identity>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy, bool>::type
+    typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        bool>::type
     is_sorted(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred = Pred(),
         Proj&& proj = Proj());
 
@@ -240,7 +241,8 @@ namespace pika { namespace ranges {
     template <typename ExPolicy, typename Rng,
         typename Pred = pika::parallel::v1::detail::less,
         typename Proj = pika::parallel::util::projection_identity>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy, bool>::type
+    typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        bool>::type
     is_sorted(ExPolicy&& policy, Rng&& rng, Pred&& pred = Pred(),
         Proj&& proj = Proj());
 
@@ -521,8 +523,9 @@ namespace pika { namespace ranges {
                 >::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(pika::ranges::is_sorted_t, FwdIter first,
-            Sent last, Pred&& pred = Pred(), Proj&& proj = Proj())
+        friend bool tag_fallback_invoke(pika::ranges::is_sorted_t,
+            FwdIter first, Sent last, Pred&& pred = Pred(),
+            Proj&& proj = Proj())
         {
             return pika::parallel::v1::detail::is_sorted<FwdIter, Sent>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
@@ -556,7 +559,8 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
-        template <typename Rng, typename Pred = pika::parallel::v1::detail::less,
+        template <typename Rng,
+            typename Pred = pika::parallel::v1::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
@@ -633,8 +637,8 @@ namespace pika { namespace ranges {
             Proj&& proj = Proj())
         {
             return pika::parallel::v1::detail::is_sorted_until<FwdIter, Sent>()
-                .call(pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
-                    PIKA_FORWARD(Proj, proj));
+                .call(pika::execution::seq, first, last,
+                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         template <typename ExPolicy, typename FwdIter, typename Sent,
@@ -664,7 +668,8 @@ namespace pika { namespace ranges {
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
-        template <typename Rng, typename Pred = pika::parallel::v1::detail::less,
+        template <typename Rng,
+            typename Pred = pika::parallel::v1::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(

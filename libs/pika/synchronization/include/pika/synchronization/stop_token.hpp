@@ -125,8 +125,7 @@ namespace pika {
             }
 
             PIKA_EXPORT bool add_callback(stop_callback_base* cb) noexcept;
-            PIKA_EXPORT void remove_callback(
-                stop_callback_base* cb) noexcept;
+            PIKA_EXPORT void remove_callback(stop_callback_base* cb) noexcept;
 
         private:
             static bool is_locked(std::uint64_t state) noexcept

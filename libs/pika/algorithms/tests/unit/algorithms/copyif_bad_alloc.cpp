@@ -70,8 +70,8 @@ void test_copy_if_bad_alloc_async(ExPolicy p, IteratorTag)
     bool returned_from_algorithm = false;
     try
     {
-        auto f = pika::copy_if(p, iterator(std::begin(c)), iterator(std::end(c)),
-            std::begin(d),
+        auto f = pika::copy_if(p, iterator(std::begin(c)),
+            iterator(std::end(c)), std::begin(d),
             [](std::size_t v) { return throw std::bad_alloc(), v != 0; });
 
         returned_from_algorithm = true;

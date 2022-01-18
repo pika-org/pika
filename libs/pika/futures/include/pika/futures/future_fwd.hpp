@@ -27,8 +27,8 @@ namespace pika {
 
     namespace lcos {
         template <typename R>
-        using future PIKA_DEPRECATED_V(
-            0, 1, "pika::lcos::future is deprecated. Use pika::future instead.") =
+        using future PIKA_DEPRECATED_V(0, 1,
+            "pika::lcos::future is deprecated. Use pika::future instead.") =
             pika::future<R>;
 
         template <typename R>

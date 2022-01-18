@@ -136,7 +136,8 @@ namespace pika { namespace execution { namespace experimental {
             friend auto tag_invoke(
                 connect_t, bulk_sender&& s, Receiver&& receiver)
             {
-                return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
+                return pika::execution::experimental::connect(
+                    PIKA_MOVE(s.sender),
                     bulk_receiver<Receiver>(PIKA_FORWARD(Receiver, receiver),
                         PIKA_MOVE(s.shape), PIKA_MOVE(s.f)));
             }

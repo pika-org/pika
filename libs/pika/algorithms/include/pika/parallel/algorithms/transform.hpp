@@ -222,7 +222,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
 
             template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Iter curr)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
+                Iter curr)
                 -> decltype(PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr)))
             {
                 return PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr));
@@ -241,8 +242,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
 
             template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Iter curr)
-                -> decltype(PIKA_INVOKE(f_, *curr))
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
+                Iter curr) -> decltype(PIKA_INVOKE(f_, *curr))
             {
                 return PIKA_INVOKE(f_, *curr);
             }
@@ -452,8 +453,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             PIKA_HOST_DEVICE PIKA_FORCEINLINE auto operator()(
                 Iter1 curr1, Iter2 curr2)
             {
-                return PIKA_INVOKE(
-                    f_, PIKA_INVOKE(proj1_, *curr1), PIKA_INVOKE(proj2_, *curr2));
+                return PIKA_INVOKE(f_, PIKA_INVOKE(proj1_, *curr1),
+                    PIKA_INVOKE(proj2_, *curr2));
             }
         };
 
@@ -507,7 +508,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             template <typename Iter, typename F_ = fun_type>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE
                 pika::tuple<typename pika::tuple_element<0,
-                               typename Iter::iterator_tuple_type>::type,
+                                typename Iter::iterator_tuple_type>::type,
                     typename pika::tuple_element<1,
                         typename Iter::iterator_tuple_type>::type,
                     typename pika::tuple_element<2,
@@ -564,7 +565,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             template <typename Iter, typename F_ = fun_type>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE
                 pika::tuple<typename pika::tuple_element<0,
-                               typename Iter::iterator_tuple_type>::type,
+                                typename Iter::iterator_tuple_type>::type,
                     typename pika::tuple_element<1,
                         typename Iter::iterator_tuple_type>::type,
                     typename pika::tuple_element<2,
@@ -938,8 +939,8 @@ namespace pika {
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
-        tag_fallback_invoke(pika::transform_t, ExPolicy&& policy, FwdIter1 first,
-            FwdIter1 last, FwdIter2 dest, F&& f)
+        tag_fallback_invoke(pika::transform_t, ExPolicy&& policy,
+            FwdIter1 first, FwdIter1 last, FwdIter2 dest, F&& f)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
                 "Requires at least forward iterator.");

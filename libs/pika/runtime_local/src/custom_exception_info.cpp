@@ -103,7 +103,8 @@ namespace pika {
 
             bool thread_info = false;
             char const* const thread_prefix = "{os-thread}: ";
-            std::size_t const* shepherd = xi.get<pika::detail::throw_shepherd>();
+            std::size_t const* shepherd =
+                xi.get<pika::detail::throw_shepherd>();
             if (shepherd && std::size_t(-1) != *shepherd)
             {
                 strm << thread_prefix << *shepherd;
@@ -292,7 +293,8 @@ namespace pika {
                 pika::detail::throw_thread_name(thread_name),
                 pika::detail::throw_function(func),
                 pika::detail::throw_file(file), pika::detail::throw_line(line),
-                pika::detail::throw_env(env), pika::detail::throw_config(config),
+                pika::detail::throw_env(env),
+                pika::detail::throw_config(config),
                 pika::detail::throw_state(state_name),
                 pika::detail::throw_auxinfo(auxinfo));
         }
@@ -393,7 +395,8 @@ namespace pika {
 
             static constexpr char const* ignored_env_patterns[] = {
                 "DOCKER", "GITHUB_TOKEN"};
-            std::string retval = pika::util::format("{} entries:\n", env.size());
+            std::string retval =
+                pika::util::format("{} entries:\n", env.size());
             for (std::string const& s : env)
             {
                 if (std::all_of(std::begin(ignored_env_patterns),
@@ -468,7 +471,8 @@ namespace pika {
                 pika::detail::throw_thread_name(util::as_string(thread_name)),
                 pika::detail::throw_function(func),
                 pika::detail::throw_file(file), pika::detail::throw_line(line),
-                pika::detail::throw_env(env), pika::detail::throw_config(config),
+                pika::detail::throw_env(env),
+                pika::detail::throw_config(config),
                 pika::detail::throw_state(state_name),
                 pika::detail::throw_auxinfo(auxinfo));
         }
@@ -521,7 +525,8 @@ namespace pika {
     /// Return the stack backtrace at the point the exception was thrown.
     std::string get_error_backtrace(pika::exception_info const& xi)
     {
-        std::string const* back_trace = xi.get<pika::detail::throw_stacktrace>();
+        std::string const* back_trace =
+            xi.get<pika::detail::throw_stacktrace>();
         if (back_trace && !back_trace->empty())
             return *back_trace;
 

@@ -218,7 +218,7 @@ namespace pika { namespace threads { namespace coroutines {
                 {
                     throw std::runtime_error(
                         pika::util::format("stack size of {1} is not page "
-                                          "aligned, page size is {2}",
+                                           "aligned, page size is {2}",
                             m_stack_size, EXEC_PAGESIZE));
                 }
 
@@ -278,7 +278,7 @@ namespace pika { namespace threads { namespace coroutines {
                 }
             }
 
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                               \
+#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                              \
     !defined(PIKA_HAVE_ADDRESS_SANITIZER)
 
 // heuristic value 1 kilobyte
@@ -445,7 +445,7 @@ namespace pika { namespace threads { namespace coroutines {
                     private:
                         void set_sigsegv_handler()
                         {
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                               \
+#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                              \
     !defined(PIKA_HAVE_ADDRESS_SANITIZER)
                             // concept inspired by the following links:
                             //
@@ -515,7 +515,7 @@ namespace pika { namespace threads { namespace coroutines {
                         std::ptrdiff_t m_stack_size;
                         void* m_stack;
 
-#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                               \
+#if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                              \
     !defined(PIKA_HAVE_ADDRESS_SANITIZER)
                         struct sigaction action;
                         stack_t segv_stack;

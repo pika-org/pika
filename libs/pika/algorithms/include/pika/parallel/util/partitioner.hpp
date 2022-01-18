@@ -74,8 +74,9 @@ namespace pika { namespace parallel { namespace util {
 
         template <typename Result, typename ExPolicy, typename FwdIter,
             typename Stride, typename F>
-        std::vector<pika::future<Result>> partition_with_index(ExPolicy&& policy,
-            FwdIter first, std::size_t count, Stride stride, F&& f)
+        std::vector<pika::future<Result>> partition_with_index(
+            ExPolicy&& policy, FwdIter first, std::size_t count, Stride stride,
+            F&& f)
         {
             // estimate a chunk size based on number of cores used
             using parameters_type =
@@ -111,16 +112,18 @@ namespace pika { namespace parallel { namespace util {
             FwdIter first, std::size_t count,
             std::vector<std::size_t> const& chunk_sizes, Data&& data, F&& f)
         {
-            PIKA_ASSERT(pika::util::size(data) >= pika::util::size(chunk_sizes));
+            PIKA_ASSERT(
+                pika::util::size(data) >= pika::util::size(chunk_sizes));
 
             typedef typename std::decay<Data>::type data_type;
 
-            typename data_type::const_iterator data_it = pika::util::begin(data);
+            typename data_type::const_iterator data_it =
+                pika::util::begin(data);
             typename std::vector<std::size_t>::const_iterator chunk_size_it =
                 pika::util::begin(chunk_sizes);
 
-            typedef typename pika::tuple<typename data_type::value_type, FwdIter,
-                std::size_t>
+            typedef typename pika::tuple<typename data_type::value_type,
+                FwdIter, std::size_t>
                 tuple_type;
 
             // schedule every chunk on a separate thread
@@ -187,8 +190,8 @@ namespace pika { namespace parallel { namespace util {
                     handle_local_exceptions::call(
                         std::current_exception(), errors);
                 }
-                return reduce(
-                    PIKA_MOVE(workitems), PIKA_MOVE(errors), PIKA_FORWARD(F2, f2));
+                return reduce(PIKA_MOVE(workitems), PIKA_MOVE(errors),
+                    PIKA_FORWARD(F2, f2));
             }
 
             template <typename ExPolicy_, typename FwdIter, typename Stride,
@@ -215,8 +218,8 @@ namespace pika { namespace parallel { namespace util {
                     handle_local_exceptions::call(
                         std::current_exception(), errors);
                 }
-                return reduce(
-                    PIKA_MOVE(workitems), PIKA_MOVE(errors), PIKA_FORWARD(F2, f2));
+                return reduce(PIKA_MOVE(workitems), PIKA_MOVE(errors),
+                    PIKA_FORWARD(F2, f2));
             }
 
             template <typename ExPolicy_, typename FwdIter, typename F1,
@@ -246,8 +249,8 @@ namespace pika { namespace parallel { namespace util {
                     handle_local_exceptions::call(
                         std::current_exception(), errors);
                 }
-                return reduce(
-                    PIKA_MOVE(workitems), PIKA_MOVE(errors), PIKA_FORWARD(F2, f2));
+                return reduce(PIKA_MOVE(workitems), PIKA_MOVE(errors),
+                    PIKA_FORWARD(F2, f2));
             }
 
         private:

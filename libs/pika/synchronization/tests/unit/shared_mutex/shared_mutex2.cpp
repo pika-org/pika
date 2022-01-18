@@ -24,8 +24,8 @@
 
 #define CHECK_LOCKED_VALUE_EQUAL(mutex_name, value, expected_value)            \
     {                                                                          \
-        std::unique_lock<pika::lcos::local::mutex> lock(mutex_name);            \
-        PIKA_TEST_EQ(value, expected_value);                                    \
+        std::unique_lock<pika::lcos::local::mutex> lock(mutex_name);           \
+        PIKA_TEST_EQ(value, expected_value);                                   \
     }
 
 void test_only_one_upgrade_lock_permitted()
@@ -109,9 +109,9 @@ void test_can_lock_upgrade_if_currently_locked_shared()
         pika::this_thread::yield();
 
         pool.create_thread(
-            test::locking_thread<pika::upgrade_lock<shared_mutex_type>>(rw_mutex,
-                unblocked_count, unblocked_count_mutex, unblocked_condition,
-                finish_mutex, simultaneous_running_count,
+            test::locking_thread<pika::upgrade_lock<shared_mutex_type>>(
+                rw_mutex, unblocked_count, unblocked_count_mutex,
+                unblocked_condition, finish_mutex, simultaneous_running_count,
                 max_simultaneous_running));
 
         {

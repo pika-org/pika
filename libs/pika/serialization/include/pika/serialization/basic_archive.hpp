@@ -78,7 +78,7 @@ namespace pika { namespace serialization {
         bool enable_compression() const
         {
             return (flags_ & pika::serialization::enable_compression) ? true :
-                                                                       false;
+                                                                        false;
         }
 
         bool endian_big() const
@@ -100,8 +100,9 @@ namespace pika { namespace serialization {
 
         bool disable_data_chunking() const
         {
-            return (flags_ & pika::serialization::disable_data_chunking) ? true :
-                                                                          false;
+            return (flags_ & pika::serialization::disable_data_chunking) ?
+                true :
+                false;
         }
 
         std::uint32_t flags() const

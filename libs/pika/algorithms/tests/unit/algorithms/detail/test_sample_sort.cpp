@@ -219,7 +219,8 @@ void test7()
 
     range<std::uint64_t*> Rbuf(&B[1000], (&B[1000]) + NELEM);
     sample_sort(parallel_executor{}, A.begin(), A.end(),
-        std::less<std::uint64_t>(), pika::threads::hardware_concurrency(), Rbuf);
+        std::less<std::uint64_t>(), pika::threads::hardware_concurrency(),
+        Rbuf);
 
     for (iter_t it = A.begin() + 1; it != A.end(); ++it)
     {
@@ -236,7 +237,8 @@ void test7()
         A.push_back(NELEM - i);
 
     sample_sort(parallel_executor{}, A.begin(), A.end(),
-        std::less<std::uint64_t>(), pika::threads::hardware_concurrency(), Rbuf);
+        std::less<std::uint64_t>(), pika::threads::hardware_concurrency(),
+        Rbuf);
 
     for (iter_t it = A.begin() + 1; it != A.end(); ++it)
     {

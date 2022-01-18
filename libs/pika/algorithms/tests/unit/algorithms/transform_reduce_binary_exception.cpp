@@ -34,7 +34,7 @@ void test_transform_reduce_binary_exception(IteratorTag)
     try
     {
         pika::transform_reduce(decorated_iterator(std::begin(c),
-                                  []() { throw std::runtime_error("test"); }),
+                                   []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), std::begin(d), init);
         PIKA_TEST(false);
     }

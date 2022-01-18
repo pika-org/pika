@@ -44,15 +44,17 @@ void parameters_test_impl(Parameters&&... params)
     pika::execution::sequenced_executor seq_exec;
     test_for_each(
         pika::execution::seq.on(seq_exec).with(params...), iterator_tag());
-    test_for_each_async(
-        pika::execution::seq(pika::execution::task).on(seq_exec).with(params...),
+    test_for_each_async(pika::execution::seq(pika::execution::task)
+                            .on(seq_exec)
+                            .with(params...),
         iterator_tag());
 
     pika::execution::parallel_executor par_exec;
     test_for_each(
         pika::execution::par.on(par_exec).with(params...), iterator_tag());
-    test_for_each_async(
-        pika::execution::par(pika::execution::task).on(par_exec).with(params...),
+    test_for_each_async(pika::execution::par(pika::execution::task)
+                            .on(par_exec)
+                            .with(params...),
         iterator_tag());
 }
 

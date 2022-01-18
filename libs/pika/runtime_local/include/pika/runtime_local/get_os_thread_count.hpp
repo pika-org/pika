@@ -32,6 +32,5 @@ namespace pika {
     /// threads used by pika.
     ///
     /// \param exec [in] The executor to be used.
-    PIKA_EXPORT std::size_t get_os_thread_count(
-        threads::executor const& exec);
+    PIKA_EXPORT std::size_t get_os_thread_count(threads::executor const& exec);
 }    // namespace pika

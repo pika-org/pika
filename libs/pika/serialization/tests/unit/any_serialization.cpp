@@ -87,8 +87,8 @@ int pika_main()
         any_type any_in;
         in(buffer, any_in);
         PIKA_TEST(any.type() == any_in.type());
-        PIKA_TEST_EQ(
-            pika::any_cast<big_object>(any), pika::any_cast<big_object>(any_in));
+        PIKA_TEST_EQ(pika::any_cast<big_object>(any),
+            pika::any_cast<big_object>(any_in));
     }
 
     return pika::local::finalize();

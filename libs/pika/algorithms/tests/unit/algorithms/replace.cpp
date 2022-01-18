@@ -63,8 +63,8 @@ void test_replace(ExPolicy policy, IteratorTag)
 
     std::size_t idx = std::rand() % c.size();    //-V104
 
-    pika::replace(policy, iterator(std::begin(c)), iterator(std::end(c)), c[idx],
-        c[idx] + 1);
+    pika::replace(policy, iterator(std::begin(c)), iterator(std::end(c)),
+        c[idx], c[idx] + 1);
 
     std::replace(std::begin(d), std::end(d), d[idx], d[idx] + 1);
 
@@ -141,7 +141,7 @@ void test_replace_exception(IteratorTag)
     try
     {
         pika::replace(decorated_iterator(std::begin(c),
-                         []() { throw std::runtime_error("test"); }),
+                          []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), std::size_t(42), std::size_t(43));
         PIKA_TEST(false);
     }

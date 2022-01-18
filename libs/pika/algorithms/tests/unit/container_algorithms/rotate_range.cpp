@@ -229,10 +229,11 @@ void test_rotate_exception(IteratorTag)
     bool caught_exception = false;
     try
     {
-        pika::ranges::rotate(pika::util::make_iterator_range(
-                                decorated_iterator(std::begin(c),
-                                    []() { throw std::runtime_error("test"); }),
-                                decorated_iterator(std::end(c))),
+        pika::ranges::rotate(
+            pika::util::make_iterator_range(
+                decorated_iterator(
+                    std::begin(c), []() { throw std::runtime_error("test"); }),
+                decorated_iterator(std::end(c))),
             decorated_iterator(mid));
         PIKA_TEST(false);
     }
@@ -382,9 +383,9 @@ void test_rotate_bad_alloc(IteratorTag)
     try
     {
         pika::ranges::rotate(pika::util::make_iterator_range(
-                                decorated_iterator(std::begin(c),
-                                    []() { throw std::bad_alloc(); }),
-                                decorated_iterator(std::end(c))),
+                                 decorated_iterator(std::begin(c),
+                                     []() { throw std::bad_alloc(); }),
+                                 decorated_iterator(std::end(c))),
             decorated_iterator(mid));
         PIKA_TEST(false);
     }

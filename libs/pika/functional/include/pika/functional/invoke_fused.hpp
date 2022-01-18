@@ -95,7 +95,8 @@ namespace pika { namespace util {
     /// \tparam R The result type of the function when it's called
     ///           with the content of the given sequenced type.
     template <typename R, typename F, typename Tuple>
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE R invoke_fused_r(F&& f, Tuple&& t)
+    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE R invoke_fused_r(
+        F&& f, Tuple&& t)
     {
         using index_pack = typename detail::fused_index_pack<Tuple>::type;
         return util::void_guard<R>(),

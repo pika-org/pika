@@ -233,8 +233,8 @@ namespace pika { namespace execution { namespace experimental {
         template <typename F, typename Future, typename... Ts>
         decltype(auto) then_execute(F&& f, Future&& predecessor, Ts&&... ts)
         {
-            auto&& predecessor_transfer_sched =
-                transfer(keep_future(PIKA_FORWARD(Future, predecessor)), sched_);
+            auto&& predecessor_transfer_sched = transfer(
+                keep_future(PIKA_FORWARD(Future, predecessor)), sched_);
 
             return make_future(then(PIKA_MOVE(predecessor_transfer_sched),
                 pika::util::bind_back(
@@ -292,10 +292,10 @@ namespace pika { namespace execution { namespace experimental {
                         });
                 };
 
-                start_detached(
-                    bulk(transfer_just(sched_, PIKA_MOVE(promises),
-                             PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...),
-                        n, PIKA_MOVE(f_helper)));
+                start_detached(bulk(
+                    transfer_just(sched_, PIKA_MOVE(promises),
+                        PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...),
+                    n, PIKA_MOVE(f_helper)));
 
                 return results;
             }
@@ -332,9 +332,9 @@ namespace pika { namespace execution { namespace experimental {
             else
             {
                 // the overall return value is future<std::vector<result_type>>
-                auto prereq =
-                    when_all(keep_future(PIKA_FORWARD(Future, predecessor)),
-                        just(std::vector<result_type>(pika::util::size(shape))));
+                auto prereq = when_all(
+                    keep_future(PIKA_FORWARD(Future, predecessor)),
+                    just(std::vector<result_type>(pika::util::size(shape))));
 
                 auto loop = bulk(transfer(PIKA_MOVE(prereq), sched_), shape,
                     detail::captured_args_then(

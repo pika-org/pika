@@ -280,14 +280,14 @@ namespace pika { namespace traits {
         };
 
         template <typename Iter>
-        struct satisfy_traversal_concept<Iter, pika::bidirectional_traversal_tag>
-          : bidirectional_concept<Iter>
+        struct satisfy_traversal_concept<Iter,
+            pika::bidirectional_traversal_tag> : bidirectional_concept<Iter>
         {
         };
 
         template <typename Iter>
-        struct satisfy_traversal_concept<Iter, pika::random_access_traversal_tag>
-          : random_access_concept<Iter>
+        struct satisfy_traversal_concept<Iter,
+            pika::random_access_traversal_tag> : random_access_concept<Iter>
         {
         };
     }    // namespace detail

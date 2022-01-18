@@ -238,7 +238,6 @@ function(pika_add_executable name)
     FOLDER ${${name}_FOLDER}
     COMPILE_FLAGS ${${name}_COMPILE_FLAGS}
     LINK_FLAGS ${${name}_LINK_FLAGS}
-    DEPENDENCIES ${${name}_DEPENDENCIES}
-    ${_target_flags}
+    DEPENDENCIES ${${name}_DEPENDENCIES} ${_target_flags}
   )
 endfunction()

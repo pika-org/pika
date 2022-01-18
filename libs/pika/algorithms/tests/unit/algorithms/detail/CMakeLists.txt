@@ -30,7 +30,5 @@ foreach(test ${tests})
     ${test}_test PRIVATE pika_iterator_support_test_utilities
   )
 
-  pika_add_unit_test(
-    "modules.algorithms.detail" ${test} ${${test}_PARAMETERS}
-  )
+  pika_add_unit_test("modules.algorithms.detail" ${test} ${${test}_PARAMETERS})
 endforeach()

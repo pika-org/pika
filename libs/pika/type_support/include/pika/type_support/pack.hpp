@@ -46,9 +46,9 @@ namespace pika { namespace util {
     struct make_index_pack
 #if defined(PIKA_HAVE_BUILTIN_INTEGER_PACK)
       : index_pack<__integer_pack(N)...>
-#elif (defined(PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ) &&                           \
-    !defined(PIKA_COMPUTE_DEVICE_CODE)) ||                                      \
-    (defined(PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ_CUDA) &&                        \
+#elif (defined(PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ) &&                          \
+    !defined(PIKA_COMPUTE_DEVICE_CODE)) ||                                     \
+    (defined(PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ_CUDA) &&                       \
         defined(PIKA_COMPUTE_DEVICE_CODE))
       : __make_integer_seq<pack_c, std::size_t, N>
 #else
@@ -161,9 +161,9 @@ namespace pika { namespace util {
         {
         };
 
-#if (defined(PIKA_HAVE_BUILTIN_TYPE_PACK_ELEMENT) &&                            \
-    !defined(PIKA_COMPUTE_DEVICE_CODE)) ||                                      \
-    (defined(PIKA_HAVE_BUILTIN_TYPE_PACK_ELEMENT_CUDA) &&                       \
+#if (defined(PIKA_HAVE_BUILTIN_TYPE_PACK_ELEMENT) &&                           \
+    !defined(PIKA_COMPUTE_DEVICE_CODE)) ||                                     \
+    (defined(PIKA_HAVE_BUILTIN_TYPE_PACK_ELEMENT_CUDA) &&                      \
         defined(PIKA_COMPUTE_DEVICE_CODE))
         template <std::size_t I, typename Ts, bool InBounds = (I < Ts::size)>
         struct at_index_impl : empty

@@ -133,7 +133,7 @@ void test_find_first_of_exception(IteratorTag)
     try
     {
         pika::find_first_of(decorated_iterator(std::begin(c),
-                               []() { throw std::runtime_error("test"); }),
+                                []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), std::begin(h), std::end(h));
         PIKA_TEST(false);
     }

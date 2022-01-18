@@ -313,8 +313,9 @@ namespace pika { namespace ranges {
                 "Requires random access iterator.");
 
             return pika::parallel::v1::detail::make_heap<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Comp, comp),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -372,8 +373,9 @@ namespace pika { namespace ranges {
                 typename std::iterator_traits<iterator_type>::value_type;
 
             return pika::parallel::v1::detail::make_heap<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                std::less<value_type>(), PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), std::less<value_type>(),
+                PIKA_FORWARD(Proj, proj));
         }
     } make_heap{};
 }}    // namespace pika::ranges

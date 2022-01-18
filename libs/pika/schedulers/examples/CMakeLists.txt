@@ -6,9 +6,7 @@
 
 if(PIKA_WITH_EXAMPLES)
   pika_add_pseudo_target(examples.modules.schedulers)
-  pika_add_pseudo_dependencies(
-    examples.modules examples.modules.schedulers
-  )
+  pika_add_pseudo_dependencies(examples.modules examples.modules.schedulers)
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
     pika_add_pseudo_target(tests.examples.modules.schedulers)
     pika_add_pseudo_dependencies(

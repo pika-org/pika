@@ -395,8 +395,8 @@ namespace pika { namespace parallel { namespace execution {
                     PIKA_MOVE(f), predecessor, PIKA_FORWARD(Ts, ts)...);
             }
             pika::future<R> (*then_execute)(void*,
-                then_execute_function_type&& f, pika::shared_future<void> const&,
-                Ts&&...);
+                then_execute_function_type&& f,
+                pika::shared_future<void> const&, Ts&&...);
 
             template <typename T>
             constexpr twoway_vtable(construct_vtable<T>) noexcept
@@ -809,8 +809,8 @@ namespace pika { namespace parallel { namespace execution {
             using function_type = typename vtable::async_execute_function_type;
 
             vtable const* vptr = static_cast<vtable const*>(base_type::vptr);
-            return vptr->async_execute(object, function_type(PIKA_FORWARD(F, f)),
-                PIKA_FORWARD(Ts, ts)...);
+            return vptr->async_execute(object,
+                function_type(PIKA_FORWARD(F, f)), PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename Future>

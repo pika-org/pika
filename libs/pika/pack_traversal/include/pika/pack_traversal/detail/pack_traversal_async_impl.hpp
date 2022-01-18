@@ -214,8 +214,8 @@ namespace pika {
                 other_allocator const& alloc,
                 async_traverse_in_place_tag<Visitor> tag,
                 MapperArg&& mapper_arg, Args... args)
-              : base_type(
-                    tag, PIKA_FORWARD(MapperArg, mapper_arg), PIKA_MOVE(args)...)
+              : base_type(tag, PIKA_FORWARD(MapperArg, mapper_arg),
+                    PIKA_MOVE(args)...)
               , alloc_(alloc)
             {
             }
@@ -382,8 +382,8 @@ namespace pika {
             bool& detached_;
 
         public:
-            explicit async_traversal_point(
-                Frame frame, pika::tuple<Hierarchy...> hierarchy, bool& detached)
+            explicit async_traversal_point(Frame frame,
+                pika::tuple<Hierarchy...> hierarchy, bool& detached)
               : frame_(PIKA_MOVE(frame))
               , hierarchy_(PIKA_MOVE(hierarchy))
               , detached_(detached)
@@ -603,7 +603,8 @@ namespace pika {
                     // Don't forward the arguments here, since we still need
                     // the objects in a valid state later.
                     traversal_point_of_t<Frame, Parent, Hierarchy...> point(
-                        frame, pika::make_tuple(parent, hierarchy...), detached);
+                        frame, pika::make_tuple(parent, hierarchy...),
+                        detached);
 
                     point.async_traverse(PIKA_FORWARD(Current, current));
 
@@ -668,8 +669,8 @@ namespace pika {
             // Create an intrusive_ptr without increasing its reference count
             // (it's already 'one').
             auto frame = typename types::frame_pointer_type(new
-                typename types::frame_type(
-                    PIKA_FORWARD(Visitor, visitor), PIKA_FORWARD(Args, args)...),
+                typename types::frame_type(PIKA_FORWARD(Visitor, visitor),
+                    PIKA_FORWARD(Args, args)...),
                 false);
 
             // Create a static range for the top level tuple

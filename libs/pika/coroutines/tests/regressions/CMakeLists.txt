@@ -19,7 +19,5 @@ foreach(test ${tests})
     FOLDER "Tests/Regressions/Modules/Local/Coroutines"
   )
 
-  pika_add_regression_test(
-    "modules.coroutines" ${test} ${${test}_PARAMETERS}
-  )
+  pika_add_regression_test("modules.coroutines" ${test} ${${test}_PARAMETERS})
 endforeach()

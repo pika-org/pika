@@ -67,7 +67,8 @@ void test_for_each_seq(IteratorTag)
     std::iota(std::begin(c), std::end(c), gen());
 
     set_42 f;
-    auto res = pika::for_each(iterator(std::begin(c)), iterator(std::end(c)), f);
+    auto res =
+        pika::for_each(iterator(std::begin(c)), iterator(std::end(c)), f);
 
     // verify values
     std::size_t count = 0;

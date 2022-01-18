@@ -50,7 +50,8 @@ void member_range()
 {
     typedef member range;
 
-    PIKA_TEST_MSG((pika::traits::is_range<range>::value == true), "member-const");
+    PIKA_TEST_MSG(
+        (pika::traits::is_range<range>::value == true), "member-const");
     PIKA_TEST_MSG(
         (pika::traits::is_range<range const>::value == true), "member-const");
 }

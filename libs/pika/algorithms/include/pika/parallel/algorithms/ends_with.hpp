@@ -212,8 +212,9 @@ namespace pika { namespace parallel { inline namespace v1 {
                 return pika::parallel::v1::detail::equal_binary().call(
                     PIKA_FORWARD(ExPolicy, policy),
                     std::next(PIKA_MOVE(first1), drop), PIKA_MOVE(last1),
-                    PIKA_MOVE(first2), PIKA_MOVE(last2), PIKA_FORWARD(Pred, pred),
-                    PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
+                    PIKA_MOVE(first2), PIKA_MOVE(last2),
+                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
+                    PIKA_FORWARD(Proj2, proj2));
             }
         };
         /// \endcond

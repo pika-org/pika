@@ -19,16 +19,19 @@ void static_checks()
         "pika::is_execution_policy<std::execution::parallel_policy>::value");
     static_assert(pika::is_execution_policy<
                       std::execution::parallel_unsequenced_policy>::value,
-        "pika::is_execution_policy<std::execution::parallel_unsequenced_policy>:"
+        "pika::is_execution_policy<std::execution::parallel_unsequenced_policy>"
+        ":"
         ":value");
 
     static_assert(pika::is_sequenced_execution_policy<
                       std::execution::sequenced_policy>::value,
-        "pika::is_sequenced_execution_policy<std::execution::sequenced_policy>::"
+        "pika::is_sequenced_execution_policy<std::execution::sequenced_policy>:"
+        ":"
         "value");
     static_assert(!pika::is_sequenced_execution_policy<
                       std::execution::parallel_policy>::value,
-        "!pika::is_sequenced_execution_policy<std::execution::parallel_policy>::"
+        "!pika::is_sequenced_execution_policy<std::execution::parallel_policy>:"
+        ":"
         "value");
     static_assert(!pika::is_sequenced_execution_policy<
                       std::execution::parallel_unsequenced_policy>::value,
@@ -37,7 +40,8 @@ void static_checks()
 
     static_assert(!pika::is_parallel_execution_policy<
                       std::execution::sequenced_policy>::value,
-        "!pika::is_sequenced_execution_policy<std::execution::sequenced_policy>:"
+        "!pika::is_sequenced_execution_policy<std::execution::sequenced_policy>"
+        ":"
         ":value");
     static_assert(pika::is_parallel_execution_policy<
                       std::execution::parallel_policy>::value,
@@ -54,11 +58,13 @@ void static_checks()
         "pika::is_execution_policy<std::execution::unsequenced_policy>::value");
     static_assert(pika::is_sequenced_execution_policy<
                       std::execution::unsequenced_policy>::value,
-        "pika::is_sequenced_execution_policy<std::execution::unsequenced_policy>"
+        "pika::is_sequenced_execution_policy<std::execution::unsequenced_"
+        "policy>"
         "::value");
     static_assert(!pika::is_parallel_execution_policy<
                       std::execution::unsequenced_policy>::value,
-        "!pika::is_parallel_execution_policy<std::execution::unsequenced_policy>"
+        "!pika::is_parallel_execution_policy<std::execution::unsequenced_"
+        "policy>"
         "::value");
 #endif
 }

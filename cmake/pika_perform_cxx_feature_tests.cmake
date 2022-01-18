@@ -55,13 +55,9 @@ function(pika_perform_cxx_feature_tests)
     DEFINITIONS PIKA_HAVE_CXX17_STD_TRANSFORM_SCAN_ALGORITHMS
   )
 
-  pika_check_for_cxx17_std_scan(
-    DEFINITIONS PIKA_HAVE_CXX17_STD_SCAN_ALGORITHMS
-  )
+  pika_check_for_cxx17_std_scan(DEFINITIONS PIKA_HAVE_CXX17_STD_SCAN_ALGORITHMS)
 
-  pika_check_for_cxx17_copy_elision(
-    DEFINITIONS PIKA_HAVE_CXX17_COPY_ELISION
-  )
+  pika_check_for_cxx17_copy_elision(DEFINITIONS PIKA_HAVE_CXX17_COPY_ELISION)
 
   pika_check_for_cxx17_memory_resource(
     DEFINITIONS PIKA_HAVE_CXX17_MEMORY_RESOURCE

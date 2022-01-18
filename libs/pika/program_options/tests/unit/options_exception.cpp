@@ -204,8 +204,9 @@ void test_multiple_occurrences_with_different_names()
     {
         PIKA_TEST((e.get_option_name() == "--cfgfile") ||
             (e.get_option_name() == "--config-file"));
-        PIKA_TEST((string(e.what()) ==
-                     "option '--cfgfile' cannot be specified more than once") ||
+        PIKA_TEST(
+            (string(e.what()) ==
+                "option '--cfgfile' cannot be specified more than once") ||
             (string(e.what()) ==
                 "option '--config-file' cannot be specified more than once"));
     }

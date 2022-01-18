@@ -55,8 +55,8 @@ void test_sorted_until1_async(ExPolicy p, IteratorTag)
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), 0);
 
-    pika::future<iterator> f =
-        pika::is_sorted_until(p, iterator(std::begin(c)), iterator(std::end(c)));
+    pika::future<iterator> f = pika::is_sorted_until(
+        p, iterator(std::begin(c)), iterator(std::end(c)));
 
     base_iterator test_index = std::end(c);
 
@@ -415,7 +415,7 @@ void test_sorted_until_seq_exception(IteratorTag)
     try
     {
         pika::is_sorted_until(decorated_iterator(std::begin(c),
-                                 []() { throw std::runtime_error("test"); }),
+                                  []() { throw std::runtime_error("test"); }),
             decorated_iterator(
                 std::end(c), []() { throw std::runtime_error("test"); }));
     }

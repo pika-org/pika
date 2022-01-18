@@ -22,8 +22,7 @@ namespace pika_start {
     // to make sure that these variables are defined correctly in cases
     // where pika_main functionalities are not used.
     PIKA_SYMBOL_EXPORT bool is_linked __attribute__((weak)) = false;
-    PIKA_SYMBOL_EXPORT bool include_libpika_wrap __attribute__((weak)) =
-        false;
+    PIKA_SYMBOL_EXPORT bool include_libpika_wrap __attribute__((weak)) = false;
 }    // namespace pika_start
 
 #endif
@@ -51,13 +50,13 @@ namespace pika { namespace threads { namespace detail {
         }
         else
         {
-                    PIKA_THROW_EXCEPTION(invalid_status,
-                        "pika::threads::detail::get_self_or_default_pool",
-                        "Attempting to register a thread outside the pika "
-                        "runtime and no default pool handler is installed. "
-                        "Did you mean to run this on an pika thread?");
-                }
+            PIKA_THROW_EXCEPTION(invalid_status,
+                "pika::threads::detail::get_self_or_default_pool",
+                "Attempting to register a thread outside the pika "
+                "runtime and no default pool handler is installed. "
+                "Did you mean to run this on an pika thread?");
+        }
 
-                return pool;
-            }
+        return pool;
+    }
 }}}    // namespace pika::threads::detail

@@ -159,7 +159,8 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
                 {
                     auto end_value1 = PIKA_INVOKE(proj1, first1[end1 - 1]);
 
-                    while (!PIKA_INVOKE(f, end_value1, end_value) && --end1 != 0)
+                    while (
+                        !PIKA_INVOKE(f, end_value1, end_value) && --end1 != 0)
                     {
                         end_value = PIKA_MOVE(end_value1);
                         end_value1 = PIKA_INVOKE(proj1, first1[end1 - 1]);

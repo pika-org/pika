@@ -186,8 +186,8 @@ namespace pika { namespace parallel { inline namespace v2 {
                     "the task_block is not active");
             }
 
-            tasks_.run(
-                policy_.executor(), PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            tasks_.run(policy_.executor(), PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Ts, ts)...);
         }
 
         /// Causes the expression f() to be invoked asynchronously using the

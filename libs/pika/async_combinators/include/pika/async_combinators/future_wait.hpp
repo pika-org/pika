@@ -206,7 +206,8 @@ namespace pika { namespace lcos {
     /// expected value directly (without wrapping it into a tuple).
     template <typename Future, typename F>
     PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use pika::wait_each "
+        "pika::lcos::wait is deprecated and will be removed. Use "
+        "pika::wait_each "
         "instead.")
     std::enable_if_t<!std::is_void_v<traits::future_traits_t<Future>>,
         std::size_t> wait(Future&& f1, F&& f)
@@ -217,7 +218,8 @@ namespace pika { namespace lcos {
 
     template <typename Future, typename F>
     PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use pika::wait_each "
+        "pika::lcos::wait is deprecated and will be removed. Use "
+        "pika::wait_each "
         "instead.")
     std::enable_if_t<std::is_void_v<traits::future_traits_t<Future>>,
         std::size_t> wait(Future&& f1, F&& f)
@@ -233,7 +235,8 @@ namespace pika { namespace lcos {
     // results to be there.
     template <typename Future, typename F>
     PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use pika::wait_each "
+        "pika::lcos::wait is deprecated and will be removed. Use "
+        "pika::wait_each "
         "instead.")
     inline std::size_t wait(std::vector<Future>& lazy_values, F&& f,
         std::int32_t /* suspend_for */ = 10)
@@ -262,7 +265,8 @@ namespace pika { namespace lcos {
 
     template <typename Future, typename F>
     PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use pika::wait_each "
+        "pika::lcos::wait is deprecated and will be removed. Use "
+        "pika::wait_each "
         "instead.")
     inline std::size_t wait(
         std::vector<Future>&& lazy_values, F&& f, std::int32_t suspend_for = 10)
@@ -272,7 +276,8 @@ namespace pika { namespace lcos {
 
     template <typename Future, typename F>
     PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait is deprecated and will be removed. Use pika::wait_each "
+        "pika::lcos::wait is deprecated and will be removed. Use "
+        "pika::wait_each "
         "instead.")
     inline std::size_t wait(std::vector<Future> const& lazy_values, F&& f,
         std::int32_t /* suspend_for */ = 10)

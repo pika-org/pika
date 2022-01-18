@@ -1120,7 +1120,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::replace_if is deprecated, use pika::ranges::replace_if "
+        "pika::parallel::replace_if is deprecated, use "
+        "pika::ranges::replace_if "
         "instead") typename util::detail::algorithm_result<ExPolicy,
         typename pika::traits::range_traits<Rng>::iterator_type>::type
         replace_if(ExPolicy&& policy, Rng&& rng, F&& f, T const& new_value,
@@ -1517,7 +1518,8 @@ namespace pika { namespace ranges {
 
             return pika::parallel::v1::detail::replace_copy_if<
                 pika::parallel::util::in_out_result<
-                    typename pika::traits::range_iterator<Rng>::type, OutIter>>()
+                    typename pika::traits::range_iterator<Rng>::type,
+                    OutIter>>()
                 .call(pika::execution::seq, pika::util::begin(rng),
                     pika::util::end(rng), dest, PIKA_FORWARD(Pred, pred),
                     new_value, PIKA_FORWARD(Proj, proj));
@@ -1572,7 +1574,8 @@ namespace pika { namespace ranges {
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
             replace_copy_if_result<
-                typename pika::traits::range_iterator<Rng>::type, FwdIter>>::type
+                typename pika::traits::range_iterator<Rng>::type,
+                FwdIter>>::type
         tag_fallback_invoke(pika::ranges::replace_copy_if_t, ExPolicy&& policy,
             Rng&& rng, FwdIter dest, Pred&& pred, T const& new_value,
             Proj&& proj = Proj())
@@ -1587,7 +1590,8 @@ namespace pika { namespace ranges {
 
             return pika::parallel::v1::detail::replace_copy_if<
                 pika::parallel::util::in_out_result<
-                    typename pika::traits::range_iterator<Rng>::type, FwdIter>>()
+                    typename pika::traits::range_iterator<Rng>::type,
+                    FwdIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng), dest, PIKA_FORWARD(Pred, pred),
                     new_value, PIKA_FORWARD(Proj, proj));
@@ -1660,8 +1664,8 @@ namespace pika { namespace ranges {
                 Type;
 
             return pika::ranges::replace_copy_if(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                dest,
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), dest,
                 [old_value](Type const& a) -> bool { return old_value == a; },
                 new_value, PIKA_FORWARD(Proj, proj));
         }
@@ -1713,7 +1717,8 @@ namespace pika { namespace ranges {
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            replace_copy_result<typename pika::traits::range_iterator<Rng>::type,
+            replace_copy_result<
+                typename pika::traits::range_iterator<Rng>::type,
                 FwdIter>>::type
         tag_fallback_invoke(pika::ranges::replace_copy_t, ExPolicy&& policy,
             Rng&& rng, FwdIter dest, T1 const& old_value, T2 const& new_value,

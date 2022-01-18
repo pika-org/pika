@@ -108,7 +108,8 @@ namespace pika {
     // extension:
     template <typename T>
     struct is_sequenced_execution_policy
-      : pika::detail::is_sequenced_execution_policy<typename std::decay<T>::type>
+      : pika::detail::is_sequenced_execution_policy<
+            typename std::decay<T>::type>
     {
     };
 
@@ -176,7 +177,8 @@ namespace pika { namespace parallel { namespace execution {
 
     template <typename T>
     using is_parallel_execution_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::is_parallel_execution_policy is deprecated, "
+        "pika::parallel::execution::is_parallel_execution_policy is "
+        "deprecated, "
         "use pika::is_parallel_execution_policy instead") =
         pika::is_parallel_execution_policy<T>;
 

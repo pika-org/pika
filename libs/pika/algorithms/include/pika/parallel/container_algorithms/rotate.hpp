@@ -410,10 +410,10 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::rotate is deprecated, use pika::ranges::rotate instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<pika::traits::range_iterator_t<Rng>,
-                pika::traits::range_iterator_t<Rng>>>::type
+        "pika::parallel::rotate is deprecated, use pika::ranges::rotate "
+        "instead") typename util::detail::algorithm_result<ExPolicy,
+        util::in_out_result<pika::traits::range_iterator_t<Rng>,
+            pika::traits::range_iterator_t<Rng>>>::type
         rotate(ExPolicy&& policy, Rng&& rng,
             pika::traits::range_iterator_t<Rng> middle)
     {
@@ -438,8 +438,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 OutIter>>::type rotate_copy(ExPolicy&& policy, Rng&& rng,
             pika::traits::range_iterator_t<Rng> middle, OutIter dest_first)
     {
-        return rotate_copy(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            middle, pika::util::end(rng), dest_first);
+        return rotate_copy(PIKA_FORWARD(ExPolicy, policy),
+            pika::util::begin(rng), middle, pika::util::end(rng), dest_first);
     }
 }}}    // namespace pika::parallel::v1
 
@@ -508,9 +508,9 @@ namespace pika { namespace ranges {
             return pika::parallel::util::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::rotate<parallel::util::in_out_result<
-                    pika::traits::range_iterator_t<Rng>,
-                    typename pika::traits::range_sentinel<Rng>::type>>()
+                pika::parallel::v1::detail::rotate<parallel::util::
+                        in_out_result<pika::traits::range_iterator_t<Rng>,
+                            typename pika::traits::range_sentinel<Rng>::type>>()
                     .call(pika::execution::seq, pika::util::begin(rng), middle,
                         pika::util::end(rng)));
         }
@@ -525,8 +525,8 @@ namespace pika { namespace ranges {
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
             subrange_t<pika::traits::range_iterator_t<Rng>,
                 pika::traits::range_iterator_t<Rng>>>::type
-        tag_fallback_invoke(pika::ranges::rotate_t, ExPolicy&& policy, Rng&& rng,
-            pika::traits::range_iterator_t<Rng> middle)
+        tag_fallback_invoke(pika::ranges::rotate_t, ExPolicy&& policy,
+            Rng&& rng, pika::traits::range_iterator_t<Rng> middle)
         {
             using is_seq = std::integral_constant<bool,
                 pika::is_sequenced_execution_policy_v<ExPolicy> ||
@@ -536,9 +536,9 @@ namespace pika { namespace ranges {
             return pika::parallel::util::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::rotate<parallel::util::in_out_result<
-                    pika::traits::range_iterator_t<Rng>,
-                    typename pika::traits::range_sentinel<Rng>::type>>()
+                pika::parallel::v1::detail::rotate<parallel::util::
+                        in_out_result<pika::traits::range_iterator_t<Rng>,
+                            typename pika::traits::range_sentinel<Rng>::type>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(),
                         pika::util::begin(rng), middle, pika::util::end(rng)));
         }

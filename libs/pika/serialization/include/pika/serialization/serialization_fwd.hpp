@@ -36,42 +36,42 @@ namespace pika { namespace serialization {
 
 }}    // namespace pika::serialization
 
-#define PIKA_SERIALIZATION_SPLIT_MEMBER()                                       \
-    void serialize(pika::serialization::input_archive& ar, unsigned)            \
+#define PIKA_SERIALIZATION_SPLIT_MEMBER()                                      \
+    void serialize(pika::serialization::input_archive& ar, unsigned)           \
     {                                                                          \
         load(ar, 0);                                                           \
     }                                                                          \
-    void serialize(pika::serialization::output_archive& ar, unsigned) const     \
+    void serialize(pika::serialization::output_archive& ar, unsigned) const    \
     {                                                                          \
         save(ar, 0);                                                           \
     }                                                                          \
     /**/
 
-#define PIKA_SERIALIZATION_SPLIT_FREE(T)                                        \
-    PIKA_FORCEINLINE void serialize(                                            \
-        pika::serialization::input_archive& ar, T& t, unsigned)                 \
+#define PIKA_SERIALIZATION_SPLIT_FREE(T)                                       \
+    PIKA_FORCEINLINE void serialize(                                           \
+        pika::serialization::input_archive& ar, T& t, unsigned)                \
     {                                                                          \
         load(ar, t, 0);                                                        \
     }                                                                          \
-    PIKA_FORCEINLINE void serialize(                                            \
-        pika::serialization::output_archive& ar, T& t, unsigned)                \
+    PIKA_FORCEINLINE void serialize(                                           \
+        pika::serialization::output_archive& ar, T& t, unsigned)               \
     {                                                                          \
         save(ar, const_cast<std::add_const_t<T>&>(t), 0);                      \
     }                                                                          \
     /**/
 
-#define PIKA_SERIALIZATION_SPLIT_FREE_TEMPLATE(TEMPLATE, ARGS)                  \
-    PIKA_PP_STRIP_PARENS(TEMPLATE)                                              \
-    PIKA_FORCEINLINE void serialize(pika::serialization::input_archive& ar,      \
-        PIKA_PP_STRIP_PARENS(ARGS) & t, unsigned)                               \
+#define PIKA_SERIALIZATION_SPLIT_FREE_TEMPLATE(TEMPLATE, ARGS)                 \
+    PIKA_PP_STRIP_PARENS(TEMPLATE)                                             \
+    PIKA_FORCEINLINE void serialize(pika::serialization::input_archive& ar,    \
+        PIKA_PP_STRIP_PARENS(ARGS) & t, unsigned)                              \
     {                                                                          \
         load(ar, t, 0);                                                        \
     }                                                                          \
-    PIKA_PP_STRIP_PARENS(TEMPLATE)                                              \
-    PIKA_FORCEINLINE void serialize(pika::serialization::output_archive& ar,     \
-        PIKA_PP_STRIP_PARENS(ARGS) & t, unsigned)                               \
+    PIKA_PP_STRIP_PARENS(TEMPLATE)                                             \
+    PIKA_FORCEINLINE void serialize(pika::serialization::output_archive& ar,   \
+        PIKA_PP_STRIP_PARENS(ARGS) & t, unsigned)                              \
     {                                                                          \
-        save(ar, const_cast<std::add_const_t<PIKA_PP_STRIP_PARENS(ARGS)>&>(t),  \
+        save(ar, const_cast<std::add_const_t<PIKA_PP_STRIP_PARENS(ARGS)>&>(t), \
             0);                                                                \
     }                                                                          \
     /**/

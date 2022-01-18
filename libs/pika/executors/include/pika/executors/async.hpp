@@ -70,7 +70,8 @@ namespace pika { namespace detail {
         call(F&& f, Ts&&... ts)
         {
             return async_launch_policy_dispatch<std::decay_t<F>>::call(
-                pika::launch::async, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+                pika::launch::async, PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Ts, ts)...);
         }
     };
 

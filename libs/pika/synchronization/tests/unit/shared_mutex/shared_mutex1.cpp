@@ -25,8 +25,8 @@
 
 #define CHECK_LOCKED_VALUE_EQUAL(mutex_name, value, expected_value)            \
     {                                                                          \
-        std::unique_lock<pika::lcos::local::mutex> lock(mutex_name);            \
-        PIKA_TEST_EQ(value, expected_value);                                    \
+        std::unique_lock<pika::lcos::local::mutex> lock(mutex_name);           \
+        PIKA_TEST_EQ(value, expected_value);                                   \
     }
 
 void test_multiple_readers()

@@ -407,7 +407,8 @@ namespace pika { namespace ranges {
     ///           elements copied.
     ///
     template <typename ExPolicy, typename I, typename Sent, typename O,
-        typename Pred, typename Proj = pika::parallel::util::projection_identity>
+        typename Pred,
+        typename Proj = pika::parallel::util::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         remove_copy_if_result<I, O>>::type
     ranges::remove_copy_if(ExPolicy&& policy, I first, Sent last, O dest,

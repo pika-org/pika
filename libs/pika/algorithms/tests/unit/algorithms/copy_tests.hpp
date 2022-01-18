@@ -110,7 +110,7 @@ void test_copy_exception(IteratorTag)
     try
     {
         pika::copy(decorated_iterator(std::begin(c),
-                      []() { throw std::runtime_error("test"); }),
+                       []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), std::begin(d));
         PIKA_TEST(false);
     }

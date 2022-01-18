@@ -469,7 +469,8 @@ namespace pika { namespace experimental {
                             try
                             {
                                 pika::execution::experimental::set_value(
-                                    PIKA_MOVE(r), access_type{PIKA_MOVE(state)});
+                                    PIKA_MOVE(r),
+                                    access_type{PIKA_MOVE(state)});
                             }
                             catch (...)
                             {
@@ -480,7 +481,8 @@ namespace pika { namespace experimental {
 
                     if (os.prev_state)
                     {
-                        os.prev_state->add_continuation(PIKA_MOVE(continuation));
+                        os.prev_state->add_continuation(
+                            PIKA_MOVE(continuation));
 
                         // We release prev_state here to allow continuations to
                         // run. The operation state may otherwise keep it alive
@@ -661,7 +663,8 @@ namespace pika { namespace experimental {
                             try
                             {
                                 pika::execution::experimental::set_value(
-                                    PIKA_MOVE(r), access_type{PIKA_MOVE(state)});
+                                    PIKA_MOVE(r),
+                                    access_type{PIKA_MOVE(state)});
                             }
                             catch (...)
                             {
@@ -672,7 +675,8 @@ namespace pika { namespace experimental {
 
                     if (os.prev_state)
                     {
-                        os.prev_state->add_continuation(PIKA_MOVE(continuation));
+                        os.prev_state->add_continuation(
+                            PIKA_MOVE(continuation));
                         // We release prev_state here to allow continuations to
                         // run. The operation state may otherwise keep it alive
                         // longer than needed.

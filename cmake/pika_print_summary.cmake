@@ -67,9 +67,8 @@ function(pika_create_configuration_summary message module_name)
             PROPERTY TYPE
           )
           if(_type STREQUAL "BOOL")
-            set(pika_config_information
-                "${pika_config_information}"
-                "\n        \"${_variableName}=OFF\","
+            set(pika_config_information "${pika_config_information}"
+                                        "\n        \"${_variableName}=OFF\","
             )
           endif()
         endif()
@@ -78,9 +77,7 @@ function(pika_create_configuration_summary message module_name)
   endif()
 
   if(pika_config_information)
-    string(REPLACE ";" "" pika_config_information
-                   ${pika_config_information}
-    )
+    string(REPLACE ";" "" pika_config_information ${pika_config_information})
   endif()
 
   set(_base_dir_local "pika/local/config")

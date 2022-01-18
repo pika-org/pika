@@ -39,7 +39,8 @@ namespace pika {
     namespace local { namespace detail {
         PIKA_EXPORT bool parse_commandline(pika::util::section const& rtcfg,
             pika::program_options::options_description const& app_options,
-            std::string const& cmdline, pika::program_options::variables_map& vm,
+            std::string const& cmdline,
+            pika::program_options::variables_map& vm,
             int error_mode = util::return_on_error,
             pika::program_options::options_description* visible = nullptr,
             std::vector<std::string>* unregistered_options = nullptr);

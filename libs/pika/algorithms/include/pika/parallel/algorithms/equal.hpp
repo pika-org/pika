@@ -397,7 +397,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     util::loop_n<std::decay_t<ExPolicy>>(it, part_count, tok,
                         [&f, &tok](zip_iterator const& curr) mutable -> void {
                             reference t = *curr;
-                            if (!PIKA_INVOKE(f, pika::get<0>(t), pika::get<1>(t)))
+                            if (!PIKA_INVOKE(
+                                    f, pika::get<0>(t), pika::get<1>(t)))
                             {
                                 tok.cancel();
                             }
@@ -408,7 +409,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 return util::partitioner<ExPolicy, bool>::call(
                     PIKA_FORWARD(ExPolicy, policy),
                     pika::util::make_zip_iterator(first1, first2), count,
-                    PIKA_MOVE(f1), [](std::vector<pika::future<bool>>&& results) {
+                    PIKA_MOVE(f1),
+                    [](std::vector<pika::future<bool>>&& results) {
                         return std::all_of(pika::util::begin(results),
                             pika::util::end(results),
                             [](pika::future<bool>& val) { return val.get(); });
@@ -636,8 +638,9 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::equal().call(pika::execution::seq,
-                first1, last1, first2, PIKA_FORWARD(Pred, op));
+            return pika::parallel::v1::detail::equal().call(
+                pika::execution::seq, first1, last1, first2,
+                PIKA_FORWARD(Pred, op));
         }
 
         // clang-format off
@@ -655,8 +658,9 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::equal().call(pika::execution::seq,
-                first1, last1, first2, pika::parallel::v1::detail::equal_to{});
+            return pika::parallel::v1::detail::equal().call(
+                pika::execution::seq, first1, last1, first2,
+                pika::parallel::v1::detail::equal_to{});
         }
     } equal{};
 }    // namespace pika

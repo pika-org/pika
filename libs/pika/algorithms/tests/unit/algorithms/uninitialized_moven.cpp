@@ -29,7 +29,8 @@ void test_uninitialized_move_n(IteratorTag)
     std::vector<std::size_t> d(c.size());
     std::iota(std::begin(c), std::end(c), std::rand());
 
-    pika::uninitialized_move_n(iterator(std::begin(c)), c.size(), std::begin(d));
+    pika::uninitialized_move_n(
+        iterator(std::begin(c)), c.size(), std::begin(d));
 
     std::size_t count = 0;
     PIKA_TEST(std::equal(std::begin(c), std::end(c), std::begin(d),

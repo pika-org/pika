@@ -110,10 +110,10 @@ namespace pika { namespace traits {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-#define PIKA_UTIL_REGISTER_UNIQUE_FUNCTION_DECLARATION(Sig, F, Name)            \
-    PIKA_DECLARE_GET_FUNCTION_NAME(unique_function_vtable<Sig>, F, Name)        \
+#define PIKA_UTIL_REGISTER_UNIQUE_FUNCTION_DECLARATION(Sig, F, Name)           \
+    PIKA_DECLARE_GET_FUNCTION_NAME(unique_function_vtable<Sig>, F, Name)       \
     /**/
 
-#define PIKA_UTIL_REGISTER_UNIQUE_FUNCTION(Sig, F, Name)                        \
-    PIKA_DEFINE_GET_FUNCTION_NAME(unique_function_vtable<Sig>, F, Name)         \
+#define PIKA_UTIL_REGISTER_UNIQUE_FUNCTION(Sig, F, Name)                       \
+    PIKA_DEFINE_GET_FUNCTION_NAME(unique_function_vtable<Sig>, F, Name)        \
     /**/

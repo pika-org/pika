@@ -79,7 +79,8 @@ void test_unique_sent()
     auto end_len = std::rand() % 10006 + 1;
     c[end_len] = 10;
 
-    auto result = pika::ranges::unique(std::begin(c), sentinel<std::size_t>{10});
+    auto result =
+        pika::ranges::unique(std::begin(c), sentinel<std::size_t>{10});
     auto solution = std::unique(std::begin(d), std::begin(d) + end_len);
 
     bool equality =

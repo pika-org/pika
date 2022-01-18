@@ -219,8 +219,7 @@ namespace pika { namespace program_options {
         This is done since naming of environment variables is typically
         different from the naming of command line options.
     */
-    PIKA_EXPORT parsed_options parse_environment(
-        const options_description&,
+    PIKA_EXPORT parsed_options parse_environment(const options_description&,
         const std::function<std::string(std::string)>& name_mapper);
 
     /** Parse environment.
@@ -247,9 +246,9 @@ namespace pika { namespace program_options {
         Splitting is done in a unix style way, with respect to quotes '"'
         and escape characters '\'
     */
-    PIKA_EXPORT std::vector<std::string> split_unix(
-        const std::string& cmdline, const std::string& separator = " \t",
-        const std::string& quote = "'\"", const std::string& escape = "\\");
+    PIKA_EXPORT std::vector<std::string> split_unix(const std::string& cmdline,
+        const std::string& separator = " \t", const std::string& quote = "'\"",
+        const std::string& escape = "\\");
 
     /** @overload */
     PIKA_EXPORT std::vector<std::wstring> split_unix(

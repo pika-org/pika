@@ -7,9 +7,7 @@
 set(PIKA_SHORTENPSEUDOTARGET_LOADED TRUE)
 
 function(pika_shorten_pseudo_target target shortened_target)
-  pika_debug(
-    "pika_shorten_pseudo_target" "shortening pseudo target: ${target}"
-  )
+  pika_debug("pika_shorten_pseudo_target" "shortening pseudo target: ${target}")
   if(WIN32)
     set(args)
     foreach(arg ${target})

@@ -62,8 +62,7 @@ namespace pika { namespace threads { namespace policies {
         typename StagedQueuing = lockfree_fifo,
         typename TerminatedQueuing =
             default_local_priority_queue_scheduler_terminated_queue>
-    class PIKA_EXPORT local_priority_queue_scheduler
-      : public scheduler_base
+    class PIKA_EXPORT local_priority_queue_scheduler : public scheduler_base
     {
     public:
         typedef std::false_type has_periodic_maintenance;

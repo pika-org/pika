@@ -398,7 +398,7 @@ void test_set_intersection_bad_alloc(IteratorTag)
     try
     {
         pika::ranges::set_intersection(decorated_iterator(std::begin(c1),
-                                          []() { throw std::bad_alloc(); }),
+                                           []() { throw std::bad_alloc(); }),
             decorated_iterator(std::end(c1)), std::begin(c2), std::end(c2),
             std::begin(c3));
 

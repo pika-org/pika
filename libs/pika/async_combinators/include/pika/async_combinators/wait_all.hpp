@@ -239,7 +239,8 @@ namespace pika {
 
             template <std::size_t I>
             struct is_end
-              : std::integral_constant<bool, pika::tuple_size<Tuple>::value == I>
+              : std::integral_constant<bool,
+                    pika::tuple_size<Tuple>::value == I>
             {
             };
 
@@ -468,26 +469,30 @@ namespace pika {
     template <typename Future, std::size_t N>
     PIKA_FORCEINLINE void wait_all_nothrow(std::array<Future, N>& values)
     {
-        pika::wait_all_nothrow(const_cast<std::array<Future, N> const&>(values));
+        pika::wait_all_nothrow(
+            const_cast<std::array<Future, N> const&>(values));
     }
 
     template <typename Future, std::size_t N>
     PIKA_FORCEINLINE void wait_all(std::array<Future, N>& values)
     {
-        pika::wait_all_nothrow(const_cast<std::array<Future, N> const&>(values));
+        pika::wait_all_nothrow(
+            const_cast<std::array<Future, N> const&>(values));
         pika::detail::throw_if_exceptional(values);
     }
 
     template <typename Future, std::size_t N>
     PIKA_FORCEINLINE void wait_all_nothrow(std::array<Future, N>&& values)
     {
-        pika::wait_all_nothrow(const_cast<std::array<Future, N> const&>(values));
+        pika::wait_all_nothrow(
+            const_cast<std::array<Future, N> const&>(values));
     }
 
     template <typename Future, std::size_t N>
     PIKA_FORCEINLINE void wait_all(std::array<Future, N>&& values)
     {
-        pika::wait_all_nothrow(const_cast<std::array<Future, N> const&>(values));
+        pika::wait_all_nothrow(
+            const_cast<std::array<Future, N> const&>(values));
         pika::detail::throw_if_exceptional(values);
     }
 
@@ -563,7 +568,8 @@ namespace pika {
                 result_type(pika::traits::detail::get_shared_state(ts)...);
 
             // frame is initialized with initial reference count
-            pika::intrusive_ptr<frame_type> frame(new frame_type(values), false);
+            pika::intrusive_ptr<frame_type> frame(
+                new frame_type(values), false);
             frame->wait_all();
         }
     }

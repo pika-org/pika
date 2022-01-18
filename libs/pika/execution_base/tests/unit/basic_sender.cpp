@@ -99,8 +99,8 @@ struct sender_1
     struct operation_state
     {
         receiver& r;
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             pika::execution::experimental::set_value(std::move(os.r), 4711);
         };
@@ -128,8 +128,8 @@ struct sender_2
     struct operation_state
     {
         receiver& r;
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             pika::execution::experimental::set_value(std::move(os.r), 4711);
         };

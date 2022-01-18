@@ -32,7 +32,8 @@ namespace pika {
         static void invoke(std::true_type, F&& f, stop_token&& st, Ts&&... ts)
         {
             // pass the stop_token as first argument to the started thread:
-            PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_MOVE(st), PIKA_FORWARD(Ts, ts)...);
+            PIKA_INVOKE(
+                PIKA_FORWARD(F, f), PIKA_MOVE(st), PIKA_FORWARD(Ts, ts)...);
         }
 
     public:
@@ -257,7 +258,7 @@ namespace pika {
         }
 
     private:
-        stop_source ssource_;     // stop_source for started thread
+        stop_source ssource_;      // stop_source for started thread
         pika::thread thread_{};    // started thread (if any)
     };
 

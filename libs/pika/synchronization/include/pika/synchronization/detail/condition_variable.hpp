@@ -84,8 +84,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
 
         PIKA_EXPORT ~condition_variable();
 
-        PIKA_EXPORT bool empty(
-            std::unique_lock<mutex_type> const& lock) const;
+        PIKA_EXPORT bool empty(std::unique_lock<mutex_type> const& lock) const;
 
         PIKA_EXPORT std::size_t size(
             std::unique_lock<mutex_type> const& lock) const;
@@ -186,10 +185,8 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         util::cache_aligned_data_derived<detail::condition_variable> cond_;
 
     private:
-        friend PIKA_EXPORT void intrusive_ptr_add_ref(
-            condition_variable_data*);
-        friend PIKA_EXPORT void intrusive_ptr_release(
-            condition_variable_data*);
+        friend PIKA_EXPORT void intrusive_ptr_add_ref(condition_variable_data*);
+        friend PIKA_EXPORT void intrusive_ptr_release(condition_variable_data*);
 
         pika::util::atomic_count count_;
     };

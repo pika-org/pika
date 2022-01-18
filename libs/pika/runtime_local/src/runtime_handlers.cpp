@@ -137,7 +137,8 @@ namespace pika { namespace detail {
         pika::runtime* rt = get_runtime_ptr();
         if (rt == nullptr)
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "pika::detail::get_default_pool",
+            PIKA_THROW_EXCEPTION(invalid_status,
+                "pika::detail::get_default_pool",
                 "The runtime system is not active");
         }
 

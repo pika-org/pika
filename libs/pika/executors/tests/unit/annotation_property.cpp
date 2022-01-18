@@ -156,7 +156,7 @@ void test_then()
             pika::execution::experimental::with_annotation, executor{}, desc);
 
         PIKA_TEST(pika::parallel::execution::then_execute(exec, &test_f, f, 42)
-                     .get() != pika::this_thread::get_id());
+                      .get() != pika::this_thread::get_id());
         PIKA_TEST_EQ(annotation, desc);
     }
 
@@ -166,7 +166,7 @@ void test_then()
             pika::execution::experimental::with_annotation(executor{}, desc);
 
         PIKA_TEST(pika::parallel::execution::then_execute(exec, &test_f, f, 42)
-                     .get() != pika::this_thread::get_id());
+                      .get() != pika::this_thread::get_id());
         PIKA_TEST_EQ(annotation, desc);
     }
 }
@@ -241,13 +241,13 @@ void test_bulk_async()
             pika::execution::experimental::with_annotation, executor{}, desc);
 
         pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
-                          pika::util::bind(&bulk_test, _1, tid, _2), 107, 42))
+                           pika::util::bind(&bulk_test, _1, tid, _2), 107, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
         pika::when_all(pika::parallel::execution::bulk_async_execute(
-                          exec, &bulk_test, 107, tid, 42))
+                           exec, &bulk_test, 107, tid, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
     }
@@ -258,13 +258,13 @@ void test_bulk_async()
 
         annotation.clear();
         pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
-                          pika::util::bind(&bulk_test, _1, tid, _2), 107, 42))
+                           pika::util::bind(&bulk_test, _1, tid, _2), 107, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
         pika::when_all(pika::parallel::execution::bulk_async_execute(
-                          exec, &bulk_test, 107, tid, 42))
+                           exec, &bulk_test, 107, tid, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
     }
@@ -340,9 +340,9 @@ void test_bulk_then()
 void test_post_policy_prefer()
 {
     std::string desc("test_post_policy_prefer");
-    auto policy =
-        pika::experimental::prefer(pika::execution::experimental::with_annotation,
-            pika::execution::par, desc);
+    auto policy = pika::experimental::prefer(
+        pika::execution::experimental::with_annotation, pika::execution::par,
+        desc);
 
     pika::lcos::local::latch l(2);
     pika::parallel::execution::post(

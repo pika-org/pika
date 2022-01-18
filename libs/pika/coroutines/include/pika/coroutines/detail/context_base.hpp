@@ -56,8 +56,8 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-#define PIKA_COROUTINE_NUM_ALL_HEAPS                                            \
-    (PIKA_COROUTINE_NUM_HEAPS + PIKA_COROUTINE_NUM_HEAPS / 2 +                   \
+#define PIKA_COROUTINE_NUM_ALL_HEAPS                                           \
+    (PIKA_COROUTINE_NUM_HEAPS + PIKA_COROUTINE_NUM_HEAPS / 2 +                 \
         PIKA_COROUTINE_NUM_HEAPS / 4 + PIKA_COROUTINE_NUM_HEAPS / 4) /**/
 
 namespace pika { namespace threads { namespace coroutines { namespace detail {

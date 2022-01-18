@@ -118,10 +118,11 @@ void test_then(Executor& exec)
 {
     pika::future<void> f1 = pika::make_ready_future();
     PIKA_TEST(pika::parallel::execution::then_execute(exec, &then_test, f1, 42)
-                 .get() == pika::this_thread::get_id());
+                  .get() == pika::this_thread::get_id());
 
     pika::future<void> f2 = pika::make_ready_future();
-    pika::parallel::execution::then_execute(exec, &then_test_void, f2, 42).get();
+    pika::parallel::execution::then_execute(exec, &then_test_void, f2, 42)
+        .get();
 }
 
 template <typename Executor>
@@ -168,10 +169,10 @@ void test_bulk_async(Executor& exec)
     using pika::util::placeholders::_2;
 
     pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
-                      pika::util::bind(&sync_bulk_test, _1, tid, _2), v, 42))
+                       pika::util::bind(&sync_bulk_test, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                      exec, &sync_bulk_test, v, tid, 42))
+                       exec, &sync_bulk_test, v, tid, 42))
         .get();
 
     pika::when_all(
@@ -179,7 +180,7 @@ void test_bulk_async(Executor& exec)
             exec, pika::util::bind(&sync_bulk_test_void, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                      exec, &sync_bulk_test_void, v, tid, 42))
+                       exec, &sync_bulk_test_void, v, tid, 42))
         .get();
 }
 

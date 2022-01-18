@@ -56,8 +56,8 @@ void test_for_loop_n_async(ExPolicy&& p, IteratorTag)
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
 
-    auto f = pika::for_loop_n(std::forward<ExPolicy>(p), iterator(std::begin(c)),
-        c.size(), [](iterator it) { *it = 42; });
+    auto f = pika::for_loop_n(std::forward<ExPolicy>(p),
+        iterator(std::begin(c)), c.size(), [](iterator it) { *it = 42; });
     f.wait();
 
     // verify values

@@ -159,7 +159,8 @@ int main()
     }
 
     // Test transform_iterator default argument handling
-    {{typedef pika::util::transform_iterator<int*, adaptable_mult_functor, float>
+    {{typedef pika::util::transform_iterator<int*, adaptable_mult_functor,
+        float>
             iter_t;
 
     PIKA_TEST((std::is_same<iter_t::reference, float>::value));

@@ -74,7 +74,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
     namespace posix {
         PIKA_EXPORT extern bool use_guard_pages;
 
-#if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) &&     \
+#if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) &&    \
     _POSIX_MAPPED_FILES > 0
 
         inline void* alloc_stack(std::size_t size)

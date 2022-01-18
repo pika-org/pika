@@ -230,9 +230,10 @@ void test_any_of_exception_async(ExPolicy p, IteratorTag)
         bool returned_from_algorithm = false;
         try
         {
-            pika::future<void> f = pika::ranges::any_of(p, c, [](std::size_t v) {
-                return throw std::runtime_error("test"), v != 0;
-            });
+            pika::future<void> f =
+                pika::ranges::any_of(p, c, [](std::size_t v) {
+                    return throw std::runtime_error("test"), v != 0;
+                });
             returned_from_algorithm = true;
             f.get();
 

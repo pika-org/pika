@@ -99,7 +99,8 @@ namespace pika { namespace threads {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id, "pika::threads::interrupt_thread",
+            PIKA_THROWS_IF(ec, null_thread_id,
+                "pika::threads::interrupt_thread",
                 "null thread id encountered");
             return;
         }

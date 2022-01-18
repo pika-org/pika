@@ -84,19 +84,19 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
 #define PIKA_COROUTINE_POSIX_IMPL "Pth implementation"
 #define PIKA_COROUTINE_DECLARE_CONTEXT(name) pth_uctx_t name
-#define PIKA_COROUTINE_CREATE_CONTEXT(ctx)                                      \
-    pika::threads::coroutines::detail::posix::pth::check_(                      \
+#define PIKA_COROUTINE_CREATE_CONTEXT(ctx)                                     \
+    pika::threads::coroutines::detail::posix::pth::check_(                     \
         pth_uctx_create(&(ctx)))
-#define PIKA_COROUTINE_MAKE_CONTEXT(                                                   \
+#define PIKA_COROUTINE_MAKE_CONTEXT(                                                  \
     ctx, stack, size, startfunc, startarg, exitto)                                    \
     /* const sigset_t* sigmask = nullptr: we don't expect per-context signal masks */ \
-    pika::threads::coroutines::detail::posix::pth::check_(                             \
+    pika::threads::coroutines::detail::posix::pth::check_(                            \
         pth_uctx_make(*(ctx), static_cast<char*>(stack), (size), nullptr,             \
             (startfunc), (startarg), (exitto)))
-#define PIKA_COROUTINE_SWAP_CONTEXT(from, to)                                   \
-    pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_switch(      \
-        *(from), *(to))) #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx)            \
-        pika::threads::coroutines::detail::posix::pth::check_(                  \
+#define PIKA_COROUTINE_SWAP_CONTEXT(from, to)                                  \
+    pika::threads::coroutines::detail::posix::pth::check_(pth_uctx_switch(     \
+        *(from), *(to))) #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx)           \
+        pika::threads::coroutines::detail::posix::pth::check_(                 \
             pth_uctx_destroy(ctx))
 
 #else                 // generic Posix platform (e.g. OS X >= 10.5)
@@ -154,9 +154,9 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 #define PIKA_COROUTINE_POSIX_IMPL "ucontext implementation"
 #define PIKA_COROUTINE_DECLARE_CONTEXT(name) ::ucontext_t name
 #define PIKA_COROUTINE_CREATE_CONTEXT(ctx) /* nop */
-#define PIKA_COROUTINE_MAKE_CONTEXT(                                            \
+#define PIKA_COROUTINE_MAKE_CONTEXT(                                           \
     ctx, stack, size, startfunc, startarg, exitto)                             \
-    pika::threads::coroutines::detail::posix::ucontext::make_context(           \
+    pika::threads::coroutines::detail::posix::ucontext::make_context(          \
         ctx, stack, size, startfunc, startarg, exitto)
 #define PIKA_COROUTINE_SWAP_CONTEXT(pfrom, pto) ::swapcontext((pfrom), (pto))
 #define PIKA_COROUTINE_DESTROY_CONTEXT(ctx) /* nop */

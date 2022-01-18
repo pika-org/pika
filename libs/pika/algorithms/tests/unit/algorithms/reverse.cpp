@@ -201,9 +201,10 @@ void test_reverse_exception_async(ExPolicy p, IteratorTag)
     bool returned_from_algorithm = false;
     try
     {
-        pika::future<void> f = pika::reverse(p, decorated_iterator(std::begin(c)),
-            decorated_iterator(
-                std::end(c), []() { throw std::runtime_error("test"); }));
+        pika::future<void> f =
+            pika::reverse(p, decorated_iterator(std::begin(c)),
+                decorated_iterator(
+                    std::end(c), []() { throw std::runtime_error("test"); }));
         returned_from_algorithm = true;
         f.get();
 
@@ -321,7 +322,8 @@ void test_reverse_bad_alloc_async(ExPolicy p, IteratorTag)
     bool returned_from_algorithm = false;
     try
     {
-        pika::future<void> f = pika::reverse(p, decorated_iterator(std::begin(c)),
+        pika::future<void> f = pika::reverse(p,
+            decorated_iterator(std::begin(c)),
             decorated_iterator(std::end(c), []() { throw std::bad_alloc(); }));
         returned_from_algorithm = true;
         f.get();

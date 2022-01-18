@@ -265,8 +265,7 @@ namespace pika { namespace debug {
     // ------------------------------------------------------------------
     struct mem_crc32
     {
-        PIKA_EXPORT mem_crc32(
-            void const* a, std::size_t len, char const* txt);
+        PIKA_EXPORT mem_crc32(void const* a, std::size_t len, char const* txt);
 
         std::uint64_t const* addr_;
         std::size_t const len_;

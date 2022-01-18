@@ -15,7 +15,7 @@
 void is_sentinel_for()
 {
     PIKA_TEST_MSG((pika::traits::is_sentinel_for<sentinel<int64_t>,
-                     iterator<std::int64_t>>::value),
+                      iterator<std::int64_t>>::value),
         "Sentinel value is not proper for given iterator");
 
     PIKA_TEST_MSG(
@@ -23,11 +23,11 @@ void is_sentinel_for()
         "Integer - integer pair is incompatible pair");
 
     PIKA_TEST_MSG((pika::traits::is_sentinel_for<std::vector<int>::iterator,
-                     std::vector<int>::iterator>::value),
+                      std::vector<int>::iterator>::value),
         "Incompatible begin - end iterator pair on vector");
 
     PIKA_TEST_MSG((!pika::traits::is_sentinel_for<std::string,
-                     std::string::iterator>::value),
+                      std::string::iterator>::value),
         "String - string::iterator is incompatible pair");
 }
 

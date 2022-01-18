@@ -86,7 +86,8 @@ namespace pika { namespace execution { namespace experimental {
             };
 
             using queue_type =
-                pika::concurrency::detail::contiguous_index_queue<std::uint32_t>;
+                pika::concurrency::detail::contiguous_index_queue<
+                    std::uint32_t>;
             using queues_type =
                 std::vector<pika::util::cache_aligned_data<queue_type>>;
 

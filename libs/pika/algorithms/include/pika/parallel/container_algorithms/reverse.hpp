@@ -442,7 +442,8 @@ namespace pika { namespace ranges {
         friend Iter tag_fallback_invoke(
             pika::ranges::reverse_t, Iter first, Sent sent)
         {
-            static_assert((pika::traits::is_bidirectional_iterator<Iter>::value),
+            static_assert(
+                (pika::traits::is_bidirectional_iterator<Iter>::value),
                 "Required at least biderectional iterator.");
 
             return parallel::v1::detail::reverse<Iter>().call(
@@ -465,8 +466,8 @@ namespace pika { namespace ranges {
 
             return parallel::v1::detail::reverse<
                 typename pika::traits::range_iterator<Rng>::type>()
-                .call(pika::execution::sequenced_policy{}, pika::util::begin(rng),
-                    pika::util::end(rng));
+                .call(pika::execution::sequenced_policy{},
+                    pika::util::begin(rng), pika::util::end(rng));
         }
 
         // clang-format off
@@ -482,7 +483,8 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(
             pika::ranges::reverse_t, ExPolicy&& policy, Iter first, Sent sent)
         {
-            static_assert((pika::traits::is_bidirectional_iterator<Iter>::value),
+            static_assert(
+                (pika::traits::is_bidirectional_iterator<Iter>::value),
                 "Required at least biderectional iterator.");
 
             return parallel::v1::detail::reverse<Iter>().call(
@@ -530,7 +532,8 @@ namespace pika { namespace ranges {
         friend reverse_copy_result<Iter, OutIter> tag_fallback_invoke(
             pika::ranges::reverse_copy_t, Iter first, Sent last, OutIter result)
         {
-            static_assert((pika::traits::is_bidirectional_iterator<Iter>::value),
+            static_assert(
+                (pika::traits::is_bidirectional_iterator<Iter>::value),
                 "Required at least biderectional iterator.");
 
             static_assert((pika::traits::is_output_iterator<OutIter>::value),
@@ -563,9 +566,10 @@ namespace pika { namespace ranges {
 
             return parallel::v1::detail::reverse_copy<
                 pika::parallel::util::in_out_result<
-                    typename pika::traits::range_iterator<Rng>::type, OutIter>>()
-                .call(pika::execution::sequenced_policy{}, pika::util::begin(rng),
-                    pika::util::end(rng), result);
+                    typename pika::traits::range_iterator<Rng>::type,
+                    OutIter>>()
+                .call(pika::execution::sequenced_policy{},
+                    pika::util::begin(rng), pika::util::end(rng), result);
         }
 
         // clang-format off
@@ -582,7 +586,8 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(pika::ranges::reverse_copy_t, ExPolicy&& policy,
             Iter first, Sent last, FwdIter result)
         {
-            static_assert((pika::traits::is_bidirectional_iterator<Iter>::value),
+            static_assert(
+                (pika::traits::is_bidirectional_iterator<Iter>::value),
                 "Required at least biderectional iterator.");
 
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
@@ -602,7 +607,8 @@ namespace pika { namespace ranges {
         )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            reverse_copy_result<typename pika::traits::range_iterator<Rng>::type,
+            reverse_copy_result<
+                typename pika::traits::range_iterator<Rng>::type,
                 OutIter>>::type
         tag_fallback_invoke(pika::ranges::reverse_copy_t, ExPolicy&& policy,
             Rng&& rng, OutIter result)
@@ -617,7 +623,8 @@ namespace pika { namespace ranges {
 
             return parallel::v1::detail::reverse_copy<
                 pika::parallel::util::in_out_result<
-                    typename pika::traits::range_iterator<Rng>::type, OutIter>>()
+                    typename pika::traits::range_iterator<Rng>::type,
+                    OutIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng), result);
         }

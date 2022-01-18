@@ -116,8 +116,8 @@ void function_pointers(std::uint32_t num)
     vf.resize(num);
     for (std::uint32_t i = 0; i < num; ++i)
     {
-        vf[i] =
-            pika::dataflow(pika::unwrapping(&int_f1), pika::make_ready_future(42));
+        vf[i] = pika::dataflow(
+            pika::unwrapping(&int_f1), pika::make_ready_future(42));
     }
     pika::future<int> f4 =
         pika::dataflow(pika::unwrapping(&int_f_vector), std::move(vf));

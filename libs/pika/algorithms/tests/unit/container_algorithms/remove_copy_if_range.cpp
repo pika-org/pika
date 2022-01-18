@@ -305,8 +305,8 @@ void test_remove_copy_if_exception_async(ExPolicy p, IteratorTag)
     bool returned_from_algorithm = false;
     try
     {
-        auto f =
-            pika::ranges::remove_copy_if(p, c, std::begin(d), [](std::size_t v) {
+        auto f = pika::ranges::remove_copy_if(
+            p, c, std::begin(d), [](std::size_t v) {
                 return throw std::runtime_error("test"), v == 0;
             });
 

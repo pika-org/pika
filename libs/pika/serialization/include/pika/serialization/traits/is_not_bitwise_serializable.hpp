@@ -44,8 +44,8 @@ namespace pika { namespace traits {
 
 }}    // namespace pika::traits
 
-#define PIKA_IS_NOT_BITWISE_SERIALIZABLE(T)                                     \
-    namespace pika { namespace traits {                                         \
+#define PIKA_IS_NOT_BITWISE_SERIALIZABLE(T)                                    \
+    namespace pika { namespace traits {                                        \
             template <>                                                        \
             struct is_not_bitwise_serializable<T> : std::true_type             \
             {                                                                  \

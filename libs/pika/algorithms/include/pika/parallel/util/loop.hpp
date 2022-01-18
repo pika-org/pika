@@ -158,8 +158,8 @@ namespace pika { namespace parallel { namespace util {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Begin loop(
         ExPolicy&& policy, Begin begin, End end, CancelToken& tok, F&& f)
     {
-        return pika::parallel::util::loop_t{}(
-            PIKA_FORWARD(ExPolicy, policy), begin, end, tok, PIKA_FORWARD(F, f));
+        return pika::parallel::util::loop_t{}(PIKA_FORWARD(ExPolicy, policy),
+            begin, end, tok, PIKA_FORWARD(F, f));
     }
 #endif
 
@@ -207,7 +207,8 @@ namespace pika { namespace parallel { namespace util {
         tag_fallback_invoke(pika::parallel::util::loop_ind_t, ExPolicy&&,
             Begin begin, End end, F&& f)
         {
-            return detail::loop_ind<Begin>::call(begin, end, PIKA_FORWARD(F, f));
+            return detail::loop_ind<Begin>::call(
+                begin, end, PIKA_FORWARD(F, f));
         }
 
         template <typename ExPolicy, typename Begin, typename End,
@@ -238,7 +239,8 @@ namespace pika { namespace parallel { namespace util {
         ExPolicy&& policy, Begin begin, End end, CancelToken& tok, F&& f)
     {
         return pika::parallel::util::loop_ind_t{}(
-            PIKA_FORWARD(ExPolicy, policy), begin, end, tok, PIKA_FORWARD(F, f));
+            PIKA_FORWARD(ExPolicy, policy), begin, end, tok,
+            PIKA_FORWARD(F, f));
     }
 #endif
 
@@ -367,8 +369,9 @@ namespace pika { namespace parallel { namespace util {
             }
 
             template <typename Iter, typename CancelToken, typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(Iter it,
-                std::size_t num, CancelToken& tok, F&& f, std::false_type)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
+                Iter it, std::size_t num, CancelToken& tok, F&& f,
+                std::false_type)
             {
                 std::size_t count(num & std::size_t(-4));    // -V112
                 for (std::size_t i = 0; i < count;
@@ -391,8 +394,9 @@ namespace pika { namespace parallel { namespace util {
             }
 
             template <typename Iter, typename CancelToken, typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(Iter it,
-                std::size_t num, CancelToken& tok, F&& f, std::true_type)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
+                Iter it, std::size_t num, CancelToken& tok, F&& f,
+                std::true_type)
             {
                 while (num >= 4)
                 {
@@ -521,14 +525,15 @@ namespace pika { namespace parallel { namespace util {
 
         template <typename ExPolicy>
         struct accumulate_values_t
-          : pika::functional::detail::tag_fallback<accumulate_values_t<ExPolicy>>
+          : pika::functional::detail::tag_fallback<
+                accumulate_values_t<ExPolicy>>
         {
         private:
             template <typename F, typename T>
             friend PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T const&
             tag_fallback_invoke(
-                pika::parallel::util::detail::accumulate_values_t<ExPolicy>, F&&,
-                T const& v)
+                pika::parallel::util::detail::accumulate_values_t<ExPolicy>,
+                F&&, T const& v)
             {
                 return v;
             }
@@ -553,15 +558,16 @@ namespace pika { namespace parallel { namespace util {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T const& accumulate_values(
             F&& f, T const& v)
         {
-            return pika::parallel::util::detail::accumulate_values_t<ExPolicy>{}(
-                PIKA_FORWARD(F, f), v);
+            return pika::parallel::util::detail::accumulate_values_t<
+                ExPolicy>{}(PIKA_FORWARD(F, f), v);
         }
 
         template <typename ExPolicy, typename F, typename T, typename T1>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T accumulate_values(
             F&& f, T&& v, T1&& init)
         {
-            return pika::parallel::util::detail::accumulate_values_t<ExPolicy>{}(
+            return pika::parallel::util::detail::accumulate_values_t<
+                ExPolicy>{}(
                 PIKA_FORWARD(F, f), PIKA_FORWARD(T1, v), PIKA_FORWARD(T, init));
         }
 #endif
@@ -634,8 +640,9 @@ namespace pika { namespace parallel { namespace util {
             }
 
             template <typename Iter, typename CancelToken, typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(Iter it,
-                std::size_t num, CancelToken& tok, F&& f, std::false_type)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
+                Iter it, std::size_t num, CancelToken& tok, F&& f,
+                std::false_type)
             {
                 std::size_t count(num & std::size_t(-4));    // -V112
                 for (std::size_t i = 0; i < count;
@@ -658,8 +665,9 @@ namespace pika { namespace parallel { namespace util {
             }
 
             template <typename Iter, typename CancelToken, typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(Iter it,
-                std::size_t num, CancelToken& tok, F&& f, std::true_type)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
+                Iter it, std::size_t num, CancelToken& tok, F&& f,
+                std::true_type)
             {
                 while (num >= 4)
                 {
@@ -1002,8 +1010,8 @@ namespace pika { namespace parallel { namespace util {
         Iter it, std::size_t count, FwdIter dest, F&& f, Cleanup&& cleanup)
     {
         using cat = typename std::iterator_traits<Iter>::iterator_category;
-        return detail::loop_with_cleanup_n<cat>::call(
-            it, count, dest, PIKA_FORWARD(F, f), PIKA_FORWARD(Cleanup, cleanup));
+        return detail::loop_with_cleanup_n<cat>::call(it, count, dest,
+            PIKA_FORWARD(F, f), PIKA_FORWARD(Cleanup, cleanup));
     }
 
     template <typename Iter, typename CancelToken, typename F, typename Cleanup>
@@ -1236,7 +1244,8 @@ namespace pika { namespace parallel { namespace util {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename T, typename Pred>
-    PIKA_FORCEINLINE T accumulate_n(Iter it, std::size_t count, T init, Pred&& f)
+    PIKA_FORCEINLINE T accumulate_n(
+        Iter it, std::size_t count, T init, Pred&& f)
     {
         using cat = typename std::iterator_traits<Iter>::iterator_category;
         return detail::accumulate_n<cat>::call(

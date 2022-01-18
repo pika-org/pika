@@ -173,9 +173,8 @@ namespace pika { namespace program_options {
             be changed by subsequence assignments. */
         std::set<std::string> m_final;
 
-        friend PIKA_EXPORT void store(
-            const basic_parsed_options<char>& options, variables_map& xm,
-            bool utf8);
+        friend PIKA_EXPORT void store(const basic_parsed_options<char>& options,
+            variables_map& xm, bool utf8);
 
         /** Names of required options, filled by parser which has
             access to options_description.

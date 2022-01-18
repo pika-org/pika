@@ -757,8 +757,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         {
             while (true)
             {
-                while (
-                    first != last && PIKA_INVOKE(pred, PIKA_INVOKE(proj, *first)))
+                while (first != last &&
+                    PIKA_INVOKE(pred, PIKA_INVOKE(proj, *first)))
                     ++first;
                 if (first == last)
                     break;
@@ -781,12 +781,14 @@ namespace pika { namespace parallel { inline namespace v1 {
 
         // sequential partition with projection function for forward iterator.
         template <typename FwdIter, typename Pred, typename Proj,
-            PIKA_CONCEPT_REQUIRES_(pika::traits::is_forward_iterator_v<FwdIter> &&
+            PIKA_CONCEPT_REQUIRES_(
+                pika::traits::is_forward_iterator_v<FwdIter> &&
                 !pika::traits::is_bidirectional_iterator_v<FwdIter>)>
         FwdIter sequential_partition(
             FwdIter first, FwdIter last, Pred&& pred, Proj&& proj)
         {
-            while (first != last && PIKA_INVOKE(pred, PIKA_INVOKE(proj, *first)))
+            while (
+                first != last && PIKA_INVOKE(pred, PIKA_INVOKE(proj, *first)))
                 ++first;
 
             if (first == last)
@@ -1060,7 +1062,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     while ((!right_block.empty() ||
                                !(right_block = block_manager.get_right_block())
                                     .empty()) &&
-                        !PIKA_INVOKE(pred, PIKA_INVOKE(proj, *right_block.first)))
+                        !PIKA_INVOKE(
+                            pred, PIKA_INVOKE(proj, *right_block.first)))
                     {
                         ++right_block.first;
                     }
@@ -1691,7 +1694,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         return parallel::v1::tuple_to_pair(
             detail::partition_copy<result_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, dest_true,
-                dest_false, PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
+                dest_false, PIKA_FORWARD(Pred, pred),
+                PIKA_FORWARD(Proj, proj)));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif

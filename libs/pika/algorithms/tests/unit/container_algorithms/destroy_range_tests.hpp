@@ -149,10 +149,10 @@ void test_destroy_exception(IteratorTag)
     try
     {
         pika::ranges::destroy(decorated_iterator(p,
-                                 [&throw_after]() {
-                                     if (throw_after-- == 0)
-                                         throw std::runtime_error("test");
-                                 }),
+                                  [&throw_after]() {
+                                      if (throw_after-- == 0)
+                                          throw std::runtime_error("test");
+                                  }),
             decorated_iterator(p + data_size));
         PIKA_TEST(false);
     }

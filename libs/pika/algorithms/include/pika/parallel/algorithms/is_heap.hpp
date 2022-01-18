@@ -225,9 +225,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                             }
                         });
                 };
-                auto f2 =
-                    [tok](
-                        std::vector<pika::future<void>>&& data) mutable -> bool {
+                auto f2 = [tok](std::vector<pika::future<void>>&& data) mutable
+                    -> bool {
                     // make sure iterators embedded in function object that is
                     // attached to futures are invalidated
                     data.clear();
@@ -286,13 +285,14 @@ namespace pika { namespace parallel { inline namespace v1 {
             >::value
         )>
     // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::is_heap is deprecated, use pika::is_heap instead")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::parallel::is_heap is deprecated, use pika::is_heap instead")
         typename util::detail::algorithm_result<ExPolicy, bool>::type
         is_heap(ExPolicy&& policy, RandIter first, RandIter last,
             Comp&& comp = Comp(), Proj&& proj = Proj())
     {
-        static_assert((pika::traits::is_random_access_iterator<RandIter>::value),
+        static_assert(
+            (pika::traits::is_random_access_iterator<RandIter>::value),
             "Requires a random access iterator.");
 
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
@@ -371,9 +371,9 @@ namespace pika { namespace parallel { inline namespace v1 {
                             }
                         });
                 };
-                auto f2 =
-                    [tok, second](
-                        std::vector<pika::future<void>>&& data) mutable -> Iter {
+                auto f2 = [tok, second](
+                              std::vector<pika::future<void>>&& data) mutable
+                    -> Iter {
                     // make sure iterators embedded in function object that is
                     // attached to futures are invalidated
                     data.clear();
@@ -443,7 +443,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         is_heap_until(ExPolicy&& policy, RandIter first, RandIter last,
             Comp&& comp = Comp(), Proj&& proj = Proj())
     {
-        static_assert((pika::traits::is_random_access_iterator<RandIter>::value),
+        static_assert(
+            (pika::traits::is_random_access_iterator<RandIter>::value),
             "Requires a random access iterator.");
 
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
@@ -451,8 +452,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
         return detail::is_heap_until<RandIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(Comp, comp),
-            PIKA_FORWARD(Proj, proj));
+            PIKA_FORWARD(ExPolicy, policy), first, last,
+            PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif

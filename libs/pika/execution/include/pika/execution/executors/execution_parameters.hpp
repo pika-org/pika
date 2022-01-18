@@ -110,8 +110,8 @@ namespace pika { namespace parallel { namespace execution {
         {
             // default implementation
             template <typename Target, typename F>
-            PIKA_FORCEINLINE static std::size_t get_chunk_size(Target, F&& /*f*/,
-                std::size_t /*cores*/, std::size_t /*num_tasks*/)
+            PIKA_FORCEINLINE static std::size_t get_chunk_size(Target,
+                F&& /*f*/, std::size_t /*cores*/, std::size_t /*num_tasks*/)
             {
                 // return zero for the chunk-size which will tell the
                 // implementation to calculate the chunk size either based
@@ -139,8 +139,9 @@ namespace pika { namespace parallel { namespace execution {
                 Executor&& exec, F&& f, std::size_t cores,
                 std::size_t num_tasks)
             {
-                auto withprop = with_get_chunk_size(PIKA_FORWARD(Executor, exec),
-                    params, get_chunk_size_property{});
+                auto withprop =
+                    with_get_chunk_size(PIKA_FORWARD(Executor, exec), params,
+                        get_chunk_size_property{});
 
                 return withprop.first.get_chunk_size(
                     PIKA_FORWARD(decltype(withprop.second), withprop.second),
@@ -467,8 +468,8 @@ namespace pika { namespace parallel { namespace execution {
                 Parameters& params, Executor&& exec)
             {
                 auto withprop =
-                    with_mark_end_execution(PIKA_FORWARD(Executor, exec), params,
-                        mark_end_execution_property{});
+                    with_mark_end_execution(PIKA_FORWARD(Executor, exec),
+                        params, mark_end_execution_property{});
 
                 withprop.first.mark_end_execution(
                     PIKA_FORWARD(decltype(withprop.second), withprop.second));
@@ -701,19 +702,20 @@ namespace pika { namespace parallel { namespace execution {
 
         ///////////////////////////////////////////////////////////////////////
 
-#define PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(func)                        \
+#define PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(func)                       \
     static_assert(                                                             \
         parameters_type_counter<                                               \
-            PIKA_PP_CAT(pika::parallel::execution::detail::has_, func) <         \
-            pika::util::decay_unwrap_t<Params>>::value... > ::value <= 1,       \
+            PIKA_PP_CAT(pika::parallel::execution::detail::has_, func) <       \
+            pika::util::decay_unwrap_t<Params>>::value... > ::value <= 1,      \
         "Passing more than one executor parameters type "                      \
         "exposing " PIKA_PP_STRINGIZE(func) " is not possible") /**/
 
         template <typename... Params>
         struct executor_parameters : public unwrapper<Params>...
         {
-            static_assert(pika::util::all_of<pika::traits::is_executor_parameters<
-                              std::decay_t<Params>>...>::value,
+            static_assert(
+                pika::util::all_of<pika::traits::is_executor_parameters<
+                    std::decay_t<Params>>...>::value,
                 "All passed parameters must be a proper executor parameters "
                 "objects");
             static_assert(sizeof...(Params) >= 2,
@@ -725,7 +727,8 @@ namespace pika { namespace parallel { namespace execution {
             PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(mark_end_of_scheduling);
             PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(mark_end_execution);
             PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(processing_units_count);
-            PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(maximal_number_of_chunks);
+            PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(
+                maximal_number_of_chunks);
             PIKA_STATIC_ASSERT_ON_PARAMETERS_AMBIGUITY(
                 reset_thread_distribution);
 
@@ -780,8 +783,9 @@ namespace pika { namespace parallel { namespace execution {
     };
 
     template <typename... Params>
-    constexpr PIKA_FORCEINLINE typename executor_parameters_join<Params...>::type
-    join_executor_parameters(Params&&... params)
+    constexpr PIKA_FORCEINLINE
+        typename executor_parameters_join<Params...>::type
+        join_executor_parameters(Params&&... params)
     {
         using joined_params =
             typename executor_parameters_join<Params...>::type;

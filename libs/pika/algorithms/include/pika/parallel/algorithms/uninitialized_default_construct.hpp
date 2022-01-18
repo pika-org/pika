@@ -455,8 +455,8 @@ namespace pika {
                 pika::traits::is_forward_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend void tag_fallback_invoke(
-            pika::uninitialized_default_construct_t, FwdIter first, FwdIter last)
+        friend void tag_fallback_invoke(pika::uninitialized_default_construct_t,
+            FwdIter first, FwdIter last)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
@@ -495,7 +495,8 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::uninitialized_default_construct_n
     inline constexpr struct uninitialized_default_construct_n_t final
-      : pika::detail::tag_parallel_algorithm<uninitialized_default_construct_n_t>
+      : pika::detail::tag_parallel_algorithm<
+            uninitialized_default_construct_n_t>
     {
         // clang-format off
         template <typename FwdIter, typename Size,
@@ -504,7 +505,8 @@ namespace pika {
             )>
         // clang-format on
         friend FwdIter tag_fallback_invoke(
-            pika::uninitialized_default_construct_n_t, FwdIter first, Size count)
+            pika::uninitialized_default_construct_n_t, FwdIter first,
+            Size count)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
@@ -515,9 +517,9 @@ namespace pika {
                 return first;
             }
 
-            return pika::parallel::v1::detail::uninitialized_default_construct_n<
-                FwdIter>()
-                .call(pika::execution::seq, first, std::size_t(count));
+            return pika::parallel::v1::detail::
+                uninitialized_default_construct_n<FwdIter>()
+                    .call(pika::execution::seq, first, std::size_t(count));
         }
 
         // clang-format off
@@ -542,9 +544,10 @@ namespace pika {
                     FwdIter>::get(PIKA_MOVE(first));
             }
 
-            return pika::parallel::v1::detail::uninitialized_default_construct_n<
-                FwdIter>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count));
+            return pika::parallel::v1::detail::
+                uninitialized_default_construct_n<FwdIter>()
+                    .call(PIKA_FORWARD(ExPolicy, policy), first,
+                        std::size_t(count));
         }
 
     } uninitialized_default_construct_n{};

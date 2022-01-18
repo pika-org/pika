@@ -323,7 +323,8 @@ namespace pika::execution::experimental::detail {
         template <typename Sender_, typename Receiver_>
         any_operation_state_impl(Sender_&& sender, Receiver_&& receiver)
           : operation_state(pika::execution::experimental::connect(
-                PIKA_FORWARD(Sender_, sender), PIKA_FORWARD(Receiver_, receiver)))
+                PIKA_FORWARD(Sender_, sender),
+                PIKA_FORWARD(Receiver_, receiver)))
         {
         }
 
@@ -515,8 +516,8 @@ namespace pika::execution::experimental::detail {
             PIKA_MOVE(moved_storage.get()).set_error(PIKA_MOVE(ep));
         }
 
-        friend void tag_invoke(
-            pika::execution::experimental::set_done_t, any_receiver&& r) noexcept
+        friend void tag_invoke(pika::execution::experimental::set_done_t,
+            any_receiver&& r) noexcept
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_done. Doing

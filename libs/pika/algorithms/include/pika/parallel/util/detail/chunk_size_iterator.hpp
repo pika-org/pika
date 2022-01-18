@@ -76,8 +76,9 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     public:
         PIKA_HOST_DEVICE chunk_size_iterator() = default;
 
-        PIKA_HOST_DEVICE chunk_size_iterator(Iterator it, std::size_t chunk_size,
-            std::size_t count = 0, std::size_t current = 0)
+        PIKA_HOST_DEVICE chunk_size_iterator(Iterator it,
+            std::size_t chunk_size, std::size_t count = 0,
+            std::size_t current = 0)
           : data_(it, (pika::detail::min)(chunk_size, count))
           , chunk_size_(chunk_size)
           , last_chunk_size_(get_last_chunk_size(count, chunk_size))

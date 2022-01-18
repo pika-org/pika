@@ -47,8 +47,8 @@ void test_when_each_from_list()
         PIKA_TEST_LT(id, count);
     };
 
-    auto callback_with_index = [count, &call_with_index_count](
-                                   std::size_t idx, pika::future<unsigned> fut) {
+    auto callback_with_index = [count, &call_with_index_count](std::size_t idx,
+                                   pika::future<unsigned> fut) {
         ++call_with_index_count;
 
         unsigned id = fut.get();
@@ -98,8 +98,8 @@ void test_when_each_from_list_iterators()
         PIKA_TEST_LT(id, count);
     };
 
-    auto callback_with_index = [count, &call_with_index_count](
-                                   std::size_t idx, pika::future<unsigned> fut) {
+    auto callback_with_index = [count, &call_with_index_count](std::size_t idx,
+                                   pika::future<unsigned> fut) {
         ++call_with_index_count;
 
         unsigned id = fut.get();
@@ -210,8 +210,8 @@ void test_when_each_one_future()
         PIKA_TEST_LT(id, count);
     };
 
-    auto callback_with_index = [count, &call_with_index_count](
-                                   std::size_t idx, pika::future<unsigned> fut) {
+    auto callback_with_index = [count, &call_with_index_count](std::size_t idx,
+                                   pika::future<unsigned> fut) {
         ++call_with_index_count;
 
         unsigned id = fut.get();
@@ -220,8 +220,10 @@ void test_when_each_one_future()
         PIKA_TEST_LT(id, count);
     };
 
-    pika::future<unsigned> f = pika::make_ready_future(static_cast<unsigned>(0));
-    pika::future<unsigned> g = pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> f =
+        pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> g =
+        pika::make_ready_future(static_cast<unsigned>(0));
 
     pika::future<void> r = pika::when_each(callback, std::move(f));
     pika::future<void> rwi = pika::when_each(callback_with_index, std::move(g));
@@ -250,8 +252,8 @@ void test_when_each_two_futures()
         PIKA_TEST_LT(id, count);
     };
 
-    auto callback_with_index = [count, &call_with_index_count](
-                                   std::size_t idx, pika::future<unsigned> fut) {
+    auto callback_with_index = [count, &call_with_index_count](std::size_t idx,
+                                   pika::future<unsigned> fut) {
         ++call_with_index_count;
 
         unsigned id = fut.get();
@@ -260,10 +262,14 @@ void test_when_each_two_futures()
         PIKA_TEST_LT(id, count);
     };
 
-    pika::future<unsigned> f1 = pika::make_ready_future(static_cast<unsigned>(0));
-    pika::future<unsigned> f2 = pika::make_ready_future(static_cast<unsigned>(1));
-    pika::future<unsigned> g1 = pika::make_ready_future(static_cast<unsigned>(0));
-    pika::future<unsigned> g2 = pika::make_ready_future(static_cast<unsigned>(1));
+    pika::future<unsigned> f1 =
+        pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> f2 =
+        pika::make_ready_future(static_cast<unsigned>(1));
+    pika::future<unsigned> g1 =
+        pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> g2 =
+        pika::make_ready_future(static_cast<unsigned>(1));
 
     pika::future<void> r =
         pika::when_each(callback, std::move(f1), std::move(f2));
@@ -297,8 +303,8 @@ void test_when_each_three_futures()
         PIKA_TEST_LT(id, count);
     };
 
-    auto callback_with_index = [count, &call_with_index_count](
-                                   std::size_t idx, pika::future<unsigned> fut) {
+    auto callback_with_index = [count, &call_with_index_count](std::size_t idx,
+                                   pika::future<unsigned> fut) {
         ++call_with_index_count;
 
         unsigned id = fut.get();
@@ -307,12 +313,18 @@ void test_when_each_three_futures()
         PIKA_TEST_LT(id, count);
     };
 
-    pika::future<unsigned> f1 = pika::make_ready_future(static_cast<unsigned>(0));
-    pika::future<unsigned> f2 = pika::make_ready_future(static_cast<unsigned>(1));
-    pika::future<unsigned> f3 = pika::make_ready_future(static_cast<unsigned>(2));
-    pika::future<unsigned> g1 = pika::make_ready_future(static_cast<unsigned>(0));
-    pika::future<unsigned> g2 = pika::make_ready_future(static_cast<unsigned>(1));
-    pika::future<unsigned> g3 = pika::make_ready_future(static_cast<unsigned>(2));
+    pika::future<unsigned> f1 =
+        pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> f2 =
+        pika::make_ready_future(static_cast<unsigned>(1));
+    pika::future<unsigned> f3 =
+        pika::make_ready_future(static_cast<unsigned>(2));
+    pika::future<unsigned> g1 =
+        pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> g2 =
+        pika::make_ready_future(static_cast<unsigned>(1));
+    pika::future<unsigned> g3 =
+        pika::make_ready_future(static_cast<unsigned>(2));
 
     pika::future<void> r =
         pika::when_each(callback, std::move(f1), std::move(f2), std::move(f3));
@@ -348,8 +360,8 @@ void test_when_each_four_futures()
         PIKA_TEST_LT(id, count);
     };
 
-    auto callback_with_index = [count, &call_with_index_count](
-                                   std::size_t idx, pika::future<unsigned> fut) {
+    auto callback_with_index = [count, &call_with_index_count](std::size_t idx,
+                                   pika::future<unsigned> fut) {
         ++call_with_index_count;
 
         unsigned id = fut.get();
@@ -358,14 +370,22 @@ void test_when_each_four_futures()
         PIKA_TEST_LT(id, count);
     };
 
-    pika::future<unsigned> f1 = pika::make_ready_future(static_cast<unsigned>(0));
-    pika::future<unsigned> f2 = pika::make_ready_future(static_cast<unsigned>(1));
-    pika::future<unsigned> f3 = pika::make_ready_future(static_cast<unsigned>(2));
-    pika::future<unsigned> f4 = pika::make_ready_future(static_cast<unsigned>(3));
-    pika::future<unsigned> g1 = pika::make_ready_future(static_cast<unsigned>(0));
-    pika::future<unsigned> g2 = pika::make_ready_future(static_cast<unsigned>(1));
-    pika::future<unsigned> g3 = pika::make_ready_future(static_cast<unsigned>(2));
-    pika::future<unsigned> g4 = pika::make_ready_future(static_cast<unsigned>(3));
+    pika::future<unsigned> f1 =
+        pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> f2 =
+        pika::make_ready_future(static_cast<unsigned>(1));
+    pika::future<unsigned> f3 =
+        pika::make_ready_future(static_cast<unsigned>(2));
+    pika::future<unsigned> f4 =
+        pika::make_ready_future(static_cast<unsigned>(3));
+    pika::future<unsigned> g1 =
+        pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> g2 =
+        pika::make_ready_future(static_cast<unsigned>(1));
+    pika::future<unsigned> g3 =
+        pika::make_ready_future(static_cast<unsigned>(2));
+    pika::future<unsigned> g4 =
+        pika::make_ready_future(static_cast<unsigned>(3));
 
     pika::future<void> r = pika::when_each(
         callback, std::move(f1), std::move(f2), std::move(f3), std::move(f4));
@@ -403,8 +423,8 @@ void test_when_each_five_futures()
         PIKA_TEST_LT(id, count);
     };
 
-    auto callback_with_index = [count, &call_with_index_count](
-                                   std::size_t idx, pika::future<unsigned> fut) {
+    auto callback_with_index = [count, &call_with_index_count](std::size_t idx,
+                                   pika::future<unsigned> fut) {
         ++call_with_index_count;
 
         unsigned id = fut.get();
@@ -413,19 +433,29 @@ void test_when_each_five_futures()
         PIKA_TEST_LT(id, count);
     };
 
-    pika::future<unsigned> f1 = pika::make_ready_future(static_cast<unsigned>(0));
-    pika::future<unsigned> f2 = pika::make_ready_future(static_cast<unsigned>(1));
-    pika::future<unsigned> f3 = pika::make_ready_future(static_cast<unsigned>(2));
-    pika::future<unsigned> f4 = pika::make_ready_future(static_cast<unsigned>(3));
-    pika::future<unsigned> f5 = pika::make_ready_future(static_cast<unsigned>(4));
-    pika::future<unsigned> g1 = pika::make_ready_future(static_cast<unsigned>(0));
-    pika::future<unsigned> g2 = pika::make_ready_future(static_cast<unsigned>(1));
-    pika::future<unsigned> g3 = pika::make_ready_future(static_cast<unsigned>(2));
-    pika::future<unsigned> g4 = pika::make_ready_future(static_cast<unsigned>(3));
-    pika::future<unsigned> g5 = pika::make_ready_future(static_cast<unsigned>(4));
+    pika::future<unsigned> f1 =
+        pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> f2 =
+        pika::make_ready_future(static_cast<unsigned>(1));
+    pika::future<unsigned> f3 =
+        pika::make_ready_future(static_cast<unsigned>(2));
+    pika::future<unsigned> f4 =
+        pika::make_ready_future(static_cast<unsigned>(3));
+    pika::future<unsigned> f5 =
+        pika::make_ready_future(static_cast<unsigned>(4));
+    pika::future<unsigned> g1 =
+        pika::make_ready_future(static_cast<unsigned>(0));
+    pika::future<unsigned> g2 =
+        pika::make_ready_future(static_cast<unsigned>(1));
+    pika::future<unsigned> g3 =
+        pika::make_ready_future(static_cast<unsigned>(2));
+    pika::future<unsigned> g4 =
+        pika::make_ready_future(static_cast<unsigned>(3));
+    pika::future<unsigned> g5 =
+        pika::make_ready_future(static_cast<unsigned>(4));
 
-    pika::future<void> r = pika::when_each(callback, std::move(f1), std::move(f2),
-        std::move(f3), std::move(f4), std::move(f5));
+    pika::future<void> r = pika::when_each(callback, std::move(f1),
+        std::move(f2), std::move(f3), std::move(f4), std::move(f5));
 
     pika::future<void> rwi = pika::when_each(callback_with_index, std::move(g1),
         std::move(g2), std::move(g3), std::move(g4), std::move(g5));
@@ -462,8 +492,8 @@ void test_when_each_late_future()
         PIKA_TEST_LT(id, count);
     };
 
-    auto callback_with_index = [count, &call_with_index_count](
-                                   std::size_t idx, pika::future<unsigned> fut) {
+    auto callback_with_index = [count, &call_with_index_count](std::size_t idx,
+                                   pika::future<unsigned> fut) {
         ++call_with_index_count;
 
         unsigned id = fut.get();
@@ -523,8 +553,8 @@ void test_when_each_deferred_futures()
         PIKA_TEST_LT(id, count);
     };
 
-    auto callback_with_index = [count, &call_with_index_count](
-                                   std::size_t idx, pika::future<unsigned> fut) {
+    auto callback_with_index = [count, &call_with_index_count](std::size_t idx,
+                                   pika::future<unsigned> fut) {
         ++call_with_index_count;
 
         unsigned id = fut.get();

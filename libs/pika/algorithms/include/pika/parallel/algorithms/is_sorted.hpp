@@ -49,7 +49,8 @@ namespace pika {
     ///           If the range [first, last) contains less than two elements,
     ///           the function always returns true.
     ///
-    template <typename FwdIter, typename Pred = pika::parallel::v1::detail::less>
+    template <typename FwdIter,
+        typename Pred = pika::parallel::v1::detail::less>
     bool is_sorted(FwdIter first, FwdIter last, Pred&& pred = Pred());
 
     /// Determines if the range [first, last) is sorted. Uses pred to
@@ -111,7 +112,8 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter,
         typename Pred = pika::parallel::v1::detail::less>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy, bool>::type
+    typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        bool>::type
     is_sorted(
         ExPolicy&& policy, FwdIter first, FwdIter last, Pred&& pred = Pred());
 
@@ -152,7 +154,8 @@ namespace pika {
     ///           element. If the sequence has less than two elements or the
     ///           sequence is sorted, last is returned.
     ///
-    template <typename FwdIter, typename Pred = pika::parallel::v1::detail::less>
+    template <typename FwdIter,
+        typename Pred = pika::parallel::v1::detail::less>
     FwdIter is_sorted_until(FwdIter first, FwdIter last, Pred&& pred = Pred());
 
     /// Returns the first element in the range [first, last) that is not sorted.
@@ -343,8 +346,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             "Requires at least forward iterator.");
 
         return detail::is_sorted<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(Pred, pred),
-            util::projection_identity());
+            PIKA_FORWARD(ExPolicy, policy), first, last,
+            PIKA_FORWARD(Pred, pred), util::projection_identity());
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -433,8 +436,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     return PIKA_MOVE(first);
                 };
                 return util::partitioner<ExPolicy, FwdIter,
-                    void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), first,
-                    count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
+                    void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
+                    first, count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
             }
         };
         /// \endcond
@@ -453,8 +456,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             "Requires at least forward iterator.");
 
         return detail::is_sorted_until<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(Pred, pred),
-            util::projection_identity());
+            PIKA_FORWARD(ExPolicy, policy), first, last,
+            PIKA_FORWARD(Pred, pred), util::projection_identity());
     }
 }}}    // namespace pika::parallel::v1
 
@@ -475,11 +478,12 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(
-            pika::is_sorted_t, FwdIter first, FwdIter last, Pred&& pred = Pred())
+        friend bool tag_fallback_invoke(pika::is_sorted_t, FwdIter first,
+            FwdIter last, Pred&& pred = Pred())
         {
             return pika::parallel::v1::detail::is_sorted<FwdIter, FwdIter>()
-                .call(pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
+                .call(pika::execution::seq, first, last,
+                    PIKA_FORWARD(Pred, pred),
                     pika::parallel::util::projection_identity());
         }
 
@@ -529,7 +533,8 @@ namespace pika {
         {
             return pika::parallel::v1::detail::is_sorted_until<FwdIter,
                 FwdIter>()
-                .call(pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
+                .call(pika::execution::seq, first, last,
+                    PIKA_FORWARD(Pred, pred),
                     pika::parallel::util::projection_identity());
         }
 

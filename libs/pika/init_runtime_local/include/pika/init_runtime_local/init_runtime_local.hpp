@@ -112,7 +112,8 @@ namespace pika {
                 bool blocking);
 
             inline int init_start_impl(
-                util::function_nonser<int(pika::program_options::variables_map&)>
+                util::function_nonser<int(
+                    pika::program_options::variables_map&)>
                     f,
                 int argc, char** argv, init_params const& params, bool blocking)
             {
@@ -175,7 +176,8 @@ namespace pika {
             int argc, char** argv, init_params const& params = init_params())
         {
             return 0 ==
-                detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false);
+                detail::init_start_impl(
+                    PIKA_MOVE(f), argc, argv, params, false);
         }
 
         inline bool start(std::function<int(int, char**)> f, int argc,

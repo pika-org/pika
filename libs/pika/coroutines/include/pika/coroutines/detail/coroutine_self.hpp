@@ -83,8 +83,9 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
         arg_type yield(result_type arg = result_type())
         {
-            return !yield_decorator_.empty() ? yield_decorator_(PIKA_MOVE(arg)) :
-                                               yield_impl(PIKA_MOVE(arg));
+            return !yield_decorator_.empty() ?
+                yield_decorator_(PIKA_MOVE(arg)) :
+                yield_impl(PIKA_MOVE(arg));
         }
 
         template <typename F>

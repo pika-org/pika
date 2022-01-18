@@ -57,7 +57,8 @@ namespace pika { namespace runtime_local { namespace detail {
         }
         catch (exception_info const& xi)
         {
-            std::string const* function = xi.get<pika::detail::throw_function>();
+            std::string const* function =
+                xi.get<pika::detail::throw_function>();
             if (function)
                 throw_function_ = *function;
 
@@ -83,7 +84,8 @@ namespace pika { namespace runtime_local { namespace detail {
             if (pid_)
                 throw_pid_ = *pid_;
 
-            std::size_t const* shepherd = xi.get<pika::detail::throw_shepherd>();
+            std::size_t const* shepherd =
+                xi.get<pika::detail::throw_shepherd>();
             if (shepherd)
                 throw_shepherd_ = *shepherd;
 
@@ -341,7 +343,8 @@ namespace pika { namespace runtime_local { namespace detail {
             break;
 
         case pika::util::std_bad_typeid:
-            e = pika::detail::construct_exception(pika::detail::bad_typeid(what),
+            e = pika::detail::construct_exception(
+                pika::detail::bad_typeid(what),
                 pika::detail::construct_exception_info(throw_function_,
                     throw_file_, throw_line_, throw_back_trace_,
                     throw_locality_, throw_hostname_, throw_pid_,

@@ -108,8 +108,8 @@ namespace any_tests    // test definitions
         const pika::any value;
 
         PIKA_TEST_MSG(!value.has_value(), "empty");
-        PIKA_TEST_EQ_MSG(static_cast<void*>(nullptr), pika::any_cast<int>(&value),
-            "pika::any_cast<int>");
+        PIKA_TEST_EQ_MSG(static_cast<void*>(nullptr),
+            pika::any_cast<int>(&value), "pika::any_cast<int>");
         PIKA_TEST_EQ_MSG(
             value.type(), typeid(pika::util::detail::any::empty), "type");
     }
@@ -121,8 +121,8 @@ namespace any_tests    // test definitions
 
         PIKA_TEST_EQ_MSG(true, value.has_value(), "empty");
         PIKA_TEST_EQ_MSG(value.type(), typeid(std::string), "type");
-        PIKA_TEST_EQ_MSG(static_cast<void*>(nullptr), pika::any_cast<int>(&value),
-            "pika::any_cast<int>");
+        PIKA_TEST_EQ_MSG(static_cast<void*>(nullptr),
+            pika::any_cast<int>(&value), "pika::any_cast<int>");
         PIKA_TEST_NEQ_MSG(static_cast<void*>(nullptr),
             pika::any_cast<std::string>(&value), "pika::any_cast<std::string>");
         PIKA_TEST_EQ_MSG(pika::any_cast<std::string>(value), text,
@@ -175,8 +175,8 @@ namespace any_tests    // test definitions
 
         PIKA_TEST_EQ_MSG(true, value.has_value(), "type");
         PIKA_TEST_EQ_MSG(value.type(), typeid(std::string), "type");
-        PIKA_TEST_EQ_MSG(static_cast<void*>(nullptr), pika::any_cast<int>(&value),
-            "pika::any_cast<int>");
+        PIKA_TEST_EQ_MSG(static_cast<void*>(nullptr),
+            pika::any_cast<int>(&value), "pika::any_cast<int>");
         PIKA_TEST_NEQ_MSG(static_cast<void*>(nullptr),
             pika::any_cast<std::string>(&value), "pika::any_cast<std::string>");
         PIKA_TEST_EQ_MSG(pika::any_cast<std::string>(value), text,

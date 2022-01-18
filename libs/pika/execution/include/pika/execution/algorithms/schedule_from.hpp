@@ -100,7 +100,8 @@ namespace pika { namespace execution { namespace experimental {
 
                 using value_type = pika::util::detail::prepend_t<
                     typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<pika::tuple, pika::variant>,
+                        Sender>::template value_types<pika::tuple,
+                        pika::variant>,
                     pika::monostate>;
                 value_type ts;
 
@@ -181,7 +182,8 @@ namespace pika { namespace execution { namespace experimental {
 
                 void set_done_predecessor_sender() noexcept
                 {
-                    pika::execution::experimental::set_done(PIKA_MOVE(receiver));
+                    pika::execution::experimental::set_done(
+                        PIKA_MOVE(receiver));
                 }
 
                 template <typename... Us>
@@ -272,7 +274,8 @@ namespace pika { namespace execution { namespace experimental {
                 void set_done_scheduler_sender() noexcept
                 {
                     scheduler_op_state.reset();
-                    pika::execution::experimental::set_done(PIKA_MOVE(receiver));
+                    pika::execution::experimental::set_done(
+                        PIKA_MOVE(receiver));
                 }
 
                 void set_value_scheduler_sender() noexcept

@@ -223,7 +223,8 @@ namespace pika {
                 util::all_of_v<traits::is_future<Ts>...>>>
     void wait_each(F&& f, Ts&&... ts)
     {
-        auto result = pika::when_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+        auto result =
+            pika::when_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         result.wait();
         pika::detail::throw_if_exceptional(PIKA_MOVE(result));
     }
@@ -232,8 +233,8 @@ namespace pika {
 namespace pika::lcos {
 
     template <typename F, typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_each is deprecated. Use pika::wait_each instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_each is deprecated. Use pika::wait_each instead.")
     void wait_each(F&& f, Ts&&... ts)
     {
         pika::wait_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
@@ -242,8 +243,8 @@ namespace pika::lcos {
     template <typename F, typename Iterator,
         typename Enable =
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_each is deprecated. Use pika::wait_each instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_each is deprecated. Use pika::wait_each instead.")
     void wait_each_n(F&& f, Iterator begin, std::size_t count)
     {
         pika::wait_each_n(PIKA_FORWARD(F, f), begin, count);

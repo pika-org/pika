@@ -188,7 +188,8 @@ struct test_async_executor
         // forward the task execution on to the real internal executor
         return pika::parallel::execution::then_execute(executor_,
             pika::annotated_function(std::forward<F>(f), "custom then"),
-            std::forward<OuterFuture<pika::tuple<InnerFutures...>>>(predecessor),
+            std::forward<OuterFuture<pika::tuple<InnerFutures...>>>(
+                predecessor),
             std::forward<Ts>(ts)...);
     }
 

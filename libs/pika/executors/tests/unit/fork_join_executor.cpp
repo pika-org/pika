@@ -71,7 +71,7 @@ void test_bulk_async(ExecutorArgs&&... args)
 
     fork_join_executor exec{std::forward<ExecutorArgs>(args)...};
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                      exec, pika::util::bind(&bulk_test, _1, _2), v, 42))
+                       exec, pika::util::bind(&bulk_test, _1, _2), v, 42))
         .get();
     PIKA_TEST_EQ(count.load(), n);
 

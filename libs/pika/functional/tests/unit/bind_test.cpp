@@ -157,13 +157,13 @@ void function_test()
     PIKA_TEST(pika::util::bind(f_8, placeholders::_1, 2, 3, 4, 5, 6, 7, 8)(i) ==
         87654321L);
     PIKA_TEST(pika::util::bind(f_9, placeholders::_1, 2, 3, 4, 5, 6, 7, 8, 9)(
-                 i) == 987654321L);
+                  i) == 987654321L);
 
     PIKA_TEST((pika::util::bind(fv_0)(i), (global_result == 17041L)));
     PIKA_TEST(
         (pika::util::bind(fv_1, placeholders::_1)(i), (global_result == 1L)));
-    PIKA_TEST((
-        pika::util::bind(fv_2, placeholders::_1, 2)(i), (global_result == 21L)));
+    PIKA_TEST((pika::util::bind(fv_2, placeholders::_1, 2)(i),
+        (global_result == 21L)));
     PIKA_TEST((pika::util::bind(fv_3, placeholders::_1, 2, 3)(i),
         (global_result == 321L)));
     PIKA_TEST((pika::util::bind(fv_4, placeholders::_1, 2, 3, 4)(i),
@@ -680,28 +680,29 @@ void nested_bind_test()
     int const x = 1;
     int const y = 2;
 
-    PIKA_TEST(
-        pika::util::bind(f_1, pika::util::bind(f_1, placeholders::_1))(x) == 1L);
-    PIKA_TEST(pika::util::bind(
-                 f_1, pika::util::bind(f_2, placeholders::_1, placeholders::_2))(
-                 x, y) == 21L);
+    PIKA_TEST(pika::util::bind(f_1, pika::util::bind(f_1, placeholders::_1))(
+                  x) == 1L);
+    PIKA_TEST(pika::util::bind(f_1,
+                  pika::util::bind(f_2, placeholders::_1, placeholders::_2))(
+                  x, y) == 21L);
     PIKA_TEST(pika::util::bind(f_2, pika::util::bind(f_1, placeholders::_1),
-                 pika::util::bind(f_1, placeholders::_1))(x) == 11L);
+                  pika::util::bind(f_1, placeholders::_1))(x) == 11L);
     PIKA_TEST(pika::util::bind(f_2, pika::util::bind(f_1, placeholders::_1),
-                 pika::util::bind(f_1, placeholders::_2))(x, y) == 21L);
+                  pika::util::bind(f_1, placeholders::_2))(x, y) == 21L);
     PIKA_TEST(pika::util::bind(f_1, pika::util::bind(f_0))() == 17041L);
 
-    PIKA_TEST((pika::util::bind(fv_1, pika::util::bind(f_1, placeholders::_1))(x),
-        (global_result == 1L)));
+    PIKA_TEST(
+        (pika::util::bind(fv_1, pika::util::bind(f_1, placeholders::_1))(x),
+            (global_result == 1L)));
     PIKA_TEST(
         (pika::util::bind(fv_1,
              pika::util::bind(f_2, placeholders::_1, placeholders::_2))(x, y),
             (global_result == 21L)));
     PIKA_TEST((pika::util::bind(fv_2, pika::util::bind(f_1, placeholders::_1),
-                  pika::util::bind(f_1, placeholders::_1))(x),
+                   pika::util::bind(f_1, placeholders::_1))(x),
         (global_result == 11L)));
     PIKA_TEST((pika::util::bind(fv_2, pika::util::bind(f_1, placeholders::_1),
-                  pika::util::bind(f_1, placeholders::_2))(x, y),
+                   pika::util::bind(f_1, placeholders::_2))(x, y),
         (global_result == 21L)));
     PIKA_TEST((pika::util::bind(fv_1, pika::util::bind(f_0))(),
         (global_result == 17041L)));

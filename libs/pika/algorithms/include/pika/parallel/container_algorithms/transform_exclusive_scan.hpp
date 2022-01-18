@@ -552,8 +552,8 @@ namespace pika { namespace ranges {
 
             return pika::parallel::v1::detail::transform_exclusive_scan<
                 result_type>()
-                .call(pika::execution::seq, std::begin(rng), std::end(rng), dest,
-                    PIKA_FORWARD(UnOp, unary_op), PIKA_MOVE(init),
+                .call(pika::execution::seq, std::begin(rng), std::end(rng),
+                    dest, PIKA_FORWARD(UnOp, unary_op), PIKA_MOVE(init),
                     PIKA_FORWARD(BinOp, binary_op));
         }
 

@@ -70,7 +70,8 @@ int pika_main(int argc, char* argv[])
             {
                 if (thread_num < pika::resource::get_num_threads("default") - 1)
                 {
-                    pika::threads::suspend_processing_unit(tp, thread_num).get();
+                    pika::threads::suspend_processing_unit(tp, thread_num)
+                        .get();
                 }
 
                 ++thread_num;

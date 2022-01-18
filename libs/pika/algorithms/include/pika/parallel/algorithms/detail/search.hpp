@@ -99,7 +99,8 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             using partitioner =
                 pika::parallel::util::partitioner<ExPolicy, FwdIter, void>;
 
-            pika::parallel::util::cancellation_token<difference_type> tok(count);
+            pika::parallel::util::cancellation_token<difference_type> tok(
+                count);
 
             auto f1 = [diff, count, tok, s_first, op = PIKA_FORWARD(Pred, op),
                           proj1 = PIKA_FORWARD(Proj1, proj1),

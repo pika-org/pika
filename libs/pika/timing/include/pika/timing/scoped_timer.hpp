@@ -17,7 +17,8 @@ namespace pika { namespace util {
     struct scoped_timer
     {
         scoped_timer(T& t, bool enabled = true)
-          : started_at_(enabled ? pika::chrono::high_resolution_clock::now() : 0)
+          : started_at_(
+                enabled ? pika::chrono::high_resolution_clock::now() : 0)
           , t_(enabled ? &t : nullptr)
         {
         }

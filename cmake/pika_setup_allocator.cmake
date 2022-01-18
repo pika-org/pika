@@ -101,13 +101,12 @@ if(NOT TARGET pika_dependencies_allocator)
       endif()
       if(MSVC)
         target_compile_options(
-          pika_dependencies_allocator
-          INTERFACE /INCLUDE:__TBB_malloc_proxy
+          pika_dependencies_allocator INTERFACE /INCLUDE:__TBB_malloc_proxy
         )
       endif()
       target_link_libraries(
         pika_dependencies_allocator INTERFACE ${TBBMALLOC_LIBRARY}
-                                                   ${TBBMALLOC_PROXY_LIBRARY}
+                                              ${TBBMALLOC_PROXY_LIBRARY}
       )
     endif()
 

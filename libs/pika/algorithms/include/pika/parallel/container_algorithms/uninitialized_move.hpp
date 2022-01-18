@@ -407,7 +407,8 @@ namespace pika { namespace ranges {
             using iterator_type2 =
                 typename pika::traits::range_traits<Rng2>::iterator_type;
 
-            static_assert(pika::traits::is_input_iterator<iterator_type1>::value,
+            static_assert(
+                pika::traits::is_input_iterator<iterator_type1>::value,
                 "Requires at least input iterator.");
 
             static_assert(

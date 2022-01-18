@@ -55,7 +55,7 @@ namespace pika { namespace threads {
     };
     // clang-format on
 
-#define PIKA_THREAD_STATE_UNSCOPED_ENUM_DEPRECATION_MSG                         \
+#define PIKA_THREAD_STATE_UNSCOPED_ENUM_DEPRECATION_MSG                        \
     "The unscoped thread_state_enum names are deprecated. Please use "         \
     "thread_schedule_state::state instead."
 
@@ -98,8 +98,7 @@ namespace pika { namespace threads {
     /// thread_state constant.
     ///
     /// \param state this represents the thread state.
-    PIKA_EXPORT char const* get_thread_state_name(
-        thread_schedule_state state);
+    PIKA_EXPORT char const* get_thread_state_name(thread_schedule_state state);
 
     ///////////////////////////////////////////////////////////////////////////
     // clang-format off
@@ -142,43 +141,34 @@ namespace pika { namespace threads {
     };
     // clang-format on
 
-#define PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG                      \
+#define PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG                     \
     "The unscoped thread_priority names are deprecated. Please use "           \
     "thread_priority::priority instead."
 
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_priority thread_priority_unknown =
         thread_priority::unknown;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_priority thread_priority_default =
         thread_priority::default_;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_priority thread_priority_low = thread_priority::low;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_priority thread_priority_normal =
         thread_priority::normal;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_priority thread_priority_high_recursive =
         thread_priority::high_recursive;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_priority thread_priority_boost =
         thread_priority::boost;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_priority thread_priority_high =
         thread_priority::high;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_priority thread_priority_bound =
         thread_priority::bound;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_priority thread_priority_critical =
         thread_priority::critical;
 #undef PIKA_THREAD_PRIORITY_UNSCOPED_ENUM_DEPRECATION_MSG
@@ -193,8 +183,7 @@ namespace pika { namespace threads {
     /// constant.
     ///
     /// \param this represents the thread priority.
-    PIKA_EXPORT char const* get_thread_priority_name(
-        thread_priority priority);
+    PIKA_EXPORT char const* get_thread_priority_name(thread_priority priority);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \enum thread_restart_state
@@ -211,28 +200,23 @@ namespace pika { namespace threads {
         abort = 4         ///< The thread needs to be aborted
     };
 
-#define PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG                      \
+#define PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG                     \
     "The unscoped thread_state_ex_enum names are deprecated. Please use "      \
     "thread_restart_state::state instead."
 
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_restart_state wait_unknown =
         thread_restart_state::unknown;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_restart_state wait_signaled =
         thread_restart_state::signaled;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_restart_state wait_timeout =
         thread_restart_state::timeout;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_restart_state wait_terminate =
         thread_restart_state::terminate;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_restart_state wait_abort =
         thread_restart_state::abort;
 #undef PIKA_THREAD_STATE_EX_UNSCOPED_ENUM_DEPRECATION_MSG
@@ -278,48 +262,38 @@ namespace pika { namespace threads {
         maximal = huge,       ///< use maximally stack size
     };
 
-#define PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG                     \
+#define PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG                    \
     "The unscoped thread_stacksize names are deprecated. Please use "          \
     "thread_stacksize::size instead."
 
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_unknown =
         thread_stacksize::unknown;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_small =
         thread_stacksize::small_;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_medium =
         thread_stacksize::medium;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_large =
         thread_stacksize::large;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_huge =
         thread_stacksize::huge;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_nostack =
         thread_stacksize::nostack;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_current =
         thread_stacksize::current;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_default =
         thread_stacksize::default_;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_minimal =
         thread_stacksize::minimal;
-    PIKA_DEPRECATED_V(
-        0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
+    PIKA_DEPRECATED_V(0, 1, PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG)
     static constexpr thread_stacksize thread_stacksize_maximal =
         thread_stacksize::maximal;
 #undef PIKA_THREAD_STACKSIZE_UNSCOPED_ENUM_DEPRECATION_MSG
@@ -334,8 +308,7 @@ namespace pika { namespace threads {
     /// constant.
     ///
     /// \param size this represents the stack size
-    PIKA_EXPORT char const* get_stack_size_enum_name(
-        thread_stacksize size);
+    PIKA_EXPORT char const* get_stack_size_enum_name(thread_stacksize size);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \enum thread_schedule_hint_mode
@@ -362,7 +335,7 @@ namespace pika { namespace threads {
         numa = 2,
     };
 
-#define PIKA_THREAD_SCHEDULE_HINT_UNSCOPED_ENUM_DEPRECATION_MSG                 \
+#define PIKA_THREAD_SCHEDULE_HINT_UNSCOPED_ENUM_DEPRECATION_MSG                \
     "The unscoped thread_schedule_hint_mode names are deprecated. Please use " \
     "thread_schedule_hint_mode::hint instead."
 

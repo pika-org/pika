@@ -470,8 +470,9 @@ namespace pika { namespace ranges {
                 "Requires at least forward iterator.");
 
             auto it = parallel::v1::detail::for_each<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Proj, proj));
             return {PIKA_MOVE(it), PIKA_FORWARD(F, f)};
         }
 
@@ -557,7 +558,8 @@ namespace pika { namespace ranges {
             }
 
             auto it = parallel::v1::detail::for_each_n<InIter>().call(
-                pika::execution::seq, first, count, f, PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, first, count, f,
+                PIKA_FORWARD(Proj, proj));
             return {PIKA_MOVE(it), PIKA_FORWARD(F, f)};
         }
 
@@ -587,8 +589,8 @@ namespace pika { namespace ranges {
             }
 
             return parallel::v1::detail::for_each_n<FwdIter>().call(
-                PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
+                PIKA_FORWARD(ExPolicy, policy), first, count,
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
         }
     } for_each_n{};
 }}    // namespace pika::ranges

@@ -24,7 +24,8 @@
 
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
-    return PIKA_PP_CAT(PIKA_HAVE_JEMALLOC_PREFIX, aligned_alloc)(alignment, size);
+    return PIKA_PP_CAT(PIKA_HAVE_JEMALLOC_PREFIX, aligned_alloc)(
+        alignment, size);
 }
 
 inline void __aligned_free(void* p) noexcept

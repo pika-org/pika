@@ -112,8 +112,7 @@ namespace pika {
 
     using pre_exception_handler_type = std::function<void()>;
 
-    PIKA_EXPORT void set_pre_exception_handler(
-        pre_exception_handler_type f);
+    PIKA_EXPORT void set_pre_exception_handler(pre_exception_handler_type f);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief A pika::thread_interrupted is the exception type used by pika to
@@ -298,9 +297,9 @@ namespace pika {
         };
 
         template <typename Exception>
-        PIKA_EXPORT std::exception_ptr get_exception(
-            pika::exception const& e, std::string const& func,
-            std::string const& file, long line, std::string const& auxinfo);
+        PIKA_EXPORT std::exception_ptr get_exception(pika::exception const& e,
+            std::string const& func, std::string const& file, long line,
+            std::string const& auxinfo);
 
         template <typename Exception>
         PIKA_EXPORT std::exception_ptr construct_lightweight_exception(
@@ -473,8 +472,7 @@ namespace pika {
     ///             \a pika::get_error_what(), \a pika::get_error_config(),
     ///             \a pika::get_error_state()
     ///
-    PIKA_EXPORT std::string get_error_file_name(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::string get_error_file_name(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>

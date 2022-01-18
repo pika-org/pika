@@ -80,7 +80,8 @@ namespace pika { namespace execution { namespace experimental {
             // variant.
             using error_type =
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    predecessor_error_types<pika::variant>, std::exception_ptr>>;
+                    predecessor_error_types<pika::variant>,
+                    std::exception_ptr>>;
 
             // We use a spinlock here to allow taking the lock on non-pika threads.
             using mutex_type = pika::lcos::local::spinlock;

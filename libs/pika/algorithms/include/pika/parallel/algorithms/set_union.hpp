@@ -210,7 +210,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 {
                     return util::detail::convert_to_result(
                         detail::copy<util::in_out_result<Iter2, Iter3>>().call(
-                            PIKA_FORWARD(ExPolicy, policy), first2, last2, dest),
+                            PIKA_FORWARD(ExPolicy, policy), first2, last2,
+                            dest),
                         [first1](util::in_out_result<Iter2, Iter3> const& p)
                             -> result_type {
                             return {first1, p.in, p.out};
@@ -221,7 +222,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 {
                     return util::detail::convert_to_result(
                         detail::copy<util::in_out_result<Iter1, Iter3>>().call(
-                            PIKA_FORWARD(ExPolicy, policy), first1, last1, dest),
+                            PIKA_FORWARD(ExPolicy, policy), first1, last1,
+                            dest),
                         [first2](util::in_out_result<Iter1, Iter3> const& p)
                             -> result_type {
                             return {p.in, first2, p.out};

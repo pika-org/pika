@@ -165,7 +165,7 @@ namespace pika { namespace threads { namespace policies {
                 auto max_allowed_state = state_suspended;
 
                 pika::util::yield_while([this, states_size, &l, &num_thread,
-                                           &max_allowed_state]() {
+                                            &max_allowed_state]() {
                     std::size_t num_allowed_threads = 0;
 
                     for (std::size_t offset = 0; offset < states_size; ++offset)

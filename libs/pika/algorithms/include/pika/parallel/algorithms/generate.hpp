@@ -169,8 +169,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             static constexpr Iter sequential(
                 ExPolicy&& policy, Iter first, Sent last, F&& f)
             {
-                return sequential_generate(PIKA_FORWARD(ExPolicy, policy), first,
-                    last, PIKA_FORWARD(F, f));
+                return sequential_generate(PIKA_FORWARD(ExPolicy, policy),
+                    first, last, PIKA_FORWARD(F, f));
             }
 
             template <typename ExPolicy, typename Iter, typename Sent,
@@ -272,7 +272,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::generate_n is deprecated, use pika::generate_n instead")
+        "pika::parallel::generate_n is deprecated, use pika::generate_n "
+        "instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
         generate_n(ExPolicy&& policy, FwdIter first, Size count, F&& f)
     {
@@ -289,8 +290,9 @@ namespace pika { namespace parallel { inline namespace v1 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
-        return detail::generate_n<FwdIter>().call(PIKA_FORWARD(ExPolicy, policy),
-            first, std::size_t(count), PIKA_FORWARD(F, f));
+        return detail::generate_n<FwdIter>().call(
+            PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
+            PIKA_FORWARD(F, f));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -321,7 +323,8 @@ namespace pika {
                 "Required at least forward iterator.");
 
             return pika::parallel::v1::detail::generate<FwdIter>().call(
-                PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f));
+                PIKA_FORWARD(ExPolicy, policy), first, last,
+                PIKA_FORWARD(F, f));
         }
 
         // clang-format off

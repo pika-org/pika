@@ -207,7 +207,8 @@ namespace pika { namespace lcos { namespace detail {
                 std::lock_guard<mutex_type> l(mtx_);
                 if (started_)
                 {
-                    PIKA_THROWS_IF(ec, task_already_started, "continuation::run",
+                    PIKA_THROWS_IF(ec, task_already_started,
+                        "continuation::run",
                         "this task has already been started");
                     return;
                 }

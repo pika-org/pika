@@ -578,8 +578,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
         return pika::parallel::v1::detail::find_end<iterator_type>().call(
             PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
-            pika::util::end(rng1), pika::util::begin(rng2), pika::util::end(rng2),
-            PIKA_FORWARD(Pred, op), proj, proj);
+            pika::util::end(rng1), pika::util::begin(rng2),
+            pika::util::end(rng2), PIKA_FORWARD(Pred, op), proj, proj);
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -627,9 +627,9 @@ namespace pika { namespace parallel { inline namespace v1 {
 
         return pika::parallel::v1::detail::find_first_of<iterator_type>().call(
             PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
-            pika::util::end(rng1), pika::util::begin(rng2), pika::util::end(rng2),
-            PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-            PIKA_FORWARD(Proj2, proj2));
+            pika::util::end(rng1), pika::util::begin(rng2),
+            pika::util::end(rng2), PIKA_FORWARD(Pred, op),
+            PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -714,7 +714,8 @@ namespace pika { namespace ranges {
                 "Requires at least input iterator.");
 
             return pika::parallel::v1::detail::find<Iter>().call(
-                pika::execution::seq, first, last, val, PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, first, last, val,
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -738,8 +739,8 @@ namespace pika { namespace ranges {
                 "Requires at least input iterator.");
 
             return pika::parallel::v1::detail::find<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                val, PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), val, PIKA_FORWARD(Proj, proj));
         }
     } find{};
 
@@ -852,8 +853,9 @@ namespace pika { namespace ranges {
                 "Requires at least input iterator.");
 
             return pika::parallel::v1::detail::find_if<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Pred, pred),
+                PIKA_FORWARD(Proj, proj));
         }
     } find_if{};
 
@@ -914,10 +916,10 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_if_not<iterator_type>().call(
-                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), PIKA_FORWARD(Pred, pred),
-                PIKA_FORWARD(Proj, proj));
+            return pika::parallel::v1::detail::find_if_not<iterator_type>()
+                .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+                    pika::util::end(rng), PIKA_FORWARD(Pred, pred),
+                    PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -965,9 +967,10 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::find_if_not<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
+            return pika::parallel::v1::detail::find_if_not<iterator_type>()
+                .call(pika::execution::seq, pika::util::begin(rng),
+                    pika::util::end(rng), PIKA_FORWARD(Pred, pred),
+                    PIKA_FORWARD(Proj, proj));
         }
     } find_if_not{};
 

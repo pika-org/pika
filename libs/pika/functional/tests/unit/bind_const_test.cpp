@@ -167,9 +167,9 @@ void function_test()
     PIKA_TEST(test(pika::util::bind(f_6, placeholders::_1, 2, 3, 4, 5, 6), i) ==
         654321L);
     PIKA_TEST(test(pika::util::bind(f_7, placeholders::_1, 2, 3, 4, 5, 6, 7),
-                 i) == 7654321L);
+                  i) == 7654321L);
     PIKA_TEST(test(pika::util::bind(f_8, placeholders::_1, 2, 3, 4, 5, 6, 7, 8),
-                 i) == 87654321L);
+                  i) == 87654321L);
     PIKA_TEST(
         test(pika::util::bind(f_9, placeholders::_1, 2, 3, 4, 5, 6, 7, 8, 9),
             i) == 987654321L);
@@ -177,17 +177,19 @@ void function_test()
     PIKA_TEST_EQ(testv(pika::util::bind(fv_0), i), 17041L);
     PIKA_TEST_EQ(testv(pika::util::bind(fv_1, placeholders::_1), i), 1L);
     PIKA_TEST_EQ(testv(pika::util::bind(fv_2, placeholders::_1, 2), i), 21L);
-    PIKA_TEST_EQ(testv(pika::util::bind(fv_3, placeholders::_1, 2, 3), i), 321L);
+    PIKA_TEST_EQ(
+        testv(pika::util::bind(fv_3, placeholders::_1, 2, 3), i), 321L);
     PIKA_TEST_EQ(
         testv(pika::util::bind(fv_4, placeholders::_1, 2, 3, 4), i), 4321L);
     PIKA_TEST(testv(pika::util::bind(fv_5, placeholders::_1, 2, 3, 4, 5), i) ==
         54321L);
-    PIKA_TEST(testv(pika::util::bind(fv_6, placeholders::_1, 2, 3, 4, 5, 6), i) ==
-        654321L);
+    PIKA_TEST(testv(pika::util::bind(fv_6, placeholders::_1, 2, 3, 4, 5, 6),
+                  i) == 654321L);
     PIKA_TEST(testv(pika::util::bind(fv_7, placeholders::_1, 2, 3, 4, 5, 6, 7),
-                 i) == 7654321L);
-    PIKA_TEST(testv(pika::util::bind(fv_8, placeholders::_1, 2, 3, 4, 5, 6, 7, 8),
-                 i) == 87654321L);
+                  i) == 7654321L);
+    PIKA_TEST(
+        testv(pika::util::bind(fv_8, placeholders::_1, 2, 3, 4, 5, 6, 7, 8),
+            i) == 87654321L);
     PIKA_TEST(
         testv(pika::util::bind(fv_9, placeholders::_1, 2, 3, 4, 5, 6, 7, 8, 9),
             i) == 987654321L);

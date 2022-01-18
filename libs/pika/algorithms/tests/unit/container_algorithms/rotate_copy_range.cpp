@@ -395,9 +395,9 @@ void test_rotate_copy_bad_alloc(IteratorTag)
     try
     {
         pika::ranges::rotate_copy(pika::util::make_iterator_range(
-                                     decorated_iterator(std::begin(c),
-                                         []() { throw std::bad_alloc(); }),
-                                     decorated_iterator(std::end(c))),
+                                      decorated_iterator(std::begin(c),
+                                          []() { throw std::bad_alloc(); }),
+                                      decorated_iterator(std::end(c))),
             decorated_iterator(mid), std::begin(d));
         PIKA_TEST(false);
     }

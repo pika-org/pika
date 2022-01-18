@@ -210,7 +210,7 @@ int pika_main()
                 catch (std::runtime_error const& e)
                 {
                     PIKA_TEST(std::string(e.what()).find(std::string(
-                                 "invalid root")) != std::string::npos);
+                                  "invalid root")) != std::string::npos);
                     exception_thrown = true;
                 }
                 PIKA_TEST(exception_thrown);

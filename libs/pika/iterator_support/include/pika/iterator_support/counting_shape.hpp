@@ -16,8 +16,8 @@ namespace pika { namespace util { namespace detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Incrementable>
-    using counting_shape_type =
-        pika::util::iterator_range<pika::util::counting_iterator<Incrementable>>;
+    using counting_shape_type = pika::util::iterator_range<
+        pika::util::counting_iterator<Incrementable>>;
 
     template <typename Incrementable>
     PIKA_HOST_DEVICE inline counting_shape_type<Incrementable>

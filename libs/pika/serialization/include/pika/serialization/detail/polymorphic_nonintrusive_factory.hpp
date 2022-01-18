@@ -224,26 +224,26 @@ namespace pika { namespace serialization { namespace detail {
 
 #include <pika/local/config/warnings_suffix.hpp>
 
-#define PIKA_SERIALIZATION_REGISTER_CLASS_DECLARATION(Class)                    \
-    namespace pika { namespace serialization { namespace detail {               \
+#define PIKA_SERIALIZATION_REGISTER_CLASS_DECLARATION(Class)                   \
+    namespace pika { namespace serialization { namespace detail {              \
                 template <>                                                    \
-                struct PIKA_ALWAYS_EXPORT get_serialization_name<Class>;  \
+                struct PIKA_ALWAYS_EXPORT get_serialization_name<Class>;       \
             }                                                                  \
         }                                                                      \
     }                                                                          \
-    namespace pika { namespace traits {                                         \
+    namespace pika { namespace traits {                                        \
             template <>                                                        \
             struct needs_automatic_registration<action> : std::false_type      \
             {                                                                  \
             };                                                                 \
         }                                                                      \
     }                                                                          \
-    PIKA_TRAITS_NONINTRUSIVE_POLYMORPHIC(Class)                                 \
+    PIKA_TRAITS_NONINTRUSIVE_POLYMORPHIC(Class)                                \
 /**/
-#define PIKA_SERIALIZATION_REGISTER_CLASS_NAME(Class, Name)                     \
-    namespace pika { namespace serialization { namespace detail {               \
+#define PIKA_SERIALIZATION_REGISTER_CLASS_NAME(Class, Name)                    \
+    namespace pika { namespace serialization { namespace detail {              \
                 template <>                                                    \
-                struct PIKA_ALWAYS_EXPORT get_serialization_name<Class>   \
+                struct PIKA_ALWAYS_EXPORT get_serialization_name<Class>        \
                 {                                                              \
                     char const* operator()()                                   \
                     {                                                          \
@@ -252,15 +252,15 @@ namespace pika { namespace serialization { namespace detail {
                 };                                                             \
         }}                                                                     \
     }                                                                          \
-    template pika::serialization::detail::register_class<Class>                 \
-        pika::serialization::detail::register_class<Class>::instance;           \
+    template pika::serialization::detail::register_class<Class>                \
+        pika::serialization::detail::register_class<Class>::instance;          \
 /**/
-#define PIKA_SERIALIZATION_REGISTER_CLASS_NAME_TEMPLATE(                        \
+#define PIKA_SERIALIZATION_REGISTER_CLASS_NAME_TEMPLATE(                       \
     Parameters, Template, Name)                                                \
-    namespace pika { namespace serialization { namespace detail {               \
-                PIKA_PP_STRIP_PARENS(Parameters)                                \
-                struct PIKA_ALWAYS_EXPORT                                 \
-                    get_serialization_name<PIKA_PP_STRIP_PARENS(Template)>      \
+    namespace pika { namespace serialization { namespace detail {              \
+                PIKA_PP_STRIP_PARENS(Parameters)                               \
+                struct PIKA_ALWAYS_EXPORT                                      \
+                    get_serialization_name<PIKA_PP_STRIP_PARENS(Template)>     \
                 {                                                              \
                     char const* operator()()                                   \
                     {                                                          \
@@ -271,32 +271,33 @@ namespace pika { namespace serialization { namespace detail {
         }                                                                      \
     }                                                                          \
 /**/
-#define PIKA_SERIALIZATION_REGISTER_CLASS(Class)                                \
-    PIKA_SERIALIZATION_REGISTER_CLASS_NAME(Class, PIKA_PP_STRINGIZE(Class))      \
+#define PIKA_SERIALIZATION_REGISTER_CLASS(Class)                               \
+    PIKA_SERIALIZATION_REGISTER_CLASS_NAME(Class, PIKA_PP_STRINGIZE(Class))    \
 /**/
-#define PIKA_SERIALIZATION_REGISTER_CLASS_TEMPLATE(Parameters, Template)        \
-    PIKA_SERIALIZATION_REGISTER_CLASS_NAME_TEMPLATE(Parameters, Template,       \
-        pika::util::debug::type_id<PIKA_PP_STRIP_PARENS(Template)>::typeid_      \
+#define PIKA_SERIALIZATION_REGISTER_CLASS_TEMPLATE(Parameters, Template)       \
+    PIKA_SERIALIZATION_REGISTER_CLASS_NAME_TEMPLATE(Parameters, Template,      \
+        pika::util::debug::type_id<PIKA_PP_STRIP_PARENS(Template)>::typeid_    \
             .type_id())                                                        \
-    PIKA_PP_STRIP_PARENS(Parameters)                                            \
-    pika::serialization::detail::register_class<PIKA_PP_STRIP_PARENS(Template)>  \
-        PIKA_PP_STRIP_PARENS(Template)::pika_register_class_instance;            \
+    PIKA_PP_STRIP_PARENS(Parameters)                                           \
+    pika::serialization::detail::register_class<PIKA_PP_STRIP_PARENS(          \
+        Template)>                                                             \
+        PIKA_PP_STRIP_PARENS(Template)::pika_register_class_instance;          \
 /**/
-#define PIKA_SERIALIZATION_POLYMORPHIC_TEMPLATE_SEMIINTRUSIVE(Template)         \
-    static pika::serialization::detail::register_class<Template>                \
-        pika_register_class_instance;                                           \
+#define PIKA_SERIALIZATION_POLYMORPHIC_TEMPLATE_SEMIINTRUSIVE(Template)        \
+    static pika::serialization::detail::register_class<Template>               \
+        pika_register_class_instance;                                          \
                                                                                \
-    virtual pika::serialization::detail::register_class<Template>&              \
-    pika_get_register_class_instance(                                           \
-        pika::serialization::detail::register_class<Template>*) const           \
+    virtual pika::serialization::detail::register_class<Template>&             \
+    pika_get_register_class_instance(                                          \
+        pika::serialization::detail::register_class<Template>*) const          \
     {                                                                          \
-        return pika_register_class_instance;                                    \
+        return pika_register_class_instance;                                   \
     }                                                                          \
 /**/
-#define PIKA_SERIALIZATION_WITH_CUSTOM_CONSTRUCTOR(Class, Func)                 \
-    namespace pika { namespace serialization { namespace detail {               \
+#define PIKA_SERIALIZATION_WITH_CUSTOM_CONSTRUCTOR(Class, Func)                \
+    namespace pika { namespace serialization { namespace detail {              \
                 template <>                                                    \
-                class constructor_selector_ptr<PIKA_PP_STRIP_PARENS(Class)>     \
+                class constructor_selector_ptr<PIKA_PP_STRIP_PARENS(Class)>    \
                 {                                                              \
                 public:                                                        \
                     static Class* create(input_archive& ar)                    \
@@ -308,18 +309,18 @@ namespace pika { namespace serialization { namespace detail {
         }                                                                      \
     }                                                                          \
 /**/
-#define PIKA_SERIALIZATION_WITH_CUSTOM_CONSTRUCTOR_TEMPLATE(                    \
+#define PIKA_SERIALIZATION_WITH_CUSTOM_CONSTRUCTOR_TEMPLATE(                   \
     Parameters, Template, Func)                                                \
-    namespace pika { namespace serialization { namespace detail {               \
-                PIKA_PP_STRIP_PARENS(Parameters)                                \
-                class constructor_selector_ptr<PIKA_PP_STRIP_PARENS(Template)>  \
+    namespace pika { namespace serialization { namespace detail {              \
+                PIKA_PP_STRIP_PARENS(Parameters)                               \
+                class constructor_selector_ptr<PIKA_PP_STRIP_PARENS(Template)> \
                 {                                                              \
                 public:                                                        \
-                    static PIKA_PP_STRIP_PARENS(Template) *                     \
+                    static PIKA_PP_STRIP_PARENS(Template) *                    \
                         create(input_archive& ar)                              \
                     {                                                          \
                         return Func(ar,                                        \
-                            static_cast<PIKA_PP_STRIP_PARENS(Template)*>(0));   \
+                            static_cast<PIKA_PP_STRIP_PARENS(Template)*>(0));  \
                     }                                                          \
                 };                                                             \
             }                                                                  \

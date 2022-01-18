@@ -757,7 +757,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             while (++first != last)
             {
-                if (!PIKA_INVOKE(pred, base_projected, PIKA_INVOKE(proj, *first)))
+                if (!PIKA_INVOKE(
+                        pred, base_projected, PIKA_INVOKE(proj, *first)))
                 {
                     base = first;
                     *dest++ = *first;
@@ -787,7 +788,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             while (++first != last)
             {
-                if (!PIKA_INVOKE(pred, base_projected, PIKA_INVOKE(proj, *first)))
+                if (!PIKA_INVOKE(
+                        pred, base_projected, PIKA_INVOKE(proj, *first)))
                 {
                     base_val = *first;
                     *dest++ = base_val;

@@ -151,7 +151,8 @@ namespace pika { namespace cuda { namespace experimental {
         }
 
         template <typename Allocator>
-        pika::future<void> get_future_with_callback(Allocator const& alloc) const
+        pika::future<void> get_future_with_callback(
+            Allocator const& alloc) const
         {
             return detail::get_future_with_callback(
                 alloc, handle_.get_stream());

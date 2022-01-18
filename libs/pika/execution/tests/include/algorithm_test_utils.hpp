@@ -31,8 +31,8 @@ struct void_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             pika::execution::experimental::set_value(std::move(os.r));
         }
@@ -62,8 +62,8 @@ struct error_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             try
             {
@@ -179,8 +179,8 @@ struct error_typed_sender
     {
         std::decay_t<R> r;
 
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             try
             {
@@ -264,8 +264,8 @@ struct custom_sender
     {
         std::atomic<bool>& start_called;
         std::decay_t<R> r;
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             os.start_called = true;
             pika::execution::experimental::set_value(std::move(os.r));
@@ -305,8 +305,8 @@ struct custom_typed_sender
         std::decay_t<T> x;
         std::atomic<bool>& start_called;
         std::decay_t<R> r;
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             os.start_called = true;
             pika::execution::experimental::set_value(
@@ -315,8 +315,8 @@ struct custom_typed_sender
     };
 
     template <typename R>
-    friend auto tag_invoke(
-        pika::execution::experimental::connect_t, custom_typed_sender&& s, R&& r)
+    friend auto tag_invoke(pika::execution::experimental::connect_t,
+        custom_typed_sender&& s, R&& r)
     {
         s.connect_called = true;
         return operation_state<R>{

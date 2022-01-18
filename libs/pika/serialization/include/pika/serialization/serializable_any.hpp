@@ -400,7 +400,8 @@ namespace pika { namespace util {
 
     template <typename T, typename Char>
     PIKA_DEPRECATED_V(0, 1,
-        "pika::util::make_any is deprecated. Please use pika::make_any instead.")
+        "pika::util::make_any is deprecated. Please use pika::make_any "
+        "instead.")
     basic_any<serialization::input_archive, serialization::output_archive,
         Char> make_any(T&& t)
     {

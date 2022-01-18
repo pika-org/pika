@@ -47,8 +47,9 @@ namespace pika { namespace parallel { namespace util {
         }
 
         template <typename T>
-        PIKA_FORCEINLINE std::enable_if_t<std::is_pointer<T>::value, char const*>
-        to_const_ptr(T ptr) noexcept
+        PIKA_FORCEINLINE
+            std::enable_if_t<std::is_pointer<T>::value, char const*>
+            to_const_ptr(T ptr) noexcept
         {
             return const_cast<char const*>(
                 reinterpret_cast<char volatile const*>(ptr));
@@ -168,7 +169,8 @@ namespace pika { namespace parallel { namespace util {
         };
 
         template <typename Dummy>
-        struct copy_n_helper<pika::traits::trivially_copyable_pointer_tag, Dummy>
+        struct copy_n_helper<pika::traits::trivially_copyable_pointer_tag,
+            Dummy>
         {
             template <typename InIter, typename OutIter>
             PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
@@ -311,7 +313,8 @@ namespace pika { namespace parallel { namespace util {
         };
 
         template <typename Dummy>
-        struct move_n_helper<pika::traits::trivially_copyable_pointer_tag, Dummy>
+        struct move_n_helper<pika::traits::trivially_copyable_pointer_tag,
+            Dummy>
         {
             template <typename InIter, typename OutIter>
             PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(

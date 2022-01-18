@@ -101,7 +101,7 @@ namespace pika { namespace util {
         // use format followed by single cout for better multi-threaded output
         std::string temp =
             pika::util::format("<DartMeasurement name=\"{}\" "
-                              "type=\"numeric/double\">{}</DartMeasurement>",
+                               "type=\"numeric/double\">{}</DartMeasurement>",
                 name, time);
         std::cout << temp << std::endl;
     }

@@ -575,8 +575,9 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend RandIter tag_fallback_invoke(pika::partial_sort_t, RandIter first,
-            RandIter middle, RandIter last, Comp&& comp = Comp())
+        friend RandIter tag_fallback_invoke(pika::partial_sort_t,
+            RandIter first, RandIter middle, RandIter last,
+            Comp&& comp = Comp())
         {
             static_assert(
                 pika::traits::is_random_access_iterator<RandIter>::value,
@@ -584,7 +585,8 @@ namespace pika {
 
             return parallel::v1::partial_sort<RandIter>().call(
                 pika::execution::seq, first, middle, last,
-                PIKA_FORWARD(Comp, comp), parallel::util::projection_identity());
+                PIKA_FORWARD(Comp, comp),
+                parallel::util::projection_identity());
         }
 
         // clang-format off

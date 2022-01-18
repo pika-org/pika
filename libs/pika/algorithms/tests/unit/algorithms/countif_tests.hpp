@@ -113,7 +113,7 @@ void test_count_if_exception(IteratorTag)
     {
         // pred should never proc, so simple 'returns true'
         pika::count_if(decorated_iterator(std::begin(c),
-                          []() { throw std::runtime_error("test"); }),
+                           []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), always_true());
         PIKA_TEST(false);
     }

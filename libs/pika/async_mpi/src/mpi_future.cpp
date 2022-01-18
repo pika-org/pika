@@ -125,8 +125,7 @@ namespace pika { namespace mpi { namespace experimental {
         }
 
         // stream operator to display debug mpi_info
-        PIKA_EXPORT std::ostream& operator<<(
-            std::ostream& os, mpi_info const&)
+        PIKA_EXPORT std::ostream& operator<<(std::ostream& os, mpi_info const&)
         {
             os << "R " << debug::dec<3>(get_mpi_info().rank_) << "/"
                << debug::dec<3>(get_mpi_info().size_) << " requests in vector "
@@ -391,8 +390,8 @@ namespace pika { namespace mpi { namespace experimental {
         {
 #if defined(PIKA_DEBUG)
             {
-                std::unique_lock<pika::mpi::experimental::detail::mutex_type> lk(
-                    detail::get_vector_mtx());
+                std::unique_lock<pika::mpi::experimental::detail::mutex_type>
+                    lk(detail::get_vector_mtx());
                 bool requests_queue_empty =
                     get_request_callback_queue().size_approx() == 0;
                 bool requests_vector_empty =
@@ -472,7 +471,8 @@ namespace pika { namespace mpi { namespace experimental {
         }
         else
         {
-            detail::register_polling(pika::resource::get_thread_pool(pool_name));
+            detail::register_polling(
+                pika::resource::get_thread_pool(pool_name));
         }
     }
 

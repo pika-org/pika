@@ -67,8 +67,8 @@ namespace mylib {
             error_called = true;
         }
 
-        friend void tag_invoke(
-            pika::execution::experimental::set_value_t, receiver_3, int) noexcept
+        friend void tag_invoke(pika::execution::experimental::set_value_t,
+            receiver_3, int) noexcept
         {
             value_called = true;
         }
@@ -97,8 +97,8 @@ namespace mylib {
 
     struct non_receiver_2
     {
-        friend void tag_invoke(
-            pika::execution::experimental::set_done_t, non_receiver_2&&) noexcept
+        friend void tag_invoke(pika::execution::experimental::set_done_t,
+            non_receiver_2&&) noexcept
         {
             done_called = true;
         }
@@ -139,8 +139,8 @@ namespace mylib {
 
     struct non_receiver_4
     {
-        friend void tag_invoke(
-            pika::execution::experimental::set_done_t, non_receiver_4&&) noexcept
+        friend void tag_invoke(pika::execution::experimental::set_done_t,
+            non_receiver_4&&) noexcept
         {
             done_called = true;
         }
@@ -175,8 +175,8 @@ namespace mylib {
 
     struct non_receiver_6
     {
-        friend void tag_invoke(
-            pika::execution::experimental::set_done_t, non_receiver_6&&) noexcept
+        friend void tag_invoke(pika::execution::experimental::set_done_t,
+            non_receiver_6&&) noexcept
         {
             done_called = true;
         }

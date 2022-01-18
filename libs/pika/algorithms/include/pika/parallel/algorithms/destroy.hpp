@@ -207,8 +207,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             pika::traits::is_iterator<FwdIter>::value
         )>
     // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::destroy is deprecated, use pika::destroy instead")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::parallel::destroy is deprecated, use pika::destroy instead")
         typename util::detail::algorithm_result<ExPolicy>::type
         destroy(ExPolicy&& policy, FwdIter first, FwdIter last)
     {
@@ -329,8 +329,8 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::util::detail::algorithm_result<ExPolicy>::get(
-                pika::parallel::v1::detail::destroy<FwdIter>().call(
+            return pika::parallel::util::detail::algorithm_result<ExPolicy>::
+                get(pika::parallel::v1::detail::destroy<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last));
         }
 

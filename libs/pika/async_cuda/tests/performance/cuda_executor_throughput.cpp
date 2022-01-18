@@ -144,8 +144,8 @@ void matrixMultiply(
         // install cuda future polling handler for this scope block
         pika::cuda::experimental::enable_user_polling poll("default");
 
-        pika::cuda::experimental::cublas_executor exec_event(
-            0, CUBLAS_POINTER_MODE_HOST, pika::cuda::experimental::event_mode{});
+        pika::cuda::experimental::cublas_executor exec_event(0,
+            CUBLAS_POINTER_MODE_HOST, pika::cuda::experimental::event_mode{});
         test_function(exec_event, "Event polling based executor", iterations);
     }
 

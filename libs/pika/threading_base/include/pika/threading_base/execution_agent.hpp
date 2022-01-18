@@ -24,8 +24,7 @@
 
 namespace pika { namespace threads {
 
-    struct PIKA_EXPORT execution_context
-      : pika::execution_base::context_base
+    struct PIKA_EXPORT execution_context : pika::execution_base::context_base
     {
         pika::execution_base::resource_base const& resource() const override
         {

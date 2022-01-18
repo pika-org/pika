@@ -150,7 +150,8 @@ namespace pika { namespace lcos { namespace local {
 
             if (old_count > update)
             {
-                cond_.data_.wait(l, "pika::local::cpp20_latch::arrive_and_wait");
+                cond_.data_.wait(
+                    l, "pika::local::cpp20_latch::arrive_and_wait");
 
                 PIKA_ASSERT(counter_.load(std::memory_order_relaxed) == 0);
                 PIKA_ASSERT(notified_);

@@ -338,7 +338,8 @@ namespace pika { namespace cuda { namespace experimental {
             transform_stream_t, F&& f, cudaStream_t stream = {})
         {
             return pika::execution::experimental::detail::partial_algorithm<
-                transform_stream_t, F, cudaStream_t>{PIKA_FORWARD(F, f), stream};
+                transform_stream_t, F, cudaStream_t>{
+                PIKA_FORWARD(F, f), stream};
         }
     } transform_stream{};
 }}}    // namespace pika::cuda::experimental

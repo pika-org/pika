@@ -276,7 +276,8 @@ namespace pika { namespace ranges {
                 "Required at least forward iterator.");
 
             return pika::parallel::v1::detail::generate<Iter>().call(
-                PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f));
+                PIKA_FORWARD(ExPolicy, policy), first, last,
+                PIKA_FORWARD(F, f));
         }
 
         // clang-format off
@@ -296,8 +297,8 @@ namespace pika { namespace ranges {
                 "Required at least forward iterator.");
 
             return pika::parallel::v1::detail::generate<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_FORWARD(F, f));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(F, f));
         }
 
         // clang-format off

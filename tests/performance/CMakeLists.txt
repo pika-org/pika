@@ -9,7 +9,5 @@ set(subdirs local)
 foreach(subdir ${subdirs})
   pika_add_pseudo_target(tests.performance.${subdir})
   add_subdirectory(${subdir})
-  pika_add_pseudo_dependencies(
-    tests.performance tests.performance.${subdir}
-  )
+  pika_add_pseudo_dependencies(tests.performance tests.performance.${subdir})
 endforeach()

@@ -647,7 +647,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::inclusive_scan is deprecated, use pika::inclusive_scan "
+        "pika::parallel::inclusive_scan is deprecated, use "
+        "pika::inclusive_scan "
         "instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
         inclusive_scan(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,
@@ -687,7 +688,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::inclusive_scan is deprecated, use pika::inclusive_scan "
+        "pika::parallel::inclusive_scan is deprecated, use "
+        "pika::inclusive_scan "
         "instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
         inclusive_scan(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,
@@ -722,7 +724,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::inclusive_scan is deprecated, use pika::inclusive_scan "
+        "pika::parallel::inclusive_scan is deprecated, use "
+        "pika::inclusive_scan "
         "instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
         inclusive_scan(

@@ -98,9 +98,9 @@ void test_find_end1_async_proj(ExPolicy&& p, IteratorTag)
 
     auto proj = [](std::size_t x) { return x % 65536; };
 
-    pika::future<iterator> f = pika::ranges::find_end(p, iterator(std::begin(c)),
-        iterator(std::end(c)), std::begin(h), std::end(h),
-        std::equal_to<std::size_t>(), proj, proj);
+    pika::future<iterator> f = pika::ranges::find_end(p,
+        iterator(std::begin(c)), iterator(std::end(c)), std::begin(h),
+        std::end(h), std::equal_to<std::size_t>(), proj, proj);
     f.wait();
 
     // create iterator at position of value to be found
@@ -211,9 +211,9 @@ void test_find_end2_async_proj(ExPolicy&& p, IteratorTag)
 
     auto proj = [](std::size_t x) { return x % 65536; };
 
-    pika::future<iterator> f = pika::ranges::find_end(p, iterator(std::begin(c)),
-        iterator(std::end(c)), std::begin(h), std::end(h),
-        std::equal_to<std::size_t>(), proj, proj);
+    pika::future<iterator> f = pika::ranges::find_end(p,
+        iterator(std::begin(c)), iterator(std::end(c)), std::begin(h),
+        std::end(h), std::equal_to<std::size_t>(), proj, proj);
 
     f.wait();
 
@@ -324,9 +324,9 @@ void test_find_end3_async_proj(ExPolicy&& p, IteratorTag)
 
     // create only two partitions, splitting the desired sub sequence into
     // separate partitions.
-    pika::future<iterator> f = pika::ranges::find_end(p, iterator(std::begin(c)),
-        iterator(std::end(c)), std::begin(h), std::end(h),
-        std::equal_to<std::size_t>(), proj, proj);
+    pika::future<iterator> f = pika::ranges::find_end(p,
+        iterator(std::begin(c)), iterator(std::end(c)), std::begin(h),
+        std::end(h), std::equal_to<std::size_t>(), proj, proj);
 
     f.wait();
 
@@ -530,7 +530,7 @@ void test_find_end_exception(IteratorTag)
     try
     {
         pika::ranges::find_end(decorated_iterator(std::begin(c),
-                                  []() { throw std::runtime_error("test"); }),
+                                   []() { throw std::runtime_error("test"); }),
             decorated_iterator(
                 std::end(c), []() { throw std::runtime_error("test"); }),
             std::begin(h), std::end(h));

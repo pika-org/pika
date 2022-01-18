@@ -550,8 +550,8 @@ void test_includes_exception_async(ExPolicy&& p, IteratorTag)
     bool returned_from_algorithm = false;
     try
     {
-        pika::future<bool> f = pika::ranges::includes(p, iterator(std::begin(c1)),
-            iterator(std::end(c1)), start_it, end_it,
+        pika::future<bool> f = pika::ranges::includes(p,
+            iterator(std::begin(c1)), iterator(std::end(c1)), start_it, end_it,
             [](std::size_t, std::size_t) {
                 return throw std::runtime_error("test"), true;
             });
@@ -725,8 +725,8 @@ void test_includes_bad_alloc_async(ExPolicy&& p, IteratorTag)
     bool returned_from_algorithm = false;
     try
     {
-        pika::future<bool> f = pika::ranges::includes(p, iterator(std::begin(c1)),
-            iterator(std::end(c1)), start_it, end_it,
+        pika::future<bool> f = pika::ranges::includes(p,
+            iterator(std::begin(c1)), iterator(std::end(c1)), start_it, end_it,
             [](std::size_t, std::size_t) {
                 return throw std::bad_alloc(), true;
             });

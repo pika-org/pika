@@ -555,7 +555,8 @@ namespace pika { namespace ranges {
         friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
             typename std::iterator_traits<typename pika::traits::range_traits<
                 Rng>::iterator_type>::value_type>::type
-        tag_fallback_invoke(pika::ranges::reduce_t, ExPolicy&& policy, Rng&& rng)
+        tag_fallback_invoke(
+            pika::ranges::reduce_t, ExPolicy&& policy, Rng&& rng)
         {
             using iterator_type =
                 typename pika::traits::range_traits<Rng>::iterator_type;
@@ -601,13 +602,14 @@ namespace pika { namespace ranges {
         friend T tag_fallback_invoke(
             pika::ranges::reduce_t, Rng&& rng, T init, F&& f)
         {
-            static_assert(pika::traits::is_input_iterator<typename pika::traits::
-                                  range_traits<Rng>::iterator_type>::value,
+            static_assert(
+                pika::traits::is_input_iterator<typename pika::traits::
+                        range_traits<Rng>::iterator_type>::value,
                 "Requires at least input iterator.");
 
             return pika::parallel::v1::detail::reduce<T>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_MOVE(init), PIKA_FORWARD(F, f));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_MOVE(init), PIKA_FORWARD(F, f));
         }
 
         // clang-format off
@@ -638,13 +640,14 @@ namespace pika { namespace ranges {
         // clang-format on
         friend T tag_fallback_invoke(pika::ranges::reduce_t, Rng&& rng, T init)
         {
-            static_assert(pika::traits::is_input_iterator<typename pika::traits::
-                                  range_traits<Rng>::iterator_type>::value,
+            static_assert(
+                pika::traits::is_input_iterator<typename pika::traits::
+                        range_traits<Rng>::iterator_type>::value,
                 "Requires at least input iterator.");
 
             return pika::parallel::v1::detail::reduce<T>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_MOVE(init), std::plus<T>{});
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_MOVE(init), std::plus<T>{});
         }
 
         // clang-format off
@@ -686,8 +689,8 @@ namespace pika { namespace ranges {
                 "Requires at least input iterator.");
 
             return pika::parallel::v1::detail::reduce<value_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                value_type{}, std::plus<value_type>{});
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), value_type{}, std::plus<value_type>{});
         }
     } reduce{};
 }}    // namespace pika::ranges

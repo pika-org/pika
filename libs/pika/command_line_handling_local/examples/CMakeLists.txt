@@ -10,9 +10,7 @@ if(PIKA_WITH_EXAMPLES)
     examples.modules examples.modules.command_line_handling_local
   )
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
-    pika_add_pseudo_target(
-      tests.examples.modules.command_line_handling_local
-    )
+    pika_add_pseudo_target(tests.examples.modules.command_line_handling_local)
     pika_add_pseudo_dependencies(
       tests.examples.modules tests.examples.modules.command_line_handling_local
     )

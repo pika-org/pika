@@ -79,8 +79,8 @@ namespace pika { namespace detail {
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
             }
 
-            lcos::local::futures_factory<result_type()> p(
-                util::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(util::deferred_call(
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
             if (pika::detail::has_async_policy(policy))
             {
                 threads::thread_id_ref_type tid =
@@ -135,7 +135,8 @@ namespace pika { namespace detail {
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::sync_policy, F&& f, Ts&&... ts)
         {
-            return detail::call_sync(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            return detail::call_sync(
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename... Ts>
@@ -151,8 +152,8 @@ namespace pika { namespace detail {
             using result_type =
                 util::detail::invoke_deferred_result_t<F, Ts...>;
 
-            lcos::local::futures_factory<result_type()> p(
-                util::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(util::deferred_call(
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
             threads::thread_id_ref_type tid =
                 p.apply(pool, desc.get_description(), policy);
@@ -193,8 +194,8 @@ namespace pika { namespace detail {
             using result_type =
                 util::detail::invoke_deferred_result_t<F, Ts...>;
 
-            lcos::local::futures_factory<result_type()> p(
-                util::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(util::deferred_call(
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
             threads::thread_id_ref_type tid =
                 p.apply(pool, desc.get_description(), policy);
@@ -240,8 +241,8 @@ namespace pika { namespace detail {
             using result_type =
                 util::detail::invoke_deferred_result_t<F, Ts...>;
 
-            lcos::local::futures_factory<result_type()> p(
-                util::deferred_call(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(util::deferred_call(
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
             return p.get_future();
         }

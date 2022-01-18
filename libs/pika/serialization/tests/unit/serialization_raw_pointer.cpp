@@ -124,8 +124,8 @@ int pika_main()
 
     // serialize tuple with a non-zero-copyable type and a const
     {
-        static_assert(
-            !pika::traits::is_bitwise_serializable_v<pika::tuple<A, int const>>);
+        static_assert(!pika::traits::is_bitwise_serializable_v<
+                      pika::tuple<A, int const>>);
 
         int value = 42;
         std::tuple<A, int const> ot{A(), value};

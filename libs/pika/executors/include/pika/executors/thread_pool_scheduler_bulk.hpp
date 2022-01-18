@@ -137,7 +137,8 @@ namespace pika { namespace execution { namespace experimental {
                         set_error_t, bulk_receiver&& r, E&& e) noexcept
                     {
                         pika::execution::experimental::set_error(
-                            PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(E, e));
+                            PIKA_MOVE(r.op_state->receiver),
+                            PIKA_FORWARD(E, e));
                     }
 
                     friend void tag_invoke(
@@ -287,7 +288,8 @@ namespace pika { namespace execution { namespace experimental {
                             {
                                 if (op_state->exception_thrown)
                                 {
-                                    PIKA_ASSERT(op_state->exception.has_value());
+                                    PIKA_ASSERT(
+                                        op_state->exception.has_value());
                                     pika::execution::experimental::set_error(
                                         PIKA_MOVE(op_state->receiver),
                                         PIKA_MOVE(op_state->exception.value()));
@@ -372,7 +374,8 @@ namespace pika { namespace execution { namespace experimental {
                         if (hint == pika::threads::thread_schedule_hint())
                         {
                             hint = pika::threads::thread_schedule_hint(
-                                pika::threads::thread_schedule_hint_mode::thread,
+                                pika::threads::thread_schedule_hint_mode::
+                                    thread,
                                 worker_thread);
                         }
 

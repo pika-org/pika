@@ -62,7 +62,8 @@ namespace pika { namespace parallel { namespace util {
     }
 
     template <typename I1, typename I2>
-    pika::future<I2> get_in2_element(pika::future<util::in_in_result<I1, I2>>&& f)
+    pika::future<I2> get_in2_element(
+        pika::future<util::in_in_result<I1, I2>>&& f)
     {
         return pika::make_future<I2>(
             PIKA_MOVE(f), [](util::in_in_result<I1, I2>&& p) { return p.in2; });
@@ -134,7 +135,8 @@ namespace pika { namespace parallel { namespace util {
 
     // converst a in_out_result into a iterator_range
     template <typename I, typename O>
-    pika::util::iterator_range<I, O> get_subrange(in_out_result<I, O> const& ior)
+    pika::util::iterator_range<I, O> get_subrange(
+        in_out_result<I, O> const& ior)
     {
         return pika::util::iterator_range<I, O>(ior.in, ior.out);
     }
@@ -227,8 +229,8 @@ namespace pika { namespace parallel { namespace util {
     pika::future<O> get_third_element(
         pika::future<util::in_in_out_result<I1, I2, O>>&& f)
     {
-        return pika::make_future<O>(
-            PIKA_MOVE(f), [](in_in_out_result<I1, I2, O>&& p) { return p.out; });
+        return pika::make_future<O>(PIKA_MOVE(f),
+            [](in_in_out_result<I1, I2, O>&& p) { return p.out; });
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -340,7 +342,8 @@ namespace pika { namespace parallel { namespace util {
     pika::future<pika::util::iterator_range<Iterator, Sentinel>> make_subrange(
         pika::future<Iterator>&& iterator, Sentinel sentinel)
     {
-        return pika::make_future<pika::util::iterator_range<Iterator, Sentinel>>(
+        return pika::make_future<
+            pika::util::iterator_range<Iterator, Sentinel>>(
             PIKA_MOVE(iterator), [sentinel](Iterator&& it) {
                 return pika::util::iterator_range<Iterator, Sentinel>(
                     it, sentinel);
@@ -433,7 +436,8 @@ namespace pika { namespace parallel { namespace util {
                 typename pika::tuple_element<2, iterator_tuple_type>::type>;
 
             iterator_tuple_type t = zipiter.get_iterator_tuple();
-            return result_type{pika::get<0>(t), pika::get<1>(t), pika::get<2>(t)};
+            return result_type{
+                pika::get<0>(t), pika::get<1>(t), pika::get<2>(t)};
         }
 
         template <typename ZipIter>

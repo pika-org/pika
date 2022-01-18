@@ -97,7 +97,8 @@ std::uint64_t averageout_task_foreach(std::size_t vector_size, Executor&& exec)
         for (auto i = 0; i < test_count; i++)
             measure_task_foreach(data_representation, exec).wait();
 
-        return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+        return (pika::chrono::high_resolution_clock::now() - start) /
+            test_count;
     }
 
     std::vector<pika::shared_future<void>> tests;
@@ -167,7 +168,8 @@ std::uint64_t averageout_task_forloop(std::size_t vector_size, Executor&& exec)
         for (auto i = 0; i < test_count; i++)
             measure_task_forloop(data_representation, exec).wait();
 
-        return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+        return (pika::chrono::high_resolution_clock::now() - start) /
+            test_count;
     }
 
     std::vector<pika::shared_future<void>> tests;

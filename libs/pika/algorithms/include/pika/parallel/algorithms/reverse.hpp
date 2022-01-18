@@ -236,7 +236,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 auto last2{pika::ranges::next(first, last)};
                 typedef std::reverse_iterator<BidirIter> destination_iterator;
-                typedef pika::util::zip_iterator<BidirIter, destination_iterator>
+                typedef pika::util::zip_iterator<BidirIter,
+                    destination_iterator>
                     zip_iterator;
                 typedef typename zip_iterator::reference reference;
 
@@ -436,8 +437,8 @@ namespace pika {
             return parallel::util::get_second_element(
                 parallel::v1::detail::reverse_copy<
                     pika::parallel::util::in_out_result<BidirIter, OutIter>>()
-                    .call(
-                        pika::execution::sequenced_policy{}, first, last, dest));
+                    .call(pika::execution::sequenced_policy{}, first, last,
+                        dest));
         }
 
         // clang-format off

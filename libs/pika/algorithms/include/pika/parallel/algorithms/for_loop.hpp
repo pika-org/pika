@@ -786,7 +786,8 @@ namespace pika {
 
             template <typename... Ts, std::size_t... Is>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void next_iteration(
-                pika::tuple<Ts...>& args, pika::util::index_pack<Is...>) noexcept
+                pika::tuple<Ts...>& args,
+                pika::util::index_pack<Is...>) noexcept
             {
                 int const _sequencer[] = {
                     0, (pika::get<Is>(args).next_iteration(), 0)...};
@@ -1126,8 +1127,9 @@ namespace pika {
                                 PIKA_FORWARD(F, f), stride, args},
                             [=](std::vector<pika::future<void>>&&) mutable
                             -> void {
-                                auto pack = typename pika::util::make_index_pack<
-                                    sizeof...(Ts)>::type();
+                                auto pack =
+                                    typename pika::util::make_index_pack<
+                                        sizeof...(Ts)>::type();
                                 // make sure live-out variables are properly set on
                                 // return
                                 detail::exit_iteration(args, pack, size);
@@ -1204,7 +1206,8 @@ namespace pika {
                 (pika::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
         PIKA_DEPRECATED_V(0, 1,
-            "pika::parallel::for_loop is deprecated, use pika::for_loop instead")
+            "pika::parallel::for_loop is deprecated, use pika::for_loop "
+            "instead")
         typename util::detail::algorithm_result<ExPolicy>::type for_loop(
             ExPolicy&& policy, std::decay_t<I> first, I last, Args&&... args)
         {
@@ -1221,7 +1224,8 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(pika::traits::is_iterator<I>::value ||
                 std::is_integral<I>::value)>
         PIKA_DEPRECATED_V(0, 1,
-            "pika::parallel::for_loop is deprecated, use pika::for_loop instead")
+            "pika::parallel::for_loop is deprecated, use pika::for_loop "
+            "instead")
         void for_loop(std::decay_t<I> first, I last, Args&&... args)
         {
             static_assert(sizeof...(Args) >= 1,
@@ -1233,11 +1237,12 @@ namespace pika {
 
         template <typename ExPolicy, typename I, typename S, typename... Args,
             PIKA_CONCEPT_REQUIRES_(pika::is_execution_policy<ExPolicy>::value&&
-                                      std::is_integral<S>::value &&
+                                       std::is_integral<S>::value &&
                 (pika::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
         PIKA_DEPRECATED_V(0, 1,
-            "pika::parallel::for_loop is deprecated, use pika::for_loop instead")
+            "pika::parallel::for_loop is deprecated, use pika::for_loop "
+            "instead")
         typename util::detail::algorithm_result<ExPolicy>::type
             for_loop_strided(ExPolicy&& policy, std::decay_t<I> first, I last,
                 S stride, Args&&... args)
@@ -1257,7 +1262,8 @@ namespace pika {
                 (pika::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
         PIKA_DEPRECATED_V(0, 1,
-            "pika::parallel::for_loop is deprecated, use pika::for_loop instead")
+            "pika::parallel::for_loop is deprecated, use pika::for_loop "
+            "instead")
         void for_loop_strided(
             std::decay_t<I> first, I last, S stride, Args&&... args)
         {
@@ -1272,11 +1278,12 @@ namespace pika {
         template <typename ExPolicy, typename I, typename Size,
             typename... Args,
             PIKA_CONCEPT_REQUIRES_(pika::is_execution_policy<ExPolicy>::value&&
-                                      std::is_integral<Size>::value &&
+                                       std::is_integral<Size>::value &&
                 (pika::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
         PIKA_DEPRECATED_V(0, 1,
-            "pika::parallel::for_loop is deprecated, use pika::for_loop instead")
+            "pika::parallel::for_loop is deprecated, use pika::for_loop "
+            "instead")
         typename util::detail::algorithm_result<ExPolicy>::type
             for_loop_n(ExPolicy&& policy, I first, Size size, Args&&... args)
         {
@@ -1294,7 +1301,8 @@ namespace pika {
                 (pika::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
         PIKA_DEPRECATED_V(0, 1,
-            "pika::parallel::for_loop is deprecated, use pika::for_loop instead")
+            "pika::parallel::for_loop is deprecated, use pika::for_loop "
+            "instead")
         void for_loop_n(I first, Size size, Args&&... args)
         {
             static_assert(sizeof...(Args) >= 1,
@@ -1312,7 +1320,8 @@ namespace pika {
                 (pika::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
         PIKA_DEPRECATED_V(0, 1,
-            "pika::parallel::for_loop is deprecated, use pika::for_loop instead")
+            "pika::parallel::for_loop is deprecated, use pika::for_loop "
+            "instead")
         typename util::detail::algorithm_result<ExPolicy>::type
             for_loop_n_strided(
                 ExPolicy&& policy, I first, Size size, S stride, Args&&... args)
@@ -1334,7 +1343,8 @@ namespace pika {
                 (pika::traits::is_iterator<I>::value ||
                     std::is_integral<I>::value))>
         PIKA_DEPRECATED_V(0, 1,
-            "pika::parallel::for_loop is deprecated, use pika::for_loop instead")
+            "pika::parallel::for_loop is deprecated, use pika::for_loop "
+            "instead")
         void for_loop_n_strided(I first, Size size, S stride, Args&&... args)
         {
             static_assert(sizeof...(Args) >= 1,
@@ -1366,8 +1376,8 @@ namespace pika {
                 "for_loop must be called with at least a function object");
 
             using pika::util::make_index_pack;
-            return parallel::v2::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
-                first, last, 1,
+            return parallel::v2::detail::for_loop(
+                PIKA_FORWARD(ExPolicy, policy), first, last, 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -1415,8 +1425,8 @@ namespace pika {
                 "object");
 
             using pika::util::make_index_pack;
-            return parallel::v2::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
-                first, last, stride,
+            return parallel::v2::detail::for_loop(
+                PIKA_FORWARD(ExPolicy, policy), first, last, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }

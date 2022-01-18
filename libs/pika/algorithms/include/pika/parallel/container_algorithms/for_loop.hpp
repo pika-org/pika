@@ -753,8 +753,8 @@ namespace pika { namespace ranges {
                 "for_loop must be called with at least a function object");
 
             using pika::util::make_index_pack;
-            return parallel::v2::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
-                first, last, 1,
+            return parallel::v2::detail::for_loop(
+                PIKA_FORWARD(ExPolicy, policy), first, last, 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -786,15 +786,16 @@ namespace pika { namespace ranges {
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
-        tag_fallback_invoke(
-            pika::ranges::for_loop_t, ExPolicy&& policy, R&& rng, Args&&... args)
+        tag_fallback_invoke(pika::ranges::for_loop_t, ExPolicy&& policy,
+            R&& rng, Args&&... args)
         {
             static_assert(sizeof...(Args) >= 1,
                 "for_loop must be called with at least a function object");
 
             using pika::util::make_index_pack;
-            return parallel::v2::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
-                pika::util::begin(rng), pika::util::end(rng), 1,
+            return parallel::v2::detail::for_loop(
+                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+                pika::util::end(rng), 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -842,8 +843,8 @@ namespace pika { namespace ranges {
                 "object");
 
             using pika::util::make_index_pack;
-            return parallel::v2::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
-                first, last, stride,
+            return parallel::v2::detail::for_loop(
+                PIKA_FORWARD(ExPolicy, policy), first, last, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -887,8 +888,9 @@ namespace pika { namespace ranges {
                 "object");
 
             using pika::util::make_index_pack;
-            return parallel::v2::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
-                pika::util::begin(rng), pika::util::end(rng), stride,
+            return parallel::v2::detail::for_loop(
+                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+                pika::util::end(rng), stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }

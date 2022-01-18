@@ -407,9 +407,9 @@ namespace pika { namespace ranges {
         // clang-format on
         friend typename parallel::util::detail::algorithm_result_t<ExPolicy,
             partial_sort_copy_result<FwdIter, RandIter>>
-        tag_fallback_invoke(pika::ranges::partial_sort_copy_t, ExPolicy&& policy,
-            FwdIter first, Sent1 last, RandIter r_first, Sent2 r_last,
-            Comp&& comp = Comp(), Proj1&& proj1 = Proj1(),
+        tag_fallback_invoke(pika::ranges::partial_sort_copy_t,
+            ExPolicy&& policy, FwdIter first, Sent1 last, RandIter r_first,
+            Sent2 r_last, Comp&& comp = Comp(), Proj1&& proj1 = Proj1(),
             Proj2&& proj2 = Proj2())
         {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
@@ -422,8 +422,8 @@ namespace pika { namespace ranges {
 
             return pika::parallel::v1::detail::partial_sort_copy<result_type>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, r_first,
-                    r_last, PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
+                    r_last, PIKA_FORWARD(Comp, comp),
+                    PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
         }
 
         // clang-format off
@@ -489,9 +489,10 @@ namespace pika { namespace ranges {
         friend parallel::util::detail::algorithm_result_t<ExPolicy,
             partial_sort_copy_result<pika::traits::range_iterator_t<Rng1>,
                 pika::traits::range_iterator_t<Rng2>>>
-        tag_fallback_invoke(pika::ranges::partial_sort_copy_t, ExPolicy&& policy,
-            Rng1&& rng1, Rng2&& rng2, Compare&& comp = Compare(),
-            Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
+        tag_fallback_invoke(pika::ranges::partial_sort_copy_t,
+            ExPolicy&& policy, Rng1&& rng1, Rng2&& rng2,
+            Compare&& comp = Compare(), Proj1&& proj1 = Proj1(),
+            Proj2&& proj2 = Proj2())
         {
             using iterator_type1 = pika::traits::range_iterator_t<Rng1>;
             using iterator_type2 = pika::traits::range_iterator_t<Rng2>;

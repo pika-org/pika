@@ -68,7 +68,8 @@ int pika_main()
         pika::future<void> f3 = pika::async(&do_nothing, 42);
         f3.get();
 
-        pika::future<void> f4 = pika::async(pika::launch::sync, &do_nothing, 42);
+        pika::future<void> f4 =
+            pika::async(pika::launch::sync, &do_nothing, 42);
         f4.get();
     }
 
@@ -92,24 +93,24 @@ int pika_main()
             pika::async(pika::util::bind(&increment, 42));
         PIKA_TEST_EQ(f1.get(), 43);
 
-        pika::future<std::int32_t> f2 =
-            pika::async(pika::launch::all, pika::util::bind(&increment, _1), 42);
+        pika::future<std::int32_t> f2 = pika::async(
+            pika::launch::all, pika::util::bind(&increment, _1), 42);
         PIKA_TEST_EQ(f2.get(), 43);
 
         pika::future<std::int32_t> f3 =
             pika::async(pika::util::bind(&increment, 42));
         PIKA_TEST_EQ(f3.get(), 43);
 
-        pika::future<std::int32_t> f4 =
-            pika::async(pika::launch::all, pika::util::bind(&increment, _1), 42);
+        pika::future<std::int32_t> f4 = pika::async(
+            pika::launch::all, pika::util::bind(&increment, _1), 42);
         PIKA_TEST_EQ(f4.get(), 43);
 
-        pika::future<void> f5 =
-            pika::async(pika::launch::all, pika::util::bind(&do_nothing, _1), 42);
+        pika::future<void> f5 = pika::async(
+            pika::launch::all, pika::util::bind(&do_nothing, _1), 42);
         f5.get();
 
-        pika::future<void> f6 =
-            pika::async(pika::launch::sync, pika::util::bind(&do_nothing, _1), 42);
+        pika::future<void> f6 = pika::async(
+            pika::launch::sync, pika::util::bind(&do_nothing, _1), 42);
         f6.get();
     }
 
@@ -147,12 +148,12 @@ int pika_main()
             pika::async(pika::launch::all, pika::util::bind(increment, _1), 42);
         PIKA_TEST_EQ(f4.get(), 43);
 
-        pika::future<void> f5 =
-            pika::async(pika::launch::all, pika::util::bind(do_nothing, _1), 42);
+        pika::future<void> f5 = pika::async(
+            pika::launch::all, pika::util::bind(do_nothing, _1), 42);
         f5.get();
 
-        pika::future<void> f6 =
-            pika::async(pika::launch::sync, pika::util::bind(do_nothing, _1), 42);
+        pika::future<void> f6 = pika::async(
+            pika::launch::sync, pika::util::bind(do_nothing, _1), 42);
         f6.get();
     }
 
@@ -162,7 +163,8 @@ int pika_main()
         pika::future<std::int32_t> f1 = pika::async(mult, 42);
         PIKA_TEST_EQ(f1.get(), 84);
 
-        pika::future<std::int32_t> f2 = pika::async(pika::launch::all, mult, 42);
+        pika::future<std::int32_t> f2 =
+            pika::async(pika::launch::all, mult, 42);
         PIKA_TEST_EQ(f2.get(), 84);
     }
 
@@ -187,8 +189,8 @@ int pika_main()
         PIKA_TEST_EQ(f4.get(), 84);
 
         do_nothing_obj do_nothing_f;
-        pika::future<void> f5 =
-            pika::async(pika::launch::all, pika::util::bind(do_nothing_f, _1), 42);
+        pika::future<void> f5 = pika::async(
+            pika::launch::all, pika::util::bind(do_nothing_f, _1), 42);
         f5.get();
 
         pika::future<void> f6 = pika::async(
@@ -250,7 +252,8 @@ int pika_main()
     {
         using pika::util::placeholders::_1;
 
-        auto policy1 = pika::launch::select([]() { return pika::launch::sync; });
+        auto policy1 =
+            pika::launch::select([]() { return pika::launch::sync; });
 
         pika::future<std::int32_t> f1 =
             pika::async(policy1, pika::util::bind(&increment, 42));

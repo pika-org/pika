@@ -124,8 +124,10 @@ void test_partitioned1(ExPolicy policy)
 
     bool parted1 =
         pika::ranges::is_partitioned(policy, c, is_even(), identity());
-    bool parted2 = pika::ranges::is_partitioned(policy, c, is_odd(), identity());
-    bool parted3 = pika::ranges::is_partitioned(policy, c, is_even(), add_one());
+    bool parted2 =
+        pika::ranges::is_partitioned(policy, c, is_odd(), identity());
+    bool parted3 =
+        pika::ranges::is_partitioned(policy, c, is_even(), add_one());
     bool parted4 = pika::ranges::is_partitioned(policy, c, is_odd(), add_one());
 
     PIKA_TEST(parted1);

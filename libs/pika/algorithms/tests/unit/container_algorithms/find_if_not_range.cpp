@@ -33,9 +33,9 @@ void test_find_if_not(IteratorTag)
     std::fill(std::begin(c), std::end(c), dis(gen));
     c.at(c.size() / 2) = 1;
 
-    iterator index =
-        pika::ranges::find_if_not(iterator(std::begin(c)), iterator(std::end(c)),
-            [](std::size_t v) { return v != std::size_t(1); });
+    iterator index = pika::ranges::find_if_not(iterator(std::begin(c)),
+        iterator(std::end(c)),
+        [](std::size_t v) { return v != std::size_t(1); });
 
     base_iterator test_index = std::begin(c) + c.size() / 2;
 

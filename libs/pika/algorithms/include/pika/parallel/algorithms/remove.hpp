@@ -384,7 +384,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 auto f4 =
                     [dest_ptr, flags](
                         std::vector<pika::shared_future<std::size_t>>&& items,
-                        std::vector<pika::future<void>>&& data) mutable -> Iter {
+                        std::vector<pika::future<void>>&& data) mutable
+                    -> Iter {
                     PIKA_UNUSED(flags);
 
                     // make sure iterators embedded in function object that is

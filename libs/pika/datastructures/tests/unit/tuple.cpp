@@ -122,7 +122,8 @@ public:
 // ----------------------------------------------------------------------------
 
 typedef pika::tuple<int> t1;
-typedef pika::tuple<double&, const double&, const double, double*, const double*>
+typedef pika::tuple<double&, const double&, const double, double*,
+    const double*>
     t2;
 typedef pika::tuple<A, int (*)(char, int), C> t3;
 typedef pika::tuple<std::string, std::pair<A, B>> t4;
@@ -226,15 +227,17 @@ void element_access_test()
     ++pika::get<0>(t);
     PIKA_TEST_EQ(pika::get<0>(t), 6);
 
-    PIKA_TEST((std::is_const<
-                  pika::tuple_element<0, pika::tuple<int, float>>::type>::value !=
-        true));
+    PIKA_TEST(
+        (std::is_const<
+             pika::tuple_element<0, pika::tuple<int, float>>::type>::value !=
+            true));
     PIKA_TEST((std::is_const<
         pika::tuple_element<0, const pika::tuple<int, float>>::type>::value));
 
-    PIKA_TEST((std::is_const<
-                  pika::tuple_element<1, pika::tuple<int, float>>::type>::value !=
-        true));
+    PIKA_TEST(
+        (std::is_const<
+             pika::tuple_element<1, pika::tuple<int, float>>::type>::value !=
+            true));
     PIKA_TEST((std::is_const<
         pika::tuple_element<1, const pika::tuple<int, float>>::type>::value));
 
@@ -355,7 +358,8 @@ void tie_test()
     PIKA_TEST_EQ(b, 'a');
     PIKA_TEST(c == foo(3));
 
-    pika::tie(a, pika::ignore, c) = pika::make_tuple((short int) 5, false, foo(5));
+    pika::tie(a, pika::ignore, c) =
+        pika::make_tuple((short int) 5, false, foo(5));
     PIKA_TEST_EQ(a, 5);
     PIKA_TEST_EQ(b, 'a');
     PIKA_TEST(c == foo(5));

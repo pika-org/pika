@@ -184,9 +184,10 @@ namespace pika { namespace lcos { namespace local {
                 if (closed_)
                 {
                     l.unlock();
-                    return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
-                        pika::invalid_status, "pika::lcos::local::channel::set",
-                        "attempting to write to a closed channel"));
+                    return pika::make_exceptional_future<void>(
+                        PIKA_GET_EXCEPTION(pika::invalid_status,
+                            "pika::lcos::local::channel::set",
+                            "attempting to write to a closed channel"));
                 }
 
                 ++set_generation_;
@@ -257,7 +258,7 @@ namespace pika { namespace lcos { namespace local {
             // correctly if this is noexcept. pika::util::result_of (and
             // std::result_of) inside deferred_call does not detect that the
             // call is valid, and compilation fails.
-#if !(defined(PIKA_CUDA_VERSION) && defined(PIKA_GCC_VERSION) &&                 \
+#if !(defined(PIKA_CUDA_VERSION) && defined(PIKA_GCC_VERSION) &&               \
     (PIKA_GCC_VERSION < 100000))
                 noexcept
 #endif
@@ -478,9 +479,10 @@ namespace pika { namespace lcos { namespace local {
                 if (closed_)
                 {
                     l.unlock();
-                    return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
-                        pika::invalid_status, "pika::lcos::local::channel::set",
-                        "attempting to write to a closed channel"));
+                    return pika::make_exceptional_future<void>(
+                        PIKA_GET_EXCEPTION(pika::invalid_status,
+                            "pika::lcos::local::channel::set",
+                            "attempting to write to a closed channel"));
                 }
 
                 return buffer_.push(PIKA_MOVE(t), l);

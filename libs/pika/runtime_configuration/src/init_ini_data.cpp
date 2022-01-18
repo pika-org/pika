@@ -105,7 +105,8 @@ namespace pika { namespace util {
                 bool result2 = handle_ini_file(ini, path + "/pika.ini");
                 if (result2)
                 {
-                    LBT_(info).format("loaded configuration: {}/pika.ini", path);
+                    LBT_(info).format(
+                        "loaded configuration: {}/pika.ini", path);
                 }
                 result = result2 || result;
             }
@@ -158,7 +159,8 @@ namespace pika { namespace util {
                 bool result2 = handle_ini_file(ini, pika_ini_file);
                 if (result2)
                 {
-                    LBT_(info).format("loaded configuration: {}", pika_ini_file);
+                    LBT_(info).format(
+                        "loaded configuration: {}", pika_ini_file);
                 }
                 return result || result2;
             }
@@ -239,4 +241,4 @@ namespace pika { namespace util {
             return lhs.first == rhs.first;
         }
     }    // namespace detail
-}}    // namespace pika::util
+}}       // namespace pika::util

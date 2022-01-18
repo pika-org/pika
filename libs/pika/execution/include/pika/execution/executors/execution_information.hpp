@@ -95,8 +95,8 @@ namespace pika { namespace parallel { namespace execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(get_pu_mask_t,
-            Executor&& /*exec*/, threads::topology& topo,
+        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
+            get_pu_mask_t, Executor&& /*exec*/, threads::topology& topo,
             std::size_t thread_num)
         {
             return detail::get_pu_mask(topo, thread_num);

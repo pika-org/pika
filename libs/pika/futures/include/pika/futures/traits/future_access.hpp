@@ -62,8 +62,8 @@ namespace pika { namespace traits {
         struct shared_state_ptr
         {
             using result_type = shared_state_ptr_result_t<R>;
-            using type =
-                pika::intrusive_ptr<lcos::detail::future_data_base<result_type>>;
+            using type = pika::intrusive_ptr<
+                lcos::detail::future_data_base<result_type>>;
         };
 
         template <typename Future>
@@ -237,11 +237,11 @@ namespace pika { namespace traits {
         }
 
         template <typename T = void>
-        static pika::shared_future<R> create(
-            detail::shared_state_ptr_for_t<pika::shared_future<pika::future<R>>>&&
-                shared_state)
+        static pika::shared_future<R> create(detail::shared_state_ptr_for_t<
+            pika::shared_future<pika::future<R>>>&& shared_state)
         {
-            return pika::shared_future<pika::future<R>>(PIKA_MOVE(shared_state));
+            return pika::shared_future<pika::future<R>>(
+                PIKA_MOVE(shared_state));
         }
 
         template <typename SharedState>

@@ -184,7 +184,8 @@ void test_shift_left_async(ExPolicy policy, IteratorTag)
         std::begin(c) + ((std::size_t) ARR_SIZE - n), std::begin(d)));
 
     // ensure shift by more than n does not crash
-    auto fut4 = pika::ranges::shift_left(policy, c, (std::size_t)(ARR_SIZE + 1));
+    auto fut4 =
+        pika::ranges::shift_left(policy, c, (std::size_t)(ARR_SIZE + 1));
     fut4.wait();
 }
 

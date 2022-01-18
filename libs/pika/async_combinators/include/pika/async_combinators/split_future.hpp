@@ -155,23 +155,25 @@ namespace pika { namespace lcos {
 
         ///////////////////////////////////////////////////////////////////////
         template <std::size_t I, typename Tuple>
-        PIKA_FORCEINLINE pika::future<typename pika::tuple_element<I, Tuple>::type>
-        extract_nth_future(pika::future<Tuple>& future)
+        PIKA_FORCEINLINE
+            pika::future<typename pika::tuple_element<I, Tuple>::type>
+            extract_nth_future(pika::future<Tuple>& future)
         {
             typedef typename pika::tuple_element<I, Tuple>::type result_type;
 
-            return pika::traits::future_access<pika::future<result_type>>::create(
-                extract_nth_continuation<result_type, Tuple, I>(future));
+            return pika::traits::future_access<pika::future<result_type>>::
+                create(extract_nth_continuation<result_type, Tuple, I>(future));
         }
 
         template <std::size_t I, typename Tuple>
-        PIKA_FORCEINLINE pika::future<typename pika::tuple_element<I, Tuple>::type>
-        extract_nth_future(pika::shared_future<Tuple>& future)
+        PIKA_FORCEINLINE
+            pika::future<typename pika::tuple_element<I, Tuple>::type>
+            extract_nth_future(pika::shared_future<Tuple>& future)
         {
             typedef typename pika::tuple_element<I, Tuple>::type result_type;
 
-            return pika::traits::future_access<pika::future<result_type>>::create(
-                extract_nth_continuation<result_type, Tuple, I>(future));
+            return pika::traits::future_access<pika::future<result_type>>::
+                create(extract_nth_continuation<result_type, Tuple, I>(future));
         }
 
         ///////////////////////////////////////////////////////////////////////

@@ -368,7 +368,8 @@ namespace pika { namespace util {
                 logging::level, logging_destination),
             void (*define_formatters)(logging::writer::named_write&))
         {
-            auto settings = detail::get_log_settings(ini, "pika.logging.timing");
+            auto settings =
+                detail::get_log_settings(ini, "pika.logging.timing");
 
             auto lvl = pika::util::logging::level::disable_all;
             if (!settings.level_.empty())
@@ -871,7 +872,8 @@ namespace pika { namespace util {
             if (get_entry_as<int>(ini, "pika.logging.level", -1) > 0 ||
                 get_entry_as<int>(ini, "pika.logging.timing.level", -1) > 0 ||
                 get_entry_as<int>(ini, "pika.logging.debuglog.level", -1) > 0 ||
-                get_entry_as<int>(ini, "pika.logging.application.level", -1) > 0)
+                get_entry_as<int>(ini, "pika.logging.application.level", -1) >
+                    0)
             {
                 std::cerr
                     << "pika::init_logging: warning: logging is requested even "

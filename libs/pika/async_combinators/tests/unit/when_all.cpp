@@ -14,9 +14,9 @@
 #include <chrono>
 #include <deque>
 #include <list>
-#include <thread>
 #include <memory>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -235,8 +235,10 @@ void test_wait_for_all_late_futures()
 
 void test_wait_for_all_deferred_futures()
 {
-    pika::future<int> f1 = pika::async(pika::launch::deferred, &make_int_slowly);
-    pika::future<int> f2 = pika::async(pika::launch::deferred, &make_int_slowly);
+    pika::future<int> f1 =
+        pika::async(pika::launch::deferred, &make_int_slowly);
+    pika::future<int> f2 =
+        pika::async(pika::launch::deferred, &make_int_slowly);
 
     typedef pika::tuple<pika::future<int>, pika::future<int>> result_type;
     pika::future<result_type> r = pika::when_all(f1, f2);

@@ -276,13 +276,18 @@ int main()
     PIKA_TEST_EQ(pika::util::mem_fn(&X::mf0_1), pika::util::mem_fn(&X::mf0_1));
     PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf0_1), pika::util::mem_fn(&X::mf0_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf0_1), pika::util::mem_fn(&X::cmf0_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::cmf0_1), pika::util::mem_fn(&X::cmf0_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf0_1), pika::util::mem_fn(&X::cmf0_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::cmf0_1), pika::util::mem_fn(&X::cmf0_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::mf0v_1), pika::util::mem_fn(&X::mf0v_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf0v_1), pika::util::mem_fn(&X::mf0v_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::mf0v_1), pika::util::mem_fn(&X::mf0v_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::mf0v_1), pika::util::mem_fn(&X::mf0v_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf0v_1), pika::util::mem_fn(&X::cmf0v_1));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf0v_1), pika::util::mem_fn(&X::cmf0v_1));
     PIKA_TEST_NEQ(
         pika::util::mem_fn(&X::cmf0v_1), pika::util::mem_fn(&X::cmf0v_2));
 
@@ -291,13 +296,18 @@ int main()
     PIKA_TEST_EQ(pika::util::mem_fn(&X::mf1_1), pika::util::mem_fn(&X::mf1_1));
     PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf1_1), pika::util::mem_fn(&X::mf1_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf1_1), pika::util::mem_fn(&X::cmf1_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::cmf1_1), pika::util::mem_fn(&X::cmf1_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf1_1), pika::util::mem_fn(&X::cmf1_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::cmf1_1), pika::util::mem_fn(&X::cmf1_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::mf1v_1), pika::util::mem_fn(&X::mf1v_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf1v_1), pika::util::mem_fn(&X::mf1v_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::mf1v_1), pika::util::mem_fn(&X::mf1v_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::mf1v_1), pika::util::mem_fn(&X::mf1v_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf1v_1), pika::util::mem_fn(&X::cmf1v_1));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf1v_1), pika::util::mem_fn(&X::cmf1v_1));
     PIKA_TEST_NEQ(
         pika::util::mem_fn(&X::cmf1v_1), pika::util::mem_fn(&X::cmf1v_2));
 
@@ -306,13 +316,18 @@ int main()
     PIKA_TEST_EQ(pika::util::mem_fn(&X::mf2_1), pika::util::mem_fn(&X::mf2_1));
     PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf2_1), pika::util::mem_fn(&X::mf2_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf2_1), pika::util::mem_fn(&X::cmf2_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::cmf2_1), pika::util::mem_fn(&X::cmf2_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf2_1), pika::util::mem_fn(&X::cmf2_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::cmf2_1), pika::util::mem_fn(&X::cmf2_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::mf2v_1), pika::util::mem_fn(&X::mf2v_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf2v_1), pika::util::mem_fn(&X::mf2v_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::mf2v_1), pika::util::mem_fn(&X::mf2v_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::mf2v_1), pika::util::mem_fn(&X::mf2v_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf2v_1), pika::util::mem_fn(&X::cmf2v_1));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf2v_1), pika::util::mem_fn(&X::cmf2v_1));
     PIKA_TEST_NEQ(
         pika::util::mem_fn(&X::cmf2v_1), pika::util::mem_fn(&X::cmf2v_2));
 
@@ -321,13 +336,18 @@ int main()
     PIKA_TEST_EQ(pika::util::mem_fn(&X::mf3_1), pika::util::mem_fn(&X::mf3_1));
     PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf3_1), pika::util::mem_fn(&X::mf3_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf3_1), pika::util::mem_fn(&X::cmf3_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::cmf3_1), pika::util::mem_fn(&X::cmf3_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf3_1), pika::util::mem_fn(&X::cmf3_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::cmf3_1), pika::util::mem_fn(&X::cmf3_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::mf3v_1), pika::util::mem_fn(&X::mf3v_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf3v_1), pika::util::mem_fn(&X::mf3v_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::mf3v_1), pika::util::mem_fn(&X::mf3v_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::mf3v_1), pika::util::mem_fn(&X::mf3v_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf3v_1), pika::util::mem_fn(&X::cmf3v_1));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf3v_1), pika::util::mem_fn(&X::cmf3v_1));
     PIKA_TEST_NEQ(
         pika::util::mem_fn(&X::cmf3v_1), pika::util::mem_fn(&X::cmf3v_2));
 
@@ -336,13 +356,18 @@ int main()
     PIKA_TEST_EQ(pika::util::mem_fn(&X::mf4_1), pika::util::mem_fn(&X::mf4_1));
     PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf4_1), pika::util::mem_fn(&X::mf4_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf4_1), pika::util::mem_fn(&X::cmf4_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::cmf4_1), pika::util::mem_fn(&X::cmf4_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf4_1), pika::util::mem_fn(&X::cmf4_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::cmf4_1), pika::util::mem_fn(&X::cmf4_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::mf4v_1), pika::util::mem_fn(&X::mf4v_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf4v_1), pika::util::mem_fn(&X::mf4v_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::mf4v_1), pika::util::mem_fn(&X::mf4v_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::mf4v_1), pika::util::mem_fn(&X::mf4v_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf4v_1), pika::util::mem_fn(&X::cmf4v_1));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf4v_1), pika::util::mem_fn(&X::cmf4v_1));
     PIKA_TEST_NEQ(
         pika::util::mem_fn(&X::cmf4v_1), pika::util::mem_fn(&X::cmf4v_2));
 
@@ -351,13 +376,18 @@ int main()
     PIKA_TEST_EQ(pika::util::mem_fn(&X::mf5_1), pika::util::mem_fn(&X::mf5_1));
     PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf5_1), pika::util::mem_fn(&X::mf5_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf5_1), pika::util::mem_fn(&X::cmf5_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::cmf5_1), pika::util::mem_fn(&X::cmf5_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf5_1), pika::util::mem_fn(&X::cmf5_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::cmf5_1), pika::util::mem_fn(&X::cmf5_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::mf5v_1), pika::util::mem_fn(&X::mf5v_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf5v_1), pika::util::mem_fn(&X::mf5v_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::mf5v_1), pika::util::mem_fn(&X::mf5v_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::mf5v_1), pika::util::mem_fn(&X::mf5v_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf5v_1), pika::util::mem_fn(&X::cmf5v_1));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf5v_1), pika::util::mem_fn(&X::cmf5v_1));
     PIKA_TEST_NEQ(
         pika::util::mem_fn(&X::cmf5v_1), pika::util::mem_fn(&X::cmf5v_2));
 
@@ -366,13 +396,18 @@ int main()
     PIKA_TEST_EQ(pika::util::mem_fn(&X::mf6_1), pika::util::mem_fn(&X::mf6_1));
     PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf6_1), pika::util::mem_fn(&X::mf6_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf6_1), pika::util::mem_fn(&X::cmf6_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::cmf6_1), pika::util::mem_fn(&X::cmf6_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf6_1), pika::util::mem_fn(&X::cmf6_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::cmf6_1), pika::util::mem_fn(&X::cmf6_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::mf6v_1), pika::util::mem_fn(&X::mf6v_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf6v_1), pika::util::mem_fn(&X::mf6v_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::mf6v_1), pika::util::mem_fn(&X::mf6v_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::mf6v_1), pika::util::mem_fn(&X::mf6v_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf6v_1), pika::util::mem_fn(&X::cmf6v_1));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf6v_1), pika::util::mem_fn(&X::cmf6v_1));
     PIKA_TEST_NEQ(
         pika::util::mem_fn(&X::cmf6v_1), pika::util::mem_fn(&X::cmf6v_2));
 
@@ -381,13 +416,18 @@ int main()
     PIKA_TEST_EQ(pika::util::mem_fn(&X::mf7_1), pika::util::mem_fn(&X::mf7_1));
     PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf7_1), pika::util::mem_fn(&X::mf7_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf7_1), pika::util::mem_fn(&X::cmf7_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::cmf7_1), pika::util::mem_fn(&X::cmf7_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf7_1), pika::util::mem_fn(&X::cmf7_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::cmf7_1), pika::util::mem_fn(&X::cmf7_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::mf7v_1), pika::util::mem_fn(&X::mf7v_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf7v_1), pika::util::mem_fn(&X::mf7v_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::mf7v_1), pika::util::mem_fn(&X::mf7v_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::mf7v_1), pika::util::mem_fn(&X::mf7v_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf7v_1), pika::util::mem_fn(&X::cmf7v_1));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf7v_1), pika::util::mem_fn(&X::cmf7v_1));
     PIKA_TEST_NEQ(
         pika::util::mem_fn(&X::cmf7v_1), pika::util::mem_fn(&X::cmf7v_2));
 
@@ -396,13 +436,18 @@ int main()
     PIKA_TEST_EQ(pika::util::mem_fn(&X::mf8_1), pika::util::mem_fn(&X::mf8_1));
     PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf8_1), pika::util::mem_fn(&X::mf8_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf8_1), pika::util::mem_fn(&X::cmf8_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::cmf8_1), pika::util::mem_fn(&X::cmf8_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf8_1), pika::util::mem_fn(&X::cmf8_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::cmf8_1), pika::util::mem_fn(&X::cmf8_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::mf8v_1), pika::util::mem_fn(&X::mf8v_1));
-    PIKA_TEST_NEQ(pika::util::mem_fn(&X::mf8v_1), pika::util::mem_fn(&X::mf8v_2));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::mf8v_1), pika::util::mem_fn(&X::mf8v_1));
+    PIKA_TEST_NEQ(
+        pika::util::mem_fn(&X::mf8v_1), pika::util::mem_fn(&X::mf8v_2));
 
-    PIKA_TEST_EQ(pika::util::mem_fn(&X::cmf8v_1), pika::util::mem_fn(&X::cmf8v_1));
+    PIKA_TEST_EQ(
+        pika::util::mem_fn(&X::cmf8v_1), pika::util::mem_fn(&X::cmf8v_1));
     PIKA_TEST_NEQ(
         pika::util::mem_fn(&X::cmf8v_1), pika::util::mem_fn(&X::cmf8v_2));
 

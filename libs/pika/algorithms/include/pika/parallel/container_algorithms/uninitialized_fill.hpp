@@ -334,8 +334,8 @@ namespace pika { namespace ranges {
 
             return pika::parallel::v1::detail::uninitialized_fill<
                 iterator_type>()
-                .call(
-                    pika::execution::seq, std::begin(rng), std::end(rng), value);
+                .call(pika::execution::seq, std::begin(rng), std::end(rng),
+                    value);
         }
 
         // clang-format off

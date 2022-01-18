@@ -17,6 +17,5 @@ namespace pika { namespace util {
     // return the full path of the current executable
     PIKA_EXPORT std::string get_executable_filename(
         char const* argv0 = nullptr);
-    PIKA_EXPORT std::string get_executable_prefix(
-        char const* argv0 = nullptr);
+    PIKA_EXPORT std::string get_executable_prefix(char const* argv0 = nullptr);
 }}    // namespace pika::util

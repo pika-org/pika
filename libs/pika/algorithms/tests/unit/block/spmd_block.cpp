@@ -111,7 +111,8 @@ int pika_main()
 
     pika::wait_all(join);
 
-    pika::parallel::define_spmd_block(num_images, bulk_test_function, c3.data());
+    pika::parallel::define_spmd_block(
+        num_images, bulk_test_function, c3.data());
 
     return pika::local::finalize();
 }

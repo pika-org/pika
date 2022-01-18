@@ -623,7 +623,8 @@ namespace pika { namespace parallel { namespace util {
         pika::parallel::util::loop_t, pika::execution::simd_policy, Begin begin,
         End end, F&& f)
     {
-        return detail::datapar_loop<Begin>::call(begin, end, PIKA_FORWARD(F, f));
+        return detail::datapar_loop<Begin>::call(
+            begin, end, PIKA_FORWARD(F, f));
     }
 
     template <typename Begin, typename End, typename F>
@@ -631,7 +632,8 @@ namespace pika { namespace parallel { namespace util {
         pika::parallel::util::loop_t, pika::execution::simd_task_policy,
         Begin begin, End end, F&& f)
     {
-        return detail::datapar_loop<Begin>::call(begin, end, PIKA_FORWARD(F, f));
+        return detail::datapar_loop<Begin>::call(
+            begin, end, PIKA_FORWARD(F, f));
     }
 
     template <typename Begin, typename End, typename CancelToken, typename F>

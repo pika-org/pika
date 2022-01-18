@@ -45,7 +45,8 @@ struct ___itt_counter;
 #define PIKA_ITT_THREAD_IGNORE() itt_thread_ignore()
 
 #define PIKA_ITT_TASK_BEGIN(domain, name) itt_task_begin(domain, name)
-#define PIKA_ITT_TASK_BEGIN_ID(domain, id, name) itt_task_begin(domain, id, name)
+#define PIKA_ITT_TASK_BEGIN_ID(domain, id, name)                               \
+    itt_task_begin(domain, id, name)
 #define PIKA_ITT_TASK_END(domain) itt_task_end(domain)
 
 #define PIKA_ITT_DOMAIN_CREATE(name) itt_domain_create(name)
@@ -55,30 +56,30 @@ struct ___itt_counter;
 #define PIKA_ITT_ID_CREATE(domain, id) itt_id_create(domain, id)
 #define PIKA_ITT_ID_DESTROY(id) itt_id_destroy(id)
 
-#define PIKA_ITT_HEAP_FUNCTION_CREATE(name, domain)                             \
+#define PIKA_ITT_HEAP_FUNCTION_CREATE(name, domain)                            \
     itt_heap_function_create(name, domain) /**/
-#define PIKA_ITT_HEAP_ALLOCATE_BEGIN(f, size, initialized)                      \
+#define PIKA_ITT_HEAP_ALLOCATE_BEGIN(f, size, initialized)                     \
     itt_heap_allocate_begin(f, size, initialized) /**/
-#define PIKA_ITT_HEAP_ALLOCATE_END(f, addr, size, initialized)                  \
+#define PIKA_ITT_HEAP_ALLOCATE_END(f, addr, size, initialized)                 \
     itt_heap_allocate_end(f, addr, size, initialized) /**/
 #define PIKA_ITT_HEAP_FREE_BEGIN(f, addr) itt_heap_free_begin(f, addr)
 #define PIKA_ITT_HEAP_FREE_END(f, addr) itt_heap_free_end(f, addr)
-#define PIKA_ITT_HEAP_REALLOCATE_BEGIN(f, addr, new_size, initialized)          \
+#define PIKA_ITT_HEAP_REALLOCATE_BEGIN(f, addr, new_size, initialized)         \
     itt_heap_reallocate_begin(f, addr, new_size, initialized) /**/
-#define PIKA_ITT_HEAP_REALLOCATE_END(f, addr, new_addr, new_size, initialized)  \
+#define PIKA_ITT_HEAP_REALLOCATE_END(f, addr, new_addr, new_size, initialized) \
     itt_heap_reallocate_end(f, addr, new_addr, new_size, initialized) /**/
 #define PIKA_ITT_HEAP_INTERNAL_ACCESS_BEGIN() itt_heap_internal_access_begin()
 #define PIKA_ITT_HEAP_INTERNAL_ACCESS_END() itt_heap_internal_access_end()
 
-#define PIKA_ITT_COUNTER_CREATE(name, domain)                                   \
+#define PIKA_ITT_COUNTER_CREATE(name, domain)                                  \
     itt_counter_create(name, domain) /**/
-#define PIKA_ITT_COUNTER_CREATE_TYPED(name, domain, type)                       \
+#define PIKA_ITT_COUNTER_CREATE_TYPED(name, domain, type)                      \
     itt_counter_create_typed(name, domain, type) /**/
-#define PIKA_ITT_COUNTER_SET_VALUE(id, value_ptr)                               \
+#define PIKA_ITT_COUNTER_SET_VALUE(id, value_ptr)                              \
     itt_counter_set_value(id, value_ptr) /**/
 #define PIKA_ITT_COUNTER_DESTROY(id) itt_counter_destroy(id)
 
-#define PIKA_ITT_METADATA_ADD(domain, id, key, data)                            \
+#define PIKA_ITT_METADATA_ADD(domain, id, key, data)                           \
     itt_metadata_add(domain, id, key, data) /**/
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,8 +127,7 @@ PIKA_EXPORT ___itt_string_handle* itt_string_handle_create(
     char const*) noexcept;
 
 PIKA_EXPORT ___itt_id* itt_make_id(void*, std::size_t);
-PIKA_EXPORT void itt_id_create(
-    ___itt_domain const*, ___itt_id* id) noexcept;
+PIKA_EXPORT void itt_id_create(___itt_domain const*, ___itt_id* id) noexcept;
 PIKA_EXPORT void itt_id_destroy(___itt_id* id) noexcept;
 
 PIKA_EXPORT __itt_heap_function itt_heap_function_create(

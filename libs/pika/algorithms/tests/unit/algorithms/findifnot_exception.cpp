@@ -36,7 +36,7 @@ void test_find_if_not_exception(IteratorTag)
     try
     {
         pika::find_if_not(decorated_iterator(std::begin(c),
-                             []() { throw std::runtime_error("test"); }),
+                              []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), [](std::size_t) { return 1; });
         PIKA_TEST(false);
     }

@@ -214,7 +214,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
 
         template <typename Result>
-        struct handle_exception_impl<pika::execution::unsequenced_policy, Result>
+        struct handle_exception_impl<pika::execution::unsequenced_policy,
+            Result>
         {
             using type = Result;
 

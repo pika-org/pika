@@ -211,28 +211,32 @@ namespace pika { namespace parallel { inline namespace v2 {
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, v1::detail::min_of<T>>
+    PIKA_FORCEINLINE constexpr detail::reduction_helper<T,
+        v1::detail::min_of<T>>
     reduction_min(T& var)
     {
         return reduction(var, var, v1::detail::min_of<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, v1::detail::min_of<T>>
+    PIKA_FORCEINLINE constexpr detail::reduction_helper<T,
+        v1::detail::min_of<T>>
     reduction_min(T& var, T const& identity)
     {
         return reduction(var, identity, v1::detail::min_of<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, v1::detail::max_of<T>>
+    PIKA_FORCEINLINE constexpr detail::reduction_helper<T,
+        v1::detail::max_of<T>>
     reduction_max(T& var)
     {
         return reduction(var, var, v1::detail::max_of<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, v1::detail::max_of<T>>
+    PIKA_FORCEINLINE constexpr detail::reduction_helper<T,
+        v1::detail::max_of<T>>
     reduction_max(T& var, T const& identity)
     {
         return reduction(var, identity, v1::detail::max_of<T>());

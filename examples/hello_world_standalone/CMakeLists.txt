@@ -19,8 +19,7 @@ if(EXISTS "${pika_DIR}")
     # Only for the purposes of testing we output the executable and libraries to
     # the output directory of pika
     set_target_properties(
-      hello_world PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-                             ${PIKA_OUTPUT_DIRECTORY}
+      hello_world PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PIKA_OUTPUT_DIRECTORY}
     )
   endif()
 

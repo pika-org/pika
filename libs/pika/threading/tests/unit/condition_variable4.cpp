@@ -75,7 +75,8 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
         for (;;)
         {
             {
-                pika::util::unlock_guard<pika::lcos::local::mutex> ul(items_mtx);
+                pika::util::unlock_guard<pika::lcos::local::mutex> ul(
+                    items_mtx);
                 if (cons_sec > 0)
                 {
                     std::this_thread::sleep_for(cons_sleep);

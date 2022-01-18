@@ -684,8 +684,8 @@ namespace pika { namespace ranges {
                 exclusive_scan_result<traits::range_iterator_t<Rng>, O>;
 
             return pika::parallel::v1::detail::exclusive_scan<result_type>()
-                .call(pika::execution::seq, std::begin(rng), std::end(rng), dest,
-                    PIKA_MOVE(init), PIKA_FORWARD(Op, op));
+                .call(pika::execution::seq, std::begin(rng), std::end(rng),
+                    dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
         }
 
         // clang-format off

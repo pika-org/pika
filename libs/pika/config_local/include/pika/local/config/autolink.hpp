@@ -10,7 +10,7 @@
 #include <pika/local/config/debug.hpp>
 
 // enable auto-linking for supported platforms
-#if defined(PIKA_MSVC) || defined(__BORLANDC__) ||                              \
+#if defined(PIKA_MSVC) || defined(__BORLANDC__) ||                             \
     (defined(__MWERKS__) && defined(_WIN32) && (__MWERKS__ >= 0x3000)) ||      \
     (defined(__ICL) && defined(_MSC_EXTENSIONS) && (PIKA_MSVC >= 1200))
 
@@ -20,8 +20,8 @@
 
 #if defined(PIKA_DEBUG)
 #pragma comment(lib,                                                           \
-    PIKA_AUTOLINK_LIB_NAME "d"                                                  \
-                          ".lib")
+    PIKA_AUTOLINK_LIB_NAME "d"                                                 \
+                           ".lib")
 #else
 #pragma comment(lib, PIKA_AUTOLINK_LIB_NAME ".lib")
 #endif

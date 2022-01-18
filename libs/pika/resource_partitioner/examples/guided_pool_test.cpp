@@ -201,8 +201,8 @@ int pika_main()
     // the args of the async lambda must match the args of the hint type
     using hint_type3 = pool_numa_hint<guided_test_tag>;
     // create an executor using the numa hint type
-    pika::parallel::execution::guided_pool_executor<hint_type3> guided_cont_exec(
-        &pika::resource::get_thread_pool(CUSTOM_POOL_NAME));
+    pika::parallel::execution::guided_pool_executor<hint_type3>
+        guided_cont_exec(&pika::resource::get_thread_pool(CUSTOM_POOL_NAME));
     // invoke the lambda asynchronously and use the numa executor
     auto new_future = pika::async([]() -> double {
         return 2 * 3.1415;
@@ -221,8 +221,8 @@ int pika_main()
     return pika::local::finalize();
 }
 
-void init_resource_partitioner_handler(
-    pika::resource::partitioner& rp, pika::program_options::variables_map const&)
+void init_resource_partitioner_handler(pika::resource::partitioner& rp,
+    pika::program_options::variables_map const&)
 {
     // create a thread pool and supply a lambda that returns a new pool with
     // a user supplied scheduler attached

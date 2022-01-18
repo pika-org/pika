@@ -96,8 +96,8 @@ void test_remove_copy_async(ExPolicy p, IteratorTag)
     std::fill(std::begin(c), middle, 1);
     std::fill(middle, std::end(c), 2);
 
-    auto f = pika::remove_copy(p, iterator(std::begin(c)), iterator(std::end(c)),
-        std::begin(d), std::size_t(2));
+    auto f = pika::remove_copy(p, iterator(std::begin(c)),
+        iterator(std::end(c)), std::begin(d), std::size_t(2));
 
     f.wait();
 
@@ -134,8 +134,8 @@ void test_remove_copy_outiter(ExPolicy policy, IteratorTag)
             ++count;
             return v1 == v2;
         }));
-    PIKA_TEST(std::equal(std::begin(c) + 3001, std::end(c), std::begin(d) + 3000,
-        [&count](std::size_t v1, std::size_t v2) -> bool {
+    PIKA_TEST(std::equal(std::begin(c) + 3001, std::end(c),
+        std::begin(d) + 3000, [&count](std::size_t v1, std::size_t v2) -> bool {
             PIKA_TEST_EQ(v1, v2);
             ++count;
             return v1 == v2;
@@ -153,8 +153,8 @@ void test_remove_copy_outiter_async(ExPolicy p, IteratorTag)
     std::vector<std::size_t> d(0);
     std::iota(std::begin(c), std::end(c), 0);
 
-    auto f = pika::remove_copy(p, iterator(std::begin(c)), iterator(std::end(c)),
-        std::back_inserter(d), std::size_t(3000));
+    auto f = pika::remove_copy(p, iterator(std::begin(c)),
+        iterator(std::end(c)), std::back_inserter(d), std::size_t(3000));
     f.wait();
 
     std::size_t count = 0;
@@ -164,8 +164,8 @@ void test_remove_copy_outiter_async(ExPolicy p, IteratorTag)
             ++count;
             return v1 == v2;
         }));
-    PIKA_TEST(std::equal(std::begin(c) + 3001, std::end(c), std::begin(d) + 3000,
-        [&count](std::size_t v1, std::size_t v2) -> bool {
+    PIKA_TEST(std::equal(std::begin(c) + 3001, std::end(c),
+        std::begin(d) + 3000, [&count](std::size_t v1, std::size_t v2) -> bool {
             PIKA_TEST_EQ(v1, v2);
             ++count;
             return v1 == v2;

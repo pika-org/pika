@@ -43,8 +43,9 @@ void test_wait_for_two_out_of_five_futures()
     pika::lcos::local::packaged_task<int()> pt5(make_int_slowly);
     pika::future<int> f5 = pt5.get_future();
 
-    typedef pika::when_some_result<pika::tuple<pika::future<int>, pika::future<int>,
-        pika::future<int>, pika::future<int>, pika::future<int>>>
+    typedef pika::when_some_result<
+        pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>,
+            pika::future<int>, pika::future<int>>>
         result_type;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
@@ -82,8 +83,9 @@ void test_wait_for_three_out_of_five_futures()
     pika::future<int> f5 = pt5.get_future();
     pt5();
 
-    typedef pika::when_some_result<pika::tuple<pika::future<int>, pika::future<int>,
-        pika::future<int>, pika::future<int>, pika::future<int>>>
+    typedef pika::when_some_result<
+        pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>,
+            pika::future<int>, pika::future<int>>>
         result_type;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
@@ -118,8 +120,9 @@ void test_wait_for_two_out_of_five_late_futures()
     pika::lcos::local::packaged_task<int()> pt5(make_int_slowly);
     pika::future<int> f5 = pt5.get_future();
 
-    typedef pika::when_some_result<pika::tuple<pika::future<int>, pika::future<int>,
-        pika::future<int>, pika::future<int>, pika::future<int>>>
+    typedef pika::when_some_result<
+        pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>,
+            pika::future<int>, pika::future<int>>>
         result_type;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
@@ -146,14 +149,20 @@ void test_wait_for_two_out_of_five_deferred_futures()
 {
     unsigned const count = 2;
 
-    pika::future<int> f1 = pika::async(pika::launch::deferred, &make_int_slowly);
-    pika::future<int> f2 = pika::async(pika::launch::deferred, &make_int_slowly);
-    pika::future<int> f3 = pika::async(pika::launch::deferred, &make_int_slowly);
-    pika::future<int> f4 = pika::async(pika::launch::deferred, &make_int_slowly);
-    pika::future<int> f5 = pika::async(pika::launch::deferred, &make_int_slowly);
+    pika::future<int> f1 =
+        pika::async(pika::launch::deferred, &make_int_slowly);
+    pika::future<int> f2 =
+        pika::async(pika::launch::deferred, &make_int_slowly);
+    pika::future<int> f3 =
+        pika::async(pika::launch::deferred, &make_int_slowly);
+    pika::future<int> f4 =
+        pika::async(pika::launch::deferred, &make_int_slowly);
+    pika::future<int> f5 =
+        pika::async(pika::launch::deferred, &make_int_slowly);
 
-    typedef pika::when_some_result<pika::tuple<pika::future<int>, pika::future<int>,
-        pika::future<int>, pika::future<int>, pika::future<int>>>
+    typedef pika::when_some_result<
+        pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>,
+            pika::future<int>, pika::future<int>>>
         result_type;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
@@ -298,7 +307,8 @@ void test_wait_for_either_of_five_futures_1_from_list_iterators()
     pt5();
 
     pika::future<pika::when_some_result<Container>> r =
-        pika::when_some<iterator, Container>(3u, futures.begin(), futures.end());
+        pika::when_some<iterator, Container>(
+            3u, futures.begin(), futures.end());
     pika::when_some_result<Container> raw = r.get();
 
     PIKA_TEST_EQ(raw.indices[0], 0u);

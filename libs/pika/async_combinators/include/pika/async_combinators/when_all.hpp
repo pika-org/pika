@@ -228,7 +228,8 @@ namespace pika {
             pika::tuple<pika::traits::acquire_future_t<T>...>>::type
         when_all_impl(T&&... args)
         {
-            using result_type = pika::tuple<pika::traits::acquire_future_t<T>...>;
+            using result_type =
+                pika::tuple<pika::traits::acquire_future_t<T>...>;
             using frame_type = async_when_all_frame<result_type>;
             using no_addref = typename frame_type::base_type::init_no_addref;
 

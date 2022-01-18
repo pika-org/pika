@@ -294,8 +294,8 @@ namespace pika { namespace ranges {
             Proj&& proj = Proj())
         {
             return pika::parallel::v1::detail::adjacent_find<FwdIter, FwdIter>()
-                .call(pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
-                    PIKA_FORWARD(Proj, proj));
+                .call(pika::execution::seq, first, last,
+                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off

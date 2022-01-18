@@ -185,9 +185,10 @@ namespace pika { namespace parallel { inline namespace v1 {
                         FwdIter>::get(PIKA_MOVE(first));
                 }
 
-                return for_each_n<FwdIter>().call(PIKA_FORWARD(ExPolicy, policy),
-                    first, detail::distance(first, last),
-                    fill_iteration<T>{val}, util::projection_identity());
+                return for_each_n<FwdIter>().call(
+                    PIKA_FORWARD(ExPolicy, policy), first,
+                    detail::distance(first, last), fill_iteration<T>{val},
+                    util::projection_identity());
             }
         };
         /// \endcond

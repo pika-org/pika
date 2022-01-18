@@ -370,10 +370,11 @@ namespace pika { namespace ranges {
                 set_union_result<iterator_type1, iterator_type2, Iter3>;
 
             return pika::parallel::v1::detail::set_union<result_type>().call2(
-                PIKA_FORWARD(ExPolicy, policy), is_seq(), pika::util::begin(rng1),
-                pika::util::end(rng1), pika::util::begin(rng2),
-                pika::util::end(rng2), dest, PIKA_FORWARD(Pred, op),
-                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
+                PIKA_FORWARD(ExPolicy, policy), is_seq(),
+                pika::util::begin(rng1), pika::util::end(rng1),
+                pika::util::begin(rng2), pika::util::end(rng2), dest,
+                PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
         }
 
         // clang-format off

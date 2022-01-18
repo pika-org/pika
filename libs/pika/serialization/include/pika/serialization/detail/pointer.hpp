@@ -154,8 +154,8 @@ namespace pika { namespace serialization {
             using type = typename util::lazy_conditional<
                 pika::traits::is_serialized_with_id<referred_type>::value,
                 pika::util::identity<polymorphic_with_id>,
-                std::conditional<
-                    pika::traits::is_intrusive_polymorphic<referred_type>::value,
+                std::conditional<pika::traits::is_intrusive_polymorphic<
+                                     referred_type>::value,
                     intrusive_polymorphic,
                     typename std::conditional<
                         pika::traits::is_nonintrusive_polymorphic<
@@ -228,7 +228,8 @@ namespace pika { namespace serialization {
                 pika::traits::is_serialized_with_id<referred_type>::value,
                 polymorphic_with_id,
                 typename std::conditional<
-                    pika::traits::is_intrusive_polymorphic<referred_type>::value,
+                    pika::traits::is_intrusive_polymorphic<
+                        referred_type>::value,
                     intrusive_polymorphic, usual>::type>::type;
         };
 

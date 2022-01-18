@@ -224,8 +224,8 @@ namespace pika { namespace ranges {
 
             return pika::parallel::v1::detail::transfer<
                 pika::parallel::v1::detail::move<iterator_type, Iter2>>(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                dest);
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), dest);
         }
     } move{};
 
@@ -277,9 +277,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 typename pika::traits::range_traits<Rng>::iterator_type,
                 FwdIter>>::type move(ExPolicy&& policy, Rng&& rng, FwdIter dest)
     {
-        using move_iter_t =
-            detail::move<typename pika::traits::range_traits<Rng>::iterator_type,
-                FwdIter>;
+        using move_iter_t = detail::move<
+            typename pika::traits::range_traits<Rng>::iterator_type, FwdIter>;
 
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic push

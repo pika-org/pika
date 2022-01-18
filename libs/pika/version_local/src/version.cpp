@@ -71,8 +71,7 @@ namespace pika::local {
     std::string full_version_as_string()
     {
         return pika::util::format("{}.{}.{}",    //-V609
-            PIKA_VERSION_MAJOR, PIKA_VERSION_MINOR,
-            PIKA_VERSION_SUBMINOR);
+            PIKA_VERSION_MAJOR, PIKA_VERSION_MINOR, PIKA_VERSION_SUBMINOR);
     }
 
     std::string tag()
@@ -98,7 +97,8 @@ namespace pika::local {
 #endif
         // add general MPI version
 #if defined(MPI_VERSION) && defined(MPI_SUBVERSION)
-        pika::util::format_to(strm, ", MPI V{}.{}", MPI_VERSION, MPI_SUBVERSION);
+        pika::util::format_to(
+            strm, ", MPI V{}.{}", MPI_VERSION, MPI_SUBVERSION);
 #else
         strm << ", unknown MPI version";
 #endif
@@ -144,7 +144,8 @@ namespace pika::local {
         strm << "pika:\n";
 
 #if defined(PIKA_HAVE_MALLOC)
-        pika::util::format_to(strm, "  PIKA_HAVE_MALLOC={}\n", PIKA_HAVE_MALLOC);
+        pika::util::format_to(
+            strm, "  PIKA_HAVE_MALLOC={}\n", PIKA_HAVE_MALLOC);
 #endif
 
         char const* const* p = pika::local::config_strings;
@@ -158,8 +159,7 @@ namespace pika::local {
     std::string build_string()
     {
         return pika::util::format("V{}{}, Git: {:.10}",    //-V609
-            full_version_as_string(), PIKA_VERSION_TAG,
-            PIKA_HAVE_GIT_COMMIT);
+            full_version_as_string(), PIKA_VERSION_TAG, PIKA_HAVE_GIT_COMMIT);
     }
 
     std::string boost_version()
@@ -201,19 +201,19 @@ namespace pika::local {
     std::string complete_version()
     {
         std::string version = pika::util::format("Versions:\n"
-                                                "  pika: {}\n"
-                                                "  Boost: {}\n"
-                                                "  Hwloc: {}\n"
+                                                 "  pika: {}\n"
+                                                 "  Boost: {}\n"
+                                                 "  Hwloc: {}\n"
 #if defined(PIKA_HAVE_MODULE_MPI_BASE)
-                                                "  MPI: {}\n"
+                                                 "  MPI: {}\n"
 #endif
-                                                "\n"
-                                                "Build:\n"
-                                                "  Type: {}\n"
-                                                "  Date: {}\n"
-                                                "  Platform: {}\n"
-                                                "  Compiler: {}\n"
-                                                "  Standard Library: {}\n",
+                                                 "\n"
+                                                 "Build:\n"
+                                                 "  Type: {}\n"
+                                                 "  Date: {}\n"
+                                                 "  Platform: {}\n"
+                                                 "  Compiler: {}\n"
+                                                 "  Standard Library: {}\n",
             build_string(), boost_version(), hwloc_version(),
 #if defined(PIKA_HAVE_MODULE_MPI_BASE)
             mpi_version(),

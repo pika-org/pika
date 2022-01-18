@@ -34,8 +34,7 @@ namespace pika {
     ///       exception.
     ///
     /// \see    \a pika::register_shutdown_function()
-    PIKA_EXPORT void register_pre_shutdown_function(
-        shutdown_function_type f);
+    PIKA_EXPORT void register_pre_shutdown_function(shutdown_function_type f);
 
     /// \brief Add a function to be executed by a pika thread during
     /// \a pika::finalize() but guaranteed after any pre-shutdown function is

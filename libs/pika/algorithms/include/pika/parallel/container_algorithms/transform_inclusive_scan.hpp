@@ -862,7 +862,8 @@ namespace pika { namespace ranges {
             return pika::parallel::v1::detail::transform_inclusive_scan<
                 result_type>()
                 .call(pika::execution::seq, first, last, dest,
-                    PIKA_FORWARD(UnOp, unary_op), PIKA_FORWARD(BinOp, binary_op));
+                    PIKA_FORWARD(UnOp, unary_op),
+                    PIKA_FORWARD(BinOp, binary_op));
         }
 
         // clang-format off
@@ -900,7 +901,8 @@ namespace pika { namespace ranges {
             return pika::parallel::v1::detail::transform_inclusive_scan<
                 result_type>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                    PIKA_FORWARD(UnOp, unary_op), PIKA_FORWARD(BinOp, binary_op));
+                    PIKA_FORWARD(UnOp, unary_op),
+                    PIKA_FORWARD(BinOp, binary_op));
         }
 
         // clang-format off
@@ -933,8 +935,9 @@ namespace pika { namespace ranges {
 
             return pika::parallel::v1::detail::transform_inclusive_scan<
                 result_type>()
-                .call(pika::execution::seq, std::begin(rng), std::end(rng), dest,
-                    PIKA_FORWARD(UnOp, unary_op), PIKA_FORWARD(BinOp, binary_op));
+                .call(pika::execution::seq, std::begin(rng), std::end(rng),
+                    dest, PIKA_FORWARD(UnOp, unary_op),
+                    PIKA_FORWARD(BinOp, binary_op));
         }
 
         // clang-format off
@@ -1086,8 +1089,8 @@ namespace pika { namespace ranges {
 
             return pika::parallel::v1::detail::transform_inclusive_scan<
                 result_type>()
-                .call(pika::execution::seq, std::begin(rng), std::end(rng), dest,
-                    PIKA_FORWARD(UnOp, unary_op), PIKA_MOVE(init),
+                .call(pika::execution::seq, std::begin(rng), std::end(rng),
+                    dest, PIKA_FORWARD(UnOp, unary_op), PIKA_MOVE(init),
                     PIKA_FORWARD(BinOp, binary_op));
         }
 

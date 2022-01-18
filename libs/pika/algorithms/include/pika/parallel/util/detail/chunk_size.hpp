@@ -243,8 +243,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     void add_ready_future_idx(std::vector<Future>& workitems, F&& f,
         FwdIter first, std::size_t base_idx, std::size_t count)
     {
-        workitems.push_back(
-            pika::make_ready_future(PIKA_FORWARD(F, f)(first, count, base_idx)));
+        workitems.push_back(pika::make_ready_future(
+            PIKA_FORWARD(F, f)(first, count, base_idx)));
     }
 
     template <typename F, typename FwdIter>

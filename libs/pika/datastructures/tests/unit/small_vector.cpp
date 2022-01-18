@@ -193,11 +193,11 @@ namespace pika {
     template class pika::detail::small_vector<int, 2>;
     template class pika::detail::small_vector<int, 10>;
 
-    template class pika::detail::small_vector<test::movable_and_copyable_int, 10,
-        test::simple_allocator<test::movable_and_copyable_int>>;
+    template class pika::detail::small_vector<test::movable_and_copyable_int,
+        10, test::simple_allocator<test::movable_and_copyable_int>>;
 
-    template class pika::detail::small_vector<test::movable_and_copyable_int, 10,
-        std::allocator<test::movable_and_copyable_int>>;
+    template class pika::detail::small_vector<test::movable_and_copyable_int,
+        10, std::allocator<test::movable_and_copyable_int>>;
 }    // namespace pika
 #endif
 
@@ -535,7 +535,8 @@ namespace test {
 
                 auto insert_it =
                     vector.insert(vector.end(), &aux_vect[0], aux_vect + 50);
-                PIKA_TEST_EQ(std::size_t(std::distance(insert_it, vector.end())),
+                PIKA_TEST_EQ(
+                    std::size_t(std::distance(insert_it, vector.end())),
                     std::size_t(50));
 
                 v.insert(v.end(), aux_vect2, aux_vect2 + 50);

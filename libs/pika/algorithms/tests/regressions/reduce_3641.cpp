@@ -22,8 +22,8 @@ int pika_main()
 
     PIKA_TEST_EQ(result, std::int64_t(4950));
 
-    result = pika::ranges::reduce(pika::execution::par, iterator<std::int64_t>{0},
-        sentinel<int64_t>{100}, std::int64_t(0));
+    result = pika::ranges::reduce(pika::execution::par,
+        iterator<std::int64_t>{0}, sentinel<int64_t>{100}, std::int64_t(0));
 
     PIKA_TEST_EQ(result, std::int64_t(4950));
 

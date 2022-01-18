@@ -201,8 +201,8 @@ endif()
 
 # Logging configuration
 pika_option(
-  PIKA_WITH_LOGGING BOOL
-  "Build pika with logging enabled (default: ON)." ON ADVANCED
+  PIKA_WITH_LOGGING BOOL "Build pika with logging enabled (default: ON)." ON
+  ADVANCED
 )
 if(PIKA_WITH_LOGGING)
   pika_add_config_define(PIKA_HAVE_LOGGING)
@@ -215,8 +215,8 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)"
-  ON ADVANCED
+  PIKA_WITH_COMPILER_WARNINGS BOOL "Enable compiler warnings (default: ON)" ON
+  ADVANCED
 )
 
 pika_option(
@@ -273,9 +273,7 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
   add_executable(pika_exe_precompiled_headers libs/src/dummy.cpp)
 
   set_target_properties(pika_precompiled_headers PROPERTIES FOLDER "Core")
-  set_target_properties(
-    pika_exe_precompiled_headers PROPERTIES FOLDER "Core"
-  )
+  set_target_properties(pika_exe_precompiled_headers PROPERTIES FOLDER "Core")
 endif()
 
 # ##############################################################################
@@ -300,8 +298,8 @@ pika_option(
   CATEGORY "Build Targets"
 )
 pika_option(
-  PIKA_WITH_TESTS_HEADERS BOOL "Build header tests (default: ON)" ON
-  ADVANCED CATEGORY "Build Targets"
+  PIKA_WITH_TESTS_HEADERS BOOL "Build header tests (default: ON)" ON ADVANCED
+  CATEGORY "Build Targets"
 )
 pika_option(
   PIKA_WITH_TESTS_EXTERNAL_BUILD BOOL
@@ -530,13 +528,9 @@ pika_option(
   ADVANCED
 )
 if(PIKA_WITH_MAX_CPU_COUNT)
-  pika_add_config_define(
-    PIKA_HAVE_MAX_CPU_COUNT ${PIKA_WITH_MAX_CPU_COUNT}
-  )
+  pika_add_config_define(PIKA_HAVE_MAX_CPU_COUNT ${PIKA_WITH_MAX_CPU_COUNT})
 endif()
-if((NOT PIKA_WITH_MAX_CPU_COUNT) OR (PIKA_WITH_MAX_CPU_COUNT GREATER 64
-                                        )
-)
+if((NOT PIKA_WITH_MAX_CPU_COUNT) OR (PIKA_WITH_MAX_CPU_COUNT GREATER 64))
   pika_add_config_define(PIKA_HAVE_MORE_THAN_64_THREADS)
 endif()
 
@@ -562,7 +556,8 @@ pika_option(
 
 pika_option(
   PIKA_WITH_THREAD_MANAGER_IDLE_BACKOFF BOOL
-  "pika scheduler threads do exponential backoff on idle queues (default: ON)" ON
+  "pika scheduler threads do exponential backoff on idle queues (default: ON)"
+  ON
   CATEGORY "Thread Manager"
   ADVANCED
 )
@@ -794,8 +789,8 @@ if(PIKA_WITH_SPINLOCK_DEADLOCK_DETECTION)
 endif()
 
 pika_option(
-  PIKA_WITH_ITTNOTIFY BOOL "Enable Amplifier (ITT) instrumentation support."
-  OFF CATEGORY "Profiling"
+  PIKA_WITH_ITTNOTIFY BOOL "Enable Amplifier (ITT) instrumentation support." OFF
+  CATEGORY "Profiling"
 )
 
 pika_option(
@@ -842,8 +837,8 @@ if(PIKA_WITH_ASYNC_MPI)
 
   if(MSVC)
     # FIXME: add OpenMPI specific flag here for now as the
-    # pika_add_compile_flag() below does not add the extra options to the
-    # top level directory
+    # pika_add_compile_flag() below does not add the extra options to the top
+    # level directory
     pika_add_config_define(OMPI_IMPORTS)
   endif()
 endif()
@@ -918,8 +913,8 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_SANITIZERS BOOL
-  "Configure with sanitizer instrumentation support." OFF CATEGORY "Debugging"
+  PIKA_WITH_SANITIZERS BOOL "Configure with sanitizer instrumentation support."
+  OFF CATEGORY "Debugging"
 )
 
 set(PIKA_WITH_VERIFY_LOCKS_DEFAULT OFF)
@@ -951,8 +946,7 @@ pika_option(
   ADVANCED
 )
 pika_option(
-  PIKA_WITH_THREAD_GUARD_PAGE BOOL "Enable thread guard page (default: ON)"
-  ON
+  PIKA_WITH_THREAD_GUARD_PAGE BOOL "Enable thread guard page (default: ON)" ON
   CATEGORY "Debugging"
   ADVANCED
 )
@@ -1120,9 +1114,7 @@ elseif("${PIKA_PLATFORM_UC}" STREQUAL "ANDROID")
 elseif("${PIKA_PLATFORM_UC}" STREQUAL "XEONPHI")
   pika_info("Compiling for Intel Xeon Phi devices")
   if(NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
-    pika_error(
-      "pika on the MIC can only be compiled with the Intel compiler."
-    )
+    pika_error("pika on the MIC can only be compiled with the Intel compiler.")
   endif()
 elseif("${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
   if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -1176,9 +1168,7 @@ pika_option(
 
 pika_check_for_mm_prefetch(DEFINITIONS PIKA_HAVE_MM_PREFETCH)
 
-pika_check_for_stable_inplace_merge(
-  DEFINITIONS PIKA_HAVE_STABLE_INPLACE_MERGE
-)
+pika_check_for_stable_inplace_merge(DEFINITIONS PIKA_HAVE_STABLE_INPLACE_MERGE)
 
 if(NOT PIKA_WITH_STABLE_INPLACE_MERGE)
   pika_warn(
@@ -1204,8 +1194,7 @@ if(NOT WIN32)
   if(NOT MSVC)
     if(PIKA_CXX11_STD_ATOMIC_LIBRARIES)
       target_link_libraries(
-        pika_base_libraries
-        INTERFACE ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
+        pika_base_libraries INTERFACE ${PIKA_CXX11_STD_ATOMIC_LIBRARIES}
       )
     endif()
   endif()
@@ -1240,9 +1229,7 @@ if(WIN32)
 
     # VS2012 and above has a special flag for improving the debug experience by
     # adding more symbol information to the build (-d2Zi)
-    pika_add_target_compile_option(
-      -d2Zi+ PUBLIC CONFIGURATIONS RelWithDebInfo
-    )
+    pika_add_target_compile_option(-d2Zi+ PUBLIC CONFIGURATIONS RelWithDebInfo)
 
     # VS2013 and above know how to do link time constant data segment folding
     # VS2013 update 2 and above know how to remove debug information for
@@ -1251,9 +1238,7 @@ if(WIN32)
     pika_add_target_compile_option(
       -Gw PUBLIC CONFIGURATIONS Release RelWithDebInfo MinSizeRel
     )
-    pika_add_target_compile_option(
-      -Zo PUBLIC CONFIGURATIONS RelWithDebInfo
-    )
+    pika_add_target_compile_option(-Zo PUBLIC CONFIGURATIONS RelWithDebInfo)
     if(PIKA_WITH_DATAPAR_VC)
       pika_add_target_compile_option(-std:c++latest PUBLIC)
       pika_add_config_cond_define(_HAS_AUTO_PTR_ETC 1)
@@ -1266,8 +1251,8 @@ if(WIN32)
       pika_add_target_compile_option(-Zc:throwingNew PUBLIC)
 
       # enable faster linking (requires VS2015 Update1) disabled for now as this
-      # flag crashes debugger pika_remove_link_flag(/debug CONFIGURATIONS
-      # Debug) pika_add_link_flag(/debug:fastlink CONFIGURATIONS Debug)
+      # flag crashes debugger pika_remove_link_flag(/debug CONFIGURATIONS Debug)
+      # pika_add_link_flag(/debug:fastlink CONFIGURATIONS Debug)
 
       # Update 2 requires to set _ENABLE_ATOMIC_ALIGNMENT_FIX for it to compile
       # atomics
@@ -1409,8 +1394,8 @@ if(PIKA_WITH_COMPILER_WARNINGS)
     endif()
 
     # False positive when build with Vc and Clang
-    if(NOT (PIKA_WITH_DATAPAR_VC AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL
-                                         "Clang")
+    if(NOT (PIKA_WITH_DATAPAR_VC AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
+           )
     )
       pika_add_compile_flag_if_available(-Werror=trampolines)
     endif()
@@ -1466,9 +1451,7 @@ else()
   endif()
 
   # False positive when building with Vc and Clang
-  if(NOT (PIKA_WITH_DATAPAR_VC AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL
-                                       "Clang")
-  )
+  if(NOT (PIKA_WITH_DATAPAR_VC AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
     # Silence warning about __sync_fetch_and_nand changing semantics
     pika_add_compile_flag_if_available(-Wno-sync-nand)
   endif()
@@ -1487,9 +1470,7 @@ else()
     pika_add_link_flag_if_available(-Wl,-z,defs)
   endif()
   if(WIN32)
-    target_link_libraries(
-      pika_base_libraries INTERFACE psapi WS2_32 mswsock
-    )
+    target_link_libraries(pika_base_libraries INTERFACE psapi WS2_32 mswsock)
   endif()
 
   if("${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
@@ -1547,9 +1528,7 @@ else()
 
       # XeonPhi's do not support RDTSCP
       if(NOT ("${PIKA_PLATFORM_UC}" STREQUAL "XEONPHI"))
-        pika_cpuid(
-          "rdtscp" PIKA_WITH_RDTSCP DEFINITIONS PIKA_HAVE_RDTSCP
-        )
+        pika_cpuid("rdtscp" PIKA_WITH_RDTSCP DEFINITIONS PIKA_HAVE_RDTSCP)
       endif()
 
     endif()
@@ -1670,9 +1649,7 @@ endif()
 # Git commit detection
 # ##############################################################################
 include(pika_git_commit)
-pika_add_config_define(
-  PIKA_HAVE_GIT_COMMIT "\"${PIKA_WITH_GIT_COMMIT}\""
-)
+pika_add_config_define(PIKA_HAVE_GIT_COMMIT "\"${PIKA_WITH_GIT_COMMIT}\"")
 
 include(pika_set_output_paths)
 
@@ -1825,14 +1802,13 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
   endif()
 
   set(system_precompiled_headers_dependencies
-      pika_dependencies_boost pika_private_flags
-      pika_public_flags
+      pika_dependencies_boost pika_private_flags pika_public_flags
   )
 
   target_link_libraries(
     pika_precompiled_headers
-    PRIVATE pika_public_flags pika_private_flags
-            pika_base_libraries ${system_precompiled_headers_dependencies}
+    PRIVATE pika_public_flags pika_private_flags pika_base_libraries
+            ${system_precompiled_headers_dependencies}
   )
   target_precompile_headers(
     pika_precompiled_headers PRIVATE ${system_precompiled_headers}
@@ -1846,24 +1822,22 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
   # PIKA_APPLICATION_NAME_DEFAULT).
   list(REMOVE_ITEM pika_precompiled_headers_modules init_runtime_local)
   # config, version, and the include modules don't have pika/module headers.
-  list(REMOVE_ITEM pika_precompiled_headers_modules config_local
-       include_local version_local
+  list(REMOVE_ITEM pika_precompiled_headers_modules config_local include_local
+       version_local
   )
   list(TRANSFORM pika_precompiled_headers_modules PREPEND "<pika/modules/")
   list(TRANSFORM pika_precompiled_headers_modules APPEND ".hpp>")
 
   target_link_libraries(pika_exe_precompiled_headers PRIVATE pika)
   target_precompile_headers(
-    pika_exe_precompiled_headers PRIVATE
-    ${pika_precompiled_headers_modules}
+    pika_exe_precompiled_headers PRIVATE ${pika_precompiled_headers_modules}
   )
 endif()
 
 # ##############################################################################
 # installation instructions
 # ##############################################################################
-# Install all pika header that have been configured using various CMake
-# options
+# Install all pika header that have been configured using various CMake options
 install(
   DIRECTORY "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/pika/"
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/pika
@@ -1932,8 +1906,7 @@ install(
   EXPORT pika_internal_targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-          COMPONENT pika_base_libraries
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT pika_base_libraries
 )
 pika_export_internal_targets(pika_base_libraries)
 

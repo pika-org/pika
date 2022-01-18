@@ -461,8 +461,8 @@ namespace pika { namespace ranges {
                 FwdIter>;
 
             return pika::parallel::v1::detail::transfer<copy_iter_t>(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                dest);
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), dest);
         }
     } copy{};
 

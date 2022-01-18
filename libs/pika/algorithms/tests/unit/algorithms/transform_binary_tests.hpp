@@ -132,8 +132,8 @@ void test_transform_binary_async(ExPolicy p, IteratorTag)
     std::iota(std::begin(c2), std::end(c2),
         std::rand() % ((std::numeric_limits<int>::max)() / 2));
 
-    auto f = pika::transform(p, iterator(std::begin(c1)), iterator(std::end(c1)),
-        std::begin(c2), std::begin(d1), add());
+    auto f = pika::transform(p, iterator(std::begin(c1)),
+        iterator(std::end(c1)), std::begin(c2), std::begin(d1), add());
     f.wait();
 
     auto result = f.get();
@@ -207,8 +207,9 @@ void test_transform_binary_exception(ExPolicy policy, IteratorTag)
     bool caught_exception = false;
     try
     {
-        pika::transform(policy, iterator(std::begin(c1)), iterator(std::end(c1)),
-            std::begin(c2), std::begin(d1), throw_always());
+        pika::transform(policy, iterator(std::begin(c1)),
+            iterator(std::end(c1)), std::begin(c2), std::begin(d1),
+            throw_always());
 
         PIKA_TEST(false);
     }
@@ -282,8 +283,9 @@ void test_transform_binary_bad_alloc(ExPolicy policy, IteratorTag)
     bool caught_bad_alloc = false;
     try
     {
-        pika::transform(policy, iterator(std::begin(c1)), iterator(std::end(c1)),
-            std::begin(c2), std::begin(d1), throw_bad_alloc());
+        pika::transform(policy, iterator(std::begin(c1)),
+            iterator(std::end(c1)), std::begin(c2), std::begin(d1),
+            throw_bad_alloc());
 
         PIKA_TEST(false);
     }

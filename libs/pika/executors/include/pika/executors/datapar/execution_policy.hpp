@@ -1338,7 +1338,8 @@ namespace pika { namespace detail {
 
     template <typename Executor, typename Parameters>
     struct is_execution_policy<
-        pika::execution::simd_policy_shim<Executor, Parameters>> : std::true_type
+        pika::execution::simd_policy_shim<Executor, Parameters>>
+      : std::true_type
     {
     };
 
@@ -1356,7 +1357,8 @@ namespace pika { namespace detail {
     };
 
     template <>
-    struct is_execution_policy<pika::execution::par_simd_policy> : std::true_type
+    struct is_execution_policy<pika::execution::par_simd_policy>
+      : std::true_type
     {
     };
 
@@ -1397,7 +1399,8 @@ namespace pika { namespace detail {
 
     template <typename Executor, typename Parameters>
     struct is_sequenced_execution_policy<
-        pika::execution::simd_policy_shim<Executor, Parameters>> : std::true_type
+        pika::execution::simd_policy_shim<Executor, Parameters>>
+      : std::true_type
     {
     };
 
@@ -1483,7 +1486,8 @@ namespace pika { namespace detail {
 
     template <typename Executor, typename Parameters>
     struct is_vectorpack_execution_policy<
-        pika::execution::simd_policy_shim<Executor, Parameters>> : std::true_type
+        pika::execution::simd_policy_shim<Executor, Parameters>>
+      : std::true_type
     {
     };
 

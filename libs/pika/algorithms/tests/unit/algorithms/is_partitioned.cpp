@@ -99,8 +99,9 @@ void test_partitioned2(ExPolicy policy, IteratorTag)
 
     bool parted_odd = pika::is_partitioned(policy, iterator(std::begin(c_odd)),
         iterator(std::end(c_odd)), [](std::size_t n) { return n % 2 == 0; });
-    bool parted_even = pika::is_partitioned(policy, iterator(std::begin(c_even)),
-        iterator(std::end(c_even)), [](std::size_t n) { return n % 2 == 0; });
+    bool parted_even = pika::is_partitioned(policy,
+        iterator(std::begin(c_even)), iterator(std::end(c_even)),
+        [](std::size_t n) { return n % 2 == 0; });
 
     PIKA_TEST(parted_odd);
     PIKA_TEST(parted_even);

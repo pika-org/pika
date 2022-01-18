@@ -47,8 +47,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         PIKA_EXPORT void signal(
             std::unique_lock<mutex_type> l, std::ptrdiff_t count);
 
-        PIKA_EXPORT std::ptrdiff_t signal_all(
-            std::unique_lock<mutex_type> l);
+        PIKA_EXPORT std::ptrdiff_t signal_all(std::unique_lock<mutex_type> l);
 
     private:
         std::ptrdiff_t value_;

@@ -87,8 +87,7 @@ namespace pika { namespace program_options {
         }
 
         /* Throws multiple_occurrences if 'value' is not empty. */
-        PIKA_EXPORT void check_first_occurrence(
-            const pika::any_nonser& value);
+        PIKA_EXPORT void check_first_occurrence(const pika::any_nonser& value);
     }    // namespace validators
 
     using namespace validators;

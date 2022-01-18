@@ -100,7 +100,7 @@
      make copyable.
 */
 
-#if defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES) &&                            \
+#if defined(PIKA_HAVE_GENERIC_CONTEXT_COROUTINES) &&                           \
     defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
 #   error PIKA_HAVE_GENERIC_CONTEXT_COROUTINES and PIKA_HAVE_FIBER_BASED_COROUTINES cannot be defined at the same time.
 #endif

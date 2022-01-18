@@ -10,9 +10,7 @@ set(subdirs threads util)
 foreach(subdir ${subdirs})
   pika_add_pseudo_target(tests.regressions.${subdir})
   add_subdirectory(${subdir})
-  pika_add_pseudo_dependencies(
-    tests.regressions tests.regressions.${subdir}
-  )
+  pika_add_pseudo_dependencies(tests.regressions tests.regressions.${subdir})
 endforeach()
 
 set(tests multiple_init_local multiple_init_local_2918

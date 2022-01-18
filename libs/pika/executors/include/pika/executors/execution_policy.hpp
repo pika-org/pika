@@ -1589,7 +1589,8 @@ namespace pika { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
     /// \cond NOINTERNAL
     template <>
-    struct is_execution_policy<pika::execution::parallel_policy> : std::true_type
+    struct is_execution_policy<pika::execution::parallel_policy>
+      : std::true_type
     {
     };
 

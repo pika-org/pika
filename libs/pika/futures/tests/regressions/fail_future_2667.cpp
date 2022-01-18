@@ -17,9 +17,10 @@
 
 int pika_main()
 {
-    pika::future<pika::future<int>> fut = pika::async([]() -> pika::future<int> {
-        return pika::async([]() -> int { return 42; });
-    });
+    pika::future<pika::future<int>> fut =
+        pika::async([]() -> pika::future<int> {
+            return pika::async([]() -> int { return 42; });
+        });
 
     pika::future<void> fut2 = std::move(fut);
     fut2.get();

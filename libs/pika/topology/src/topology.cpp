@@ -1543,8 +1543,8 @@ namespace pika { namespace threads {
            << "number of numa nodes  : " << get_number_of_numa_nodes() << "\n"
            << "number of cores       : " << get_number_of_cores() << "\n"
            << "number of PUs         : " << get_number_of_pus() << "\n"
-           << "hardware concurrency  : " << pika::threads::hardware_concurrency()
-           << "\n"
+           << "hardware concurrency  : "
+           << pika::threads::hardware_concurrency() << "\n"
            << std::endl;
         //! -------------------------------------- topology (affinity masks)
         os << "[HWLOC topology info] affinity masks :\n"

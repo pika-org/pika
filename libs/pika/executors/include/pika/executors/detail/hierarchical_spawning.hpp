@@ -95,8 +95,9 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
                      ++part_i)
                 {
                     results[part_i] =
-                        pika::detail::async_launch_policy_dispatch<Launch>::call(
-                            async_policy, desc, pool, f, *it, ts...);
+                        pika::detail::async_launch_policy_dispatch<
+                            Launch>::call(async_policy, desc, pool, f, *it,
+                            ts...);
                     ++it;
                 }
                 l.count_down(part_size);
@@ -119,7 +120,8 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         S const& shape, Ts&&... ts)
     {
         pika::util::thread_description const desc(f,
-            "pika::parallel::execution::detail::hierarchical_bulk_async_execute_"
+            "pika::parallel::execution::detail::hierarchical_bulk_async_"
+            "execute_"
             "helper");
 
         return hierarchical_bulk_async_execute_helper(desc, pool, first_thread,

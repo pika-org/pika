@@ -35,8 +35,8 @@ void test_zero()
         [](int bar, int baz) { return bar * baz; }, 10);
     Iter i_exc_add = pika::exclusive_scan(policy, a.begin(), a.end(), d.begin(),
         100, [](int bar, int baz) { return bar + baz; });
-    Iter i_exc_mult = pika::exclusive_scan(policy, a.begin(), a.end(), e.begin(),
-        10, [](int bar, int baz) { return bar * baz; });
+    Iter i_exc_mult = pika::exclusive_scan(policy, a.begin(), a.end(),
+        e.begin(), 10, [](int bar, int baz) { return bar * baz; });
     Iter i_transform_inc = pika::transform_inclusive_scan(
         policy, a.begin(), a.end(), f.begin(),
         [](int bar, int baz) { return 2 * bar + 2 * baz; },
@@ -101,12 +101,12 @@ void test_one(std::vector<int> a)
     auto fun_conv = [](int foo) { return foo - 3; };
     auto policy = pika::execution::par;
 
-    Iter f_inc_add =
-        pika::inclusive_scan(policy, a.begin(), a.end(), b.begin(), fun_add, 10);
+    Iter f_inc_add = pika::inclusive_scan(
+        policy, a.begin(), a.end(), b.begin(), fun_add, 10);
     Iter f_inc_mult = pika::inclusive_scan(
         policy, a.begin(), a.end(), c.begin(), fun_mult, 10);
-    Iter f_exc_add =
-        pika::exclusive_scan(policy, a.begin(), a.end(), d.begin(), 10, fun_add);
+    Iter f_exc_add = pika::exclusive_scan(
+        policy, a.begin(), a.end(), d.begin(), 10, fun_add);
     Iter f_exc_mult = pika::exclusive_scan(
         policy, a.begin(), a.end(), e.begin(), 10, fun_mult);
     Iter f_transform_inc = pika::transform_inclusive_scan(
@@ -158,12 +158,12 @@ void test_async_one(std::vector<int> a)
     auto fun_conv = [](int foo) { return foo - 3; };
     auto policy = pika::execution::par(pika::execution::task);
 
-    Fut_Iter f_inc_add =
-        pika::inclusive_scan(policy, a.begin(), a.end(), b.begin(), fun_add, 10);
+    Fut_Iter f_inc_add = pika::inclusive_scan(
+        policy, a.begin(), a.end(), b.begin(), fun_add, 10);
     Fut_Iter f_inc_mult = pika::inclusive_scan(
         policy, a.begin(), a.end(), c.begin(), fun_mult, 10);
-    Fut_Iter f_exc_add =
-        pika::exclusive_scan(policy, a.begin(), a.end(), d.begin(), 10, fun_add);
+    Fut_Iter f_exc_add = pika::exclusive_scan(
+        policy, a.begin(), a.end(), d.begin(), 10, fun_add);
     Fut_Iter f_exc_mult = pika::exclusive_scan(
         policy, a.begin(), a.end(), e.begin(), 10, fun_mult);
     Fut_Iter f_transform_inc = pika::transform_inclusive_scan(

@@ -81,7 +81,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                         util::in_in_result<Iter1, Iter2>>()
                         .call(pika::execution::seq, PIKA_MOVE(first1),
                             PIKA_MOVE(end_first), PIKA_MOVE(first2), last2,
-                            PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
+                            PIKA_FORWARD(Pred, pred),
+                            PIKA_FORWARD(Proj1, proj1),
                             PIKA_FORWARD(Proj2, proj2)),
                     last2);
             }

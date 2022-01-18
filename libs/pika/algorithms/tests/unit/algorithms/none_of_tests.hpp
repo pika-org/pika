@@ -221,8 +221,8 @@ void test_none_of_exception(ExPolicy&& policy, IteratorTag)
         bool caught_exception = false;
         try
         {
-            pika::none_of(policy, iterator(std::begin(c)), iterator(std::end(c)),
-                [](auto v) {
+            pika::none_of(policy, iterator(std::begin(c)),
+                iterator(std::end(c)), [](auto v) {
                     return throw std::runtime_error("test"), v != 0;
                 });
 
@@ -299,7 +299,8 @@ void test_none_of_bad_alloc(ExPolicy&& policy, IteratorTag)
         bool caught_exception = false;
         try
         {
-            pika::none_of(policy, iterator(std::begin(c)), iterator(std::end(c)),
+            pika::none_of(policy, iterator(std::begin(c)),
+                iterator(std::end(c)),
                 [](auto v) { return throw std::bad_alloc(), v != 0; });
 
             PIKA_TEST(false);

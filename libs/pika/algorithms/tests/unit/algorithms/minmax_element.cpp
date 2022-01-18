@@ -65,8 +65,8 @@ void test_minmax_element(ExPolicy policy, IteratorTag)
     iterator end(std::end(c));
     base_iterator ref_end(std::end(c));
 
-    auto r = pika::minmax_element(policy, iterator(std::begin(c)), iterator(end),
-        std::less<std::size_t>());
+    auto r = pika::minmax_element(policy, iterator(std::begin(c)),
+        iterator(end), std::less<std::size_t>());
     PIKA_TEST(r.min != end && r.max != end);
 
     auto ref = std::minmax_element(
@@ -155,8 +155,9 @@ void test_minmax_element_exception(IteratorTag)
         bool caught_exception = false;
         try
         {
-            pika::minmax_element(decorated_iterator(std::begin(c),
-                                    []() { throw std::runtime_error("test"); }),
+            pika::minmax_element(
+                decorated_iterator(
+                    std::begin(c), []() { throw std::runtime_error("test"); }),
                 decorated_iterator(std::end(c)), std::less<std::size_t>());
 
             PIKA_TEST(false);
@@ -178,8 +179,9 @@ void test_minmax_element_exception(IteratorTag)
         bool caught_exception = false;
         try
         {
-            pika::minmax_element(decorated_iterator(std::begin(c),
-                                    []() { throw std::runtime_error("test"); }),
+            pika::minmax_element(
+                decorated_iterator(
+                    std::begin(c), []() { throw std::runtime_error("test"); }),
                 decorated_iterator(std::end(c)));
 
             PIKA_TEST(false);
@@ -366,7 +368,7 @@ void test_minmax_element_bad_alloc(IteratorTag)
         try
         {
             pika::minmax_element(decorated_iterator(std::begin(c),
-                                    []() { throw std::bad_alloc(); }),
+                                     []() { throw std::bad_alloc(); }),
                 decorated_iterator(std::end(c)), std::less<std::size_t>());
 
             PIKA_TEST(false);
@@ -387,7 +389,7 @@ void test_minmax_element_bad_alloc(IteratorTag)
         try
         {
             pika::minmax_element(decorated_iterator(std::begin(c),
-                                    []() { throw std::bad_alloc(); }),
+                                     []() { throw std::bad_alloc(); }),
                 decorated_iterator(std::end(c)));
 
             PIKA_TEST(false);

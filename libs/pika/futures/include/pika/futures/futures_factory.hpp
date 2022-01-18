@@ -473,8 +473,8 @@ namespace pika { namespace lcos { namespace local {
                 other_allocator alloc(a);
                 unique_ptr p(traits::allocate(alloc, 1),
                     util::allocator_deleter<other_allocator>{alloc});
-                traits::construct(
-                    alloc, p.get(), init_no_addref{}, alloc, PIKA_FORWARD(F, f));
+                traits::construct(alloc, p.get(), init_no_addref{}, alloc,
+                    PIKA_FORWARD(F, f));
 
                 return return_type(p.release(), false);
             }
@@ -580,8 +580,8 @@ namespace pika { namespace lcos { namespace local {
                 other_allocator alloc(a);
                 unique_ptr p(traits::allocate(alloc, 1),
                     util::allocator_deleter<other_allocator>{alloc});
-                traits::construct(
-                    alloc, p.get(), init_no_addref{}, alloc, PIKA_FORWARD(F, f));
+                traits::construct(alloc, p.get(), init_no_addref{}, alloc,
+                    PIKA_FORWARD(F, f));
 
                 return return_type(p.release(), false);
             }
@@ -767,7 +767,8 @@ namespace pika { namespace lcos { namespace local {
             future_obtained_ = true;
 
             using traits::future_access;
-            return future_access<pika::future<Result>>::create(PIKA_MOVE(task_));
+            return future_access<pika::future<Result>>::create(
+                PIKA_MOVE(task_));
         }
 
         constexpr bool valid() const noexcept

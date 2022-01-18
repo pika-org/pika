@@ -343,8 +343,8 @@ namespace pika {
             {
                 if (blocking)
                 {
-                    return run(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup),
-                        PIKA_MOVE(shutdown));
+                    return run(*rt, cfg.pika_main_f_, cfg.vm_,
+                        PIKA_MOVE(startup), PIKA_MOVE(shutdown));
                 }
 
                 // non-blocking version

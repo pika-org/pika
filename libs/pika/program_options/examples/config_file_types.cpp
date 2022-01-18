@@ -172,7 +172,7 @@ vector<string> parse_file(
     {                                                                          \
         if (!(expr))                                                           \
         {                                                                      \
-            std::cerr << PIKA_PP_STRINGIZE(expr) << " failed!\n";               \
+            std::cerr << PIKA_PP_STRINGIZE(expr) << " failed!\n";              \
         }                                                                      \
     }                                                                          \
     /**/

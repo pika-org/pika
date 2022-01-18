@@ -328,8 +328,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             >::value
         )>
     // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::none_of is deprecated, use pika::none_of instead")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::parallel::none_of is deprecated, use pika::none_of instead")
         typename util::detail::algorithm_result<ExPolicy, bool>::type
         none_of(ExPolicy&& policy, FwdIter first, FwdIter last, F&& f,
             Proj&& proj = Proj())
@@ -461,7 +461,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
             {
                 return detail::sequential_find_if_not<ExPolicy>(first, last,
-                           PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj)) == last;
+                           PIKA_FORWARD(F, f),
+                           PIKA_FORWARD(Proj, proj)) == last;
             }
 
             template <typename ExPolicy, typename FwdIter, typename Sent,
@@ -623,8 +624,8 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::any_of().call(pika::execution::seq,
-                first, last, PIKA_FORWARD(F, f),
+            return pika::parallel::v1::detail::any_of().call(
+                pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
     } any_of{};
@@ -667,8 +668,8 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::all_of().call(pika::execution::seq,
-                first, last, PIKA_FORWARD(F, f),
+            return pika::parallel::v1::detail::all_of().call(
+                pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
     } all_of{};

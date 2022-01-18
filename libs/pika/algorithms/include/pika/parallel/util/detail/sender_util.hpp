@@ -30,8 +30,8 @@ namespace pika { namespace detail {
         auto operator()(T1&& t1, Ts&&... ts) -> decltype(Tag{}(
             PIKA_MOVE(policy), PIKA_FORWARD(T1, t1), PIKA_FORWARD(Ts, ts)...))
         {
-            return Tag{}(
-                PIKA_MOVE(policy), PIKA_FORWARD(T1, t1), PIKA_FORWARD(Ts, ts)...);
+            return Tag{}(PIKA_MOVE(policy), PIKA_FORWARD(T1, t1),
+                PIKA_FORWARD(Ts, ts)...);
         }
     };
 

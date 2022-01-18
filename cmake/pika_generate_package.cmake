@@ -67,8 +67,7 @@ configure_file(
 # Build dir
 configure_file(
   cmake/templates/pika-config.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/pika/pika-config.cmake"
-  ESCAPE_QUOTES
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/pika/pika-config.cmake" ESCAPE_QUOTES
   @ONLY
 )
 
@@ -77,15 +76,13 @@ set(PIKA_CMAKE_MODULE_PATH "\${CMAKE_CURRENT_LIST_DIR}")
 configure_file(
   cmake/templates/pika_macros.cmake.in
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/pika_macros.cmake"
-  ESCAPE_QUOTES
-  @ONLY
+  ESCAPE_QUOTES @ONLY
 )
 # ... and the build dir
 set(PIKA_CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 configure_file(
   cmake/templates/pika_macros.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/pika/pika_macros.cmake"
-  ESCAPE_QUOTES
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/pika/pika_macros.cmake" ESCAPE_QUOTES
   @ONLY
 )
 

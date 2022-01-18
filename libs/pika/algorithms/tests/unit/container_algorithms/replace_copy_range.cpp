@@ -58,8 +58,8 @@ void test_replace_copy_sent(ExPolicy policy)
     int old_value = 42;
     int new_value = 1;
 
-    pika::ranges::replace_copy(policy, std::begin(c), sentinel<std::int16_t>{50},
-        std::begin(d), old_value, new_value);
+    pika::ranges::replace_copy(policy, std::begin(c),
+        sentinel<std::int16_t>{50}, std::begin(d), old_value, new_value);
     auto result1 = std::count(std::begin(d), std::end(d), old_value);
     auto result2 = std::count(std::begin(d), std::end(d), new_value);
 
@@ -336,9 +336,9 @@ void test_replace_copy_bad_alloc(IteratorTag)
     try
     {
         pika::ranges::replace_copy(pika::util::make_iterator_range(
-                                      decorated_iterator(std::begin(c),
-                                          []() { throw std::bad_alloc(); }),
-                                      decorated_iterator(std::end(c))),
+                                       decorated_iterator(std::begin(c),
+                                           []() { throw std::bad_alloc(); }),
+                                       decorated_iterator(std::end(c))),
             std::begin(d), std::size_t(42), std::size_t(43));
         PIKA_TEST(false);
     }

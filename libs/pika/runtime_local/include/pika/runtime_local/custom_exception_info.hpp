@@ -95,12 +95,10 @@ namespace pika {
         // Report an early or late exception and locally exit execution. There
         // isn't anything more we could do. The exception will be re-thrown
         // from pika::init
-        PIKA_EXPORT void report_exception_and_continue(
-            std::exception const&);
+        PIKA_EXPORT void report_exception_and_continue(std::exception const&);
         PIKA_EXPORT void report_exception_and_continue(
             std::exception_ptr const&);
-        PIKA_EXPORT void report_exception_and_continue(
-            pika::exception const&);
+        PIKA_EXPORT void report_exception_and_continue(pika::exception const&);
 
         PIKA_EXPORT pika::exception_info construct_exception_info(
             std::string const& func, std::string const& file, long line,
@@ -168,8 +166,7 @@ namespace pika {
     ///             \a pika::get_error_what(), \a pika::get_error_config(),
     ///             \a pika::get_error_state()
     ///
-    PIKA_EXPORT std::string diagnostic_information(
-        exception_info const& xi);
+    PIKA_EXPORT std::string diagnostic_information(exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
@@ -257,8 +254,7 @@ namespace pika {
     ///             \a pika::get_error_what(), \a pika::get_error_config(),
     ///             \a pika::get_error_state()
     ///
-    PIKA_EXPORT std::string get_error_host_name(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::string get_error_host_name(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
@@ -381,8 +377,7 @@ namespace pika {
     ///             \a pika::get_error_what(), \a pika::get_error_config(),
     ///             \a pika::get_error_state()
     ///
-    PIKA_EXPORT std::string get_error_backtrace(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::string get_error_backtrace(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
@@ -424,8 +419,7 @@ namespace pika {
     ///             \a pika::get_error_what(), \a pika::get_error_config(),
     ///             \a pika::get_error_state()
     ///
-    PIKA_EXPORT std::size_t get_error_os_thread(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::size_t get_error_os_thread(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
@@ -467,8 +461,7 @@ namespace pika {
     ///             \a pika::get_error_what(), \a pika::get_error_config(),
     ///             \a pika::get_error_state()
     ///
-    PIKA_EXPORT std::size_t get_error_thread_id(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::size_t get_error_thread_id(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>
@@ -551,8 +544,7 @@ namespace pika {
     ///             \a pika::get_error(), \a pika::get_error_state()
     ///             \a pika::get_error_what(), \a pika::get_error_thread_description()
     ///
-    PIKA_EXPORT std::string get_error_config(
-        pika::exception_info const& xi);
+    PIKA_EXPORT std::string get_error_config(pika::exception_info const& xi);
 
     /// \cond NOINTERNAL
     template <typename E>

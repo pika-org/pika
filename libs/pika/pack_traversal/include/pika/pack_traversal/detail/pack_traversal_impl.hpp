@@ -236,8 +236,8 @@ namespace pika { namespace util { namespace detail {
         /// Converts the given variadic arguments into a tuple in a way
         /// that spread return values are inserted into the current pack.
         template <typename... T>
-        constexpr auto tupelize(T&&... args)
-            -> decltype(map_spread(tupelizer_of_t<>{}, PIKA_FORWARD(T, args)...))
+        constexpr auto tupelize(T&&... args) -> decltype(
+            map_spread(tupelizer_of_t<>{}, PIKA_FORWARD(T, args)...))
         {
             return map_spread(tupelizer_of_t<>{}, PIKA_FORWARD(T, args)...);
         }
@@ -263,7 +263,8 @@ namespace pika { namespace util { namespace detail {
         constexpr auto flat_arraylize_to(T&&... args) -> decltype(
             map_spread(flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...))
         {
-            return map_spread(flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...);
+            return map_spread(
+                flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...);
         }
 
         /// Converts an empty tuple to void
@@ -556,7 +557,8 @@ namespace pika { namespace util { namespace detail {
 #endif
 
             {
-                PIKA_FORWARD(M, mapper)(PIKA_FORWARD(decltype(element), element));
+                PIKA_FORWARD(M, mapper)
+                (PIKA_FORWARD(decltype(element), element));
             }
         }
     }    // end namespace container_remapping
@@ -910,8 +912,8 @@ namespace pika { namespace util { namespace detail {
         {
             try_traverse(strategy, PIKA_FORWARD(First, first));
             try_traverse(strategy, PIKA_FORWARD(Second, second));
-            int dummy[] = {
-                0, ((void) try_traverse(strategy, PIKA_FORWARD(T, rest)), 0)...};
+            int dummy[] = {0,
+                ((void) try_traverse(strategy, PIKA_FORWARD(T, rest)), 0)...};
             (void) dummy;
         }
     };

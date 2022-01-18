@@ -100,7 +100,8 @@ namespace pika { namespace serialization {
         pika::traits::detail::size<9>)
     {
         auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9] = t;
-        auto&& data = pika::forward_as_tuple(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        auto&& data =
+            pika::forward_as_tuple(p1, p2, p3, p4, p5, p6, p7, p8, p9);
         serialize(archive, data, version);
     }
 
@@ -119,8 +120,8 @@ namespace pika { namespace serialization {
         pika::traits::detail::size<11>)
     {
         auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11] = t;
-        auto&& data =
-            pika::forward_as_tuple(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+        auto&& data = pika::forward_as_tuple(
+            p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
         serialize(archive, data, version);
     }
 

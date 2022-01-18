@@ -42,8 +42,9 @@ void test_adjacent_find(ExPolicy policy, IteratorTag)
     c[random_pos] = 100000;
     c[random_pos + 1] = 1;
 
-    iterator index = pika::ranges::adjacent_find(policy, iterator(std::begin(c)),
-        iterator(std::end(c)), std::greater<std::size_t>());
+    iterator index =
+        pika::ranges::adjacent_find(policy, iterator(std::begin(c)),
+            iterator(std::end(c)), std::greater<std::size_t>());
 
     base_iterator test_index = std::begin(c) + random_pos;
 

@@ -228,7 +228,8 @@ namespace pika {
             }
 
             template <typename... Ts>
-            PIKA_FORCEINLINE void apply(pika::tuple<Ts...> const& sequence) const
+            PIKA_FORCEINLINE void apply(
+                pika::tuple<Ts...> const& sequence) const
             {
                 apply(sequence, pika::util::make_index_pack_t<sizeof...(Ts)>());
             }
@@ -325,8 +326,8 @@ namespace pika {
     template <typename Future>
     void wait_some_nothrow(std::size_t n, std::vector<Future> const& values)
     {
-        static_assert(
-            pika::traits::is_future_v<Future>, "invalid use of pika::wait_some");
+        static_assert(pika::traits::is_future_v<Future>,
+            "invalid use of pika::wait_some");
 
         if (n == 0)
         {
@@ -576,8 +577,8 @@ namespace pika {
 namespace pika::lcos {
 
     template <typename Future>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(std::size_t n, std::vector<Future> const& lazy_values,
         error_code& = throws)
     {
@@ -585,8 +586,8 @@ namespace pika::lcos {
     }
 
     template <typename Future>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(
         std::size_t n, std::vector<Future>& lazy_values, error_code& = throws)
     {
@@ -594,8 +595,8 @@ namespace pika::lcos {
     }
 
     template <typename Future>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(
         std::size_t n, std::vector<Future>&& lazy_values, error_code& = throws)
     {
@@ -603,8 +604,8 @@ namespace pika::lcos {
     }
 
     template <typename Future, std::size_t N>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(std::size_t n, std::array<Future, N> const& lazy_values,
         error_code& = throws)
     {
@@ -612,8 +613,8 @@ namespace pika::lcos {
     }
 
     template <typename Future, std::size_t N>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(
         std::size_t n, std::array<Future, N>& lazy_values, error_code& = throws)
     {
@@ -622,8 +623,8 @@ namespace pika::lcos {
     }
 
     template <typename Future, std::size_t N>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(std::size_t n, std::array<Future, N>&& lazy_values,
         error_code& = throws)
     {
@@ -634,8 +635,8 @@ namespace pika::lcos {
     template <typename Iterator,
         typename Enable =
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(
         std::size_t n, Iterator begin, Iterator end, error_code& = throws)
     {
@@ -645,32 +646,32 @@ namespace pika::lcos {
     template <typename Iterator,
         typename Enable =
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     Iterator wait_some_n(
         std::size_t n, Iterator begin, std::size_t count, error_code& = throws)
     {
         pika::wait_some(n, begin, count);
     }
 
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     inline void wait_some(std::size_t n, error_code& = throws)
     {
         pika::wait_some(n);
     }
 
     template <typename T>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(std::size_t n, pika::future<T>&& f, error_code& = throws)
     {
         pika::wait_some(n, PIKA_MOVE(f));
     }
 
     template <typename T>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(
         std::size_t n, pika::shared_future<T>&& f, error_code& = throws)
     {
@@ -678,16 +679,16 @@ namespace pika::lcos {
     }
 
     template <typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(std::size_t n, error_code&, Ts&&... ts)
     {
         pika::wait_some(n, PIKA_FORWARD(Ts, ts)...);
     }
 
     template <typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::wait_some is deprecated. Use pika::wait_some instead.")
     void wait_some(std::size_t n, Ts&&... ts)
     {
         pika::wait_some(n, PIKA_FORWARD(Ts, ts)...);

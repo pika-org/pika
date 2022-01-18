@@ -46,5 +46,5 @@ namespace pika { namespace util { namespace detail {
 
 #define PIKA_ASSERT_OWNS_LOCK(l) ::pika::util::detail::assert_owns_lock(l, 0L)
 
-#define PIKA_ASSERT_DOESNT_OWN_LOCK(l)                                          \
+#define PIKA_ASSERT_DOESNT_OWN_LOCK(l)                                         \
     ::pika::util::detail::assert_doesnt_own_lock(l, 0L)

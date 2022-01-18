@@ -117,8 +117,8 @@ namespace pika { namespace mpi { namespace experimental {
                             PIKA_INVOKE(r.f, ts..., &request);
                             // When the return type is void, there is no value
                             // to forward to the receiver
-                            set_value_request_callback_void(
-                                request, PIKA_MOVE(r.r), PIKA_FORWARD(Ts, ts)...);
+                            set_value_request_callback_void(request,
+                                PIKA_MOVE(r.r), PIKA_FORWARD(Ts, ts)...);
                         }
                         else
                         {

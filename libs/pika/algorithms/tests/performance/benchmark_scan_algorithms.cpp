@@ -80,8 +80,8 @@ void measureScanAlgorithms()
                         std::plus<int>(), 0);
                     break;
                 case ALGORITHM::EXCLUSIVE_SCAN:
-                    pika::exclusive_scan(arr.begin(), arr.end(), res.begin(), 10,
-                        std::plus<int>{});
+                    pika::exclusive_scan(arr.begin(), arr.end(), res.begin(),
+                        10, std::plus<int>{});
                     break;
                 case ALGORITHM::TRANSFORM_EXCLUSIVE_SCAN:
                     pika::transform_exclusive_scan(arr.begin(), arr.end(),

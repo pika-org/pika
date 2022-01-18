@@ -339,8 +339,9 @@ namespace pika { namespace ranges {
                 >::value
             )>
         // clang-format on
-        friend RandomIt tag_fallback_invoke(pika::ranges::sort_t, RandomIt first,
-            Sent last, Comp&& comp = Comp(), Proj&& proj = Proj())
+        friend RandomIt tag_fallback_invoke(pika::ranges::sort_t,
+            RandomIt first, Sent last, Comp&& comp = Comp(),
+            Proj&& proj = Proj())
         {
             static_assert(
                 pika::traits::is_random_access_iterator<RandomIt>::value,
@@ -407,8 +408,9 @@ namespace pika { namespace ranges {
                 "Requires a random access iterator.");
 
             return pika::parallel::v1::detail::sort<iterator_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Compare, comp),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off

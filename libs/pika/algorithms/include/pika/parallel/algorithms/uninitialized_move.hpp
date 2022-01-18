@@ -267,7 +267,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 util::loop_with_cleanup_n_with_token(
                     first, count, dest, tok,
                     [](InIter1 it, InIter2 dest) -> void {
-                        ::new (std::addressof(*dest)) value_type(PIKA_MOVE(*it));
+                        ::new (std::addressof(*dest))
+                            value_type(PIKA_MOVE(*it));
                     },
                     [](InIter2 dest) -> void { (*dest).~value_type(); })};
         }
@@ -657,7 +658,8 @@ namespace pika {
             )>
         // clang-format on
         friend std::pair<InIter, FwdIter> tag_fallback_invoke(
-            pika::uninitialized_move_n_t, InIter first, Size count, FwdIter dest)
+            pika::uninitialized_move_n_t, InIter first, Size count,
+            FwdIter dest)
         {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");

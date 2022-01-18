@@ -156,8 +156,8 @@ void test_bulk_async_void(Executor&& exec)
 
     executed = false;
 
-    pika::when_all(
-        pika::parallel::execution::bulk_async_execute(exec, &bulk_test, 107, 42))
+    pika::when_all(pika::parallel::execution::bulk_async_execute(
+                       exec, &bulk_test, 107, 42))
         .get();
 
     PIKA_TEST(executed);
@@ -185,8 +185,8 @@ void test_bulk_async(Executor&& exec)
 
     executed = false;
 
-    pika::when_all(
-        pika::parallel::execution::bulk_async_execute(exec, &bulk_test, 107, 42))
+    pika::when_all(pika::parallel::execution::bulk_async_execute(
+                       exec, &bulk_test, 107, 42))
         .get();
 
     PIKA_TEST(executed);

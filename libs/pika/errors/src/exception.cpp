@@ -41,7 +41,8 @@ namespace pika {
     exception::exception(error e)
       : std::system_error(make_error_code(e, plain))
     {
-        PIKA_ASSERT((e >= success && e < last_error) || (e & system_error_flag));
+        PIKA_ASSERT(
+            (e >= success && e < last_error) || (e & system_error_flag));
         if (e != success)
         {
             LERR_(error).format("created exception: {}", this->what());
@@ -77,7 +78,8 @@ namespace pika {
     exception::exception(error e, char const* msg, throwmode mode)
       : std::system_error(make_system_error_code(e, mode), msg)
     {
-        PIKA_ASSERT((e >= success && e < last_error) || (e & system_error_flag));
+        PIKA_ASSERT(
+            (e >= success && e < last_error) || (e & system_error_flag));
         if (e != success)
         {
             LERR_(error).format("created exception: {}", this->what());
@@ -98,7 +100,8 @@ namespace pika {
     exception::exception(error e, std::string const& msg, throwmode mode)
       : std::system_error(make_system_error_code(e, mode), msg)
     {
-        PIKA_ASSERT((e >= success && e < last_error) || (e & system_error_flag));
+        PIKA_ASSERT(
+            (e >= success && e < last_error) || (e & system_error_flag));
         if (e != success)
         {
             LERR_(error).format("created exception: {}", this->what());
@@ -161,10 +164,10 @@ namespace pika { namespace detail {
         try
         {
             throw_with_info(e,
-                std::move(
-                    pika::exception_info().set(pika::detail::throw_function(func),
-                        pika::detail::throw_file(file),
-                        pika::detail::throw_line(line))));
+                std::move(pika::exception_info().set(
+                    pika::detail::throw_function(func),
+                    pika::detail::throw_file(file),
+                    pika::detail::throw_line(line))));
         }
         catch (...)
         {
@@ -196,8 +199,8 @@ namespace pika { namespace detail {
         return std::exception_ptr();
     }
 
-    template PIKA_EXPORT std::exception_ptr
-    construct_lightweight_exception(pika::thread_interrupted const&);
+    template PIKA_EXPORT std::exception_ptr construct_lightweight_exception(
+        pika::thread_interrupted const&);
 
     template <typename Exception>
     PIKA_EXPORT std::exception_ptr construct_custom_exception(
@@ -278,9 +281,8 @@ namespace pika { namespace detail {
         std::system_error const&, std::string const&, std::string const&, long,
         std::string const&);
 
-    template PIKA_EXPORT std::exception_ptr get_exception(
-        std::exception const&, std::string const&, std::string const&, long,
-        std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(std::exception const&,
+        std::string const&, std::string const&, long, std::string const&);
     template PIKA_EXPORT std::exception_ptr get_exception(
         pika::detail::std_exception const&, std::string const&,
         std::string const&, long, std::string const&);
@@ -296,15 +298,13 @@ namespace pika { namespace detail {
     template PIKA_EXPORT std::exception_ptr get_exception(
         pika::detail::bad_typeid const&, std::string const&, std::string const&,
         long, std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(
-        std::bad_cast const&, std::string const&, std::string const&, long,
-        std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(std::bad_cast const&,
+        std::string const&, std::string const&, long, std::string const&);
     template PIKA_EXPORT std::exception_ptr get_exception(
         pika::detail::bad_cast const&, std::string const&, std::string const&,
         long, std::string const&);
-    template PIKA_EXPORT std::exception_ptr get_exception(
-        std::bad_alloc const&, std::string const&, std::string const&, long,
-        std::string const&);
+    template PIKA_EXPORT std::exception_ptr get_exception(std::bad_alloc const&,
+        std::string const&, std::string const&, long, std::string const&);
     template PIKA_EXPORT std::exception_ptr get_exception(
         pika::detail::bad_alloc const&, std::string const&, std::string const&,
         long, std::string const&);
@@ -340,18 +340,16 @@ namespace pika { namespace detail {
         std::string const&, long);
     template PIKA_EXPORT void throw_exception(
         std::bad_typeid const&, std::string const&, std::string const&, long);
-    template PIKA_EXPORT void throw_exception(
-        pika::detail::bad_typeid const&, std::string const&, std::string const&,
-        long);
+    template PIKA_EXPORT void throw_exception(pika::detail::bad_typeid const&,
+        std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
         std::bad_cast const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(pika::detail::bad_cast const&,
         std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
         std::bad_alloc const&, std::string const&, std::string const&, long);
-    template PIKA_EXPORT void throw_exception(
-        pika::detail::bad_alloc const&, std::string const&, std::string const&,
-        long);
+    template PIKA_EXPORT void throw_exception(pika::detail::bad_alloc const&,
+        std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(
         std::logic_error const&, std::string const&, std::string const&, long);
     template PIKA_EXPORT void throw_exception(std::runtime_error const&,

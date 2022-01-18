@@ -20,8 +20,8 @@ void test_invoke_projected()
 
     PIKA_TEST_EQ(*iter, std::int64_t(100));
 
-    iter = pika::ranges::for_each(pika::execution::par, iterator<std::int64_t>{0},
-        sentinel<std::int64_t>{100}, myfunction);
+    iter = pika::ranges::for_each(pika::execution::par,
+        iterator<std::int64_t>{0}, sentinel<std::int64_t>{100}, myfunction);
 
     PIKA_TEST_EQ(*iter, std::int64_t(100));
 }
@@ -33,8 +33,8 @@ void test_begin_end_iterator()
 
     PIKA_TEST_EQ(*iter, std::int64_t(100));
 
-    iter = pika::ranges::for_each(pika::execution::par, iterator<std::int64_t>{0},
-        sentinel<std::int64_t>{100}, &myfunction);
+    iter = pika::ranges::for_each(pika::execution::par,
+        iterator<std::int64_t>{0}, sentinel<std::int64_t>{100}, &myfunction);
 
     PIKA_TEST_EQ(*iter, std::int64_t(100));
 }

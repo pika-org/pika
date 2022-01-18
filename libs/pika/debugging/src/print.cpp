@@ -96,8 +96,7 @@ namespace pika { namespace debug {
 
         template PIKA_EXPORT void print_hex(
             std::ostream&, std::thread::id, int);
-        template PIKA_EXPORT void print_hex(
-            std::ostream&, unsigned long, int);
+        template PIKA_EXPORT void print_hex(std::ostream&, unsigned long, int);
         template PIKA_EXPORT void print_hex(std::ostream&, int, int);
 
         void print_ptr(std::ostream& os, void* v, int N)
@@ -126,13 +125,11 @@ namespace pika { namespace debug {
             }
         }
 
-        template PIKA_EXPORT void print_bin(
-            std::ostream&, std::uint64_t, int);
+        template PIKA_EXPORT void print_bin(std::ostream&, std::uint64_t, int);
 
 #if defined(__APPLE__)
         // Explicit instantiation necessary to solve undefined symbol for MacOS
-        template PIKA_EXPORT void print_bin(
-            std::ostream&, unsigned long, int);
+        template PIKA_EXPORT void print_bin(std::ostream&, unsigned long, int);
 #endif
     }    // namespace detail
 

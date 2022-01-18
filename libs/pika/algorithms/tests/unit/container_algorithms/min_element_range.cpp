@@ -428,9 +428,9 @@ void test_min_element_bad_alloc(IteratorTag)
         try
         {
             pika::ranges::min_element(pika::util::make_iterator_range(
-                                         decorated_iterator(std::begin(c),
-                                             []() { throw std::bad_alloc(); }),
-                                         decorated_iterator(std::end(c))),
+                                          decorated_iterator(std::begin(c),
+                                              []() { throw std::bad_alloc(); }),
+                                          decorated_iterator(std::end(c))),
                 std::less<std::size_t>());
 
             PIKA_TEST(false);

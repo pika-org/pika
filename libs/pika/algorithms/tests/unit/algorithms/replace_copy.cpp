@@ -148,7 +148,7 @@ void test_replace_copy_exception(IteratorTag)
     try
     {
         pika::replace_copy(decorated_iterator(std::begin(c),
-                              []() { throw std::runtime_error("test"); }),
+                               []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), std::begin(d), std::size_t(42),
             std::size_t(43));
         PIKA_TEST(false);

@@ -369,9 +369,10 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3, typename Comp,
             typename Proj1, typename Proj2>
-        pika::future<util::in_in_out_result<Iter1, Iter2, Iter3>> parallel_merge(
-            ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
-            Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+        pika::future<util::in_in_out_result<Iter1, Iter2, Iter3>>
+        parallel_merge(ExPolicy&& policy, Iter1 first1, Sent1 last1,
+            Iter2 first2, Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1,
+            Proj2&& proj2)
         {
             using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
 
@@ -450,7 +451,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     return algorithm_result::get(parallel_merge(
                         PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                         last2, dest, PIKA_FORWARD(Comp, comp),
-                        PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2)));
+                        PIKA_FORWARD(Proj1, proj1),
+                        PIKA_FORWARD(Proj2, proj2)));
                 }
                 catch (...)
                 {
@@ -770,7 +772,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         inplace_merge(ExPolicy&& policy, RandIter first, RandIter middle,
             RandIter last, Comp&& comp = Comp(), Proj&& proj = Proj())
     {
-        static_assert((pika::traits::is_random_access_iterator<RandIter>::value),
+        static_assert(
+            (pika::traits::is_random_access_iterator<RandIter>::value),
             "Required at least random access iterator.");
 
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
@@ -824,13 +827,14 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter3>::value),
                 "Requires at least random access iterator.");
 
-            using result_type = pika::parallel::util::in_in_out_result<RandIter1,
-                RandIter2, RandIter3>;
+            using result_type =
+                pika::parallel::util::in_in_out_result<RandIter1, RandIter2,
+                    RandIter3>;
 
             return pika::parallel::util::get_third_element(
                 pika::parallel::v1::detail::merge<result_type>().call(
-                    PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
-                    dest, PIKA_FORWARD(Comp, comp),
+                    PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
+                    last2, dest, PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity(),
                     pika::parallel::util::projection_identity()));
         }
@@ -862,8 +866,9 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter3>::value),
                 "Requires at least random access iterator.");
 
-            using result_type = pika::parallel::util::in_in_out_result<RandIter1,
-                RandIter2, RandIter3>;
+            using result_type =
+                pika::parallel::util::in_in_out_result<RandIter1, RandIter2,
+                    RandIter3>;
 
             return pika::parallel::util::get_third_element(
                 pika::parallel::v1::detail::merge<result_type>().call(

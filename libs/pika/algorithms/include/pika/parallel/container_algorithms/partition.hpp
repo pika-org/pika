@@ -959,7 +959,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::partition_copy is deprecated, use pika::partition_copy "
+        "pika::parallel::partition_copy is deprecated, use "
+        "pika::partition_copy "
         "instead") util::detail::algorithm_result_t<ExPolicy,
         parallel::util::in_out_out_result<pika::traits::range_iterator_t<Rng>,
             FwdIter2, FwdIter3>> partition_copy(ExPolicy&& policy, Rng&& rng,
@@ -975,10 +976,10 @@ namespace pika { namespace parallel { inline namespace v1 {
         static_assert(pika::traits::is_forward_iterator_v<iterator>,
             "Requires at least forward iterator.");
 
-        return parallel::util::make_in_out_out_result(
-            partition_copy(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), dest_true, dest_false,
-                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
+        return parallel::util::make_in_out_out_result(partition_copy(
+            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+            pika::util::end(rng), dest_true, dest_false,
+            PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -1066,8 +1067,9 @@ namespace pika { namespace ranges {
                     parallel::traits::projected<Proj, FwdIter>>
         )>
         // clang-format on
-        friend subrange_t<FwdIter> tag_fallback_invoke(pika::ranges::partition_t,
-            FwdIter first, Sent last, Pred&& pred, Proj&& proj = Proj())
+        friend subrange_t<FwdIter> tag_fallback_invoke(
+            pika::ranges::partition_t, FwdIter first, Sent last, Pred&& pred,
+            Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");

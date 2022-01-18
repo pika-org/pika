@@ -54,7 +54,8 @@ namespace pika { namespace parallel { namespace util {
         template <typename T1, typename T2>
         inline constexpr bool operator()(T1&& t1, T2&& t2) const
         {
-            return PIKA_INVOKE(comp_, PIKA_FORWARD(T1, t1), PIKA_FORWARD(T2, t2));
+            return PIKA_INVOKE(
+                comp_, PIKA_FORWARD(T1, t1), PIKA_FORWARD(T2, t2));
         }
 
         Compare comp_;
@@ -143,7 +144,8 @@ namespace pika { namespace parallel { namespace util {
         template <typename T1, typename T2>
         inline constexpr bool operator()(T1&& t1, T2&& t2) const
         {
-            return PIKA_INVOKE(comp_, PIKA_FORWARD(T1, t1), PIKA_FORWARD(T2, t2));
+            return PIKA_INVOKE(
+                comp_, PIKA_FORWARD(T1, t1), PIKA_FORWARD(T2, t2));
         }
 
         Compare comp_;

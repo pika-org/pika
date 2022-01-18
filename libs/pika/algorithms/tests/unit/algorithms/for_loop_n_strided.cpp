@@ -138,8 +138,8 @@ void test_for_loop_n_strided_idx(ExPolicy&& policy)
 
     int stride = dis(gen);    //-V103
 
-    pika::for_loop_n_strided(std::forward<ExPolicy>(policy), 0, c.size(), stride,
-        [&c](std::size_t i) { c[i] = 42; });
+    pika::for_loop_n_strided(std::forward<ExPolicy>(policy), 0, c.size(),
+        stride, [&c](std::size_t i) { c[i] = 42; });
 
     // verify values
     std::size_t count = 0;

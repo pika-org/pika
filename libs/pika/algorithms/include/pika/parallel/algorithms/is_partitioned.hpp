@@ -247,8 +247,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
         return detail::is_partitioned<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(Pred, pred),
-            util::projection_identity());
+            PIKA_FORWARD(ExPolicy, policy), first, last,
+            PIKA_FORWARD(Pred, pred), util::projection_identity());
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -269,8 +269,10 @@ namespace pika {
         friend bool tag_fallback_invoke(
             pika::is_partitioned_t, FwdIter first, FwdIter last, Pred&& pred)
         {
-            return pika::parallel::v1::detail::is_partitioned<FwdIter, FwdIter>()
-                .call(pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
+            return pika::parallel::v1::detail::is_partitioned<FwdIter,
+                FwdIter>()
+                .call(pika::execution::seq, first, last,
+                    PIKA_FORWARD(Pred, pred),
                     pika::parallel::util::projection_identity());
         }
 
@@ -287,7 +289,8 @@ namespace pika {
         tag_fallback_invoke(pika::is_partitioned_t, ExPolicy&& policy,
             FwdIter first, FwdIter last, Pred&& pred)
         {
-            return pika::parallel::v1::detail::is_partitioned<FwdIter, FwdIter>()
+            return pika::parallel::v1::detail::is_partitioned<FwdIter,
+                FwdIter>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred),
                     pika::parallel::util::projection_identity());

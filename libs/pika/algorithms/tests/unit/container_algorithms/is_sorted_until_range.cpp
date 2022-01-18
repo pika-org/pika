@@ -668,31 +668,33 @@ void test_sorted_until3_async(ExPolicy p)
     std::iota(std::begin(c1), std::end(c1), 0);
     std::iota(std::begin(c2), std::end(c2), 0);
 
-    auto f1 = pika::ranges::is_sorted_until(p, c1, std::less<int>(), [&](int x) {
-        if (x == 0)
-        {
-            return 20000;
-        }
-        else if (x == static_cast<int>(c1.size()) - 1)
-        {
-            return 0;
-        }
-        else
-        {
-            return x;
-        }
-    });
-    auto f2 = pika::ranges::is_sorted_until(p, c2, std::less<int>(), [&](int x) {
-        if (x == static_cast<int>(c2.size()) / 3 ||
-            x == 2 * static_cast<int>(c2.size()) / 3)
-        {
-            return 0;
-        }
-        else
-        {
-            return x;
-        }
-    });
+    auto f1 =
+        pika::ranges::is_sorted_until(p, c1, std::less<int>(), [&](int x) {
+            if (x == 0)
+            {
+                return 20000;
+            }
+            else if (x == static_cast<int>(c1.size()) - 1)
+            {
+                return 0;
+            }
+            else
+            {
+                return x;
+            }
+        });
+    auto f2 =
+        pika::ranges::is_sorted_until(p, c2, std::less<int>(), [&](int x) {
+            if (x == static_cast<int>(c2.size()) / 3 ||
+                x == 2 * static_cast<int>(c2.size()) / 3)
+            {
+                return 0;
+            }
+            else
+            {
+                return x;
+            }
+        });
 
     auto test_index1 = std::begin(c1) + 1;
     auto test_index2 = std::begin(c2) + c2.size() / 3;

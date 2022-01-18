@@ -54,7 +54,8 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
-    struct is_invocable : pika::detail::is_invocable_impl<F && (Ts && ...), void>
+    struct is_invocable
+      : pika::detail::is_invocable_impl<F && (Ts && ...), void>
     {
     };
 

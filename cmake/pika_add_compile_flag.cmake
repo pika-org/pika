@@ -129,16 +129,14 @@ function(pika_remove_target_compile_option FLAG)
     foreach(_flag ${PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR})
       if(NOT ${_flag} STREQUAL ${_conf})
         set_property(
-          GLOBAL APPEND PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PUBLIC
-                                 "${_flag}"
+          GLOBAL APPEND PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PUBLIC "${_flag}"
         )
       endif()
     endforeach()
     foreach(_flag ${PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR})
       if(NOT ${_flag} STREQUAL ${_conf})
         set_property(
-          GLOBAL APPEND PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE
-                                 "${_flag}"
+          GLOBAL APPEND PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE "${_flag}"
         )
       endif()
     endforeach()
@@ -162,9 +160,7 @@ function(pika_add_target_compile_definition FLAG)
 
   set(_configurations "none")
   if(PIKA_ADD_TARGET_COMPILE_DEFINITION_CONFIGURATIONS)
-    set(_configurations
-        "${PIKA_ADD_TARGET_COMPILE_DEFINITION_CONFIGURATIONS}"
-    )
+    set(_configurations "${PIKA_ADD_TARGET_COMPILE_DEFINITION_CONFIGURATIONS}")
   endif()
 
   foreach(_config ${_configurations})

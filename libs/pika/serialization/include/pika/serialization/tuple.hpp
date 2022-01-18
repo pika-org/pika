@@ -100,8 +100,8 @@ namespace pika { namespace util { namespace detail {
                 (load_element(ar, pika::get<Is>(t)), 0)...};
 #else
             int const _sequencer[] = {
-                (load_element(
-                     ar, const_cast<std::remove_const_t<Ts>&>(pika::get<Is>(t))),
+                (load_element(ar,
+                     const_cast<std::remove_const_t<Ts>&>(pika::get<Is>(t))),
                     0)...};
 #endif
 

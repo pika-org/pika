@@ -56,8 +56,8 @@ void function01(void)
     }
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<long unsigned, std::nano> nanotime1 = end - start;
-    std::cout << "pika::parallel::nth_element :" << (nanotime1.count() / 1000000)
-              << " msec\n";
+    std::cout << "pika::parallel::nth_element :"
+              << (nanotime1.count() / 1000000) << " msec\n";
 
     start = std::chrono::high_resolution_clock::now();
     for (uint64_t i = 0; i < NELEM; ++i)

@@ -184,8 +184,8 @@ namespace pika { namespace util {
 
         template <typename T, typename U>
         struct zip_iterator_category<pika::tuple<T, U>,
-            typename std::enable_if<pika::tuple_size<pika::tuple<T, U>>::value ==
-                2>::type>
+            typename std::enable_if<
+                pika::tuple_size<pika::tuple<T, U>>::value == 2>::type>
           : zip_iterator_category_impl<
                 typename std::iterator_traits<T>::iterator_category,
                 typename std::iterator_traits<U>::iterator_category>
@@ -214,8 +214,8 @@ namespace pika { namespace util {
             template <std::size_t... Is>
             PIKA_HOST_DEVICE static
                 typename zip_iterator_reference<pika::tuple<Ts...>>::type
-                call(
-                    util::index_pack<Is...>, pika::tuple<Ts...> const& iterators)
+                call(util::index_pack<Is...>,
+                    pika::tuple<Ts...> const& iterators)
             {
                 return pika::forward_as_tuple(*pika::get<Is>(iterators)...);
             }
@@ -325,7 +325,8 @@ namespace pika { namespace util {
             PIKA_HOST_DEVICE
             std::ptrdiff_t distance_to(zip_iterator_base const& other) const
             {
-                return pika::get<0>(other.iterators_) - pika::get<0>(iterators_);
+                return pika::get<0>(other.iterators_) -
+                    pika::get<0>(iterators_);
             }
 
         private:
@@ -361,7 +362,8 @@ namespace pika { namespace util {
 
     template <typename... Ts>
     class zip_iterator
-      : public detail::zip_iterator_base<pika::tuple<Ts...>, zip_iterator<Ts...>>
+      : public detail::zip_iterator_base<pika::tuple<Ts...>,
+            zip_iterator<Ts...>>
     {
         static_assert(
             sizeof...(Ts) != 0, "zip_iterator must wrap at least one iterator");

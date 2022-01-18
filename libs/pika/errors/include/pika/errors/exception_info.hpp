@@ -44,8 +44,8 @@ namespace pika {
         Type _value;
     };
 
-#define PIKA_DEFINE_ERROR_INFO(NAME, TYPE)                                      \
-    struct NAME : ::pika::error_info<NAME, TYPE>                                \
+#define PIKA_DEFINE_ERROR_INFO(NAME, TYPE)                                     \
+    struct NAME : ::pika::error_info<NAME, TYPE>                               \
     {                                                                          \
         explicit NAME(TYPE const& value)                                       \
           : error_info(value)                                                  \
@@ -53,7 +53,7 @@ namespace pika {
         }                                                                      \
                                                                                \
         explicit NAME(TYPE&& value)                                            \
-          : error_info(PIKA_FORWARD(TYPE, value))                               \
+          : error_info(PIKA_FORWARD(TYPE, value))                              \
         {                                                                      \
         }                                                                      \
     } /**/
@@ -190,7 +190,8 @@ namespace pika {
         static_assert(!std::is_base_of<exception_info, ED>::value,
             "E shall not derive from exception_info");
 
-        throw detail::exception_with_info<ED>(PIKA_FORWARD(E, e), PIKA_MOVE(xi));
+        throw detail::exception_with_info<ED>(
+            PIKA_FORWARD(E, e), PIKA_MOVE(xi));
     }
 
     template <typename E>

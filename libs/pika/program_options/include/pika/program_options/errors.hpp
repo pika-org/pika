@@ -45,8 +45,7 @@ namespace pika { namespace program_options {
     /** Class thrown when there are too many positional options.
         This is a programming error.
     */
-    class PIKA_ALWAYS_EXPORT too_many_positional_options_error
-      : public error
+    class PIKA_ALWAYS_EXPORT too_many_positional_options_error : public error
     {
     public:
         too_many_positional_options_error()
@@ -202,8 +201,7 @@ namespace pika { namespace program_options {
 
     /** Class thrown when there are several option values, but
         user called a method which cannot return them all. */
-    class PIKA_ALWAYS_EXPORT multiple_values
-      : public error_with_option_name
+    class PIKA_ALWAYS_EXPORT multiple_values : public error_with_option_name
     {
     public:
         multiple_values()
@@ -232,8 +230,7 @@ namespace pika { namespace program_options {
     };
 
     /** Class thrown when a required/mandatory option is missing */
-    class PIKA_ALWAYS_EXPORT required_option
-      : public error_with_option_name
+    class PIKA_ALWAYS_EXPORT required_option : public error_with_option_name
     {
     public:
         // option name is constructed by the option_descriptor and never on the fly
@@ -276,8 +273,7 @@ namespace pika { namespace program_options {
     };
 
     /** Class thrown when option name is not recognized. */
-    class PIKA_ALWAYS_EXPORT unknown_option
-      : public error_with_no_option_name
+    class PIKA_ALWAYS_EXPORT unknown_option : public error_with_no_option_name
     {
     public:
         unknown_option(const std::string& original_token = "")
@@ -290,8 +286,7 @@ namespace pika { namespace program_options {
     };
 
     /** Class thrown when there's ambiguity among several possible options. */
-    class PIKA_ALWAYS_EXPORT ambiguous_option
-      : public error_with_no_option_name
+    class PIKA_ALWAYS_EXPORT ambiguous_option : public error_with_no_option_name
     {
     public:
         ambiguous_option(const std::vector<std::string>& xalternatives)
@@ -362,8 +357,7 @@ namespace pika { namespace program_options {
         kind_t m_kind;
     };
 
-    class PIKA_ALWAYS_EXPORT invalid_config_file_syntax
-      : public invalid_syntax
+    class PIKA_ALWAYS_EXPORT invalid_config_file_syntax : public invalid_syntax
     {
     public:
         invalid_config_file_syntax(const std::string& invalid_line, kind_t kind)
@@ -387,8 +381,7 @@ namespace pika { namespace program_options {
     };
 
     /** Class thrown when there are syntax errors in given command line */
-    class PIKA_ALWAYS_EXPORT invalid_command_line_syntax
-      : public invalid_syntax
+    class PIKA_ALWAYS_EXPORT invalid_command_line_syntax : public invalid_syntax
     {
     public:
         invalid_command_line_syntax(kind_t kind,
@@ -401,8 +394,7 @@ namespace pika { namespace program_options {
     };
 
     /** Class thrown when value of option is incorrect. */
-    class PIKA_ALWAYS_EXPORT validation_error
-      : public error_with_option_name
+    class PIKA_ALWAYS_EXPORT validation_error : public error_with_option_name
     {
     public:
         enum kind_t

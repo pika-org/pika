@@ -124,7 +124,8 @@ void test_starts_with(ExPolicy policy, IteratorTag)
     auto result1 = pika::ranges::starts_with(policy, some_ints, some_more_ints);
     PIKA_TEST_EQ(result1, true);
 
-    auto result2 = pika::ranges::starts_with(policy, some_ints, some_wrong_ints);
+    auto result2 =
+        pika::ranges::starts_with(policy, some_ints, some_wrong_ints);
     PIKA_TEST_EQ(result2, false);
 }
 

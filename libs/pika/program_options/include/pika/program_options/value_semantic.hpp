@@ -122,8 +122,7 @@ namespace pika { namespace program_options {
 
     /** Class which specifies a simple handling of a value: the value will
         have string type and only one token is allowed. */
-    class PIKA_EXPORT untyped_value
-      : public value_semantic_codecvt_helper<char>
+    class PIKA_EXPORT untyped_value : public value_semantic_codecvt_helper<char>
     {
     public:
         untyped_value(bool zero_tokens = false)

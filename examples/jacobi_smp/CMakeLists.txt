@@ -50,9 +50,7 @@ foreach(jacobi_smp_application ${jacobi_smp_applications})
     FOLDER "Examples/Local/JacobiSMP"
   )
 
-  pika_add_example_target_dependencies(
-    "jacobi_smp" ${jacobi_smp_application}
-  )
+  pika_add_example_target_dependencies("jacobi_smp" ${jacobi_smp_application})
 
   if(PIKA_WITH_TESTS
      AND PIKA_WITH_TESTS_EXAMPLES

@@ -114,7 +114,8 @@ namespace pika { namespace cuda { namespace experimental { namespace detail {
         }
         check_cuda_error(cudaEventRecord(event, stream));
 
-        detail::add_to_event_callback_queue(event_callback{event, PIKA_MOVE(f)});
+        detail::add_to_event_callback_queue(
+            event_callback{event, PIKA_MOVE(f)});
     }
 
     // Background progress function for async CUDA operations. Checks for completed

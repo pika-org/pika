@@ -261,7 +261,8 @@ namespace pika { namespace execution {
                 pool_ ? pool_ : threads::detail::get_self_or_default_pool();
 
             return pika::detail::async_launch_policy_dispatch<Policy>::call(
-                policy_, desc, pool, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+                policy_, desc, pool, PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename Future, typename... Ts>
@@ -281,10 +282,11 @@ namespace pika { namespace execution {
             typename pika::traits::detail::shared_state_ptr<result_type>::type
                 p = lcos::detail::make_continuation_alloc_nounwrap<result_type>(
                     pika::util::internal_allocator<>{},
-                    PIKA_FORWARD(Future, predecessor), policy_, PIKA_MOVE(func));
+                    PIKA_FORWARD(Future, predecessor), policy_,
+                    PIKA_MOVE(func));
 
-            return pika::traits::future_access<pika::future<result_type>>::create(
-                PIKA_MOVE(p));
+            return pika::traits::future_access<
+                pika::future<result_type>>::create(PIKA_MOVE(p));
         }
 
         // NonBlockingOneWayExecutor (adapted) interface
@@ -295,7 +297,8 @@ namespace pika { namespace execution {
             auto pool =
                 pool_ ? pool_ : threads::detail::get_self_or_default_pool();
             parallel::execution::detail::post_policy_dispatch<Policy>::call(
-                policy_, desc, pool, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+                policy_, desc, pool, PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Ts, ts)...);
         }
 
         // BulkTwoWayExecutor interface
@@ -310,7 +313,8 @@ namespace pika { namespace execution {
             return parallel::execution::detail::
                 hierarchical_bulk_async_execute_helper(desc, pool, 0,
                     pool->get_os_thread_count(), hierarchical_threshold_,
-                    policy_, PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...);
+                    policy_, PIKA_FORWARD(F, f), shape,
+                    PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename S, typename Future, typename... Ts>
@@ -361,7 +365,8 @@ namespace pika { namespace parallel { namespace execution {
         pika::execution::parallel_executor;
     template <typename Policy>
     using parallel_policy_executor PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_policy_executor is deprecated. Use "
+        "pika::parallel::execution::parallel_policy_executor is deprecated. "
+        "Use "
         "pika::execution::parallel_policy_executor instead.") =
         pika::execution::parallel_policy_executor<Policy>;
 }}}    // namespace pika::parallel::execution
@@ -369,14 +374,14 @@ namespace pika { namespace parallel { namespace execution {
 namespace pika { namespace parallel { namespace execution {
     /// \cond NOINTERNAL
     template <typename Policy>
-    struct is_one_way_executor<pika::execution::parallel_policy_executor<Policy>>
-      : std::true_type
+    struct is_one_way_executor<
+        pika::execution::parallel_policy_executor<Policy>> : std::true_type
     {
     };
 
     template <typename Policy>
-    struct is_two_way_executor<pika::execution::parallel_policy_executor<Policy>>
-      : std::true_type
+    struct is_two_way_executor<
+        pika::execution::parallel_policy_executor<Policy>> : std::true_type
     {
     };
 

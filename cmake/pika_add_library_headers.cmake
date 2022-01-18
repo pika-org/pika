@@ -59,8 +59,8 @@ function(pika_add_library_headers_noglob name)
     )
 
     pika_print_list(
-      "DEBUG" "pika_add_library_sources_noglob.${name}"
-      "Sources for ${name}" HEADERS_HEADERS
+      "DEBUG" "pika_add_library_sources_noglob.${name}" "Sources for ${name}"
+      HEADERS_HEADERS
     )
 
     set(headers ${HEADERS_HEADERS})

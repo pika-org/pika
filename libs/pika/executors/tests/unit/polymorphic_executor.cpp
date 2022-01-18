@@ -100,7 +100,7 @@ void test_bulk_async(executor const& exec)
 
     count = 0;
     pika::when_all(pika::parallel::execution::bulk_async_execute(
-                      exec, pika::util::bind(&bulk_test, _1, _2), v, 42))
+                       exec, pika::util::bind(&bulk_test, _1, _2), v, 42))
         .get();
     PIKA_TEST(count == v.size());
 

@@ -163,8 +163,8 @@ namespace pika { namespace util {
     namespace range_adl {
         template <typename C,
             typename Iterator = typename detail::iterator<C>::type>
-        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE Iterator begin(C& c) noexcept(
-            noexcept(detail::begin_impl(c, 0L)))
+        PIKA_HOST_DEVICE constexpr PIKA_FORCEINLINE Iterator begin(
+            C& c) noexcept(noexcept(detail::begin_impl(c, 0L)))
         {
             return detail::begin_impl(c, 0L);
         }

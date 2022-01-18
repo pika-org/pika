@@ -128,17 +128,17 @@ PIKA_DEFINE_LOG(g_l, logger_type)
     ////////////////////////////////////////////////////////////////////////////
     // Defining Macros
 
-#define PIKA_DECLARE_LOG(NAME)                                                  \
-    ::pika::util::logging::logger* NAME##_logger();                             \
+#define PIKA_DECLARE_LOG(NAME)                                                 \
+    ::pika::util::logging::logger* NAME##_logger();                            \
     namespace {                                                                \
         void const* const ensure_creation_##NAME = NAME##_logger();            \
     }
 
-#define PIKA_DEFINE_LOG(NAME, LEVEL)                                            \
-    ::pika::util::logging::logger* NAME##_logger()                              \
+#define PIKA_DEFINE_LOG(NAME, LEVEL)                                           \
+    ::pika::util::logging::logger* NAME##_logger()                             \
     {                                                                          \
-        static ::pika::util::logging::logger l(                                 \
-            pika::util::logging::level::LEVEL);                                 \
+        static ::pika::util::logging::logger l(                                \
+            pika::util::logging::level::LEVEL);                                \
         return &l;                                                             \
     }
 
@@ -146,13 +146,13 @@ PIKA_DEFINE_LOG(g_l, logger_type)
     // Messages that were logged before initializing the log
     // - cache the message (and I'll write it even if the filter is turned off)
 
-#define PIKA_LOG_USE_LOG(NAME, LEVEL)                                           \
+#define PIKA_LOG_USE_LOG(NAME, LEVEL)                                          \
     if (!(NAME##_logger()->is_enabled(LEVEL)))                                 \
         ;                                                                      \
     else                                                                       \
         NAME##_logger()->gather()
 
-#define PIKA_LOG_FORMAT(NAME, LEVEL, FORMAT, ...)                               \
+#define PIKA_LOG_FORMAT(NAME, LEVEL, FORMAT, ...)                              \
     PIKA_LOG_USE_LOG(NAME, LEVEL).format(FORMAT, __VA_ARGS__)
 
 }}}    // namespace pika::util::logging

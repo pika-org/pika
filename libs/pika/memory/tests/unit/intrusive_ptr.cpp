@@ -918,8 +918,8 @@ namespace n_const_cast {
         PIKA_TEST_EQ(N::base::instances, 0);
 
         {
-            pika::intrusive_ptr<X> px =
-                pika::const_pointer_cast<X>(pika::intrusive_ptr<X const>(new X));
+            pika::intrusive_ptr<X> px = pika::const_pointer_cast<X>(
+                pika::intrusive_ptr<X const>(new X));
             PIKA_TEST(px.get() != nullptr);
             PIKA_TEST_EQ(px->use_count(), 1);
         }

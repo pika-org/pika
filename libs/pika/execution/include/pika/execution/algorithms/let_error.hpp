@@ -66,8 +66,9 @@ namespace pika { namespace execution { namespace experimental {
 
             // Type of the potential senders returned from the sender factor F
             template <template <typename...> class Variant>
-            using successor_sender_types = pika::util::detail::unique_t<
-                pika::util::detail::transform_t<predecessor_error_types<Variant>,
+            using successor_sender_types =
+                pika::util::detail::unique_t<pika::util::detail::transform_t<
+                    predecessor_error_types<Variant>,
                     successor_sender_types_helper>>;
 
             // The workaround for clang is due to a parsing bug in clang < 11
@@ -124,8 +125,9 @@ namespace pika { namespace execution { namespace experimental {
                         }
 
                         template <typename OperationState_,
-                            typename = std::enable_if_t<!std::is_same_v<
-                                std::decay_t<OperationState_>, pika::monostate>>>
+                            typename = std::enable_if_t<
+                                !std::is_same_v<std::decay_t<OperationState_>,
+                                    pika::monostate>>>
                         void operator()(OperationState_& op_state) const
                         {
                             pika::execution::experimental::start(op_state);
@@ -162,8 +164,8 @@ namespace pika { namespace execution { namespace experimental {
                                 .template emplace<operation_state_type>(
                                     pika::util::detail::with_result_of([&]() {
                                         return pika::execution::experimental::
-                                            connect(
-                                                PIKA_INVOKE(PIKA_MOVE(f), error),
+                                            connect(PIKA_INVOKE(
+                                                        PIKA_MOVE(f), error),
                                                 PIKA_MOVE(receiver));
                                     }));
 #else
@@ -289,7 +291,8 @@ namespace pika { namespace execution { namespace experimental {
             friend auto tag_invoke(
                 connect_t, let_error_sender&& s, Receiver&& receiver)
             {
-                return operation_state<Receiver>(PIKA_MOVE(s.predecessor_sender),
+                return operation_state<Receiver>(
+                    PIKA_MOVE(s.predecessor_sender),
                     PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f));
             }
         };
@@ -317,7 +320,8 @@ namespace pika { namespace execution { namespace experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             let_error_t, F&& f)
         {
-            return detail::partial_algorithm<let_error_t, F>{PIKA_FORWARD(F, f)};
+            return detail::partial_algorithm<let_error_t, F>{
+                PIKA_FORWARD(F, f)};
         }
     } let_error{};
 }}}    // namespace pika::execution::experimental

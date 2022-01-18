@@ -249,8 +249,8 @@ namespace pika { namespace lcos { namespace detail {
         {
             detail::dataflow_finalization<dataflow_type> this_f_(this);
 
-            pika::execution::parallel_policy_executor<launch::async_policy> exec{
-                policy};
+            pika::execution::parallel_policy_executor<launch::async_policy>
+                exec{policy};
 
             exec.post(PIKA_MOVE(this_f_), PIKA_FORWARD(Futures_, futures));
         }
@@ -425,8 +425,8 @@ namespace pika { namespace lcos { namespace detail {
 
         // Construct the dataflow_frame and traverse
         // the arguments asynchronously
-        pika::intrusive_ptr<Frame> p = util::traverse_pack_async_allocator(alloc,
-            util::async_traverse_in_place_tag<Frame>{}, PIKA_MOVE(data),
+        pika::intrusive_ptr<Frame> p = util::traverse_pack_async_allocator(
+            alloc, util::async_traverse_in_place_tag<Frame>{}, PIKA_MOVE(data),
             PIKA_FORWARD(Ts, ts)...);
 
         using traits::future_access;

@@ -23,8 +23,10 @@ void test_copy_n()
     test_copy_n(pika::execution::par, IteratorTag());
     test_copy_n(pika::execution::par_unseq, IteratorTag());
 
-    test_copy_n_async(pika::execution::seq(pika::execution::task), IteratorTag());
-    test_copy_n_async(pika::execution::par(pika::execution::task), IteratorTag());
+    test_copy_n_async(
+        pika::execution::seq(pika::execution::task), IteratorTag());
+    test_copy_n_async(
+        pika::execution::par(pika::execution::task), IteratorTag());
 }
 
 void n_copy_test()

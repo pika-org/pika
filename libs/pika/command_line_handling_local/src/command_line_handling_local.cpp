@@ -254,9 +254,10 @@ namespace pika { namespace local { namespace detail {
 
         std::size_t default_threads = init_threads;
 
-        std::string threads_str = cfgmap.get_value<std::string>(
-            "pika.os_threads",
-            rtcfg.get_entry("pika.os_threads", std::to_string(default_threads)));
+        std::string threads_str =
+            cfgmap.get_value<std::string>("pika.os_threads",
+                rtcfg.get_entry(
+                    "pika.os_threads", std::to_string(default_threads)));
 
         if ("cores" == threads_str)
         {
@@ -327,12 +328,12 @@ namespace pika { namespace local { namespace detail {
             throw pika::detail::command_line_error(
                 "Requested more than " PIKA_PP_STRINGIZE(
                     PIKA_HAVE_MAX_CPU_COUNT) " pika.force_min_os_threads "
-                                            "to use for this "
-                                            "application, "
-                                            "use the option "
-                                            "-DPIKA_WITH_MAX_CPU_COUNT=<"
-                                            "N> "
-                                            "when configuring pika.");
+                                             "to use for this "
+                                             "application, "
+                                             "use the option "
+                                             "-DPIKA_WITH_MAX_CPU_COUNT=<"
+                                             "N> "
+                                             "when configuring pika.");
         }
 #endif
 
@@ -422,7 +423,8 @@ namespace pika { namespace local { namespace detail {
     void command_line_handling::check_pu_step() const
     {
         if (pika::threads::hardware_concurrency() > 1 &&
-            (pu_step_ == 0 || pu_step_ >= pika::threads::hardware_concurrency()))
+            (pu_step_ == 0 ||
+                pu_step_ >= pika::threads::hardware_concurrency()))
         {
             throw pika::detail::command_line_error(
                 "Invalid command line option "
@@ -646,8 +648,8 @@ namespace pika { namespace local { namespace detail {
             ini_config.emplace_back("pika.logging.application.level=5");
         }
 #else
-        if (vm.count("pika:debug-pika-log") || vm.count("pika:debug-timing-log") ||
-            vm.count("pika:debug-app-log"))
+        if (vm.count("pika:debug-pika-log") ||
+            vm.count("pika:debug-timing-log") || vm.count("pika:debug-app-log"))
         {
             // clang-format off
             throw pika::detail::command_line_error(
@@ -749,11 +751,11 @@ namespace pika { namespace local { namespace detail {
             }
             else
             {
-                throw pika::detail::command_line_error(
-                    pika::util::format("Invalid argument for option --pika:help: "
-                                      "'{1}', allowed values: "
-                                      "'minimal' (default) and 'full'",
-                        help_option));
+                throw pika::detail::command_line_error(pika::util::format(
+                    "Invalid argument for option --pika:help: "
+                    "'{1}', allowed values: "
+                    "'minimal' (default) and 'full'",
+                    help_option));
             }
         }
         return false;
@@ -844,8 +846,8 @@ namespace pika { namespace local { namespace detail {
 
     ///////////////////////////////////////////////////////////////////////////
     int command_line_handling::call(
-        pika::program_options::options_description const& desc_cmdline, int argc,
-        char** argv)
+        pika::program_options::options_description const& desc_cmdline,
+        int argc, char** argv)
     {
         // set the flag signaling that command line parsing has been done
         cmd_line_parsed_ = true;
@@ -871,7 +873,8 @@ namespace pika { namespace local { namespace detail {
         std::string prepend_command_line =
             rtcfg_.get_entry("pika.commandline.prepend_options");
 
-        args = prepend_options(PIKA_MOVE(args), PIKA_MOVE(prepend_command_line));
+        args =
+            prepend_options(PIKA_MOVE(args), PIKA_MOVE(prepend_command_line));
 
         // Initial analysis of the command line options. This is
         // preliminary as it will not take into account any aliases as

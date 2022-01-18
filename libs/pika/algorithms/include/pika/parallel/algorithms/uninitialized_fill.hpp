@@ -486,7 +486,8 @@ namespace pika {
 
             return pika::util::void_guard<result_type>(),
                    pika::parallel::v1::detail::uninitialized_fill<FwdIter>()
-                       .call(PIKA_FORWARD(ExPolicy, policy), first, last, value);
+                       .call(
+                           PIKA_FORWARD(ExPolicy, policy), first, last, value);
         }
 
     } uninitialized_fill{};

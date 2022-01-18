@@ -146,7 +146,7 @@ void test_cv_thread_no_pred(bool call_notify)
     pika::stop_source is;
     {
         pika::thread t1([&ready, &ready_mtx, &ready_cv, st = is.get_token(),
-                           call_notify] {
+                            call_notify] {
             {
                 std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
                 bool ret = ready_cv.wait(lg, st, [&ready] { return ready; });
@@ -244,23 +244,24 @@ void test_minimal_wait(int sec)
         pika::lcos::local::condition_variable_any ready_cv;
 
         {
-            pika::jthread t1([&ready, &ready_mtx, &ready_cv, dur](
-                                pika::stop_token st) {
-                try
-                {
-                    auto t0 = std::chrono::steady_clock::now();
+            pika::jthread t1(
+                [&ready, &ready_mtx, &ready_cv, dur](pika::stop_token st) {
+                    try
                     {
-                        std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
-                        ready_cv.wait(lg, st, [&ready] { return ready; });
+                        auto t0 = std::chrono::steady_clock::now();
+                        {
+                            std::unique_lock<pika::lcos::local::mutex> lg{
+                                ready_mtx};
+                            ready_cv.wait(lg, st, [&ready] { return ready; });
+                        }
+                        PIKA_TEST(std::chrono::steady_clock::now() <
+                            t0 + dur + std::chrono::seconds(1));
                     }
-                    PIKA_TEST(std::chrono::steady_clock::now() <
-                        t0 + dur + std::chrono::seconds(1));
-                }
-                catch (...)
-                {
-                    PIKA_TEST(false);
-                }
-            });
+                    catch (...)
+                    {
+                        PIKA_TEST(false);
+                    }
+                });
 
             std::this_thread::sleep_for(dur);
         }    // leave scope of t1 without join() or detach() (signals cancellation)
@@ -286,12 +287,13 @@ void test_minimal_wait_for(int sec1, int sec2)
 
         {
             pika::jthread t1([&ready, &ready_mtx, &ready_cv, dur_int, dur_wait](
-                                pika::stop_token st) {
+                                 pika::stop_token st) {
                 try
                 {
                     auto t0 = std::chrono::steady_clock::now();
                     {
-                        std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
+                        std::unique_lock<pika::lcos::local::mutex> lg{
+                            ready_mtx};
                         ready_cv.wait_for(
                             lg, st, dur_wait, [&ready] { return ready; });
                     }
@@ -326,7 +328,7 @@ void test_timed_cv(bool call_notify, bool /* call_interrupt */, Dur dur)
 
     {
         pika::jthread t1([&ready, &ready_mtx, &ready_cv, call_notify, dur](
-                            pika::stop_token st) {
+                             pika::stop_token st) {
             auto t0 = std::chrono::steady_clock::now();
             int times_done{0};
             while (times_done < 3)
@@ -398,7 +400,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
     state t1_feedback{state::loop};
     {
         pika::jthread t1([&ready_, &ready_mtx, &ready_cv, call_notify, dur,
-                            &t1_feedback](pika::stop_token st) {
+                             &t1_feedback](pika::stop_token st) {
             auto t0 = std::chrono::steady_clock::now();
             int times_done{0};
             while (times_done < 3)
@@ -515,8 +517,8 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
             {
                 std::this_thread::sleep_for(std::chrono::microseconds(100));
                 pika::jthread t([idx, t0stoken = t0ssource.get_token(),
-                                   &arr_ready, &arr_ready_mtx, &arr_ready_cv,
-                                   call_notify] {
+                                    &arr_ready, &arr_ready_mtx, &arr_ready_cv,
+                                    call_notify] {
                     // use interrupt token of t0 instead
                     // NOTE: disables signaling interrupts directly to the thread
                     cv_wait(t0stoken, idx + 1, arr_ready[idx],

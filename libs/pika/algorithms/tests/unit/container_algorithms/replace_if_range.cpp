@@ -96,8 +96,8 @@ void test_replace_if(IteratorTag)
     std::replace_if(std::begin(d), std::end(d), equal_f(d[idx]), d[idx] + 1);
 
     std::size_t count = 0;
-    PIKA_TEST(std::equal(std::begin(c.base()), std::end(c.base()), std::begin(d),
-        [&count](std::size_t v1, std::size_t v2) -> bool {
+    PIKA_TEST(std::equal(std::begin(c.base()), std::end(c.base()),
+        std::begin(d), [&count](std::size_t v1, std::size_t v2) -> bool {
             PIKA_TEST_EQ(v1, v2);
             ++count;
             return v1 == v2;
@@ -126,8 +126,8 @@ void test_replace_if(ExPolicy policy, IteratorTag)
     std::replace_if(std::begin(d), std::end(d), equal_f(d[idx]), d[idx] + 1);
 
     std::size_t count = 0;
-    PIKA_TEST(std::equal(std::begin(c.base()), std::end(c.base()), std::begin(d),
-        [&count](std::size_t v1, std::size_t v2) -> bool {
+    PIKA_TEST(std::equal(std::begin(c.base()), std::end(c.base()),
+        std::begin(d), [&count](std::size_t v1, std::size_t v2) -> bool {
             PIKA_TEST_EQ(v1, v2);
             ++count;
             return v1 == v2;
@@ -154,8 +154,8 @@ void test_replace_if_async(ExPolicy p, IteratorTag)
     std::replace_if(std::begin(d), std::end(d), equal_f(d[idx]), d[idx] + 1);
 
     std::size_t count = 0;
-    PIKA_TEST(std::equal(std::begin(c.base()), std::end(c.base()), std::begin(d),
-        [&count](std::size_t v1, std::size_t v2) -> bool {
+    PIKA_TEST(std::equal(std::begin(c.base()), std::end(c.base()),
+        std::begin(d), [&count](std::size_t v1, std::size_t v2) -> bool {
             PIKA_TEST_EQ(v1, v2);
             ++count;
             return v1 == v2;
@@ -336,9 +336,9 @@ void test_replace_if_bad_alloc(IteratorTag)
     try
     {
         pika::ranges::replace_if(pika::util::make_iterator_range(
-                                    decorated_iterator(std::begin(c),
-                                        []() { throw std::bad_alloc(); }),
-                                    decorated_iterator(std::end(c))),
+                                     decorated_iterator(std::begin(c),
+                                         []() { throw std::bad_alloc(); }),
+                                     decorated_iterator(std::end(c))),
             equal_f(42), std::size_t(43));
         PIKA_TEST(false);
     }

@@ -225,8 +225,8 @@ int main(int argc, char* argv[])
         "the kind of iterator tag (random/bidirectional/forward)")("base_num",
         pika::program_options::value<int>(),
         pika::util::format("the base number for partitioning."
-                          " The range of random_fill is [0, {1}]"
-                          " (default: random number in the range [0, {2}]",
+                           " The range of random_fill is [0, {1}]"
+                           " (default: random number in the range [0, {2}]",
             random_fill_range, random_fill_range)
             .c_str())("test_count",
         pika::program_options::value<int>()->default_value(10),

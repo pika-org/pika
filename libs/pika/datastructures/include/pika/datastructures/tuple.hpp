@@ -295,7 +295,8 @@ namespace pika {
 
     private:
         template <std::size_t... Is, typename UTuple>
-        constexpr PIKA_HOST_DEVICE tuple(util::index_pack<Is...>, UTuple&& other)
+        constexpr PIKA_HOST_DEVICE tuple(
+            util::index_pack<Is...>, UTuple&& other)
           : _members(std::piecewise_construct,
                 pika::get<Is>(PIKA_FORWARD(UTuple, other))...)
         {
@@ -312,8 +313,8 @@ namespace pika {
         template <typename UTuple,
             typename Enable = typename std::enable_if<!std::is_same<tuple,
                 typename std::decay<UTuple>::type>::value>::type,
-            typename EnableCompatible = typename std::enable_if<
-                pika::detail::are_tuples_compatible<tuple, UTuple>::value>::type>
+            typename EnableCompatible = typename std::enable_if<pika::detail::
+                    are_tuples_compatible<tuple, UTuple>::value>::type>
         constexpr PIKA_HOST_DEVICE tuple(UTuple&& other)
           : tuple(index_pack{}, PIKA_FORWARD(UTuple, other))
         {
@@ -853,7 +854,8 @@ namespace pika {
     }    // namespace detail
 
     template <typename... Tuples>
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE auto tuple_cat(Tuples&&... tuples)
+    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE auto tuple_cat(
+        Tuples&&... tuples)
         -> decltype(pika::detail::tuple_cat_impl(
             typename util::make_index_pack<pika::detail::tuple_cat_size<
                 typename std::decay<Tuples>::type...>::value>::type{},
@@ -1059,9 +1061,11 @@ namespace pika { namespace util {
 
     template <typename... Ts>
     PIKA_DEPRECATED_V(0, 1,
-        "pika::util::forward_as_tuple is deprecated. Use pika::forward_as_tuple "
+        "pika::util::forward_as_tuple is deprecated. Use "
+        "pika::forward_as_tuple "
         "instead.")
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE auto forward_as_tuple(Ts&&... vs)
+    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE
+        auto forward_as_tuple(Ts&&... vs)
     {
         return pika::forward_as_tuple(PIKA_FORWARD(Ts, vs)...);
     }

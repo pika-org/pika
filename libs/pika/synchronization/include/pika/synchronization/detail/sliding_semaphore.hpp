@@ -32,9 +32,8 @@ namespace pika { namespace lcos { namespace local { namespace detail {
             std::int64_t max_difference, std::int64_t lower_limit);
         PIKA_EXPORT ~sliding_semaphore();
 
-        PIKA_EXPORT void set_max_difference(
-            std::unique_lock<mutex_type>& l, std::int64_t max_difference,
-            std::int64_t lower_limit);
+        PIKA_EXPORT void set_max_difference(std::unique_lock<mutex_type>& l,
+            std::int64_t max_difference, std::int64_t lower_limit);
 
         PIKA_EXPORT void wait(
             std::unique_lock<mutex_type>& l, std::int64_t upper_limit);
@@ -45,8 +44,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         PIKA_EXPORT void signal(
             std::unique_lock<mutex_type> l, std::int64_t lower_limit);
 
-        PIKA_EXPORT std::int64_t signal_all(
-            std::unique_lock<mutex_type> l);
+        PIKA_EXPORT std::int64_t signal_all(std::unique_lock<mutex_type> l);
 
     private:
         std::int64_t max_difference_;

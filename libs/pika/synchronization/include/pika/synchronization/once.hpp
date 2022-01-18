@@ -60,7 +60,8 @@ namespace pika { namespace lcos { namespace local {
                     // wrapped function was throwing an exception before
                     flag.event_.reset();
 
-                    PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...);
+                    PIKA_INVOKE(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...);
 
                     // set status to done, release waiting threads
                     flag.status_.store(function_complete_flag_value);

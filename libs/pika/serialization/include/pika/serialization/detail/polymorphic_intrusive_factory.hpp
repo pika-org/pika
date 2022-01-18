@@ -26,16 +26,15 @@ namespace pika { namespace serialization { namespace detail {
 
     private:
         using ctor_type = void* (*) ();
-        using ctor_map_type =
-            std::unordered_map<std::string, ctor_type, pika::util::jenkins_hash>;
+        using ctor_map_type = std::unordered_map<std::string, ctor_type,
+            pika::util::jenkins_hash>;
 
     public:
         polymorphic_intrusive_factory() {}
 
         PIKA_EXPORT static polymorphic_intrusive_factory& instance();
 
-        PIKA_EXPORT void register_class(
-            std::string const& name, ctor_type fun);
+        PIKA_EXPORT void register_class(std::string const& name, ctor_type fun);
 
         PIKA_EXPORT void* create(std::string const& name) const;
 
@@ -76,93 +75,93 @@ namespace pika { namespace serialization { namespace detail {
 
 }}}    // namespace pika::serialization::detail
 
-#define PIKA_SERIALIZATION_ADD_INTRUSIVE_MEMBERS_WITH_NAME(Class, Name)         \
+#define PIKA_SERIALIZATION_ADD_INTRUSIVE_MEMBERS_WITH_NAME(Class, Name)        \
     template <typename, typename>                                              \
-    friend struct ::pika::serialization::detail::register_class_name;           \
+    friend struct ::pika::serialization::detail::register_class_name;          \
                                                                                \
-    static std::string pika_serialization_get_name_impl()                       \
+    static std::string pika_serialization_get_name_impl()                      \
     {                                                                          \
-        pika::serialization::detail::register_class_name<Class>::instance       \
+        pika::serialization::detail::register_class_name<Class>::instance      \
             .instantiate();                                                    \
         return Name;                                                           \
     }                                                                          \
-    virtual std::string pika_serialization_get_name() const                     \
+    virtual std::string pika_serialization_get_name() const                    \
     {                                                                          \
-        return Class::pika_serialization_get_name_impl();                       \
+        return Class::pika_serialization_get_name_impl();                      \
     }                                                                          \
     /**/
 
-#define PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME(Class, Name)                   \
-    PIKA_SERIALIZATION_ADD_INTRUSIVE_MEMBERS_WITH_NAME(Class, Name);            \
-    virtual void load(pika::serialization::input_archive& ar, unsigned n)       \
+#define PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME(Class, Name)                  \
+    PIKA_SERIALIZATION_ADD_INTRUSIVE_MEMBERS_WITH_NAME(Class, Name);           \
+    virtual void load(pika::serialization::input_archive& ar, unsigned n)      \
     {                                                                          \
-        serialize<pika::serialization::input_archive>(ar, n);                   \
+        serialize<pika::serialization::input_archive>(ar, n);                  \
     }                                                                          \
-    virtual void save(pika::serialization::output_archive& ar, unsigned n)      \
+    virtual void save(pika::serialization::output_archive& ar, unsigned n)     \
         const                                                                  \
     {                                                                          \
         const_cast<Class*>(this)                                               \
-            ->serialize<pika::serialization::output_archive>(ar, n);            \
+            ->serialize<pika::serialization::output_archive>(ar, n);           \
     }                                                                          \
-    PIKA_SERIALIZATION_SPLIT_MEMBER()                                           \
+    PIKA_SERIALIZATION_SPLIT_MEMBER()                                          \
     /**/
 
-#define PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME_SPLITTED(Class, Name)          \
-    PIKA_SERIALIZATION_ADD_INTRUSIVE_MEMBERS_WITH_NAME(Class, Name);            \
-    virtual void load(pika::serialization::input_archive& ar, unsigned n)       \
+#define PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME_SPLITTED(Class, Name)         \
+    PIKA_SERIALIZATION_ADD_INTRUSIVE_MEMBERS_WITH_NAME(Class, Name);           \
+    virtual void load(pika::serialization::input_archive& ar, unsigned n)      \
     {                                                                          \
-        load<pika::serialization::input_archive>(ar, n);                        \
+        load<pika::serialization::input_archive>(ar, n);                       \
     }                                                                          \
-    virtual void save(pika::serialization::output_archive& ar, unsigned n)      \
+    virtual void save(pika::serialization::output_archive& ar, unsigned n)     \
         const                                                                  \
     {                                                                          \
-        save<pika::serialization::output_archive>(ar, n);                       \
+        save<pika::serialization::output_archive>(ar, n);                      \
     }                                                                          \
     /**/
 
-#define PIKA_SERIALIZATION_POLYMORPHIC_ABSTRACT(Class)                          \
-    virtual std::string pika_serialization_get_name() const = 0;                \
-    virtual void load(pika::serialization::input_archive& ar, unsigned n)       \
+#define PIKA_SERIALIZATION_POLYMORPHIC_ABSTRACT(Class)                         \
+    virtual std::string pika_serialization_get_name() const = 0;               \
+    virtual void load(pika::serialization::input_archive& ar, unsigned n)      \
     {                                                                          \
-        serialize<pika::serialization::input_archive>(ar, n);                   \
+        serialize<pika::serialization::input_archive>(ar, n);                  \
     }                                                                          \
-    virtual void save(pika::serialization::output_archive& ar, unsigned n)      \
+    virtual void save(pika::serialization::output_archive& ar, unsigned n)     \
         const                                                                  \
     {                                                                          \
         const_cast<Class*>(this)                                               \
-            ->serialize<pika::serialization::output_archive>(ar, n);            \
+            ->serialize<pika::serialization::output_archive>(ar, n);           \
     }                                                                          \
-    PIKA_SERIALIZATION_SPLIT_MEMBER()                                           \
+    PIKA_SERIALIZATION_SPLIT_MEMBER()                                          \
     /**/
 
-#define PIKA_SERIALIZATION_POLYMORPHIC_ABSTRACT_SPLITTED(Class)                 \
-    virtual std::string pika_serialization_get_name() const = 0;                \
-    virtual void load(pika::serialization::input_archive& ar, unsigned n)       \
+#define PIKA_SERIALIZATION_POLYMORPHIC_ABSTRACT_SPLITTED(Class)                \
+    virtual std::string pika_serialization_get_name() const = 0;               \
+    virtual void load(pika::serialization::input_archive& ar, unsigned n)      \
     {                                                                          \
-        load<pika::serialization::input_archive>(ar, n);                        \
+        load<pika::serialization::input_archive>(ar, n);                       \
     }                                                                          \
-    virtual void save(pika::serialization::output_archive& ar, unsigned n)      \
+    virtual void save(pika::serialization::output_archive& ar, unsigned n)     \
         const                                                                  \
     {                                                                          \
-        save<pika::serialization::output_archive>(ar, n);                       \
+        save<pika::serialization::output_archive>(ar, n);                      \
     }                                                                          \
     /**/
 
-#define PIKA_SERIALIZATION_POLYMORPHIC(Class)                                   \
-    PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME(Class, PIKA_PP_STRINGIZE(Class))    \
+#define PIKA_SERIALIZATION_POLYMORPHIC(Class)                                  \
+    PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME(Class, PIKA_PP_STRINGIZE(Class))  \
     /**/
 
-#define PIKA_SERIALIZATION_POLYMORPHIC_SPLITTED(Class)                          \
-    PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME_SPLITTED(                          \
-        Class, PIKA_PP_STRINGIZE(Class))                                        \
+#define PIKA_SERIALIZATION_POLYMORPHIC_SPLITTED(Class)                         \
+    PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME_SPLITTED(                         \
+        Class, PIKA_PP_STRINGIZE(Class))                                       \
     /**/
 
-#define PIKA_SERIALIZATION_POLYMORPHIC_TEMPLATE(Class)                          \
-    PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME(                                   \
-        Class, pika::util::debug::type_id<Class>::typeid_.type_id();)           \
+#define PIKA_SERIALIZATION_POLYMORPHIC_TEMPLATE(Class)                         \
+    PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME(                                  \
+        Class, pika::util::debug::type_id<Class>::typeid_.type_id();)          \
     /**/
 
-#define PIKA_SERIALIZATION_POLYMORPHIC_TEMPLATE_SPLITTED(Class)                 \
-    PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME_SPLITTED(                          \
-        Class, pika::util::debug::type_id<T>::typeid_.type_id();)               \
+#define PIKA_SERIALIZATION_POLYMORPHIC_TEMPLATE_SPLITTED(Class)                \
+    PIKA_SERIALIZATION_POLYMORPHIC_WITH_NAME_SPLITTED(                         \
+        Class, pika::util::debug::type_id<T>::typeid_.type_id();)              \
     /**/

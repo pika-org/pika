@@ -251,7 +251,7 @@ void test_bulk_async(Executor&& executor)
             pika::execution::experimental::with_annotation, executor, desc);
 
         pika::when_all(pika::parallel::execution::bulk_async_execute(
-                          exec, pika::util::bind(&bulk_test, _1, _2), 107, 42))
+                           exec, pika::util::bind(&bulk_test, _1, _2), 107, 42))
             .get();
 
         PIKA_TEST_EQ(annotation, desc);
@@ -260,7 +260,7 @@ void test_bulk_async(Executor&& executor)
 
         annotation.clear();
         pika::when_all(pika::parallel::execution::bulk_async_execute(
-                          exec, &bulk_test, 107, 42))
+                           exec, &bulk_test, 107, 42))
             .get();
 
         PIKA_TEST_EQ(annotation, desc);
@@ -274,7 +274,7 @@ void test_bulk_async(Executor&& executor)
 
         annotation.clear();
         pika::when_all(pika::parallel::execution::bulk_async_execute(
-                          exec, pika::util::bind(&bulk_test, _1, _2), 107, 42))
+                           exec, pika::util::bind(&bulk_test, _1, _2), 107, 42))
             .get();
 
         PIKA_TEST_EQ(annotation, desc);
@@ -283,7 +283,7 @@ void test_bulk_async(Executor&& executor)
 
         annotation.clear();
         pika::when_all(pika::parallel::execution::bulk_async_execute(
-                          exec, &bulk_test, 107, 42))
+                           exec, &bulk_test, 107, 42))
             .get();
 
         PIKA_TEST_EQ(annotation, desc);
@@ -374,7 +374,8 @@ void test_post_policy(ExPolicy&& policy)
     auto p = pika::execution::experimental::with_annotation(policy, desc);
 
     pika::lcos::local::latch l(2);
-    pika::parallel::execution::post(p.executor(), &test_post_f, 42, std::ref(l));
+    pika::parallel::execution::post(
+        p.executor(), &test_post_f, 42, std::ref(l));
     l.arrive_and_wait();
 
     PIKA_TEST_EQ(annotation, desc);

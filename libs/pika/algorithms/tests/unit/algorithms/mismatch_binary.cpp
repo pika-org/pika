@@ -41,7 +41,8 @@ void test_mismatch_binary1(IteratorTag)
     iterator end1 = iterator(std::end(c1));
 
     {
-        auto result = pika::mismatch(begin1, end1, std::begin(c2), std::end(c2));
+        auto result =
+            pika::mismatch(begin1, end1, std::begin(c2), std::end(c2));
 
         // verify values
         PIKA_TEST_EQ(
@@ -54,7 +55,8 @@ void test_mismatch_binary1(IteratorTag)
         std::size_t changed_idx = dis(gen);    //-V104
         ++c1[changed_idx];
 
-        auto result = pika::mismatch(begin1, end1, std::begin(c2), std::end(c2));
+        auto result =
+            pika::mismatch(begin1, end1, std::begin(c2), std::end(c2));
 
         // verify values
         PIKA_TEST_EQ(

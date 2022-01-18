@@ -84,8 +84,7 @@ if(PIKA_WITH_DATAPAR_VC AND NOT TARGET Vc::vc)
   pika_add_config_define(PIKA_HAVE_DATAPAR)
   pika_add_config_define(PIKA_HAVE_DATAPAR_VC)
 
-  pika_info(
-    "Found Vc (vectorization):" ${Vc_INCLUDE_DIR} "- version:"
-    ${Vc_VERSION_STRING}
+  pika_info("Found Vc (vectorization):" ${Vc_INCLUDE_DIR} "- version:"
+            ${Vc_VERSION_STRING}
   )
 endif()

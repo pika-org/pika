@@ -50,7 +50,8 @@ int main()
 
     PIKA_TEST(pika::util::bind(f, placeholders::_7)(1, 2, 3, 4, 5, 6, 7) == 7);
 
-    PIKA_TEST(pika::util::bind(f, placeholders::_8)(1, 2, 3, 4, 5, 6, 7, 8) == 8);
+    PIKA_TEST(
+        pika::util::bind(f, placeholders::_8)(1, 2, 3, 4, 5, 6, 7, 8) == 8);
 
     PIKA_TEST(
         pika::util::bind(f, placeholders::_9)(1, 2, 3, 4, 5, 6, 7, 8, 9) == 9);

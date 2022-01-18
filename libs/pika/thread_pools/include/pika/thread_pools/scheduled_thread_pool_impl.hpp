@@ -507,7 +507,7 @@ namespace pika { namespace threads { namespace detail {
                     counter_data.tfunc_times_, counter_data.exec_times_,
                     counter_data.idle_loop_counts_,
                     counter_data.busy_loop_counts_,
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
                     counter_data.tasks_active_,
                     counter_data.background_duration_,
@@ -528,7 +528,7 @@ namespace pika { namespace threads { namespace detail {
                         policies::do_background_work) &&
                     network_background_callback_)
                 {
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
                     callbacks.background_ = util::deferred_call(    //-V107
                         network_background_callback_, global_thread_num,
@@ -1204,7 +1204,7 @@ namespace pika { namespace threads { namespace detail {
 #endif    // PIKA_HAVE_THREAD_IDLE_RATES
 #endif    // PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
     ////////////////////////////////////////////////////////////
     template <typename Scheduler>

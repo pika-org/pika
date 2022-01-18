@@ -77,8 +77,8 @@ void test_reduce1_async(ExPolicy p, IteratorTag)
     std::size_t val(42);
     auto op = [val](std::size_t v1, std::size_t v2) { return v1 + v2 + val; };
 
-    pika::future<std::size_t> f =
-        pika::reduce(p, iterator(std::begin(c)), iterator(std::end(c)), val, op);
+    pika::future<std::size_t> f = pika::reduce(
+        p, iterator(std::begin(c)), iterator(std::end(c)), val, op);
     f.wait();
 
     // verify values

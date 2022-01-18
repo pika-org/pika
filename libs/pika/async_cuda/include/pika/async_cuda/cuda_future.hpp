@@ -223,8 +223,7 @@ namespace pika { namespace cuda { namespace experimental {
 
         // -------------------------------------------------------------
         // non allocator version of : get future with a callback set
-        PIKA_EXPORT pika::future<void> get_future_with_callback(
-            cudaStream_t);
+        PIKA_EXPORT pika::future<void> get_future_with_callback(cudaStream_t);
 
         // -------------------------------------------------------------
         // non allocator version of : get future with an event set

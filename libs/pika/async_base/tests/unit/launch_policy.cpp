@@ -52,7 +52,8 @@ int main()
 {
     static_assert(sizeof(pika::launch::async_policy) <= sizeof(std::int64_t));
     static_assert(sizeof(pika::launch::sync_policy) <= sizeof(std::int64_t));
-    static_assert(sizeof(pika::launch::deferred_policy) <= sizeof(std::int64_t));
+    static_assert(
+        sizeof(pika::launch::deferred_policy) <= sizeof(std::int64_t));
     static_assert(sizeof(pika::launch::fork_policy) <= sizeof(std::int64_t));
     static_assert(sizeof(pika::launch::apply_policy) <= sizeof(std::int64_t));
     static_assert(sizeof(pika::launch) <= sizeof(std::int64_t));

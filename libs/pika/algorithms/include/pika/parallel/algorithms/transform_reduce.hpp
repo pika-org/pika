@@ -391,12 +391,14 @@ namespace pika { namespace parallel { inline namespace v1 {
                 return util::partitioner<ExPolicy, T>::call(
                     PIKA_FORWARD(ExPolicy, policy), first,
                     detail::distance(first, last), PIKA_MOVE(f1),
-                    pika::unwrapping([init = PIKA_FORWARD(T_, init),
-                                        r = PIKA_FORWARD(Reduce, r)](
-                                        std::vector<T>&& results) mutable -> T {
-                        return util::accumulate_n(pika::util::begin(results),
-                            pika::util::size(results), init, r);
-                    }));
+                    pika::unwrapping(
+                        [init = PIKA_FORWARD(T_, init),
+                            r = PIKA_FORWARD(Reduce, r)](
+                            std::vector<T>&& results) mutable -> T {
+                            return util::accumulate_n(
+                                pika::util::begin(results),
+                                pika::util::size(results), init, r);
+                        }));
             }
         };
     }    // namespace detail
@@ -433,9 +435,9 @@ namespace pika { namespace parallel { inline namespace v1 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
-        return detail::transform_reduce<T>().call(PIKA_FORWARD(ExPolicy, policy),
-            first, last, PIKA_FORWARD(T, init), PIKA_FORWARD(Reduce, red_op),
-            PIKA_FORWARD(Convert, conv_op));
+        return detail::transform_reduce<T>().call(
+            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(T, init),
+            PIKA_FORWARD(Reduce, red_op), PIKA_FORWARD(Convert, conv_op));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -618,7 +620,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 return util::partitioner<ExPolicy, T>::call(
                     PIKA_FORWARD(ExPolicy, policy),
                     make_zip_iterator(first1, first2), count, PIKA_MOVE(f1),
-                    [init = PIKA_FORWARD(T_, init), op1 = PIKA_FORWARD(Op1, op1)](
+                    [init = PIKA_FORWARD(T_, init),
+                        op1 = PIKA_FORWARD(Op1, op1)](
                         std::vector<pika::future<T>>&& results) mutable -> T {
                         T ret = PIKA_MOVE(init);
                         for (auto&& fut : results)
@@ -850,10 +853,10 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>().call(
-                PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-                PIKA_MOVE(init), pika::parallel::v1::detail::plus(),
-                pika::parallel::v1::detail::multiplies());
+            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+                .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
+                    PIKA_MOVE(init), pika::parallel::v1::detail::plus(),
+                    pika::parallel::v1::detail::multiplies());
         }
 
         // clang-format off
@@ -871,10 +874,10 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>().call(
-                pika::execution::seq, first1, last1, first2, PIKA_MOVE(init),
-                pika::parallel::v1::detail::plus(),
-                pika::parallel::v1::detail::multiplies());
+            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+                .call(pika::execution::seq, first1, last1, first2,
+                    PIKA_MOVE(init), pika::parallel::v1::detail::plus(),
+                    pika::parallel::v1::detail::multiplies());
         }
 
         // clang-format off
@@ -911,10 +914,10 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>().call(
-                PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-                PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
-                PIKA_FORWARD(Convert, conv_op));
+            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+                .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
+                    PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
+                    PIKA_FORWARD(Convert, conv_op));
         }
 
         // clang-format off
@@ -948,9 +951,10 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>().call(
-                pika::execution::seq, first1, last1, first2, PIKA_MOVE(init),
-                PIKA_FORWARD(Reduce, red_op), PIKA_FORWARD(Convert, conv_op));
+            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+                .call(pika::execution::seq, first1, last1, first2,
+                    PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
+                    PIKA_FORWARD(Convert, conv_op));
         }
     } transform_reduce{};
 }    // namespace pika

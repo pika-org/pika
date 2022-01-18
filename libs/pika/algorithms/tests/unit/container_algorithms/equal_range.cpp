@@ -180,9 +180,9 @@ void test_equal2(IteratorTag)
     std::iota(std::begin(c2), std::end(c2), first_value);
 
     {
-        bool result =
-            pika::ranges::equal(iterator(std::begin(c1)), iterator(std::end(c1)),
-                std::begin(c2), std::end(c2), std::equal_to<std::size_t>());
+        bool result = pika::ranges::equal(iterator(std::begin(c1)),
+            iterator(std::end(c1)), std::begin(c2), std::end(c2),
+            std::equal_to<std::size_t>());
 
         bool expected = std::equal(
             std::begin(c1), std::end(c1), std::begin(c2), std::end(c2));
@@ -194,9 +194,9 @@ void test_equal2(IteratorTag)
     {
         std::uniform_int_distribution<> dis(0, c1.size() - 1);
         ++c1[dis(gen)];    //-V104
-        bool result =
-            pika::ranges::equal(iterator(std::begin(c1)), iterator(std::end(c1)),
-                std::begin(c2), std::end(c2), std::equal_to<std::size_t>());
+        bool result = pika::ranges::equal(iterator(std::begin(c1)),
+            iterator(std::end(c1)), std::begin(c2), std::end(c2),
+            std::equal_to<std::size_t>());
 
         bool expected = std::equal(
             std::begin(c1), std::end(c1), std::begin(c2), std::end(c2));

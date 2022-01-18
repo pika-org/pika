@@ -119,8 +119,8 @@ void run_benchmark(std::size_t vector_size, int test_count,
         run_unique_copy_benchmark_pika(test_count, par, first, last, dest);
 
     std::cout << "--- run_unique_copy_benchmark_par_unseq ---" << std::endl;
-    double time_par_unseq =
-        run_unique_copy_benchmark_pika(test_count, par_unseq, first, last, dest);
+    double time_par_unseq = run_unique_copy_benchmark_pika(
+        test_count, par_unseq, first, last, dest);
 
     std::cout << "\n-------------- Benchmark Result --------------"
               << std::endl;

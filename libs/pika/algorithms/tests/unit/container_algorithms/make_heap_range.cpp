@@ -108,7 +108,7 @@ void test_make_heap2(IteratorTag)
         iterator(pika::util::end(c)), std::greater<std::size_t>());
 
     PIKA_TEST_EQ(std::is_heap(pika::util::begin(c), pika::util::end(c),
-                    std::greater<std::size_t>()),
+                     std::greater<std::size_t>()),
         true);
 }
 
@@ -128,7 +128,7 @@ void test_make_heap2(ExPolicy&& policy, IteratorTag)
         iterator(pika::util::end(c)), std::greater<std::size_t>());
 
     PIKA_TEST_EQ(std::is_heap(pika::util::begin(c), pika::util::end(c),
-                    std::greater<std::size_t>()),
+                     std::greater<std::size_t>()),
         true);
 }
 
@@ -147,7 +147,7 @@ void test_make_heap_async2(ExPolicy&& p, IteratorTag)
 
     test.wait();
     PIKA_TEST_EQ(std::is_heap(pika::util::begin(c), pika::util::end(c),
-                    std::greater<std::size_t>()),
+                     std::greater<std::size_t>()),
         true);
 }
 
@@ -185,7 +185,7 @@ void test_make_heap_exception(IteratorTag)
     try
     {
         pika::ranges::make_heap(decorated_iterator(pika::util::begin(c),
-                                   []() { throw std::runtime_error("test"); }),
+                                    []() { throw std::runtime_error("test"); }),
             decorated_iterator(pika::util::end(c)));
         PIKA_TEST(false);
     }
@@ -309,7 +309,7 @@ void test_make_heap_bad_alloc(IteratorTag)
     try
     {
         pika::ranges::make_heap(decorated_iterator(pika::util::begin(c),
-                                   []() { throw std::bad_alloc(); }),
+                                    []() { throw std::bad_alloc(); }),
             decorated_iterator(pika::util::end(c)));
         PIKA_TEST(false);
     }

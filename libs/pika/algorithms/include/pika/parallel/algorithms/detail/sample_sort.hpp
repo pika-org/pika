@@ -289,12 +289,12 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             pika::util::make_counting_iterator(nthreads));
 
         pika::when_all(execution::bulk_async_execute(
-                          exec,
-                          [&, this](std::uint32_t i) {
-                              spin_sort(vmem_thread[i].begin(),
-                                  vmem_thread[i].end(), comp, vbuf_thread[i]);
-                          },
-                          shape))
+                           exec,
+                           [&, this](std::uint32_t i) {
+                               spin_sort(vmem_thread[i].begin(),
+                                   vmem_thread[i].end(), comp, vbuf_thread[i]);
+                           },
+                           shape))
             .get();
 
         // Obtain the vector of milestones

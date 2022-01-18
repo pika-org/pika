@@ -51,7 +51,7 @@ namespace pika { namespace util {
     /* The priority of description is altname, id::name, id::address */
     void thread_description::init_from_alternative_name(char const* altname)
     {
-#if defined(PIKA_HAVE_THREAD_DESCRIPTION) &&                                    \
+#if defined(PIKA_HAVE_THREAD_DESCRIPTION) &&                                   \
     !defined(PIKA_HAVE_THREAD_DESCRIPTION_FULL)
         if (altname != nullptr)
         {

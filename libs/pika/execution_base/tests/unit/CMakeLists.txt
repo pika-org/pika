@@ -24,11 +24,7 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Local/ExecutionBase"
   )
 
-  pika_add_unit_test(
-    "modules.execution_base" ${test} ${${test}_PARAMETERS}
-  )
-  target_compile_definitions(
-    ${test}_test PRIVATE -DPIKA_MODULE_STATIC_LINKING
-  )
+  pika_add_unit_test("modules.execution_base" ${test} ${${test}_PARAMETERS})
+  target_compile_definitions(${test}_test PRIVATE -DPIKA_MODULE_STATIC_LINKING)
 
 endforeach()

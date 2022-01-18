@@ -106,8 +106,7 @@ namespace pika {
         private:
             friend class serialization::access;
 
-            PIKA_EXPORT void load(
-                serialization::input_archive& ar, unsigned);
+            PIKA_EXPORT void load(serialization::input_archive& ar, unsigned);
             PIKA_EXPORT void save(
                 serialization::output_archive& ar, unsigned) const;
 
@@ -807,7 +806,8 @@ namespace pika {
             return policy.priority();
         }
 
-        friend launch tag_invoke(pika::execution::experimental::with_stacksize_t,
+        friend launch tag_invoke(
+            pika::execution::experimental::with_stacksize_t,
             launch const& policy, threads::thread_stacksize stacksize) noexcept
         {
             auto policy_with_stacksize = policy;

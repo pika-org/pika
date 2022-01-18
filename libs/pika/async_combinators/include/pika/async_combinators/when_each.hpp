@@ -167,7 +167,8 @@ namespace pika {
 
             template <std::size_t I>
             struct is_end
-              : std::integral_constant<bool, pika::tuple_size<Tuple>::value == I>
+              : std::integral_constant<bool,
+                    pika::tuple_size<Tuple>::value == I>
             {
             };
 
@@ -242,7 +243,8 @@ namespace pika {
                             // re-evaluate it and continue to the next argument
                             // (if any).
                             next_future_data->set_on_completed(
-                                [this_ = PIKA_MOVE(this_), next = PIKA_MOVE(next),
+                                [this_ = PIKA_MOVE(this_),
+                                    next = PIKA_MOVE(next),
                                     end = PIKA_MOVE(end)]() mutable -> void {
                                     this_->template await_range<I>(
                                         PIKA_MOVE(next), PIKA_MOVE(end));
@@ -412,7 +414,8 @@ namespace pika {
 
         return pika::when_each(PIKA_FORWARD(F, f), values)
             .then(pika::launch::sync,
-                [begin = PIKA_MOVE(begin)](pika::future<void>&& fut) -> Iterator {
+                [begin = PIKA_MOVE(begin)](
+                    pika::future<void>&& fut) -> Iterator {
                     fut.get();    // rethrow exceptions, if any
                     return begin;
                 });
@@ -438,8 +441,8 @@ namespace pika {
         traits::acquire_future_disp func;
         argument_type values(func(PIKA_FORWARD(Ts, ts))...);
 
-        pika::intrusive_ptr<frame_type> p(
-            new frame_type(PIKA_MOVE(values), PIKA_FORWARD(F, f), sizeof...(Ts)));
+        pika::intrusive_ptr<frame_type> p(new frame_type(
+            PIKA_MOVE(values), PIKA_FORWARD(F, f), sizeof...(Ts)));
 
         p->template do_await<0>();
 
@@ -451,8 +454,8 @@ namespace pika {
 namespace pika::lcos {
 
     template <typename F, typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::when_each is deprecated. Use pika::when_each instead.")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::lcos::when_each is deprecated. Use pika::when_each instead.")
     auto when_each(F&& f, Ts&&... ts)
     {
         return pika::when_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);

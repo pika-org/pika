@@ -107,7 +107,7 @@ void test_count_exception(IteratorTag)
     try
     {
         pika::count(decorated_iterator(std::begin(c),
-                       []() { throw std::runtime_error("test"); }),
+                        []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), int(10));
         PIKA_TEST(false);
     }

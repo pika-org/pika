@@ -77,7 +77,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     };
 
     template <>
-    struct handle_remote_exceptions<pika::execution::parallel_unsequenced_policy>
+    struct handle_remote_exceptions<
+        pika::execution::parallel_unsequenced_policy>
     {
         PIKA_NORETURN static void call(
             std::exception_ptr const&, std::list<std::exception_ptr>&)

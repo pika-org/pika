@@ -69,8 +69,8 @@ void test_limit()
     std::vector<pika::future<void>> futures;
     // scope block for executor lifetime (block on destruction)
     {
-        pika::execution::experimental::limiting_executor<decltype(exec1)> lexec1(
-            exec1, max1 / 2, max1, block_on_exit);
+        pika::execution::experimental::limiting_executor<decltype(exec1)>
+            lexec1(exec1, max1 / 2, max1, block_on_exit);
 
         // run this loop for N seconds and launch as many tasks as we can
         // then check that there were never more than N on a given executor

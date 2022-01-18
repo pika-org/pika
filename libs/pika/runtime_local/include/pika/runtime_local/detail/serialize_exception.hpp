@@ -15,9 +15,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace runtime_local { namespace detail {
-    PIKA_EXPORT void save_custom_exception(
-        pika::serialization::output_archive&, std::exception_ptr const&,
-        unsigned int);
+    PIKA_EXPORT void save_custom_exception(pika::serialization::output_archive&,
+        std::exception_ptr const&, unsigned int);
     PIKA_EXPORT void load_custom_exception(
         pika::serialization::input_archive&, std::exception_ptr&, unsigned int);
 }}}    // namespace pika::runtime_local::detail

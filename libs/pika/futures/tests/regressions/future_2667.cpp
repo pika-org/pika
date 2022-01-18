@@ -27,9 +27,10 @@ void do_more_work()
 
 int pika_main()
 {
-    pika::future<pika::future<void>> fut = pika::async([]() -> pika::future<void> {
-        return pika::async([]() -> void { do_more_work(); });
-    });
+    pika::future<pika::future<void>> fut =
+        pika::async([]() -> pika::future<void> {
+            return pika::async([]() -> void { do_more_work(); });
+        });
 
     pika::chrono::high_resolution_timer t;
 

@@ -273,8 +273,8 @@ namespace pika { namespace ranges {
             FwdIter first, Sent last, Pred&& pred, Proj&& proj = Proj())
         {
             return pika::parallel::v1::detail::is_partitioned<FwdIter, Sent>()
-                .call(pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
-                    PIKA_FORWARD(Proj, proj));
+                .call(pika::execution::seq, first, last,
+                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off

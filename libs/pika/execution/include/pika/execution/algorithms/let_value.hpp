@@ -180,8 +180,9 @@ namespace pika { namespace execution { namespace experimental {
                         }
 
                         template <typename OperationState_,
-                            typename = std::enable_if_t<!std::is_same_v<
-                                std::decay_t<OperationState_>, pika::monostate>>>
+                            typename = std::enable_if_t<
+                                !std::is_same_v<std::decay_t<OperationState_>,
+                                    pika::monostate>>>
                         void operator()(OperationState_& op_state) const
                         {
                             pika::execution::experimental::start(op_state);
@@ -251,8 +252,9 @@ namespace pika { namespace execution { namespace experimental {
                                 op_state.predecessor_ts
                                     .template emplace<pika::tuple<Ts...>>(
                                         PIKA_FORWARD(Ts, ts)...);
-                                pika::visit(set_value_visitor{PIKA_MOVE(receiver),
-                                               PIKA_MOVE(f), op_state},
+                                pika::visit(
+                                    set_value_visitor{PIKA_MOVE(receiver),
+                                        PIKA_MOVE(f), op_state},
                                     op_state.predecessor_ts);
                             },
                             [&](std::exception_ptr ep) {
@@ -305,7 +307,8 @@ namespace pika { namespace execution { namespace experimental {
             friend auto tag_invoke(
                 connect_t, let_value_sender&& s, Receiver&& receiver)
             {
-                return operation_state<Receiver>(PIKA_MOVE(s.predecessor_sender),
+                return operation_state<Receiver>(
+                    PIKA_MOVE(s.predecessor_sender),
                     PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f));
             }
         };
@@ -333,7 +336,8 @@ namespace pika { namespace execution { namespace experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             let_value_t, F&& f)
         {
-            return detail::partial_algorithm<let_value_t, F>{PIKA_FORWARD(F, f)};
+            return detail::partial_algorithm<let_value_t, F>{
+                PIKA_FORWARD(F, f)};
         }
     } let_value{};
 }}}    // namespace pika::execution::experimental

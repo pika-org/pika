@@ -214,7 +214,8 @@ namespace pika { namespace threads { namespace detail {
             default:
             {
                 PIKA_ASSERT_MSG(false,
-                    pika::util::format("set_thread_state: previous state was {}",
+                    pika::util::format(
+                        "set_thread_state: previous state was {}",
                         previous_state_val));    // should not happen
                 break;
             }

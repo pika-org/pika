@@ -450,7 +450,8 @@ namespace pika { namespace util {
                     std::string value = e.first;
                     entry_changed_func f = e.second;
 
-                    pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                    pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(
+                        l);
                     f(fullkey, value);
                 }
             }
@@ -499,7 +500,8 @@ namespace pika { namespace util {
                     std::string value = it->second.first;
                     entry_changed_func f = it->second.second;
 
-                    pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                    pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(
+                        l);
                     f(fullkey, value);
                 }
             }
@@ -516,7 +518,8 @@ namespace pika { namespace util {
                     std::string value = p.first->second.first;
                     entry_changed_func f = p.first->second.second;
 
-                    pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                    pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(
+                        l);
                     f(key, value);
                 }
             }

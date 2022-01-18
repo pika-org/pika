@@ -217,8 +217,8 @@ namespace pika { namespace parallel { namespace util {
             std::size_t chunk_size_;
             std::size_t range_size_;
 
-            static constexpr std::size_t sizeof_first_value_type =
-                sizeof(typename pika::tuple_element<0, ranges_type>::type::type);
+            static constexpr std::size_t sizeof_first_value_type = sizeof(
+                typename pika::tuple_element<0, ranges_type>::type::type);
 
         public:
             prefetcher_context(Itr begin, Itr end, ranges_type const& rngs,

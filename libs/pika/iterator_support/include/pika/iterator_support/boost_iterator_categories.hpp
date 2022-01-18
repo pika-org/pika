@@ -103,11 +103,12 @@ namespace pika { namespace iterators {
       : pika::util::lazy_conditional<
             std::is_convertible<Traversal, random_access_traversal_tag>::value,
             pika::util::identity<random_access_traversal_tag>,
-            pika::util::lazy_conditional<std::is_convertible<Traversal,
-                                            bidirectional_traversal_tag>::value,
+            pika::util::lazy_conditional<
+                std::is_convertible<Traversal,
+                    bidirectional_traversal_tag>::value,
                 pika::util::identity<bidirectional_traversal_tag>,
                 pika::util::lazy_conditional<std::is_convertible<Traversal,
-                                                forward_traversal_tag>::value,
+                                                 forward_traversal_tag>::value,
                     pika::util::identity<forward_traversal_tag>,
                     pika::util::lazy_conditional<
                         std::is_convertible<Traversal,
@@ -142,11 +143,14 @@ namespace pika { namespace iterators {
 
 namespace pika {
 
-    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::bidirectional_traversal_tag;
+    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::
+        bidirectional_traversal_tag;
     using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::forward_traversal_tag;
-    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::incrementable_traversal_tag;
+    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::
+        incrementable_traversal_tag;
     using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::no_traversal_tag;
-    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::random_access_traversal_tag;
+    using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::
+        random_access_traversal_tag;
     using PIKA_ITERATOR_TRAVERSAL_TAG_NS::iterators::single_pass_traversal_tag;
 
     namespace traits {

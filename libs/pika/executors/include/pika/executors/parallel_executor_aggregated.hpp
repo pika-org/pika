@@ -267,8 +267,8 @@ namespace pika { namespace parallel { namespace execution {
 
         /// Create a new parallel executor
         constexpr explicit parallel_policy_executor_aggregated(
-            pika::launch l = pika::launch::async_policy{}, std::size_t spread = 4,
-            std::size_t tasks = std::size_t(-1))
+            pika::launch l = pika::launch::async_policy{},
+            std::size_t spread = 4, std::size_t tasks = std::size_t(-1))
           : policy_(l)
           , num_spread_(spread)
           , num_tasks_(tasks)
@@ -313,8 +313,9 @@ namespace pika { namespace parallel { namespace execution {
         template <typename F, typename... Ts>
         pika::future<void> async_execute(F&& f, Ts&&... ts) const
         {
-            return pika::detail::async_launch_policy_dispatch<pika::launch>::call(
-                policy_, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            return pika::detail::async_launch_policy_dispatch<
+                pika::launch>::call(policy_, PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Ts, ts)...);
         }
 
         // NonBlockingOneWayExecutor (adapted) interface

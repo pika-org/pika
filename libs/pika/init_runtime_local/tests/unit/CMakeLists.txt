@@ -6,7 +6,8 @@
 
 set(tests
     config_entry_local
-    # shutdown_suspended_thread_local # Disabled due to unavailable timed suspension
+    # shutdown_suspended_thread_local # Disabled due to unavailable timed
+    # suspension
 )
 
 foreach(test ${tests})
@@ -25,7 +26,5 @@ foreach(test ${tests})
     FOLDER ${folder_name}
   )
 
-  pika_add_unit_test(
-    "modules.init_runtime_local" ${test} ${${test}_PARAMETERS}
-  )
+  pika_add_unit_test("modules.init_runtime_local" ${test} ${${test}_PARAMETERS})
 endforeach()

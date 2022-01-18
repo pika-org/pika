@@ -8,9 +8,7 @@
 set(PIKA_GITCOMMIT_LOADED TRUE)
 
 # if no git commit is set, try to get it from the source directory
-if(NOT PIKA_WITH_GIT_COMMIT OR "${PIKA_WITH_GIT_COMMIT}" STREQUAL
-                                   "None"
-)
+if(NOT PIKA_WITH_GIT_COMMIT OR "${PIKA_WITH_GIT_COMMIT}" STREQUAL "None")
 
   find_package(Git)
 
@@ -26,19 +24,15 @@ if(NOT PIKA_WITH_GIT_COMMIT OR "${PIKA_WITH_GIT_COMMIT}" STREQUAL
 
 endif()
 
-if(NOT PIKA_WITH_GIT_COMMIT OR "${PIKA_WITH_GIT_COMMIT}" STREQUAL
-                                   "None"
-)
+if(NOT PIKA_WITH_GIT_COMMIT OR "${PIKA_WITH_GIT_COMMIT}" STREQUAL "None")
   pika_warn("GIT commit not found (set to 'unknown').")
   set(PIKA_WITH_GIT_COMMIT "unknown")
   set(PIKA_WITH_GIT_COMMIT_SHORT "unknown")
 else()
   pika_info("GIT commit is ${PIKA_WITH_GIT_COMMIT}.")
-  if(NOT PIKA_WITH_GIT_COMMIT_SHORT OR "${PIKA_WITH_GIT_COMMIT_SHORT}"
-                                           STREQUAL "None"
+  if(NOT PIKA_WITH_GIT_COMMIT_SHORT OR "${PIKA_WITH_GIT_COMMIT_SHORT}" STREQUAL
+                                       "None"
   )
-    string(SUBSTRING "${PIKA_WITH_GIT_COMMIT}" 0 7
-                     PIKA_WITH_GIT_COMMIT_SHORT
-    )
+    string(SUBSTRING "${PIKA_WITH_GIT_COMMIT}" 0 7 PIKA_WITH_GIT_COMMIT_SHORT)
   endif()
 endif()

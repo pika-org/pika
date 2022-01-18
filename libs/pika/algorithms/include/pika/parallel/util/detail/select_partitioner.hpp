@@ -24,8 +24,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 
     template <template <typename...> class Partitioner,
         template <typename...> class TaskPartitioner>
-    struct select_partitioner<pika::execution::parallel_task_policy, Partitioner,
-        TaskPartitioner>
+    struct select_partitioner<pika::execution::parallel_task_policy,
+        Partitioner, TaskPartitioner>
     {
         template <typename... Args>
         using apply =
@@ -48,8 +48,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 #if defined(PIKA_HAVE_DATAPAR)
     template <template <typename...> class Partitioner,
         template <typename...> class TaskPartitioner>
-    struct select_partitioner<pika::execution::par_simd_task_policy, Partitioner,
-        TaskPartitioner>
+    struct select_partitioner<pika::execution::par_simd_task_policy,
+        Partitioner, TaskPartitioner>
     {
         template <typename... Args>
         using apply =

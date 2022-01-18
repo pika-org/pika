@@ -300,8 +300,10 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(
             pika::ranges::swap_ranges_t, Rng1&& rng1, Rng2&& rng2)
         {
-            using iterator_type1 = typename pika::traits::range_iterator_t<Rng1>;
-            using iterator_type2 = typename pika::traits::range_iterator_t<Rng2>;
+            using iterator_type1 =
+                typename pika::traits::range_iterator_t<Rng1>;
+            using iterator_type2 =
+                typename pika::traits::range_iterator_t<Rng2>;
 
             static_assert(pika::traits::is_input_iterator_v<iterator_type1>,
                 "Requires at least input iterator.");
@@ -328,8 +330,10 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(pika::ranges::swap_ranges_t, ExPolicy&& policy,
             Rng1&& rng1, Rng2&& rng2)
         {
-            using iterator_type1 = typename pika::traits::range_iterator_t<Rng1>;
-            using iterator_type2 = typename pika::traits::range_iterator_t<Rng2>;
+            using iterator_type1 =
+                typename pika::traits::range_iterator_t<Rng1>;
+            using iterator_type2 =
+                typename pika::traits::range_iterator_t<Rng2>;
 
             static_assert(pika::traits::is_forward_iterator_v<iterator_type1>,
                 "Requires at least forward iterator.");

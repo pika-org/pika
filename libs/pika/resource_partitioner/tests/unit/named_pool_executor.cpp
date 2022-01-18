@@ -116,8 +116,8 @@ int pika_main()
     return pika::local::finalize();
 }
 
-void init_resource_partitioner_handler(
-    pika::resource::partitioner& rp, pika::program_options::variables_map const&)
+void init_resource_partitioner_handler(pika::resource::partitioner& rp,
+    pika::program_options::variables_map const&)
 {
     // before adding pools - set the default pool name to "pool-0"
     rp.set_default_pool_name("pool-0");

@@ -36,8 +36,7 @@ namespace pika { namespace mpi { namespace experimental {
         PIKA_EXPORT void add_request_callback(
             request_callback_function_type&& f, MPI_Request req);
         PIKA_EXPORT void register_polling(pika::threads::thread_pool_base&);
-        PIKA_EXPORT void unregister_polling(
-            pika::threads::thread_pool_base&);
+        PIKA_EXPORT void unregister_polling(pika::threads::thread_pool_base&);
 
     }    // namespace detail
 

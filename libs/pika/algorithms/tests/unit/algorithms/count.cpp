@@ -23,8 +23,10 @@ void test_count()
     test_count(pika::execution::par, IteratorTag());
     test_count(pika::execution::par_unseq, IteratorTag());
 
-    test_count_async(pika::execution::seq(pika::execution::task), IteratorTag());
-    test_count_async(pika::execution::par(pika::execution::task), IteratorTag());
+    test_count_async(
+        pika::execution::seq(pika::execution::task), IteratorTag());
+    test_count_async(
+        pika::execution::par(pika::execution::task), IteratorTag());
 }
 
 void count_test()

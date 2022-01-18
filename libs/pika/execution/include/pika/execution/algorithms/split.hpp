@@ -124,11 +124,13 @@ namespace pika { namespace execution { namespace experimental {
                 };
                 using value_type =
                     typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<pika::tuple, pika::variant>;
+                        Sender>::template value_types<pika::tuple,
+                        pika::variant>;
                 using error_type =
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
                         error_types<pika::variant>, std::exception_ptr>>;
-                pika::variant<pika::monostate, done_type, error_type, value_type>
+                pika::variant<pika::monostate, done_type, error_type,
+                    value_type>
                     v;
 
                 using continuation_type =
@@ -171,7 +173,8 @@ namespace pika { namespace execution { namespace experimental {
                             std::declval<
                                 pika::variant<pika::monostate, value_type>>()
                                 .template emplace<value_type>(
-                                    pika::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
+                                    pika::make_tuple<>(
+                                        PIKA_FORWARD(Ts, ts)...)),
                             void())
                     {
                         r.state->v.template emplace<value_type>(
@@ -220,14 +223,14 @@ namespace pika { namespace execution { namespace experimental {
                     void operator()(error_type const& error)
                     {
                         pika::visit(error_visitor<Receiver>{PIKA_FORWARD(
-                                       Receiver, receiver)},
+                                        Receiver, receiver)},
                             error);
                     }
 
                     void operator()(value_type const& ts)
                     {
                         pika::visit(value_visitor<Receiver>{PIKA_FORWARD(
-                                       Receiver, receiver)},
+                                        Receiver, receiver)},
                             ts);
                     }
                 };

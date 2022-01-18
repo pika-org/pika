@@ -105,10 +105,8 @@ namespace pika { namespace util {
         PIKA_EXPORT extern sample_value_t* sample_value_function;
         PIKA_EXPORT extern send_t* send_function;
         PIKA_EXPORT extern recv_t* recv_function;
-        PIKA_EXPORT extern update_task_string_t*
-            update_task_string_function;
-        PIKA_EXPORT extern update_task_address_t*
-            update_task_address_function;
+        PIKA_EXPORT extern update_task_string_t* update_task_string_function;
+        PIKA_EXPORT extern update_task_address_t* update_task_address_function;
         PIKA_EXPORT extern start_t* start_function;
         PIKA_EXPORT extern stop_t* stop_function;
         PIKA_EXPORT extern yield_t* yield_function;

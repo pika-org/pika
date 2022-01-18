@@ -75,9 +75,7 @@ function(pika_add_test_and_deps_compile_test category subcategory name)
 endfunction(pika_add_test_and_deps_compile_test)
 
 function(pika_add_unit_compile_test subcategory name)
-  pika_add_test_and_deps_compile_test(
-    "unit" "${subcategory}" ${name} ${ARGN}
-  )
+  pika_add_test_and_deps_compile_test("unit" "${subcategory}" ${name} ${ARGN})
 endfunction(pika_add_unit_compile_test)
 
 function(pika_add_regression_compile_test subcategory name)
@@ -156,8 +154,8 @@ function(pika_add_header_tests category)
   set(test_name "all_headers")
   set(all_headers_test_file "${CMAKE_CURRENT_BINARY_DIR}/${test_name}.cpp")
   file(WRITE ${all_headers_test_file}
-       ${all_headers} "#ifndef PIKA_MAIN_DEFINED\n" "int main() { return 0; }\n"
-       "#endif\n"
+       ${all_headers} "#ifndef PIKA_MAIN_DEFINED\n"
+       "int main() { return 0; }\n" "#endif\n"
   )
 
   pika_add_headers_compile_test(

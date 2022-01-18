@@ -175,7 +175,7 @@ void test_detach()
         std::atomic<bool> all_set{false};
 
         pika::jthread t([&id, &is_interrupted, &interrupt_token, &all_set,
-                           &finally_interrupted](pika::stop_token stoken) {
+                            &finally_interrupted](pika::stop_token stoken) {
             // check some values of the started thread
             id = pika::this_thread::get_id();
             interrupt_token = stoken;

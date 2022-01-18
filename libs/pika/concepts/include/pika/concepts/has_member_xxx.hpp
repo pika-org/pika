@@ -17,8 +17,8 @@
 /// true if and only if its parameter type has member function with
 /// MEMBER name (no matter static it is or not). The generated trait
 /// ends up in a namespace where the macro itself has been placed.
-#define PIKA_HAS_MEMBER_XXX_TRAIT_DEF(MEMBER)                                   \
-    namespace PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _detail)                    \
+#define PIKA_HAS_MEMBER_XXX_TRAIT_DEF(MEMBER)                                  \
+    namespace PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _detail)                  \
     {                                                                          \
         struct helper                                                          \
         {                                                                      \
@@ -51,22 +51,22 @@
     }                                                                          \
                                                                                \
     template <typename T, typename Enable = void>                              \
-    struct PIKA_PP_CAT(has_, MEMBER)                                            \
+    struct PIKA_PP_CAT(has_, MEMBER)                                           \
       : std::false_type                                                        \
     {                                                                          \
     };                                                                         \
                                                                                \
     template <typename T>                                                      \
-    struct PIKA_PP_CAT(has_, MEMBER)<T, std::enable_if_t<std::is_class_v<T>>>   \
-      : PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _detail)::impl<T>                 \
+    struct PIKA_PP_CAT(has_, MEMBER)<T, std::enable_if_t<std::is_class_v<T>>>  \
+      : PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _detail)::impl<T>               \
     {                                                                          \
     };                                                                         \
                                                                                \
     template <typename T>                                                      \
-    using PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _t) =                           \
-        typename PIKA_PP_CAT(has_, MEMBER)<T>::type;                            \
+    using PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _t) =                         \
+        typename PIKA_PP_CAT(has_, MEMBER)<T>::type;                           \
                                                                                \
     template <typename T>                                                      \
-    inline constexpr bool PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _v) =           \
-        PIKA_PP_CAT(has_, MEMBER)<T>::value;                                    \
+    inline constexpr bool PIKA_PP_CAT(PIKA_PP_CAT(has_, MEMBER), _v) =         \
+        PIKA_PP_CAT(has_, MEMBER)<T>::value;                                   \
     /**/

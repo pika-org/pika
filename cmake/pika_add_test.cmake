@@ -137,9 +137,7 @@ endfunction(pika_add_unit_test)
 
 function(pika_add_regression_test subcategory name)
   # ARGN needed in case we add a test with the same executable
-  pika_add_test_and_deps_test(
-    "regressions" "${subcategory}" ${name} ${ARGN}
-  )
+  pika_add_test_and_deps_test("regressions" "${subcategory}" ${name} ${ARGN})
 endfunction(pika_add_regression_test)
 
 function(pika_add_performance_test subcategory name)

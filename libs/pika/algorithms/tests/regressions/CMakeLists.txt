@@ -46,7 +46,5 @@ foreach(test ${tests})
     ${test}_test PRIVATE pika_iterator_support_test_utilities
   )
 
-  pika_add_regression_test(
-    "modules.algorithms" ${test} ${${test}_PARAMETERS}
-  )
+  pika_add_regression_test("modules.algorithms" ${test} ${${test}_PARAMETERS})
 endforeach()

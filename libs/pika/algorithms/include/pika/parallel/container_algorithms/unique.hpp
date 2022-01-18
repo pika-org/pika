@@ -652,17 +652,17 @@ namespace pika { namespace parallel { inline namespace v1 {
     PIKA_DEPRECATED_V(0, 1,
         "pika::parallel::unique_copy is deprecated, use pika::unique_copy "
         "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<pika::traits::range_iterator_t<Rng>, FwdIter2>>::type
-        unique_copy(ExPolicy&& policy, Rng&& rng, FwdIter2 dest,
-            Pred&& pred = Pred(), Proj&& proj = Proj())
+        util::in_out_result<pika::traits::range_iterator_t<Rng>,
+            FwdIter2>>::type unique_copy(ExPolicy&& policy, Rng&& rng,
+        FwdIter2 dest, Pred&& pred = Pred(), Proj&& proj = Proj())
     {
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
-        return unique_copy(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), dest, PIKA_FORWARD(Pred, pred),
-            PIKA_FORWARD(Proj, proj));
+        return unique_copy(PIKA_FORWARD(ExPolicy, policy),
+            pika::util::begin(rng), pika::util::end(rng), dest,
+            PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif
@@ -791,8 +791,8 @@ namespace pika { namespace ranges {
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
             subrange_t<pika::traits::range_iterator_t<Rng>,
                 pika::traits::range_iterator_t<Rng>>>::type
-        tag_fallback_invoke(pika::ranges::unique_t, ExPolicy&& policy, Rng&& rng,
-            Pred&& pred = Pred(), Proj&& proj = Proj())
+        tag_fallback_invoke(pika::ranges::unique_t, ExPolicy&& policy,
+            Rng&& rng, Pred&& pred = Pred(), Proj&& proj = Proj())
         {
             using iterator_type = pika::traits::range_iterator_t<Rng>;
 
@@ -804,9 +804,9 @@ namespace pika { namespace ranges {
                 typename pika::traits::range_sentinel<Rng>::type>(
                 pika::parallel::v1::detail::unique<
                     pika::traits::range_iterator_t<Rng>>()
-                    .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                        pika::util::end(rng), PIKA_FORWARD(Pred, pred),
-                        PIKA_FORWARD(Proj, proj)),
+                    .call(PIKA_FORWARD(ExPolicy, policy),
+                        pika::util::begin(rng), pika::util::end(rng),
+                        PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
                 pika::util::end(rng));
         }
     } unique{};
@@ -844,8 +844,8 @@ namespace pika { namespace ranges {
             using result_type = unique_copy_result<InIter, O>;
 
             return pika::parallel::v1::detail::unique_copy<result_type>().call(
-                pika::execution::seq, first, last, dest, PIKA_FORWARD(Pred, pred),
-                PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, first, last, dest,
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -905,8 +905,9 @@ namespace pika { namespace ranges {
             using result_type = unique_copy_result<iterator_type, O>;
 
             return pika::parallel::v1::detail::unique_copy<result_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                dest, PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), dest, PIKA_FORWARD(Pred, pred),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off

@@ -49,8 +49,8 @@ void functions_byval_params()
     PIKA_TEST_MSG(
         (pika::is_invocable_v<f, int const&> == true), "fun-value/const-lvref");
     PIKA_TEST_MSG((pika::is_invocable_v<f, int&&> == true), "fun-value/rvref");
-    PIKA_TEST_MSG(
-        (pika::is_invocable_v<f, int const&&> == true), "fun-value/const-rvref");
+    PIKA_TEST_MSG((pika::is_invocable_v<f, int const&&> == true),
+        "fun-value/const-rvref");
 
     typedef void (*fc)(int const);
     PIKA_TEST_MSG(
@@ -70,8 +70,8 @@ void functions_bylvref_params()
     typedef void (*f)(int&);
     PIKA_TEST_MSG((pika::is_invocable_v<f, int> == false), "fun-lvref/value");
     PIKA_TEST_MSG((pika::is_invocable_v<f, int&> == true), "fun-lvref/lvref");
-    PIKA_TEST_MSG(
-        (pika::is_invocable_v<f, int const&> == false), "fun-lvref/const-lvref");
+    PIKA_TEST_MSG((pika::is_invocable_v<f, int const&> == false),
+        "fun-lvref/const-lvref");
     PIKA_TEST_MSG((pika::is_invocable_v<f, int&&> == false), "fun-lvref/rvref");
     PIKA_TEST_MSG((pika::is_invocable_v<f, int const&&> == false),
         "fun-lvref/const-rvref");
@@ -94,8 +94,8 @@ void functions_byrvref_params()
     typedef void (*f)(int&&);
     PIKA_TEST_MSG((pika::is_invocable_v<f, int> == true), "fun-rvref/value");
     PIKA_TEST_MSG((pika::is_invocable_v<f, int&> == false), "fun-rvref/lvref");
-    PIKA_TEST_MSG(
-        (pika::is_invocable_v<f, int const&> == false), "fun-rvref/const-lvref");
+    PIKA_TEST_MSG((pika::is_invocable_v<f, int const&> == false),
+        "fun-rvref/const-lvref");
     PIKA_TEST_MSG((pika::is_invocable_v<f, int&&> == true), "fun-rvref/rvref");
 #if !defined(BOOST_INTEL)
     PIKA_TEST_MSG((pika::is_invocable_v<f, int const&&> == false),
@@ -164,8 +164,8 @@ void member_object_pointers()
     PIKA_TEST_MSG(
         (pika::is_invocable_v<f, X const&> == true), "mem-obj-ptr/const-lvref");
     PIKA_TEST_MSG((pika::is_invocable_v<f, X&&> == true), "mem-obj-ptr/rvref");
-    PIKA_TEST_MSG(
-        (pika::is_invocable_v<f, X const&&> == true), "mem-obj-ptr/const-rvref");
+    PIKA_TEST_MSG((pika::is_invocable_v<f, X const&&> == true),
+        "mem-obj-ptr/const-rvref");
     PIKA_TEST_MSG((pika::is_invocable_v<f, smart_ptr<X>> == true),
         "mem-obj-ptr/smart-ptr");
     PIKA_TEST_MSG((pika::is_invocable_v<f, smart_ptr<X const>> == true),
@@ -187,10 +187,12 @@ void function_objects()
     PIKA_TEST_MSG(
         (pika::is_invocable_v<X const&&, int> == false), "fun-obj/const-rvref");
 
-    PIKA_TEST_MSG((pika::is_invocable_v<Xc, int> == true), "const-fun-obj/value");
+    PIKA_TEST_MSG(
+        (pika::is_invocable_v<Xc, int> == true), "const-fun-obj/value");
     PIKA_TEST_MSG((pika::is_invocable_v<Xc const, int> == true),
         "const-fun-obj/const-value");
-    PIKA_TEST_MSG((pika::is_invocable_v<Xc*, int> == false), "const-fun-obj/ptr");
+    PIKA_TEST_MSG(
+        (pika::is_invocable_v<Xc*, int> == false), "const-fun-obj/ptr");
     PIKA_TEST_MSG((pika::is_invocable_v<Xc const*, int> == false),
         "const-fun-obj/const-ptr");
     PIKA_TEST_MSG(

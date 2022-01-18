@@ -160,9 +160,8 @@ namespace pika::functional::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
-    using is_tag_override_invocable =
-        pika::is_invocable<decltype(tag_override_invoke_ns::tag_override_invoke),
-            Tag, Args...>;
+    using is_tag_override_invocable = pika::is_invocable<
+        decltype(tag_override_invoke_ns::tag_override_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_tag_override_invocable_v =
@@ -249,8 +248,8 @@ namespace pika::functional::detail {
                 noexcept(is_nothrow_tag_override_invocable_v<Tag, Args...>)
                     -> tag_override_invoke_result_t<Tag, Args&&...>
             {
-                return tag_override_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_override_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
 
             // Is not tag-override-dispatchable, but tag-dispatchable
@@ -263,8 +262,8 @@ namespace pika::functional::detail {
                 noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
                     -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
 
             // Is not tag-override-dispatchable, not tag-dispatchable, but
@@ -279,8 +278,8 @@ namespace pika::functional::detail {
                 noexcept(is_nothrow_tag_fallback_invocable_v<Tag, Args...>)
                     -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
         };
 
@@ -300,8 +299,8 @@ namespace pika::functional::detail {
                 Args&&... args) const noexcept
                 -> tag_override_invoke_result_t<Tag, Args&&...>
             {
-                return tag_override_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_override_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
 
             // Is not nothrow tag-override-dispatchable, but nothrow
@@ -314,8 +313,8 @@ namespace pika::functional::detail {
                 Args&&... args) const noexcept
                 -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
 
             // Is not nothrow tag-override-dispatchable, not nothrow
@@ -329,8 +328,8 @@ namespace pika::functional::detail {
                 Args&&... args) const noexcept
                 -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
         };
     }    // namespace tag_base_ns

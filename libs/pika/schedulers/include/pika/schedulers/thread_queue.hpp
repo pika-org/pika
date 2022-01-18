@@ -1164,7 +1164,8 @@ namespace pika { namespace threads { namespace policies {
 
         mutable mutex_type mtx_;    // mutex protecting the members
 
-        thread_map_type thread_map_;    // mapping of thread id's to pika-threads
+        thread_map_type
+            thread_map_;    // mapping of thread id's to pika-threads
 
         // overall count of work items
         std::atomic<std::int64_t> thread_map_count_;

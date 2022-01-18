@@ -38,7 +38,8 @@ void test_bulk_sync(Executor& exec)
     std::vector<int> results = pika::parallel::execution::bulk_sync_execute(
         exec, pika::util::bind(&bulk_test, tid, _1, false, _2), v, 42);
 
-    PIKA_TEST(std::equal(std::begin(results), std::end(results), std::begin(v)));
+    PIKA_TEST(
+        std::equal(std::begin(results), std::end(results), std::begin(v)));
 }
 
 template <typename Executor>

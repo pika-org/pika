@@ -40,8 +40,7 @@ namespace pika {
     ///       system during its initialization (if necessary).
     ///
     /// \see    \a pika::register_startup_function()
-    PIKA_EXPORT void register_pre_startup_function(
-        startup_function_type f);
+    PIKA_EXPORT void register_pre_startup_function(startup_function_type f);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Add a function to be executed by a pika thread before pika_main

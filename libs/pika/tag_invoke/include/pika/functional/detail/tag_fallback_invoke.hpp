@@ -158,9 +158,8 @@ namespace pika::functional::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
-    using is_tag_fallback_invocable =
-        pika::is_invocable<decltype(tag_fallback_invoke_ns::tag_fallback_invoke),
-            Tag, Args...>;
+    using is_tag_fallback_invocable = pika::is_invocable<
+        decltype(tag_fallback_invoke_ns::tag_fallback_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_tag_fallback_invocable_v =
@@ -267,8 +266,8 @@ namespace pika::functional::detail {
                 noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
                     -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
 
             // is not tag-dispatchable
@@ -280,8 +279,8 @@ namespace pika::functional::detail {
                 noexcept(is_nothrow_tag_fallback_invocable_v<Tag, Args...>)
                     -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
         };
 
@@ -307,8 +306,8 @@ namespace pika::functional::detail {
                 std::true_type, Args&&... args) const noexcept
                 -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
 
         public:
@@ -320,8 +319,8 @@ namespace pika::functional::detail {
                 Args&&... args) const noexcept
                 -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(
-                    static_cast<Tag const&>(*this), PIKA_FORWARD(Args, args)...);
+                return tag_invoke(static_cast<Tag const&>(*this),
+                    PIKA_FORWARD(Args, args)...);
             }
 
             // is not nothrow tag-dispatchable

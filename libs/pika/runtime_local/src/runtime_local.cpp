@@ -321,8 +321,8 @@ namespace pika {
     {
         notifier_ = PIKA_MOVE(notifier);
 
-        thread_manager_.reset(new pika::threads::threadmanager(rtcfg_,
-            notifier_, network_background_callback));
+        thread_manager_.reset(new pika::threads::threadmanager(
+            rtcfg_, notifier_, network_background_callback));
     }
 
     void runtime::init()
@@ -837,8 +837,8 @@ namespace pika {
 
         ///////////////////////////////////////////////////////////////////////////
         // retrieve the command line arguments for the current locality
-        bool retrieve_commandline_arguments(
-            std::string const& appname, pika::program_options::variables_map& vm)
+        bool retrieve_commandline_arguments(std::string const& appname,
+            pika::program_options::variables_map& vm)
         {
             using pika::program_options::options_description;
 
@@ -1031,7 +1031,7 @@ namespace pika {
     }
 }    // namespace pika
 
-#if defined(_WIN64) && defined(PIKA_DEBUG) &&                                   \
+#if defined(_WIN64) && defined(PIKA_DEBUG) &&                                  \
     !defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
 #include <io.h>
 #endif
@@ -1075,7 +1075,8 @@ namespace pika {
         {
             if (rt->get_state() > state_startup)
             {
-                PIKA_THROW_EXCEPTION(invalid_status, "register_startup_function",
+                PIKA_THROW_EXCEPTION(invalid_status,
+                    "register_startup_function",
                     "Too late to register a new startup function.");
                 return;
             }
@@ -1191,10 +1192,12 @@ namespace pika {
                     {
                         std::string boundcpu_str = threads::to_string(boundcpu);
                         std::string pu_mask_str = threads::to_string(pu_mask);
-                        PIKA_THROW_EXCEPTION(invalid_status, "handle_print_bind",
+                        PIKA_THROW_EXCEPTION(invalid_status,
+                            "handle_print_bind",
                             pika::util::format(
                                 "unexpected mismatch between locality {1}: "
-                                "binding reported from HWLOC({2}) and pika({3}) "
+                                "binding reported from HWLOC({2}) and "
+                                "pika({3}) "
                                 "on thread {4}",
                                 pika::get_locality_id(), boundcpu_str,
                                 pu_mask_str, i));
@@ -1285,7 +1288,7 @@ namespace pika {
         util::function_nonser<pika_main_function_type> const& func,
         bool blocking)
     {
-#if defined(_WIN64) && defined(PIKA_DEBUG) &&                                   \
+#if defined(_WIN64) && defined(PIKA_DEBUG) &&                                  \
     !defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
         // needs to be called to avoid problems at system startup
         // see: http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=100319

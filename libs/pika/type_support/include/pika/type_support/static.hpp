@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-#if !defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION) &&                \
+#if !defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION) &&              \
     !(PIKA_INTEL_VERSION > 1200 && !defined(PIKA_WINDOWS))
 #include <memory>    // for placement new
 #include <mutex>
@@ -25,8 +25,9 @@
 // clang-format on
 
 namespace pika { namespace util {
-#if defined(PIKA_GCC_VERSION) || defined(PIKA_CLANG_VERSION) ||                  \
-    (PIKA_INTEL_VERSION > 1200 && !defined(PIKA_WINDOWS)) || defined(PIKA_MSVC)
+#if defined(PIKA_GCC_VERSION) || defined(PIKA_CLANG_VERSION) ||                \
+    (PIKA_INTEL_VERSION > 1200 && !defined(PIKA_WINDOWS)) ||                   \
+    defined(PIKA_MSVC)
 
     //
     // C++11 requires thread-safe initialization of function-scope statics.

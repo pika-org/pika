@@ -316,10 +316,11 @@ namespace pika { namespace ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename std::iterator_traits<typename pika::traits::range_traits<
-            Rng>::iterator_type>::difference_type
-        tag_fallback_invoke(
-            count_t, Rng&& rng, T const& value, Proj&& proj = Proj())
+        friend
+            typename std::iterator_traits<typename pika::traits::range_traits<
+                Rng>::iterator_type>::difference_type
+            tag_fallback_invoke(
+                count_t, Rng&& rng, T const& value, Proj&& proj = Proj())
         {
             using iterator_type =
                 typename pika::traits::range_traits<Rng>::iterator_type;
@@ -332,8 +333,8 @@ namespace pika { namespace ranges {
                 typename std::iterator_traits<iterator_type>::difference_type;
 
             return pika::parallel::v1::detail::count<difference_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                value, PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), value, PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -441,9 +442,11 @@ namespace pika { namespace ranges {
                 >::value
             )>
         // clang-format on
-        friend typename std::iterator_traits<typename pika::traits::range_traits<
-            Rng>::iterator_type>::difference_type
-        tag_fallback_invoke(count_if_t, Rng&& rng, F&& f, Proj&& proj = Proj())
+        friend
+            typename std::iterator_traits<typename pika::traits::range_traits<
+                Rng>::iterator_type>::difference_type
+            tag_fallback_invoke(
+                count_if_t, Rng&& rng, F&& f, Proj&& proj = Proj())
         {
             using iterator_type =
                 typename pika::traits::range_traits<Rng>::iterator_type;
@@ -456,8 +459,9 @@ namespace pika { namespace ranges {
                 typename std::iterator_traits<iterator_type>::difference_type;
 
             return pika::parallel::v1::detail::count_if<difference_type>().call(
-                pika::execution::seq, pika::util::begin(rng), pika::util::end(rng),
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off

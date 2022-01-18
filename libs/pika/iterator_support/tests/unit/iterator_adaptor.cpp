@@ -207,7 +207,8 @@ int main()
         PIKA_TEST((std::is_same<Iter1::value_type, int>::value));
         PIKA_TEST((std::is_same<Iter1::reference, int&>::value));
         PIKA_TEST((std::is_same<Iter1::pointer, int*>::value));
-        PIKA_TEST((std::is_same<Iter1::difference_type, std::ptrdiff_t>::value));
+        PIKA_TEST(
+            (std::is_same<Iter1::difference_type, std::ptrdiff_t>::value));
 
         PIKA_TEST((std::is_convertible<Iter1::iterator_category,
             std::random_access_iterator_tag>::value));
@@ -296,7 +297,8 @@ int main()
         typedef modify_traversal<BaseIter, std::forward_iterator_tag>
             IncrementableIter;
 
-        PIKA_TEST((std::is_same<IncrementableIter::base_type, BaseIter>::value));
+        PIKA_TEST(
+            (std::is_same<IncrementableIter::base_type, BaseIter>::value));
     }
 
     return pika::util::report_errors();

@@ -67,7 +67,8 @@ namespace test {
             }
 
             // wait to finish
-            std::unique_lock<pika::lcos::local::mutex> finish_lock(finish_mutex);
+            std::unique_lock<pika::lcos::local::mutex> finish_lock(
+                finish_mutex);
             {
                 std::unique_lock<pika::lcos::local::mutex> ublock(
                     unblocked_count_mutex);

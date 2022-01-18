@@ -55,8 +55,9 @@ namespace pika { namespace lcos { namespace detail {
         PIKA_FORCEINLINE static pika::traits::future_then_result_t<Future, F>
         call(Future&& fut, Policy_&& policy, F&& f)
         {
-            using result_type = typename pika::traits::future_then_result<Future,
-                F>::result_type;
+            using result_type =
+                typename pika::traits::future_then_result<Future,
+                    F>::result_type;
             using continuation_result_type =
                 pika::util::invoke_result_t<F, Future>;
 
@@ -65,8 +66,8 @@ namespace pika { namespace lcos { namespace detail {
                     pika::util::internal_allocator<>{}, PIKA_MOVE(fut),
                     PIKA_FORWARD(Policy_, policy), PIKA_FORWARD(F, f));
 
-            return pika::traits::future_access<pika::future<result_type>>::create(
-                PIKA_MOVE(p));
+            return pika::traits::future_access<
+                pika::future<result_type>>::create(PIKA_MOVE(p));
         }
 
         template <typename Allocator, typename Policy_, typename F>
@@ -74,8 +75,9 @@ namespace pika { namespace lcos { namespace detail {
         call_alloc(
             Allocator const& alloc, Future&& fut, Policy_&& policy, F&& f)
         {
-            using result_type = typename pika::traits::future_then_result<Future,
-                F>::result_type;
+            using result_type =
+                typename pika::traits::future_then_result<Future,
+                    F>::result_type;
             using continuation_result_type =
                 pika::util::invoke_result_t<F, Future>;
 
@@ -84,8 +86,8 @@ namespace pika { namespace lcos { namespace detail {
                     PIKA_MOVE(fut), PIKA_FORWARD(Policy_, policy),
                     PIKA_FORWARD(F, f));
 
-            return pika::traits::future_access<pika::future<result_type>>::create(
-                PIKA_MOVE(p));
+            return pika::traits::future_access<
+                pika::future<result_type>>::create(PIKA_MOVE(p));
         }
     };
 
@@ -105,8 +107,8 @@ namespace pika { namespace lcos { namespace detail {
         call(Future&& fut, Executor_&& exec, F&& f)
         {
             // simply forward this to executor
-            return detail::then_execute_helper(
-                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f), PIKA_MOVE(fut));
+            return detail::then_execute_helper(PIKA_FORWARD(Executor_, exec),
+                PIKA_FORWARD(F, f), PIKA_MOVE(fut));
         }
 
         template <typename Allocator, typename Executor_, typename F>
@@ -114,8 +116,8 @@ namespace pika { namespace lcos { namespace detail {
             Executor_, Future, F>
         call_alloc(Allocator const&, Future&& fut, Executor_&& exec, F&& f)
         {
-            return call(PIKA_FORWARD(Future, fut), PIKA_FORWARD(Executor_, exec),
-                PIKA_FORWARD(F, f));
+            return call(PIKA_FORWARD(Future, fut),
+                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f));
         }
     };
 

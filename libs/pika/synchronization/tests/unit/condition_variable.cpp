@@ -382,9 +382,9 @@ void test_condition_notify_all_wakes_from_relative_wait_until_with_predicate()
     {
         for (unsigned i = 0; i < 5; ++i)
         {
-            group.push_back(
-                pika::thread(&wait_for_flag ::relative_wait_until_with_predicate,
-                    std::ref(data)));
+            group.push_back(pika::thread(
+                &wait_for_flag ::relative_wait_until_with_predicate,
+                std::ref(data)));
         }
 
         {

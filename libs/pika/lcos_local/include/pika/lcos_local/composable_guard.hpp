@@ -183,8 +183,7 @@ namespace pika { namespace lcos { namespace local {
 
     /// Conceptually, a guard acts like a mutex on an asynchronous task. The
     /// mutex is locked before the task runs, and unlocked afterwards.
-    PIKA_EXPORT void run_guarded(
-        guard& guard, detail::guard_function task);
+    PIKA_EXPORT void run_guarded(guard& guard, detail::guard_function task);
 
     template <typename F, typename... Args>
     void run_guarded(guard& guard, F&& f, Args&&... args)

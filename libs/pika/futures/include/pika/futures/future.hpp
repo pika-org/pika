@@ -98,7 +98,8 @@ namespace pika { namespace lcos { namespace detail {
             ar >> exception;
 
             pika::intrusive_ptr<shared_state> p(
-                new shared_state(init_no_addref{}, PIKA_MOVE(exception)), false);
+                new shared_state(init_no_addref{}, PIKA_MOVE(exception)),
+                false);
 
             f = pika::traits::future_access<Future>::create(PIKA_MOVE(p));
         }
@@ -138,7 +139,8 @@ namespace pika { namespace lcos { namespace detail {
             ar >> exception;
 
             pika::intrusive_ptr<shared_state> p(
-                new shared_state(init_no_addref{}, PIKA_MOVE(exception)), false);
+                new shared_state(init_no_addref{}, PIKA_MOVE(exception)),
+                false);
 
             f = pika::traits::future_access<Future>::create(PIKA_MOVE(p));
         }
@@ -480,8 +482,8 @@ namespace pika { namespace lcos { namespace detail {
         operation_state(operation_state const&) = delete;
         operation_state& operator=(operation_state const&) = delete;
 
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, operation_state& os) noexcept
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
         {
             os.start_helper();
         }
@@ -895,8 +897,8 @@ namespace pika {
         //     constructor invocation.
         //   - other.valid() == false.
         future(future<future>&& other) noexcept
-          : base_type(
-                other.valid() ? lcos::detail::unwrap(PIKA_MOVE(other)) : nullptr)
+          : base_type(other.valid() ? lcos::detail::unwrap(PIKA_MOVE(other)) :
+                                      nullptr)
         {
         }
 
@@ -907,8 +909,8 @@ namespace pika {
         //     constructor invocation.
         //   - other.valid() == false.
         future(future<shared_future<R>>&& other) noexcept
-          : base_type(
-                other.valid() ? lcos::detail::unwrap(PIKA_MOVE(other)) : nullptr)
+          : base_type(other.valid() ? lcos::detail::unwrap(PIKA_MOVE(other)) :
+                                      nullptr)
         {
         }
 
@@ -1037,8 +1039,8 @@ namespace pika {
         {
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
             PIKA_ASSERT(false);
-            using future_type = decltype(base_type::then(
-                PIKA_MOVE(*this), PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f), ec));
+            using future_type = decltype(base_type::then(PIKA_MOVE(*this),
+                PIKA_FORWARD(T0, t0), PIKA_FORWARD(F, f), ec));
             return future_type{};
 #else
             invalidate on_exit(*this);
@@ -1318,7 +1320,8 @@ namespace pika {
                 base_type::then(shared_future(*this), PIKA_FORWARD(F, f), ec));
             return future_type{};
 #else
-            return base_type::then(shared_future(*this), PIKA_FORWARD(F, f), ec);
+            return base_type::then(
+                shared_future(*this), PIKA_FORWARD(F, f), ec);
 #endif
         }
 
@@ -1402,8 +1405,10 @@ namespace pika {
         else
         {
             return f.then(pika::launch::sync,
-                [conv = PIKA_FORWARD(Conv, conv)](pika::shared_future<U> const& f)
-                    -> R { return PIKA_INVOKE(conv, f.get()); });
+                [conv = PIKA_FORWARD(Conv, conv)](
+                    pika::shared_future<U> const& f) -> R {
+                    return PIKA_INVOKE(conv, f.get());
+                });
         }
     }
 
@@ -1417,7 +1422,8 @@ namespace pika {
     }
 
     template <typename R>
-    pika::shared_future<R>& make_shared_future(pika::shared_future<R>& f) noexcept
+    pika::shared_future<R>& make_shared_future(
+        pika::shared_future<R>& f) noexcept
     {
         return f;
     }
@@ -1785,8 +1791,9 @@ namespace pika { namespace lcos {
     PIKA_DEPRECATED_V(0, 1,
         "pika::lcos::make_ready_future_at is deprecated. Use "
         "pika::make_ready_future_at instead.")
-    std::enable_if_t<std::is_void_v<T>, pika::future<void>> make_ready_future_at(
-        pika::chrono::steady_time_point const& abs_time)
+    std::
+        enable_if_t<std::is_void_v<T>, pika::future<void>> make_ready_future_at(
+            pika::chrono::steady_time_point const& abs_time)
     {
         return pika::make_ready_future_at(abs_time);
     }
@@ -1824,7 +1831,8 @@ namespace pika { namespace lcos {
     PIKA_DEPRECATED_V(0, 1,
         "pika::lcos::make_shared_future is deprecated. Use "
         "pika::make_shared_future instead.")
-    pika::shared_future<R>& make_shared_future(pika::shared_future<R>& f) noexcept
+    pika::shared_future<R>& make_shared_future(
+        pika::shared_future<R>& f) noexcept
     {
         return f;
     }
@@ -1852,5 +1860,5 @@ namespace pika { namespace lcos {
 
 #include <pika/futures/packaged_continuation.hpp>
 
-#define PIKA_MAKE_EXCEPTIONAL_FUTURE(T, errorcode, f, msg)                      \
+#define PIKA_MAKE_EXCEPTIONAL_FUTURE(T, errorcode, f, msg)                     \
     pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(errorcode, f, msg)) /**/

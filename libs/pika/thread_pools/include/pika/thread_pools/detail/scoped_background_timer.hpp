@@ -13,7 +13,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads {
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
     ////////////////////////////////////////////////////////////////////////////
     struct background_work_duration_counter

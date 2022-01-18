@@ -262,9 +262,10 @@ namespace pika { namespace parallel { inline namespace v1 {
                         });
                 };
 
-                auto f2 =
-                    [tok, first1, first2, last1, last2, pred, proj1, proj2](
-                        std::vector<pika::future<void>>&& data) mutable -> bool {
+                auto f2 = [tok, first1, first2, last1, last2, pred, proj1,
+                              proj2](
+                              std::vector<pika::future<void>>&& data) mutable
+                    -> bool {
                     // make sure iterators embedded in function object that is
                     // attached to futures are invalidated
                     data.clear();
@@ -323,7 +324,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 #endif
         return detail::lexicographical_compare().call(
             PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
-            PIKA_FORWARD(Pred, pred), pika::parallel::util::projection_identity{},
+            PIKA_FORWARD(Pred, pred),
+            pika::parallel::util::projection_identity{},
             pika::parallel::util::projection_identity{});
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop

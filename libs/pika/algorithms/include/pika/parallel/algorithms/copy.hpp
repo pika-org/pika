@@ -608,8 +608,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             >
         )>
     // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::copy_if is deprecated, use pika::copy_if instead")
+    PIKA_DEPRECATED_V(0, 1,
+        "pika::parallel::copy_if is deprecated, use pika::copy_if instead")
         typename util::detail::algorithm_result<ExPolicy,
             util::in_out_result<FwdIter1, FwdIter2>>::type
         copy_if(ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest,

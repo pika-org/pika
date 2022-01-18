@@ -12,8 +12,8 @@ macro(pika_add_link_flag FLAG)
   set(one_value_args)
   set(multi_value_args TARGETS CONFIGURATIONS)
   cmake_parse_arguments(
-    PIKA_ADD_LINK_FLAG "${options}" "${one_value_args}"
-    "${multi_value_args}" ${ARGN}
+    PIKA_ADD_LINK_FLAG "${options}" "${one_value_args}" "${multi_value_args}"
+    ${ARGN}
   )
 
   if(PIKA_ADD_LINK_FLAG_PUBLIC)

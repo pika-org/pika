@@ -73,7 +73,8 @@ namespace pika { namespace debug {
 
         void print_thread_info(std::ostream& os)
         {
-            if (pika::threads::get_self_id() == pika::threads::invalid_thread_id)
+            if (pika::threads::get_self_id() ==
+                pika::threads::invalid_thread_id)
             {
                 os << "-------------- ";
             }

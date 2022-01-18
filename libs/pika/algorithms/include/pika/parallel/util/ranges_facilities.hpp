@@ -68,7 +68,8 @@ namespace pika { namespace ranges {
     {
         if (pika::parallel::v1::detail::distance(first, bound) < size_t(n))
         {
-            return pika::parallel::v1::detail::advance_to_sentinel(first, bound);
+            return pika::parallel::v1::detail::advance_to_sentinel(
+                first, bound);
         }
         else
         {

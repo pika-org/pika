@@ -791,7 +791,7 @@ namespace pika { namespace threads {
         return result;
     }
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
     std::int64_t threadmanager::get_background_work_duration(bool reset)
     {

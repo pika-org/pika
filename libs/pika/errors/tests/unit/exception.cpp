@@ -63,7 +63,8 @@ int main()
     catch (pika::exception& e)
     {
         exception_caught = true;
-        PIKA_TEST_EQ(pika::get_error_what(e), "simulated error: pika(no_success)");
+        PIKA_TEST_EQ(
+            pika::get_error_what(e), "simulated error: pika(no_success)");
         PIKA_TEST_EQ(pika::get_error_function_name(e), "throw_always");
     }
     PIKA_TEST(exception_caught);
@@ -76,7 +77,8 @@ int main()
     catch (pika::exception_info& e)
     {
         exception_caught = true;
-        PIKA_TEST_EQ(pika::get_error_what(e), "simulated error: pika(no_success)");
+        PIKA_TEST_EQ(
+            pika::get_error_what(e), "simulated error: pika(no_success)");
         PIKA_TEST_EQ(pika::get_error_function_name(e), "throw_always");
     }
     PIKA_TEST(exception_caught);

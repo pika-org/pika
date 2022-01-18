@@ -416,7 +416,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         return parallel::util::get_second_element(
             detail::transform_exclusive_scan<result_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                PIKA_FORWARD(Conv, conv), PIKA_MOVE(init), PIKA_FORWARD(Op, op)));
+                PIKA_FORWARD(Conv, conv), PIKA_MOVE(init),
+                PIKA_FORWARD(Op, op)));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
 #endif

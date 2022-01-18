@@ -235,7 +235,8 @@ namespace pika {
             detail::unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...))
         {
             static_assert(Depth > 0U, "The unwrapping depth must be >= 1!");
-            return detail::unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...);
+            return detail::unwrap_depth_impl<Depth>(
+                PIKA_FORWARD(Args, args)...);
         }
 
         namespace functional {

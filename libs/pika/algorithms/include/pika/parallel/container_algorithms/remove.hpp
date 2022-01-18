@@ -653,9 +653,9 @@ namespace pika { namespace ranges {
                 typename pika::traits::range_sentinel<Rng>::type>(
                 pika::parallel::v1::detail::remove_if<
                     typename pika::traits::range_iterator<Rng>::type>()
-                    .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                        pika::util::end(rng), PIKA_FORWARD(Pred, pred),
-                        PIKA_FORWARD(Proj, proj)),
+                    .call(PIKA_FORWARD(ExPolicy, policy),
+                        pika::util::begin(rng), pika::util::end(rng),
+                        PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
                 pika::util::end(rng));
         }
     } remove_if{};
@@ -677,8 +677,9 @@ namespace pika { namespace ranges {
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
-        friend subrange_t<Iter, Sent> tag_fallback_invoke(pika::ranges::remove_t,
-            Iter first, Sent last, T const& value, Proj&& proj = Proj())
+        friend subrange_t<Iter, Sent> tag_fallback_invoke(
+            pika::ranges::remove_t, Iter first, Sent last, T const& value,
+            Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_input_iterator<Iter>::value),
                 "Required at least input iterator.");
@@ -761,8 +762,8 @@ namespace pika { namespace ranges {
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
             subrange_t<typename pika::traits::range_iterator<Rng>::type>>::type
-        tag_fallback_invoke(pika::ranges::remove_t, ExPolicy&& policy, Rng&& rng,
-            T const& value, Proj&& proj = Proj())
+        tag_fallback_invoke(pika::ranges::remove_t, ExPolicy&& policy,
+            Rng&& rng, T const& value, Proj&& proj = Proj())
         {
             static_assert(
                 (pika::traits::is_forward_iterator<

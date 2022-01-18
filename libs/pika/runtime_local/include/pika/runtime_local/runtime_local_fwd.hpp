@@ -59,8 +59,7 @@ namespace pika {
     PIKA_EXPORT std::size_t get_runtime_instance_number();
 
     /// Register a function to be called during system shutdown
-    PIKA_EXPORT bool register_on_exit(
-        util::function_nonser<void()> const&);
+    PIKA_EXPORT bool register_on_exit(util::function_nonser<void()> const&);
 
     /// \cond NOINTERNAL
     namespace util {

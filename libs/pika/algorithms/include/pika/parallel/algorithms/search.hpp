@@ -441,11 +441,11 @@ namespace pika {
             std::size_t count, FwdIter2 s_first, FwdIter2 s_last,
             Pred&& op = Pred())
         {
-            return pika::parallel::v1::detail::search_n<FwdIter, FwdIter>().call(
-                pika::execution::seq, first, count, s_first, s_last,
-                PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+            return pika::parallel::v1::detail::search_n<FwdIter, FwdIter>()
+                .call(pika::execution::seq, first, count, s_first, s_last,
+                    PIKA_FORWARD(Pred, op),
+                    pika::parallel::util::projection_identity{},
+                    pika::parallel::util::projection_identity{});
         }
 
         // clang-format off
@@ -467,11 +467,11 @@ namespace pika {
             std::size_t count, FwdIter2 s_first, FwdIter2 s_last,
             Pred&& op = Pred())
         {
-            return pika::parallel::v1::detail::search_n<FwdIter, FwdIter>().call(
-                PIKA_FORWARD(ExPolicy, policy), first, count, s_first, s_last,
-                PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+            return pika::parallel::v1::detail::search_n<FwdIter, FwdIter>()
+                .call(PIKA_FORWARD(ExPolicy, policy), first, count, s_first,
+                    s_last, PIKA_FORWARD(Pred, op),
+                    pika::parallel::util::projection_identity{},
+                    pika::parallel::util::projection_identity{});
         }
 
     } search_n{};

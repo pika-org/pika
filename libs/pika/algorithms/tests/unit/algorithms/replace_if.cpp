@@ -156,7 +156,7 @@ void test_replace_if_exception(IteratorTag)
     try
     {
         pika::replace_if(decorated_iterator(std::begin(c),
-                            []() { throw std::runtime_error("test"); }),
+                             []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), equal_f(42), std::size_t(43));
         PIKA_TEST(false);
     }

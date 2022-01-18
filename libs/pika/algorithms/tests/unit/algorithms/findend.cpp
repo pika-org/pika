@@ -499,7 +499,7 @@ void test_find_end_exception(IteratorTag)
     try
     {
         pika::find_end(decorated_iterator(std::begin(c),
-                          []() { throw std::runtime_error("test"); }),
+                           []() { throw std::runtime_error("test"); }),
             decorated_iterator(
                 std::end(c), []() { throw std::runtime_error("test"); }),
             std::begin(h), std::end(h));

@@ -113,7 +113,8 @@ namespace pika { namespace serialization { namespace detail {
 
                 using is_polymorphic = std::integral_constant<bool,
                     pika::traits::is_intrusive_polymorphic_v<value_type> ||
-                        pika::traits::is_nonintrusive_polymorphic_v<value_type>>;
+                        pika::traits::is_nonintrusive_polymorphic_v<
+                            value_type>>;
 
                 call(ar, collection, size, is_polymorphic());
             }

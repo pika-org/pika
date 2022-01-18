@@ -471,7 +471,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::exclusive_scan is deprecated, use pika::exclusive_scan "
+        "pika::parallel::exclusive_scan is deprecated, use "
+        "pika::exclusive_scan "
         "instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
         exclusive_scan(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,
@@ -507,7 +508,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             )>
     // clang-format on
     PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::exclusive_scan is deprecated, use pika::exclusive_scan "
+        "pika::parallel::exclusive_scan is deprecated, use "
+        "pika::exclusive_scan "
         "instead")
         typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
         exclusive_scan(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,

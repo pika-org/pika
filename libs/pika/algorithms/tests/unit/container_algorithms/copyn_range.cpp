@@ -132,7 +132,7 @@ void test_copy_n_exception(IteratorTag)
     try
     {
         pika::ranges::copy_n(decorated_iterator(std::begin(c),
-                                []() { throw std::runtime_error("test"); }),
+                                 []() { throw std::runtime_error("test"); }),
             c.size(), std::begin(d));
         PIKA_TEST(false);
     }

@@ -303,7 +303,8 @@ static void test_async_mixed_traversal()
     using container_t = std::vector<std::size_t>;
 
     // Test hierarchies where container and tuple like types are mixed
-    test_async_traversal_base<4U>(0U, pika::make_tuple(container_t{1U, 2U}), 3U);
+    test_async_traversal_base<4U>(
+        0U, pika::make_tuple(container_t{1U, 2U}), 3U);
 
     test_async_traversal_base<4U>(
         pika::make_tuple(

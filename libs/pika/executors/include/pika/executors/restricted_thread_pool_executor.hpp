@@ -131,8 +131,8 @@ namespace pika { namespace parallel { namespace execution {
                 p = pika::lcos::detail::make_continuation_exec<result_type>(
                     PIKA_FORWARD(Future, predecessor), *this, PIKA_MOVE(func));
 
-            return pika::traits::future_access<pika::future<result_type>>::create(
-                PIKA_MOVE(p));
+            return pika::traits::future_access<
+                pika::future<result_type>>::create(PIKA_MOVE(p));
         }
 
         // NonBlockingOneWayExecutor (adapted) interface
@@ -144,8 +144,8 @@ namespace pika { namespace parallel { namespace execution {
             auto policy = launch::async_policy(priority_, stacksize_,
                 threads::thread_schedule_hint(get_next_thread_num()));
 
-            detail::post_policy_dispatch<launch::async_policy>::call(
-                policy, desc, pool_, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
+            detail::post_policy_dispatch<launch::async_policy>::call(policy,
+                desc, pool_, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename S, typename... Ts>

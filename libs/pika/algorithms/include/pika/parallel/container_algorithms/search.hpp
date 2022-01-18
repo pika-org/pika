@@ -722,9 +722,9 @@ namespace pika { namespace parallel { inline namespace v1 {
             Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
     {
         return search(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
-            pika::util::end(rng1), pika::util::begin(rng2), pika::util::end(rng2),
-            PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-            PIKA_FORWARD(Proj2, proj2));
+            pika::util::end(rng1), pika::util::begin(rng2),
+            pika::util::end(rng2), PIKA_FORWARD(Pred, op),
+            PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
     }
 
     // clang-format off
@@ -785,9 +785,10 @@ namespace pika { namespace ranges {
                 >::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(pika::ranges::search_t, FwdIter first,
-            Sent last, FwdIter2 s_first, Sent2 s_last, Pred&& op = Pred(),
-            Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
+        friend FwdIter tag_fallback_invoke(pika::ranges::search_t,
+            FwdIter first, Sent last, FwdIter2 s_first, Sent2 s_last,
+            Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
+            Proj2&& proj2 = Proj2())
         {
             return pika::parallel::v1::detail::search<FwdIter, Sent>().call(
                 pika::execution::seq, first, last, s_first, s_last,
@@ -925,10 +926,10 @@ namespace pika { namespace ranges {
             Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
             Proj2&& proj2 = Proj2())
         {
-            return pika::parallel::v1::detail::search_n<FwdIter, FwdIter>().call(
-                pika::execution::seq, first, count, s_first, s_last,
-                PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-                PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::v1::detail::search_n<FwdIter, FwdIter>()
+                .call(pika::execution::seq, first, count, s_first, s_last,
+                    PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
+                    PIKA_FORWARD(Proj2, proj2));
         }
 
         // clang-format off
@@ -957,10 +958,10 @@ namespace pika { namespace ranges {
             Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
             Proj2&& proj2 = Proj2())
         {
-            return pika::parallel::v1::detail::search_n<FwdIter, FwdIter>().call(
-                PIKA_FORWARD(ExPolicy, policy), first, count, s_first, s_last,
-                PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-                PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::v1::detail::search_n<FwdIter, FwdIter>()
+                .call(PIKA_FORWARD(ExPolicy, policy), first, count, s_first,
+                    s_last, PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
+                    PIKA_FORWARD(Proj2, proj2));
         }
 
         // clang-format off

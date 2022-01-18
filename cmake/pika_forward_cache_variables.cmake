@@ -4,8 +4,8 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-# The goal is to store all PIKA_* cache variables in a file, so that they
-# would be forwarded to projects using pika (the file is included in the
+# The goal is to store all PIKA_* cache variables in a file, so that they would
+# be forwarded to projects using pika (the file is included in the
 # pika-config.cmake)
 
 get_cmake_property(cache_vars CACHE_VARIABLES)

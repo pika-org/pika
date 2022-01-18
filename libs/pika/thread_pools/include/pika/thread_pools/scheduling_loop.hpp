@@ -17,7 +17,7 @@
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_data.hpp>
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
 #include <pika/thread_pools/detail/scoped_background_timer.hpp>
 #endif
@@ -333,7 +333,7 @@ namespace pika { namespace threads { namespace detail {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
     struct scheduling_counters
     {
@@ -476,7 +476,7 @@ namespace pika { namespace threads { namespace detail {
     // and create a new one that is supposed to be executed inside the
     // scheduling_loop, true otherwise
     template <typename SchedulingPolicy>
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
     bool call_background_thread(thread_id_ref_type& background_thread,
         thread_id_ref_type& next_thrd, SchedulingPolicy& scheduler,
@@ -510,7 +510,7 @@ namespace pika { namespace threads { namespace detail {
                             thrd_stat.get_previous() ==
                                 thread_schedule_state::pending))
                     {
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
                         // measure background work duration
                         background_work_duration_counter bg_work_duration(
@@ -589,7 +589,7 @@ namespace pika { namespace threads { namespace detail {
         std::int64_t& idle_loop_count = counters.idle_loop_count_;
         std::int64_t& busy_loop_count = counters.busy_loop_count_;
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
         std::int64_t& bg_work_exec_time_init =
             counters.background_work_duration_;
@@ -961,7 +961,7 @@ namespace pika { namespace threads { namespace detail {
                     added = std::size_t(-1);
                 }
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
                 // do background work in parcel layer and in agas
                 if (!call_background_thread(background_thread, next_thrd,
@@ -993,8 +993,8 @@ namespace pika { namespace threads { namespace detail {
                 if (!params.inner_.empty())
                 {
                     params.inner_();
-                    context_storage = pika::execution_base::this_thread::detail::
-                        get_agent_storage();
+                    context_storage = pika::execution_base::this_thread::
+                        detail::get_agent_storage();
                 }
             }
 
@@ -1012,7 +1012,7 @@ namespace pika { namespace threads { namespace detail {
             {
                 busy_loop_count = 0;
 
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
                 // do background work in parcel layer and in agas
                 if (!call_background_thread(background_thread, next_thrd,
@@ -1051,8 +1051,8 @@ namespace pika { namespace threads { namespace detail {
                 if (!params.outer_.empty())
                 {
                     params.outer_();
-                    context_storage = pika::execution_base::this_thread::detail::
-                        get_agent_storage();
+                    context_storage = pika::execution_base::this_thread::
+                        detail::get_agent_storage();
                 }
 
                 // break if we were idling after 'may_exit'

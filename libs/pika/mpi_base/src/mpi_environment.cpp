@@ -60,7 +60,8 @@ namespace pika { namespace util {
         util::runtime_configuration const& cfg)
     {
         // log message was already generated
-        return detail::detect_mpi_environment(cfg, PIKA_HAVE_PARCELPORT_MPI_ENV);
+        return detail::detect_mpi_environment(
+            cfg, PIKA_HAVE_PARCELPORT_MPI_ENV);
     }
 }}    // namespace pika::util
 

@@ -546,7 +546,8 @@ namespace pika {
 
             return pika::parallel::v1::detail::uninitialized_value_construct_n<
                 FwdIter>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count));
+                .call(
+                    PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count));
         }
 
     } uninitialized_value_construct_n{};

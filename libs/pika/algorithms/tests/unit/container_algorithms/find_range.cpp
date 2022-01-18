@@ -121,7 +121,7 @@ void test_find_exception(IteratorTag)
     try
     {
         pika::ranges::find(decorated_iterator(std::begin(c),
-                              []() { throw std::runtime_error("test"); }),
+                               []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c)), std::size_t(0));
         PIKA_TEST(false);
     }

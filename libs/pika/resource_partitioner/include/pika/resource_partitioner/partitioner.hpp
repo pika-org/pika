@@ -137,7 +137,8 @@ namespace pika { namespace resource {
             resource::partitioner_mode rpmode, pika::util::section rtcfg,
             pika::threads::policies::detail::affinity_data affinity_data);
 
-        partitioner(resource::partitioner_mode rpmode, pika::util::section rtcfg,
+        partitioner(resource::partitioner_mode rpmode,
+            pika::util::section rtcfg,
             pika::threads::policies::detail::affinity_data affinity_data)
           : partitioner_(
                 detail::create_partitioner(rpmode, rtcfg, affinity_data))
@@ -172,8 +173,7 @@ namespace pika { namespace resource {
         PIKA_EXPORT void add_resource(pika::resource::pu const& p,
             std::string const& pool_name, bool exclusive,
             std::size_t num_threads = 1);
-        PIKA_EXPORT void add_resource(
-            std::vector<pika::resource::pu> const& pv,
+        PIKA_EXPORT void add_resource(std::vector<pika::resource::pu> const& pv,
             std::string const& pool_name, bool exclusive = true);
         PIKA_EXPORT void add_resource(pika::resource::core const& c,
             std::string const& pool_name, bool exclusive = true);

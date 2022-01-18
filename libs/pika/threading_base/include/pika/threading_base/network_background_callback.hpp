@@ -13,7 +13,7 @@
 #include <cstdint>
 
 namespace pika { namespace threads { namespace detail {
-#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                            \
+#if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
     using network_background_callback_type =
         util::function_nonser<bool(std::size_t, std::int64_t&, std::int64_t&)>;

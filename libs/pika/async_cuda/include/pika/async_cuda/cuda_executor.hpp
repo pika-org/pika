@@ -84,7 +84,8 @@ namespace pika { namespace cuda { namespace experimental {
           : device_(device)
           , event_mode_(event_mode)
         {
-            target_ = std::make_shared<pika::cuda::experimental::target>(device);
+            target_ =
+                std::make_shared<pika::cuda::experimental::target>(device);
             stream_ = target_->native_handle().get_stream();
         }
 

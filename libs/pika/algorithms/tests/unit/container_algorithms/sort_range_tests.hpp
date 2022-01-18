@@ -676,7 +676,8 @@ void test_sort2_comp(ExPolicy&& policy, T, Compare comp = Compare())
 
     std::uint64_t t = pika::chrono::high_resolution_clock::now();
     // sort, blocking when seq, par, par_vec
-    pika::ranges::sort(std::forward<ExPolicy>(policy), c.begin(), c.end(), comp);
+    pika::ranges::sort(
+        std::forward<ExPolicy>(policy), c.begin(), c.end(), comp);
     std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
 
     bool is_sorted = (verify_(c, comp, elapsed, true) != 0);
@@ -749,7 +750,8 @@ void test_sort1_comp(
 
     std::uint64_t t = pika::chrono::high_resolution_clock::now();
     // sort, blocking when seq, par, par_vec
-    pika::ranges::sort(std::forward<ExPolicy>(policy), c.begin(), c.end(), comp);
+    pika::ranges::sort(
+        std::forward<ExPolicy>(policy), c.begin(), c.end(), comp);
     std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
 
     bool is_sorted = (verify_(c, comp, elapsed, true) != 0);

@@ -510,7 +510,8 @@ namespace pika { namespace parallel { inline namespace v1 {
     PIKA_DEPRECATED_V(0, 1,
         "pika::parallel::transform is deprecated, use pika::ranges::transform "
         "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_in_out_result<typename pika::traits::range_iterator<Rng1>::type,
+        util::in_in_out_result<
+            typename pika::traits::range_iterator<Rng1>::type,
             typename pika::traits::range_iterator<Rng2>::type, OutIter>>::type
         transform(ExPolicy&& policy, Rng1&& rng1, Rng2&& rng2, OutIter dest,
             F&& f, Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
@@ -525,13 +526,15 @@ namespace pika { namespace parallel { inline namespace v1 {
         using iterator_type2 =
             typename pika::traits::range_traits<Rng2>::iterator_type;
 
-        static_assert(pika::traits::is_forward_iterator<iterator_type1>::value &&
+        static_assert(
+            pika::traits::is_forward_iterator<iterator_type1>::value &&
                 pika::traits::is_forward_iterator<iterator_type2>::value,
             "Requires at least forward iterator.");
 
-        return transform(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
-            pika::util::end(rng1), pika::util::begin(rng2), pika::util::end(rng2),
-            PIKA_MOVE(dest), PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
+        return transform(PIKA_FORWARD(ExPolicy, policy),
+            pika::util::begin(rng1), pika::util::end(rng1),
+            pika::util::begin(rng2), pika::util::end(rng2), PIKA_MOVE(dest),
+            PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
             PIKA_FORWARD(Proj2, proj2));
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop
@@ -590,7 +593,8 @@ namespace pika { namespace ranges {
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
             ranges::unary_transform_result<
-                typename pika::traits::range_iterator<Rng>::type, FwdIter>>::type
+                typename pika::traits::range_iterator<Rng>::type,
+                FwdIter>>::type
         tag_fallback_invoke(pika::ranges::transform_t, ExPolicy&& policy,
             Rng&& rng, FwdIter dest, F&& f, Proj&& proj = Proj())
         {
@@ -698,8 +702,8 @@ namespace pika { namespace ranges {
 
             return parallel::v1::detail::transform<
                 unary_transform_result<FwdIter1, FwdIter2>>()
-                .call(pika::execution::seq, first, last, dest, PIKA_FORWARD(F, f),
-                    PIKA_FORWARD(Proj, proj));
+                .call(pika::execution::seq, first, last, dest,
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off

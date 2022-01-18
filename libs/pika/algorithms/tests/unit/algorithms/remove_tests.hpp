@@ -283,7 +283,7 @@ void test_remove_exception(IteratorTag, bool test_for_remove_if = false)
         else
         {
             pika::remove(decorated_iterator(std::begin(c),
-                            []() { throw std::runtime_error("test"); }),
+                             []() { throw std::runtime_error("test"); }),
                 decorated_iterator(std::end(c)), int(10));
         }
 
@@ -421,7 +421,7 @@ void test_remove_bad_alloc(IteratorTag, bool test_for_remove_if = false)
         else
         {
             pika::remove(decorated_iterator(
-                            std::begin(c), []() { throw std::bad_alloc(); }),
+                             std::begin(c), []() { throw std::bad_alloc(); }),
                 decorated_iterator(std::end(c)), int(10));
         }
 

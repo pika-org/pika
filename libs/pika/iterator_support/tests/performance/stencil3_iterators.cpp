@@ -42,7 +42,8 @@ namespace pika { namespace experimental { namespace detail {
     template <typename Iterator>
     PIKA_FORCEINLINE Iterator previous(Iterator const& it)
     {
-        return previous(it, pika::traits::is_random_access_iterator<Iterator>());
+        return previous(
+            it, pika::traits::is_random_access_iterator<Iterator>());
     }
 
     template <typename Iterator>
@@ -175,8 +176,8 @@ namespace pika { namespace experimental {
                 auto next = make_next_transformer(end, end_val);
 
                 return type(
-                    pika::make_tuple(util::make_transform_iterator(it, prev), it,
-                        util::make_transform_iterator(it, next)));
+                    pika::make_tuple(util::make_transform_iterator(it, prev),
+                        it, util::make_transform_iterator(it, next)));
             }
 
             static type create(Iterator const& it)

@@ -205,7 +205,8 @@ namespace pika { namespace threads {
             return;
         }
 
-        auto suspend_direct_wrapper = [&pool, callback = PIKA_MOVE(callback)]() {
+        auto suspend_direct_wrapper = [&pool,
+                                          callback = PIKA_MOVE(callback)]() {
             pool.suspend_direct(throws);
             callback();
         };

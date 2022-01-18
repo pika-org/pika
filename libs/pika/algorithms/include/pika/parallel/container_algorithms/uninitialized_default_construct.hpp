@@ -367,7 +367,8 @@ namespace pika { namespace ranges {
     } uninitialized_default_construct{};
 
     inline constexpr struct uninitialized_default_construct_n_t final
-      : pika::detail::tag_parallel_algorithm<uninitialized_default_construct_n_t>
+      : pika::detail::tag_parallel_algorithm<
+            uninitialized_default_construct_n_t>
     {
     private:
         // clang-format off
@@ -383,9 +384,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_default_construct_n<
-                FwdIter>()
-                .call(pika::execution::seq, first, count);
+            return pika::parallel::v1::detail::
+                uninitialized_default_construct_n<FwdIter>()
+                    .call(pika::execution::seq, first, count);
         }
 
         // clang-format off
@@ -403,9 +404,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_default_construct_n<
-                FwdIter>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, count);
+            return pika::parallel::v1::detail::
+                uninitialized_default_construct_n<FwdIter>()
+                    .call(PIKA_FORWARD(ExPolicy, policy), first, count);
         }
     } uninitialized_default_construct_n{};
 }}    // namespace pika::ranges

@@ -82,8 +82,9 @@ void test_set_difference1_async(ExPolicy&& p, IteratorTag)
 
     std::vector<std::size_t> c3(2 * c1.size()), c4(2 * c1.size());    //-V656
 
-    pika::future<void> result = pika::set_difference(p, iterator(std::begin(c1)),
-        iterator(std::end(c1)), std::begin(c2), std::end(c2), std::begin(c3));
+    pika::future<void> result = pika::set_difference(p,
+        iterator(std::begin(c1)), iterator(std::end(c1)), std::begin(c2),
+        std::end(c2), std::begin(c3));
     result.wait();
 
     std::set_difference(std::begin(c1), std::end(c1), std::begin(c2),
@@ -190,9 +191,9 @@ void test_set_difference2_async(ExPolicy&& p, IteratorTag)
 
     std::vector<std::size_t> c3(2 * c1.size()), c4(2 * c1.size());    //-V656
 
-    pika::future<void> result =
-        pika::set_difference(p, iterator(std::begin(c1)), iterator(std::end(c1)),
-            std::begin(c2), std::end(c2), std::begin(c3), comp);
+    pika::future<void> result = pika::set_difference(p,
+        iterator(std::begin(c1)), iterator(std::end(c1)), std::begin(c2),
+        std::end(c2), std::begin(c3), comp);
     result.wait();
 
     std::set_difference(std::begin(c1), std::end(c1), std::begin(c2),
@@ -243,7 +244,7 @@ void test_set_difference_exception(IteratorTag)
     try
     {
         pika::set_difference(decorated_iterator(std::begin(c1),
-                                []() { throw std::runtime_error("test"); }),
+                                 []() { throw std::runtime_error("test"); }),
             decorated_iterator(std::end(c1)), std::begin(c2), std::end(c2),
             std::begin(c3));
 
@@ -395,7 +396,7 @@ void test_set_difference_bad_alloc(IteratorTag)
     try
     {
         pika::set_difference(decorated_iterator(std::begin(c1),
-                                []() { throw std::bad_alloc(); }),
+                                 []() { throw std::bad_alloc(); }),
             decorated_iterator(std::end(c1)), std::begin(c2), std::end(c2),
             std::begin(c3));
 

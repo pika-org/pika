@@ -84,5 +84,6 @@ namespace pika { namespace util {
         pika::chrono::steady_time_point;
     using steady_duration PIKA_DEPRECATED_V(0, 1,
         "pika::util::steady_duration is deprecated. Use "
-        "pika::chrono::steady_duration instead.") = pika::chrono::steady_duration;
+        "pika::chrono::steady_duration instead.") =
+        pika::chrono::steady_duration;
 }}    // namespace pika::util

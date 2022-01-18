@@ -21,7 +21,5 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Local/Algorithms/Block"
   )
 
-  pika_add_unit_test(
-    "modules.algorithms.block" ${test} ${${test}_PARAMETERS}
-  )
+  pika_add_unit_test("modules.algorithms.block" ${test} ${${test}_PARAMETERS})
 endforeach()

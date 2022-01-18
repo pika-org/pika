@@ -49,8 +49,8 @@ namespace pika { namespace traits {
         is_serialized_with_id<T>::value;
 }}    // namespace pika::traits
 
-#define PIKA_TRAITS_NONINTRUSIVE_POLYMORPHIC(Class)                             \
-    namespace pika { namespace traits {                                         \
+#define PIKA_TRAITS_NONINTRUSIVE_POLYMORPHIC(Class)                            \
+    namespace pika { namespace traits {                                        \
             template <>                                                        \
             struct is_nonintrusive_polymorphic<Class> : std::true_type         \
             {                                                                  \
@@ -59,10 +59,10 @@ namespace pika { namespace traits {
     }                                                                          \
     /**/
 
-#define PIKA_TRAITS_NONINTRUSIVE_POLYMORPHIC_TEMPLATE(TEMPLATE, ARG_LIST)       \
-    namespace pika { namespace traits {                                         \
-            PIKA_PP_STRIP_PARENS(TEMPLATE)                                      \
-            struct is_nonintrusive_polymorphic<PIKA_PP_STRIP_PARENS(ARG_LIST)>  \
+#define PIKA_TRAITS_NONINTRUSIVE_POLYMORPHIC_TEMPLATE(TEMPLATE, ARG_LIST)      \
+    namespace pika { namespace traits {                                        \
+            PIKA_PP_STRIP_PARENS(TEMPLATE)                                     \
+            struct is_nonintrusive_polymorphic<PIKA_PP_STRIP_PARENS(ARG_LIST)> \
               : std::true_type                                                 \
             {                                                                  \
             };                                                                 \
@@ -70,8 +70,8 @@ namespace pika { namespace traits {
     }                                                                          \
     /**/
 
-#define PIKA_TRAITS_SERIALIZED_WITH_ID(Class)                                   \
-    namespace pika { namespace traits {                                         \
+#define PIKA_TRAITS_SERIALIZED_WITH_ID(Class)                                  \
+    namespace pika { namespace traits {                                        \
             template <>                                                        \
             struct is_serialized_with_id<Class> : std::true_type               \
             {                                                                  \
@@ -80,10 +80,10 @@ namespace pika { namespace traits {
     }                                                                          \
     /**/
 
-#define PIKA_TRAITS_SERIALIZED_WITH_ID_TEMPLATE(TEMPLATE, ARG_LIST)             \
-    namespace pika { namespace traits {                                         \
-            PIKA_PP_STRIP_PARENS(TEMPLATE)                                      \
-            struct is_serialized_with_id<PIKA_PP_STRIP_PARENS(ARG_LIST)>        \
+#define PIKA_TRAITS_SERIALIZED_WITH_ID_TEMPLATE(TEMPLATE, ARG_LIST)            \
+    namespace pika { namespace traits {                                        \
+            PIKA_PP_STRIP_PARENS(TEMPLATE)                                     \
+            struct is_serialized_with_id<PIKA_PP_STRIP_PARENS(ARG_LIST)>       \
               : std::true_type                                                 \
             {                                                                  \
             };                                                                 \

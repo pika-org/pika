@@ -142,7 +142,7 @@ void test_max_element_exception(IteratorTag)
         try
         {
             pika::max_element(decorated_iterator(std::begin(c),
-                                 []() { throw std::runtime_error("test"); }),
+                                  []() { throw std::runtime_error("test"); }),
                 decorated_iterator(std::end(c)), std::less<std::size_t>());
 
             PIKA_TEST(false);
@@ -165,7 +165,7 @@ void test_max_element_exception(IteratorTag)
         try
         {
             pika::max_element(decorated_iterator(std::begin(c),
-                                 []() { throw std::runtime_error("test"); }),
+                                  []() { throw std::runtime_error("test"); }),
                 decorated_iterator(std::end(c)));
 
             PIKA_TEST(false);
@@ -352,7 +352,7 @@ void test_max_element_bad_alloc(IteratorTag)
         try
         {
             pika::max_element(decorated_iterator(std::begin(c),
-                                 []() { throw std::bad_alloc(); }),
+                                  []() { throw std::bad_alloc(); }),
                 decorated_iterator(std::end(c)), std::less<std::size_t>());
 
             PIKA_TEST(false);
@@ -373,7 +373,7 @@ void test_max_element_bad_alloc(IteratorTag)
         try
         {
             pika::max_element(decorated_iterator(std::begin(c),
-                                 []() { throw std::bad_alloc(); }),
+                                  []() { throw std::bad_alloc(); }),
                 decorated_iterator(std::end(c)));
 
             PIKA_TEST(false);

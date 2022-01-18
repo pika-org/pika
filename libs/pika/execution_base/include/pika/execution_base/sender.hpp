@@ -254,11 +254,13 @@ namespace pika { namespace execution { namespace experimental {
           : std::integral_constant<bool,
                 pika::is_invocable_v<connect_t, Sender&&, Receiver&&> ||
                     pika::is_invocable_v<connect_t, Sender&&, Receiver&> ||
-                    pika::is_invocable_v<connect_t, Sender&&, Receiver const&> ||
+                    pika::is_invocable_v<connect_t, Sender&&,
+                        Receiver const&> ||
                     pika::is_invocable_v<connect_t, Sender&, Receiver&&> ||
                     pika::is_invocable_v<connect_t, Sender&, Receiver&> ||
                     pika::is_invocable_v<connect_t, Sender&, Receiver const&> ||
-                    pika::is_invocable_v<connect_t, Sender const&, Receiver&&> ||
+                    pika::is_invocable_v<connect_t, Sender const&,
+                        Receiver&&> ||
                     pika::is_invocable_v<connect_t, Sender const&, Receiver&> ||
                     pika::is_invocable_v<connect_t, Sender const&,
                         Receiver const&>>

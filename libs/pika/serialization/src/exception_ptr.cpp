@@ -199,8 +199,9 @@ namespace pika { namespace serialization {
             default:
             case pika::util::std_exception:
             case pika::util::unknown_exception:
-                e = pika::detail::get_exception(pika::detail::std_exception(what),
-                    throw_function_, throw_file_, throw_line_);
+                e = pika::detail::get_exception(
+                    pika::detail::std_exception(what), throw_function_,
+                    throw_file_, throw_line_);
                 break;
 
             // standard exceptions
@@ -239,8 +240,9 @@ namespace pika { namespace serialization {
                     throw_function_, throw_file_, throw_line_);
                 break;
             case pika::util::std_bad_exception:
-                e = pika::detail::get_exception(pika::detail::bad_exception(what),
-                    throw_function_, throw_file_, throw_line_);
+                e = pika::detail::get_exception(
+                    pika::detail::bad_exception(what), throw_function_,
+                    throw_file_, throw_line_);
                 break;
 
 #if ASIO_HAS_BOOST_THROW_EXCEPTION != 0
@@ -265,8 +267,8 @@ namespace pika { namespace serialization {
             // pika::exception
             case pika::util::pika_exception:
                 e = pika::detail::get_exception(
-                    pika::exception(
-                        static_cast<pika::error>(err_value), what, pika::rethrow),
+                    pika::exception(static_cast<pika::error>(err_value), what,
+                        pika::rethrow),
                     throw_function_, throw_file_, throw_line_);
                 break;
 

@@ -239,7 +239,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
         return detail::adjacent_find<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(Pred, pred),
+            PIKA_FORWARD(ExPolicy, policy), first, last,
+            PIKA_FORWARD(Pred, pred),
             pika::parallel::util::projection_identity{});
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
 #pragma GCC diagnostic pop

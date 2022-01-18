@@ -74,16 +74,13 @@ if(PIKA_WITH_EXAMPLES_TBB)
   list(APPEND benchmarks tbb_homogeneous_timed_task_spawn)
 
   set(tbb_homogeneous_timed_task_spawn_FLAGS
-      NOLIBS DEPENDENCIES ${boost_library_dependencies} ${TBB_LIBRARIES}
-      pika
+      NOLIBS DEPENDENCIES ${boost_library_dependencies} ${TBB_LIBRARIES} pika
   )
 
   set(tbb_homogeneous_timed_task_spawn_INCLUDE_DIRECTORIES ${TBB_INCLUDE_DIR})
 endif()
 
-set(delay_baseline_FLAGS NOLIBS DEPENDENCIES ${boost_library_dependencies}
-                         pika
-)
+set(delay_baseline_FLAGS NOLIBS DEPENDENCIES ${boost_library_dependencies} pika)
 set(delay_baseline_threaded_FLAGS DEPENDENCIES ${boost_library_dependencies}
                                   pika
 )
@@ -136,9 +133,7 @@ foreach(benchmark ${benchmarks})
   target_link_libraries(${benchmark}_test PRIVATE ${${benchmark}_LIBRARIES})
 
   if(NOT "${${benchmark}_PARAMETERS}" MATCHES NO_PIKA_MAIN)
-    pika_add_performance_test(
-      "local" ${benchmark} ${${benchmark}_PARAMETERS}
-    )
+    pika_add_performance_test("local" ${benchmark} ${${benchmark}_PARAMETERS})
   endif()
 
 endforeach()

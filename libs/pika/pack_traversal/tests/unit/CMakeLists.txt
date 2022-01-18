@@ -18,7 +18,5 @@ foreach(test ${tests})
     FOLDER "Tests/Unit/Modules/Local/PackTraversal"
   )
 
-  pika_add_unit_test(
-    "modules.pack_traversal" ${test} ${${test}_PARAMETERS}
-  )
+  pika_add_unit_test("modules.pack_traversal" ${test} ${${test}_PARAMETERS})
 endforeach()

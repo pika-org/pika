@@ -32,7 +32,7 @@
 
 namespace pika { namespace threads {
     /// \cond NOINTERNAL
-#if !defined(PIKA_HAVE_MORE_THAN_64_THREADS) ||                                 \
+#if !defined(PIKA_HAVE_MORE_THAN_64_THREADS) ||                                \
     (defined(PIKA_HAVE_MAX_CPU_COUNT) && PIKA_HAVE_MAX_CPU_COUNT <= 64)
     typedef std::uint64_t mask_type;
     typedef std::uint64_t mask_cref_type;

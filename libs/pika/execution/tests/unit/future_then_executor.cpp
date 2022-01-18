@@ -153,7 +153,8 @@ void test_complex_then_chain_one(Executor& exec)
 template <typename Executor>
 void test_complex_then_chain_two(Executor& exec)
 {
-    pika::future<int> f2 = pika::async(exec, p1).then(exec, &p2).then(exec, &p2);
+    pika::future<int> f2 =
+        pika::async(exec, p1).then(exec, &p2).then(exec, &p2);
     PIKA_TEST(f2.get() == 4);
 }
 

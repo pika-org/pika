@@ -139,8 +139,8 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename... Senders_>
             explicit constexpr when_all_sender(Senders_&&... senders)
-              : senders(
-                    std::piecewise_construct, PIKA_FORWARD(Senders_, senders)...)
+              : senders(std::piecewise_construct,
+                    PIKA_FORWARD(Senders_, senders)...)
             {
             }
 
@@ -179,8 +179,8 @@ namespace pika { namespace execution { namespace experimental {
 
             template <std::size_t I>
             static constexpr std::size_t sender_pack_size_at_index =
-                single_variant_t<typename sender_traits<pika::util::at_index_t<I,
-                    Senders...>>::template value_types<pika::util::pack,
+                single_variant_t<typename sender_traits<pika::util::at_index_t<
+                    I, Senders...>>::template value_types<pika::util::pack,
                     pika::util::pack>>::size;
 
             template <typename Receiver, typename SendersPack,
@@ -221,10 +221,12 @@ namespace pika { namespace execution { namespace experimental {
                     using type = pika::optional<std::decay_t<T>>;
                 };
                 using value_types_storage_type =
-                    pika::util::detail::change_pack_t<pika::util::member_pack_for,
+                    pika::util::detail::change_pack_t<
+                        pika::util::member_pack_for,
                         pika::util::detail::transform_t<
                             pika::util::detail::concat_pack_of_packs_t<
-                                value_types<pika::util::pack, pika::util::pack>>,
+                                value_types<pika::util::pack,
+                                    pika::util::pack>>,
                             add_optional>>;
                 // Values sent by all predecessor senders are stored here in the
                 // base-case operation state. They are stored in a
@@ -237,8 +239,8 @@ namespace pika { namespace execution { namespace experimental {
                 std::atomic<bool> set_done_error_called{false};
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-                using operation_state_type =
-                    std::decay_t<decltype(pika::execution::experimental::connect(
+                using operation_state_type = std::decay_t<decltype(
+                    pika::execution::experimental::connect(
                         std::declval<SendersPack>().template get<i>(),
                         when_all_receiver<operation_state>(
                             std::declval<std::decay_t<operation_state>&>())))>;
@@ -269,10 +271,11 @@ namespace pika { namespace execution { namespace experimental {
 
                 template <std::size_t... Is, typename... Ts>
                 void set_value_helper(
-                    pika::util::member_pack<pika::util::index_pack<Is...>, Ts...>&
-                        ts)
+                    pika::util::member_pack<pika::util::index_pack<Is...>,
+                        Ts...>& ts)
                 {
-                    pika::execution::experimental::set_value(PIKA_MOVE(receiver),
+                    pika::execution::experimental::set_value(
+                        PIKA_MOVE(receiver),
                         PIKA_MOVE(*(ts.template get<Is>()))...);
                 }
 
@@ -319,8 +322,8 @@ namespace pika { namespace execution { namespace experimental {
                 static constexpr std::size_t i_storage_offset =
                     base_type::i_storage_offset + base_type::sender_pack_size;
 
-                using operation_state_type =
-                    std::decay_t<decltype(pika::execution::experimental::connect(
+                using operation_state_type = std::decay_t<decltype(
+                    pika::execution::experimental::connect(
                         PIKA_FORWARD(SendersPack, senders).template get<i>(),
                         when_all_receiver<operation_state>(
                             std::declval<std::decay_t<operation_state>&>())))>;

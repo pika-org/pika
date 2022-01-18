@@ -28,7 +28,8 @@ int pika_main()
         // This thread should get scheduled last (because of
         // pika::threads::thread_schedule_state::pending) and let the function
         // spawned above run.
-        pika::this_thread::suspend(pika::threads::thread_schedule_state::pending);
+        pika::this_thread::suspend(
+            pika::threads::thread_schedule_state::pending);
     }
 
     PIKA_TEST(run);
@@ -55,10 +56,11 @@ void test_scheduler(int argc, char* argv[])
                     thread_queue_init);
                 std::unique_ptr<Scheduler> scheduler(new Scheduler(init));
 
-                thread_pool_init.mode_ = pika::threads::policies::scheduler_mode(
-                    pika::threads::policies::do_background_work |
-                    pika::threads::policies::reduce_thread_priority |
-                    pika::threads::policies::delay_exit);
+                thread_pool_init.mode_ =
+                    pika::threads::policies::scheduler_mode(
+                        pika::threads::policies::do_background_work |
+                        pika::threads::policies::reduce_thread_priority |
+                        pika::threads::policies::delay_exit);
 
                 std::unique_ptr<pika::threads::thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<Scheduler>(

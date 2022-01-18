@@ -82,7 +82,8 @@ namespace pika { namespace parallel { namespace execution {
         {
             PIKA_ASSERT(f.is_ready());
             auto shared_state =
-                pika::traits::future_access<pika::future<T>>::get_shared_state(f);
+                pika::traits::future_access<pika::future<T>>::get_shared_state(
+                    f);
             return *shared_state->get_result();
         }
 
@@ -330,8 +331,8 @@ namespace pika { namespace parallel { namespace execution {
                 "Function    : ", pika::util::debug::print_type<F>(), "\n\t",
                 "Predecessor  : ", pika::util::debug::print_type<Future>(),
                 "\n\t", "Future       : ",
-                pika::util::debug::print_type<
-                    typename pika::traits::future_traits<Future>::result_type>(),
+                pika::util::debug::print_type<typename pika::traits::
+                        future_traits<Future>::result_type>(),
                 "\n\t",
                 "Arguments   : ", pika::util::debug::print_type<Ts...>(" | "),
                 "\n\t",

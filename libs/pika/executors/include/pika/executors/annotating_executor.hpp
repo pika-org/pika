@@ -117,16 +117,16 @@ namespace pika { namespace execution { namespace experimental {
         decltype(auto) bulk_async_execute(F&& f, S const& shape, Ts&&... ts)
         {
             return parallel::execution::bulk_async_execute(exec_,
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_), shape,
-                PIKA_FORWARD(Ts, ts)...);
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
+                shape, PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename S, typename... Ts>
         decltype(auto) bulk_sync_execute(F&& f, S const& shape, Ts&&... ts)
         {
             return parallel::execution::bulk_sync_execute(exec_,
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_), shape,
-                PIKA_FORWARD(Ts, ts)...);
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
+                shape, PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename F, typename S, typename Future, typename... Ts>
@@ -134,8 +134,9 @@ namespace pika { namespace execution { namespace experimental {
             F&& f, S const& shape, Future&& predecessor, Ts&&... ts)
         {
             return parallel::execution::bulk_then_execute(exec_,
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_), shape,
-                PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
+                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
+                shape, PIKA_FORWARD(Future, predecessor),
+                PIKA_FORWARD(Ts, ts)...);
         }
 
         // support with_annotation property

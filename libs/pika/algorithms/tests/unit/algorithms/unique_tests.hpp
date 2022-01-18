@@ -351,8 +351,8 @@ void test_unique_etc(ExPolicy policy, IteratorTag, DataType, int rand_base)
     {
         using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
-        auto result =
-            pika::unique(policy, iterator(std::begin(c)), iterator(std::end(c)));
+        auto result = pika::unique(
+            policy, iterator(std::begin(c)), iterator(std::end(c)));
         auto solution = std::unique(std::begin(d), std::end(d));
 
         bool equality =

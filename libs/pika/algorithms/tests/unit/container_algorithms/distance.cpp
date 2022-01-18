@@ -13,7 +13,7 @@
 int main()
 {
     PIKA_TEST_EQ(pika::parallel::v1::detail::distance(
-                    iterator<std::int64_t>{0}, sentinel<int64_t>{100}),
+                     iterator<std::int64_t>{0}, sentinel<int64_t>{100}),
         100);
 
     return pika::util::report_errors();

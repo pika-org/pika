@@ -21,8 +21,6 @@ foreach(test ${function_tests})
     FOLDER "Tests/Regressions/Modules/Local/Functional"
   )
 
-  pika_add_regression_test(
-    "modules.functional" ${test} ${${test}_PARAMETERS}
-  )
+  pika_add_regression_test("modules.functional" ${test} ${${test}_PARAMETERS})
 
 endforeach()

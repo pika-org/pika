@@ -684,8 +684,8 @@ void test_wait_for_either_of_two_futures_list_1()
 
     pt1();
 
-    pika::future<pika::when_any_result<std::vector<pika::shared_future<int>>>> r =
-        pika::when_any(futures);
+    pika::future<pika::when_any_result<std::vector<pika::shared_future<int>>>>
+        r = pika::when_any(futures);
     pika::when_any_result<std::vector<pika::shared_future<int>>> raw = r.get();
 
     PIKA_TEST_EQ(raw.index, 0u);
@@ -710,8 +710,8 @@ void test_wait_for_either_of_two_futures_list_2()
 
     pt2();
 
-    pika::future<pika::when_any_result<std::vector<pika::shared_future<int>>>> r =
-        pika::when_any(futures);
+    pika::future<pika::when_any_result<std::vector<pika::shared_future<int>>>>
+        r = pika::when_any(futures);
     pika::when_any_result<std::vector<pika::shared_future<int>>> raw = r.get();
 
     PIKA_TEST_EQ(raw.index, 1u);
@@ -953,8 +953,8 @@ void test_wait_for_either_of_five_futures_1_from_list()
 
     pt1();
 
-    pika::future<pika::when_any_result<std::vector<pika::shared_future<int>>>> r =
-        pika::when_any(futures);
+    pika::future<pika::when_any_result<std::vector<pika::shared_future<int>>>>
+        r = pika::when_any(futures);
     pika::when_any_result<std::vector<pika::shared_future<int>>> raw = r.get();
 
     PIKA_TEST_EQ(raw.index, 0u);
@@ -994,8 +994,8 @@ void test_wait_for_either_of_five_futures_1_from_list_iterators()
 
     pt1();
 
-    pika::future<pika::when_any_result<std::vector<pika::shared_future<int>>>> r =
-        pika::when_any(futures.begin(), futures.end());
+    pika::future<pika::when_any_result<std::vector<pika::shared_future<int>>>>
+        r = pika::when_any(futures.begin(), futures.end());
     pika::when_any_result<std::vector<pika::shared_future<int>>> raw = r.get();
 
     PIKA_TEST_EQ(raw.index, 0u);

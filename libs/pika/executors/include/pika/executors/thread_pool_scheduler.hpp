@@ -198,7 +198,8 @@ namespace pika { namespace execution { namespace experimental {
             friend operation_state<Scheduler, Receiver> tag_invoke(
                 connect_t, sender&& s, Receiver&& receiver)
             {
-                return {PIKA_MOVE(s.scheduler), PIKA_FORWARD(Receiver, receiver)};
+                return {
+                    PIKA_MOVE(s.scheduler), PIKA_FORWARD(Receiver, receiver)};
             }
 
             template <typename Receiver>

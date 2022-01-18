@@ -55,8 +55,8 @@ function(pika_add_library_sources_noglob name)
     SOURCES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
-  # pika_print_list("DEBUG" "pika_add_library_sources_noglob.${name}"
-  # "Sources for ${name}" ${SOURCES_SOURCES})
+  # pika_print_list("DEBUG" "pika_add_library_sources_noglob.${name}" "Sources
+  # for ${name}" ${SOURCES_SOURCES})
 
   set(sources ${SOURCES_SOURCES})
 

@@ -51,8 +51,7 @@ namespace pika {
     /// \cond NOINTERNAL
     PIKA_EXPORT std::error_category const& get_lightweight_pika_category();
 
-    PIKA_EXPORT std::error_category const& get_pika_category(
-        throwmode mode);
+    PIKA_EXPORT std::error_category const& get_pika_category(throwmode mode);
 
     inline std::error_code make_system_error_code(
         error e, throwmode mode = plain)

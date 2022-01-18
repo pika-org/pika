@@ -4,8 +4,8 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-# These are a dummy targets that we add compile flags to. All pika targets should
-# link to them.
+# These are a dummy targets that we add compile flags to. All pika targets
+# should link to them.
 add_library(pika_private_flags INTERFACE)
 add_library(pika_public_flags INTERFACE)
 
