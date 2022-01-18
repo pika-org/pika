@@ -14,7 +14,7 @@ rm -f ./jenkins-pika* ./*-Testing
 
 export configuration_name_with_build_type="${configuration_name}-${build_type,,}"
 
-source .jenkins/cscs/slurm-constraint-${configuration_name}.sh
+source ".jenkins/cscs/slurm-constraint-${configuration_name}.sh"
 
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request
@@ -43,10 +43,10 @@ sbatch \
 
 # Print slurm logs
 echo "= stdout =================================================="
-cat jenkins-pika-${configuration_name_with_build_type}.out
+cat "jenkins-pika-${configuration_name_with_build_type}.out"
 
 echo "= stderr =================================================="
-cat jenkins-pika-${configuration_name_with_build_type}.err
+cat "jenkins-pika-${configuration_name_with_build_type}.err"
 
 # Get build status
 status_file="jenkins-pika-${configuration_name_with_build_type}-ctest-status.txt"

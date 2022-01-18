@@ -12,7 +12,7 @@ set -eux
 # Clean up old artifacts
 rm -f ./jenkins-pika* ./*-Testing
 
-source .jenkins/cscs-perftests/slurm-constraint-${configuration_name}.sh
+source ".jenkins/cscs-perftests/slurm-constraint-${configuration_name}.sh"
 
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request
@@ -41,10 +41,10 @@ sbatch \
 
 # Print slurm logs
 echo "= stdout =================================================="
-cat jenkins-pika-${configuration_name}.out
+cat "jenkins-pika-${configuration_name}.out"
 
 echo "= stderr =================================================="
-cat jenkins-pika-${configuration_name}.err
+cat "jenkins-pika-${configuration_name}.err"
 
 # Get build status
 status_file="jenkins-pika-${configuration_name}-ctest-status.txt"

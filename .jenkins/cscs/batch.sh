@@ -17,8 +17,8 @@ install_dir="/dev/shm/pika/install"
 mkdir -p "${build_dir}"
 cp -r "${orig_src_dir}" "${src_dir}"
 
-source ${src_dir}/.jenkins/cscs/env-common.sh
-source ${src_dir}/.jenkins/cscs/env-${configuration_name}.sh
+source "${src_dir}/.jenkins/cscs/env-common.sh"
+source "${src_dir}/.jenkins/cscs/env-${configuration_name}.sh"
 
 set +e
 ctest \
@@ -43,7 +43,7 @@ file_errors=1
 configure_errors=1
 build_errors=1
 test_errors=1
-if [[ -f ${build_dir}/Testing/TAG ]]; then
+if [[ -f "${build_dir}/Testing/TAG" ]]; then
     file_errors=0
     tag="$(head -n 1 ${build_dir}/Testing/TAG)"
 

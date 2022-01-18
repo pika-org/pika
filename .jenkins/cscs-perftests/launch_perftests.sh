@@ -25,7 +25,7 @@ pika_test_options=(
 
 # Build binaries for performance tests
 ${perftests_dir}/driver.py -v -l $logfile build -b release -o build \
-    --source-dir ${src_dir} --build-dir ${build_dir} -e $envfile \
+    --source-dir ${src_dir} --build-dir "${build_dir}" -e $envfile \
     -t "${pika_targets[@]}" ||
     {
         echo 'Build failed'
@@ -39,10 +39,10 @@ result_files=""
 # Run and compare for each targets specified
 for executable in "${pika_targets[@]}"; do
     test_opts=${pika_test_options[$index]}
-    result=${build_dir}/reports/${executable}.json
-    reference=${perftests_dir}/perftest/references/daint_default/${executable}.json
-    result_files+=(${result})
-    references_files+=(${reference})
+    result="${build_dir}/reports/${executable}.json"
+    reference="${perftests_dir}/perftest/references/daint_default/${executable}.json"
+    result_files+=("${result}")
+    references_files+=("${reference}")
     logfile_tmp=log_perftests_${executable}.tmp
 
     run_command=("./bin/${executable} ${test_opts}")
@@ -50,8 +50,8 @@ for executable in "${pika_targets[@]}"; do
     # TODO: make schedulers and other options vary
 
     # Run performance tests
-    ${perftests_dir}/driver.py -v -l $logfile_tmp perftest run --local True \
-        --run_output $result --targets-and-opts "${run_command[@]}" ||
+    ${perftests_dir}/driver.py -v -l "$logfile_tmp" perftest run --local True \
+        --run_output "$result" --targets-and-opts "${run_command[@]}" ||
         {
             echo 'Running failed'
             test_errors=1
@@ -62,9 +62,9 @@ for executable in "${pika_targets[@]}"; do
 done
 
 # Plot comparison of current result with references
-${perftests_dir}/driver.py -v -l $logfile perftest plot compare --references \
+${perftests_dir}/driver.py -v -l "$logfile" perftest plot compare --references \
     ${references_files[@]} --results ${result_files[@]} \
-    -o ${build_dir}/reports/reference-comparison ||
+    -o "${build_dir}/reports/reference-comparison" ||
     {
         echo 'Plotting failed: performance drop or unknown'
         plot_errors=1
