@@ -11,9 +11,9 @@ set(threading_base_headers
     pika/threading_base/callback_notifier.hpp
     pika/threading_base/create_thread.hpp
     pika/threading_base/create_work.hpp
+    pika/threading_base/detail/get_default_pool.hpp
     pika/threading_base/detail/reset_backtrace.hpp
     pika/threading_base/detail/reset_lco_description.hpp
-    pika/threading_base/detail/get_default_pool.hpp
     pika/threading_base/execution_agent.hpp
     pika/threading_base/external_timer.hpp
     pika/threading_base/network_background_callback.hpp
@@ -24,6 +24,7 @@ set(threading_base_headers
     pika/threading_base/scheduler_state.hpp
     pika/threading_base/scoped_annotation.hpp
     pika/threading_base/set_thread_state.hpp
+    pika/threading_base/set_thread_state_timed.hpp
     pika/threading_base/thread_data.hpp
     pika/threading_base/thread_data_stackful.hpp
     pika/threading_base/thread_data_stackless.hpp
