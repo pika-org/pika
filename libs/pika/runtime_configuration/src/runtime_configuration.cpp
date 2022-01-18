@@ -7,6 +7,7 @@
 
 #include <pika/local/config/endian.hpp>
 #include <pika/assert.hpp>
+#include <pika/errors/exception.hpp>
 #include <pika/local/version.hpp>
 #include <pika/modules/filesystem.hpp>
 #include <pika/modules/itt_notify.hpp>
