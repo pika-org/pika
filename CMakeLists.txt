@@ -794,14 +794,14 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_ASYNC_MPI
+  PIKA_WITH_MPI
   BOOL
   "Enable support for returning futures from MPI asynchronous calls (default: ON)"
   OFF
   CATEGORY "MPI"
 )
 
-if(PIKA_WITH_ASYNC_MPI)
+if(PIKA_WITH_MPI)
   # mpi parcelport settings
   pika_option(
     PIKA_WITH_PARCELPORT_MPI_ENV
