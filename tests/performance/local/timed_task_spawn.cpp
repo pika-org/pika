@@ -140,8 +140,8 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
         }
     }
 
-    pika::util::format_to(cout, "{}, {}, {}, {}, {:.14g}, {:.14g}", delay, tasks,
-        suspended_tasks, cores, walltime, warmup_estimate);
+    pika::util::format_to(cout, "{}, {}, {}, {}, {:.14g}, {:.14g}", delay,
+        tasks, suspended_tasks, cores, walltime, warmup_estimate);
 
     if (ac)
     {

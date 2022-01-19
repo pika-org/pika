@@ -169,7 +169,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -321,35 +321,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    template <typename ExPolicy, typename FwdIter, typename T>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::uninitialized_fill is deprecated, use "
-        "pika::uninitialized_fill "
-        "instead")
-    inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy>::type>::type
-        uninitialized_fill(
-            ExPolicy&& policy, FwdIter first, FwdIter last, T const& value)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
-            "Required at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        using result_type =
-            typename pika::parallel::util::detail::algorithm_result<
-                ExPolicy>::type;
-
-        return pika::util::void_guard<result_type>(),
-               pika::parallel::v1::detail::uninitialized_fill<FwdIter>().call(
-                   PIKA_FORWARD(ExPolicy, policy), first, last, value);
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
     /////////////////////////////////////////////////////////////////////////////
     // uninitialized_fill_n
     namespace detail {
@@ -411,38 +382,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    template <typename ExPolicy, typename FwdIter, typename Size, typename T>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::uninitialized_fill_n is deprecated, use "
-        "pika::uninitialized_fill_n "
-        "instead")
-    inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type>::type
-        uninitialized_fill_n(
-            ExPolicy&& policy, FwdIter first, Size count, T const& value)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
-            "Required at least forward iterator.");
-
-        // if count is representing a negative value, we do nothing
-        if (detail::is_negative(count))
-        {
-            return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
-                PIKA_MOVE(first));
-        }
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::uninitialized_fill_n<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count), value);
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

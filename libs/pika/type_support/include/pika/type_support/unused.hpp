@@ -9,7 +9,7 @@
 #pragma once
 
 // clang-format off
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if defined(PIKA_MSVC)
 # pragma warning(push)
 # pragma warning(disable: 4522) // multiple assignment operators specified warning

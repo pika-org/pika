@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/detail/vtable/vtable.hpp>
 
 namespace pika { namespace util { namespace detail {

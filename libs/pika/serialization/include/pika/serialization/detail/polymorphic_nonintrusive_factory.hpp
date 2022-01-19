@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/modules/debugging.hpp>
 #include <pika/modules/errors.hpp>
@@ -28,7 +28,7 @@
 #include <typeinfo>
 #include <unordered_map>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace serialization { namespace detail {
 
@@ -222,7 +222,7 @@ namespace pika { namespace serialization { namespace detail {
 
 }}}    // namespace pika::serialization::detail
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>
 
 #define PIKA_SERIALIZATION_REGISTER_CLASS_DECLARATION(Class)                   \
     namespace pika { namespace serialization { namespace detail {              \

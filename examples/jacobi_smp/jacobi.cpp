@@ -6,7 +6,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #if !defined(JACOBI_SMP_NO_pika)
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #endif
 
 #include <pika/modules/program_options.hpp>
@@ -62,7 +62,7 @@ int pika_main(variables_map& vm)
 #if defined(JACOBI_SMP_NO_pika)
     return 0;
 #else
-    return pika::local::finalize();
+    return pika::finalize();
 #endif
 }
 
@@ -72,7 +72,8 @@ int pika_main(variables_map& vm)
 
 int main(int argc, char** argv)
 {
-    options_description desc_cmd("usage: " PIKA_APPLICATION_STRING " [options]");
+    options_description desc_cmd(
+        "usage: " PIKA_APPLICATION_STRING " [options]");
 
     // clang-format off
     desc_cmd.add_options()
@@ -101,9 +102,9 @@ int main(int argc, char** argv)
     }
     return pika_main(vm);
 #else
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_cmd;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 #endif
 }

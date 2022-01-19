@@ -366,7 +366,7 @@ namespace pika { namespace ranges {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -379,46 +379,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value)>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::reverse is deprecated, use pika::ranges::reverse "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        typename pika::traits::range_iterator<Rng>::type>::type
-        reverse(ExPolicy&& policy, Rng&& rng)
-    {
-        return detail::reverse<
-            typename pika::traits::range_iterator<Rng>::type>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng));
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename OutIter,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            pika::traits::is_iterator<OutIter>::value
-        )>
-    // clang-format on
-    typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<typename pika::traits::range_iterator<Rng>::type,
-            OutIter>>::type
-    reverse_copy(ExPolicy&& policy, Rng&& rng, OutIter dest_first)
-    {
-        return detail::reverse_copy<util::in_out_result<
-            typename pika::traits::range_iterator<Rng>::type, OutIter>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), dest_first);
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
     /// `reverse_copy_result` is equivalent to

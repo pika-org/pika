@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/datastructures/any.hpp>
 #include <pika/datastructures/traits/supports_streaming_with_any.hpp>
@@ -398,24 +398,8 @@ namespace pika { namespace util {
             std::in_place_type<T>, il, PIKA_FORWARD(Ts, ts)...);
     }
 
-    template <typename T, typename Char>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::make_any is deprecated. Please use pika::make_any "
-        "instead.")
-    basic_any<serialization::input_archive, serialization::output_archive,
-        Char> make_any(T&& t)
-    {
-        return basic_any<serialization::input_archive,
-            serialization::output_archive, Char, std::true_type>(
-            PIKA_FORWARD(T, t));
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     // backwards compatibility
-    using any PIKA_DEPRECATED_V(
-        0, 1, "pika::util::any is deprecated. Please use pika::any instead.") =
-        basic_any<serialization::input_archive, serialization::output_archive,
-            char, std::true_type>;
     using wany = basic_any<serialization::input_archive,
         serialization::output_archive, wchar_t, std::true_type>;
 

@@ -376,7 +376,7 @@ namespace pika { namespace ranges {
         Proj&& proj = Proj());
 }}    // namespace pika::ranges
 #else
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
@@ -388,29 +388,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename F,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-            pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                pika::parallel::traits::projected_range<Proj, Rng>>::value)>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::for_each is deprecated, use "
-        "pika::ranges::for_each instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            typename pika::traits::range_iterator<Rng>::type>::type
-        for_each(ExPolicy&& policy, Rng&& rng, F&& f, Proj&& proj = Proj())
-    {
-        return for_each(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
     template <typename I, typename F>

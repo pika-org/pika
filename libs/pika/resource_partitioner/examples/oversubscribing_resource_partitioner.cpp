@@ -4,15 +4,15 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/local/algorithm.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/runtime.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/algorithm.hpp>
+#include <pika/execution.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/schedulers.hpp>
+#include <pika/runtime.hpp>
+#include <pika/thread.hpp>
 //
 #include <cmath>
 #include <cstddef>
@@ -216,7 +216,7 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
               << std::endl;
     thread_set.clear();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 // -------------------------------------------------------------------------
@@ -264,7 +264,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 }
 
 // the normal int main function that is called at startup and runs on an OS
-// thread the user must call pika::local::init to start the pika runtime which
+// thread the user must call pika::init to start the pika runtime which
 // will execute pika_main on an pika thread
 int main(int argc, char* argv[])
 {
@@ -277,12 +277,12 @@ int main(int argc, char* argv[])
             "Number of threads to assign to custom pool");
     // clang-format on
 
-    pika::local::init_params iparams;
+    pika::init_params iparams;
 
     iparams.desc_cmdline = desc_cmdline;
     iparams.rp_mode = pika::resource::mode_allow_oversubscription;
     iparams.rp_callback = init_resource_partitioner_handler;
 
-    return pika::local::init(pika_main, argc, argv, iparams);
+    return pika::init(pika_main, argc, argv, iparams);
 }
 #endif

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/algorithms/traits/pointer_category.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/parallel/algorithms/detail/distance.hpp>

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 
 namespace pika { namespace execution { namespace experimental {

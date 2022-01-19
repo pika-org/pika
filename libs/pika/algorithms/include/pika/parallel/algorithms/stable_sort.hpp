@@ -224,9 +224,9 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/async_local/dataflow.hpp>
+#include <pika/async/dataflow.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -342,44 +342,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename RandomIt, typename Sentinel,
-        typename Proj = util::projection_identity,
-        typename Compare = detail::less,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator_v<RandomIt> &&
-            pika::traits::is_sentinel_for<Sentinel, RandomIt>::value &&
-            traits::is_projected<Proj, RandomIt>::value &&
-            traits::is_indirect_callable<ExPolicy, Compare,
-                traits::projected<Proj, RandomIt>,
-                traits::projected<Proj, RandomIt>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::stable_sort is deprecated, use pika::stable_sort "
-        "instead")
-        typename util::detail::algorithm_result<ExPolicy, RandomIt>::type
-        stable_sort(ExPolicy&& policy, RandomIt first, Sentinel last,
-            Compare&& comp = Compare(), Proj&& proj = Proj())
-    {
-        static_assert((pika::traits::is_random_access_iterator_v<RandomIt>),
-            "Requires a random access iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::stable_sort<RandomIt>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last,
-            PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

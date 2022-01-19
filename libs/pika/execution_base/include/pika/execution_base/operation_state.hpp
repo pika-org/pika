@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config/constexpr.hpp>
+#include <pika/config/constexpr.hpp>
 #include <pika/functional/tag_invoke.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
 

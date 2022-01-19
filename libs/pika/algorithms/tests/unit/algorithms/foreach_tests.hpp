@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/execution.hpp>
+#include <pika/execution.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/for_each.hpp>
 

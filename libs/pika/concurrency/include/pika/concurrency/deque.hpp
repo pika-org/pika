@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concurrency/detail/freelist.hpp>
 #include <pika/concurrency/detail/tagged_ptr_pair.hpp>
 

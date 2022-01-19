@@ -783,7 +783,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
@@ -796,111 +796,6 @@ namespace pika {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    template <typename T>
-    using minmax_element_result = pika::parallel::util::min_max_result<T>;
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng,
-        typename Proj = util::projection_identity,
-        typename F = detail::less,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_range_v<Rng> &&
-            pika::parallel::traits::is_projected_range_v<Proj, Rng> &&
-            pika::parallel::traits::is_indirect_callable_v<
-                ExPolicy, F,
-                pika::parallel::traits::projected_range<Proj, Rng>,
-                pika::parallel::traits::projected_range<Proj, Rng>
-            >
-        )>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::min_element is deprecated, use "
-        "pika::ranges::min_element instead")
-        pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            typename pika::traits::range_traits<Rng>::iterator_type>
-    min_element(ExPolicy&& policy, Rng&& rng, F&& f = F(), Proj&& proj = Proj())
-    // clang-format on
-    {
-        return pika::parallel::v1::detail::min_element<
-            pika::traits::range_iterator_t<Rng>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng,
-        typename Proj = util::projection_identity,
-        typename F = detail::less,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_range_v<Rng> &&
-            pika::parallel::traits::is_projected_range_v<Proj, Rng> &&
-            pika::parallel::traits::is_indirect_callable_v<
-                ExPolicy, F,
-                pika::parallel::traits::projected_range<Proj, Rng>,
-                pika::parallel::traits::projected_range<Proj, Rng>
-            >
-        )>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::max_element is deprecated, use "
-        "pika::ranges::max_element instead")
-        pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            typename pika::traits::range_traits<Rng>::iterator_type>
-    max_element(ExPolicy&& policy, Rng&& rng, F&& f = F(), Proj&& proj = Proj())
-    // clang-format on
-    {
-        return pika::parallel::v1::detail::max_element<
-            pika::traits::range_iterator_t<Rng>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
-    }
-
-#if defined(PIKA_MSVC)
-#pragma push_macro("min")
-#pragma push_macro("max")
-#undef min
-#undef max
-#endif
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng,
-        typename Proj = util::projection_identity, typename F = detail::less,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_range_v<Rng> &&
-            pika::parallel::traits::is_projected_range_v<Proj, Rng> &&
-            pika::parallel::traits::is_indirect_callable_v<
-                ExPolicy, F,
-                pika::parallel::traits::projected_range<Proj, Rng>,
-                pika::parallel::traits::projected_range<Proj, Rng>
-            >
-        )>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::minmax_element is deprecated, use "
-        "pika::ranges::minmax_element instead")
-        pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            minmax_element_result<pika::traits::range_iterator_t<Rng>>>
-    minmax_element(
-        ExPolicy&& policy, Rng&& rng, F&& f = F(), Proj&& proj = Proj())
-    // clang-format on
-    {
-        return pika::parallel::v1::detail::minmax_element<
-            pika::traits::range_iterator_t<Rng>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
-    }
-
-#if defined(PIKA_MSVC)
-#pragma pop_macro("min")
-#pragma pop_macro("max")
-#endif
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

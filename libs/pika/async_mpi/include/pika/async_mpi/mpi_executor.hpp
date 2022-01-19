@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_mpi/mpi_future.hpp>
 #include <pika/execution/executors/static_chunk_size.hpp>
 #include <pika/execution_base/execution.hpp>

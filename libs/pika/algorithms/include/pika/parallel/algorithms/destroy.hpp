@@ -104,7 +104,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
@@ -200,32 +200,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::destroy is deprecated, use pika::destroy instead")
-        typename util::detail::algorithm_result<ExPolicy>::type
-        destroy(ExPolicy&& policy, FwdIter first, FwdIter last)
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Required at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::destroy<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last);
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // destroy_n
     namespace detail {
@@ -271,40 +245,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename Size,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::destroy_n is deprecated, use pika::destroy_n instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        destroy_n(ExPolicy&& policy, FwdIter first, Size count)
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-
-        // if count is representing a negative value, we do nothing
-        if (detail::is_negative(count))
-        {
-            return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
-                PIKA_MOVE(first));
-        }
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::destroy_n<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
 

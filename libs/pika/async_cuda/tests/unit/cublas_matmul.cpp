@@ -25,14 +25,14 @@
 // Currently, nvcc does not handle lambda functions properly and it is simpler to use
 // cudaMalloc/cudaMemcpy etc, so we do not #define PIKA_CUBLAS_DEMO_WITH_ALLOCATOR
 
+#include <pika/algorithm.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_cuda/custom_blas_api.hpp>
 #include <pika/async_cuda/custom_gpu_api.hpp>
-#include <pika/local/algorithm.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/async_cuda.hpp>
 #include <pika/modules/testing.hpp>
 
@@ -319,7 +319,7 @@ int pika_main(pika::program_options::variables_map& vm)
     pika::cuda::experimental::cublas_executor cublas3(std::move(cublas));
     matrixMultiply<float>(cublas3, matrix_size, device, 1);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 // -------------------------------------------------------------------------
@@ -347,9 +347,9 @@ int main(int argc, char** argv)
         pika::program_options::value<unsigned int>(),
         "the random number generator seed to use for this run");
     // clang-format on
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    auto result = pika::local::init(pika_main, argc, argv, init_args);
+    auto result = pika::init(pika_main, argc, argv, init_args);
     return result || pika::util::report_errors();
 }

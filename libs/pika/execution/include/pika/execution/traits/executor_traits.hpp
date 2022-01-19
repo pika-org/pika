@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_base/traits/is_launch_policy.hpp>
 #include <pika/concepts/has_member_xxx.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>

@@ -4,9 +4,9 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/async_mpi.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/program_options.hpp>
@@ -164,11 +164,11 @@ int pika_main(pika::program_options::variables_map& vm)
 
         // let the user polling go out of scope
     }
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 // the normal int main function that is called at startup and runs on an OS
-// thread the user must call pika::local::init to start the pika runtime which
+// thread the user must call pika::init to start the pika runtime which
 // will execute pika_main on an pika thread
 int main(int argc, char* argv[])
 {
@@ -198,11 +198,11 @@ int main(int argc, char* argv[])
     // clang-format on
 
     // Initialize and run pika.
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    auto result = pika::local::init(pika_main, argc, argv, init_args);
+    auto result = pika::init(pika_main, argc, argv, init_args);
 
     // Finalize MPI
     MPI_Finalize();

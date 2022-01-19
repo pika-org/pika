@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/hashing/fibhash.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>

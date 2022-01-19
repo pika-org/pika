@@ -17,9 +17,9 @@
 // This code implements two versions of the skynet micro benchmark: a 'normal'
 // and a futurized one.
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 
 #include <cstdint>
 #include <iostream>
@@ -98,7 +98,8 @@ int pika_main()
     {
         std::uint64_t t = pika::chrono::high_resolution_clock::now();
 
-        pika::future<std::int64_t> result = pika::async(skynet_f, 0, 1000000, 10);
+        pika::future<std::int64_t> result =
+            pika::async(skynet_f, 0, 1000000, 10);
         result.wait();
 
         t = pika::chrono::high_resolution_clock::now() - t;
@@ -111,5 +112,5 @@ int pika_main()
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

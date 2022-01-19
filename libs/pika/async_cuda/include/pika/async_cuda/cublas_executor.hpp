@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if defined(PIKA_HAVE_GPU_SUPPORT) && defined(PIKA_HAVE_GPUBLAS)
 #include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_executor.hpp>

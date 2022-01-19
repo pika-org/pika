@@ -400,7 +400,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
@@ -611,96 +611,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename Op, typename Conv, typename T,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator_v<FwdIter1> &&
-            pika::traits::is_iterator_v<FwdIter2> &&
-            pika::is_invocable_v<Conv,
-                typename std::iterator_traits<FwdIter1>::value_type> &&
-            pika::is_invocable_v<Op,
-                typename pika::util::invoke_result_t<Conv,
-                    typename std::iterator_traits<FwdIter1>::value_type>,
-                typename pika::util::invoke_result_t<Conv,
-                    typename std::iterator_traits<FwdIter1>::value_type>
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::transform_inclusive_scan is deprecated, use "
-        "pika::transform_inclusive_scan instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
-        transform_inclusive_scan(ExPolicy&& policy, FwdIter1 first,
-            FwdIter1 last, FwdIter2 dest, Op&& op, Conv&& conv, T init)
-    {
-        static_assert(pika::traits::is_forward_iterator_v<FwdIter1>,
-            "Requires at least forward iterator.");
-        static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
-            "Requires at least forward iterator.");
-
-        using result_type = parallel::util::in_out_result<FwdIter1, FwdIter2>;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return parallel::util::get_second_element(
-            detail::transform_inclusive_scan<result_type>().call(
-                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                PIKA_FORWARD(Conv, conv), PIKA_MOVE(init),
-                PIKA_FORWARD(Op, op)));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename Conv, typename Op,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator_v<FwdIter1> &&
-            pika::traits::is_iterator_v<FwdIter2> &&
-            pika::is_invocable_v<Conv,
-                typename std::iterator_traits<FwdIter1>::value_type> &&
-            pika::is_invocable_v<Op,
-                typename pika::util::invoke_result_t<Conv,
-                    typename std::iterator_traits<FwdIter1>::value_type>,
-                typename pika::util::invoke_result_t<Conv,
-                    typename std::iterator_traits<FwdIter1>::value_type>
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::transform_inclusive_scan is deprecated, use "
-        "pika::transform_inclusive_scan instead")
-        typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
-        transform_inclusive_scan(ExPolicy&& policy, FwdIter1 first,
-            FwdIter1 last, FwdIter2 dest, Op&& op, Conv&& conv)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
-            "Requires at least forward iterator.");
-        static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
-            "Requires at least forward iterator.");
-
-        using result_type = parallel::util::in_out_result<FwdIter1, FwdIter2>;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return parallel::util::get_second_element(
-            detail::transform_inclusive_scan<result_type>().call(
-                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                PIKA_FORWARD(Conv, conv), PIKA_FORWARD(Op, op)));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

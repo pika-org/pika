@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/traits/is_bind_expression.hpp>
 
 #include <type_traits>

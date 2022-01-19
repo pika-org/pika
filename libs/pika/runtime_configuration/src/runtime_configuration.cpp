@@ -5,10 +5,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config/endian.hpp>
 #include <pika/assert.hpp>
 #include <pika/errors/exception.hpp>
-#include <pika/local/version.hpp>
 #include <pika/modules/filesystem.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/prefix/find_prefix.hpp>
@@ -19,6 +17,7 @@
 #include <pika/runtime_configuration/runtime_mode.hpp>
 #include <pika/util/from_string.hpp>
 #include <pika/util/get_entry_as.hpp>
+#include <pika/version.hpp>
 
 #include <boost/tokenizer.hpp>
 

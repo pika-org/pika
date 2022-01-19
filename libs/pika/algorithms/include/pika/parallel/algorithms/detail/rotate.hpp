@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/invoke.hpp>
 
 #include <pika/execution/algorithms/detail/predicates.hpp>

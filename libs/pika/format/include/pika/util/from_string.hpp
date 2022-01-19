@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/util/bad_lexical_cast.hpp>
 
 #include <algorithm>

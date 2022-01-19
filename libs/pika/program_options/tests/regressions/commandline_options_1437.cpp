@@ -6,7 +6,7 @@
 //
 // Demonstrating #1437: pika::init() should strip pika-related flags from argv
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 bool invoked_main = false;
@@ -17,14 +17,14 @@ int my_pika_main(int argc, char**)
     PIKA_TEST_EQ(argc, 1);
 
     invoked_main = true;
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
     PIKA_TEST_LT(1, argc);
 
-    PIKA_TEST_EQ(pika::local::init(&my_pika_main, argc, argv), 0);
+    PIKA_TEST_EQ(pika::init(&my_pika_main, argc, argv), 0);
     PIKA_TEST(invoked_main);
 
     return pika::util::report_errors();

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
-#include <pika/local/config/endian.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/config/endian.hpp>
 #include <pika/serialization/array.hpp>
 #include <pika/serialization/detail/serialize_collection.hpp>
 #include <pika/serialization/serialization_fwd.hpp>

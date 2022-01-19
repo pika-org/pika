@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_MODULE_MPI_BASE)
 
@@ -17,7 +17,7 @@
 #include <cstdlib>
 #include <string>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
     struct PIKA_EXPORT mpi_environment
@@ -73,13 +73,13 @@ namespace pika { namespace util {
     };
 }}    // namespace pika::util
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>
 
 #else
 
 #include <pika/modules/runtime_configuration.hpp>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
     struct PIKA_EXPORT mpi_environment
@@ -88,6 +88,6 @@ namespace pika { namespace util {
     };
 }}    // namespace pika::util
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>
 
 #endif

@@ -4,9 +4,9 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/barrier.hpp>
-#include <pika/local/init.hpp>
-#include <pika/modules/async_local.hpp>
+#include <pika/barrier.hpp>
+#include <pika/init.hpp>
+#include <pika/modules/async.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <atomic>
@@ -210,10 +210,10 @@ int pika_main()
     test_barrier_empty_oncomplete_split();
     test_barrier_oncomplete_split();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

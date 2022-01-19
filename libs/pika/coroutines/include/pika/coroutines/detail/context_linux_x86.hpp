@@ -14,7 +14,7 @@
 
 #if defined(__linux) || defined(linux) || defined(__linux__)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
 #include <pika/coroutines/detail/posix_utility.hpp>

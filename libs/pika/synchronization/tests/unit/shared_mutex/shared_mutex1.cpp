@@ -6,11 +6,11 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/async_local/apply.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/shared_mutex.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/async/apply.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
+#include <pika/shared_mutex.hpp>
+#include <pika/thread.hpp>
 
 #include <pika/modules/testing.hpp>
 
@@ -355,7 +355,7 @@ int pika_main()
     test_unlocking_writer_unblocks_all_readers();
     test_unlocking_last_reader_only_unblocks_one_writer();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -364,9 +364,9 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.cfg = cfg;
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv, init_args), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

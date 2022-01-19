@@ -9,12 +9,12 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_combinators/wait_all.hpp>
 #include <pika/modules/errors.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/async_local/dataflow.hpp>
+#include <pika/async/dataflow.hpp>
 #endif
 
 #include <pika/execution/executors/execution.hpp>

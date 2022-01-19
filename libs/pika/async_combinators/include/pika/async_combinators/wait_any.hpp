@@ -119,7 +119,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_combinators/wait_some.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/futures/future.hpp>
@@ -270,96 +270,4 @@ namespace pika {
         pika::wait_some(1, PIKA_FORWARD(Ts, ts)...);
     }
 }    // namespace pika
-
-namespace pika::lcos {
-
-    ///////////////////////////////////////////////////////////////////////////
-    template <typename Future>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    void wait_any(std::vector<Future> const& futures, error_code& = throws)
-    {
-        pika::wait_some(1, futures);
-    }
-
-    template <typename Future>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    void wait_any(std::vector<Future>& lazy_values, error_code& = throws)
-    {
-        pika::wait_any(const_cast<std::vector<Future> const&>(lazy_values));
-    }
-
-    template <typename Future>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    void wait_any(std::vector<Future>&& lazy_values, error_code& = throws)
-    {
-        pika::wait_any(const_cast<std::vector<Future> const&>(lazy_values));
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    template <typename Future, std::size_t N>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    void wait_any(std::array<Future, N> const& futures, error_code& = throws)
-    {
-        pika::wait_some(1, futures);
-    }
-
-    template <typename Future, std::size_t N>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    void wait_any(std::array<Future, N>& lazy_values, error_code& = throws)
-    {
-        pika::wait_any(const_cast<std::array<Future, N> const&>(lazy_values));
-    }
-
-    template <typename Future, std::size_t N>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    void wait_any(std::array<Future, N>&& lazy_values, error_code& = throws)
-    {
-        pika::wait_any(const_cast<std::array<Future, N> const&>(lazy_values));
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    void wait_any(Iterator begin, Iterator end, error_code& = throws)
-    {
-        pika::wait_some(1, begin, end);
-    }
-
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    inline void wait_any(error_code& = throws)
-    {
-        pika::wait_some(1);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    void wait_any_n(Iterator begin, std::size_t count, error_code& = throws)
-    {
-        pika::wait_some_n(1, begin, count);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    template <typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::wait_any is deprecated. Use pika::wait_any instead.")
-    void wait_any(Ts&&... ts)
-    {
-        pika::wait_some(1, PIKA_FORWARD(Ts, ts)...);
-    }
-}    // namespace pika::lcos
-
 #endif    // DOXYGEN

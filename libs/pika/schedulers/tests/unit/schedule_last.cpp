@@ -4,11 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 
 #include <cstddef>
@@ -34,13 +34,13 @@ int pika_main()
 
     PIKA_TEST(run);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 template <typename Scheduler>
 void test_scheduler(int argc, char* argv[])
 {
-    pika::local::init_params init_args;
+    pika::init_params init_args;
 
     init_args.cfg = {"pika.os_threads=1"};
     init_args.rp_callback = [](auto& rp,
@@ -70,7 +70,7 @@ void test_scheduler(int argc, char* argv[])
             });
     };
 
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv, init_args), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
 }
 
 int main(int argc, char* argv[])

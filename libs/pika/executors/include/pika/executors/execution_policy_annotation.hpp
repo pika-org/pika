@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution/executors/execution_parameters.hpp>
 #include <pika/execution/executors/rebind_executor.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>

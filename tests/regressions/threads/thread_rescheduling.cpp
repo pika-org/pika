@@ -6,10 +6,10 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 
 #include <boost/dynamic_bitset.hpp>
 
@@ -170,7 +170,7 @@ int pika_main(variables_map& vm)
             pika::threads::thread_restart_state::terminate);
     }
 
-    pika::local::finalize();
+    pika::finalize();
 
     return 0;
 }
@@ -188,10 +188,10 @@ int main(int argc, char* argv[])
             "grain size of the future tree");
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    PIKA_TEST_EQ(0, pika::local::init(pika_main, argc, argv, init_args));
+    PIKA_TEST_EQ(0, pika::init(pika_main, argc, argv, init_args));
 
     PIKA_TEST(woken);
 

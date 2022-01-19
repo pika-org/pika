@@ -7,8 +7,8 @@
 // This test case demonstrates the issue described in #1613: Dataflow causes
 // stack overflow
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <atomic>
@@ -80,11 +80,11 @@ int pika_main()
     test_exception_from_continuation1();
     test_exception_from_continuation2();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
     return pika::util::report_errors();
 }

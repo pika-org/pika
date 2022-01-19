@@ -4,8 +4,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <chrono>
@@ -49,12 +49,12 @@ int pika_main()
     test_make_ready_future();
     test_async();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

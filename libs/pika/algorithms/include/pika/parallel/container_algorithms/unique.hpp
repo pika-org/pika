@@ -587,7 +587,7 @@ namespace pika { namespace ranges {
 
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/iterator_support/iterator_range.hpp>
@@ -602,72 +602,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-    // clang-format off
-    template <typename ExPolicy, typename Rng,
-        typename Pred = detail::equal_to,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy, Pred,
-                traits::projected_range<Proj, Rng>,
-                traits::projected_range<Proj, Rng>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::unique is deprecated, use pika::unique instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            pika::traits::range_iterator_t<Rng>>::type unique(ExPolicy&& policy,
-            Rng&& rng, Pred&& pred = Pred(), Proj&& proj = Proj())
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return unique(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), PIKA_FORWARD(Pred, pred),
-            PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename FwdIter2,
-        typename Pred = detail::equal_to,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            pika::traits::is_iterator<FwdIter2>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy, Pred,
-                traits::projected_range<Proj, Rng>,
-                traits::projected_range<Proj, Rng>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::unique_copy is deprecated, use pika::unique_copy "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<pika::traits::range_iterator_t<Rng>,
-            FwdIter2>>::type unique_copy(ExPolicy&& policy, Rng&& rng,
-        FwdIter2 dest, Pred&& pred = Pred(), Proj&& proj = Proj())
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return unique_copy(PIKA_FORWARD(ExPolicy, policy),
-            pika::util::begin(rng), pika::util::end(rng), dest,
-            PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

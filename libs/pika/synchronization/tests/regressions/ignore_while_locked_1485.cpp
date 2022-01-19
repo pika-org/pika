@@ -9,10 +9,10 @@
 // `ignore_all_while_checking` can be used instead to ignore all locks
 // (including the ones that are not supported by `ignore_while_checking`).
 
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/synchronization.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 
 #include <atomic>
 #include <functional>
@@ -99,12 +99,12 @@ void test_condition_with_mutex()
 int pika_main()
 {
     test_condition_with_mutex();
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

@@ -146,7 +146,7 @@ namespace pika {
 
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/iterator_support/zip_iterator.hpp>
@@ -256,42 +256,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 
         /// \endcond
     }    // namespace detail
-
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::adjacent_difference is deprecated, use "
-        "pika::adjacent_difference instead")
-    inline std::enable_if_t<pika::is_execution_policy_v<ExPolicy>,
-        util::detail::algorithm_result_t<ExPolicy,
-            FwdIter2>> adjacent_difference(ExPolicy&& policy, FwdIter1 first,
-        FwdIter1 last, FwdIter2 dest)
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return pika::parallel::v1::detail::adjacent_difference<FwdIter2>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, dest, std::minus<>());
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename Op>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::adjacent_difference is deprecated, use "
-        "pika::adjacent_difference instead")
-    inline std::enable_if_t<pika::is_execution_policy_v<ExPolicy>,
-        util::detail::algorithm_result_t<ExPolicy,
-            FwdIter2>> adjacent_difference(ExPolicy&& policy, FwdIter1 first,
-        FwdIter1 last, FwdIter2 dest, Op&& op)
-    {
-        return detail::adjacent_difference<FwdIter2>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-            PIKA_FORWARD(Op, op));
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

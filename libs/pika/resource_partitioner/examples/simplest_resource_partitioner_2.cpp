@@ -9,14 +9,14 @@
 // intended for inclusion in the documentation.
 
 //[body
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 
 #include <iostream>
 
 int pika_main()
 {
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 void init_resource_partitioner_handler(pika::resource::partitioner& rp,
@@ -47,9 +47,9 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 int main(int argc, char* argv[])
 {
     // Set the callback to init the thread_pools
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.rp_callback = &init_resource_partitioner_handler;
 
-    pika::local::init(pika_main, argc, argv, init_args);
+    pika::init(pika_main, argc, argv, init_args);
 }
 //body]

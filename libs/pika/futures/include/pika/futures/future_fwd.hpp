@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 namespace pika {
 
@@ -24,16 +24,4 @@ namespace pika {
 
     template <typename R>
     class shared_future;
-
-    namespace lcos {
-        template <typename R>
-        using future PIKA_DEPRECATED_V(0, 1,
-            "pika::lcos::future is deprecated. Use pika::future instead.") =
-            pika::future<R>;
-
-        template <typename R>
-        using shared_future PIKA_DEPRECATED_V(0, 1,
-            "pika::lcos::shared_future is deprecated. Use pika::shared_future "
-            "instead.") = pika::shared_future<R>;
-    }    // namespace lcos
 }    // namespace pika

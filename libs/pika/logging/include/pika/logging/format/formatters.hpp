@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/logging/manipulator.hpp>
 
 #include <memory>

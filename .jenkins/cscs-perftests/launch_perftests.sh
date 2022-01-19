@@ -10,8 +10,8 @@ set -ex
 
 pika_targets=(
     "foreach_report_test"
-    "future_overhead_local_report_test"
-    "stream_local_report_test")
+    "future_overhead_report_test"
+    "stream_report_test")
 pika_test_options=(
     "--pika:ini=pika.thread_queue.init_threads_count=100 \
     --pika:threads=4 --vector_size=10000 --work_delay=1 \

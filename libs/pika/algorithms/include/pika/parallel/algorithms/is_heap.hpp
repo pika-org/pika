@@ -134,7 +134,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
@@ -272,40 +272,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename RandIter,
-        typename Comp = detail::less, typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<RandIter>::value &&
-            traits::is_projected<Proj, RandIter>::value &&
-            traits::is_indirect_callable<ExPolicy, Comp,
-                traits::projected<Proj, RandIter>,
-                traits::projected<Proj, RandIter>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::is_heap is deprecated, use pika::is_heap instead")
-        typename util::detail::algorithm_result<ExPolicy, bool>::type
-        is_heap(ExPolicy&& policy, RandIter first, RandIter last,
-            Comp&& comp = Comp(), Proj&& proj = Proj())
-    {
-        static_assert(
-            (pika::traits::is_random_access_iterator<RandIter>::value),
-            "Requires a random access iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::is_heap<RandIter>().call(PIKA_FORWARD(ExPolicy, policy),
-            first, last, PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // is_heap_until
     namespace detail {
@@ -422,43 +388,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename RandIter,
-        typename Comp = detail::less, typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<RandIter>::value &&
-            traits::is_projected<Proj, RandIter>::value &&
-            traits::is_indirect_callable<ExPolicy, Comp,
-                traits::projected<Proj, RandIter>,
-                traits::projected<Proj, RandIter>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::is_heap_until is deprecated, use pika::is_heap_until "
-        "instead")
-        typename util::detail::algorithm_result<ExPolicy, RandIter>::type
-        is_heap_until(ExPolicy&& policy, RandIter first, RandIter last,
-            Comp&& comp = Comp(), Proj&& proj = Proj())
-    {
-        static_assert(
-            (pika::traits::is_random_access_iterator<RandIter>::value),
-            "Requires a random access iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::is_heap_until<RandIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last,
-            PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
 

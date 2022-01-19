@@ -49,13 +49,13 @@ pika_add_module(
     pika_allocator_support
     pika_assertion
     pika_concurrency
-    pika_config_local
+    pika_config
     pika_debugging
     pika_errors
     pika_execution_base
     pika_futures
     pika_memory
-    pika_runtime_local
+    pika_runtime
     pika_threading_base
   DEPENDENCIES ${async_cuda_extra_deps}
   CMAKE_SUBDIRS examples tests

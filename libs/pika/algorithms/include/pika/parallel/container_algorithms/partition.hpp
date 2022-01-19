@@ -898,7 +898,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -912,79 +912,6 @@ namespace pika {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename Pred,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy, Pred,
-                traits::projected_range<Proj, Rng>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::partition is deprecated, use pika::partition instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            typename pika::traits::range_iterator<Rng>::type>::type
-        partition(
-            ExPolicy&& policy, Rng&& rng, Pred&& pred, Proj&& proj = Proj())
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return partition(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), PIKA_FORWARD(Pred, pred),
-            PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename FwdIter2,
-        typename FwdIter3, typename Pred,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_range<Rng>::value &&
-            pika::traits::is_iterator_v<FwdIter2> &&
-            pika::traits::is_iterator_v<FwdIter3> &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy, Pred,
-                traits::projected_range<Proj, Rng>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::partition_copy is deprecated, use "
-        "pika::partition_copy "
-        "instead") util::detail::algorithm_result_t<ExPolicy,
-        parallel::util::in_out_out_result<pika::traits::range_iterator_t<Rng>,
-            FwdIter2, FwdIter3>> partition_copy(ExPolicy&& policy, Rng&& rng,
-        FwdIter2 dest_true, FwdIter3 dest_false, Pred&& pred,
-        Proj&& proj = Proj())
-    {
-        using iterator = pika::traits::range_iterator_t<Rng>;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        static_assert(pika::traits::is_forward_iterator_v<iterator>,
-            "Requires at least forward iterator.");
-
-        return parallel::util::make_in_out_out_result(partition_copy(
-            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), dest_true, dest_false,
-            PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

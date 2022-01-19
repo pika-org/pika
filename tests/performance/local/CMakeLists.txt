@@ -13,8 +13,8 @@ set(benchmarks
     delay_baseline
     delay_baseline_threaded
     function_object_wrapper_overhead
-    future_overhead_local
-    future_overhead_local_report
+    future_overhead
+    future_overhead_report
     heterogeneous_timed_task_spawn
     tls_overhead
     native_tls_overhead
@@ -22,8 +22,8 @@ set(benchmarks
     print_heterogeneous_payloads
     resume_suspend
     skynet
-    stream_local
-    stream_local_report
+    stream
+    stream_report
     wait_all_timings
 )
 
@@ -90,8 +90,8 @@ set(print_heterogeneous_payloads_FLAGS NOLIBS DEPENDENCIES
 set(resume_suspend_FLAGS DEPENDENCIES pika_timing)
 set(native_tls_overhead_LIBRARIES pika_dependencies_boost)
 
-set(future_overhead_local_PARAMETERS THREADS_PER_LOCALITY 4)
-set(future_overhead_local_report_PARAMETERS THREADS_PER_LOCALITY 4)
+set(future_overhead_PARAMETERS THREADS_PER_LOCALITY 4)
+set(future_overhead_report_PARAMETERS THREADS_PER_LOCALITY 4)
 
 # These tests do not run on pika threads, so we don't want to pass pika params
 # into them

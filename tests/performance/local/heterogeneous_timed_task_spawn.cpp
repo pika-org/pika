@@ -5,10 +5,10 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/local/functional.hpp>
-#include <pika/local/init.hpp>
+#include <pika/functional.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/format.hpp>
 #include <pika/modules/threadmanager.hpp>
 #include <pika/modules/timing.hpp>
@@ -213,7 +213,7 @@ int pika_main(variables_map& vm)
         print_results(get_os_thread_count(), t.elapsed());
     }
 
-    pika::local::finalize();
+    pika::finalize();
     return 0;
 }
 
@@ -252,9 +252,9 @@ int main(int argc, char* argv[])
     // clang-format on
 
     // Initialize and run pika.
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }
 #endif

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/member_pack.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution_base/receiver.hpp>

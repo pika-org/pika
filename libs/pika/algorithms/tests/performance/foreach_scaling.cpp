@@ -5,13 +5,13 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
+#include <pika/algorithm.hpp>
+#include <pika/chrono.hpp>
+#include <pika/execution.hpp>
 #include <pika/executors/parallel_executor_aggregated.hpp>
-#include <pika/local/algorithm.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 
 #include "foreach_scaling_helpers.hpp"
 
@@ -230,13 +230,13 @@ int pika_main(pika::program_options::variables_map& vm)
     if (test_count == 0 || test_count < 0)
     {
         std::cerr << "test_count cannot be zero or negative...\n" << std::flush;
-        pika::local::finalize();
+        pika::finalize();
         return -1;
     }
     else if (delay < 0)
     {
         std::cerr << "delay cannot be a negative number...\n" << std::flush;
-        pika::local::finalize();
+        pika::finalize();
         return -1;
     }
     else
@@ -400,7 +400,7 @@ int pika_main(pika::program_options::variables_map& vm)
             std::cerr << "unknown executor option (should be aggregated, "
                          "forkjoin, scheduler or parallel (default)\n"
                       << std::flush;
-            pika::local::finalize();
+            pika::finalize();
             return -1;
         }
 
@@ -497,7 +497,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -539,10 +539,10 @@ int main(int argc, char* argv[])
         ;
     // clang-format on
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }
 #endif

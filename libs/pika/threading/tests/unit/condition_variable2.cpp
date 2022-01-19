@@ -10,7 +10,7 @@
 //  (http://creativecommons.org/licenses/by/4.0/).
 
 #include <pika/functional/bind_back.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/synchronization.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/threading.hpp>
@@ -632,12 +632,12 @@ int pika_main()
         PIKA_TEST(false);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

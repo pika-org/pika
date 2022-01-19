@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_base/launch_policy.hpp>
@@ -357,19 +357,6 @@ namespace pika { namespace execution {
 
     using parallel_executor = parallel_policy_executor<pika::launch>;
 }}    // namespace pika::execution
-
-namespace pika { namespace parallel { namespace execution {
-    using parallel_executor PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_executor is deprecated. Use "
-        "pika::execution::parallel_executor instead.") =
-        pika::execution::parallel_executor;
-    template <typename Policy>
-    using parallel_policy_executor PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_policy_executor is deprecated. "
-        "Use "
-        "pika::execution::parallel_policy_executor instead.") =
-        pika::execution::parallel_policy_executor<Policy>;
-}}}    // namespace pika::parallel::execution
 
 namespace pika { namespace parallel { namespace execution {
     /// \cond NOINTERNAL

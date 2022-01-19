@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/all_any_none.hpp>
 #include <pika/parallel/container_algorithms/all_any_none.hpp>

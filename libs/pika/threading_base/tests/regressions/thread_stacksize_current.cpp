@@ -10,9 +10,9 @@
 // thread_stacksize::minimal and thread_stacksize::maximal when a thread has been
 // created.
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 
-#include <pika/modules/async_local.hpp>
+#include <pika/modules/async.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/threading_base.hpp>
 
@@ -58,7 +58,7 @@ int pika_main()
         test(stacksize);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
@@ -68,10 +68,10 @@ int main(int argc, char** argv)
         "abp-priority-lifo", "shared-priority"};
     for (auto const& scheduler : schedulers)
     {
-        pika::local::init_params iparams;
+        pika::init_params iparams;
         iparams.cfg = {"--pika:queuing=" + std::string(scheduler)};
         std::cout << iparams.cfg[0] << std::endl;
-        pika::local::init(pika_main, argc, argv, iparams);
+        pika::init(pika_main, argc, argv, iparams);
     }
 
     return pika::util::report_errors();

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/errors/exception.hpp>
 #include <pika/mpi_base/mpi.hpp>
 

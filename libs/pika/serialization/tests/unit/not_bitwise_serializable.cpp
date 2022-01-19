@@ -7,8 +7,8 @@
 // enforce that types are bitwise serializable by default
 #define PIKA_SERIALIZATION_HAVE_ALL_TYPES_ARE_BITWISE_SERIALIZABLE
 
-#include <pika/local/config.hpp>
-#include <pika/local/init.hpp>
+#include <pika/config.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/serialization.hpp>
 #include <pika/modules/testing.hpp>
 
@@ -173,11 +173,11 @@ int pika_main()
         PIKA_TEST_EQ(ib.b, 42.0);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
     return pika::util::report_errors();
 }

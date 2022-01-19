@@ -9,9 +9,7 @@
 int main()
 {
     int a[]{1, 10, 100, 1000};
-    std::inclusive_scan(
-        a, a + 4, a, [](int v1, int v2) { return v1 + v2; });
+    std::inclusive_scan(a, a + 4, a, [](int v1, int v2) { return v1 + v2; });
 
-    std::exclusive_scan(
-        a, a + 4, a, 0, [](int v1, int v2) { return v1 + v2; });
+    std::exclusive_scan(a, a + 4, a, 0, [](int v1, int v2) { return v1 + v2; });
 }

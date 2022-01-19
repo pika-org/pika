@@ -4,10 +4,10 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/config.hpp>
+#include <pika/chrono.hpp>
+#include <pika/init.hpp>
+#include <pika/thread.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -43,7 +43,7 @@ int pika_main()
         std::cout << "woke up after " << t.elapsed() << " seconds\n";
     }
 
-    pika::local::finalize();
+    pika::finalize();
     return 0;
 }
 
@@ -55,8 +55,8 @@ int main(int argc, char* argv[])
         "Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // Initialize and run pika.
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

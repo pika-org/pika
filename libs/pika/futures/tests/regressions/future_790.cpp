@@ -7,8 +7,8 @@
 // This test case demonstrates the issue described in #790: wait_for() doesn't
 // compile
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <chrono>
@@ -19,12 +19,12 @@ int pika_main()
     std::chrono::nanoseconds tn(static_cast<long long>(1000000000LL));
     future.wait_for(tn);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

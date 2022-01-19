@@ -63,7 +63,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/functional/deferred_call.hpp>

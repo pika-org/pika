@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/datastructures/traits/supports_streaming_with_any.hpp>
 #include <pika/modules/errors.hpp>

@@ -20,7 +20,7 @@ pika_add_module(
   HEADERS ${affinity_headers}
   MODULE_DEPENDENCIES
     pika_assertion
-    pika_config_local
+    pika_config
     pika_datastructures
     pika_errors
     pika_format

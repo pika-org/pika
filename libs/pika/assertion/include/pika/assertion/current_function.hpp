@@ -12,7 +12,7 @@
 //
 //  Adapted to pika naming scheme
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 namespace pika { namespace assertion { namespace detail {
 

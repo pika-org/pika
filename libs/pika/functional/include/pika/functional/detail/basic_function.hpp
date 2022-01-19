@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/functional/detail/empty_function.hpp>
 #include <pika/functional/detail/vtable/function_vtable.hpp>

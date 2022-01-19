@@ -25,9 +25,9 @@
 // Currently, nvcc does not handle lambda functions properly and it is simpler to use
 // cudaMalloc/cudaMemcpy etc, so we do not #define PIKA_CUBLAS_DEMO_WITH_ALLOCATOR
 
-#include <pika/local/algorithm.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
+#include <pika/algorithm.hpp>
+#include <pika/execution.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/async_cuda.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/timing.hpp>
@@ -182,7 +182,7 @@ int pika_main(pika::program_options::variables_map& vm)
         matrix_size.uiWC, matrix_size.uiHC);
 
     matrixMultiply<float>(matrix_size, device, iterations);
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 // -------------------------------------------------------------------------
@@ -202,9 +202,9 @@ int main(int argc, char** argv)
         "iterations");
     // clang-format on
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    auto result = pika::local::init(pika_main, argc, argv, init_args);
+    auto result = pika::init(pika_main, argc, argv, init_args);
     return result || pika::util::report_errors();
 }

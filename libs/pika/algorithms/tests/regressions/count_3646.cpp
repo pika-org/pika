@@ -6,8 +6,8 @@
 
 // #3646: Parallel algorithms should accept iterator/sentinel pairs
 
+#include <pika/init.hpp>
 #include <pika/iterator_support/tests/iter_sent.hpp>
-#include <pika/local/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/count.hpp>
 
@@ -84,12 +84,12 @@ int pika_main()
     test_count();
     test_count_if();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

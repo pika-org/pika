@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 namespace pika { namespace threads { namespace coroutines {
     namespace detail {

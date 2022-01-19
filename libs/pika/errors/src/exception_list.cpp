@@ -4,7 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/errors/exception.hpp>
 #include <pika/errors/exception_list.hpp>
 #include <pika/thread_support/unlock_guard.hpp>

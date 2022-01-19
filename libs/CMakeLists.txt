@@ -97,7 +97,7 @@ endforeach()
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/cmake/templates/modules_enabled.hpp.in"
-  "${PROJECT_BINARY_DIR}/libs/pika/config_local/include/pika/local/config/modules_enabled.hpp"
+  "${PROJECT_BINARY_DIR}/libs/pika/config/include/pika/config/modules_enabled.hpp"
   @ONLY
 )
 

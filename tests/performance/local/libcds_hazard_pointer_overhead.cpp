@@ -6,7 +6,6 @@
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/pika_init.hpp>
 #include <pika/include/apply.hpp>
 #include <pika/include/async.hpp>
 #include <pika/include/parallel_executors.hpp>
@@ -16,6 +15,7 @@
 #include <pika/modules/format.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/timing.hpp>
+#include <pika/pika_init.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 
 #include <pika/include/parallel_execution.hpp>
@@ -193,15 +193,16 @@ void measure_function_futures_create_thread_hierarchical_placement(
             for (std::uint64_t i = count_start; i < count_end; ++i)
             {
                 pika::threads::thread_init_data init(
-                    pika::threads::thread_function_type(thread_func), desc, prio,
-                    hint, stack_size,
-                    pika::threads::thread_schedule_state::pending, false, sched);
+                    pika::threads::thread_function_type(thread_func), desc,
+                    prio, hint, stack_size,
+                    pika::threads::thread_schedule_state::pending, false,
+                    sched);
                 sched->create_thread(init, nullptr, ec);
             }
         };
         auto const thread_spawn_func =
-            pika::threads::detail::thread_function_nullary<decltype(spawn_func)>{
-                spawn_func};
+            pika::threads::detail::thread_function_nullary<decltype(
+                spawn_func)>{spawn_func};
 
         pika::threads::thread_init_data init(
             pika::threads::thread_function_type(thread_spawn_func), desc, prio,

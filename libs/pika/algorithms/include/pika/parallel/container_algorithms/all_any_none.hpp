@@ -220,7 +220,7 @@ namespace pika { namespace ranges {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
@@ -233,119 +233,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-    ///////////////////////////////////////////////////////////////////////////
-    // none_of
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename F,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy, F,
-                traits::projected_range<Proj, Rng>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::none_of is deprecated, use "
-        "pika::ranges::none_of instead")
-        typename util::detail::algorithm_result<ExPolicy, bool>::type
-        none_of(ExPolicy&& policy, Rng&& rng, F&& f, Proj&& proj = Proj())
-    {
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        using iterator_type = typename pika::traits::range_iterator<Rng>::type;
-
-        static_assert(pika::traits::is_forward_iterator<iterator_type>::value,
-            "Required at least forward iterator.");
-
-        return none_of(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // any_of
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename F,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy, F,
-                traits::projected_range<Proj, Rng>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::any_of is deprecated, use pika::ranges::any_of "
-        "instead") typename util::detail::algorithm_result<ExPolicy, bool>::type
-        any_of(ExPolicy&& policy, Rng&& rng, F&& f, Proj&& proj = Proj())
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        using iterator_type = typename pika::traits::range_iterator<Rng>::type;
-
-        static_assert(pika::traits::is_forward_iterator<iterator_type>::value,
-            "Required at least forward iterator.");
-
-        return any_of(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // all_of
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename F,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy, F,
-                traits::projected_range<Proj, Rng>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::all_of is deprecated, use pika::ranges::all_of "
-        "instead") typename util::detail::algorithm_result<ExPolicy, bool>::type
-        all_of(ExPolicy&& policy, Rng&& rng, F&& f, Proj&& proj = Proj())
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        using iterator_type = typename pika::traits::range_iterator<Rng>::type;
-
-        static_assert(pika::traits::is_forward_iterator<iterator_type>::value,
-            "Required at least forward iterator.");
-
-        return all_of(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

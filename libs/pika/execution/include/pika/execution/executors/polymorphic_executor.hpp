@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/execution_base/execution.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>

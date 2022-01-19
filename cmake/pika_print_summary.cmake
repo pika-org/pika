@@ -80,8 +80,8 @@ function(pika_create_configuration_summary message module_name)
     string(REPLACE ";" "" pika_config_information ${pika_config_information})
   endif()
 
-  set(_base_dir_local "pika/local/config")
-  set(_base_dir "pika/local/config")
+  set(_base_dir_local "pika/config")
+  set(_base_dir "pika/config")
   set(_template "config_defines_strings.hpp.in")
 
   configure_file(
@@ -93,6 +93,4 @@ function(pika_create_configuration_summary message module_name)
     "${PIKA_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_base_dir}/config_strings.hpp"
     @ONLY
   )
-
-  set(_base_dir_local "libs/${module_name}/src/")
 endfunction()

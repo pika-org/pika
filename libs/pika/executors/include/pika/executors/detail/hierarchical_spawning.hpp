@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/coroutines/thread_enums.hpp>

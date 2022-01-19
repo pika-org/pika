@@ -7,10 +7,10 @@
 // This example benchmarks the time it takes to start and stop the pika runtime.
 // This is meant to be compared to resume_suspend and openmp_parallel_region.
 
+#include <pika/chrono.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/testing.hpp>
 
@@ -20,7 +20,7 @@
 
 int pika_main()
 {
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
@@ -40,12 +40,12 @@ int main(int argc, char** argv)
 
     std::uint64_t repetitions = vm["repetitions"].as<std::uint64_t>();
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    pika::local::start(pika_main, argc, argv, init_args);
+    pika::start(pika_main, argc, argv, init_args);
     std::uint64_t threads = pika::resource::get_num_threads("default");
-    pika::local::stop();
+    pika::stop();
 
     std::cout << "threads, resume [s], apply [s], suspend [s]" << std::endl;
 
@@ -57,10 +57,10 @@ int main(int argc, char** argv)
     {
         timer.restart();
 
-        pika::local::init_params init_args;
+        pika::init_params init_args;
         init_args.desc_cmdline = desc_commandline;
 
-        pika::local::start(pika_main, argc, argv, init_args);
+        pika::start(pika_main, argc, argv, init_args);
         auto t_start = timer.elapsed();
         start_time += t_start;
 
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
         auto t_apply = timer.elapsed();
 
-        pika::local::stop();
+        pika::stop();
         auto t_stop = timer.elapsed();
         stop_time += t_stop;
 

@@ -7,7 +7,7 @@
 // This test case demonstrates the issue described in #1702: Shared_mutex does
 // not compile with no_mutex cond_var
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/synchronization/shared_mutex.hpp>
 
@@ -32,12 +32,12 @@ int pika_main()
         PIKA_UNUSED(i);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

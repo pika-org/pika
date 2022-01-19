@@ -30,6 +30,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${type_support_sources}
   HEADERS ${type_support_headers}
-  MODULE_DEPENDENCIES pika_assertion pika_config_local
+  MODULE_DEPENDENCIES pika_assertion pika_config
   CMAKE_SUBDIRS examples tests
 )

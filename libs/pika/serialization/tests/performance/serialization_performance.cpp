@@ -5,12 +5,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/version.hpp>
 #include <pika/serialization/detail/preprocess_container.hpp>
 #include <pika/serialization/serialize.hpp>
 #include <pika/serialization/string.hpp>
 #include <pika/serialization/vector.hpp>
 #include <pika/util/from_string.hpp>
+#include <pika/version.hpp>
 
 #include <chrono>
 #include <cstddef>
@@ -192,7 +192,7 @@ void pika_serialization_test(std::size_t iterations)
         throw std::logic_error("pika's case: deserialization failed");
     }
 
-    std::cout << "pika: version = " << pika::local::full_version_as_string()
+    std::cout << "pika: version = " << pika::full_version_as_string()
               << std::endl;
     std::cout << "pika: size    = " << serialized.size() << " bytes"
               << std::endl;

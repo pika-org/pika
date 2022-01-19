@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
@@ -36,7 +36,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
@@ -47,18 +47,6 @@ namespace pika {
         deferred,
         uninitialized
     };
-
-    namespace lcos {
-        enum class PIKA_DEPRECATED_V(0, 1,
-            "pika::lcos::future_status is deprecated. Use "
-            "pika::future_status instead.") future_status
-        {
-            ready = static_cast<int>(pika::future_status::ready),
-            timeout = static_cast<int>(pika::future_status::timeout),
-            deferred = static_cast<int>(pika::future_status::deferred),
-            uninitialized = static_cast<int>(pika::future_status::uninitialized)
-        };
-    }    // namespace lcos
 }    // namespace pika
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1060,4 +1048,4 @@ namespace pika { namespace traits { namespace detail {
     };
 }}}    // namespace pika::traits::detail
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

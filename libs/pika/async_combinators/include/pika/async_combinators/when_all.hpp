@@ -132,7 +132,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/futures/detail/future_data.hpp>
@@ -282,26 +282,4 @@ namespace pika {
         return pika::make_ready_future(pika::tuple<>());
     }
 }    // namespace pika
-
-namespace pika::lcos {
-
-    template <typename... Args>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::when_all is deprecated. Use pika::when_all instead.")
-    auto when_all(Args&&... args)
-    {
-        return pika::when_all(PIKA_FORWARD(Args, args)...);
-    }
-
-    template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::when_all_n is deprecated. Use pika::when_all_n instead.")
-    auto when_all_n(Iterator begin, std::size_t count)
-    {
-        return pika::when_all(begin, count);
-    }
-}    // namespace pika::lcos
-
 #endif    // DOXYGEN

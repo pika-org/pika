@@ -251,7 +251,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/invoke_result.hpp>
@@ -402,46 +402,6 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename T, typename Reduce,
-        typename Convert,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter>::value &&
-            pika::is_invocable_v<Convert,
-                typename std::iterator_traits<FwdIter>::value_type> &&
-            pika::is_invocable_v<Reduce,
-                typename pika::util::invoke_result<
-                    Convert, typename std::iterator_traits<FwdIter>::value_type
-                >::type,
-                typename pika::util::invoke_result<
-                    Convert, typename std::iterator_traits<FwdIter>::value_type
-                >::type
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::transform_reduce is deprecated, use "
-        "pika::transform_reduce instead")
-        typename util::detail::algorithm_result<ExPolicy, T>::type
-        transform_reduce(ExPolicy&& policy, FwdIter first, FwdIter last, T init,
-            Reduce&& red_op, Convert&& conv_op)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
-            "Requires at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::transform_reduce<T>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(T, init),
-            PIKA_FORWARD(Reduce, red_op), PIKA_FORWARD(Convert, conv_op));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
 
     ///////////////////////////////////////////////////////////////////////////
     // transform_reduce_binary
@@ -633,75 +593,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename T,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter1>::value &&
-            pika::traits::is_iterator<FwdIter2>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::transform_reduce is deprecated, use "
-        "pika::transform_reduce instead")
-        typename util::detail::algorithm_result<ExPolicy, T>::type
-        transform_reduce(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
-            FwdIter2 first2, T init)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
-            "Requires at least forward iterator.");
-        static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
-            "Requires at least forward iterator.");
-
-        return detail::transform_reduce_binary<T>().call(
-            PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-            PIKA_MOVE(init), detail::plus(), detail::multiplies());
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename T, typename Reduce, typename Convert,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_iterator<FwdIter1>::value &&
-            pika::traits::is_iterator<FwdIter2>::value &&
-            pika::is_invocable_v<Convert,
-                typename std::iterator_traits<FwdIter1>::value_type,
-                typename std::iterator_traits<FwdIter2>::value_type
-            > &&
-            pika::is_invocable_v<Reduce,
-                typename pika::util::invoke_result<Convert,
-                    typename std::iterator_traits<FwdIter1>::value_type,
-                    typename std::iterator_traits<FwdIter2>::value_type
-                >::type,
-                typename pika::util::invoke_result<Convert,
-                    typename std::iterator_traits<FwdIter1>::value_type,
-                    typename std::iterator_traits<FwdIter2>::value_type
-                >::type
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::transform_reduce is deprecated, use "
-        "pika::transform_reduce instead")
-        typename util::detail::algorithm_result<ExPolicy, T>::type
-        transform_reduce(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
-            FwdIter2 first2, T init, Reduce&& red_op, Convert&& conv_op)
-    {
-        static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
-            "Requires at least forward iterator.");
-        static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
-            "Requires at least forward iterator.");
-
-        return detail::transform_reduce_binary<T>().call(
-            PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-            PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
-            PIKA_FORWARD(Convert, conv_op));
-    }
-
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #include <pika/functional/traits/get_function_address.hpp>

@@ -6,11 +6,11 @@
 
 //  This work is inspired by https://github.com/aprell/tasking-2.0
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/synchronization/channel_spsc.hpp>
+#include <pika/thread.hpp>
 
 #include <functional>
 #include <utility>
@@ -101,11 +101,11 @@ int pika_main()
 
     PIKA_TEST(channel_get(c1));
 
-    pika::local::finalize();
+    pika::finalize();
     return pika::util::report_errors();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

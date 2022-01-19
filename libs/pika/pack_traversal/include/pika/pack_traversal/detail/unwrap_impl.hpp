@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/traits/is_tuple_like.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>

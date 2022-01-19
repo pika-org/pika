@@ -269,7 +269,7 @@ namespace pika { namespace ranges {
 
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
@@ -281,41 +281,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace rangev1 {
-    // clang-format off
-    template <typename ExPolicy, typename Rng,
-        typename Compare = v1::detail::less,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy, Compare,
-                traits::projected_range<Proj, Rng>,
-                traits::projected_range<Proj, Rng>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::parallel::sort is deprecated, use pika::sort instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            typename pika::traits::range_iterator<Rng>::type>::type
-        sort(ExPolicy&& policy, Rng&& rng, Compare&& comp = Compare(),
-            Proj&& proj = Proj())
-    {
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return v1::sort(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), PIKA_FORWARD(Compare, comp),
-            PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::rangev1
 
 namespace pika { namespace ranges {
     ///////////////////////////////////////////////////////////////////////////

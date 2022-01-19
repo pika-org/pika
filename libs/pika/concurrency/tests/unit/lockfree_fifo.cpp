@@ -7,7 +7,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/allocator_support/aligned_allocator.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/modules/testing.hpp>

@@ -24,6 +24,6 @@ pika_add_module(
   SOURCES ${itt_notify_sources}
   HEADERS ${itt_notify_headers}
   DEPENDENCIES ${itt_notify_optional_dependencies}
-  MODULE_DEPENDENCIES pika_config_local
+  MODULE_DEPENDENCIES pika_config
   CMAKE_SUBDIRS examples tests
 )

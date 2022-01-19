@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if (PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX))
 #include <pika/modules/itt_notify.hpp>
 #endif

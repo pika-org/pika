@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config/export_definitions.hpp>
+#include <pika/config/export_definitions.hpp>
 
 #include <iosfwd>
 

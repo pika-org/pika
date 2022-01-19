@@ -6,12 +6,12 @@
 //  accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 
 #include <array>
 #include <string>
@@ -62,7 +62,7 @@ int pika_main(variables_map&)
 {
     test_wait_for_either_of_two_futures_list();
 
-    pika::local::finalize();
+    pika::finalize();
     return pika::util::report_errors();
 }
 
@@ -76,9 +76,9 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

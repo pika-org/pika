@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/serialization/serialization_fwd.hpp>

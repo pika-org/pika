@@ -20,7 +20,7 @@
 #endif
 // clang-format on
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/modules/testing.hpp>
 

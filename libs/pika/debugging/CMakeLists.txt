@@ -19,6 +19,6 @@ pika_add_module(
   SOURCES ${debugging_sources}
   HEADERS ${debugging_headers}
   EXCLUDE_FROM_GLOBAL_HEADER "pika/debugging/backtrace/backtrace.hpp"
-  MODULE_DEPENDENCIES pika_config_local
+  MODULE_DEPENDENCIES pika_config
   CMAKE_SUBDIRS examples tests
 )

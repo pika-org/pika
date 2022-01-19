@@ -7,8 +7,8 @@
 // This test case demonstrates the issue described in #1751:
 // pika::future::wait_for fails a simple test
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <chrono>
@@ -48,11 +48,11 @@ int pika_main()
         PIKA_TEST_LT(dif.count(), 1.1);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
     return pika::util::report_errors();
 }

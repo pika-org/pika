@@ -8,9 +8,9 @@
 // make_ready_future_after to orchestrate timed operations with 'normal'
 // asynchronous work.
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -62,12 +62,12 @@ int pika_main()
 {
     wake_up_after_2_seconds();
     return_int_at_time();
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
     // Initialize and run pika.
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

@@ -32,7 +32,7 @@
 #include <windows.h>
 #include <winnt.h>
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/coroutines/config/defines.hpp>
 #include <pika/coroutines/detail/get_stack_pointer.hpp>

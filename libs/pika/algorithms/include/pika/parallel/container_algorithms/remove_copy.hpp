@@ -573,7 +573,7 @@ namespace pika { namespace ranges {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -588,68 +588,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename OutIter, typename T,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            pika::traits::is_iterator<OutIter>::value &&
-            pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-            pika::parallel::traits::is_indirect_callable<
-                ExPolicy, std::equal_to<T>,
-                pika::parallel::traits::projected_range<Proj, Rng>,
-                pika::parallel::traits::projected<Proj, T const*>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::remove_copy is deprecated, use "
-        "pika::ranges::remove_copy instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<
-                typename pika::traits::range_traits<Rng>::iterator_type,
-                OutIter>>::type remove_copy(ExPolicy&& policy, Rng&& rng,
-            OutIter dest, T const& val, Proj&& proj = Proj())
-    {
-        return pika::parallel::v1::detail::remove_copy<util::in_out_result<
-            typename pika::traits::range_traits<Rng>::iterator_type, OutIter>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), dest, val, PIKA_FORWARD(Proj, proj));
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename OutIter, typename F,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            pika::traits::is_iterator<OutIter>::value &&
-            pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-            pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                pika::parallel::traits::projected_range<Proj, Rng>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::remove_copy_if is deprecated, use "
-        "pika::ranges::remove_copy_if instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<
-                typename pika::traits::range_traits<Rng>::iterator_type,
-                OutIter>>::type remove_copy_if(ExPolicy&& policy, Rng&& rng,
-            OutIter dest, F&& f, Proj&& proj = Proj())
-    {
-        return pika::parallel::v1::detail::remove_copy_if<util::in_out_result<
-            typename pika::traits::range_traits<Rng>::iterator_type, OutIter>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), dest, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

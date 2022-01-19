@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution_base/traits/is_executor_parameters.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/serialization/serialize.hpp>
@@ -121,13 +121,6 @@ namespace pika { namespace execution {
         /// \endcond
     };
 }}    // namespace pika::execution
-
-namespace pika { namespace parallel { namespace execution {
-    using auto_chunk_size PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::auto_chunk_size is deprecated. Use "
-        "pika::execution::auto_chunk_size instead.") =
-        pika::execution::auto_chunk_size;
-}}}    // namespace pika::parallel::execution
 
 namespace pika { namespace parallel { namespace execution {
     /// \cond NOINTERNAL

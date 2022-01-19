@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_base/sync.hpp>
 #include <pika/execution/detail/sync_launch_policy_dispatch.hpp>
 #include <pika/execution/executors/execution.hpp>

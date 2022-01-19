@@ -120,7 +120,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_combinators/when_any.hpp>
 #include <pika/datastructures/tuple.hpp>
@@ -467,31 +467,4 @@ namespace pika {
         return result;
     }
 }    // namespace pika
-
-namespace pika::lcos {
-
-    template <typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::lcos::when_any is deprecated. Use pika::when_any instead.")
-    auto when_any(Ts&&... ts)
-    {
-        return pika::when_any(PIKA_FORWARD(Ts, ts)...);
-    }
-
-    template <typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::when_any_n is deprecated. Use pika::when_any_n instead.")
-    auto when_any_n(Iterator begin, std::size_t count)
-    {
-        return pika::when_any_n(begin, count);
-    }
-
-    template <typename Container>
-    using when_any_result PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::when_all_result is deprecated. Use pika::when_all_result "
-        "instead.") = pika::when_any_result<Container>;
-}    // namespace pika::lcos
-
 #endif    // DOXYGEN

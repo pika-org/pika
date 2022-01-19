@@ -5,7 +5,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/is_heap.hpp>
 
@@ -55,8 +55,6 @@ struct user_defined_type
 template <typename DataType>
 void test_is_heap(DataType)
 {
-    using pika::util::get;
-
     std::size_t const size = 10007;
     std::vector<DataType> c(size);
     std::iota(std::begin(c), std::end(c), DataType(std::rand()));
@@ -76,8 +74,6 @@ void test_is_heap(ExPolicy&& policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
-
     std::size_t const size = 10007;
     std::vector<DataType> c(size);
     std::iota(std::begin(c), std::end(c), DataType(std::rand()));
@@ -96,8 +92,6 @@ void test_is_heap_async(ExPolicy&& policy, DataType)
 {
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
-
-    using pika::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size);
@@ -144,7 +138,7 @@ int pika_main(pika::program_options::variables_map& vm)
     std::srand(seed);
 
     test_is_heap();
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -161,11 +155,11 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv, init_args), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

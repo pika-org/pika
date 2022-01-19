@@ -13,14 +13,14 @@
 // cross pool injection of tasks does not cause segfaults or other
 // problems such as lockups.
 
-#include <pika/local/execution.hpp>
-#include <pika/local/functional.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/execution.hpp>
+#include <pika/functional.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/threadmanager.hpp>
+#include <pika/thread.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -202,7 +202,7 @@ int pika_main()
         pika::this_thread::yield();
     } while (counter > 0);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 void init_resource_partitioner_handler(pika::resource::partitioner& rp,
@@ -256,10 +256,10 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 void test_scheduler(
     int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.rp_callback =
         pika::bind_back(init_resource_partitioner_handler, scheduler);
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv, init_args), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
 }
 
 int main(int argc, char* argv[])

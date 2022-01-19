@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/iterator_support/counting_iterator.hpp>
 #include <pika/iterator_support/iterator_range.hpp>
 #include <pika/iterator_support/range.hpp>

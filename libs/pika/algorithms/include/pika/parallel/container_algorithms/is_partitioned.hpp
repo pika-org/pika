@@ -233,7 +233,7 @@ namespace pika {
     }    // namespace ranges
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/algorithms/traits/projected.hpp>
 #include <pika/algorithms/traits/projected_range.hpp>
 #include <pika/executors/execution_policy.hpp>

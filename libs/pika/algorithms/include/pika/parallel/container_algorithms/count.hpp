@@ -146,7 +146,7 @@ namespace pika { namespace ranges {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
@@ -157,88 +157,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-    ///////////////////////////////////////////////////////////////////////////
-    // count
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename T,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            pika::traits::is_range<Rng>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::count is deprecated, use pika::ranges::count instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            typename std::iterator_traits<typename pika::traits::range_traits<
-                Rng>::iterator_type>::difference_type>::type
-        count(
-            ExPolicy&& policy, Rng&& rng, T const& value, Proj&& proj = Proj())
-    {
-        using iterator_type =
-            typename pika::traits::range_traits<Rng>::iterator_type;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        static_assert((pika::traits::is_forward_iterator<iterator_type>::value),
-            "Required at least forward iterator.");
-
-        using difference_type =
-            typename std::iterator_traits<iterator_type>::difference_type;
-        return pika::parallel::v1::detail::count<difference_type>().call(
-            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), value, PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename F,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy, F,
-                traits::projected_range<Proj, Rng>
-            >::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::count_if is deprecated, use "
-        "pika::ranges::count_if instead")
-        typename util::detail::algorithm_result<ExPolicy,
-            typename std::iterator_traits<typename pika::traits::range_traits<
-                Rng>::iterator_type>::difference_type>::type
-        count_if(ExPolicy&& policy, Rng&& rng, F&& f, Proj&& proj = Proj())
-    {
-        using iterator_type =
-            typename pika::traits::range_traits<Rng>::iterator_type;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        static_assert((pika::traits::is_forward_iterator<iterator_type>::value),
-            "Required at least forward iterator.");
-
-        using difference_type =
-            typename std::iterator_traits<iterator_type>::difference_type;
-        return pika::parallel::v1::detail::count_if<difference_type>().call(
-            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

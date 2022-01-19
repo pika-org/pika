@@ -4,10 +4,10 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/init.hpp>
-#include <pika/local/task_block.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
-#include <pika/runtime_local/custom_exception_info.hpp>
+#include <pika/runtime/custom_exception_info.hpp>
+#include <pika/task_block.hpp>
 
 #include <iostream>
 #include <string>
@@ -255,7 +255,7 @@ int pika_main()
     define_task_block_exceptions_test3();
     define_task_block_exceptions_test4();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -264,9 +264,9 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.cfg = cfg;
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv, init_args), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

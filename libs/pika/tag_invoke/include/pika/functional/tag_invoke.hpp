@@ -98,7 +98,7 @@ namespace pika { namespace functional {
 }}    // namespace pika::functional
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
 

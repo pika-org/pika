@@ -7,9 +7,9 @@
 // This test demonstrates the issue described in #1036: Scheduler hangs when
 // user code attempts to "block" OS-threads
 
+#include <pika/barrier.hpp>
 #include <pika/functional/bind.hpp>
-#include <pika/local/barrier.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
@@ -32,9 +32,9 @@ void blocker(pika::barrier<>& exit_barrier, std::atomic<std::uint64_t>& entered,
     if (worker != pika::get_worker_thread_num())
     {
         pika::threads::thread_init_data data(
-            pika::threads::make_thread_function_nullary(pika::util::bind(&blocker,
-                std::ref(exit_barrier), std::ref(entered), std::ref(started),
-                std::ref(blocked_threads), worker)),
+            pika::threads::make_thread_function_nullary(pika::util::bind(
+                &blocker, std::ref(exit_barrier), std::ref(entered),
+                std::ref(started), std::ref(blocked_threads), worker)),
             "blocker", pika::threads::thread_priority::normal,
             pika::threads::thread_schedule_hint(worker));
         pika::threads::register_work(data);
@@ -113,7 +113,7 @@ int pika_main()
         exit_barrier.arrive_and_wait();
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -132,9 +132,9 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
     // Initialize and run pika.
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

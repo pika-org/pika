@@ -7,10 +7,10 @@
 // This example was released to the public domain by Stephan T. Lavavej
 // (see: https://channel9.msdn.com/Shows/C9-GoingNative/GoingNative-40-Updated-STL-in-VS-2015-feat-STL)
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/shared_mutex.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
+#include <pika/shared_mutex.hpp>
+#include <pika/thread.hpp>
 #include <pika/type_support/unused.hpp>
 
 #include <atomic>
@@ -91,10 +91,10 @@ int pika_main()
     for (auto& t : threads)
         t.join();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

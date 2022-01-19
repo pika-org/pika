@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/serialization/traits/is_not_bitwise_serializable.hpp>
 
 #include <memory>

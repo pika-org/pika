@@ -183,7 +183,7 @@ namespace pika { namespace ranges {
 
 #else    //DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
@@ -195,39 +195,6 @@ namespace pika { namespace ranges {
 #include <cstddef>
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename F,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::generate is deprecated, use pika::ranges::generate "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        typename pika::traits::range_iterator<Rng>::type>::type
-        generate(ExPolicy&& policy, Rng&& rng, F&& f)
-    {
-        using iterator_type = typename pika::traits::range_iterator<Rng>::type;
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        static_assert(pika::traits::is_forward_iterator<iterator_type>::value,
-            "Required at least forward iterator.");
-
-        return detail::generate<iterator_type>().call(
-            PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-            pika::util::end(rng), PIKA_FORWARD(F, f));
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

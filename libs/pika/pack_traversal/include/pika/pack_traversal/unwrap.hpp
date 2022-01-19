@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/pack_traversal/detail/unwrap_impl.hpp>
 
 #include <cstddef>
@@ -206,101 +206,4 @@ namespace pika {
         return util::detail::functional_unwrap_depth_impl<0U>(
             PIKA_FORWARD(T, callable));
     }
-
-    namespace util {
-        template <typename... Args>
-        PIKA_DEPRECATED_V(0, 1, "Please use pika::unwrap instead.")
-        auto unwrap(Args&&... args) -> decltype(
-            detail::unwrap_depth_impl<1U>(PIKA_FORWARD(Args, args)...))
-        {
-            return detail::unwrap_depth_impl<1U>(PIKA_FORWARD(Args, args)...);
-        }
-
-        namespace functional {
-            struct PIKA_DEPRECATED_V(
-                0, 1, "Please use pika::functional::unwrap instead.") unwrap
-            {
-                template <typename... Args>
-                auto operator()(Args&&... args)
-                    -> decltype(pika::unwrap(PIKA_FORWARD(Args, args)...))
-                {
-                    return pika::unwrap(PIKA_FORWARD(Args, args)...);
-                }
-            };
-        }    // namespace functional
-
-        template <std::size_t Depth, typename... Args>
-        PIKA_DEPRECATED_V(0, 1, "Please use pika::unwrap_n instead.")
-        auto unwrap_n(Args&&... args) -> decltype(
-            detail::unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...))
-        {
-            static_assert(Depth > 0U, "The unwrapping depth must be >= 1!");
-            return detail::unwrap_depth_impl<Depth>(
-                PIKA_FORWARD(Args, args)...);
-        }
-
-        namespace functional {
-            template <std::size_t Depth>
-            struct PIKA_DEPRECATED_V(
-                0, 1, "Please use pika::functional::unwrap instead.") unwrap_n
-            {
-                template <typename... Args>
-                auto operator()(Args&&... args) -> decltype(
-                    pika::unwrap_n<Depth>(PIKA_FORWARD(Args, args)...))
-                {
-                    return pika::unwrap_n<Depth>(PIKA_FORWARD(Args, args)...);
-                }
-            };
-        }    // namespace functional
-
-        template <typename... Args>
-        PIKA_DEPRECATED_V(0, 1, "Please use pika::unwrap_all instead.")
-        auto unwrap_all(Args&&... args) -> decltype(
-            detail::unwrap_depth_impl<0U>(PIKA_FORWARD(Args, args)...))
-        {
-            return detail::unwrap_depth_impl<0U>(PIKA_FORWARD(Args, args)...);
-        }
-
-        namespace functional {
-            struct PIKA_DEPRECATED_V(
-                0, 1, "Please use pika::functional::unwrap instead.") unwrap_all
-            {
-                template <typename... Args>
-                auto operator()(Args&&... args)
-                    -> decltype(pika::unwrap_all(PIKA_FORWARD(Args, args)...))
-                {
-                    return pika::unwrap_all(PIKA_FORWARD(Args, args)...);
-                }
-            };
-        }    // namespace functional
-
-        template <typename T>
-        PIKA_DEPRECATED_V(0, 1, "Please use pika::unwrapping instead.")
-        auto unwrapping(T&& callable) -> decltype(
-            detail::functional_unwrap_depth_impl<1U>(PIKA_FORWARD(T, callable)))
-        {
-            return detail::functional_unwrap_depth_impl<1U>(
-                PIKA_FORWARD(T, callable));
-        }
-
-        template <std::size_t Depth, typename T>
-        PIKA_DEPRECATED_V(0, 1, "Please use pika::unwrapping_n instead.")
-        auto unwrapping_n(T&& callable)
-            -> decltype(detail::functional_unwrap_depth_impl<Depth>(
-                PIKA_FORWARD(T, callable)))
-        {
-            static_assert(Depth > 0U, "The unwrapping depth must be >= 1!");
-            return detail::functional_unwrap_depth_impl<Depth>(
-                PIKA_FORWARD(T, callable));
-        }
-
-        template <typename T>
-        PIKA_DEPRECATED_V(0, 1, "Please use pika::unwrapping_all instead.")
-        auto unwrapping_all(T&& callable) -> decltype(
-            detail::functional_unwrap_depth_impl<0U>(PIKA_FORWARD(T, callable)))
-        {
-            return detail::functional_unwrap_depth_impl<0U>(
-                PIKA_FORWARD(T, callable));
-        }
-    }    // namespace util
 }    // namespace pika

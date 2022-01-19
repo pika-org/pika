@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/traits/is_tuple_like.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/modules/testing.hpp>

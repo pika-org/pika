@@ -4,12 +4,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/barrier.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/runtime.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/barrier.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/allocator_support.hpp>
 #include <pika/modules/format.hpp>
+#include <pika/runtime.hpp>
+#include <pika/thread.hpp>
 
 #include <boost/lockfree/queue.hpp>
 
@@ -119,7 +119,7 @@ int pika_main(variables_map& vm)
     }
 
     // initiate shutdown of the runtime system
-    pika::local::finalize();
+    pika::finalize();
     return 0;
 }
 
@@ -138,8 +138,8 @@ int main(int argc, char* argv[])
             ("csv", "output results as csv (format: OS-thread,PX-threads)");
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

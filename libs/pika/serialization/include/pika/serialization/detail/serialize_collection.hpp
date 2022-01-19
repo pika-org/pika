@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/has_member_xxx.hpp>
 #include <pika/serialization/detail/constructor_selector.hpp>
 #include <pika/serialization/detail/polymorphic_nonintrusive_factory.hpp>

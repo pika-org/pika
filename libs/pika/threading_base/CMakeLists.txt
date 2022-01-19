@@ -75,7 +75,7 @@ pika_add_module(
     pika_allocator_support
     pika_assertion
     pika_execution_base
-    pika_config_local
+    pika_config
     pika_concurrency
     pika_coroutines
     pika_debugging

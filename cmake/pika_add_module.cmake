@@ -140,7 +140,7 @@ function(pika_add_module libname modulename)
   if(${modulename}_CONFIG_FILES)
     # Version file
     set(global_config_file
-        ${CMAKE_CURRENT_BINARY_DIR}/include/pika/local/config/version.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/include/pika/config/version.hpp
     )
     configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/config_version.hpp.in"
@@ -149,7 +149,7 @@ function(pika_add_module libname modulename)
     set(generated_headers ${generated_headers} ${global_config_file})
     # Global config defines file (different from the one for each module)
     set(global_config_file
-        ${CMAKE_CURRENT_BINARY_DIR}/include/pika/local/config/defines.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/include/pika/config/defines.hpp
     )
     pika_write_config_defines_file(
       TEMPLATE
@@ -167,7 +167,7 @@ function(pika_add_module libname modulename)
   )
   list(REMOVE_ITEM zombie_generated_headers ${generated_headers}
        ${compat_headers}
-       ${CMAKE_CURRENT_BINARY_DIR}/include/pika/local/config/modules_enabled.hpp
+       ${CMAKE_CURRENT_BINARY_DIR}/include/pika/config/modules_enabled.hpp
   )
   foreach(zombie_header IN LISTS zombie_generated_headers)
     pika_warn("Removing zombie generated header: ${zombie_header}")

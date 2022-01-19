@@ -106,7 +106,7 @@ namespace pika {
 }    // namespace pika
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -231,29 +231,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    template <typename ExPolicy, typename FwdIter, typename Pred>
-    PIKA_DEPRECATED_V(0, 1, "Please use pika::is_partitioned instead")
-    inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, bool>::type>::type
-        is_partitioned(
-            ExPolicy&& policy, FwdIter first, FwdIter last, Pred&& pred)
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-        return detail::is_partitioned<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last,
-            PIKA_FORWARD(Pred, pred), util::projection_identity());
-#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 100000
-#pragma GCC diagnostic pop
-#endif
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     inline constexpr struct is_partitioned_t final

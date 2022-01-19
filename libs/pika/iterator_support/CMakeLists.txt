@@ -30,7 +30,7 @@ pika_add_module(
                              "pika/iterator_support/traits/is_range.hpp"
   SOURCES ${iterator_support_sources}
   HEADERS ${iterator_support_headers}
-  MODULE_DEPENDENCIES pika_config_local pika_datastructures pika_functional
+  MODULE_DEPENDENCIES pika_config pika_datastructures pika_functional
                       pika_serialization pika_type_support
   CMAKE_SUBDIRS examples tests
 )

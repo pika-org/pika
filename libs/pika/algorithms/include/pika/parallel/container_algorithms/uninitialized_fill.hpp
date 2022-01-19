@@ -255,7 +255,7 @@ namespace pika { namespace ranges {
 }}    // namespace pika::ranges
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/algorithms/traits/projected_range.hpp>
 #include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>

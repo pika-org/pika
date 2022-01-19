@@ -7,13 +7,13 @@
 // Simple test verifying basic resource_partitioner functionality.
 
 #include <pika/assert.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 #include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 
@@ -202,13 +202,13 @@ int pika_main()
         }
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 void test_scheduler(
     int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.cfg = {"pika.os_threads=" + std::to_string(max_threads)};
     init_args.rp_callback = [scheduler](auto& rp,
                                 pika::program_options::variables_map const&) {
@@ -218,7 +218,7 @@ void test_scheduler(
                 pika::threads::policies::enable_elasticity));
     };
 
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv, init_args), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
 }
 
 int main(int argc, char* argv[])

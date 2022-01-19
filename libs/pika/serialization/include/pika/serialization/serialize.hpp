@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/serialization/access.hpp>
 #include <pika/serialization/input_archive.hpp>
 #include <pika/serialization/output_archive.hpp>

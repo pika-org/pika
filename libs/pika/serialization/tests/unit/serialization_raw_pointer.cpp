@@ -10,9 +10,9 @@
 // allow for const tuple members
 #define PIKA_SERIALIZATION_HAVE_ALLOW_CONST_TUPLE_MEMBERS
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/tuple.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/serialization/input_archive.hpp>
 #include <pika/serialization/output_archive.hpp>
 #include <pika/serialization/serialize.hpp>
@@ -142,11 +142,11 @@ int pika_main()
         PIKA_TEST(ot == it);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
     return pika::util::report_errors();
 }

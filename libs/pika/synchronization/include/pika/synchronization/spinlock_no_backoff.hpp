@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/itt_notify.hpp>

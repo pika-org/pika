@@ -4,13 +4,13 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/condition_variable.hpp>
-#include <pika/local/exception.hpp>
-#include <pika/local/functional.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/mutex.hpp>
+#include <pika/condition_variable.hpp>
+#include <pika/exception.hpp>
+#include <pika/functional.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
-#include <pika/runtime_local/run_as_pika_thread.hpp>
+#include <pika/mutex.hpp>
+#include <pika/runtime/run_as_pika_thread.hpp>
 
 #include <functional>
 #include <mutex>
@@ -38,7 +38,7 @@ int start_func(pika::lcos::local::spinlock& mtx,
             cond.wait(lk);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 void pika_thread_func()
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     pika::util::function_nonser<int(int, char**)> start_function =
         pika::util::bind(&start_func, std::ref(mtx), std::ref(cond));
 
-    pika::local::start(start_function, argc, argv);
+    pika::start(start_function, argc, argv);
 
     // wait for the main pika thread to run
     {
@@ -82,5 +82,5 @@ int main(int argc, char** argv)
 
     cond.notify_one();
 
-    return pika::local::stop();
+    return pika::stop();
 }

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/iterator_support/boost_iterator_categories.hpp>
 #include <pika/type_support/always_void.hpp>
 #include <pika/type_support/equality.hpp>

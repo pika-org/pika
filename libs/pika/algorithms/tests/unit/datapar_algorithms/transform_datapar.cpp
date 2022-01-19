@@ -4,7 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/parallel/datapar.hpp>
 
 #include <iostream>
@@ -82,7 +82,7 @@ int pika_main(pika::program_options::variables_map& vm)
     transform_test();
     transform_exception_test();
     transform_bad_alloc_test();
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -99,11 +99,11 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv, init_args), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

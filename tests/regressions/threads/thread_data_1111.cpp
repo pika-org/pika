@@ -6,9 +6,9 @@
 
 // This test illustrates #1111: pika::threads::get_thread_data always returns zero
 
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
+#include <pika/thread.hpp>
 
 #include <cstddef>
 #include <iostream>
@@ -39,12 +39,12 @@ int pika_main()
 
     PIKA_TEST_EQ(get_thread_num(), 42);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
 
     return pika::util::report_errors();
 }

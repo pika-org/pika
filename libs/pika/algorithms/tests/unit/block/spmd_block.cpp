@@ -5,7 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/executors/execution_policy.hpp>
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/spmd_block.hpp>
 
@@ -114,11 +114,11 @@ int pika_main()
     pika::parallel::define_spmd_block(
         num_images, bulk_test_function, c3.data());
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
     return pika::util::report_errors();
 }

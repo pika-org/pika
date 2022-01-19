@@ -21,12 +21,12 @@ Core modules
    /libs/core/async_base/docs/index.rst
    /libs/core/async_combinators/docs/index.rst
    /libs/core/async_cuda/docs/index.rst
-   /libs/core/async_local/docs/index.rst
+   /libs/core/async/docs/index.rst
    /libs/core/async_mpi/docs/index.rst
-   /libs/core/command_line_handling_local/docs/index.rst
+   /libs/core/command_line_handling/docs/index.rst
    /libs/core/concepts/docs/index.rst
    /libs/core/concurrency/docs/index.rst
-   /libs/core/config_local/docs/index.rst
+   /libs/core/config/docs/index.rst
    /libs/core/coroutines/docs/index.rst
    /libs/core/datastructures/docs/index.rst
    /libs/core/debugging/docs/index.rst
@@ -40,12 +40,12 @@ Core modules
    /libs/core/futures/docs/index.rst
    /libs/core/hardware/docs/index.rst
    /libs/core/hashing/docs/index.rst
-   /libs/core/include_local/docs/index.rst
+   /libs/core/include/docs/index.rst
    /libs/core/ini/docs/index.rst
-   /libs/core/init_runtime_local/docs/index.rst
+   /libs/core/init_runtime/docs/index.rst
    /libs/core/iterator_support/docs/index.rst
    /libs/core/itt_notify/docs/index.rst
-   /libs/core/lcos_local/docs/index.rst
+   /libs/core/lcos/docs/index.rst
    /libs/core/lock_registration/docs/index.rst
    /libs/core/logging/docs/index.rst
    /libs/core/memory/docs/index.rst
@@ -57,7 +57,7 @@ Core modules
    /libs/core/properties/docs/index.rst
    /libs/core/resource_partitioner/docs/index.rst
    /libs/core/runtime_configuration/docs/index.rst
-   /libs/core/runtime_local/docs/index.rst
+   /libs/core/runtime/docs/index.rst
    /libs/core/schedulers/docs/index.rst
    /libs/core/serialization/docs/index.rst
    /libs/core/string_util/docs/index.rst
@@ -74,4 +74,4 @@ Core modules
    /libs/core/topology/docs/index.rst
    /libs/core/type_support/docs/index.rst
    /libs/core/util/docs/index.rst
-   /libs/core/version_local/docs/index.rst
+   /libs/core/version/docs/index.rst

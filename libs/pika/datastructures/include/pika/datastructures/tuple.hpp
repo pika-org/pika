@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/config/defines.hpp>
 #include <pika/datastructures/member_pack.hpp>
 #include <pika/modules/type_support.hpp>
@@ -1024,70 +1024,6 @@ namespace pika {
     }
 #endif
 }    // namespace pika
-
-namespace pika { namespace util {
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::util::ignore is deprecated. Use pika::ignore instead.")
-    pika::detail::ignore_type const ignore = {};
-
-    template <typename... Ts>
-    using tuple PIKA_DEPRECATED_V(
-        0, 1, "pika::util::tuple is deprecated. Use pika::tuple instead.") =
-        pika::tuple<Ts...>;
-    template <typename T>
-    using tuple_size PIKA_DEPRECATED_V(0, 1,
-        "pika::util::tuple_size is deprecated. Use pika::tuple_size instead.") =
-        pika::tuple_size<T>;
-    template <std::size_t I, typename T>
-    using tuple_element PIKA_DEPRECATED_V(0, 1,
-        "pika::util::tuple_element is deprecated. Use pika::tuple_size "
-        "instead.") = pika::tuple_element<I, T>;
-
-    template <typename... Ts>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::make_tuple is deprecated. Use pika::make_tuple instead.")
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE auto make_tuple(Ts&&... vs)
-    {
-        return pika::make_tuple(PIKA_FORWARD(Ts, vs)...);
-    }
-
-    template <typename... Ts>
-    PIKA_DEPRECATED_V(
-        0, 1, "pika::util::tie is deprecated. Use pika::tie instead.")
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE auto tie(Ts&&... vs)
-    {
-        return pika::tie(PIKA_FORWARD(Ts, vs)...);
-    }
-
-    template <typename... Ts>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::forward_as_tuple is deprecated. Use "
-        "pika::forward_as_tuple "
-        "instead.")
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE
-        auto forward_as_tuple(Ts&&... vs)
-    {
-        return pika::forward_as_tuple(PIKA_FORWARD(Ts, vs)...);
-    }
-
-    template <typename... Ts>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::tuple_cat is deprecated. Use pika::tuple_cat "
-        "instead.")
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE auto tuple_cat(Ts&&... vs)
-    {
-        return pika::tuple_cat(PIKA_FORWARD(Ts, vs)...);
-    }
-
-    template <std::size_t I, typename Tuple>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::util::get is deprecated. Use pika::get "
-        "instead.")
-    constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE auto get(Tuple&& tuple)
-    {
-        return pika::get<I>(PIKA_FORWARD(Tuple, tuple));
-    }
-}}    // namespace pika::util
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
 #pragma warning(pop)

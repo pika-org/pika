@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config/compiler_specific.hpp>
+#include <pika/config/compiler_specific.hpp>
 
 #if defined(PIKA_WINDOWS)
 #define PIKA_HAVE_THREADS_GET_STACK_POINTER

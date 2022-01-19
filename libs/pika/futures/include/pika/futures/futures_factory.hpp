@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/async_base/launch_policy.hpp>

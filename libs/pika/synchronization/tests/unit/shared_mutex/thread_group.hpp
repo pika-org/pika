@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/errors/exception.hpp>
 #include <pika/modules/threading.hpp>
 #include <pika/synchronization/mutex.hpp>

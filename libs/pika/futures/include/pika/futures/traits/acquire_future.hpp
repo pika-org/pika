@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/has_member_xxx.hpp>
 #include <pika/futures/traits/is_future.hpp>
 #include <pika/futures/traits/is_future_range.hpp>

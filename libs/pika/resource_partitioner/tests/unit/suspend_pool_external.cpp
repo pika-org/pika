@@ -6,14 +6,14 @@
 
 // Simple test verifying basic resource_partitioner functionality.
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/chrono.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/threadmanager.hpp>
+#include <pika/thread.hpp>
 #include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
@@ -29,7 +29,7 @@
 void test_scheduler(
     int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
-    pika::local::init_params init_args;
+    pika::init_params init_args;
 
     init_args.cfg = {"pika.os_threads=" +
         std::to_string(((std::min)(std::size_t(4),
@@ -39,7 +39,7 @@ void test_scheduler(
         rp.create_thread_pool("default", scheduler);
     };
 
-    pika::local::start(nullptr, argc, argv, init_args);
+    pika::start(nullptr, argc, argv, init_args);
 
     pika::threads::thread_pool_base& default_pool =
         pika::resource::get_thread_pool("default");
@@ -76,9 +76,9 @@ void test_scheduler(
         }
     }
 
-    pika::apply([]() { pika::local::finalize(); });
+    pika::apply([]() { pika::finalize(); });
 
-    PIKA_TEST_EQ(pika::local::stop(), 0);
+    PIKA_TEST_EQ(pika::stop(), 0);
 }
 
 int main(int argc, char* argv[])

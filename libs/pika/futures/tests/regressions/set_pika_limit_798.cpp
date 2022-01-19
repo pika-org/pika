@@ -7,10 +7,10 @@
 // This test case demonstrates the issue described in #798: PIKA_LIMIT does not
 // work for local dataflow
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/pack_traversal/unwrap.hpp>
 
@@ -25,12 +25,12 @@ int pika_main()
     pika::shared_future<double> f = pika::make_ready_future(1.0);
     f = pika::dataflow(
         pika::launch::sync, pika::unwrapping(&func), f, f, f, f, f, f, f);
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
     return pika::util::report_errors();
 }
 #endif

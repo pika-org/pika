@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/traits/future_access.hpp>

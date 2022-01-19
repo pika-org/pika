@@ -7,7 +7,7 @@
 // This example demonstrates how the pika serialization archives could be used
 // to directly store/load to/from a file.
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/serialization.hpp>
 
 #include <cstddef>
@@ -133,10 +133,10 @@ int pika_main()
             }
         }
     }
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

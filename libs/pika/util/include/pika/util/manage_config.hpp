@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/util/from_string.hpp>
 
 #include <map>
 #include <string>
 #include <vector>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
     struct PIKA_EXPORT manage_config
@@ -37,4 +37,4 @@ namespace pika { namespace util {
     };
 }}    // namespace pika::util
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

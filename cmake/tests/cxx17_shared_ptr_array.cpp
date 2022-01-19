@@ -8,7 +8,7 @@
 
 int main()
 {
-    std::shared_ptr<int[]> p (new int[10]);
+    std::shared_ptr<int[]> p(new int[10]);
 
     return 0;
 }

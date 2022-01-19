@@ -125,7 +125,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/futures/future.hpp>
@@ -450,26 +450,4 @@ namespace pika {
             PIKA_MOVE(p));
     }
 }    // namespace pika
-
-namespace pika::lcos {
-
-    template <typename F, typename... Ts>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::when_each is deprecated. Use pika::when_each instead.")
-    auto when_each(F&& f, Ts&&... ts)
-    {
-        return pika::when_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
-    }
-
-    template <typename F, typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::when_each_n is deprecated. Use pika::when_each_n instead.")
-    pika::future<Iterator> when_each_n(F&& f, Iterator begin, std::size_t count)
-    {
-        return pika::when_each_n(PIKA_FORWARD(F, f), begin, count);
-    }
-}    // namespace pika::lcos
-
 #endif    // DOXYGEN

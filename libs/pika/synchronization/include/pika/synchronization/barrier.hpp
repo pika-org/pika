@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/synchronization/detail/condition_variable.hpp>
 #include <pika/synchronization/spinlock.hpp>
@@ -20,7 +20,7 @@
 #include <cstdint>
 #include <utility>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace lcos { namespace local {
@@ -285,4 +285,4 @@ namespace pika { namespace lcos { namespace local {
     };
 }}}    // namespace pika::lcos::local
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

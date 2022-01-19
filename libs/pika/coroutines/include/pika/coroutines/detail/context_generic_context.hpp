@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
 #include <pika/coroutines/detail/swap_context.hpp>

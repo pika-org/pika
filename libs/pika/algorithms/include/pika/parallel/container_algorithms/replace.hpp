@@ -1067,7 +1067,7 @@ namespace pika { namespace ranges {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
@@ -1079,116 +1079,6 @@ namespace pika { namespace ranges {
 
 #include <type_traits>
 #include <utility>
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename T1, typename T2,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy,
-                std::equal_to<T1>, traits::projected_range<Proj, Rng>,
-                traits::projected<Proj, T1 const*>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::replace is deprecated, use pika::ranges::replace "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        typename pika::traits::range_traits<Rng>::iterator_type>::type
-        replace(ExPolicy&& policy, Rng&& rng, T1 const& old_value,
-            T2 const& new_value, Proj&& proj = Proj())
-    {
-        return pika::parallel::v1::detail::replace<
-            typename pika::traits::range_traits<Rng>::iterator_type>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), old_value, new_value,
-                PIKA_FORWARD(Proj, proj));
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename F, typename T,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy,
-                    F, traits::projected_range<Proj, Rng>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::replace_if is deprecated, use "
-        "pika::ranges::replace_if "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        typename pika::traits::range_traits<Rng>::iterator_type>::type
-        replace_if(ExPolicy&& policy, Rng&& rng, F&& f, T const& new_value,
-            Proj&& proj = Proj())
-    {
-        return pika::parallel::v1::detail::replace_if<
-            typename pika::traits::range_traits<Rng>::iterator_type>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), PIKA_FORWARD(F, f), new_value,
-                PIKA_FORWARD(Proj, proj));
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename OutIter, typename T1,
-        typename T2, typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<
-                ExPolicy,std::equal_to<T1>, traits::projected_range<Proj, Rng>,
-                    traits::projected<Proj, T1 const*>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::replace_copy is deprecated, use "
-        "pika::ranges::replace_copy "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<
-            typename pika::traits::range_traits<Rng>::iterator_type, OutIter>>::
-        type replace_copy(ExPolicy&& policy, Rng&& rng, OutIter dest,
-            T1 const& old_value, T2 const& new_value, Proj&& proj = Proj())
-    {
-        return pika::parallel::v1::detail::replace_copy<util::in_out_result<
-            typename pika::traits::range_traits<Rng>::iterator_type, OutIter>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), dest, old_value, new_value,
-                PIKA_FORWARD(Proj, proj));
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng, typename OutIter, typename F,
-        typename T, typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng>::value &&
-            traits::is_projected_range<Proj, Rng>::value &&
-            traits::is_indirect_callable<ExPolicy,
-                F, traits::projected_range<Proj, Rng>>::value
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::replace_copy_if is deprecated, use "
-        "pika::ranges::replace_copy_if "
-        "instead") typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<
-            typename pika::traits::range_traits<Rng>::iterator_type,
-            OutIter>>::type replace_copy_if(ExPolicy&& policy, Rng&& rng,
-        OutIter dest, F&& f, T const& new_value, Proj&& proj = Proj())
-    {
-        return pika::parallel::v1::detail::replace_copy_if<util::in_out_result<
-            typename pika::traits::range_traits<Rng>::iterator_type, OutIter>>()
-            .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), dest, PIKA_FORWARD(F, f), new_value,
-                PIKA_FORWARD(Proj, proj));
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

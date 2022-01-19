@@ -33,7 +33,7 @@ pika_add_module(
   HEADERS ${schedulers_headers}
   SOURCES ${schedulers_sources}
   MODULE_DEPENDENCIES
-    pika_config_local
+    pika_config
     pika_assertion
     pika_errors
     pika_format

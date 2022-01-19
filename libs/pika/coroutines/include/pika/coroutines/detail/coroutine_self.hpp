@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/coroutines/detail/coroutine_accessor.hpp>
 #include <pika/coroutines/detail/coroutine_impl.hpp>

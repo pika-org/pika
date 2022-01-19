@@ -6,7 +6,7 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ==============================================================================*/
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <cstddef>
 #include <cstdio>    // remove
@@ -21,7 +21,7 @@ namespace std {
 }
 #endif
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/serialization/serializable_any.hpp>
 #include <pika/serialization/serialize.hpp>
@@ -91,7 +91,7 @@ int pika_main()
             pika::any_cast<big_object>(any_in));
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -100,10 +100,10 @@ int main(int argc, char* argv[])
     options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    pika::local::init(pika_main, argc, argv, init_args);
+    pika::init(pika_main, argc, argv, init_args);
 
     return pika::util::report_errors();
 }

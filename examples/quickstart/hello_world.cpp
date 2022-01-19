@@ -8,7 +8,7 @@
 // The purpose of this example is to execute a pika-thread printing
 // "Hello World!" once. That's all.
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 
 #include <iostream>
 
@@ -16,10 +16,10 @@ int pika_main()
 {
     // Say hello to the world!
     std::cout << "Hello World!\n" << std::flush;
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

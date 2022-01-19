@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <cstddef>
 #include <limits>
@@ -23,7 +23,7 @@
 #include <jemalloc/jemalloc.h>
 #endif
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace util {
 #if defined(PIKA_HAVE_JEMALLOC_PREFIX)
@@ -124,4 +124,4 @@ namespace pika { namespace util {
 #endif
 }}    // namespace pika::util
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

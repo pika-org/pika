@@ -4,11 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
+#include <pika/modules/testing.hpp>
 #include <pika/pika.hpp>
 #include <pika/pika_init.hpp>
-#include <pika/modules/testing.hpp>
 
 void low_priority()
 {
@@ -36,11 +36,11 @@ PIKA_PLAIN_ACTION(normal_priority)
 
 void high_priority()
 {
-    PIKA_TEST_EQ(
-        pika::threads::thread_priority::high, pika::this_thread::get_priority());
+    PIKA_TEST_EQ(pika::threads::thread_priority::high,
+        pika::this_thread::get_priority());
     pika::this_thread::yield();
-    PIKA_TEST_EQ(
-        pika::threads::thread_priority::high, pika::this_thread::get_priority());
+    PIKA_TEST_EQ(pika::threads::thread_priority::high,
+        pika::this_thread::get_priority());
 }
 PIKA_DECLARE_ACTION(high_priority)
 PIKA_ACTION_HAS_HIGH_PRIORITY(high_priority_action)

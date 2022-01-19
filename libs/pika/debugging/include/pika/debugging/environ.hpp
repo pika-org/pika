@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 // The 'environ' should be declared in some cases. E.g. Linux man page says:
 // (This variable must be declared in the user program, but is declared in
@@ -36,7 +36,7 @@ extern char*** _NSGetEnviron(void);
 #elif defined(__FreeBSD__)
 // On FreeBSD the environment is available for executables only, so needs to be
 // handled explicitly (e.g. see pika_init_impl.hpp)
-// The variable is defined in .../runtime_local/src/custom_exception_info.cpp
+// The variable is defined in .../runtime/src/custom_exception_info.cpp
 extern PIKA_EXPORT char** freebsd_environ;
 #else
 extern char** environ;

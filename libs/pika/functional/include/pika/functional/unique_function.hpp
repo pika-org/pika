@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/detail/basic_function.hpp>
 #include <pika/functional/detail/function_registration.hpp>
 #include <pika/functional/traits/get_function_address.hpp>

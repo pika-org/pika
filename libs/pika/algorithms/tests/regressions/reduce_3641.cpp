@@ -8,8 +8,8 @@
 // #3641: Trouble with using ranges-v3 and pika::parallel::reduce
 // #3646: Parallel algorithms should accept iterator/sentinel pairs
 
+#include <pika/init.hpp>
 #include <pika/iterator_support/tests/iter_sent.hpp>
-#include <pika/local/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/reduce.hpp>
 
@@ -27,12 +27,12 @@ int pika_main()
 
     PIKA_TEST_EQ(result, std::int64_t(4950));
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/functional/detail/invoke.hpp>

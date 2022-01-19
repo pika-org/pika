@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_base/traits/is_launch_policy.hpp>
 #include <pika/execution/executors/execution.hpp>
 #include <pika/execution/executors/execution_parameters.hpp>
@@ -1471,85 +1471,6 @@ namespace pika { namespace execution {
     }
 
 }}    // namespace pika::execution
-
-namespace pika { namespace parallel { namespace execution {
-
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::par is deprecated. Please use "
-        "pika::execution::par instead.")
-    inline constexpr pika::execution::parallel_policy par{};
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::par_unseq is deprecated. Please use "
-        "pika::execution::par_unseq instead.")
-    inline constexpr pika::execution::parallel_policy par_unseq{};
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::seq is deprecated. Please use "
-        "pika::execution::seq instead.")
-    inline constexpr pika::execution::sequenced_policy seq{};
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::task is deprecated. Please use "
-        "pika::execution::task instead.")
-    inline constexpr pika::execution::task_policy_tag task{};
-    using parallel_executor PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_executor is deprecated. Please "
-        "use "
-        "pika::execution::parallel_executor instead.") =
-        pika::execution::parallel_executor;
-    using parallel_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_policy is deprecated. Please "
-        "use "
-        "pika::execution::parallel_policy instead.") =
-        pika::execution::parallel_policy;
-    template <typename Executor, typename Parameters>
-    using parallel_policy_shim PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_policy_shim is deprecated. "
-        "Please "
-        "use pika::execution::parallel_policy_shim instead.") =
-        pika::execution::parallel_policy_shim<Executor, Parameters>;
-    using parallel_task_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_task_policy is deprecated. "
-        "Please "
-        "use pika::execution::parallel_task_policy instead.") =
-        pika::execution::parallel_task_policy;
-    template <typename Executor, typename Parameters>
-    using parallel_task_policy_shim PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_task_policy_shim is "
-        "deprecated. "
-        "Please use pika::execution::parallel_task_policy_shim instead.") =
-        pika::execution::parallel_task_policy_shim<Executor, Parameters>;
-    using parallel_unsequenced_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::parallel_unsequenced_policy is "
-        "deprecated. "
-        "Please use pika::execution::parallel_unsequenced_policy instead.") =
-        pika::execution::parallel_unsequenced_policy;
-    using sequenced_executor PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::sequenced_executor is deprecated. "
-        "Please "
-        "use pika::execution::sequenced_executor instead.") =
-        pika::execution::sequenced_executor;
-    using sequenced_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::sequenced_policy is deprecated. Please "
-        "use "
-        "pika::execution::sequenced_policy instead.") =
-        pika::execution::sequenced_policy;
-    template <typename Executor, typename Parameters>
-    using sequenced_policy_shim PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::sequenced_policy_shim is deprecated. "
-        "Please "
-        "use pika::execution::sequenced_policy_shim instead.") =
-        pika::execution::sequenced_policy_shim<Executor, Parameters>;
-    using sequenced_task_policy PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::sequenced_task_policy is deprecated. "
-        "Please "
-        "use pika::execution::sequenced_task_policy instead.") =
-        pika::execution::sequenced_task_policy;
-    template <typename Executor, typename Parameters>
-    using sequenced_task_policy_shim PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::execution::sequenced_task_policy_shim is "
-        "deprecated. "
-        "Please use pika::execution::sequenced_task_policy_shim instead.") =
-        pika::execution::sequenced_task_policy_shim<Executor, Parameters>;
-}}}    // namespace pika::parallel::execution
 
 namespace pika { namespace detail {
 

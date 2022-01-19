@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/iterator_support/range.hpp>
@@ -695,69 +695,6 @@ namespace pika { namespace ranges {
 }}    // namespace pika::ranges
 
 #else
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng1, typename Rng2,
-        typename Pred = pika::ranges::equal_to,
-        typename Proj1 = parallel::util::projection_identity,
-        typename Proj2 = parallel::util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng1>::value &&
-            traits::is_projected_range<Proj1, Rng1>::value &&
-            pika::traits::is_range<Rng2>::value &&
-            traits::is_projected_range<Proj2, Rng2>::value &&
-            traits::is_indirect_callable<ExPolicy,
-                Pred, traits::projected_range<Proj1, Rng1>,
-                traits::projected_range<Proj2, Rng2>
-            >::value
-        )>
-    PIKA_DEPRECATED_V(0, 1, "Please use pika::ranges::search instead.")
-    // clang-format on
-    typename util::detail::algorithm_result<ExPolicy,
-        typename pika::traits::range_iterator<Rng1>::type>::type
-        search(ExPolicy&& policy, Rng1&& rng1, Rng2&& rng2, Pred&& op = Pred(),
-            Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
-    {
-        return search(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
-            pika::util::end(rng1), pika::util::begin(rng2),
-            pika::util::end(rng2), PIKA_FORWARD(Pred, op),
-            PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
-    }
-
-    // clang-format off
-    template <typename ExPolicy, typename Rng1, typename Rng2,
-        typename Pred = pika::ranges::equal_to,
-        typename Proj1 = parallel::util::projection_identity,
-        typename Proj2 = parallel::util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy<ExPolicy>::value &&
-            pika::traits::is_range<Rng1>::value &&
-            traits::is_projected_range<Proj1, Rng1>::value &&
-            pika::traits::is_range<Rng2>::value &&
-            traits::is_projected_range<Proj2, Rng2>::value &&
-            traits::is_indirect_callable<ExPolicy,
-                Pred, traits::projected_range<Proj1, Rng1>,
-                traits::projected_range<Proj2, Rng2>
-            >::value
-        )>
-    PIKA_DEPRECATED_V(0, 1, "Please use pika::ranges::search_n instead.")
-    // clang-format on
-    typename util::detail::algorithm_result<ExPolicy,
-        typename pika::traits::range_iterator<Rng1>::type>::type
-        search_n(ExPolicy&& policy, Rng1&& rng1, std::size_t count, Rng2&& rng2,
-            Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
-            Proj2&& proj2 = Proj2())
-    {
-        return search_n(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
-            count, pika::util::begin(rng2), pika::util::end(rng2),
-            PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-            PIKA_FORWARD(Proj2, proj2));
-    }
-
-}}}    // namespace pika::parallel::v1
 
 namespace pika { namespace ranges {
 

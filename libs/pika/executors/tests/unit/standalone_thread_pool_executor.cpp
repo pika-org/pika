@@ -11,12 +11,12 @@
 // pika runtime*. This test fails if thread pools, schedulers etc. assume that
 // the global runtime (configuration, thread manager, etc.) always exists.
 
-#include <pika/local/execution.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/execution.hpp>
+#include <pika/future.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/modules/thread_pools.hpp>
+#include <pika/thread.hpp>
 
 #include <algorithm>
 #include <cstddef>

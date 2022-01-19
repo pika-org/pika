@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika::detail {
     template <typename T>
@@ -866,4 +866,4 @@ namespace pika::detail {
     };
 }    // namespace pika::detail
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

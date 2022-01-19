@@ -11,7 +11,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt
 //
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(PIKA_MSVC)
 #pragma warning(disable : 4786)    // identifier truncated in debug info

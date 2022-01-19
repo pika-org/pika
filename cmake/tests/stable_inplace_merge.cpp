@@ -9,7 +9,7 @@
 #include <ciso646>
 
 #if defined(_LIBCPP_VERSION) && (_LIBCPP_VERSION < 6000)
-#  error "libc++ inplace_merge implementation is not stable"
+#error "libc++ inplace_merge implementation is not stable"
 #endif
 
 int main()

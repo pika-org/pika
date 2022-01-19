@@ -52,7 +52,7 @@ pika_add_module(
   SOURCES ${program_options_sources}
   HEADERS ${program_options_headers}
   DEPENDENCIES ${__boost_program_options}
-  MODULE_DEPENDENCIES pika_config_local pika_datastructures pika_format
+  MODULE_DEPENDENCIES pika_config pika_datastructures pika_format
                       pika_iterator_support
   CMAKE_SUBDIRS examples tests
 )

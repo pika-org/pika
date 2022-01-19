@@ -225,7 +225,7 @@ namespace pika {
 
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/iterator_support/range.hpp>
@@ -334,22 +334,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    template <typename ExPolicy, typename FwdIter, typename Pred = detail::less>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::is_sorted is deprecated, use pika::is_sorted instead")
-    inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, bool>::type>::type
-        is_sorted(ExPolicy&& policy, FwdIter first, FwdIter last,
-            Pred&& pred = Pred())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-
-        return detail::is_sorted<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last,
-            PIKA_FORWARD(Pred, pred), util::projection_identity());
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     // is_sorted_until
     namespace detail {
@@ -442,24 +426,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-
-    template <typename ExPolicy, typename FwdIter, typename Pred = detail::less>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::is_sorted_until is deprecated, use "
-        "pika::is_sorted_until instead")
-    inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type>::type
-        is_sorted_until(ExPolicy&& policy, FwdIter first, FwdIter last,
-            Pred&& pred = Pred())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-
-        return detail::is_sorted_until<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last,
-            PIKA_FORWARD(Pred, pred), util::projection_identity());
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
     inline constexpr struct is_sorted_t final

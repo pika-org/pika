@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/topology/cpu_mask.hpp>
@@ -96,7 +96,7 @@ namespace pika { namespace threads {
         membind_user = HWLOC_MEMBIND_MIXED + 256
     };
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
     struct PIKA_EXPORT topology
     {
@@ -407,7 +407,7 @@ namespace pika { namespace threads {
         std::vector<mask_type> thread_affinity_masks_;
     };
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>
 
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT topology& create_topology();

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>

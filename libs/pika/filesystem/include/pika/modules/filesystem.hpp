@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/filesystem/config/defines.hpp>
 
 #if !defined(PIKA_FILESYSTEM_HAVE_BOOST_FILESYSTEM_COMPATIBILITY)
@@ -64,7 +64,7 @@ namespace pika { namespace filesystem {
 
 }}    // namespace pika::filesystem
 #else
-#include <pika/local/config/detail/compat_error_code.hpp>
+#include <pika/config/detail/compat_error_code.hpp>
 
 #include <boost/filesystem.hpp>
 

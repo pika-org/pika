@@ -7,7 +7,7 @@
 #pragma once
 
 // clang-format off
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_HIP) && defined(PIKA_HAVE_GPUBLAS)
 

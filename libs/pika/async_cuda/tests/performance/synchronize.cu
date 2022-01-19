@@ -4,9 +4,9 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/chrono.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/execution.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/async_cuda.hpp>
 
 #include <cstddef>
@@ -243,7 +243,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
     pika::cuda::experimental::check_cuda_error(cudaStreamDestroy(cuda_stream));
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -254,8 +254,8 @@ int main(int argc, char* argv[])
     cmdline.add_options()("iterations",
         pika::program_options::value<std::size_t>()->default_value(1024),
         "number of iterations (default: 1024)");
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

@@ -716,7 +716,7 @@ namespace pika { namespace ranges {
 
 #else
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/modules/concepts.hpp>
 #include <pika/modules/executors.hpp>

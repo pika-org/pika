@@ -4,10 +4,10 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/format.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/testing.hpp>
@@ -33,8 +33,8 @@ std::vector<pika::future<void>> create_tasks(
         }
         else
         {
-            tasks.push_back(
-                pika::make_ready_future_after(std::chrono::microseconds(delay)));
+            tasks.push_back(pika::make_ready_future_after(
+                std::chrono::microseconds(delay)));
         }
     }
     return tasks;
@@ -140,7 +140,7 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::util::print_cdash_timing(
             "WaitAllChunks", elapsed_chunks / num_tasks);
     }
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -155,18 +155,18 @@ int main(int argc, char* argv[])
         po::value<std::size_t>()->default_value(1000),
         "number of tasks to concurrently wait for (default: 1000)")("futures,f",
         po::value<std::size_t>()->default_value(100),
-        "number of tasks to concurrently wait for (default: 100)") ("chunks,c",
+        "number of tasks to concurrently wait for (default: 100)")("chunks,c",
         po::value<std::size_t>()->default_value(1),
-        "number of chunks to split tasks into (default: 1)") ("delay,d",
+        "number of chunks to split tasks into (default: 1)")("delay,d",
         po::value<std::size_t>()->default_value(0),
-        "number of iterations in the delay loop") ("no-header,n",
+        "number of iterations in the delay loop")("no-header,n",
         po::value<bool>()->default_value(true),
         "do not print out the csv header row");
 
     // Initialize and run pika.
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }
 #endif

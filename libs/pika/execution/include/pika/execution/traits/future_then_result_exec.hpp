@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution/traits/executor_traits.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>
 #include <pika/functional/invoke_result.hpp>

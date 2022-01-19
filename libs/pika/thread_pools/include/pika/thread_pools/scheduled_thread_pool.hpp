@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/affinity/affinity_data.hpp>
 #include <pika/assert.hpp>
 #include <pika/concurrency/barrier.hpp>
@@ -32,7 +32,7 @@
 #include <utility>
 #include <vector>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 namespace pika { namespace threads { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
@@ -396,4 +396,4 @@ namespace pika { namespace threads { namespace detail {
     };
 }}}    // namespace pika::threads::detail
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

@@ -25,7 +25,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   HEADERS ${async_combinators_headers}
   EXCLUDE_FROM_GLOBAL_HEADER "pika/async_combinators/future_wait.hpp"
-  MODULE_DEPENDENCIES pika_async_base pika_config_local pika_errors pika_futures
+  MODULE_DEPENDENCIES pika_async_base pika_config pika_errors pika_futures
                       pika_memory pika_pack_traversal
   CMAKE_SUBDIRS examples tests
 )

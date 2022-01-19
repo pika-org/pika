@@ -7,11 +7,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/barrier.hpp>
-#include <pika/local/functional.hpp>
-#include <pika/local/init.hpp>
-#include <pika/local/thread.hpp>
+#include <pika/barrier.hpp>
+#include <pika/functional.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/format.hpp>
+#include <pika/thread.hpp>
 
 #include "htts2.hpp"
 
@@ -43,13 +43,13 @@ struct pika_driver : htts2::driver
             f;
         pika::program_options::options_description desc;
 
-        pika::local::init_params init_args;
+        pika::init_params init_args;
         init_args.cfg = cfg;
         init_args.desc_cmdline = desc;
 
         using pika::util::placeholders::_1;
 
-        pika::local::init(
+        pika::init(
             std::function<int(pika::program_options::variables_map&)>(
                 pika::util::bind(&pika_driver::run_impl, std::ref(*this), _1)),
             argc_, argv_, init_args);
@@ -65,7 +65,7 @@ private:
         results_type results = kernel();
         print_results(results);
 
-        return pika::local::finalize();
+        return pika::finalize();
     }
 
     pika::threads::thread_result_type payload_thread_function(

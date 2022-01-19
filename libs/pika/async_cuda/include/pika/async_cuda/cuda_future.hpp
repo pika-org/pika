@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cuda_event.hpp>
 #include <pika/async_cuda/cuda_exception.hpp>
@@ -20,8 +20,8 @@
 #include <pika/modules/execution_base.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/modules/threading_base.hpp>
-#include <pika/runtime_local/runtime_local_fwd.hpp>
-#include <pika/runtime_local/thread_pool_helpers.hpp>
+#include <pika/runtime/runtime_fwd.hpp>
+#include <pika/runtime/thread_pool_helpers.hpp>
 
 #include <memory>
 #include <string>

@@ -6,9 +6,9 @@
 
 // #3182: bulk_then_execute has unexpected return type/does not compile
 
-#include <pika/local/algorithm.hpp>
-#include <pika/local/execution.hpp>
-#include <pika/local/init.hpp>
+#include <pika/algorithm.hpp>
+#include <pika/execution.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <algorithm>
@@ -70,10 +70,10 @@ int pika_main()
         test_bulk_then_execute(exec);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

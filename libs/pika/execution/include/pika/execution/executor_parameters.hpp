@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <pika/execution/executors/auto_chunk_size.hpp>
 #include <pika/execution/executors/dynamic_chunk_size.hpp>

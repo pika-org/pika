@@ -13,7 +13,7 @@
     support for pika serialization, move assignment, == operator.
 ==============================================================================*/
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/serialization/serializable_any.hpp>
 #include <pika/serialization/serialize.hpp>
 

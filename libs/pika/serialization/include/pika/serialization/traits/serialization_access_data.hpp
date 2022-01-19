@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/serialization/binary_filter.hpp>
 #include <pika/serialization/serialization_fwd.hpp>
 

@@ -47,8 +47,8 @@
 
 #pragma once
 
-#include <pika/local/config/move.hpp>
-#include <pika/local/config/forward.hpp>
+#include <pika/config/move.hpp>
+#include <pika/config/forward.hpp>
 
 #if defined(__GNUC__)
 // Disable -Wconversion warnings (spuriously triggered when Traits::size_t and

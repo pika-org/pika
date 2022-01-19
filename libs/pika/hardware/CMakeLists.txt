@@ -39,6 +39,6 @@ pika_add_module(
     "pika/hardware/timestamp/msvc.hpp"
   SOURCES ${hardware_sources}
   HEADERS ${hardware_headers}
-  MODULE_DEPENDENCIES pika_config_local
+  MODULE_DEPENDENCIES pika_config
   CMAKE_SUBDIRS examples tests
 )

@@ -7,21 +7,13 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #include <functional>
 #include <type_traits>
 #include <utility>
 
 namespace pika { namespace util {
-
-    template <typename T>
-    struct PIKA_DEPRECATED_V(
-        0, 1, "pika::util::decay is deprecated, use std::decay instead.") decay
-      : std::decay<T>
-    {
-    };
-
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         template <typename TD>

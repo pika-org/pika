@@ -14,9 +14,9 @@
 // example is still fully serial, no parallelization is performed.
 
 #include <pika/assert.hpp>
-#include <pika/local/chrono.hpp>
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/chrono.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -184,7 +184,7 @@ int pika_main(pika::program_options::variables_map& vm)
     std::uint64_t const os_thread_count = pika::get_os_thread_count();
     print_time_results(os_thread_count, elapsed, nx, np, nt, header);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -212,8 +212,8 @@ int main(int argc, char* argv[])
     // clang-format on
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

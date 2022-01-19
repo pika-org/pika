@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>

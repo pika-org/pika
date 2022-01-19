@@ -4,8 +4,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/local/future.hpp>
-#include <pika/local/init.hpp>
+#include <pika/future.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 
 #include <iostream>
@@ -66,11 +66,11 @@ int pika_main()
         PIKA_TEST_EQ(*ss_it, *ss_it2);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
     return pika::util::report_errors();
 }

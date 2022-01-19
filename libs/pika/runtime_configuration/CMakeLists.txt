@@ -32,7 +32,7 @@ pika_add_module(
     pika_ini
     pika_prefix
     pika_coroutines
-    pika_version_local
+    pika_version
     pika_synchronization
   CMAKE_SUBDIRS examples tests
 )

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/modules/debugging.hpp>
 #include <pika/modules/hashing.hpp>
 #include <pika/preprocessor/stringize.hpp>

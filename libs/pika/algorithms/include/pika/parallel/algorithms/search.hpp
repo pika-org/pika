@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -300,71 +300,6 @@ namespace pika {
 }    // namespace pika
 
 #else
-
-namespace pika { namespace parallel { inline namespace v1 {
-
-    template <typename ExPolicy, typename FwdIter, typename FwdIter2,
-        typename Pred = detail::equal_to,
-        typename Proj1 = parallel::util::projection_identity,
-        typename Proj2 = parallel::util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(pika::is_execution_policy<
-            ExPolicy>::value&& pika::traits::is_iterator<FwdIter>::value&&
-                parallel::traits::is_projected<Proj1, FwdIter>::value&&
-                    pika::traits::is_iterator<FwdIter2>::value&&
-                        parallel::traits::is_projected<Proj2, FwdIter2>::value&&
-                            parallel::traits::is_indirect_callable<ExPolicy,
-                                Pred,
-                                parallel::traits::projected<Proj1, FwdIter>,
-                                parallel::traits::projected<Proj2,
-                                    FwdIter2>>::value)>
-    PIKA_DEPRECATED_V(0, 1, "Please use pika::search instead.")
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        search(ExPolicy&& policy, FwdIter first, FwdIter last, FwdIter2 s_first,
-            FwdIter2 s_last, Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
-            Proj2&& proj2 = Proj2())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
-            "Subsequence requires at least forward iterator.");
-
-        return pika::parallel::v1::detail::search<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, s_first, s_last,
-            PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-            PIKA_FORWARD(Proj2, proj2));
-    }
-
-    template <typename ExPolicy, typename FwdIter, typename FwdIter2,
-        typename Pred = parallel::v1::detail::equal_to,
-        typename Proj1 = parallel::util::projection_identity,
-        typename Proj2 = parallel::util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(pika::is_execution_policy<
-            ExPolicy>::value&& pika::traits::is_iterator<FwdIter>::value&&
-                parallel::traits::is_projected<Proj1, FwdIter>::value&&
-                    pika::traits::is_iterator<FwdIter2>::value&&
-                        parallel::traits::is_projected<Proj2, FwdIter2>::value&&
-                            parallel::traits::is_indirect_callable<ExPolicy,
-                                Pred,
-                                parallel::traits::projected<Proj1, FwdIter>,
-                                parallel::traits::projected<Proj2,
-                                    FwdIter2>>::value)>
-    PIKA_DEPRECATED_V(0, 1, "Please use pika::search_n instead.")
-    typename parallel::util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        search_n(ExPolicy&& policy, FwdIter first, std::size_t count,
-            FwdIter2 s_first, FwdIter2 s_last, Pred&& op = Pred(),
-            Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-        static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
-            "Subsequence requires at least forward iterator.");
-
-        return detail::search_n<FwdIter, FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, count, s_first, s_last,
-            PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-            PIKA_FORWARD(Proj2, proj2));
-    }
-}}}    // namespace pika::parallel::v1
 
 namespace pika {
 

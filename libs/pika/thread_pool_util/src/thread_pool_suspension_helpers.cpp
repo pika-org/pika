@@ -4,8 +4,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/async_local/apply.hpp>
-#include <pika/async_local/async.hpp>
+#include <pika/async/apply.hpp>
+#include <pika/async/async.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>

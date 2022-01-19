@@ -363,7 +363,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/invoke.hpp>
@@ -528,34 +528,6 @@ namespace pika { namespace parallel { inline namespace v1 {
         /// \endcond
     }    // namespace detail
 
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename F = detail::less,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<FwdIter> &&
-            traits::is_projected_v<Proj, FwdIter> &&
-            traits::is_indirect_callable_v<
-                ExPolicy, F,
-                traits::projected<Proj, FwdIter>,
-                traits::projected<Proj, FwdIter>
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::min_element is deprecated, use pika::min_element "
-        "instead") pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-        FwdIter> min_element(ExPolicy&& policy, FwdIter first, FwdIter last,
-        F&& f = F(), Proj&& proj = Proj())
-    {
-        static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
-            "Requires at least forward iterator.");
-
-        return detail::min_element<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-            PIKA_FORWARD(Proj, proj));
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // max_element
     namespace detail {
@@ -690,34 +662,6 @@ namespace pika { namespace parallel { inline namespace v1 {
 
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename F = detail::less,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<FwdIter> &&
-            traits::is_projected_v<Proj, FwdIter> &&
-            traits::is_indirect_callable_v<
-                ExPolicy, F,
-                traits::projected<Proj, FwdIter>,
-                traits::projected<Proj, FwdIter>
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::max_element is deprecated, use pika::max_element "
-        "instead") pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-        FwdIter> max_element(ExPolicy&& policy, FwdIter first, FwdIter last,
-        F&& f = F(), Proj&& proj = Proj())
-    {
-        static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
-            "Requires at least forward iterator.");
-
-        return detail::max_element<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-            PIKA_FORWARD(Proj, proj));
-    }
 
     ///////////////////////////////////////////////////////////////////////////
     // minmax_element
@@ -883,36 +827,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 
         /// \endcond
     }    // namespace detail
-
-    // clang-format off
-    template <typename ExPolicy, typename FwdIter, typename F = detail::less,
-        typename Proj = util::projection_identity,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_execution_policy_v<ExPolicy> &&
-            pika::traits::is_iterator_v<FwdIter> &&
-            traits::is_projected_v<Proj, FwdIter> &&
-            traits::is_indirect_callable_v<
-                ExPolicy, F,
-                traits::projected<Proj, FwdIter>,
-                traits::projected<Proj, FwdIter>
-            >
-        )>
-    // clang-format on
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::parallel::minmax_element is deprecated, use "
-        "pika::minmax_element "
-        "instead") pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-        minmax_element_result<FwdIter>> minmax_element(ExPolicy&& policy,
-        FwdIter first, FwdIter last, F&& f = F(), Proj&& proj = Proj())
-    {
-        static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
-            "Requires at least forward iterator.");
-
-        return detail::minmax_element<FwdIter>().call(
-            PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-            PIKA_FORWARD(Proj, proj));
-    }
-}}}    // namespace pika::parallel::v1
+}}}      // namespace pika::parallel::v1
 
 namespace pika {
 

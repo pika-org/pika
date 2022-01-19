@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
-#include <pika/local/config/endian.hpp>
+#include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/config/endian.hpp>
 #include <pika/serialization/serialization_fwd.hpp>
 #include <pika/serialization/serialize.hpp>
 #include <pika/serialization/traits/is_bitwise_serializable.hpp>

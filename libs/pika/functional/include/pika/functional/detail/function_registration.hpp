@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/debugging/demangle_helper.hpp>
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/preprocessor/strip_parens.hpp>

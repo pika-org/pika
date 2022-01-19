@@ -71,22 +71,20 @@ DerivePointerAlignment: false
 FixNamespaceComments: true
 # ForEachMacros: ['']
 IncludeCategories:
-  - Regex:           '^<pika/local/config\.hpp>'
+  - Regex:           '^<pika/config\.hpp>'
     Priority:        1
-  - Regex:           '^<pika/local/config/defines\.hpp>'
+  - Regex:           '^<pika/config/defines\.hpp>'
     Priority:        2
-  - Regex:           '^<pika/local/config/.*>'
-    Priority:        3
   - Regex:           '^<pika/.*/config\.hpp>'
-    Priority:        4
+    Priority:        3
   - Regex:           '^<pika/.*\.hpp>'
-    Priority:        5
+    Priority:        4
   - Regex:           '^<pika/parallel/.*\.hpp>'
-    Priority:        6
+    Priority:        5
   - Regex:           '^<.*'
-    Priority:        7
+    Priority:        6
   - Regex:           '.*'
-    Priority:        8
+    Priority:        7
 # IncludeIsMainRegex: ''
 IndentCaseLabels: false
 IndentWidth: 4

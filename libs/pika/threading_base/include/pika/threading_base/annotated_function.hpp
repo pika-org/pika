@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #include <pika/functional/detail/invoke.hpp>
@@ -173,21 +173,3 @@ namespace pika::traits {
     };
 #endif
 }    // namespace pika::traits
-
-namespace pika::util {
-    template <typename F>
-    PIKA_DEPRECATED_V(0, 1, "Please use pika::annotated_function instead.")
-    constexpr decltype(auto)
-        annotated_function(F&& f, char const* name = nullptr) noexcept
-    {
-        return pika::annotated_function(PIKA_FORWARD(F, f), name);
-    }
-
-    template <typename F>
-    PIKA_DEPRECATED_V(0, 1, "Please use pika::annotated_function instead.")
-    constexpr decltype(auto)
-        annotated_function(F&& f, std::string const& name) noexcept
-    {
-        return pika::annotated_function(PIKA_FORWARD(F, f), name);
-    }
-}    // namespace pika::util

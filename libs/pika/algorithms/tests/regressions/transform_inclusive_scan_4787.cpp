@@ -7,7 +7,7 @@
 // see #4787: `transform_inclusive_scan` gives incorrect results for
 //            non-commutative operator
 
-#include <pika/local/init.hpp>
+#include <pika/init.hpp>
 #include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/transform_inclusive_scan.hpp>
 
@@ -47,12 +47,12 @@ int pika_main()
     std::vector<Elem> expected = {Elem{1}, Elem{4}, Elem{2}, Elem{6}};
     PIKA_TEST(output == expected);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

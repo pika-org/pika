@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 
 // TODO: Should this be experimental?
 #if defined(PIKA_HAVE_DATAPAR)

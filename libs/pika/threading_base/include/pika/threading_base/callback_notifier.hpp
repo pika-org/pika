@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/functional/function.hpp>
 
 #include <cstddef>
 #include <deque>
 #include <exception>
 
-#include <pika/local/config/warnings_prefix.hpp>
+#include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads { namespace policies {
@@ -97,4 +97,4 @@ namespace pika { namespace threads { namespace policies {
 
 }}}    // namespace pika::threads::policies
 
-#include <pika/local/config/warnings_suffix.hpp>
+#include <pika/config/warnings_suffix.hpp>

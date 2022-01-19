@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/assertion/current_function.hpp>
 #include <pika/assertion/evaluate_assert.hpp>
 #include <pika/assertion/source_location.hpp>

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>

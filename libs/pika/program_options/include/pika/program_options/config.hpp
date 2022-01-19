@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/datastructures/any.hpp>
 #include <pika/datastructures/optional.hpp>
 #include <pika/program_options/config/defines.hpp>

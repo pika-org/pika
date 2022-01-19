@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/schedulers/thread_queue_mc.hpp>
 #include <pika/threading_base/print.hpp>

@@ -115,7 +115,7 @@ namespace pika {
 
 #else    // DOXYGEN
 
-#include <pika/local/config.hpp>
+#include <pika/config.hpp>
 #include <pika/async_combinators/detail/throw_if_exceptional.hpp>
 #include <pika/async_combinators/when_each.hpp>
 #include <pika/futures/traits/is_future.hpp>
@@ -229,26 +229,4 @@ namespace pika {
         pika::detail::throw_if_exceptional(PIKA_MOVE(result));
     }
 }    // namespace pika
-
-namespace pika::lcos {
-
-    template <typename F, typename... Ts>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait_each is deprecated. Use pika::wait_each instead.")
-    void wait_each(F&& f, Ts&&... ts)
-    {
-        pika::wait_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
-    }
-
-    template <typename F, typename Iterator,
-        typename Enable =
-            std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    PIKA_DEPRECATED_V(0, 1,
-        "pika::lcos::wait_each is deprecated. Use pika::wait_each instead.")
-    void wait_each_n(F&& f, Iterator begin, std::size_t count)
-    {
-        pika::wait_each_n(PIKA_FORWARD(F, f), begin, count);
-    }
-}    // namespace pika::lcos
-
 #endif    // DOXYGEN
