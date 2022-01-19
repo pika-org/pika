@@ -195,13 +195,6 @@ function(pika_add_module libname modulename)
     set(module_private_keyword PRIVATE)
   endif()
 
-  pika_warn("pika_${modulename} library type: ${module_library_type}")
-  pika_warn("pika_${modulename} sources: ${sources}")
-  pika_warn("pika_${modulename} objects: ${${modulename}_OBJECTS}")
-  pika_warn("pika_${modulename} headers: ${headers}")
-  pika_warn("pika_${modulename} generated headers: ${generated_headers}")
-  pika_warn("pika_${modulename} compatibility headers: ${compat_headers}")
-
   # create library modules
   add_library(
     pika_${modulename} ${module_library_type} ${sources}
