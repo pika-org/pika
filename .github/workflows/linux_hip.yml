@@ -6,10 +6,16 @@
 
 name: Linux HIP CI (Debug)
 
-on: [pull_request]
+on:
+  push:
+    branches:
+      - staging
+      - trying
+  pull_request:
 
 jobs:
   build:
+    name: github/linux/hip/fast
     runs-on: ubuntu-latest
     container: stellargroup/hip_build_env:10
 
