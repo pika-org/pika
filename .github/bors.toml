@@ -16,7 +16,6 @@ status = [
   "ci/circleci: configure",
   "ci/circleci: configure_test_combinations",
   "ci/circleci: inspect",
-  "ci/circleci: spellcheck",
   "ci/circleci: core",
 ]
 required_approvals = 0
