@@ -6,10 +6,16 @@
 
 name: Linux CI (Release, FetchContent)
 
-on: [pull_request]
+on:
+  push:
+    branches:
+      - staging
+      - trying
+  pull_request:
 
 jobs:
   build:
+    name: github/linux/fetchcontent/fast
     runs-on: ubuntu-latest
     container: stellargroup/build_env:10
 

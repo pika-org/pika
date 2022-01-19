@@ -10,6 +10,7 @@ on: [pull_request]
 
 jobs:
   build:
+    name: github/macos/debug
     runs-on: macos-latest
 
     steps:
