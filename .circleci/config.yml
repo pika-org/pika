@@ -59,13 +59,7 @@ jobs:
     working_directory: /pika
     steps:
       - checkout:
-          path: /pika/source-full
-      # Make a shallow clone of the current commit so that we don't have to copy
-      # the whole repository between work steps.
-      - run:
-          name: Creating shallow clone
-          command: |
-              git clone --depth=1 file:///pika/source-full source
+          path: /pika/source
       - run:
           name: Downloading CTest XML to Junit XML
           command: |
@@ -270,12 +264,11 @@ jobs:
           paths:
             - ./build/bin/inspect_local
 
-  # We need a full clone here to be able to compare to master.
   spellcheck:
     <<: *defaults
     steps:
-      - checkout:
-          path: /pika/source
+      - attach_workspace:
+          at: /pika
       - run:
           name: Running codespell
           command: |
@@ -551,10 +544,12 @@ workflows:
       - configure_test_combinations:
           requires:
             - checkout_code
+      - spellcheck:
+          requires:
+            - checkout_code
       - inspect:
           requires:
             - configure
-      - spellcheck
       - core:
           requires:
             - configure
