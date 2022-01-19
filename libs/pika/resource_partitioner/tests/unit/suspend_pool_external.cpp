@@ -29,7 +29,7 @@
 void test_scheduler(
     int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
-    pika::local::init_params init_args;
+    pika::init_params init_args;
 
     init_args.cfg = {"pika.os_threads=" +
         std::to_string(((std::min)(std::size_t(4),
@@ -39,7 +39,7 @@ void test_scheduler(
         rp.create_thread_pool("default", scheduler);
     };
 
-    pika::local::start(nullptr, argc, argv, init_args);
+    pika::start(nullptr, argc, argv, init_args);
 
     pika::threads::thread_pool_base& default_pool =
         pika::resource::get_thread_pool("default");
@@ -76,9 +76,9 @@ void test_scheduler(
         }
     }
 
-    pika::apply([]() { pika::local::finalize(); });
+    pika::apply([]() { pika::finalize(); });
 
-    PIKA_TEST_EQ(pika::local::stop(), 0);
+    PIKA_TEST_EQ(pika::stop(), 0);
 }
 
 int main(int argc, char* argv[])

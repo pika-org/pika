@@ -60,12 +60,12 @@
     /**/
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::local {
+namespace pika {
     // Helper data structures allowing to automatically detect version problems
     // between applications and the core libraries.
     PIKA_EXPORT extern char const PIKA_CHECK_VERSION[];
     PIKA_EXPORT extern char const PIKA_CHECK_BOOST_VERSION[];
-}    // namespace pika::local
+}    // namespace pika
 
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(PIKA_EXPORTS) && !defined(PIKA_NO_VERSION_CHECK)
@@ -81,7 +81,7 @@ namespace {
     check_pika_version()
     {
         char const* versions[] = {
-            pika::local::PIKA_CHECK_VERSION, pika::local::PIKA_CHECK_BOOST_VERSION};
+            pika::PIKA_CHECK_VERSION, pika::PIKA_CHECK_BOOST_VERSION};
         return versions[0];
     }
 }    // namespace

@@ -25,12 +25,12 @@ int pika_main()
     pika::shared_future<double> f = pika::make_ready_future(1.0);
     f = pika::dataflow(
         pika::launch::sync, pika::unwrapping(&func), f, f, f, f, f, f, f);
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
     return pika::util::report_errors();
 }
 #endif

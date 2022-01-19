@@ -37,17 +37,17 @@ int pika_main()
 
     PIKA_TEST_LT(std::size_t(1), thread_ids.size());
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
     std::vector<std::string> const cfg = {"pika.os_threads=4"};
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv, init_args), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

@@ -37,12 +37,12 @@ int pika_main()
     PIKA_TEST_EQ(f2.get(), 1);
     PIKA_TEST_EQ(f3.get(), 2);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

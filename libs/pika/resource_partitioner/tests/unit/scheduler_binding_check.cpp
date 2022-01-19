@@ -97,14 +97,14 @@ int pika_main()
 
     threadLoop();
 
-    pika::local::finalize();
+    pika::finalize();
     pika::deb_schbin.debug(pika::debug::str<15>("Finalized"));
     return pika::util::report_errors();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init_params init_args;
+    pika::init_params init_args;
 
     init_args.rp_callback = [](auto& rp,
                                 pika::program_options::variables_map const&) {
@@ -115,5 +115,5 @@ int main(int argc, char* argv[])
                 pika::threads::policies::default_mode));
     };
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

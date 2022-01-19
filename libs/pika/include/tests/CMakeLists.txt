@@ -9,9 +9,7 @@ include(pika_message)
 if(PIKA_WITH_TESTS)
   if(PIKA_WITH_TESTS_UNIT)
     pika_add_pseudo_target(tests.unit.modules.include)
-    pika_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.include
-    )
+    pika_add_pseudo_dependencies(tests.unit.modules tests.unit.modules.include)
     add_subdirectory(unit)
   endif()
 

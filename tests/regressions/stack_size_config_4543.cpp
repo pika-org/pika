@@ -20,12 +20,12 @@ int pika_main()
     pika::thread t([]() {});
     t.join();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    pika::local::init_params p;
+    pika::init_params p;
     p.cfg = {"pika.stacks.small_size=" +
             std::to_string(PIKA_SMALL_STACK_SIZE + 0x1000),
         "pika.stacks.medium_size=" +
@@ -35,5 +35,5 @@ int main(int argc, char** argv)
         "pika.stacks.huge_size=" +
             std::to_string(PIKA_HUGE_STACK_SIZE + 0x1000)};
 
-    return pika::local::init(pika_main, argc, argv, p);
+    return pika::init(pika_main, argc, argv, p);
 }

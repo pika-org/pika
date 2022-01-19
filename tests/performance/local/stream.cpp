@@ -479,7 +479,7 @@ int pika_main(pika::program_options::variables_map& vm)
         std::cout
             << "-------------------------------------------------------------\n"
             << "Modified STREAM benchmark based on\npika version: "
-                << pika::local::build_string() << "\n"
+                << pika::build_string() << "\n"
             << "-------------------------------------------------------------\n"
             << "This system uses " << sizeof(STREAM_TYPE)
                 << " bytes per array element.\n"
@@ -634,7 +634,7 @@ int pika_main(pika::program_options::variables_map& vm)
         // clang-format on
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -686,9 +686,9 @@ int main(int argc, char* argv[])
         "pika.numa_sensitive=2"    // no-cross NUMA stealing
     };
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

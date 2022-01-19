@@ -186,7 +186,7 @@ int pika_main()
     simple_await_shared_tests();
     simple_recursive_await_shared_tests();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -196,9 +196,9 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.cfg = cfg;
 
-    pika::local::init(pika_main, argc, argv, init_args);
+    pika::init(pika_main, argc, argv, init_args);
     return pika::util::report_errors();
 }

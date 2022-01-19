@@ -25,7 +25,7 @@ bool on_thread_error(std::size_t, std::exception_ptr const&)
 int pika_main()
 {
     PIKA_THROW_EXCEPTION(pika::invalid_status, "test", "test");
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     bool caught_exception = false;
     try
     {
-        pika::local::init(pika_main, argc, argv);
+        pika::init(pika_main, argc, argv);
         PIKA_TEST(false);
     }
     catch (...)

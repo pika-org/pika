@@ -202,7 +202,7 @@ int pika_main()
         pika::this_thread::yield();
     } while (counter > 0);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 void init_resource_partitioner_handler(pika::resource::partitioner& rp,
@@ -256,10 +256,10 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 void test_scheduler(
     int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.rp_callback =
         pika::bind_back(init_resource_partitioner_handler, scheduler);
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv, init_args), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
 }
 
 int main(int argc, char* argv[])

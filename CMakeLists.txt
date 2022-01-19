@@ -1817,8 +1817,8 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
   # Headers that should be precompiled for things depending on pika
   # (executables, libraries).
   set(pika_precompiled_headers_modules ${PIKA_ENABLED_MODULES})
-  # The init_runtime module cannot be precompiled because it uses macros
-  # that can depend on the application (PIKA_PREFIX and
+  # The init_runtime module cannot be precompiled because it uses macros that
+  # can depend on the application (PIKA_PREFIX and
   # PIKA_APPLICATION_NAME_DEFAULT).
   list(REMOVE_ITEM pika_precompiled_headers_modules init_runtime)
   # config, version, and the include modules don't have pika/module headers.

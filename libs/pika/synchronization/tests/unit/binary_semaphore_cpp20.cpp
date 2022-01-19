@@ -185,11 +185,11 @@ int pika_main()
     test_semaphore_try_acquire_until();
     test_semaphore_try_acquire_for_until();
 
-    pika::local::finalize();
+    pika::finalize();
     return pika::util::report_errors();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

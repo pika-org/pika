@@ -240,7 +240,7 @@ int pika_main(pika::program_options::variables_map& vm)
         std::cerr << "fibonacci_futures: wrong command line argument value for "
                      "option 'n-runs', should not be zero"
                   << std::endl;
-        return pika::local::finalize();    // Handles pika shutdown
+        return pika::finalize();    // Handles pika shutdown
     }
 
     threshold = vm["threshold"].as<unsigned int>();
@@ -250,7 +250,7 @@ int pika_main(pika::program_options::variables_map& vm)
                      "option 'threshold', should be in between 2 and n-value"
                      ", value specified: "
                   << threshold << std::endl;
-        return pika::local::finalize();    // Handles pika shutdown
+        return pika::finalize();    // Handles pika shutdown
     }
 
     bool executed_one = false;
@@ -463,7 +463,7 @@ int pika_main(pika::program_options::variables_map& vm)
                   << test << std::endl;
     }
 
-    return pika::local::finalize();    // Handles pika shutdown
+    return pika::finalize();    // Handles pika shutdown
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -487,8 +487,8 @@ int main(int argc, char* argv[])
     // clang-format on
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

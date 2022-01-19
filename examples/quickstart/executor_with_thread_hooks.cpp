@@ -234,10 +234,10 @@ int pika_main()
     PIKA_ASSERT(starts.load() != 0);
     PIKA_ASSERT(stops.load() != 0);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

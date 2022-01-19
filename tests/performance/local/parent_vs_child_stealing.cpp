@@ -95,7 +95,7 @@ int pika_main(pika::program_options::variables_map& vm)
         child_stealing_time, parent_stealing_time)
         << std::endl;
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -124,9 +124,9 @@ int main(int argc, char* argv[])
         ;
     // clang-format on
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }
 #endif

@@ -192,7 +192,7 @@ void pika_serialization_test(std::size_t iterations)
         throw std::logic_error("pika's case: deserialization failed");
     }
 
-    std::cout << "pika: version = " << pika::local::full_version_as_string()
+    std::cout << "pika: version = " << pika::full_version_as_string()
               << std::endl;
     std::cout << "pika: size    = " << serialized.size() << " bytes"
               << std::endl;

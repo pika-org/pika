@@ -17,7 +17,7 @@ int pika_main(int argc, char* argv[])
     PIKA_TEST_EQ(argc, 2);
     PIKA_TEST_EQ(std::string(argv[1]), std::string("-wobble=1"));
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
@@ -28,10 +28,10 @@ int main(int argc, char* argv[])
         "--pika:ini=pika.commandline.allow_unknown!=1",
         "--pika:ini=pika.commandline.aliasing!=0"};
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv, init_args), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
 
     return pika::util::report_errors();
 }

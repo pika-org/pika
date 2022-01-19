@@ -124,7 +124,7 @@ namespace pika {
             std::size_t frames_no = PIKA_HAVE_THREAD_BACKTRACE_DEPTH);
     }    // namespace detail
 
-    namespace local::detail {
+    namespace detail {
         PIKA_EXPORT pika::exception_info custom_exception_info(
             std::string const& func, std::string const& file, long line,
             std::string const& auxinfo);

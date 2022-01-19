@@ -61,10 +61,10 @@ int pika_main()
         ++i;
     }
 
-    return pika::local::finalize();    // Handles pika shutdown
+    return pika::finalize();    // Handles pika shutdown
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

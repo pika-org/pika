@@ -21,7 +21,7 @@ int pika_main(variables_map& vm)
     std::cout << "Value of reqopt3: " << vm["reqopt3"].as<std::string>()
               << std::endl;
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -47,9 +47,9 @@ int main(int argc, char* argv[])
         ("reqopt3", value<std::string>()->required(), "Required option 3");
     // clang-format on
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return pika::local::init(pika_main, argc + 1, newargv.data(), init_args);
+    return pika::init(pika_main, argc + 1, newargv.data(), init_args);
 }

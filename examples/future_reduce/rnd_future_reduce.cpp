@@ -118,12 +118,12 @@ int pika_main()
               << "\n " << htimer.elapsed() << " seconds \n"
               << std::flush;
     // Initiate shutdown of the runtime system.
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 //----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
     // Initialize and run pika.
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

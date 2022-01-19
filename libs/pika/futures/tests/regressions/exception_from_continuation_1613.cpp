@@ -80,11 +80,11 @@ int pika_main()
     test_exception_from_continuation1();
     test_exception_from_continuation2();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
     return pika::util::report_errors();
 }

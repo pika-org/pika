@@ -143,7 +143,7 @@ int pika_main(variables_map& vm)
     }
 
     // Initiate shutdown of the runtime system.
-    pika::local::finalize();
+    pika::finalize();
     return 0;
 }
 
@@ -168,8 +168,8 @@ int main(int argc, char* argv[])
     // clang-format on
 
     // Initialize and run pika.
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

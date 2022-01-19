@@ -20,12 +20,12 @@ int pika_main()
     pika::apply(
         [] { pika::this_thread::sleep_for(std::chrono::milliseconds(500)); });
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
 
     return pika::util::report_errors();
 }

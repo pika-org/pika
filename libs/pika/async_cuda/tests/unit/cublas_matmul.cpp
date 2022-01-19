@@ -319,7 +319,7 @@ int pika_main(pika::program_options::variables_map& vm)
     pika::cuda::experimental::cublas_executor cublas3(std::move(cublas));
     matrixMultiply<float>(cublas3, matrix_size, device, 1);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 // -------------------------------------------------------------------------
@@ -347,9 +347,9 @@ int main(int argc, char** argv)
         pika::program_options::value<unsigned int>(),
         "the random number generator seed to use for this run");
     // clang-format on
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    auto result = pika::local::init(pika_main, argc, argv, init_args);
+    auto result = pika::init(pika_main, argc, argv, init_args);
     return result || pika::util::report_errors();
 }

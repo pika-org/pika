@@ -75,11 +75,11 @@ int pika_main()
         PIKA_TEST_EQ((i + 1) % NUM_WORKERS, workers[i].get());
     }
 
-    pika::local::finalize();
+    pika::finalize();
     return pika::util::report_errors();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

@@ -16,15 +16,15 @@ std::atomic<bool> main_executed(false);
 int pika_main()
 {
     main_executed = true;
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.cfg = {"--pika:help"};
 
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv, init_args), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
 
     PIKA_TEST(!main_executed);
 

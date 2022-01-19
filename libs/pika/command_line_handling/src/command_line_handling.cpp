@@ -35,7 +35,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace local { namespace detail {
+namespace pika::detail {
     std::string runtime_configuration_string(command_line_handling const& cfg)
     {
         std::ostringstream strm;
@@ -53,15 +53,15 @@ namespace pika { namespace local { namespace detail {
     ///////////////////////////////////////////////////////////////////////
     int print_version(std::ostream& out)
     {
-        out << std::endl << pika::local::copyright() << std::endl;
-        out << pika::local::complete_version() << std::endl;
+        out << std::endl << pika::copyright() << std::endl;
+        out << pika::complete_version() << std::endl;
         return 1;
     }
 
     int print_info(std::ostream& out, command_line_handling const& cfg)
     {
         out << "Static configuration:\n---------------------\n";
-        out << pika::local::configuration_string() << std::endl;
+        out << pika::configuration_string() << std::endl;
 
         out << "Runtime configuration:\n----------------------\n";
         out << runtime_configuration_string(cfg) << std::endl;
@@ -991,4 +991,4 @@ namespace pika { namespace local { namespace detail {
         // all is good
         return 0;
     }
-}}}    // namespace pika::local::detail
+}    // namespace pika::detail

@@ -39,12 +39,12 @@ int pika_main()
 
     PIKA_TEST_EQ(get_thread_num(), 42);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
 
     return pika::util::report_errors();
 }

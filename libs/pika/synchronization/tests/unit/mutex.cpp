@@ -316,7 +316,7 @@ int pika_main(variables_map&)
         //~ test_recursive_timed_mutex();
     }
 
-    pika::local::finalize();
+    pika::finalize();
     return pika::util::report_errors();
 }
 
@@ -329,9 +329,9 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

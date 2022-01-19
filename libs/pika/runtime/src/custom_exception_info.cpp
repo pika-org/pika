@@ -230,7 +230,7 @@ namespace pika {
             }
             else
             {
-                return pika::local::full_build_string();
+                return pika::full_build_string();
             }
         }
 
@@ -411,7 +411,7 @@ namespace pika {
         }
     }    // namespace detail
 
-    namespace local::detail {
+    namespace detail {
         pika::exception_info custom_exception_info(std::string const& func,
             std::string const& file, long line, std::string const& auxinfo)
         {
@@ -458,7 +458,7 @@ namespace pika {
             }
 
             std::string env(pika::detail::get_execution_environment());
-            std::string config(pika::local::configuration_string());
+            std::string config(pika::configuration_string());
 
             return pika::exception_info().set(
                 pika::detail::throw_stacktrace(back_trace),
@@ -476,7 +476,7 @@ namespace pika {
                 pika::detail::throw_state(state_name),
                 pika::detail::throw_auxinfo(auxinfo));
         }
-    }    // namespace local::detail
+    }    // namespace detail
 }    // namespace pika
 
 ///////////////////////////////////////////////////////////////////////////////

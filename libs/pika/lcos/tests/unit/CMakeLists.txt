@@ -19,9 +19,7 @@ set(tests
 set(dataflow_PARAMETERS THREADS_PER_LOCALITY 4)
 set(dataflow_external_future_PARAMETERS THREADS_PER_LOCALITY 4)
 set(dataflow_executor_PARAMETERS THREADS_PER_LOCALITY 4)
-set(dataflow_executor_additional_arguments_PARAMETERS THREADS_PER_LOCALITY
-                                                            4
-)
+set(dataflow_executor_additional_arguments_PARAMETERS THREADS_PER_LOCALITY 4)
 set(run_guarded_PARAMETERS THREADS_PER_LOCALITY 4)
 
 foreach(test ${tests})

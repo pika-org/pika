@@ -46,12 +46,12 @@ int pika_main()
     PIKA_TEST(!val.empty());
     PIKA_TEST_EQ(val, std::string("test1"));
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
     return pika::util::report_errors();
 }
 #endif

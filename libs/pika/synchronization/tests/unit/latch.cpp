@@ -151,14 +151,14 @@ int pika_main()
         PIKA_TEST_EQ(num_threads.load(), NUM_THREADS);
     }
 
-    PIKA_TEST_EQ(pika::local::finalize(), 0);
+    PIKA_TEST_EQ(pika::finalize(), 0);
     return 0;
 }
 
 int main(int argc, char* argv[])
 {
     // Initialize and run pika
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv), 0,
         "pika main exited with non-zero status");
 
     return pika::util::report_errors();

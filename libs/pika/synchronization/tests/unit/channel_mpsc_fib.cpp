@@ -101,11 +101,11 @@ int pika_main()
 
     PIKA_TEST(channel_get(c1));
 
-    pika::local::finalize();
+    pika::finalize();
     return pika::util::report_errors();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

@@ -204,7 +204,7 @@ int pika_main(pika::program_options::variables_map&)
               << std::endl;
     thread_set.clear();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 // -------------------------------------------------------------------------
@@ -253,7 +253,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 
 // ------------------------------------------------------------------------
 // the normal int main function that is called at startup and runs on an OS
-// thread the user must call pika::local::init to start the pika runtime which
+// thread the user must call pika::init to start the pika runtime which
 // will execute pika_main on an pika thread
 int main(int argc, char* argv[])
 {
@@ -266,12 +266,12 @@ int main(int argc, char* argv[])
     // clang-format on
 
     // Setup the init parameters
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_cmdline;
 
     // Set the callback to init the thread_pools
     init_args.rp_callback = &init_resource_partitioner_handler;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }
 #endif

@@ -68,10 +68,10 @@ int pika_main()
     std::cout << (all.is_ready() ? "all is ready!" : "all is not ready...")
               << std::endl;
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

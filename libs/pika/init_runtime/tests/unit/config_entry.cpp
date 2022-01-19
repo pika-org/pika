@@ -59,12 +59,12 @@ int pika_main()
 {
     test_get_entry();
     test_set_entry();
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
 
     return pika::util::report_errors();
 }

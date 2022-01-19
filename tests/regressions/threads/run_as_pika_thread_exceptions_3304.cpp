@@ -38,7 +38,7 @@ int start_func(pika::lcos::local::spinlock& mtx,
             cond.wait(lk);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 void pika_thread_func()
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     pika::util::function_nonser<int(int, char**)> start_function =
         pika::util::bind(&start_func, std::ref(mtx), std::ref(cond));
 
-    pika::local::start(start_function, argc, argv);
+    pika::start(start_function, argc, argv);
 
     // wait for the main pika thread to run
     {
@@ -82,5 +82,5 @@ int main(int argc, char** argv)
 
     cond.notify_one();
 
-    return pika::local::stop();
+    return pika::stop();
 }

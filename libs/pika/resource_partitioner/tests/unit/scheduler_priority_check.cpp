@@ -174,7 +174,7 @@ int pika_main(variables_map& vm)
               << "Launch    : " << launch_count << "\n"
               << "Launch HP : " << hp_launch_count << std::endl;
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -201,10 +201,10 @@ int main(int argc, char* argv[])
     // clang-format on
 
     // Setup the init parameters
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv, init_args), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
 
     return pika::util::report_errors();
 }

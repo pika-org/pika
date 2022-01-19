@@ -128,7 +128,7 @@ namespace pika { namespace lcos { namespace local {
             std::unique_lock l(mtx_.data_);
             if (counter_.load(std::memory_order_relaxed) > 0 || !notified_)
             {
-                cond_.data_.wait(l, "pika::local::cpp20_latch::wait");
+                cond_.data_.wait(l, "pika::cpp20_latch::wait");
 
                 PIKA_ASSERT(counter_.load(std::memory_order_relaxed) == 0);
                 PIKA_ASSERT(notified_);
@@ -150,8 +150,7 @@ namespace pika { namespace lcos { namespace local {
 
             if (old_count > update)
             {
-                cond_.data_.wait(
-                    l, "pika::local::cpp20_latch::arrive_and_wait");
+                cond_.data_.wait(l, "pika::cpp20_latch::arrive_and_wait");
 
                 PIKA_ASSERT(counter_.load(std::memory_order_relaxed) == 0);
                 PIKA_ASSERT(notified_);

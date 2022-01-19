@@ -242,14 +242,14 @@ int pika_main()
         }
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
 
-    auto result = pika::local::init(pika_main, argc, argv);
+    auto result = pika::init(pika_main, argc, argv);
 
     MPI_Finalize();
 

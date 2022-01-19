@@ -76,7 +76,7 @@ namespace pika {
 
             if (verbosity >= 2)
             {
-                std::cerr << pika::local::full_build_string() << "\n";
+                std::cerr << pika::full_build_string() << "\n";
             }
 
 #if defined(PIKA_HAVE_STACKTRACES)
@@ -151,7 +151,7 @@ namespace pika {
 
             if (verbosity >= 2)
             {
-                std::cerr << pika::local::full_build_string() << "\n";
+                std::cerr << pika::full_build_string() << "\n";
             }
 
 #if defined(PIKA_HAVE_STACKTRACES)
@@ -831,7 +831,7 @@ namespace pika {
             if (cfg.has_entry("pika.cmd_line"))
                 cmdline = cfg.get_entry("pika.cmd_line");
 
-            return pika::local::detail::parse_commandline(
+            return pika::detail::parse_commandline(
                 cfg, app_options, cmdline, vm, allow_unregistered);
         }
 
@@ -1218,7 +1218,7 @@ namespace pika {
         {
             {
                 pika::program_options::options_description options;
-                result = pika::local::detail::handle_late_commandline_options(
+                result = pika::detail::handle_late_commandline_options(
                     get_config(), options, &detail::handle_print_bind);
                 if (result)
                 {

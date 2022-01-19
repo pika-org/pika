@@ -14,17 +14,17 @@ int invoked_init = 0;
 int pika_main()
 {
     ++invoked_init;
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
     // Everything is fine on the first call
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
     PIKA_TEST_EQ(invoked_init, 1);
 
     // Segfault on the call, now fixed
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
     PIKA_TEST_EQ(invoked_init, 2);
 
     return pika::util::report_errors();

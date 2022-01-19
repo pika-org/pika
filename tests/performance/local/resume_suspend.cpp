@@ -37,11 +37,11 @@ int main(int argc, char** argv)
 
     std::uint64_t repetitions = vm["repetitions"].as<std::uint64_t>();
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    pika::local::start(nullptr, argc, argv, init_args);
-    pika::local::suspend();
+    pika::start(nullptr, argc, argv, init_args);
+    pika::suspend();
 
     std::uint64_t threads = pika::resource::get_num_threads("default");
 
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     {
         timer.restart();
 
-        pika::local::resume();
+        pika::resume();
         auto t_resume = timer.elapsed();
         resume_time += t_resume;
 
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 
         auto t_apply = timer.elapsed();
 
-        pika::local::suspend();
+        pika::suspend();
         auto t_suspend = timer.elapsed();
         suspend_time += t_suspend;
 
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
     pika::util::print_cdash_timing("ResumeTime", resume_time);
     pika::util::print_cdash_timing("SuspendTime", suspend_time);
 
-    pika::local::resume();
-    pika::apply([]() { pika::local::finalize(); });
-    pika::local::stop();
+    pika::resume();
+    pika::apply([]() { pika::finalize(); });
+    pika::stop();
 }

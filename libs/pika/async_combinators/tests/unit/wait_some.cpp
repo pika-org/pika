@@ -208,11 +208,11 @@ int pika_main()
 {
     test_wait_some();
     test_wait_some_n();
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
     return pika::util::report_errors();
 }

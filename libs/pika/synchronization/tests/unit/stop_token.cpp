@@ -359,11 +359,11 @@ int pika_main()
     test_stoken(std::chrono::seconds{0});
     test_stoken(std::chrono::milliseconds{500});
 
-    pika::local::finalize();
+    pika::finalize();
     return pika::util::report_errors();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

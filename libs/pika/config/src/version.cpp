@@ -12,9 +12,9 @@
 #include <pika/preprocessor/stringize.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::local {
+namespace pika {
     PIKA_EXPORT char const PIKA_CHECK_VERSION[] =
         PIKA_PP_STRINGIZE(PIKA_CHECK_VERSION);
     PIKA_EXPORT char const PIKA_CHECK_BOOST_VERSION[] =
         PIKA_PP_STRINGIZE(PIKA_CHECK_BOOST_VERSION);
-}    // namespace pika::local
+}    // namespace pika

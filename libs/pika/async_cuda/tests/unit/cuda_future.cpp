@@ -171,7 +171,7 @@ int pika_main(pika::program_options::variables_map& vm)
     // test a full kernel example
     PIKA_TEST(test_saxpy(cudaexec));
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 // -------------------------------------------------------------------------
@@ -188,9 +188,9 @@ int main(int argc, char** argv)
         "iterations")("seed,s", pika::program_options::value<unsigned int>(),
         "the random number generator seed to use for this run");
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    auto result = pika::local::init(pika_main, argc, argv, init_args);
+    auto result = pika::init(pika_main, argc, argv, init_args);
     return result || pika::util::report_errors();
 }

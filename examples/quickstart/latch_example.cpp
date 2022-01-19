@@ -39,7 +39,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
     pika::wait_all(results);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -55,8 +55,8 @@ int main(int argc, char* argv[])
         value<std::ptrdiff_t>()->default_value(16),
         "number of threads to synchronize at a local latch (default: 16)");
 
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

@@ -14,7 +14,7 @@
 #include <string>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::local {
+namespace pika {
     // Returns the major pika version.
     PIKA_EXPORT std::uint8_t major_version();
 
@@ -65,4 +65,4 @@ namespace pika::local {
 
     // Return the pika configuration information
     PIKA_EXPORT std::string configuration_string();
-}    // namespace pika::local
+}    // namespace pika

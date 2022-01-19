@@ -18,8 +18,8 @@ set(example_programs
     fibonacci
     file_serialization
     hello_world
-    latch
-    channel
+    latch_example # suffix added to avoid conflict with unit tests
+    channel_example # suffix added to avoid conflict with unit tests
     channel_docs
     matrix_multiplication
     pipeline1

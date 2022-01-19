@@ -221,7 +221,7 @@ int pika_main(variables_map& /*vm*/)
         PIKA_TEST_EQ(x.hash, 23558);
     }
 
-    pika::local::finalize();
+    pika::finalize();
     return pika::util::report_errors();
 }
 
@@ -232,8 +232,8 @@ int main(int argc, char* argv[])
     options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

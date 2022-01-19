@@ -106,10 +106,10 @@ int pika_main()
     std::cout << "Consumer throughput: " << (NUM_TESTS / consumer_time)
               << " [op/s] (" << (consumer_time / NUM_TESTS) << " [s/op])\n";
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

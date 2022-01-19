@@ -42,10 +42,10 @@ int pika_main()
 
     pika::ranges::for_each(pika::execution::par.on(exec), v, [](int) {});
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

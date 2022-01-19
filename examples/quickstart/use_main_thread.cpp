@@ -15,14 +15,14 @@
 // finalize.
 int pika_main()
 {
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::start(pika_main, argc, argv);
+    pika::start(pika_main, argc, argv);
 
     std::cout << "Hello from the main thread!" << std::endl;
 
-    return pika::local::stop();
+    return pika::stop();
 }

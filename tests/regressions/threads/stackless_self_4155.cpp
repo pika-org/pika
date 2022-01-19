@@ -22,12 +22,12 @@ int pika_main()
         pika::threads::thread_schedule_hint(),
         pika::threads::thread_stacksize::nostack);
     pika::threads::register_work(data);
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    pika::local::init(pika_main, argc, argv);
+    pika::init(pika_main, argc, argv);
 
     return pika::util::report_errors();
 }

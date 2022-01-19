@@ -58,7 +58,7 @@ int pika_main()
         test(stacksize);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
@@ -68,10 +68,10 @@ int main(int argc, char** argv)
         "abp-priority-lifo", "shared-priority"};
     for (auto const& scheduler : schedulers)
     {
-        pika::local::init_params iparams;
+        pika::init_params iparams;
         iparams.cfg = {"--pika:queuing=" + std::string(scheduler)};
         std::cout << iparams.cfg[0] << std::endl;
-        pika::local::init(pika_main, argc, argv, iparams);
+        pika::init(pika_main, argc, argv, iparams);
     }
 
     return pika::util::report_errors();

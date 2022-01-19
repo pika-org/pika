@@ -6,9 +6,7 @@
 
 if(PIKA_WITH_EXAMPLES)
   pika_add_pseudo_target(examples.modules.init_runtime)
-  pika_add_pseudo_dependencies(
-    examples.modules examples.modules.init_runtime
-  )
+  pika_add_pseudo_dependencies(examples.modules examples.modules.init_runtime)
   if(PIKA_WITH_TESTS
      AND PIKA_WITH_TESTS_EXAMPLES
      AND PIKA_INIT_RUNTIME_WITH_TESTS

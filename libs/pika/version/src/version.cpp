@@ -47,7 +47,7 @@
 #include <string>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::local {
+namespace pika {
     std::uint8_t major_version()
     {
         return PIKA_VERSION_MAJOR;
@@ -148,7 +148,7 @@ namespace pika::local {
             strm, "  PIKA_HAVE_MALLOC={}\n", PIKA_HAVE_MALLOC);
 #endif
 
-        char const* const* p = pika::local::config_strings;
+        char const* const* p = pika::config_strings;
         while (*p)
             strm << "  " << *p++ << "\n";
         strm << "\n";
@@ -237,4 +237,4 @@ namespace pika::local {
     {
         return std::string(__DATE__) + " " + __TIME__;
     }
-}    // namespace pika::local
+}    // namespace pika

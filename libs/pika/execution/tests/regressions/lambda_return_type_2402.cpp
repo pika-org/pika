@@ -33,11 +33,11 @@ int pika_main()
             PIKA_TEST(all_of(mass_density == 0.0));
         });
 
-    return pika::local::finalize();    // Handles pika shutdown
+    return pika::finalize();    // Handles pika shutdown
 }
 
 int main(int argc, char** argv)
 {
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
     return pika::util::report_errors();
 }

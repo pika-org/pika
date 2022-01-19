@@ -1551,7 +1551,7 @@ int pika_main(variables_map&)
         test_wait_for_three_out_of_five_futures();
     }
 
-    pika::local::finalize();
+    pika::finalize();
     return pika::util::report_errors();
 }
 
@@ -1565,9 +1565,9 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=4"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }

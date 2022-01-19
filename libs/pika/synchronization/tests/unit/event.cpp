@@ -28,8 +28,8 @@ using pika::this_thread::suspend;
 
 using pika::lcos::local::event;
 
-using pika::local::finalize;
-using pika::local::init;
+using pika::finalize;
+using pika::init;
 
 using pika::util::report_errors;
 
@@ -102,11 +102,11 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=all"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::local::init(pika_main, argc, argv, init_args), 0,
+    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
         "pika main exited with non-zero status");
     return report_errors();
 }

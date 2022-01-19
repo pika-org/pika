@@ -23,11 +23,11 @@ int pika_main(int argc, char** argv_init)
         PIKA_TEST_EQ(0, std::strcmp(argv[i + 1], argv_init[i]));
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main()
 {
-    PIKA_TEST_EQ(pika::local::init(pika_main, 4, const_cast<char**>(argv)), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, 4, const_cast<char**>(argv)), 0);
     return pika::util::report_errors();
 }

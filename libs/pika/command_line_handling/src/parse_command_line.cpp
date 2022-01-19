@@ -21,7 +21,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace local { namespace detail {
+namespace pika::detail {
     inline std::string trim_whitespace(std::string const& s)
     {
         using size_type = std::string::size_type;
@@ -617,4 +617,4 @@ namespace pika { namespace local { namespace detail {
         }
         return command_line;
     }
-}}}
+}

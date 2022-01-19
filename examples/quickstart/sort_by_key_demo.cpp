@@ -45,12 +45,12 @@ int pika_main()
         print_sequence(keys, values);
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-    return pika::local::init(
+    return pika::init(
         pika_main, argc, argv);    // Initialize and run pika
 }

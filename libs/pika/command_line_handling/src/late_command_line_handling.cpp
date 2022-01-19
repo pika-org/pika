@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace pika { namespace local { namespace detail {
+namespace pika::detail {
     void decode(std::string& str, char const* s, char const* r)
     {
         std::string::size_type pos = 0;
@@ -138,4 +138,4 @@ namespace pika { namespace local { namespace detail {
 
         return 0;
     }
-}}}    // namespace pika::local::detail
+}    // namespace pika::detail

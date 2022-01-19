@@ -13,7 +13,7 @@
 int pika_main()
 {
     PIKA_THROW_EXCEPTION(pika::invalid_status, "pika_main", "testing");
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
     bool caught_exception = false;
     try
     {
-        pika::local::init(pika_main, argc, argv);
+        pika::init(pika_main, argc, argv);
     }
     catch (pika::exception const& e)
     {

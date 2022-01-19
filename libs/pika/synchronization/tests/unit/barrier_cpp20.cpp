@@ -210,10 +210,10 @@ int pika_main()
     test_barrier_empty_oncomplete_split();
     test_barrier_oncomplete_split();
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    return pika::local::init(pika_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }

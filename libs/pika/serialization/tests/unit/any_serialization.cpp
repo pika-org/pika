@@ -91,7 +91,7 @@ int pika_main()
             pika::any_cast<big_object>(any_in));
     }
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -100,10 +100,10 @@ int main(int argc, char* argv[])
     options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    pika::local::init(pika_main, argc, argv, init_args);
+    pika::init(pika_main, argc, argv, init_args);
 
     return pika::util::report_errors();
 }

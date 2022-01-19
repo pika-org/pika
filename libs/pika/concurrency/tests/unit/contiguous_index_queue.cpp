@@ -202,18 +202,18 @@ int pika_main(pika::program_options::variables_map& vm)
     test_concurrent(pop_mode::left);
     test_concurrent(pop_mode::right);
     test_concurrent(pop_mode::random);
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char** argv)
 {
-    pika::local::init_params i;
+    pika::init_params i;
     pika::program_options::options_description desc_cmdline(
         "usage: " PIKA_APPLICATION_STRING " [options]");
     desc_cmdline.add_options()("seed,s",
         pika::program_options::value<unsigned int>(),
         "the random number generator seed to use for this run");
     i.desc_cmdline = desc_cmdline;
-    pika::local::init(pika_main, argc, argv, i);
+    pika::init(pika_main, argc, argv, i);
     return pika::util::report_errors();
 }

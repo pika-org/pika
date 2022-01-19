@@ -12,9 +12,9 @@
 
 #include <cstddef>
 
-namespace pika { namespace local { namespace detail {
+namespace pika::detail {
     PIKA_EXPORT int handle_late_commandline_options(
         util::runtime_configuration& ini,
         pika::program_options::options_description const& options,
         void (*handle_print_bind)(std::size_t));
-}}}    // namespace pika::local::detail
+}    // namespace pika::detail

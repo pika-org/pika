@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace local { namespace detail {
+namespace pika::detail {
     struct command_line_handling
     {
         command_line_handling(pika::util::runtime_configuration rtcfg,
@@ -88,4 +88,4 @@ namespace pika { namespace local { namespace detail {
         std::vector<std::string> preprocess_config_settings(
             int argc, char** argv);
     };
-}}}    // namespace pika::local::detail
+}    // namespace pika::detail

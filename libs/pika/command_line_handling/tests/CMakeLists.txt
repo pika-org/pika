@@ -17,23 +17,17 @@ if(PIKA_WITH_TESTS)
   endif()
 
   if(PIKA_WITH_TESTS_REGRESSIONS)
-    pika_add_pseudo_target(
-      tests.regressions.modules.command_line_handling
-    )
+    pika_add_pseudo_target(tests.regressions.modules.command_line_handling)
     pika_add_pseudo_dependencies(
-      tests.regressions.modules
-      tests.regressions.modules.command_line_handling
+      tests.regressions.modules tests.regressions.modules.command_line_handling
     )
     add_subdirectory(regressions)
   endif()
 
   if(PIKA_WITH_TESTS_BENCHMARKS)
-    pika_add_pseudo_target(
-      tests.performance.modules.command_line_handling
-    )
+    pika_add_pseudo_target(tests.performance.modules.command_line_handling)
     pika_add_pseudo_dependencies(
-      tests.performance.modules
-      tests.performance.modules.command_line_handling
+      tests.performance.modules tests.performance.modules.command_line_handling
     )
     add_subdirectory(performance)
   endif()

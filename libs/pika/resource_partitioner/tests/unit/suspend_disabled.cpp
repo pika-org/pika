@@ -41,12 +41,12 @@ int pika_main()
 
     PIKA_TEST(exception_thrown);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init_params init_args;
+    pika::init_params init_args;
 
     init_args.cfg = {"pika.os_threads=" +
         std::to_string(((std::min)(std::size_t(4),
@@ -61,5 +61,5 @@ int main(int argc, char* argv[])
                 ~pika::threads::policies::enable_elasticity));
     };
 
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv, init_args), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);
 }

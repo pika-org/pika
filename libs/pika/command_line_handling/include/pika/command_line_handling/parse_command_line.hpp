@@ -36,7 +36,7 @@ namespace pika {
         }    // namespace detail
     }        // namespace util
 
-    namespace local { namespace detail {
+    namespace detail {
         PIKA_EXPORT bool parse_commandline(pika::util::section const& rtcfg,
             pika::program_options::options_description const& app_options,
             std::string const& cmdline,
@@ -55,5 +55,5 @@ namespace pika {
 
         PIKA_EXPORT std::string reconstruct_command_line(
             pika::program_options::variables_map const& vm);
-    }}    // namespace local::detail
+    }    // namespace detail
 }    // namespace pika

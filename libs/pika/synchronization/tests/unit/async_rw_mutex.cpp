@@ -279,12 +279,12 @@ int pika_main(pika::program_options::variables_map& vm)
     test_multiple_accesses(
         async_rw_mutex<mytype, mytype_base>{mytype{}}, iterations);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
 {
-    pika::local::init_params i;
+    pika::init_params i;
     pika::program_options::options_description desc_cmdline(
         "usage: " PIKA_APPLICATION_STRING " [options]");
     desc_cmdline.add_options()("seed,s",
@@ -292,6 +292,6 @@ int main(int argc, char* argv[])
         "the random number generator seed to use for this run");
     i.desc_cmdline = desc_cmdline;
 
-    PIKA_TEST_EQ(pika::local::init(pika_main, argc, argv, i), 0);
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv, i), 0);
     return pika::util::report_errors();
 }

@@ -151,7 +151,7 @@ int pika_main()
     test_merge_stable(par, int(), rand_base);
     test_merge_stable(par_unseq, int(), rand_base);
 
-    return pika::local::finalize();
+    return pika::finalize();
 }
 
 int main(int argc, char* argv[])
@@ -160,8 +160,8 @@ int main(int argc, char* argv[])
     std::vector<std::string> const cfg = {"pika.os_threads=1"};
 
     // Initialize and run pika
-    pika::local::init_params init_args;
+    pika::init_params init_args;
     init_args.cfg = cfg;
 
-    return pika::local::init(pika_main, argc, argv, init_args);
+    return pika::init(pika_main, argc, argv, init_args);
 }
