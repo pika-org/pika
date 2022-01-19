@@ -5,10 +5,13 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 status = [
+  # GitHub actions
   "github/linux/debug/fast",
   "github/linux/fetchcontent/fast",
   "github/linux/hip/fast",
   "github/linux/sanitizers/fast",
+
+  # CircleCI
   "ci/circleci: check_circular_deps",
   "ci/circleci: check_module_cmakelists",
   "ci/circleci: clang_format",
@@ -17,6 +20,15 @@ status = [
   "ci/circleci: configure_test_combinations",
   "ci/circleci: inspect",
   "ci/circleci: core",
+
+  # Jenkins
+  "jenkins/cscs/clang-13-debug",
+  "jenkins/cscs/clang-7-debug",
+  "jenkins/cscs/clang-cuda-debug",
+  "jenkins/cscs/clang-apex-debug",
+  "jenkins/cscs/gcc-11-debug",
+  "jenkins/cscs/gcc-7-debug",
+  "jenkins/cscs/gcc-cuda-debug",
 ]
 required_approvals = 0
 delete_merged_branches = true
