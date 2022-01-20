@@ -10,6 +10,7 @@ status = [
   "github/linux/fetchcontent/fast",
   "github/linux/hip/fast",
   "github/linux/sanitizers/fast",
+  "github/macos/debug",
 
   # CircleCI
   "ci/circleci: check_circular_deps",
