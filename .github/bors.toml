@@ -12,15 +12,24 @@ status = [
   "github/linux/sanitizers/fast",
   "github/macos/debug",
 
-  # CircleCI
+  # CircleCI static checks
   "ci/circleci: check_circular_deps",
   "ci/circleci: check_module_cmakelists",
   "ci/circleci: clang_format",
   "ci/circleci: cmake_format",
-  "ci/circleci: configure",
-  "ci/circleci: configure_test_combinations",
   "ci/circleci: inspect",
+
+  # CircleCI build and test
+  "ci/circleci: configure_test_combinations",
+  "ci/circleci: configure",
   "ci/circleci: core",
+  "ci/circleci: tests.examples",
+  "ci/circleci: tests.headers",
+  "ci/circleci: tests.performance",
+  "ci/circleci: tests.regressions",
+  "ci/circleci: tests.unit",
+  "ci/circleci: tests.unit.algorithms",
+  "ci/circleci: tests.unit.container_algorithms",
 
   # Jenkins
   "jenkins/cscs/clang-13-debug",
