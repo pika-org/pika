@@ -8,46 +8,19 @@
 
 #include <pika/config.hpp>
 #include <pika/errors/exception.hpp>
-#include <pika/mpi_base/mpi.hpp>
 
-#include <cstddef>
-#include <memory>
 #include <string>
 
 namespace pika::mpi::experimental {
-
     namespace detail {
-
-        // extract MPI error message
-        std::string error_message(int code)
-        {
-            int N = 1023;
-            std::unique_ptr<char[]> err_buff(new char[std::size_t(N) + 1]);
-            err_buff[0] = '\0';
-
-            MPI_Error_string(code, err_buff.get(), &N);
-
-            return err_buff.get();
-        }
-
+        PIKA_EXPORT std::string error_message(int code);
     }    // namespace detail
 
-    // -------------------------------------------------------------------------
-    // exception type for failed launch of MPI functions
     struct mpi_exception : pika::exception
     {
-        explicit mpi_exception(int err_code, const std::string& msg = "")
-          : err_code_(err_code)
-        {
-            pika::exception(pika::bad_function_call,
-                msg + std::string(" MPI returned with error: ") +
-                    detail::error_message(err_code));
-        }
-
-        int get_mpi_errorcode()
-        {
-            return err_code_;
-        }
+        PIKA_EXPORT explicit mpi_exception(
+            int err_code, const std::string& msg = "");
+        PIKA_EXPORT int get_mpi_errorcode() const noexcept;
 
     protected:
         int err_code_;

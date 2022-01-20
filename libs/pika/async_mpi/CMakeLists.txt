@@ -25,7 +25,7 @@ set(async_mpi_headers
 )
 
 # Default location is $PIKA_ROOT/libs/mpi/src
-set(mpi_sources mpi_future.cpp)
+set(mpi_sources mpi_exception.cpp mpi_future.cpp)
 
 include(pika_add_module)
 pika_add_module(
