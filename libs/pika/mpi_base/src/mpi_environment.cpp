@@ -60,8 +60,7 @@ namespace pika { namespace util {
         util::runtime_configuration const& cfg)
     {
         // log message was already generated
-        return detail::detect_mpi_environment(
-            cfg, PIKA_HAVE_PARCELPORT_MPI_ENV);
+        return detail::detect_mpi_environment(cfg, PIKA_HAVE_MPI_ENV);
     }
 }}    // namespace pika::util
 
@@ -119,19 +118,15 @@ namespace pika { namespace util {
         int this_rank = -1;
         has_called_init_ = false;
 
-        // We assume to use the MPI parcelport if it is not explicitly disabled
         enabled_ = check_mpi_environment(rtcfg);
         if (!enabled_)
         {
-            rtcfg.add_entry("pika.parcel.mpi.enable", "0");
             return;
         }
 
-        rtcfg.add_entry("pika.parcel.bootstrap", "mpi");
-
         int required = MPI_THREAD_SINGLE;
         int minimal = MPI_THREAD_SINGLE;
-#if defined(PIKA_HAVE_PARCELPORT_MPI_MULTITHREADED)
+#if defined(PIKA_HAVE_MPI_MULTITHREADED)
         required =
             (get_entry_as(rtcfg, "pika.parcel.mpi.multithreaded", 1) != 0) ?
             MPI_THREAD_MULTIPLE :
@@ -148,9 +143,6 @@ namespace pika { namespace util {
             init(argc, argv, required, minimal, provided_threading_flag_);
         if (MPI_SUCCESS != retval && MPI_ERR_OTHER != retval)
         {
-            // explicitly disable mpi if not run by mpirun
-            rtcfg.add_entry("pika.parcel.mpi.enable", "0");
-
             enabled_ = false;
 
             int msglen = 0;

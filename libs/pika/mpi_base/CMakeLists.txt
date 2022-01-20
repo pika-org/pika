@@ -6,7 +6,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-if(NOT PIKA_WITH_ASYNC_MPI)
+if(NOT PIKA_WITH_MPI)
   return()
 endif()
 

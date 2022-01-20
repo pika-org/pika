@@ -10,7 +10,7 @@ set(version_headers pika/version.hpp)
 
 set(version_sources version.cpp)
 
-if(PIKA_WITH_ASYNC_MPI)
+if(PIKA_WITH_MPI)
   include(pika_setup_mpi)
   set(mpi_dependencies Mpi::mpi)
 endif()

@@ -45,6 +45,6 @@ macro(pika_setup_mpi)
   endif()
 endmacro()
 
-if(PIKA_WITH_ASYNC_MPI)
+if(PIKA_WITH_MPI)
   pika_setup_mpi()
 endif()

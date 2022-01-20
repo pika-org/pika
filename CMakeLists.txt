@@ -794,45 +794,38 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_ASYNC_MPI
+  PIKA_WITH_MPI
   BOOL
   "Enable support for returning futures from MPI asynchronous calls (default: ON)"
   OFF
   CATEGORY "MPI"
 )
 
-if(PIKA_WITH_ASYNC_MPI)
-  # mpi parcelport settings
+if(PIKA_WITH_MPI)
+  # mpi settings
   pika_option(
-    PIKA_WITH_PARCELPORT_MPI_ENV
+    PIKA_WITH_MPI_ENV
     STRING
     "List of environment variables checked to detect MPI (default: MV2_COMM_WORLD_RANK;PMI_RANK;OMPI_COMM_WORLD_SIZE;ALPS_APP_PE;PMIX_RANK;PALS_NODEID)."
     "MV2_COMM_WORLD_RANK;PMI_RANK;OMPI_COMM_WORLD_SIZE;ALPS_APP_PE;PMIX_RANK;PALS_NODEID"
-    CATEGORY "Parcelport"
+    CATEGORY "MPI"
     ADVANCED
   )
 
-  # This list is to detect whether we run inside an mpi environment. If one of
-  # those environment variables is set, the MPI parcelport is enabled by
-  # default. PMI_RANK: Intel MPI and MVAPICH2 OMPI_COMM_WORLD_SIZE: OpenMPI
-  # starting at version 1.3
-  if(PIKA_WITH_PARCELPORT_MPI_ENV)
-    string(REPLACE ";" "," pika_parcelport_mpi_env_
-                   "${PIKA_WITH_PARCELPORT_MPI_ENV}"
-    )
-    pika_add_config_define(
-      PIKA_HAVE_PARCELPORT_MPI_ENV "\"${pika_parcelport_mpi_env_}\""
-    )
+  # This list is to detect whether we run inside an mpi environment.
+  if(PIKA_WITH_MPI_ENV)
+    string(REPLACE ";" "," pika_mpi_env_ "${PIKA_WITH_MPI_ENV}")
+    pika_add_config_define(PIKA_HAVE_MPI_ENV "\"${pika_mpi_env_}\"")
   endif()
 
   pika_option(
-    PIKA_WITH_PARCELPORT_MPI_MULTITHREADED BOOL
+    PIKA_WITH_MPI_MULTITHREADED BOOL
     "Turn on MPI multithreading support (default: ON)." ON
-    CATEGORY "Parcelport"
+    CATEGORY "MPI"
     ADVANCED
   )
-  if(PIKA_WITH_PARCELPORT_MPI_MULTITHREADED)
-    pika_add_config_define(PIKA_HAVE_PARCELPORT_MPI_MULTITHREADED)
+  if(PIKA_WITH_MPI_MULTITHREADED)
+    pika_add_config_define(PIKA_HAVE_MPI_MULTITHREADED)
   endif()
 
   if(MSVC)
