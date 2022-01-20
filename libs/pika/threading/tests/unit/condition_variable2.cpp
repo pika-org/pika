@@ -72,6 +72,7 @@ void test_cv(bool call_notify)
                 PIKA_TEST(call_notify != it.stop_requested());
             });
 
+        pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         if (call_notify)
         {
@@ -122,6 +123,7 @@ void test_cv_pred(bool call_notify)
                 PIKA_TEST(call_notify != st.stop_requested());
             });
 
+        pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         if (call_notify)
         {
@@ -162,8 +164,10 @@ void test_cv_thread_no_pred(bool call_notify)
             }
         });
 
+        pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         PIKA_TEST(!is.stop_requested());
+        pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         if (call_notify)
@@ -210,8 +214,10 @@ void test_cv_thread_pred(bool call_notify)
                 PIKA_TEST(call_notify != st.stop_requested());
             });
 
+        pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         PIKA_TEST(!is.stop_requested());
+        pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         if (call_notify)
@@ -263,6 +269,7 @@ void test_minimal_wait(int sec)
                     }
                 });
 
+            pika::this_thread::yield();
             std::this_thread::sleep_for(dur);
         }    // leave scope of t1 without join() or detach() (signals cancellation)
     }
@@ -308,6 +315,7 @@ void test_minimal_wait_for(int sec1, int sec2)
                 }
             });
 
+            pika::this_thread::yield();
             std::this_thread::sleep_for(dur_int);
         }    // leave scope of t1 without join() or detach() (signals cancellation)
     }
@@ -367,9 +375,13 @@ void test_timed_cv(bool call_notify, bool /* call_interrupt */, Dur dur)
                 ready = true;
             }    // release lock
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             pika::this_thread::yield();
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
             ready_cv.notify_one();
+
+            pika::this_thread::yield();
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         else
         {
@@ -446,8 +458,10 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
             }
         });
 
+        pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         PIKA_TEST(!t1.get_stop_source().stop_requested());
+        pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         if (call_notify)
@@ -461,6 +475,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
             ready_cv.notify_one();
             while (t1_feedback != state::ready)
             {
+                pika::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
             }
             PIKA_TEST(std::chrono::steady_clock::now() <
@@ -472,6 +487,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
             t1.request_stop();
             while (t1_feedback != state::interrupted)
             {
+                pika::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
             }
             PIKA_TEST(std::chrono::steady_clock::now() <
@@ -482,6 +498,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
     auto t0 = std::chrono::steady_clock::now();
     while (t1_feedback == state::loop)
     {
+        pika::this_thread::yield();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     PIKA_TEST(std::chrono::steady_clock::now() < t0 + std::chrono::seconds(5));
@@ -508,6 +525,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
             std::ref(ready_mtx), std::ref(ready_cv), call_notify));
         {
             auto t0ssource = t0.get_stop_source();
+            pika::this_thread::yield();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
             // starts thread concurrently calling request_stop() for the same
@@ -515,6 +533,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
             std::vector<pika::jthread> vthreads;
             for (int idx = 0; idx < NumExtraCV; ++idx)
             {
+                pika::this_thread::yield();
                 std::this_thread::sleep_for(std::chrono::microseconds(100));
                 pika::jthread t([idx, t0stoken = t0ssource.get_token(),
                                     &arr_ready, &arr_ready_mtx, &arr_ready_cv,
@@ -527,6 +546,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
                 vthreads.push_back(std::move(t));
             }
 
+            pika::this_thread::yield();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
             if (call_notify)

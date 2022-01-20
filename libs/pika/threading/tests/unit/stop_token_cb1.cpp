@@ -288,6 +288,7 @@ void test_callback_deregistration_blocks_until_callback_finishes()
                 callback_executing = true;
                 cv.notify_all();
                 lock.unlock();
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 pika::this_thread::yield();
                 PIKA_TEST(!callback_unregistered);
                 callback_about_to_return = true;

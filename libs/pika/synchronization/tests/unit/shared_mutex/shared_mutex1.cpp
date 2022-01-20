@@ -289,6 +289,7 @@ void test_unlocking_last_reader_only_unblocks_one_writer()
                     simultaneous_running_readers, max_simultaneous_readers));
         }
 
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         pika::this_thread::yield();
 
         for (unsigned i = 0; i != writer_count; ++i)
@@ -309,6 +310,7 @@ void test_unlocking_last_reader_only_unblocks_one_writer()
             }
         }
 
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         pika::this_thread::yield();
 
         CHECK_LOCKED_VALUE_EQUAL(
