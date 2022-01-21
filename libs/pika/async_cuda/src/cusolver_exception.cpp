@@ -7,6 +7,7 @@
 #pragma once
 
 #include <pika/config.hpp>
+#if defined(PIKA_HAVE_CUDA)
 #include <pika/async_cuda/cusolver_exception.hpp>
 #include <pika/async_cuda/custom_lapack_api.hpp>
 #include <pika/errors/exception.hpp>
@@ -99,3 +100,4 @@ namespace pika::cuda::experimental {
         return err;
     }
 }    // namespace pika::cuda::experimental
+#endif

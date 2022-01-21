@@ -337,6 +337,7 @@ int pika_main()
         cu::check_cuda_error(cudaFree(p));
     }
 
+#if defined(PIKA_HAVE_CUDA)
     // cuBLAS and cuSOLVER
     {
         dummy::reset_counts();
@@ -384,6 +385,7 @@ int pika_main()
         PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
     }
+#endif
 
     return pika::finalize();
 }

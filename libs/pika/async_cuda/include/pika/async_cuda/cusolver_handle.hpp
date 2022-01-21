@@ -7,6 +7,7 @@
 #pragma once
 
 #include <pika/config.hpp>
+#if defined(PIKA_HAVE_CUDA)
 #include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/async_cuda/custom_gpu_api.hpp>
@@ -59,3 +60,4 @@ namespace pika::cuda::experimental {
         /// \endcond
     };
 }    // namespace pika::cuda::experimental
+#endif

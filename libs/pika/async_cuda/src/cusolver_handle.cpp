@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+#if defined(PIKA_HAVE_CUDA)
 #include <pika/async_cuda/cuda_device_scope.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/async_cuda/cusolver_exception.hpp>
@@ -114,3 +115,4 @@ namespace pika::cuda::experimental {
         return os;
     }
 }    // namespace pika::cuda::experimental
+#endif

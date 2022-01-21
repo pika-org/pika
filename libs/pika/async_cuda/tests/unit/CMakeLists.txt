@@ -12,9 +12,11 @@ set(tests
     cuda_pool
     cuda_scheduler
     cuda_stream
-    cusolver_handle
     then_with_stream
 )
+if(PIKA_WITH_CUDA)
+  list(APPEND tests cusolver_handle)
+endif()
 
 set(cublas_matmul_PARAMETERS THREADS 4)
 set(cuda_future_PARAMETERS THREADS 4)
