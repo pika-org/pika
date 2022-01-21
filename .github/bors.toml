@@ -43,3 +43,5 @@ status = [
 required_approvals = 0
 delete_merged_branches = true
 use_squash_merge = false
+# Three hours to account for queueing delays
+timeout_sec = 10800
