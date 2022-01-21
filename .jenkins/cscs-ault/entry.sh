@@ -38,6 +38,7 @@ sbatch \
     --time="03:00:00" \
     --output="${job_name}.out" \
     --error="${job_name}.err" \
+    --exclusive \
     --wait .jenkins/cscs-ault/batch.sh
 
 # Print slurm logs
