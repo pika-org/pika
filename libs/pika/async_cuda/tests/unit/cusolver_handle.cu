@@ -172,7 +172,7 @@ int main()
 
         // step 4: LU factorization
         cu::check_cusolver_error(cusolverDnDgetrf(
-            handle.get(), m, m, d_A, lda, d_work, NULL, d_info));
+            handle.get(), m, m, d_A, lda, d_work, nullptr, d_info));
         cu::check_cuda_error(cudaDeviceSynchronize());
         cu::check_cuda_error(cudaMemcpy(
             LU, d_A, sizeof(double) * lda * m, cudaMemcpyDeviceToHost));
@@ -190,7 +190,7 @@ int main()
         //       | 3 |       |  0      |
         cu::check_cusolver_error(
             cusolverDnDgetrs(handle.get(), CUBLAS_OP_N, m, 1, /* nrhs */
-                d_A, lda, NULL, d_B, ldb, d_info));
+                d_A, lda, nullptr, d_B, ldb, d_info));
         cu::check_cuda_error(cudaDeviceSynchronize());
         cu::check_cuda_error(
             cudaMemcpy(X, d_B, sizeof(double) * m, cudaMemcpyDeviceToHost));

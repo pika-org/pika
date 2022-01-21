@@ -33,6 +33,7 @@
 
     #define cudaDeviceProp hipDeviceProp_t
     #define cudaDeviceSynchronize hipDeviceSynchronize
+    #define cudaDeviceGetStreamPriorityRange hipDeviceGetStreamPriorityRange
     #define cudaError_t hipError_t
     #define cudaErrorNotReady hipErrorNotReady
     #define cudaEvent_t hipEvent_t
@@ -64,6 +65,7 @@
     #define cudaStreamAddCallback hipStreamAddCallback
     #define cudaStreamCreate hipStreamCreate
     #define cudaStreamCreateWithFlags hipStreamCreateWithFlags
+    #define cudaStreamCreateWithPriority hipStreamCreateWithPriority
     #define cudaStreamDestroy hipStreamDestroy
     #define cudaStreamNonBlocking hipStreamNonBlocking
     #define cudaStreamSynchronize hipStreamSynchronize
