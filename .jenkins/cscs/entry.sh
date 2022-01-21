@@ -57,12 +57,12 @@ else
 fi
 
 # Get the CDash dashboard build id
-cdash_build_id="$(cat jenkins-hpx-${configuration_name_with_build_type}-cdash-build-id.txt)"
+cdash_build_id="$(cat jenkins-pika-${configuration_name_with_build_type}-cdash-build-id.txt)"
 
 if [[ -z "${ghprbPullId:-}" ]]; then
     .jenkins/common/set_github_status.sh \
         "${GITHUB_TOKEN}" \
-        "STEllAR-GROUP/hpx" \
+        "pika-org/pika" \
         "${GIT_COMMIT}" \
         "${github_commit_status}" \
         "${configuration_name_with_build_type}" \
