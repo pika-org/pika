@@ -58,9 +58,9 @@ namespace pika {
         return PIKA_VERSION_MINOR;
     }
 
-    std::uint8_t subminor_version()
+    std::uint8_t patch_version()
     {
-        return PIKA_VERSION_SUBMINOR;
+        return PIKA_VERSION_PATCH;
     }
 
     std::uint32_t full_version()
@@ -71,7 +71,7 @@ namespace pika {
     std::string full_version_as_string()
     {
         return pika::util::format("{}.{}.{}",    //-V609
-            PIKA_VERSION_MAJOR, PIKA_VERSION_MINOR, PIKA_VERSION_SUBMINOR);
+            PIKA_VERSION_MAJOR, PIKA_VERSION_MINOR, PIKA_VERSION_PATCH);
     }
 
     std::string tag()
