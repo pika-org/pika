@@ -188,11 +188,9 @@ function(pika_add_module libname modulename)
   if(module_is_interface_library)
     set(module_library_type INTERFACE)
     set(module_public_keyword INTERFACE)
-    set(module_private_keyword INTERFACE)
   else()
     set(module_library_type OBJECT)
     set(module_public_keyword PUBLIC)
-    set(module_private_keyword PRIVATE)
   endif()
 
   # create library modules
@@ -235,14 +233,12 @@ function(pika_add_module libname modulename)
   )
 
   target_link_libraries(
-    pika_${modulename}
-    ${module_public_keyword}
-    pika_public_flags
-    ${module_private_keyword}
-    pika_private_flags
-    ${module_public_keyword}
+    pika_${modulename} ${module_public_keyword} pika_public_flags
     pika_base_libraries
   )
+  if(NOT module_is_interface_library)
+    target_link_libraries(pika_${modulename} PRIVATE pika_private_flags)
+  endif()
 
   if(PIKA_WITH_PRECOMPILED_HEADERS)
     target_precompile_headers(
@@ -257,9 +253,11 @@ function(pika_add_module libname modulename)
     )
   endif()
 
-  target_compile_definitions(
-    pika_${modulename} ${module_private_keyword} ${libname_upper}_EXPORTS
-  )
+  if(NOT module_is_interface_library)
+    target_compile_definitions(
+      pika_${modulename} PRIVATE ${libname_upper}_EXPORTS
+    )
+  endif()
 
   target_include_directories(
     pika_${modulename} ${module_public_keyword}
