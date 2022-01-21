@@ -470,7 +470,7 @@ jobs:
       - run:
           name: Building Header Tests
           command: |
-              ctest --timeout 60 -j1 -T test --no-compress-output --output-on-failure \
+              ctest --timeout 60 -j3 -T test --no-compress-output --output-on-failure \
                 -R tests.headers
       - run:
           <<: *convert_xml
