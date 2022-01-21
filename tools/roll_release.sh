@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019-2021 ETH Zurich
+# Copyright (c) 2019-2022 ETH Zurich
 # Copyright (c) 2011-2012 Bryce Adelstein-Lelbach
 #
 # SPDX-License-Identifier: BSL-1.0
@@ -20,10 +20,9 @@ VERSION_FULL_NOTAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
 VERSION_FULL_TAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAG}
 VERSION_FULL_NOTAG_UNDERSCORE=${VERSION_MAJOR}_${VERSION_MINOR}_${VERSION_PATCH}
 VERSION_TITLE="pika ${VERSION_FULL_NOTAG}"
-VERSION_DESCRIPTION="" # TODO
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-if ! which hub > /dev/null 2>&1; then
+if ! which hub >/dev/null 2>&1; then
     echo "Hub not installed on this system (see https://hub.github.com/). Exiting."
     exit 1
 fi
@@ -33,6 +32,8 @@ if ! [[ "$CURRENT_BRANCH" =~ ^release-[0-9]+\.[0-9]+\.X$ ]]; then
     exit 1
 fi
 
+changelog_path="CHANGELOG.md"
+
 if [ -z "${VERSION_TAG}" ]; then
     echo "You are about to tag and create a final release on GitHub."
 
@@ -41,23 +42,20 @@ if [ -z "${VERSION_TAG}" ]; then
 
     sanity_errors=0
 
-    whats_new_file_nosuffix="whats_new_${VERSION_FULL_NOTAG_UNDERSCORE}"
-    whats_new_path="docs/sphinx/releases/${whats_new_file_nosuffix}.rst"
-    printf "Checking that %s exists... " "${whats_new_path}"
-    if [[ -f "${whats_new_path}" ]]; then
+    printf "Checking that %s has an entry for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
+    if $(grep "## ${VERSION_FULL_NOTAG}" "${changelog_path}"); then
         echo "OK"
     else
         echo "Missing"
-        sanity_errors=$((sanity_errors+1))
+        sanity_errors=$((sanity_errors + 1))
     fi
 
-
-    printf "Checking that %s.rst is included in the docs/sphinx/releases.rst table of contents... " "${whats_new_file_nosuffix}"
-    if [[ $(grep "${whats_new_file_nosuffix}" docs/sphinx/releases.rst) ]]; then
+    printf "Checking that %s also has a date set for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
+    if $(grep "## ${VERSION_FULL_NOTAG} ([0-9]{4}-[0-9]{2}-[0-9]{2})" "${changelog_path}"); then
         echo "OK"
     else
         echo "Missing"
-        sanity_errors=$((sanity_errors+1))
+        sanity_errors=$((sanity_errors + 1))
     fi
 
     if [[ ${sanity_errors} -gt 0 ]]; then
@@ -69,19 +67,27 @@ else
     echo "If you intended to make a final release, remove the tag in the main CMakeLists.txt first."
 fi
 
+# Extract the changelog for this version from CHANGELOG.md
+VERSION_DESCRIPTION=$(
+    # Find the correct heading and print everything from there to the end of the file
+    awk "/## ${VERSION_FULL_NOTAG}/,EOF" ${changelog_path} |
+        # Remove the heading
+        tail -n+3 |
+        # Find the next heading or the end of the file and print everything until that heading
+        sed '/## /Q'
+)
+
 echo ""
-echo "The version is \"${VERSION_FULL_TAG}\"."
-echo "The version title is:"
-echo "\"${VERSION_TITLE}\"."
+echo "The version is: ${VERSION_FULL_TAG}"
+echo "The version title is: ${VERSION_TITLE}"
 echo "The version description is:"
-echo "\"${VERSION_DESCRIPTION}\"."
-echo ""
+echo "${VERSION_DESCRIPTION}"
 
 echo "Do you want to continue?"
 select yn in "Yes" "No"; do
     case $yn in
-        Yes ) break;;
-        No ) exit;;
+        Yes) break ;;
+        No) exit ;;
     esac
 done
 
@@ -102,4 +108,4 @@ hub release create \
     ${PRERELEASE_FLAG} \
     --message "${VERSION_TITLE}" \
     --message "${VERSION_DESCRIPTION}"
-    "${VERSION_FULL_TAG}"
+"${VERSION_FULL_TAG}"
