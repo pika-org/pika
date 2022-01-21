@@ -245,7 +245,7 @@ jobs:
       - run:
           name: Running Inspect Tool
           command: |
-              ./bin/inspect_local --all --output=./pika_inspect_report.html /pika/source
+              ./bin/inspect --all --output=./pika_inspect_report.html /pika/source
       - run:
           name: Convert inspect HTML output to XML
           command: |
@@ -262,7 +262,7 @@ jobs:
       - persist_to_workspace:
           root: /pika
           paths:
-            - ./build/bin/inspect_local
+            - ./build/bin/inspect
 
   spellcheck:
     <<: *defaults
