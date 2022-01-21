@@ -7,7 +7,7 @@
 
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
-set(CTEST_TEST_TIMEOUT 30)
+set(CTEST_TEST_TIMEOUT 300)
 set(CTEST_CMAKE_GENERATOR Ninja)
 set(CTEST_SITE "cscs(ault)")
 set(CTEST_UPDATE_COMMAND "git")
