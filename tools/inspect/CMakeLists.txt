@@ -9,7 +9,7 @@
 include(pika_setup_boost_regex)
 
 pika_add_executable(
-  inspect_local INTERNAL_FLAGS AUTOGLOB NOLIBS FOLDER "Tools/Local/Inspect"
+  inspect INTERNAL_FLAGS AUTOGLOB NOLIBS FOLDER "Tools/Local/Inspect"
 )
 
 if(NOT Boost_REGEX_FOUND)
@@ -17,9 +17,7 @@ if(NOT Boost_REGEX_FOUND)
 endif()
 
 # Set the basic search paths for the generated pika headers
-target_link_libraries(
-  inspect_local PRIVATE Boost::regex pika_dependencies_boost pika
-)
+target_link_libraries(inspect PRIVATE Boost::regex pika_dependencies_boost pika)
 
 # add dependencies to pseudo-target
-pika_add_pseudo_dependencies(tools.inspect inspect_local)
+pika_add_pseudo_dependencies(tools.inspect inspect)
