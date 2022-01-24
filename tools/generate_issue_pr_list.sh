@@ -15,8 +15,8 @@
 
 VERSION_MAJOR=$(sed -n 's/set(PIKA_VERSION_MAJOR \(.*\))/\1/p' CMakeLists.txt)
 VERSION_MINOR=$(sed -n 's/set(PIKA_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_SUBMINOR=$(sed -n 's/set(PIKA_VERSION_SUBMINOR \(.*\))/\1/p' CMakeLists.txt)
-VERSION_FULL_NOTAG=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_SUBMINOR
+VERSION_PATCH=$(sed -n 's/set(PIKA_VERSION_PATCH \(.*\))/\1/p' CMakeLists.txt)
+VERSION_FULL_NOTAG=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 
 if ! which hub > /dev/null 2>&1; then
     echo "Hub not installed on this system. Exiting.."

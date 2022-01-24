@@ -22,7 +22,7 @@ namespace pika {
     PIKA_EXPORT std::uint8_t minor_version();
 
     // Returns the sub-minor/patch-level pika version.
-    PIKA_EXPORT std::uint8_t subminor_version();
+    PIKA_EXPORT std::uint8_t patch_version();
 
     // Returns the full pika version.
     PIKA_EXPORT std::uint32_t full_version();

@@ -22,16 +22,16 @@
 #define PIKA_VERSION_MAJOR @PIKA_VERSION_MAJOR@
 /// Evaluates to the minor version of pika
 #define PIKA_VERSION_MINOR @PIKA_VERSION_MINOR@
-/// Evaluates to the subminor version of pika
-#define PIKA_VERSION_SUBMINOR @PIKA_VERSION_SUBMINOR@
+/// Evaluates to the patch version of pika
+#define PIKA_VERSION_PATCH @PIKA_VERSION_PATCH@
 
 /// Evaluates to the pika version:
 /// ``PIKA_VERSION_FULL & 0xFF0000 == PIKA_VERSION_MAJOR``
 /// ``PIKA_VERSION_FULL & 0x00FF00 == PIKA_VERSION_MINOR``
-/// ``PIKA_VERSION_FULL & 0x0000FF == PIKA_VERSION_SUBMINOR``
+/// ``PIKA_VERSION_FULL & 0x0000FF == PIKA_VERSION_PATCH``
 #define PIKA_VERSION_FULL                                                 \
     ((PIKA_VERSION_MAJOR << 16) | (PIKA_VERSION_MINOR << 8) |        \
-        PIKA_VERSION_SUBMINOR)
+        PIKA_VERSION_PATCH)
 
 /// Evaluates to the release date of this pika version in the format YYYYMMDD.
 #define PIKA_VERSION_DATE @PIKA_VERSION_DATE@
