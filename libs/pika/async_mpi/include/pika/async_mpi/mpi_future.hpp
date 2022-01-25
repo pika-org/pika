@@ -116,8 +116,10 @@ namespace pika { namespace mpi { namespace experimental {
             bool error_handler_initialized_ = false;
             int rank_ = -1;
             int size_ = -1;
-            // requests vector holds the requests that are checked
-            std::atomic<std::uint32_t> requests_vector_size_{0};
+            // requests vector holds the requests that are checked; this
+            // represents the number of active requests in the vector, not the
+            // size of the vector
+            std::atomic<std::uint32_t> active_requests_vector_size_{0};
             // requests queue holds the requests recently added
             std::atomic<std::uint32_t> requests_queue_size_{0};
         };
@@ -212,7 +214,7 @@ namespace pika { namespace mpi { namespace experimental {
             {
                 return true;
             }
-            return (detail::get_mpi_info().requests_vector_size_ > 0);
+            return (detail::get_mpi_info().active_requests_vector_size_ > 0);
         });
     }
 
@@ -226,7 +228,8 @@ namespace pika { namespace mpi { namespace experimental {
             {
                 return true;
             }
-            return (detail::get_mpi_info().requests_vector_size_ > 0) || f();
+            return (detail::get_mpi_info().active_requests_vector_size_ > 0) ||
+                f();
         });
     }
 
