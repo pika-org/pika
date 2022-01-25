@@ -198,5 +198,7 @@ int main()
         PIKA_TEST(!let_error_callback_called);
     }
 
+    test_adl_isolation(ex::let_error(ex::just(), my_namespace::my_type{}));
+
     return pika::util::report_errors();
 }

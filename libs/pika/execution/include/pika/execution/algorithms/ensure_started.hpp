@@ -21,39 +21,79 @@ namespace pika::execution::experimental {
       : pika::functional::detail::tag_fallback<ensure_started_t>
     {
     private:
-        // clang-format off
         template <typename Sender,
-            typename Allocator = pika::util::internal_allocator<>,
-            PIKA_CONCEPT_REQUIRES_(
-                is_sender_v<Sender> &&
-                pika::traits::is_allocator_v<Allocator>
-            )>
-        // clang-format on
+            PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender> &&
+                !split_detail::is_split_sender_v<Sender>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            ensure_started_t, Sender&& sender, Allocator const& allocator = {})
+            ensure_started_t, Sender&& sender)
         {
-            return detail::split_sender<Sender, Allocator,
-                detail::submission_type::eager>{
+            return split_detail::split_sender<Sender,
+                pika::util::internal_allocator<>,
+                split_detail::submission_type::eager>{
+                PIKA_FORWARD(Sender, sender), {}};
+        }
+
+        template <typename Sender, typename Allocator,
+            PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender> &&
+                !split_detail::is_split_sender_v<Sender> &&
+                pika::traits::is_allocator_v<Allocator>)>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            ensure_started_t, Sender&& sender, Allocator const& allocator)
+        {
+            return split_detail::split_sender<Sender, Allocator,
+                split_detail::submission_type::eager>{
                 PIKA_FORWARD(Sender, sender), allocator};
         }
 
-        template <typename Sender, typename Allocator>
+        template <typename Sender, typename Allocator,
+            PIKA_CONCEPT_REQUIRES_(split_detail::is_split_sender_v<Sender> &&
+                (Sender::subm_type == split_detail::submission_type::eager) &&
+                std::is_same_v<typename Sender::allocator_type,
+                    std::decay_t<Allocator>>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            ensure_started_t,
-            detail::split_sender<Sender, Allocator,
-                detail::submission_type::eager>
-                sender,
-            Allocator const& = {})
+            ensure_started_t, Sender&& sender, Allocator const&)
         {
-            return sender;
+            return PIKA_FORWARD(Sender, sender);
         }
 
-        // clang-format off
+        template <typename Sender, typename Allocator,
+            PIKA_CONCEPT_REQUIRES_(split_detail::is_split_sender_v<Sender> &&
+                !((Sender::subm_type == split_detail::submission_type::eager) &&
+                    std::is_same_v<typename Sender::allocator_type,
+                        std::decay_t<Allocator>>) )>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            ensure_started_t, Sender&& sender, Allocator const& allocator)
+        {
+            return split_detail::split_sender<Sender, Allocator,
+                split_detail::submission_type::eager>{
+                PIKA_FORWARD(Sender, sender), allocator};
+        }
+
+        template <typename Sender,
+            PIKA_CONCEPT_REQUIRES_(split_detail::is_split_sender_v<Sender> &&
+                (std::decay_t<Sender>::subm_type ==
+                    split_detail::submission_type::eager))>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            ensure_started_t, Sender&& sender)
+        {
+            return PIKA_FORWARD(Sender, sender);
+        }
+
+        template <typename Sender,
+            PIKA_CONCEPT_REQUIRES_(split_detail::is_split_sender_v<Sender> &&
+                (std::decay_t<Sender>::subm_type ==
+                    split_detail::submission_type::lazy))>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            ensure_started_t, Sender&& sender)
+        {
+            return split_detail::split_sender<Sender,
+                pika::util::internal_allocator<>,
+                split_detail::submission_type::eager>{
+                PIKA_FORWARD(Sender, sender), {}};
+        }
+
         template <typename Allocator = pika::util::internal_allocator<>,
-            PIKA_CONCEPT_REQUIRES_(
-                pika::traits::is_allocator_v<Allocator>
-            )>
-        // clang-format on
+            PIKA_CONCEPT_REQUIRES_(pika::traits::is_allocator_v<Allocator>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             ensure_started_t, Allocator const& allocator = {})
         {

@@ -441,3 +441,139 @@ struct scheduler2 : scheduler
     {
     }
 };
+
+namespace tag_namespace {
+    inline constexpr struct my_tag_t
+    {
+        template <typename Sender>
+        auto operator()(Sender&& sender) const
+        {
+            return pika::functional::tag_invoke(
+                *this, std::forward<Sender>(sender));
+        }
+
+        struct wrapper
+        {
+            wrapper(my_tag_t) {}
+        };
+
+        // This overload should be chosen by test_adl_isolation below. We make
+        // sure this is a worse match than the one in my_namespace by requiring
+        // a conversion.
+        template <typename Sender>
+        friend void tag_invoke(wrapper, Sender&&)
+        {
+        }
+    } my_tag{};
+}    // namespace tag_namespace
+
+namespace my_namespace {
+    // The below types should be used as a template arguments for the sender in
+    // test_adl_isolation.
+    struct my_type
+    {
+        void operator()() const {}
+        void operator()(int) const {}
+        void operator()(std::exception_ptr) const {}
+    };
+
+    struct my_scheduler
+    {
+        struct sender
+        {
+            template <template <class...> class Tuple,
+                template <class...> class Variant>
+            using value_types = Variant<Tuple<>>;
+
+            template <template <class...> class Variant>
+            using error_types = Variant<std::exception_ptr>;
+
+            static constexpr bool sends_done = false;
+
+            template <typename R>
+            struct operation_state
+            {
+                std::decay_t<R> r;
+
+                friend void tag_invoke(pika::execution::experimental::start_t,
+                    operation_state& os) noexcept
+                {
+                    pika::execution::experimental::set_value(std::move(os.r));
+                };
+            };
+
+            template <typename R>
+            friend auto tag_invoke(
+                pika::execution::experimental::connect_t, sender&&, R&& r)
+            {
+                return operation_state<R>{std::forward<R>(r)};
+            }
+        };
+
+        friend sender tag_invoke(
+            pika::execution::experimental::schedule_t, my_scheduler)
+        {
+            return {};
+        }
+
+        bool operator==(my_scheduler const&) const noexcept
+        {
+            return true;
+        }
+
+        bool operator!=(my_scheduler const&) const noexcept
+        {
+            return false;
+        }
+    };
+
+    struct my_sender
+    {
+        template <template <typename...> class Tuple,
+            template <typename...> class Variant>
+        using value_types = Variant<Tuple<>>;
+
+        template <template <typename...> class Variant>
+        using error_types = Variant<>;
+
+        static constexpr bool sends_done = false;
+
+        template <typename R>
+        struct operation_state
+        {
+            std::decay_t<R> r;
+            friend void tag_invoke(pika::execution::experimental::start_t,
+                operation_state& os) noexcept
+            {
+                pika::execution::experimental::set_value(std::move(os.r));
+            }
+        };
+
+        template <typename R>
+        friend operation_state<R> tag_invoke(
+            pika::execution::experimental::connect_t, my_sender, R&& r)
+        {
+            return {std::forward<R>(r)};
+        }
+    };
+
+    // This overload should not be chosen by test_adl_isolation below. We make
+    // sure this is a better match than the one in tag_namespace so that if this
+    // one is visible it is chosen. It should not be visible.
+    template <typename Sender>
+    void tag_invoke(tag_namespace::my_tag_t, Sender&&)
+    {
+        static_assert(sizeof(Sender) == 0);
+    }
+}    // namespace my_namespace
+
+// This test function expects a type that has my_namespace::my_type as a
+// template argument. If template arguments are correctly hidden from ADL the
+// friend tag_invoke overload in my_tag_t will be chosen. If template arguments
+// are not hidden the unconstrained tag_invoke overload in my_namespace will be
+// chosen instead.
+template <typename Sender>
+void test_adl_isolation(Sender&& sender)
+{
+    tag_namespace::my_tag(std::forward<Sender>(sender));
+}

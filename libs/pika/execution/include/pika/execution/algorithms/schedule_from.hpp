@@ -27,9 +27,19 @@
 #include <utility>
 
 namespace pika { namespace execution { namespace experimental {
-    namespace detail {
+    namespace schedule_from_detail {
         template <typename Sender, typename Scheduler>
-        struct schedule_from_sender
+        struct schedule_from_sender_impl
+        {
+            struct type;
+        };
+
+        template <typename Sender, typename Scheduler>
+        using schedule_from_sender =
+            typename schedule_from_sender_impl<Sender, Scheduler>::type;
+
+        template <typename Sender, typename Scheduler>
+        struct schedule_from_sender_impl<Sender, Scheduler>::type
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> predecessor_sender;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
@@ -74,7 +84,7 @@ namespace pika { namespace execution { namespace experimental {
                 >
             friend constexpr auto tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                schedule_from_sender const& sender)
+                type const& sender)
             {
                 if constexpr (std::is_same_v<std::decay_t<CPO>,
                                   pika::execution::experimental::set_value_t>)
@@ -294,7 +304,7 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
-                connect_t, schedule_from_sender&& s, Receiver&& receiver)
+                connect_t, type&& s, Receiver&& receiver)
             {
                 return {PIKA_MOVE(s.predecessor_sender), PIKA_MOVE(s.scheduler),
                     PIKA_FORWARD(Receiver, receiver)};
@@ -302,13 +312,13 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
-                connect_t, schedule_from_sender& s, Receiver&& receiver)
+                connect_t, type& s, Receiver&& receiver)
             {
                 return {s.predecessor_sender, s.scheduler,
                     PIKA_FORWARD(Receiver, receiver)};
             }
         };
-    }    // namespace detail
+    }    // namespace schedule_from_detail
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE struct schedule_from_t final
       : pika::functional::detail::tag_fallback<schedule_from_t>
@@ -323,8 +333,8 @@ namespace pika { namespace execution { namespace experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             schedule_from_t, Scheduler&& scheduler, Sender&& predecessor_sender)
         {
-            return detail::schedule_from_sender<Sender, Scheduler>{
-                PIKA_FORWARD(Sender, predecessor_sender),
+            return schedule_from_detail::schedule_from_sender<Sender,
+                Scheduler>{PIKA_FORWARD(Sender, predecessor_sender),
                 PIKA_FORWARD(Scheduler, scheduler)};
         }
     } schedule_from{};

@@ -45,8 +45,9 @@ namespace pika { namespace execution { namespace experimental {
         // clang-format off
         template <typename Sender, typename Scheduler,
             PIKA_CONCEPT_REQUIRES_(
-                is_sender_v<Sender> &&
-                is_scheduler_v<Scheduler>
+                is_sender_v<Sender>
+                // &&
+                // is_scheduler_v<Scheduler>
             )>
         // clang-format on
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(

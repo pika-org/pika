@@ -120,5 +120,7 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+    test_adl_isolation(ex::just(my_namespace::my_type{}));
+
     return pika::util::report_errors();
 }

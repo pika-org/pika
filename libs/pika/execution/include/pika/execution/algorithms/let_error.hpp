@@ -25,9 +25,19 @@
 #include <utility>
 
 namespace pika { namespace execution { namespace experimental {
-    namespace detail {
+    namespace let_error_detail {
         template <typename PredecessorSender, typename F>
-        struct let_error_sender
+        struct let_error_sender_impl
+        {
+            struct type;
+        };
+
+        template <typename PredecessorSender, typename F>
+        using let_error_sender =
+            typename let_error_sender_impl<PredecessorSender, F>::type;
+
+        template <typename PredecessorSender, typename F>
+        struct let_error_sender_impl<PredecessorSender, F>::type
         {
             PIKA_NO_UNIQUE_ADDRESS typename std::decay_t<PredecessorSender>
                 predecessor_sender;
@@ -80,7 +90,7 @@ namespace pika { namespace execution { namespace experimental {
                 predecessor_value_types<Tuple, Variant>,
                 pika::util::detail::concat_pack_of_packs_t<pika::util::detail::
                         transform_t<successor_sender_types<Variant>,
-                            value_types<Tuple, Variant>::template apply
+                            detail::value_types<Tuple, Variant>::template apply
 #if defined(PIKA_CLANG_VERSION) && PIKA_CLANG_VERSION < 110000
                             >
                     //
@@ -94,7 +104,7 @@ namespace pika { namespace execution { namespace experimental {
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
                     pika::util::detail::concat_pack_of_packs_t<pika::util::
                             detail::transform_t<successor_sender_types<Variant>,
-                                error_types<Variant>::template apply>>,
+                                detail::error_types<Variant>::template apply>>,
                     std::exception_ptr>>;
 
             static constexpr bool sends_done = false;
@@ -288,15 +298,14 @@ namespace pika { namespace execution { namespace experimental {
             };
 
             template <typename Receiver>
-            friend auto tag_invoke(
-                connect_t, let_error_sender&& s, Receiver&& receiver)
+            friend auto tag_invoke(connect_t, type&& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
                     PIKA_MOVE(s.predecessor_sender),
                     PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f));
             }
         };
-    }    // namespace detail
+    }    // namespace let_error_detail
 
     inline constexpr struct let_error_t final
       : pika::functional::detail::tag_fallback<let_error_t>
@@ -311,7 +320,7 @@ namespace pika { namespace execution { namespace experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             let_error_t, PredecessorSender&& predecessor_sender, F&& f)
         {
-            return detail::let_error_sender<PredecessorSender, F>{
+            return let_error_detail::let_error_sender<PredecessorSender, F>{
                 PIKA_FORWARD(PredecessorSender, predecessor_sender),
                 PIKA_FORWARD(F, f)};
         }
