@@ -24,6 +24,7 @@ set +e
 ctest \
     --verbose \
     -S ${src_dir}/.jenkins/cscs/ctest.cmake \
+    -DCTEST_BUILD_EXTRA_OPTIONS="${build_extra_options}" \
     -DCTEST_CONFIGURE_EXTRA_OPTIONS="${configure_extra_options} -DCMAKE_INSTALL_PREFIX=${install_dir}" \
     -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name_with_build_type}" \
     -DCTEST_SOURCE_DIRECTORY="${src_dir}" \

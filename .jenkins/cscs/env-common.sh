@@ -25,3 +25,5 @@ configure_extra_options+=" -DPIKA_WITH_TESTS_REGRESSIONS=ON"
 configure_extra_options+=" -DPIKA_WITH_TESTS_BENCHMARKS=ON"
 configure_extra_options+=" -DPIKA_WITH_TESTS_EXTERNAL_BUILD=ON"
 configure_extra_options+=" -DPIKA_WITH_TESTS_EXAMPLES=OFF"
+
+build_extra_options=""
