@@ -42,6 +42,10 @@ namespace pika::cuda::experimental {
             case HIPBLAS_STATUS_INVALID_ENUM:
                 return "HIPBLAS_STATUS_INVALID_ENUM";
 #endif
+#if PIKA_HIP_VERSION >= 40400000
+            case HIPBLAS_STATUS_UNKNOWN:
+                return "HIPBLAS_STATUS_UNKNOWN";
+#endif
 #else
             case CUBLAS_STATUS_LICENSE_ERROR:
                 return "CUBLAS_STATUS_LICENSE_ERROR";
