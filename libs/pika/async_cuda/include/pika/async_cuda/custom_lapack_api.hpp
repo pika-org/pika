@@ -8,11 +8,7 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_HIP)
-
-static_assert(false, "Unsupported");
-
-#elif defined(PIKA_HAVE_CUDA)
+#if defined(PIKA_HAVE_CUDA)
 
 #if defined(PIKA_GCC_VERSION)
 #pragma GCC diagnostic push

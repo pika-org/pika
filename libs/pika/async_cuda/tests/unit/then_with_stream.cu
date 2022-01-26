@@ -58,15 +58,17 @@ struct dummy
         dummy_kernel<<<1, 1, 0, stream>>>();
     }
 
-    void operator()(cublasHandle_t handle) const
+    void operator()(cublasHandle_t) const
     {
         ++cublas_void_calls;
     }
 
-    void operator()(cusolverDnHandle_t handle) const
+#if defined(PIKA_HAVE_CUDA)
+    void operator()(cusolverDnHandle_t) const
     {
         ++cusolver_void_calls;
     }
+#endif
 
     double operator()(int x) const
     {
@@ -81,17 +83,19 @@ struct dummy
         return x + 1;
     }
 
-    double operator()(cublasHandle_t handle, int x) const
+    double operator()(cublasHandle_t, int x) const
     {
         ++cublas_int_calls;
         return x + 1;
     }
 
-    double operator()(cusolverDnHandle_t handle, int x) const
+#if defined(PIKA_HAVE_CUDA)
+    double operator()(cusolverDnHandle_t, int x) const
     {
         ++cusolver_int_calls;
         return x + 1;
     }
+#endif
 
     int operator()(double x) const
     {
@@ -106,17 +110,19 @@ struct dummy
         return x + 1;
     }
 
-    int operator()(cublasHandle_t handle, double x) const
+    int operator()(cublasHandle_t, double x) const
     {
         ++cublas_double_calls;
         return x + 1;
     }
 
-    int operator()(cusolverDnHandle_t handle, double x) const
+#if defined(PIKA_HAVE_CUDA)
+    int operator()(cusolverDnHandle_t, double x) const
     {
         ++cusolver_double_calls;
         return x + 1;
     }
+#endif
 };
 
 std::atomic<std::size_t> dummy::host_void_calls{0};
@@ -362,7 +368,6 @@ int pika_main()
         PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(1));
     }
 
-    // Host continuation
     {
         dummy::reset_counts();
         auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
@@ -381,6 +386,50 @@ int pika_main()
         PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
+    }
+#else
+    {
+        dummy::reset_counts();
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{}) |
+            cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        PIKA_TEST_EQ(ex::sync_wait(std::move(s)), 6);
+        PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::stream_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
+    }
+
+    {
+        dummy::reset_counts();
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(dummy{}) | cu::then_on_host(dummy{}) |
+            cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        PIKA_TEST_EQ(ex::sync_wait(std::move(s)), 7.0);
+        PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(3));
+        PIKA_TEST_EQ(dummy::stream_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
