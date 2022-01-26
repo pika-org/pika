@@ -21,34 +21,30 @@ namespace pika { namespace util {
     class iterator_range
     {
     public:
-        iterator_range()
-          : _iterator()
-          , _sentinel()
-        {
-        }
+        iterator_range() = default;
 
-        iterator_range(Iterator iterator, Sentinel sentinel)
+        PIKA_HOST_DEVICE iterator_range(Iterator iterator, Sentinel sentinel)
           : _iterator(PIKA_MOVE(iterator))
           , _sentinel(PIKA_MOVE(sentinel))
         {
         }
 
-        Iterator begin() const
+        PIKA_HOST_DEVICE Iterator begin() const
         {
             return _iterator;
         }
 
-        Iterator end() const
+        PIKA_HOST_DEVICE Iterator end() const
         {
             return _sentinel;
         }
 
-        std::ptrdiff_t size() const
+        PIKA_HOST_DEVICE std::ptrdiff_t size() const
         {
             return std::distance(_iterator, _sentinel);
         }
 
-        bool empty() const
+        PIKA_HOST_DEVICE bool empty() const
         {
             return _iterator == _sentinel;
         }

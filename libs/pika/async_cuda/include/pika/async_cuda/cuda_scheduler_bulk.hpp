@@ -35,6 +35,7 @@ namespace pika::cuda::experimental {
             }
         }
 
+#if defined(PIKA_COMPUTE_CODE)
         template <typename Shape>
         PIKA_DEVICE auto shape_dereference(Shape&& shape, int i)
         {
@@ -48,7 +49,6 @@ namespace pika::cuda::experimental {
             }
         }
 
-#if defined(PIKA_COMPUTE_CODE)
         template <typename F, typename Shape, typename Size, typename... Ts>
         __global__ void bulk_function_kernel_integral(
             F f, Shape shape, Size n, Ts... ts)
@@ -64,35 +64,44 @@ namespace pika::cuda::experimental {
         template <typename F, typename Shape>
         void launch_bulk_function(F f, Shape shape, cudaStream_t stream)
         {
+#if defined(PIKA_COMPUTE_CODE)
             auto n = shape_size(shape);
             if (n > 0)
             {
                 constexpr int block_dim = 256;
                 int grid_dim = (n + block_dim - 1) / block_dim;
 
-#if defined(PIKA_COMPUTE_CODE)
                 bulk_function_kernel_integral<<<block_dim, grid_dim, 0, 0>>>(
                     f, shape, n);
-#endif
                 check_cuda_error(cudaGetLastError());
             }
+#else
+            PIKA_UNUSED(f);
+            PIKA_UNUSED(shape);
+            PIKA_UNUSED(stream);
+#endif
         }
 
         template <typename F, typename Shape, typename T>
         void launch_bulk_function(F f, Shape shape, T t, cudaStream_t stream)
         {
+#if defined(PIKA_COMPUTE_CODE)
             auto n = shape_size(shape);
             if (n > 0)
             {
                 constexpr int block_dim = 256;
                 int grid_dim = (n + block_dim - 1) / block_dim;
 
-#if defined(PIKA_COMPUTE_CODE)
                 bulk_function_kernel_integral<<<block_dim, grid_dim, 0, 0>>>(
                     f, shape, n, t);
-#endif
                 check_cuda_error(cudaGetLastError());
             }
+#else
+            PIKA_UNUSED(f);
+            PIKA_UNUSED(shape);
+            PIKA_UNUSED(t);
+            PIKA_UNUSED(stream);
+#endif
         }
 
         template <typename Shape, typename F>
@@ -124,7 +133,7 @@ namespace pika::cuda::experimental {
     /// Execute a function in bulk on a CUDA device.
     template <typename Sender, typename Shape, typename F>
     decltype(auto) tag_invoke(pika::execution::experimental::bulk_t,
-        cuda_scheduler scheduler, Sender&& sender, Shape&& shape, F&& f)
+        cuda_scheduler, Sender&& sender, Shape&& shape, F&& f)
     {
         return then_with_stream(PIKA_FORWARD(Sender, sender),
             detail::bulk_launcher{
