@@ -71,8 +71,8 @@ namespace pika::cuda::experimental {
                 constexpr int block_dim = 256;
                 int grid_dim = (n + block_dim - 1) / block_dim;
 
-                bulk_function_kernel_integral<<<block_dim, grid_dim, 0, 0>>>(
-                    f, shape, n);
+                bulk_function_kernel_integral<<<block_dim, grid_dim, 0,
+                    stream>>>(f, shape, n);
                 check_cuda_error(cudaGetLastError());
             }
 #else
@@ -92,8 +92,8 @@ namespace pika::cuda::experimental {
                 constexpr int block_dim = 256;
                 int grid_dim = (n + block_dim - 1) / block_dim;
 
-                bulk_function_kernel_integral<<<block_dim, grid_dim, 0, 0>>>(
-                    f, shape, n, t);
+                bulk_function_kernel_integral<<<block_dim, grid_dim, 0,
+                    stream>>>(f, shape, n, t);
                 check_cuda_error(cudaGetLastError());
             }
 #else
