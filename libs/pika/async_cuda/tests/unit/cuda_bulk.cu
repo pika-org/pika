@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-int hpx_main(pika::program_options::variables_map& vm)
+int hpx_main()
 {
     namespace ex = pika::execution::experimental;
     namespace cu = pika::cuda::experimental;
@@ -25,7 +25,7 @@ int hpx_main(pika::program_options::variables_map& vm)
 
     using element_type = int;
 
-    auto malloc = [](void* p, std::size_t n, cudaStream_t stream) {
+    auto malloc = [](void* p, element_type n, cudaStream_t stream) {
 #if PIKA_CUDA_VERSION >= 1102
         cu::check_cuda_error(
             cudaMallocAsync(&p, sizeof(element_type) * n, stream));
@@ -33,10 +33,11 @@ int hpx_main(pika::program_options::variables_map& vm)
         // This is not a good idea in real code, but is good enough for the
         // purposes of this test.
         cu::check_cuda_error(cudaMalloc(&p, sizeof(element_type) * n));
+        PIKA_UNUSED(stream);
 #endif
         return p;
     };
-    auto f = [] PIKA_HOST_DEVICE(std::size_t i, void* p) {
+    auto f = [] PIKA_HOST_DEVICE(element_type i, void* p) {
         static_cast<element_type*>(p)[i] = i;
     };
     auto free = [](void* p, cudaStream_t stream) {
@@ -46,11 +47,12 @@ int hpx_main(pika::program_options::variables_map& vm)
         // This is not a good idea in real code, but is good enough for the
         // purposes of this test.
         cu::check_cuda_error(cudaFree(p));
+        PIKA_UNUSED(stream);
 #endif
     };
 
     // Integral shape
-    for (std::size_t n : {1, 42, 10007})
+    for (element_type n : {1, 42, 10007})
     {
         std::vector<element_type> host_vector(n, 0);
         element_type* device_ptr = nullptr;
@@ -69,14 +71,14 @@ int hpx_main(pika::program_options::variables_map& vm)
             cu::then_with_stream(memcpy) | cu::then_with_stream(free);
         ex::sync_wait(std::move(s));
 
-        for (std::size_t i = 0; i < n; ++i)
+        for (element_type i = 0; i < n; ++i)
         {
             PIKA_TEST_EQ(host_vector[i], i);
         }
     }
 
     // Range
-    for (std::size_t n : {1, 42, 10007})
+    for (element_type n : {1, 42, 10007})
     {
         using element_type = int;
 
@@ -98,7 +100,7 @@ int hpx_main(pika::program_options::variables_map& vm)
             cu::then_with_stream(memcpy) | cu::then_with_stream(free);
         ex::sync_wait(std::move(s));
 
-        for (std::size_t i = 0; i < n; ++i)
+        for (element_type i = 0; i < n; ++i)
         {
             PIKA_TEST_EQ(host_vector[i], i);
         }

@@ -127,7 +127,7 @@ int main()
             cudaMemcpy(s.data(), p, sizeof(int) * n, cudaMemcpyDeviceToHost));
         cu::check_cuda_error(cudaFree(p));
 
-        for (std::size_t i = 0; i < n; ++i)
+        for (int i = 0; i < n; ++i)
         {
             PIKA_TEST_EQ(s[i], i * 2);
         }

@@ -163,7 +163,7 @@ int main()
             s.data(), p, sizeof(int) * streams.size(), cudaMemcpyDeviceToHost));
         cu::check_cuda_error(cudaFree(p));
 
-        for (std::size_t i = 0; i < streams.size(); ++i)
+        for (int i = 0; i < static_cast<int>(streams.size()); ++i)
         {
             PIKA_TEST_EQ(s[i], i * 2);
         }
