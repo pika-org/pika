@@ -8,16 +8,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Default location is $PIKA_ROOT/libs/lcos/include
 set(lcos_headers
-    pika/lcos/and_gate.hpp
-    pika/lcos/channel.hpp
-    pika/lcos/composable_guard.hpp
-    pika/lcos/conditional_trigger.hpp
-    pika/lcos/detail/preprocess_future.hpp
-    pika/lcos/receive_buffer.hpp
+    pika/lcos/and_gate.hpp pika/lcos/channel.hpp pika/lcos/composable_guard.hpp
+    pika/lcos/conditional_trigger.hpp pika/lcos/receive_buffer.hpp
     pika/lcos/trigger.hpp
 )
 
-set(lcos_sources composable_guard.cpp preprocess_future.cpp)
+set(lcos_sources composable_guard.cpp)
 
 include(pika_add_module)
 pika_add_module(

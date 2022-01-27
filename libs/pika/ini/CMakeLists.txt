@@ -19,7 +19,6 @@ pika_add_module(
     pika_assertion
     pika_config
     pika_errors
-    pika_serialization
     pika_string_util
     pika_thread_support
     pika_concurrency

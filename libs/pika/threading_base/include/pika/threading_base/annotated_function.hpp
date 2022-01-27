@@ -63,14 +63,6 @@ namespace pika {
                 return PIKA_INVOKE(f_, PIKA_FORWARD(Ts, ts)...);
             }
 
-            template <typename Archive>
-            void serialize(Archive& ar, unsigned int const /*version*/)
-            {
-                // clang-format off
-                ar & f_;
-                // clang-format on
-            }
-
             ///////////////////////////////////////////////////////////////////
             /// \brief Returns the function address
             ///

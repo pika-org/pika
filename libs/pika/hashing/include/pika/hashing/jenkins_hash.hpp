@@ -8,10 +8,6 @@
 
 #include <pika/config.hpp>
 
-#if defined(JENKINS_HASH_HAS_SERIALIZATION_SUPPORT)
-#include <pika/serialization/serialize.hpp>
-#endif
-
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -240,16 +236,5 @@ namespace pika { namespace util {
 
     private:
         size_type seed_;
-
-#if defined(JENKINS_HASH_HAS_SERIALIZATION_SUPPORT)
-        // serialization support
-        friend class pika::serialization::access;
-
-        template <class Archive>
-        void serialize(Archive& ar, const unsigned int version)
-        {
-            ar& seed_;
-        }
-#endif
     };
 }}    // namespace pika::util

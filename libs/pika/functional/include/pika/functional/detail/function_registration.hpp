@@ -26,14 +26,7 @@ namespace pika { namespace util { namespace detail {
     template <typename VTable, typename F>
     struct get_function_name_impl
     {
-        static char const* call()
-#ifdef PIKA_HAVE_AUTOMATIC_SERIALIZATION_REGISTRATION
-        {
-            return debug::type_id<F>::typeid_.type_id();
-        }
-#else
-            = delete;
-#endif
+        static char const* call() = delete;
     };
 
     ///////////////////////////////////////////////////////////////////////////

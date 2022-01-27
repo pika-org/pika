@@ -36,11 +36,6 @@ struct foo
     {
         worker_timed(delay * 1000);
     }
-
-    template <typename Archive>
-    void serialize(Archive&, unsigned int)
-    {
-    }
 };
 
 template <typename F>

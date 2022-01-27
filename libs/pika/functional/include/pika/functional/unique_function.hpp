@@ -21,14 +21,14 @@
 
 namespace pika { namespace util {
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Sig, bool Serializable = true>
+    template <typename Sig>
     class unique_function;
 
-    template <typename R, typename... Ts, bool Serializable>
-    class unique_function<R(Ts...), Serializable>
-      : public detail::basic_function<R(Ts...), false, Serializable>
+    template <typename R, typename... Ts>
+    class unique_function<R(Ts...)>
+      : public detail::basic_function<R(Ts...), false>
     {
-        using base_type = detail::basic_function<R(Ts...), false, Serializable>;
+        using base_type = detail::basic_function<R(Ts...), false>;
 
     public:
         typedef R result_type;
@@ -69,38 +69,38 @@ namespace pika { namespace util {
     };
 
     template <typename Sig>
-    using unique_function_nonser = unique_function<Sig, false>;
+    using unique_function_nonser = unique_function<Sig>;
 }}    // namespace pika::util
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace traits {
-    template <typename Sig, bool Serializable>
-    struct get_function_address<util::unique_function<Sig, Serializable>>
+    template <typename Sig>
+    struct get_function_address<util::unique_function<Sig>>
     {
         static constexpr std::size_t call(
-            util::unique_function<Sig, Serializable> const& f) noexcept
+            util::unique_function<Sig> const& f) noexcept
         {
             return f.get_function_address();
         }
     };
 
-    template <typename Sig, bool Serializable>
-    struct get_function_annotation<util::unique_function<Sig, Serializable>>
+    template <typename Sig>
+    struct get_function_annotation<util::unique_function<Sig>>
     {
         static constexpr char const* call(
-            util::unique_function<Sig, Serializable> const& f) noexcept
+            util::unique_function<Sig> const& f) noexcept
         {
             return f.get_function_annotation();
         }
     };
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-    template <typename Sig, bool Serializable>
-    struct get_function_annotation_itt<util::unique_function<Sig, Serializable>>
+    template <typename Sig>
+    struct get_function_annotation_itt<util::unique_function<Sig>>
     {
         static util::itt::string_handle call(
-            util::unique_function<Sig, Serializable> const& f) noexcept
+            util::unique_function<Sig> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }

@@ -40,8 +40,6 @@ namespace pika { namespace util {
         class bound_back<F, index_pack<Is...>, Ts...>
         {
         public:
-            bound_back() = default;    // needed for serialization
-
             template <typename F_, typename... Ts_,
                 typename = typename std::enable_if<
                     std::is_constructible<F, F_>::value>::type>
@@ -106,13 +104,6 @@ namespace pika { namespace util {
             {
                 return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)...,
                     PIKA_MOVE(_args).template get<Is>()...);
-            }
-
-            template <typename Archive>
-            void serialize(Archive& ar, unsigned int const /*version*/)
-            {
-                ar& _f;
-                ar& _args;
             }
 
             constexpr std::size_t get_function_address() const
@@ -207,15 +198,3 @@ namespace pika { namespace traits {
 #endif
 #endif
 }}    // namespace pika::traits
-
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace serialization {
-    // serialization of the bound_back object
-    template <typename Archive, typename F, typename... Ts>
-    void serialize(Archive& ar,
-        ::pika::util::detail::bound_back<F, Ts...>& bound,
-        unsigned int const version = 0)
-    {
-        bound.serialize(ar, version);
-    }
-}}    // namespace pika::serialization

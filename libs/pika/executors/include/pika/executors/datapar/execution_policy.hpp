@@ -19,7 +19,6 @@
 #include <pika/executors/execution_policy.hpp>
 #include <pika/executors/parallel_executor.hpp>
 #include <pika/executors/sequenced_executor.hpp>
-#include <pika/serialization/serialize.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -165,14 +164,6 @@ namespace pika { namespace execution { inline namespace v1 {
         constexpr executor_parameters_type const& parameters() const
         {
             return params_;
-        }
-
-    private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        constexpr void serialize(Archive&, const unsigned int)
-        {
         }
 
     private:
@@ -331,17 +322,6 @@ namespace pika { namespace execution { inline namespace v1 {
         }
 
     private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            // clang-format off
-            ar & exec_ & params_;
-            // clang-format on
-        }
-
-    private:
         Executor exec_;
         Parameters params_;
         /// \endcond
@@ -484,14 +464,6 @@ namespace pika { namespace execution { inline namespace v1 {
         constexpr executor_parameters_type const& parameters() const
         {
             return params_;
-        }
-
-    private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& /* ar */, const unsigned int /* version */)
-        {
         }
 
     private:
@@ -649,17 +621,6 @@ namespace pika { namespace execution { inline namespace v1 {
         }
 
     private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            // clang-format off
-            ar & exec_ & params_;
-            // clang-format on
-        }
-
-    private:
         Executor exec_;
         Parameters params_;
         /// \endcond
@@ -806,14 +767,6 @@ namespace pika { namespace execution { inline namespace v1 {
         }
 
     private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& /* ar */, const unsigned int /* version */)
-        {
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
     };
@@ -950,14 +903,6 @@ namespace pika { namespace execution { inline namespace v1 {
         constexpr executor_parameters_type const& parameters() const
         {
             return params_;
-        }
-
-    private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& /* ar */, const unsigned int /* version */)
-        {
         }
 
     private:
@@ -1115,17 +1060,6 @@ namespace pika { namespace execution { inline namespace v1 {
         }
 
     private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            // clang-format off
-            ar & exec_ & params_;
-            // clang-format on
-        }
-
-    private:
         Executor exec_;
         Parameters params_;
         /// \endcond
@@ -1276,17 +1210,6 @@ namespace pika { namespace execution { inline namespace v1 {
           : exec_(PIKA_FORWARD(Executor_, exec))
           , params_(PIKA_FORWARD(Parameters_, params))
         {
-        }
-
-    private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            // clang-format off
-            ar & exec_ & params_;
-            // clang-format on
         }
 
     private:

@@ -10,7 +10,6 @@
 
 #include <pika/config.hpp>
 #include <pika/execution_base/traits/is_executor_parameters.hpp>
-#include <pika/serialization/serialize.hpp>
 
 #include <cstddef>
 #include <type_traits>
@@ -44,17 +43,6 @@ namespace pika { namespace execution {
             Executor&, F&&, std::size_t, std::size_t) const
         {
             return chunk_size_;
-        }
-        /// \endcond
-
-    private:
-        /// \cond NOINTERNAL
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            ar& chunk_size_;
         }
         /// \endcond
 

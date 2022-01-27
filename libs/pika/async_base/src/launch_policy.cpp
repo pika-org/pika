@@ -7,9 +7,6 @@
 #include <pika/config.hpp>
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/coroutines/thread_enums.hpp>
-#include <pika/serialization/input_archive.hpp>
-#include <pika/serialization/output_archive.hpp>
-#include <pika/serialization/serialize.hpp>
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -30,38 +27,4 @@ namespace pika {
         detail::policy_holder<>{detail::launch_policy::sync_policies};
     const detail::policy_holder<> launch::async_policies =
         detail::policy_holder<>{detail::launch_policy::async_policies};
-
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        void policy_holder_base::load(
-            serialization::input_archive& ar, unsigned)
-        {
-            int value = 0;
-            // clang-format off
-            ar & value;
-            policy_ = static_cast<launch_policy>(value);
-
-            ar & value;
-            priority_ = static_cast<threads::thread_priority>(value);
-
-            ar & hint_.hint & value;
-            hint_.mode = static_cast<threads::thread_schedule_hint_mode>(value);
-            // clang-format on
-        }
-
-        void policy_holder_base::save(
-            serialization::output_archive& ar, unsigned) const
-        {
-            // clang-format off
-            int value = static_cast<int>(policy_);
-            ar & value;
-
-            value = static_cast<int>(priority_);
-            ar & value;
-
-            value = static_cast<int>(hint_.mode);
-            ar & value & hint_.hint;
-            // clang-format on
-        }
-    }    // namespace detail
 }    // namespace pika

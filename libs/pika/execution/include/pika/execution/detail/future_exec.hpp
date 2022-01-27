@@ -24,7 +24,6 @@
 #include <pika/futures/traits/future_access.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/memory.hpp>
-#include <pika/serialization/detail/polymorphic_nonintrusive_factory.hpp>
 #include <pika/timing/steady_clock.hpp>
 
 #include <exception>

@@ -25,14 +25,6 @@ namespace pika { namespace util {
         class one_shot_wrapper    //-V690
         {
         public:
-            // default constructor is needed for serialization
-            constexpr one_shot_wrapper()
-#if defined(PIKA_DEBUG)
-              : _called(false)
-#endif
-            {
-            }
-
             template <typename F_,
                 typename = typename std::enable_if<
                     std::is_constructible<F, F_>::value>::type>
@@ -71,12 +63,6 @@ namespace pika { namespace util {
                 check_call();
 
                 return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Ts, vs)...);
-            }
-
-            template <typename Archive>
-            void serialize(Archive& ar, unsigned int const /*version*/)
-            {
-                ar& _f;
             }
 
             constexpr std::size_t get_function_address() const
@@ -162,14 +148,3 @@ namespace pika { namespace traits {
 #endif
 #endif
 }}    // namespace pika::traits
-
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace serialization {
-    template <typename Archive, typename F>
-    void serialize(Archive& ar,
-        ::pika::util::detail::one_shot_wrapper<F>& one_shot_wrapper,
-        unsigned int const version = 0)
-    {
-        one_shot_wrapper.serialize(ar, version);
-    }
-}}    // namespace pika::serialization

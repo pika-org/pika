@@ -29,11 +29,6 @@ set(functional_headers
     pika/functional/one_shot.hpp
     pika/functional/protect.hpp
     pika/functional/unique_function.hpp
-    pika/functional/serialization/detail/serializable_basic_function.hpp
-    pika/functional/serialization/detail/vtable/serializable_function_vtable.hpp
-    pika/functional/serialization/detail/vtable/serializable_vtable.hpp
-    pika/functional/serialization/serializable_function.hpp
-    pika/functional/serialization/serializable_unique_function.hpp
     pika/functional/traits/get_action_name.hpp
     pika/functional/traits/get_function_address.hpp
     pika/functional/traits/get_function_annotation.hpp
@@ -64,7 +59,6 @@ pika_add_module(
     pika_debugging
     pika_errors
     pika_itt_notify
-    pika_serialization
     pika_tag_invoke
     pika_type_support
   CMAKE_SUBDIRS examples tests

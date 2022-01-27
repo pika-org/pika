@@ -12,7 +12,6 @@
 #include <pika/async_base/scheduling_properties.hpp>
 #include <pika/async_base/traits/is_launch_policy.hpp>
 #include <pika/coroutines/thread_enums.hpp>
-#include <pika/serialization/serialization_fwd.hpp>
 
 #include <cstdint>
 #include <type_traits>
@@ -102,15 +101,6 @@ namespace pika {
             threads::thread_priority priority_;
             threads::thread_stacksize stacksize_;
             threads::thread_schedule_hint hint_;
-
-        private:
-            friend class serialization::access;
-
-            PIKA_EXPORT void load(serialization::input_archive& ar, unsigned);
-            PIKA_EXPORT void save(
-                serialization::output_archive& ar, unsigned) const;
-
-            PIKA_SERIALIZATION_SPLIT_MEMBER()
         };
 
         ///////////////////////////////////////////////////////////////////////

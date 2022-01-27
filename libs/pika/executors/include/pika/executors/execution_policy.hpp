@@ -21,7 +21,6 @@
 #include <pika/executors/execution_policy_fwd.hpp>
 #include <pika/executors/parallel_executor.hpp>
 #include <pika/executors/sequenced_executor.hpp>
-#include <pika/serialization/serialize.hpp>
 
 #include <memory>
 #include <type_traits>
@@ -188,14 +187,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        constexpr void serialize(Archive&, const unsigned int)
-        {
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
     };
@@ -349,17 +340,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int)
-        {
-            // clang-format off
-            ar & exec_ & params_;
-            // clang-format on
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
         /// \endcond
@@ -497,14 +477,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        constexpr void serialize(Archive&, const unsigned int)
-        {
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
     };
@@ -658,17 +630,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int)
-        {
-            // clang-format off
-            ar & exec_ & params_;
-            // clang-format on
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
         /// \endcond
@@ -809,14 +770,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        constexpr void serialize(Archive&, const unsigned int)
-        {
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
     };
@@ -970,17 +923,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int)
-        {
-            // clang-format off
-            ar & exec_ & params_;
-            // clang-format on
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
         /// \endcond
@@ -1114,14 +1056,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        constexpr void serialize(Archive&, const unsigned int)
-        {
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
     };
@@ -1277,17 +1211,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int)
-        {
-            // clang-format off
-            ar & exec_ & params_;
-            // clang-format on
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
         /// \endcond
@@ -1351,14 +1274,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        constexpr void serialize(Archive&, const unsigned int)
-        {
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
     };
@@ -1423,14 +1338,6 @@ namespace pika { namespace execution {
 
     private:
         friend struct pika::parallel::execution::create_rebound_policy_t;
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        constexpr void serialize(Archive&, const unsigned int)
-        {
-        }
-
-    private:
         executor_type exec_;
         executor_parameters_type params_;
     };

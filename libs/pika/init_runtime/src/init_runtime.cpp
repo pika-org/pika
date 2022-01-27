@@ -32,7 +32,6 @@
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
 #include <pika/runtime/debugging.hpp>
-#include <pika/runtime/detail/serialize_exception.hpp>
 #include <pika/runtime/get_locality_id.hpp>
 #include <pika/runtime/runtime.hpp>
 #include <pika/runtime/runtime_handlers.hpp>
@@ -364,10 +363,6 @@ namespace pika {
                 &pika::detail::assertion_handler);
             pika::set_custom_exception_info_handler(
                 &pika::detail::custom_exception_info);
-            pika::serialization::detail::set_save_custom_exception_handler(
-                &pika::detail::save_custom_exception);
-            pika::serialization::detail::set_load_custom_exception_handler(
-                &pika::detail::load_custom_exception);
             pika::set_pre_exception_handler(
                 &pika::detail::pre_exception_handler);
             pika::set_thread_termination_handler(

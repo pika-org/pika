@@ -58,8 +58,6 @@ namespace pika { namespace util {
         class deferred<F, index_pack<Is...>, Ts...>
         {
         public:
-            deferred() = default;    // needed for serialization
-
             template <typename F_, typename... Ts_,
                 typename = std::enable_if_t<std::is_constructible_v<F, F_&&>>>
             explicit constexpr PIKA_HOST_DEVICE deferred(F_&& f, Ts_&&... vs)
@@ -86,15 +84,6 @@ namespace pika { namespace util {
             {
                 return PIKA_INVOKE(
                     PIKA_MOVE(_f), PIKA_MOVE(_args).template get<Is>()...);
-            }
-
-            template <typename Archive>
-            void serialize(Archive& ar, unsigned int const /*version*/)
-            {
-                // clang-format off
-                ar & _f;
-                ar & _args;
-                // clang-format on
             }
 
             constexpr std::size_t get_function_address() const
@@ -193,15 +182,3 @@ namespace pika { namespace traits {
 #endif
 }}    // namespace pika::traits
 #endif
-
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace serialization {
-    ///////////////////////////////////////////////////////////////////////////
-    template <typename Archive, typename F, typename... Ts>
-    PIKA_FORCEINLINE void serialize(Archive& ar,
-        ::pika::util::detail::deferred<F, Ts...>& d,
-        unsigned int const version = 0)
-    {
-        d.serialize(ar, version);
-    }
-}}    // namespace pika::serialization

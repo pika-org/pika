@@ -101,8 +101,6 @@ namespace pika { namespace util {
         class bound<F, index_pack<Is...>, Ts...>
         {
         public:
-            bound() = default;    // needed for serialization
-
             template <typename F_, typename... Ts_,
                 typename =
                     std::enable_if_t<std::is_constructible<F, F_>::value>>
@@ -171,15 +169,6 @@ namespace pika { namespace util {
                     detail::bind_eval<Ts const, sizeof...(Us)>::call(
                         PIKA_MOVE(_args).template get<Is>(),
                         PIKA_FORWARD(Us, vs)...)...);
-            }
-
-            template <typename Archive>
-            void serialize(Archive& ar, unsigned int const /*version*/)
-            {
-                // clang-format off
-                ar & _f;
-                ar & _args;
-                // clang-format on
             }
 
             constexpr std::size_t get_function_address() const
@@ -273,24 +262,3 @@ namespace pika { namespace traits {
 #endif
 #endif
 }}    // namespace pika::traits
-
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace serialization {
-
-    // serialization of the bound object
-    template <typename Archive, typename F, typename... Ts>
-    void serialize(Archive& ar, ::pika::util::detail::bound<F, Ts...>& bound,
-        unsigned int const version = 0)
-    {
-        bound.serialize(ar, version);
-    }
-
-    // serialization of placeholders is trivial, just provide empty functions
-    template <typename Archive, int I>
-    void serialize(Archive& /* ar */,
-        std::integral_constant<int, I>& /*placeholder*/
-        ,
-        unsigned int const /*version*/ = 0)
-    {
-    }
-}}    // namespace pika::serialization

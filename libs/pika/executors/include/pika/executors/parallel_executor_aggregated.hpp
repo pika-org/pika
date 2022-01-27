@@ -22,7 +22,6 @@
 #include <pika/futures/future.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/iterator_support/range.hpp>
-#include <pika/serialization/serialize.hpp>
 #include <pika/synchronization/latch.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
 
@@ -235,19 +234,6 @@ namespace pika { namespace parallel { namespace execution {
 
     private:
         /// \cond NOINTERNAL
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            // clang-format off
-            ar & num_spread_ & num_tasks_;
-            // clang-format on
-        }
-        /// \endcond
-
-    private:
-        /// \cond NOINTERNAL
         std::size_t const num_spread_;
         std::size_t const num_tasks_;
         /// \endcond
@@ -457,19 +443,6 @@ namespace pika { namespace parallel { namespace execution {
                     PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...));
             return result;
         }
-
-    private:
-        /// \cond NOINTERNAL
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            // clang-format off
-            ar& policy_ & num_spread_ & num_tasks_;
-            // clang-format on
-        }
-        /// \endcond
 
     private:
         /// \cond NOINTERNAL

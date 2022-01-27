@@ -10,7 +10,7 @@
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
     The class pika::any is built based on boost::spirit::hold_any class.
-    It adds support for pika serialization, move assignment, == operator.
+    It adds support for move assignment, == operator.
 ==============================================================================*/
 
 #pragma once
