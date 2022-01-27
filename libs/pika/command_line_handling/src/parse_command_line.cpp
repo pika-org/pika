@@ -6,9 +6,9 @@
 
 #include <pika/command_line_handling/parse_command_line.hpp>
 #include <pika/datastructures/any.hpp>
+#include <pika/detail/filesystem.hpp>
 #include <pika/ini/ini.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/filesystem.hpp>
 #include <pika/util/from_string.hpp>
 
 #include <cctype>

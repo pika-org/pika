@@ -10,6 +10,7 @@
 #include <pika/assert.hpp>
 #include <pika/command_line_handling/command_line_handling.hpp>
 #include <pika/coroutines/detail/context_impl.hpp>
+#include <pika/detail/filesystem.hpp>
 #include <pika/execution/detail/execution_parameter_callbacks.hpp>
 #include <pika/executors/exception_list.hpp>
 #include <pika/functional/bind_front.hpp>
@@ -19,7 +20,6 @@
 #include <pika/init_runtime/init_runtime.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/filesystem.hpp>
 #include <pika/modules/format.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>

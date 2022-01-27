@@ -24,7 +24,7 @@ const char* pika_no_inspect = "pika-"
 //  Files that contain the pika_no_inspect value are not inspected.
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
+#include <pika/detail/filesystem.hpp>
 #include <pika/modules/program_options.hpp>
 
 #include <algorithm>

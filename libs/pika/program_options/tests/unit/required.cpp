@@ -5,7 +5,7 @@
 //  (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/modules/filesystem.hpp>
+#include <pika/detail/filesystem.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/testing.hpp>
 

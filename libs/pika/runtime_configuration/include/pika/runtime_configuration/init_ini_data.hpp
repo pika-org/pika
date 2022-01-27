@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <pika/detail/filesystem.hpp>
 #include <pika/ini/ini.hpp>
-#include <pika/modules/filesystem.hpp>
 
 #include <map>
 #include <memory>

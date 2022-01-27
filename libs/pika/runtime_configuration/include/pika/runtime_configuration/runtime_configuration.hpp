@@ -9,9 +9,9 @@
 
 #include <pika/config.hpp>
 #include <pika/coroutines/thread_enums.hpp>
+#include <pika/detail/filesystem.hpp>
 #include <pika/errors/error_code.hpp>
 #include <pika/ini/ini.hpp>
-#include <pika/modules/filesystem.hpp>
 #include <pika/runtime_configuration/runtime_configuration_fwd.hpp>
 #include <pika/runtime_configuration/runtime_mode.hpp>
 
