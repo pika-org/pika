@@ -18,3 +18,13 @@ Acknowledgements
 
 pika is a fork of `HPX <https://hpx.stellar-group.org>`_ focusing on the
 single-node use case complemented by minimal MPI support.
+
+Name
+====
+
+Pick your favourite meaning from the following:
+
+* `pika the animal <https://en.wikipedia.org/wiki/Pika>`_
+* `pika- as a prefix for fast in Finnish
+  <https://en.wiktionary.org/wiki/pika->`_
+* `pika in various other languages <https://en.wiktionary.org/wiki/pika>`_
