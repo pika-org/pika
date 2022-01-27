@@ -19,3 +19,4 @@ packages
 .clangd
 /out
 .vs
+/spack-*
