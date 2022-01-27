@@ -9,7 +9,6 @@
 #include <pika/assert.hpp>
 #include <pika/ini/ini.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/filesystem.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/prefix/find_prefix.hpp>
 #include <pika/runtime_configuration/init_ini_data.hpp>
@@ -18,6 +17,7 @@
 #include <boost/tokenizer.hpp>
 
 #include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -34,9 +34,8 @@ namespace pika { namespace util {
     {
         try
         {
-            namespace fs = filesystem;
             std::error_code ec;
-            if (!fs::exists(loc, ec) || ec)
+            if (!std::filesystem::exists(loc, ec) || ec)
                 return false;    // avoid exception on missing file
             ini.read(loc);
         }
@@ -54,11 +53,9 @@ namespace pika { namespace util {
         char const* env = getenv(env_var);
         if (nullptr != env)
         {
-            namespace fs = filesystem;
-
-            fs::path inipath(env);
+            std::filesystem::path inipath(env);
             if (nullptr != file_suffix)
-                inipath /= fs::path(file_suffix);
+                inipath /= std::filesystem::path(file_suffix);
 
             if (handle_ini_file(ini, inipath.string()))
             {
@@ -77,8 +74,6 @@ namespace pika { namespace util {
     // successfully
     bool init_ini_data_base(section& ini, std::string& pika_ini_file)
     {
-        namespace fs = filesystem;
-
         // fall back: use compile time prefix
         std::string ini_paths(ini.get_entry("pika.master_ini_path"));
         std::string ini_paths_suffixes(
@@ -113,7 +108,8 @@ namespace pika { namespace util {
         }
 
         // look in the current directory first
-        std::string cwd = fs::current_path().string() + "/.pika.ini";
+        std::string cwd =
+            std::filesystem::current_path().string() + "/.pika.ini";
         {
             bool result2 = handle_ini_file(ini, cwd);
             if (result2)
@@ -143,9 +139,8 @@ namespace pika { namespace util {
 
         if (!pika_ini_file.empty())
         {
-            namespace fs = filesystem;
             std::error_code ec;
-            if (!fs::exists(pika_ini_file, ec) || ec)
+            if (!std::filesystem::exists(pika_ini_file, ec) || ec)
             {
                 std::cerr
                     << "pika::init: command line warning: file specified using "
@@ -172,8 +167,6 @@ namespace pika { namespace util {
     // global function to read component ini information
     void merge_component_inis(section& ini)
     {
-        namespace fs = filesystem;
-
         // now merge all information into one global structure
         std::string ini_path(ini.get_entry("pika.ini_path"));
         std::vector<std::string> ini_paths;
@@ -194,14 +187,15 @@ namespace pika { namespace util {
         {
             try
             {
-                fs::directory_iterator nodir;
-                fs::path this_path(*it);
+                std::filesystem::directory_iterator nodir;
+                std::filesystem::path this_path(*it);
 
                 std::error_code ec;
-                if (!fs::exists(this_path, ec) || ec)
+                if (!std::filesystem::exists(this_path, ec) || ec)
                     continue;
 
-                for (fs::directory_iterator dir(this_path); dir != nodir; ++dir)
+                for (std::filesystem::directory_iterator dir(this_path);
+                     dir != nodir; ++dir)
                 {
                     if (dir->path().extension() != ".ini")
                         continue;
@@ -219,7 +213,7 @@ namespace pika { namespace util {
                     }
                 }
             }
-            catch (fs::filesystem_error const& /*e*/)
+            catch (std::filesystem::filesystem_error const& /*e*/)
             {
                 ;
             }
@@ -228,15 +222,15 @@ namespace pika { namespace util {
 
     namespace detail {
         inline bool cmppath_less(
-            std::pair<filesystem::path, std::string> const& lhs,
-            std::pair<filesystem::path, std::string> const& rhs)
+            std::pair<std::filesystem::path, std::string> const& lhs,
+            std::pair<std::filesystem::path, std::string> const& rhs)
         {
             return lhs.first < rhs.first;
         }
 
         inline bool cmppath_equal(
-            std::pair<filesystem::path, std::string> const& lhs,
-            std::pair<filesystem::path, std::string> const& rhs)
+            std::pair<std::filesystem::path, std::string> const& lhs,
+            std::pair<std::filesystem::path, std::string> const& rhs)
         {
             return lhs.first == rhs.first;
         }

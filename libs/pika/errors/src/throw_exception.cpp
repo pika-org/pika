@@ -8,9 +8,9 @@
 #include <pika/config.hpp>
 #include <pika/errors/error.hpp>
 #include <pika/errors/exception.hpp>
-#include <pika/modules/filesystem.hpp>
 
 #include <exception>
+#include <filesystem>
 #include <string>
 #include <system_error>
 
@@ -18,7 +18,7 @@ namespace pika { namespace detail {
     PIKA_NORETURN void throw_exception(error errcode, std::string const& msg,
         std::string const& func, std::string const& file, long line)
     {
-        filesystem::path p(file);
+        std::filesystem::path p(file);
         pika::detail::throw_exception(
             pika::exception(errcode, msg, pika::plain), func, p.string(), line);
     }
@@ -35,7 +35,7 @@ namespace pika { namespace detail {
         throwmode mode, std::string const& /* func */, std::string const& file,
         long line, std::string const& auxinfo)
     {
-        filesystem::path p(file);
+        std::filesystem::path p(file);
         return pika::detail::get_exception(pika::exception(errcode, msg, mode),
             p.string(), file, line, auxinfo);
     }

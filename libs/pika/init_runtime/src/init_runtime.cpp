@@ -356,7 +356,7 @@ namespace pika {
         ////////////////////////////////////////////////////////////////////////
         void init_environment()
         {
-            PIKA_UNUSED(pika::filesystem::initial_path());
+            PIKA_UNUSED(pika::detail::filesystem::initial_path());
 
             pika::assertion::set_assertion_handler(
                 &pika::detail::assertion_handler);

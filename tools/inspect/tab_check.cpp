@@ -11,6 +11,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
+#include <filesystem>
 #include <string>
 #include "function_hyper.hpp"
 #include "tab_check.hpp"
@@ -32,7 +33,7 @@ namespace boost { namespace inspect {
     }
 
     void tab_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

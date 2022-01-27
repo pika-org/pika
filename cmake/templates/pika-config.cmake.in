@@ -79,7 +79,6 @@ if(NOT BOOST_ROOT AND NOT "$ENV{BOOST_ROOT}")
   set(BOOST_ROOT ${PIKA_BOOST_ROOT})
 endif()
 include(pika_setup_boost)
-include(pika_setup_boost_filesystem)
 
 # HIP
 include(pika_setup_hip)

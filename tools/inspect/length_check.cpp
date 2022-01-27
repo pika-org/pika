@@ -8,7 +8,6 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
 
 #include "function_hyper.hpp"
 #include "length_check.hpp"
@@ -18,12 +17,12 @@
 #include <boost/tokenizer.hpp>
 
 #include <cstddef>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <string>
 
 using namespace std;
-namespace fs = pika::filesystem;
 
 namespace boost { namespace inspect {
     length_check::length_check(std::size_t setting)
@@ -58,7 +57,7 @@ namespace boost { namespace inspect {
     };
 
     void length_check::inspect(const string& library_name,
-        const path& full_path,     // ex: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // ex: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

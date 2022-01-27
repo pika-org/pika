@@ -12,6 +12,7 @@
 #include <pika/util/to_string.hpp>
 
 #include <algorithm>
+#include <filesystem>
 
 #include "boost/regex.hpp"
 #include "function_hyper.hpp"
@@ -62,7 +63,7 @@ namespace boost { namespace inspect {
     //  inspect ( C++ source files )  ---------------------------------------//
 
     void minmax_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

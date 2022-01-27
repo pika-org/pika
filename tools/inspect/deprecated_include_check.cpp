@@ -13,6 +13,7 @@
 #include <pika/util/to_string.hpp>
 
 #include <algorithm>
+#include <filesystem>
 
 #include "boost/regex.hpp"
 #include "deprecated_include_check.hpp"
@@ -51,7 +52,7 @@ namespace boost { namespace inspect {
         {"boost/format\\.hpp", "pika/util/format.hpp"},
         {"boost/regex.hpp", "regex"},
         {"boost/program_options([^\\s]*)\\.hpp", "pika/program_options\\2.hpp"},
-        {"boost/filesystem([^\\s]*)\\.hpp", "pika/modules/filesystem.hpp"},
+        {"boost/filesystem([^\\s]*)\\.hpp", "filesystem"},
         {"boost/lexical_cast\\.hpp",
             "pika/util/((from_string)|(to_string)).hpp"},
         {"boost/system([^\\s]*)\\.hpp", "system_error"}, {nullptr, nullptr}};
@@ -88,7 +89,7 @@ namespace boost { namespace inspect {
     //  inspect ( C++ source files )  ---------------------------------------//
 
     void deprecated_include_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         std::string::size_type p = contents.find("pikainspect:"

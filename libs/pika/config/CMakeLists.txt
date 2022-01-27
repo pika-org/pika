@@ -15,7 +15,6 @@ set(config_headers
     pika/config/compiler_specific.hpp
     pika/config/constexpr.hpp
     pika/config/debug.hpp
-    pika/config/detail/compat_error_code.hpp
     pika/config/emulate_deleted.hpp
     pika/config/endian.hpp
     pika/config/export_definitions.hpp

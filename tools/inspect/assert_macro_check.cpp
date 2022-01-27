@@ -9,16 +9,14 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
 #include <pika/util/to_string.hpp>
 
 #include "assert_macro_check.hpp"
 #include "boost/regex.hpp"
 #include "function_hyper.hpp"
 
+#include <filesystem>
 #include <functional>
-
-namespace fs = pika::filesystem;
 
 namespace {
     boost::regex assert_macro_regex(
@@ -58,7 +56,7 @@ namespace boost { namespace inspect {
     }
 
     void assert_macro_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

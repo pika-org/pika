@@ -7,38 +7,31 @@
 //  pikainspect:nodeprecatedinclude:boost/filesystem.hpp
 
 /// \file
-/// This file provides a compatibility layer using Boost.Filesystem for the
-/// C++17 filesystem library. It is *not* intended to be a complete
-/// compatibility layer. It only contains functions required by the pika
-/// codebase. It also provides some functions only available in Boost.Filesystem
-/// when using C++17 filesystem.
+/// This file provides a few additional filesystem utilities on top of those
+/// provided by <filesystem>.
 
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/filesystem/config/defines.hpp>
 
-#if !defined(PIKA_FILESYSTEM_HAVE_BOOST_FILESYSTEM_COMPATIBILITY)
 #include <filesystem>
 #include <string>
 #include <system_error>
 
-namespace pika { namespace filesystem {
-    using namespace std::filesystem;
-    using std::filesystem::canonical;
-
-    inline path initial_path()
+namespace pika::detail::filesystem {
+    inline std::filesystem::path initial_path()
     {
-        static path ip = current_path();
+        static std::filesystem::path ip = std::filesystem::current_path();
         return ip;
     }
 
-    inline std::string basename(path const& p)
+    inline std::string basename(std::filesystem::path const& p)
     {
         return p.stem().string();
     }
 
-    inline path canonical(path const& p, path const& base)
+    inline std::filesystem::path canonical(
+        std::filesystem::path const& p, std::filesystem::path const& base)
     {
         if (p.is_relative())
         {
@@ -50,7 +43,8 @@ namespace pika { namespace filesystem {
         }
     }
 
-    inline path canonical(path const& p, path const& base, std::error_code& ec)
+    inline std::filesystem::path canonical(std::filesystem::path const& p,
+        std::filesystem::path const& base, std::error_code& ec)
     {
         if (p.is_relative())
         {
@@ -62,38 +56,4 @@ namespace pika { namespace filesystem {
         }
     }
 
-}}    // namespace pika::filesystem
-#else
-#include <pika/config/detail/compat_error_code.hpp>
-
-#include <boost/filesystem.hpp>
-
-#include <system_error>
-
-static_assert(BOOST_FILESYSTEM_VERSION == 3,
-    "pika requires Boost.Filesystem version 3 (or support for the C++17 "
-    "filesystem library)");
-
-namespace pika { namespace filesystem {
-    using namespace boost::filesystem;
-
-    using boost::filesystem::canonical;
-    inline path canonical(path const& p, path const& base, std::error_code& ec)
-    {
-        return canonical(p, base, compat_error_code(ec));
-    }
-
-    using boost::filesystem::exists;
-    inline bool exists(path const& p, std::error_code& ec) noexcept
-    {
-        return exists(p, compat_error_code(ec));
-    }
-
-    using boost::filesystem::is_regular_file;
-    inline bool is_regular_file(path const& p, std::error_code& ec) noexcept
-    {
-        return is_regular_file(p, compat_error_code(ec));
-    }
-
-}}    // namespace pika::filesystem
-#endif
+}    // namespace pika::detail::filesystem

@@ -145,7 +145,7 @@ int main()
     simple_required_test(config_file);
 
     // delete the config file
-    pika::filesystem::remove(config_file);
+    std::filesystem::remove(config_file);
 
     return pika::util::report_errors();
 }

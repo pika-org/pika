@@ -9,16 +9,14 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
 
 #include "inspector.hpp"
 
+#include <filesystem>
 #include <string>
 
-using pika::filesystem::path;
-
 // When you have a specific line and the line is the location of the link
-inline std::string linelink(path const& full_path, std::string const& linenumb)
+inline std::string linelink(std::filesystem::path const& full_path, std::string const& linenumb)
 {
     std::string commit = PIKA_HAVE_GIT_COMMIT;
     std::string location = boost::inspect::relative_to(
@@ -35,7 +33,7 @@ inline std::string linelink(path const& full_path, std::string const& linenumb)
 
 // When you have a specific line, but a word is the location of the link
 inline std::string wordlink(
-    path const& full_path, std::string const& linenumb, std::string const& word)
+    std::filesystem::path const& full_path, std::string const& linenumb, std::string const& word)
 {
     std::string commit = PIKA_HAVE_GIT_COMMIT;
     std::string location = boost::inspect::relative_to(
@@ -48,7 +46,7 @@ inline std::string wordlink(
 }
 
 // When you don't have a specific line
-inline std::string loclink(path const& full_path, std::string const& word)
+inline std::string loclink(std::filesystem::path const& full_path, std::string const& word)
 {
     std::string commit = PIKA_HAVE_GIT_COMMIT;
     std::string location = boost::inspect::relative_to(

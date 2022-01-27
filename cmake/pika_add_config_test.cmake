@@ -385,15 +385,6 @@ function(pika_check_for_cxx17_aligned_new)
 endfunction()
 
 # ##############################################################################
-function(pika_check_for_cxx17_filesystem)
-  pika_add_config_test(
-    PIKA_WITH_CXX17_FILESYSTEM
-    SOURCE cmake/tests/cxx17_filesystem.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
 function(pika_check_for_cxx17_hardware_destructive_interference_size)
   pika_add_config_test(
     PIKA_WITH_CXX17_HARDWARE_DESTRUCTIVE_INTERFERENCE_SIZE

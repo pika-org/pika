@@ -11,15 +11,13 @@
 
 #pragma once
 
-#include <pika/modules/filesystem.hpp>
-
 #include <cstddef>
+#include <filesystem>
 #include <iostream>
 #include <ostream>
 #include <set>
 #include <string>
 
-using pika::filesystem::path;
 using std::string;
 
 namespace boost { namespace inspect {
@@ -27,7 +25,7 @@ namespace boost { namespace inspect {
 
     const char* line_break();
 
-    path search_root_path();
+    std::filesystem::path search_root_path();
 
     class inspector
     {
@@ -42,13 +40,13 @@ namespace boost { namespace inspect {
 
         // always called:
         virtual void inspect(const string& /*library_name*/,    // "filesystem"
-            const path& /*full_path*/)
+            const std::filesystem::path& /*full_path*/)
         {
         }    // "c:/foo/boost/filesystem/path.hpp"
 
         // called only for registered leaf() signatures:
         virtual void inspect(const string& library_name,    // "filesystem"
-            const path& full_path,     // "c:/foo/boost/filesystem/path.hpp"
+            const std::filesystem::path& full_path,     // "c:/foo/boost/filesystem/path.hpp"
             const string& contents)    // contents of file
             = 0;
 
@@ -71,7 +69,7 @@ namespace boost { namespace inspect {
         }
 
         // report error callback (from inspect(), close() ):
-        void error(const string& library_name, const path& full_path,
+        void error(const string& library_name, const std::filesystem::path& full_path,
             const string& msg,
             std::size_t line_number =
                 0);    // 0 if not available or not applicable
@@ -105,21 +103,21 @@ namespace boost { namespace inspect {
         hypertext_inspector();
     };
 
-    inline string relative_to(const path& src_arg, const path& base_arg)
+    inline string relative_to(const std::filesystem::path& src_arg, const std::filesystem::path& base_arg)
     {
-        path base(base_arg);
+        std::filesystem::path base(base_arg);
         base.lexically_normal();
         string::size_type pos(base.string().size());
         string src_arg_s(src_arg.string());
-        path src;
+        std::filesystem::path src;
         if (pos < src_arg_s.size())
-            src = path(src_arg.string().substr(pos));
+            src = std::filesystem::path(src_arg.string().substr(pos));
         else
-            src = path(src_arg_s);
+            src = std::filesystem::path(src_arg_s);
         src.lexically_normal();
         return src.string();
     }
 
-    string impute_library(const path& full_dir_path);
+    string impute_library(const std::filesystem::path& full_dir_path);
 
 }}    // namespace boost::inspect

@@ -7,15 +7,13 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
 
+#include <filesystem>
 #include <functional>
 #include <string>
 #include "boost/regex.hpp"
 #include "function_hyper.hpp"
 #include "windows_macro_check.hpp"
-
-namespace fs = pika::filesystem;
 
 namespace {
     boost::regex windows_macro_regex(
@@ -54,7 +52,7 @@ namespace boost { namespace inspect {
     }
 
     void windows_macro_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"
