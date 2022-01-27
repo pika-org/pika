@@ -6,9 +6,7 @@
 
 function(pika_add_test category name)
   set(options FAILURE_EXPECTED RUN_SERIAL)
-  set(one_value_args EXECUTABLE LOCALITIES THREADS_PER_LOCALITY TIMEOUT
-                     RUNWRAPPER
-  )
+  set(one_value_args EXECUTABLE LOCALITIES THREADS TIMEOUT RUNWRAPPER)
   set(multi_value_args ARGS)
   cmake_parse_arguments(
     ${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
@@ -18,15 +16,12 @@ function(pika_add_test category name)
     set(${name}_LOCALITIES 1)
   endif()
 
-  if(NOT ${name}_THREADS_PER_LOCALITY)
-    set(${name}_THREADS_PER_LOCALITY 1)
-  elseif(PIKA_WITH_TESTS_MAX_THREADS_PER_LOCALITY GREATER 0
-         AND ${name}_THREADS_PER_LOCALITY GREATER
-             PIKA_WITH_TESTS_MAX_THREADS_PER_LOCALITY
+  if(NOT ${name}_THREADS)
+    set(${name}_THREADS 1)
+  elseif(PIKA_WITH_TESTS_MAX_THREADS GREATER 0 AND ${name}_THREADS GREATER
+                                                   PIKA_WITH_TESTS_MAX_THREADS
   )
-    set(${name}_THREADS_PER_LOCALITY
-        ${PIKA_WITH_TESTS_MAX_THREADS_PER_LOCALITY}
-    )
+    set(${name}_THREADS ${PIKA_WITH_TESTS_MAX_THREADS})
   endif()
 
   if(NOT ${name}_EXECUTABLE)
@@ -46,16 +41,16 @@ function(pika_add_test category name)
   endif()
 
   # If --pika:threads=cores or all
-  if(${name}_THREADS_PER_LOCALITY LESS_EQUAL 0)
+  if(${name}_THREADS LESS_EQUAL 0)
     set(run_serial TRUE)
-    if(${name}_THREADS_PER_LOCALITY EQUAL -1)
-      set(${name}_THREADS_PER_LOCALITY "all")
-    elseif(${name}_THREADS_PER_LOCALITY EQUAL -2)
-      set(${name}_THREADS_PER_LOCALITY "cores")
+    if(${name}_THREADS EQUAL -1)
+      set(${name}_THREADS "all")
+    elseif(${name}_THREADS EQUAL -2)
+      set(${name}_THREADS "cores")
     endif()
   endif()
 
-  set(args "--pika:threads=${${name}_THREADS_PER_LOCALITY}")
+  set(args "--pika:threads=${${name}_THREADS}")
   if(${PIKA_WITH_TESTS_DEBUG_LOG})
     set(args ${args}
              "--pika:debug-pika-log=${PIKA_WITH_TESTS_DEBUG_LOG_DESTINATION}"

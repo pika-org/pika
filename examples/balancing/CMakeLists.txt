@@ -9,8 +9,8 @@ set(example_programs # thread_phase # Disabled due to unavailable timed
     os_thread_num
 )
 
-set(os_thread_num_PARAMETERS THREADS_PER_LOCALITY 4)
-set(thread_phase_PARAMETERS THREADS_PER_LOCALITY 4)
+set(os_thread_num_PARAMETERS THREADS 4)
+set(thread_phase_PARAMETERS THREADS 4)
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)

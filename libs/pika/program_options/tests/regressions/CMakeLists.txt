@@ -8,7 +8,7 @@ set(tests command_line_arguments_706 commandline_options_1437
           command_line_required_arguments_2990
 )
 
-set(commandline_options_1437_PARAMETERS THREADS_PER_LOCALITY 2)
+set(commandline_options_1437_PARAMETERS THREADS 2)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

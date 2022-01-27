@@ -6,8 +6,8 @@
 
 set(tests shared_mutex1 shared_mutex2)
 
-set(shared_mutex1_PARAMETERS THREADS_PER_LOCALITY 4)
-set(shared_mutex2_PARAMETERS THREADS_PER_LOCALITY 4)
+set(shared_mutex1_PARAMETERS THREADS 4)
+set(shared_mutex2_PARAMETERS THREADS 4)
 
 set(shared_mutex1_FLAGS DEPENDENCIES PRIVATE pika_dependencies_boost)
 

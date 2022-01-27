@@ -29,29 +29,29 @@ set(tests
     stop_token_cb2
 )
 
-set(async_rw_mutex_PARAMETERS THREADS_PER_LOCALITY 4)
-set(barrier_cpp20_PARAMETERS THREADS_PER_LOCALITY 4)
-set(binary_semaphore_cpp20_PARAMETERS THREADS_PER_LOCALITY 4)
-set(channel_mpmc_fib_PARAMETERS THREADS_PER_LOCALITY 4)
-set(channel_mpmc_shift_PARAMETERS THREADS_PER_LOCALITY 4)
-set(channel_mpsc_fib_PARAMETERS THREADS_PER_LOCALITY 4)
-set(channel_mpsc_shift_PARAMETERS THREADS_PER_LOCALITY 4)
-set(channel_spsc_fib_PARAMETERS THREADS_PER_LOCALITY 4)
-set(channel_spsc_shift_PARAMETERS THREADS_PER_LOCALITY 4)
+set(async_rw_mutex_PARAMETERS THREADS 4)
+set(barrier_cpp20_PARAMETERS THREADS 4)
+set(binary_semaphore_cpp20_PARAMETERS THREADS 4)
+set(channel_mpmc_fib_PARAMETERS THREADS 4)
+set(channel_mpmc_shift_PARAMETERS THREADS 4)
+set(channel_mpsc_fib_PARAMETERS THREADS 4)
+set(channel_mpsc_shift_PARAMETERS THREADS 4)
+set(channel_spsc_fib_PARAMETERS THREADS 4)
+set(channel_spsc_shift_PARAMETERS THREADS 4)
 
-set(counting_semaphore_PARAMETERS THREADS_PER_LOCALITY 4)
-set(counting_semaphore_cpp20_PARAMETERS THREADS_PER_LOCALITY 4)
+set(counting_semaphore_PARAMETERS THREADS 4)
+set(counting_semaphore_cpp20_PARAMETERS THREADS 4)
 
-set(latch_cpp20_PARAMETERS THREADS_PER_LOCALITY 4)
-set(barrier_PARAMETERS THREADS_PER_LOCALITY 4)
-set(latch_PARAMETERS THREADS_PER_LOCALITY 4)
-set(event_PARAMETERS THREADS_PER_LOCALITY 4)
-set(mutex_PARAMETERS THREADS_PER_LOCALITY 4)
+set(latch_cpp20_PARAMETERS THREADS 4)
+set(barrier_PARAMETERS THREADS 4)
+set(latch_PARAMETERS THREADS 4)
+set(event_PARAMETERS THREADS 4)
+set(mutex_PARAMETERS THREADS 4)
 
-set(sliding_semaphore_PARAMETERS THREADS_PER_LOCALITY 4)
+set(sliding_semaphore_PARAMETERS THREADS 4)
 
-set(stop_token_cb2_PARAMETERS THREADS_PER_LOCALITY 4)
-set(stop_token_PARAMETERS THREADS_PER_LOCALITY 4)
+set(stop_token_cb2_PARAMETERS THREADS 4)
+set(stop_token_PARAMETERS THREADS 4)
 
 foreach(test ${tests})
 

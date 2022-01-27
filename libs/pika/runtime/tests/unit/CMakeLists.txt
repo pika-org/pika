@@ -6,7 +6,7 @@
 
 set(tests thread_mapper)
 
-set(thread_mapper_PARAMETERS THREADS_PER_LOCALITY 4)
+set(thread_mapper_PARAMETERS THREADS 4)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

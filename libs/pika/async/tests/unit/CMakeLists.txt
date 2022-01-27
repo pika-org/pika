@@ -10,11 +10,11 @@ set(tests apply apply_executor async async_executor
           async_executor_additional_arguments
 )
 
-set(apply_PARAMETERS THREADS_PER_LOCALITY 4)
-set(apply_executor_PARAMETERS THREADS_PER_LOCALITY 4)
-set(async_PARAMETERS THREADS_PER_LOCALITY 4)
-set(async_executor_PARAMETERS THREADS_PER_LOCALITY 4)
-set(async_executor_additional_arguments_PARAMETERS THREADS_PER_LOCALITY 4)
+set(apply_PARAMETERS THREADS 4)
+set(apply_executor_PARAMETERS THREADS 4)
+set(async_PARAMETERS THREADS 4)
+set(async_executor_PARAMETERS THREADS 4)
+set(async_executor_additional_arguments_PARAMETERS THREADS 4)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

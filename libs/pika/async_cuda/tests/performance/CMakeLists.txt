@@ -10,7 +10,7 @@ if(PIKA_WITH_GPUBLAS)
 endif()
 
 set(synchronize_CUDA ON)
-set(cuda_executor_throughput_PARAMETERS THREADS_PER_LOCALITY 1)
+set(cuda_executor_throughput_PARAMETERS THREADS 1)
 
 foreach(benchmark ${benchmarks})
 

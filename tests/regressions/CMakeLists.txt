@@ -17,7 +17,7 @@ set(tests multiple_init multiple_init_2918 stack_size_config_4543
           unhandled_exception_582
 )
 
-set(unhandled_exception_582_PARAMETERS THREADS_PER_LOCALITY 1)
+set(unhandled_exception_582_PARAMETERS THREADS 1)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)
