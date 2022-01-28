@@ -26,6 +26,7 @@ set(tests
     minimal_async_executor
     minimal_sync_executor
     persistent_executor_parameters
+    scheduler_queries
 )
 
 set(future_then_executor_PARAMETERS THREADS 4)

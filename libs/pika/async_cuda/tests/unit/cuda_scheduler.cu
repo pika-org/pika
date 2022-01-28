@@ -18,13 +18,12 @@ inline constexpr bool is_cuda_scheduler_v =
     std::is_same_v<std::decay_t<Scheduler>, cu::cuda_scheduler>;
 
 #define CHECK_CUDA_COMPLETION_SCHEDULER(...)                                   \
-    static_assert(is_cuda_scheduler_v<decltype(                                \
-            ex::get_completion_scheduler<ex::set_value_t>(__VA_ARGS__))>)
+    static_assert(is_cuda_scheduler_v<                                         \
+        decltype(ex::get_completion_scheduler<ex::set_value_t>(__VA_ARGS__))>)
 
 #define CHECK_NOT_CUDA_COMPLETION_SCHEDULER(...)                               \
-    static_assert(                                                             \
-        !is_cuda_scheduler_v<decltype(                                         \
-            ex::get_completion_scheduler<ex::set_value_t>(__VA_ARGS__))>)
+    static_assert(!is_cuda_scheduler_v<decltype(ex::get_completion_scheduler<  \
+                      ex::set_value_t>(__VA_ARGS__))>)
 
 int main()
 {
@@ -112,5 +111,10 @@ int main()
                 .get_next_stream()
                 .get_priority(),
             pika::threads::thread_priority::high);
+    }
+
+    {
+        PIKA_TEST(ex::get_forward_progress_guarantee(sched) ==
+            ex::forward_progress_guarantee::weakly_parallel);
     }
 }

@@ -46,6 +46,7 @@ set(execution_headers
     pika/execution/executors/polymorphic_executor.hpp
     pika/execution/executors/rebind_executor.hpp
     pika/execution/executors/static_chunk_size.hpp
+    pika/execution/scheduler_queries.hpp
     pika/execution/traits/detail/simd/vector_pack_alignment_size.hpp
     pika/execution/traits/detail/simd/vector_pack_all_any_none.hpp
     pika/execution/traits/detail/simd/vector_pack_count_bits.hpp
