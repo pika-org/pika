@@ -181,7 +181,9 @@ namespace test {
     };
 }    // namespace test
 
-#if defined(PIKA_HAVE_CXX17_MEMORY_RESOURCE)
+// The use of Boost's small_vector is currently forced due to the performance of
+// the pika one being significantly worse.
+#if 0    // defined(PIKA_HAVE_CXX17_MEMORY_RESOURCE)
 namespace pika {
 
     // Explicit instantiation to detect compilation errors
@@ -208,8 +210,12 @@ namespace test {
         // basic test with less elements than static size
         {
             using sm5_t = pika::detail::small_vector<int, 5>;
+// The use of Boost's small_vector is currently forced due to the performance of
+// the pika one being significantly worse.
+#if 0    // defined(PIKA_HAVE_CXX17_MEMORY_RESOURCE)
             static_assert(
                 sm5_t::static_capacity == 5, "sm5_t::static_capacity == 5");
+#endif
 
             sm5_t sm5;
             sm5.push_back(1);
@@ -220,8 +226,12 @@ namespace test {
         }
         {
             using sm7_t = pika::detail::small_vector<int, 7>;
+// The use of Boost's small_vector is currently forced due to the performance of
+// the pika one being significantly worse.
+#if 0    // defined(PIKA_HAVE_CXX17_MEMORY_RESOURCE)
             static_assert(
                 sm7_t::static_capacity == 7, "sm7_t::static_capacity == 7");
+#endif
 
             sm7_t sm7;
             sm7.push_back(1);
@@ -304,7 +314,11 @@ namespace test {
         {
             // v bigger than static capacity, w empty
             vec v;
+// The use of Boost's small_vector is currently forced due to the performance of
+// the pika one being significantly worse.
+#if 0    // defined(PIKA_HAVE_CXX17_MEMORY_RESOURCE)
             PIKA_TEST_EQ(v.capacity(), vec::static_capacity);
+#endif
 
             for (std::size_t i = 0, max = v.capacity() + 1; i != max; ++i)
             {
