@@ -73,9 +73,11 @@ namespace pika { namespace cuda { namespace experimental { namespace detail {
         return get_event_callback_queue().size_approx();
     }
 
+    static std::atomic<std::size_t> active_events_counter{0};
+
     std::size_t get_number_of_active_events()
     {
-        return get_event_callback_vector().size();
+        return active_events_counter;
     }
 
     void add_to_event_callback_queue(event_callback&& continuation)
@@ -95,6 +97,7 @@ namespace pika { namespace cuda { namespace experimental { namespace detail {
     void add_to_event_callback_vector(event_callback&& continuation)
     {
         get_event_callback_vector().push_back(PIKA_MOVE(continuation));
+        ++active_events_counter;
 
         cud_debug.debug(
             debug::str<>("event callback moved from queue to vector"), "event",
@@ -182,6 +185,7 @@ namespace pika { namespace cuda { namespace experimental { namespace detail {
                     return true;
                 }),
             event_callback_vector.end());
+        active_events_counter = event_callback_vector.size();
 
         detail::event_callback continuation;
         while (detail::get_event_callback_queue().try_dequeue(continuation))
@@ -211,15 +215,7 @@ namespace pika { namespace cuda { namespace experimental { namespace detail {
 
     std::size_t get_work_count()
     {
-        std::size_t work_count = 0;
-        {
-            std::unique_lock<mutex_type> lk(get_vector_mtx(), std::try_to_lock);
-            if (lk.owns_lock())
-            {
-                work_count += get_number_of_active_events();
-            }
-        }
-
+        std::size_t work_count = get_number_of_active_events();
         work_count += get_number_of_enqueued_events();
 
         return work_count;

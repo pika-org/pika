@@ -82,8 +82,7 @@ namespace pika { namespace mpi { namespace experimental {
         {
             get_requests_vector().push_back(req_callback.request);
             get_request_callback_vector().push_back(std::move(req_callback));
-            get_mpi_info().requests_vector_size_ =
-                static_cast<std::uint32_t>(get_requests_vector().size());
+            ++(get_mpi_info().active_requests_vector_size_);
 
             if constexpr (mpi_debug.is_enabled())
             {
@@ -128,8 +127,9 @@ namespace pika { namespace mpi { namespace experimental {
         PIKA_EXPORT std::ostream& operator<<(std::ostream& os, mpi_info const&)
         {
             os << "R " << debug::dec<3>(get_mpi_info().rank_) << "/"
-               << debug::dec<3>(get_mpi_info().size_) << " requests in vector "
-               << debug::dec<3>(get_mpi_info().requests_vector_size_)
+               << debug::dec<3>(get_mpi_info().size_)
+               << " active requests in vector "
+               << debug::dec<3>(get_mpi_info().active_requests_vector_size_)
                << " queued requests "
                << debug::dec<3>(get_mpi_info().requests_queue_size_);
             return os;
@@ -306,6 +306,8 @@ namespace pika { namespace mpi { namespace experimental {
                 // is only used for an assert
                 request_callback_vector[std::size_t(index)].request =
                     MPI_REQUEST_NULL;
+
+                --(detail::get_mpi_info().active_requests_vector_size_);
             }
         }
 
@@ -340,7 +342,7 @@ namespace pika { namespace mpi { namespace experimental {
                         "Fatal Error: Mismatch in vectors");
                 }
 
-                detail::get_mpi_info().requests_vector_size_ =
+                detail::get_mpi_info().active_requests_vector_size_ =
                     static_cast<std::uint32_t>(requests_vector.size());
 
                 if constexpr (mpi_debug.is_enabled())
@@ -358,16 +360,8 @@ namespace pika { namespace mpi { namespace experimental {
     namespace detail {
         std::size_t get_work_count()
         {
-            std::size_t work_count = 0;
-            {
-                std::unique_lock<detail::mutex_type> lk(
-                    detail::get_vector_mtx(), std::try_to_lock);
-                if (lk.owns_lock())
-                {
-                    work_count += get_num_active_requests_in_vector();
-                }
-            }
-
+            std::size_t work_count =
+                get_mpi_info().active_requests_vector_size_;
             work_count += get_mpi_info().requests_queue_size_;
 
             return work_count;
