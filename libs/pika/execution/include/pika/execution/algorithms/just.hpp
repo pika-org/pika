@@ -84,7 +84,7 @@ namespace pika { namespace execution { namespace experimental {
                         [&]() {
                             pika::execution::experimental::set_value(
                                 PIKA_MOVE(os.receiver),
-                                PIKA_MOVE(os.ts).template get<Is>()...);
+                                PIKA_FORWARD(Ts, os.ts.template get<Is>())...);
                         },
                         [&](std::exception_ptr ep) {
                             pika::execution::experimental::set_error(
