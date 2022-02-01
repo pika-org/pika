@@ -47,5 +47,6 @@ jobs:
       run: |
           cd build
           ctest \
+            --timeout 120 \
             --output-on-failure \
             --tests-regex tests.examples

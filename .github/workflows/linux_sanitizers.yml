@@ -52,5 +52,6 @@ jobs:
           export UBSAN_OPTIONS=print_stacktrace=1,suppressions=$PWD/tools/ubsan.supp
           cd build
           ctest \
+            --timeout 120 \
             --output-on-failure \
             --tests-regex tests.examples
