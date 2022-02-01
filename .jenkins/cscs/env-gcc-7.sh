@@ -30,3 +30,5 @@ configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"
 configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 configure_extra_options+=" -DPIKA_WITH_APEX=ON"
+
+build_extra_options+=" -j10"
