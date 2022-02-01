@@ -11,10 +11,8 @@
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/async_cuda/custom_blas_api.hpp>
 #include <pika/async_cuda/custom_gpu_api.hpp>
-#include <pika/synchronization/spinlock.hpp>
 
 #include <iosfwd>
-#include <mutex>
 
 namespace pika::cuda::experimental {
     /// RAII wrapper for a cuBLAS handle.
@@ -24,9 +22,6 @@ namespace pika::cuda::experimental {
         int device;
         cudaStream_t stream{};
         cublasHandle_t handle{};
-
-        using mutex_type = pika::lcos::local::spinlock;
-        mutable mutex_type mtx;
 
         static PIKA_EXPORT cublasHandle_t create_handle(
             int device, cudaStream_t stream);
