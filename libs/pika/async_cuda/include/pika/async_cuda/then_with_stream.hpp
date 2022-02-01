@@ -343,7 +343,7 @@ namespace pika::cuda::experimental::detail {
     {
         std::decay_t<S> s;
         std::decay_t<F> f;
-        cuda_pool pool;
+        cuda_scheduler sched;
         std::reference_wrapper<const cuda_stream> stream;
 
         cuda_stream const& initialize_stream()
@@ -354,15 +354,15 @@ namespace pika::cuda::experimental::detail {
             }
             else
             {
-                return this->pool.get_next_stream();
+                return this->sched.get_next_stream();
             }
         }
 
         template <typename S_, typename F_>
-        then_with_cuda_sender(S_&& s, F_&& f, cuda_pool pool)
+        then_with_cuda_sender(S_&& s, F_&& f, cuda_scheduler sched)
           : s(PIKA_FORWARD(S_, s))
           , f(PIKA_FORWARD(F_, f))
-          , pool(PIKA_MOVE(pool))
+          , sched(PIKA_MOVE(sched))
           , stream(initialize_stream())
         {
         }
@@ -408,7 +408,8 @@ namespace pika::cuda::experimental::detail {
         {
             return pika::execution::experimental::connect(PIKA_MOVE(s.s),
                 then_with_cuda_receiver<R, F>{PIKA_FORWARD(R, r),
-                    PIKA_MOVE(s.f), PIKA_MOVE(s.pool), PIKA_MOVE(s.stream)});
+                    PIKA_MOVE(s.f), PIKA_MOVE(s.sched.get_pool()),
+                    PIKA_MOVE(s.stream)});
         }
 
         template <typename R>
@@ -417,7 +418,7 @@ namespace pika::cuda::experimental::detail {
         {
             return pika::execution::experimental::connect(s.s,
                 then_with_cuda_receiver<R, F>{
-                    PIKA_FORWARD(R, r), s.f, s.pool, s.stream});
+                    PIKA_FORWARD(R, r), s.f, s.sched.get_pool(), s.stream});
         }
 
         friend cuda_scheduler tag_invoke(
@@ -425,7 +426,7 @@ namespace pika::cuda::experimental::detail {
                 pika::execution::experimental::set_value_t>,
             then_with_cuda_sender const& s)
         {
-            return {s.pool};
+            return s.sched;
         }
     };
 
@@ -445,8 +446,7 @@ namespace pika::cuda::experimental::detail {
         -> decltype(detail::then_with_cuda_sender<S, F>{PIKA_FORWARD(S, s),
             PIKA_FORWARD(F, f),
             pika::execution::experimental::get_completion_scheduler<
-                pika::execution::experimental::set_value_t>(s)
-                .get_pool()})
+                pika::execution::experimental::set_value_t>(s)})
     {
         auto completion_sched =
             pika::execution::experimental::get_completion_scheduler<
@@ -457,7 +457,7 @@ namespace pika::cuda::experimental::detail {
             "completion scheduler is cuda_scheduler");
 
         return detail::then_with_cuda_sender<S, F>{PIKA_FORWARD(S, s),
-            PIKA_FORWARD(F, f), completion_sched.get_pool()};
+            PIKA_FORWARD(F, f), std::move(completion_sched)};
     }
 
     // This is a wrapper for functions that expect a cudaStream_t in the last
