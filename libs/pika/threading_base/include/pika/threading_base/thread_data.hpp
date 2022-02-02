@@ -243,11 +243,8 @@ namespace pika { namespace threads {
 
     public:
         /// Return the id of the component this thread is running in
-#if !defined(PIKA_GCC_VERSION) || (PIKA_GCC_VERSION >= 70300)
-        constexpr
-#endif
-            std::uint64_t    // same as naming::address_type
-            get_component_id() const noexcept
+        constexpr std::uint64_t    // same as naming::address_type
+        get_component_id() const noexcept
         {
             return 0;
         }
@@ -305,32 +302,20 @@ namespace pika { namespace threads {
 
 #if !defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
         /// Return the locality of the parent thread
-#if !defined(PIKA_GCC_VERSION) || (PIKA_GCC_VERSION >= 70300)
-        constexpr
-#endif
-            std::uint32_t
-            get_parent_locality_id() const noexcept
+        constexpr std::uint32_t get_parent_locality_id() const noexcept
         {
             // this is the same as naming::invalid_locality_id
             return ~static_cast<std::uint32_t>(0);
         }
 
         /// Return the thread id of the parent thread
-#if !defined(PIKA_GCC_VERSION) || (PIKA_GCC_VERSION >= 70300)
-        constexpr
-#endif
-            thread_id_type
-            get_parent_thread_id() const noexcept
+        constexpr thread_id_type get_parent_thread_id() const noexcept
         {
             return threads::invalid_thread_id;
         }
 
         /// Return the phase of the parent thread
-#if !defined(PIKA_GCC_VERSION) || (PIKA_GCC_VERSION >= 70300)
-        constexpr
-#endif
-            std::size_t
-            get_parent_thread_phase() const noexcept
+        constexpr std::size_t get_parent_thread_phase() const noexcept
         {
             return 0;
         }
@@ -368,11 +353,7 @@ namespace pika { namespace threads {
 #if !defined(PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION)
 
 #ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
-#if !defined(PIKA_GCC_VERSION) || (PIKA_GCC_VERSION >= 70300)
-        constexpr
-#endif
-            char const*
-            get_backtrace() const noexcept
+        constexpr char const* get_backtrace() const noexcept
         {
             return nullptr;
         }
@@ -381,11 +362,7 @@ namespace pika { namespace threads {
             return nullptr;
         }
 #else
-#if !defined(PIKA_GCC_VERSION) || (PIKA_GCC_VERSION >= 70300)
-        constexpr
-#endif
-            util::backtrace const*
-            get_backtrace() const noexcept
+        constexpr util::backtrace const* get_backtrace() const noexcept
         {
             return nullptr;
         }
@@ -451,11 +428,7 @@ namespace pika { namespace threads {
         }
 #endif
 
-#if !defined(PIKA_GCC_VERSION) || (PIKA_GCC_VERSION >= 70300)
-        constexpr
-#endif
-            thread_priority
-            get_priority() const noexcept
+        constexpr thread_priority get_priority() const noexcept
         {
             return priority_;
         }

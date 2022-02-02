@@ -1082,9 +1082,9 @@ pika_option(
 
 # Check if the selected compiler versions are supposed to work with our codebase
 if(CMAKE_COMPILER_IS_GNUCXX AND PIKA_WITH_GCC_VERSION_CHECK)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
     pika_error(
-      "GCC 7.0 or higher is required. Specify PIKA_WITH_GCC_VERSION_CHECK=OFF to ignore this error."
+      "GCC 9.0 or higher is required. Specify PIKA_WITH_GCC_VERSION_CHECK=OFF to ignore this error."
     )
   endif()
 endif()
