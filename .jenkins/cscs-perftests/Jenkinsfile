@@ -40,6 +40,9 @@ pipeline {
             }
         }
         stage('perftests') {
+            options {
+                timeout(time: 2, unit: 'HOURS')
+            }
             matrix {
                 axes {
                     axis {
