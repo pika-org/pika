@@ -36,6 +36,9 @@ pipeline {
             }
         }
         stage('build') {
+            options {
+                timeout(time: 2, unit: 'HOURS')
+            }
             matrix {
                 axes {
                     axis {
