@@ -43,7 +43,7 @@ if [ -z "${VERSION_TAG}" ]; then
     sanity_errors=0
 
     printf "Checking that %s has an entry for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
-    if $(grep "## ${VERSION_FULL_NOTAG}" "${changelog_path}"); then
+    if grep "## ${VERSION_FULL_NOTAG}" "${changelog_path}"; then
         echo "OK"
     else
         echo "Missing"
@@ -51,7 +51,7 @@ if [ -z "${VERSION_TAG}" ]; then
     fi
 
     printf "Checking that %s also has a date set for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
-    if $(grep "## ${VERSION_FULL_NOTAG} ([0-9]{4}-[0-9]{2}-[0-9]{2})" "${changelog_path}"); then
+    if grep "## ${VERSION_FULL_NOTAG} ([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\})" "${changelog_path}"; then
         echo "OK"
     else
         echo "Missing"
@@ -107,5 +107,5 @@ echo "Creating release."
 hub release create \
     ${PRERELEASE_FLAG} \
     --message "${VERSION_TITLE}" \
-    --message "${VERSION_DESCRIPTION}"
-"${VERSION_FULL_TAG}"
+    --message "${VERSION_DESCRIPTION}" \
+    "${VERSION_FULL_TAG}"
