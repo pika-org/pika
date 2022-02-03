@@ -42,22 +42,22 @@ int main()
     }
 
     {
-        // auto s =
-        //     ex::schedule(sched) | cu::then_with_stream([](cudaStream_t) {});
-        // CHECK_CUDA_COMPLETION_SCHEDULER(s);
+        auto s =
+            ex::schedule(sched) | cu::then_with_stream([](cudaStream_t) {});
+        CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
 
     {
-        // auto s = ex::schedule(sched) |
-        //     cu::then_with_cublas(
-        //         [](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST);
-        // CHECK_CUDA_COMPLETION_SCHEDULER(s);
+        auto s = ex::schedule(sched) |
+            cu::then_with_cublas(
+                [](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST);
+        CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
 
     {
-        // auto s = ex::schedule(sched) |
-        //     cu::then_with_cusolver([](cusolverDnHandle_t) {});
-        // CHECK_CUDA_COMPLETION_SCHEDULER(s);
+        auto s = ex::schedule(sched) |
+            cu::then_with_cusolver([](cusolverDnHandle_t) {});
+        CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
 
     {
@@ -70,9 +70,9 @@ int main()
         // avoid it trying to get a thread pool through the default thread pool
         // handler which is not installed in this test (the HPX runtime is not
         // started). The thread pool is never accessed.
-        // auto s = ex::schedule(sched) |
-        //     cu::then_with_cusolver([](cusolverDnHandle_t) {}) |
-        //     ex::transfer(ex::thread_pool_scheduler{nullptr});
-        // CHECK_NOT_CUDA_COMPLETION_SCHEDULER(s);
+        auto s = ex::schedule(sched) |
+            cu::then_with_cusolver([](cusolverDnHandle_t) {}) |
+            ex::transfer(ex::thread_pool_scheduler{nullptr});
+        CHECK_NOT_CUDA_COMPLETION_SCHEDULER(s);
     }
 }
