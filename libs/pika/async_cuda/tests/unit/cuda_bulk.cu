@@ -57,9 +57,9 @@ int hpx_main()
         std::vector<element_type> host_vector(n, 0);
         element_type* device_ptr = nullptr;
 
-        // We capture the and the size into the lambda. The proper way would be
-        // to use a when_all, but currently using when_all would mean additional
-        // synchronization.
+        // We capture the host vector and the size into the lambda. The proper
+        // way would be to use a when_all, but currently using when_all would
+        // mean additional synchronization.
         auto memcpy = [&](void* p, cudaStream_t stream) {
             cu::check_cuda_error(cudaMemcpyAsync(host_vector.data(), p,
                 sizeof(element_type) * n, cudaMemcpyDeviceToHost, stream));
@@ -85,7 +85,7 @@ int hpx_main()
         std::vector<element_type> host_vector(n, 0);
         element_type* device_ptr = nullptr;
 
-        // We capture the and pointer the size into the lambda. The proper way
+        // We capture the host vector the size into the lambda. The proper way
         // would be to use a when_all, but currently using when_all would mean
         // additional synchronization.
         auto memcpy = [&](void* p, cudaStream_t stream) {
