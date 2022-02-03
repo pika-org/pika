@@ -227,6 +227,7 @@ pika_option(
 pika_option(
   PIKA_WITH_EXECUTABLE_PREFIX STRING "Executable prefix (default: none)." ""
   CATEGORY "Build Targets"
+  ADVANCED
 )
 
 pika_option(
@@ -791,6 +792,7 @@ endif()
 pika_option(
   PIKA_WITH_ITTNOTIFY BOOL "Enable Amplifier (ITT) instrumentation support." OFF
   CATEGORY "Profiling"
+  ADVANCED
 )
 
 pika_option(
@@ -903,11 +905,14 @@ endif()
 pika_option(
   PIKA_WITH_VALGRIND BOOL "Enable Valgrind instrumentation support." OFF
   CATEGORY "Debugging"
+  ADVANCED
 )
 
 pika_option(
   PIKA_WITH_SANITIZERS BOOL "Configure with sanitizer instrumentation support."
-  OFF CATEGORY "Debugging"
+  OFF
+  CATEGORY "Debugging"
+  ADVANCED
 )
 
 set(PIKA_WITH_VERIFY_LOCKS_DEFAULT OFF)
