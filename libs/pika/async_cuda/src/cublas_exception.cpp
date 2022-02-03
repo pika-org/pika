@@ -55,6 +55,15 @@ namespace pika::cuda::experimental {
         }
     }    // namespace detail
 
+    cublas_exception::cublas_exception(cublasStatus_t err)
+      : pika::exception(pika::bad_function_call,
+            std::string("cuBLAS function returned error code ") +
+                std::to_string(err) + " (" +
+                detail::cublas_get_error_string(err) + ")")
+      , err_(err)
+    {
+    }
+
     cublas_exception::cublas_exception(
         const std::string& msg, cublasStatus_t err)
       : pika::exception(pika::bad_function_call, msg)
@@ -71,10 +80,7 @@ namespace pika::cuda::experimental {
     {
         if (err != CUBLAS_STATUS_SUCCESS)
         {
-            auto msg = std::string("cuBLAS function returned error code ") +
-                std::to_string(err) + " (" +
-                detail::cublas_get_error_string(err) + ")";
-            throw cublas_exception(msg, err);
+            throw cublas_exception(err);
         }
         return err;
     }

@@ -16,6 +16,7 @@
 namespace pika::cuda::experimental {
     struct cuda_exception : pika::exception
     {
+        PIKA_EXPORT explicit cuda_exception(cudaError_t err);
         PIKA_EXPORT cuda_exception(const std::string& msg, cudaError_t err);
         PIKA_EXPORT cudaError_t get_cuda_errorcode() const noexcept;
 

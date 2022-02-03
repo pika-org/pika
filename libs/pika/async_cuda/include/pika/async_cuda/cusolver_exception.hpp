@@ -21,6 +21,7 @@ namespace pika::cuda::experimental {
 
     struct cusolver_exception : pika::exception
     {
+        PIKA_EXPORT explicit cusolver_exception(cusolverStatus_t err);
         PIKA_EXPORT cusolver_exception(
             const std::string& msg, cusolverStatus_t err);
         PIKA_EXPORT cusolverStatus_t get_cusolver_errorcode() const noexcept;

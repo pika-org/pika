@@ -95,13 +95,8 @@ namespace pika { namespace cuda { namespace experimental {
                         }
                         else
                         {
-                            auto msg =
-                                std::string(
-                                    "CUDA function returned error code ") +
-                                std::to_string(status) + " (" +
-                                cudaGetErrorString(status) + ")";
                             fdp->set_exception(std::make_exception_ptr(
-                                cuda_exception(std::move(msg), status)));
+                                cuda_exception(status)));
                         }
                     },
                     stream);

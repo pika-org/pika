@@ -12,6 +12,14 @@
 #include <utility>
 
 namespace pika::cuda::experimental {
+    cuda_exception::cuda_exception(cudaError_t err)
+      : pika::exception(pika::bad_function_call,
+            std::string("CUDA function returned error code ") +
+                std::to_string(err) + " (" + cudaGetErrorString(err) + ")")
+      , err_(err)
+    {
+    }
+
     cuda_exception::cuda_exception(const std::string& msg, cudaError_t err)
       : pika::exception(pika::bad_function_call, msg)
       , err_(err)
@@ -27,9 +35,7 @@ namespace pika::cuda::experimental {
     {
         if (err != cudaSuccess)
         {
-            auto msg = std::string("CUDA function returned error code ") +
-                std::to_string(err) + " (" + cudaGetErrorString(err) + ")";
-            throw cuda_exception(std::move(msg), err);
+            throw cuda_exception(err);
         }
     }
 }    // namespace pika::cuda::experimental

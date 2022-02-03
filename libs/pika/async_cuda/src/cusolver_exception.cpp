@@ -76,6 +76,15 @@ namespace pika::cuda::experimental {
         }
     }    // namespace detail
 
+    cusolver_exception::cusolver_exception(cusolverStatus_t err)
+      : pika::exception(pika::bad_function_call,
+            std::string("cuSOLVER function returned error code ") +
+                std::to_string(err) + " (" +
+                detail::cusolver_get_error_string(err) + ")")
+      , err_(err)
+    {
+    }
+
     cusolver_exception::cusolver_exception(
         const std::string& msg, cusolverStatus_t err)
       : pika::exception(pika::bad_function_call, msg)
@@ -92,10 +101,7 @@ namespace pika::cuda::experimental {
     {
         if (err != CUSOLVER_STATUS_SUCCESS)
         {
-            auto msg = std::string("cuSOLVER function returned error code ") +
-                std::to_string(err) + " (" +
-                detail::cusolver_get_error_string(err) + ")";
-            throw cusolver_exception(msg, err);
+            throw cusolver_exception(err);
         }
         return err;
     }
