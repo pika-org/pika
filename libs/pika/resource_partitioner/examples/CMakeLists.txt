@@ -51,13 +51,9 @@ foreach(example_program ${example_programs})
 
   # add example executable
   pika_add_executable(
-    ${example_program}
-    INTERNAL_FLAGS
-    SOURCES
-    ${sources}
-    ${${example_program}_FLAGS}
-    FOLDER
-    "Examples/Modules/Local/ResourcePartitioner"
+    ${example_program} INTERNAL_FLAGS
+    SOURCES ${sources} ${${example_program}_FLAGS}
+    FOLDER "Examples/Modules/Local/ResourcePartitioner"
   )
 
   if(MSVC)
