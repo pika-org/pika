@@ -156,6 +156,7 @@ struct dummy_cublas
     }
 };
 
+#if defined(PIKA_HAVE_CUDA)
 struct dummy_cusolver
 {
     bool& called;
@@ -164,6 +165,7 @@ struct dummy_cusolver
         called = true;
     }
 };
+#endif
 
 __global__ void increment_kernel(int* p)
 {
