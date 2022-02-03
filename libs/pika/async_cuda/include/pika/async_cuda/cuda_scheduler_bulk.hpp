@@ -125,9 +125,6 @@ namespace pika::cuda::experimental {
                 return t;
             }
         };
-
-        template <typename Shape, typename F>
-        bulk_launcher(Shape, F) -> bulk_launcher<Shape, F>;
     }    // namespace detail
 
     /// Execute a function in bulk on a CUDA device.
@@ -136,7 +133,7 @@ namespace pika::cuda::experimental {
         cuda_scheduler, Sender&& sender, Shape&& shape, F&& f)
     {
         return then_with_stream(PIKA_FORWARD(Sender, sender),
-            detail::bulk_launcher{
+            detail::bulk_launcher<Shape, F>{
                 PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)});
     }
 }    // namespace pika::cuda::experimental

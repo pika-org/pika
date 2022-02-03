@@ -468,9 +468,14 @@ namespace pika::cuda::experimental::detail {
         std::decay_t<F> f;
 
         template <typename... Ts>
-        auto operator()(cuda_stream const& stream, Ts&&... ts) noexcept(
-            noexcept(PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)..., stream.get())))
-            -> decltype(PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)..., stream.get()))
+        auto operator()(cuda_stream const& stream, Ts&&... ts)
+        // nvcc does not compile this correctly with noexcept(...)
+#if defined(PIKA_CLANG_VERSION)
+            noexcept(
+                noexcept(PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)..., stream.get())))
+#endif
+                -> decltype(
+                    PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)..., stream.get()))
         {
             return PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)..., stream.get());
         }
@@ -485,11 +490,14 @@ namespace pika::cuda::experimental::detail {
         cublasPointerMode_t pointer_mode;
 
         template <typename... Ts>
-        auto operator()(cuda_stream const& stream, Ts&&... ts) noexcept(
-            noexcept(invoke_with_thread_local_cublas_handle(
+        auto operator()(cuda_stream const& stream, Ts&&... ts)
+        // nvcc does not compile this correctly with noexcept(...)
+#if defined(PIKA_CLANG_VERSION)
+            noexcept(noexcept(invoke_with_thread_local_cublas_handle(
                 stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...)))
-            -> decltype(invoke_with_thread_local_cublas_handle(
-                stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...))
+#endif
+                -> decltype(invoke_with_thread_local_cublas_handle(
+                    stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...))
         {
             return invoke_with_thread_local_cublas_handle(
                 stream, pointer_mode, f, PIKA_FORWARD(Ts, ts)...);
@@ -505,11 +513,14 @@ namespace pika::cuda::experimental::detail {
         std::decay_t<F> f;
 
         template <typename... Ts>
-        auto operator()(cuda_stream const& stream, Ts&&... ts) noexcept(
-            noexcept(invoke_with_thread_local_cusolver_handle(
+        auto operator()(cuda_stream const& stream, Ts&&... ts)
+        // nvcc does not compile this correctly with noexcept(...)
+#if defined(PIKA_CLANG_VERSION)
+            noexcept(noexcept(invoke_with_thread_local_cusolver_handle(
                 stream, f, PIKA_FORWARD(Ts, ts)...)))
-            -> decltype(invoke_with_thread_local_cusolver_handle(
-                stream, f, PIKA_FORWARD(Ts, ts)...))
+#endif
+                -> decltype(invoke_with_thread_local_cusolver_handle(
+                    stream, f, PIKA_FORWARD(Ts, ts)...))
         {
             return invoke_with_thread_local_cusolver_handle(
                 stream, f, PIKA_FORWARD(Ts, ts)...);
@@ -542,7 +553,6 @@ namespace pika::cuda::experimental {
         constexpr PIKA_FORCEINLINE auto operator()(S&& s, F&& f) const
             -> decltype(detail::then_with_cuda_pool(PIKA_FORWARD(S, s),
                 detail::cuda_stream_callable<F>{PIKA_FORWARD(F, f)}))
-
         {
             return detail::then_with_cuda_pool(PIKA_FORWARD(S, s),
                 detail::cuda_stream_callable<F>{PIKA_FORWARD(F, f)});
