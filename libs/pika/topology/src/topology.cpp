@@ -525,6 +525,8 @@ namespace pika { namespace threads {
         sleep(0);    // Allow the OS to pick up the change.
 #endif
         hwloc_bitmap_free(cpuset);
+#else
+        PIKA_UNUSED(mask);
 #endif    // __APPLE__
 
         if (&ec != &throws)
@@ -1367,6 +1369,10 @@ namespace pika { namespace threads {
                 "hwloc_set_area_membind_nodeset failed : {}", msg);
             return false;
         }
+#else
+        PIKA_UNUSED(addr);
+        PIKA_UNUSED(len);
+        PIKA_UNUSED(nodeset);
 #endif
         return true;
     }

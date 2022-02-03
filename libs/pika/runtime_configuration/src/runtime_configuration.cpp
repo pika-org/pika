@@ -365,6 +365,9 @@ namespace pika { namespace util {
       , argv0(argv0_)
 #endif
     {
+#if !(defined(__linux) || defined(linux) || defined(__linux__))
+        PIKA_UNUSED(argv0_);
+#endif
         pre_initialize_ini();
 
         // set global config options
