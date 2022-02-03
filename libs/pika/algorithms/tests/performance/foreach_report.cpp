@@ -70,6 +70,18 @@ int pika_main(pika::program_options::variables_map& vm)
         std::iota(std::begin(data_representation),
             std::end(data_representation), gen());
 
+        // Perform a warmup round with 10% of the regular iterations
+        {
+            pika::execution::experimental::scheduler_executor<
+                pika::execution::experimental::thread_pool_scheduler>
+                exec;
+
+            for (int i = 0; i < (std::max)(1, test_count / 10); ++i)
+            {
+                measure_parallel_foreach(data_representation, exec);
+            }
+        }
+
         {
             pika::execution::experimental::scheduler_executor<
                 pika::execution::experimental::thread_pool_scheduler>
