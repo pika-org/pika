@@ -38,15 +38,15 @@ set(example_programs
 # TODO: These examples currently fail. Disabled until they are fixed.
 set(disabled_tests fibonacci_await)
 
-set(customize_async_PARAMETERS THREADS_PER_LOCALITY 4)
-set(enumerate_threads_PARAMETERS THREADS_PER_LOCALITY 4)
-set(event_synchronization_PARAMETERS THREADS_PER_LOCALITY 4)
-set(hello_world_PARAMETERS THREADS_PER_LOCALITY 4)
-set(channel_PARAMETERS THREADS_PER_LOCALITY 4)
-set(simple_future_continuation_PARAMETERS THREADS_PER_LOCALITY 4)
-set(timed_futures_PARAMETERS THREADS_PER_LOCALITY 4)
-set(vector_counting_dotproduct_PARAMETERS THREADS_PER_LOCALITY 4)
-set(vector_zip_dotproduct_PARAMETERS THREADS_PER_LOCALITY 4)
+set(customize_async_PARAMETERS THREADS 4)
+set(enumerate_threads_PARAMETERS THREADS 4)
+set(event_synchronization_PARAMETERS THREADS 4)
+set(hello_world_PARAMETERS THREADS 4)
+set(channel_PARAMETERS THREADS 4)
+set(simple_future_continuation_PARAMETERS THREADS 4)
+set(timed_futures_PARAMETERS THREADS 4)
+set(vector_counting_dotproduct_PARAMETERS THREADS 4)
+set(vector_zip_dotproduct_PARAMETERS THREADS 4)
 
 # the following example fails compiling on someversions of MSVC
 if(PIKA_WITH_TUPLE_RVALUE_SWAP AND (NOT MSVC))

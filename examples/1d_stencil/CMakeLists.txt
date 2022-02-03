@@ -13,11 +13,11 @@ if(PIKA_WITH_EXAMPLES_OPENMP)
   set(example_programs ${example_programs} 1d_stencil_1_omp 1d_stencil_3_omp)
 endif()
 
-set(1d_stencil_1_PARAMETERS THREADS_PER_LOCALITY 4)
-set(1d_stencil_2_PARAMETERS THREADS_PER_LOCALITY 4)
-set(1d_stencil_3_PARAMETERS THREADS_PER_LOCALITY 4)
-set(1d_stencil_4_PARAMETERS THREADS_PER_LOCALITY 4)
-set(1d_stencil_4_parallel_PARAMETERS THREADS_PER_LOCALITY 4)
+set(1d_stencil_1_PARAMETERS THREADS 4)
+set(1d_stencil_2_PARAMETERS THREADS 4)
+set(1d_stencil_3_PARAMETERS THREADS 4)
+set(1d_stencil_4_PARAMETERS THREADS 4)
+set(1d_stencil_4_parallel_PARAMETERS THREADS 4)
 
 foreach(example_program ${example_programs})
 

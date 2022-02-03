@@ -9,9 +9,9 @@ if(PIKA_WITH_GPUBLAS)
   list(APPEND benchmarks cublas_matmul)
 endif()
 
-set(cublas_matmul_PARAMETERS THREADS_PER_LOCALITY 4)
-set(cuda_future_PARAMETERS THREADS_PER_LOCALITY 4)
-set(transform_stream_PARAMETERS THREADS_PER_LOCALITY 4)
+set(cublas_matmul_PARAMETERS THREADS 4)
+set(cuda_future_PARAMETERS THREADS 4)
+set(transform_stream_PARAMETERS THREADS 4)
 
 set(cuda_future_CUDA_SOURCE saxpy trivial_demo)
 set(transform_stream_CUDA ON)

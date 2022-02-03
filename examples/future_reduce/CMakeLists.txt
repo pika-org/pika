@@ -6,7 +6,7 @@
 
 set(example_programs rnd_future_reduce)
 
-set(rnd_future_reduce_PARAMETERS THREADS_PER_LOCALITY 4)
+set(rnd_future_reduce_PARAMETERS THREADS 4)
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)

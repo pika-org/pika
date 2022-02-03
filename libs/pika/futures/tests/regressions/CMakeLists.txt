@@ -17,8 +17,8 @@ set(tests
     wait_for_1751
 )
 
-set(exception_from_continuation_1613_PARAMETERS THREADS_PER_LOCALITY 2)
-set(wait_for_1751_PARAMETERS THREADS_PER_LOCALITY 4)
+set(exception_from_continuation_1613_PARAMETERS THREADS 2)
+set(wait_for_1751_PARAMETERS THREADS 4)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

@@ -33,16 +33,16 @@ if(NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
   set(example_programs ${example_programs} guided_pool_test)
 endif()
 
-set(oversubscribing_resource_partitioner_PARAMETERS
-    THREADS_PER_LOCALITY 4 "--use-pools" "--pool-threads" 1
+set(oversubscribing_resource_partitioner_PARAMETERS THREADS 4 "--use-pools"
+                                                    "--pool-threads" 1
 )
-set(simple_resource_partitioner_PARAMETERS THREADS_PER_LOCALITY 4 "--use-pools"
+set(simple_resource_partitioner_PARAMETERS THREADS 4 "--use-pools"
                                            "--pool-threads" 1
 )
-set(simplest_resource_partitioner_1_PARAMETERS THREADS_PER_LOCALITY 4)
-set(simplest_resource_partitioner_2_PARAMETERS THREADS_PER_LOCALITY 4)
-set(guided_pool_test_PARAMETERS THREADS_PER_LOCALITY 4)
-set(async_customization_PARAMETERS THREADS_PER_LOCALITY 4)
+set(simplest_resource_partitioner_1_PARAMETERS THREADS 4)
+set(simplest_resource_partitioner_2_PARAMETERS THREADS 4)
+set(guided_pool_test_PARAMETERS THREADS 4)
+set(async_customization_PARAMETERS THREADS 4)
 
 foreach(example_program ${example_programs})
   set(sources ${example_program}.cpp)

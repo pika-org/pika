@@ -6,8 +6,8 @@
 
 set(jacobi_smp_applications jacobi_pika jacobi_nonuniform_pika)
 
-set(jacobi_pika_PARAMETERS THREADS_PER_LOCALITY 4)
-set(jacobi_nonuniform_pika_PARAMETERS THREADS_PER_LOCALITY 4)
+set(jacobi_pika_PARAMETERS THREADS 4)
+set(jacobi_nonuniform_pika_PARAMETERS THREADS 4)
 
 set(jacobi_pika_sources jacobi.cpp)
 set(jacobi_nonuniform_pika_sources jacobi_nonuniform.cpp)

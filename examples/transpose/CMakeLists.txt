@@ -11,8 +11,8 @@ set(example_programs transpose_serial transpose_serial_block transpose_smp
 
 set(transpose_serial_vector_FLAGS DEPENDENCIES partitioned_vector_component)
 
-set(transpose_smp_PARAMETERS THREADS_PER_LOCALITY 4)
-set(transpose_smp_block_PARAMETERS THREADS_PER_LOCALITY 4)
+set(transpose_smp_PARAMETERS THREADS 4)
+set(transpose_smp_block_PARAMETERS THREADS 4)
 
 foreach(example_program ${example_programs})
 

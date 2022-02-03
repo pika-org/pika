@@ -996,7 +996,7 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_TESTS_MAX_THREADS_PER_LOCALITY
+  PIKA_WITH_TESTS_MAX_THREADS
   STRING
   "Maximum number of threads to use for tests (default: 0, use the number of threads specified by the test)"
   0

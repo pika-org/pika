@@ -16,11 +16,11 @@ set(tests
     threads_all_1422
 )
 
-set(block_os_threads_1036_PARAMETERS THREADS_PER_LOCALITY 4 RUN_SERIAL)
-set(thread_rescheduling_PARAMETERS THREADS_PER_LOCALITY 4)
-set(thread_suspend_pending_PARAMETERS THREADS_PER_LOCALITY 1)
-set(thread_suspend_duration_PARAMETERS THREADS_PER_LOCALITY 1)
-set(threads_all_1422_PARAMETERS THREADS_PER_LOCALITY -1) # -1 means 'all'
+set(block_os_threads_1036_PARAMETERS THREADS 4 RUN_SERIAL)
+set(thread_rescheduling_PARAMETERS THREADS 4)
+set(thread_suspend_pending_PARAMETERS THREADS 1)
+set(thread_suspend_duration_PARAMETERS THREADS 1)
+set(threads_all_1422_PARAMETERS THREADS -1) # -1 means 'all'
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

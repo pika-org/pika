@@ -6,7 +6,7 @@
 
 set(tests)
 
-set(parse_affinity_options_PARAMETERS THREADS_PER_LOCALITY 2)
+set(parse_affinity_options_PARAMETERS THREADS 2)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

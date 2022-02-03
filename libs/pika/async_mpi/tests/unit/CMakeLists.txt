@@ -6,9 +6,7 @@
 
 set(tests mpi_ring_async_executor algorithm_transform_mpi)
 
-set(mpi_ring_async_executor_PARAMETERS THREADS_PER_LOCALITY 4 LOCALITIES 2
-                                       RUNWRAPPER mpi
-)
+set(mpi_ring_async_executor_PARAMETERS THREADS 4 LOCALITIES 2 RUNWRAPPER mpi)
 
 set(algorithm_transform_mpi_PARAMETERS LOCALITIES 2 RUNWRAPPER mpi)
 set(algorithm_transform_mpi_DEPENDENCIES pika_execution_test_utilities)

@@ -124,7 +124,7 @@ set(tests
 foreach(test ${tests})
   set(sources ${test}.cpp)
 
-  set(${test}_PARAMETERS THREADS_PER_LOCALITY 4)
+  set(${test}_PARAMETERS THREADS 4)
   source_group("Source Files" FILES ${sources})
 
   # add example executable

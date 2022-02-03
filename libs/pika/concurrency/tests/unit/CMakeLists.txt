@@ -6,7 +6,7 @@
 
 set(tests contiguous_index_queue lockfree_fifo)
 
-set(contiguous_index_queue_PARAMETERS THREADS_PER_LOCALITY 4)
+set(contiguous_index_queue_PARAMETERS THREADS 4)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

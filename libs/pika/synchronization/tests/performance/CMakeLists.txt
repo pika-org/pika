@@ -8,9 +8,9 @@ set(benchmarks channel_mpmc_throughput channel_mpsc_throughput
                channel_spsc_throughput
 )
 
-set(channel_mpmc_throughput_PARAMETERS THREADS_PER_LOCALITY 2)
-set(channel_mpsc_throughput_PARAMETERS THREADS_PER_LOCALITY 2)
-set(channel_spsc_throughputs_PARAMETERS THREADS_PER_LOCALITY 2)
+set(channel_mpmc_throughput_PARAMETERS THREADS 2)
+set(channel_mpsc_throughput_PARAMETERS THREADS 2)
+set(channel_spsc_throughputs_PARAMETERS THREADS 2)
 
 foreach(benchmark ${benchmarks})
 

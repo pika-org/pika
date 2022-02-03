@@ -18,11 +18,11 @@ set(tests
 
 if(PIKA_WITH_CXX20_COROUTINES)
   set(tests ${tests} await)
-  set(await_PARAMETERS THREADS_PER_LOCALITY 4)
+  set(await_PARAMETERS THREADS 4)
 endif()
 
-set(future_PARAMETERS THREADS_PER_LOCALITY 4)
-set(future_then_PARAMETERS THREADS_PER_LOCALITY 4)
+set(future_PARAMETERS THREADS 4)
+set(future_then_PARAMETERS THREADS 4)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)
