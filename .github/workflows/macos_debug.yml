@@ -36,7 +36,8 @@ jobs:
               -DPIKA_WITH_TESTS=ON \
               -DPIKA_WITH_TESTS_HEADERS=OFF \
               -DPIKA_WITH_TESTS_MAX_THREADS=3 \
-              -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON
+              -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON \
+              -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=On
     - name: Build
       shell: bash
       run: |
