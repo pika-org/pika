@@ -62,6 +62,13 @@ int main()
     }
 
     {
+        auto s = ex::schedule(sched) |
+            cu::then_with_any_cuda(
+                [](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST);
+        CHECK_CUDA_COMPLETION_SCHEDULER(s);
+    }
+
+    {
         auto s = ex::schedule(sched) | cu::then_on_host([]() {});
         CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }

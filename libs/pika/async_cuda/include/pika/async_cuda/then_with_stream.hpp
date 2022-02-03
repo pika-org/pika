@@ -634,4 +634,55 @@ namespace pika::cuda::experimental {
         }
     } then_with_cusolver{};
 #endif
+
+    /// Attach a continuation to run f with a CUDA stream, cuBLAS handle, or
+    /// cuSOLVER handle.
+    ///
+    /// This is a generic version of then_with_stream, then_with_cublas, and
+    /// then_with_cusolver which will use one of the three depending on what f
+    /// is callable with. If f is callable with more than one of the mentioned
+    /// adaptors they will be prioritized in the given order.
+    inline constexpr struct then_with_any_cuda_t final
+    {
+        template <typename S, typename F,
+            PIKA_CONCEPT_REQUIRES_(
+                pika::execution::experimental::is_sender_v<S>)>
+        constexpr PIKA_FORCEINLINE auto operator()(S&& s, F&& f,
+            cublasPointerMode_t pointer_mode = CUBLAS_POINTER_MODE_HOST) const
+        {
+            if constexpr (std::is_invocable_v<then_with_stream_t, S, F>)
+            {
+                return then_with_stream(PIKA_FORWARD(S, s), PIKA_FORWARD(F, f));
+            }
+            else if constexpr (std::is_invocable_v<then_with_cublas_t, S, F,
+                                   cublasPointerMode_t>)
+            {
+                return then_with_cublas(
+                    PIKA_FORWARD(S, s), PIKA_FORWARD(F, f), pointer_mode);
+            }
+#if defined(PIKA_HAVE_CUDA)
+            else if constexpr (std::is_invocable_v<then_with_cusolver_t, S, F>)
+            {
+                return then_with_cusolver(
+                    PIKA_FORWARD(S, s), PIKA_FORWARD(F, f));
+            }
+#endif
+            else
+            {
+                static_assert(sizeof(S) == 0,
+                    "Attempting to use then_with_any_cuda, but f is not "
+                    "invocable with a CUDA stream as the last argument or "
+                    "cuBLAS/cuSOLVER handle as the first argument.");
+            }
+        }
+
+        template <typename F>
+        constexpr PIKA_FORCEINLINE auto operator()(F&& f,
+            cublasPointerMode_t pointer_mode = CUBLAS_POINTER_MODE_HOST) const
+        {
+            return pika::execution::experimental::detail::partial_algorithm<
+                then_with_any_cuda_t, F, cublasPointerMode_t>{
+                PIKA_FORWARD(F, f), pointer_mode};
+        }
+    } then_with_any_cuda{};
 }    // namespace pika::cuda::experimental

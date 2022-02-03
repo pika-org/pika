@@ -138,6 +138,33 @@ std::atomic<std::size_t> dummy::stream_double_calls{0};
 std::atomic<std::size_t> dummy::cublas_double_calls{0};
 std::atomic<std::size_t> dummy::cusolver_double_calls{0};
 
+struct dummy_stream
+{
+    bool& called;
+    void operator()(cudaStream_t)
+    {
+        called = true;
+    }
+};
+
+struct dummy_cublas
+{
+    bool& called;
+    void operator()(cublasHandle_t)
+    {
+        called = true;
+    }
+};
+
+struct dummy_cusolver
+{
+    bool& called;
+    void operator()(cusolverDnHandle_t)
+    {
+        called = true;
+    }
+};
+
 __global__ void increment_kernel(int* p)
 {
     ++(*p);
@@ -390,6 +417,47 @@ int pika_main()
         PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
     }
+
+    // then_with_any_cuda picks the first option if multiple are possible, i.e.
+    // it will dispatch all calls to then_with_stream since dummy has call
+    // operator overloads with cudaStream_t.
+    {
+        dummy::reset_counts();
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_any_cuda(dummy{}) | cu::then_on_host(dummy{}) |
+            cu::then_with_any_cuda(dummy{}, CUBLAS_POINTER_MODE_HOST) |
+            cu::then_with_any_cuda(dummy{}) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        PIKA_TEST_EQ(ex::sync_wait(std::move(s)), 7.0);
+        PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(2));
+        PIKA_TEST_EQ(dummy::stream_int_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(2));
+        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
+    }
+
+    {
+        bool stream_called = false;
+        bool cublas_called = false;
+        bool cusolver_called = false;
+        auto s = ex::schedule(cu::cuda_scheduler{pool}) |
+            cu::then_with_any_cuda(dummy_stream{stream_called}) |
+            cu::then_with_any_cuda(
+                dummy_cublas{cublas_called}, CUBLAS_POINTER_MODE_HOST) |
+            cu::then_with_any_cuda(dummy_cusolver{cusolver_called});
+        ex::sync_wait(std::move(s));
+        PIKA_TEST(stream_called);
+        PIKA_TEST(cublas_called);
+        PIKA_TEST(cusolver_called);
+    }
 #else
     {
         dummy::reset_counts();
@@ -433,6 +501,43 @@ int pika_main()
         PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
+    }
+
+    // then_with_any_cuda picks the first option if multiple are possible, i.e.
+    // it will dispatch all calls to then_with_stream since dummy has call
+    // operator overloads with cudaStream_t.
+    {
+        dummy::reset_counts();
+        auto s = ex::just(1) | ex::transfer(ex::thread_pool_scheduler{}) |
+            ex::then(dummy{}) | ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_any_cuda(dummy{}) | cu::then_on_host(dummy{}) |
+            cu::then_with_any_cuda(dummy{}, CUBLAS_POINTER_MODE_HOST) |
+            ex::transfer(ex::thread_pool_scheduler{}) | ex::then(dummy{});
+        PIKA_TEST_EQ(ex::sync_wait(std::move(s)), 7.0);
+        PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_void_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(3));
+        PIKA_TEST_EQ(dummy::stream_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(2));
+        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
+    }
+
+    {
+        bool stream_called = false;
+        bool cublas_called = false;
+        auto s = ex::schedule(cu::cuda_scheduler{pool}) |
+            cu::then_with_any_cuda(dummy_stream{stream_called}) |
+            cu::then_with_any_cuda(
+                dummy_cublas{cublas_called}, CUBLAS_POINTER_MODE_HOST);
+        ex::sync_wait(std::move(s));
+        PIKA_TEST(stream_called);
+        PIKA_TEST(cublas_called);
     }
 #endif
 
