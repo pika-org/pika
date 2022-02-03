@@ -6,6 +6,7 @@
 
 #include <pika/execution.hpp>
 #include <pika/modules/async_cuda.hpp>
+#include <pika/modules/testing.hpp>
 
 #include <type_traits>
 
@@ -74,5 +75,32 @@ int main()
             cu::then_with_cusolver([](cusolverDnHandle_t) {}) |
             ex::transfer(ex::thread_pool_scheduler{nullptr});
         CHECK_NOT_CUDA_COMPLETION_SCHEDULER(s);
+    }
+
+    {
+        cu::cuda_scheduler sched{pool};
+
+        // This partly tests implementation details. The scheduler is not
+        // guaranteed to return a stream with the exact same priority as given
+        // to the scheduler. It will return a stream with a priority "close to"
+        // the given priority. Currently this means that anything high or higher
+        // maps to high, and anything below high maps to normal.
+        PIKA_TEST_EQ(sched.get_next_stream().get_priority(),
+            pika::threads::thread_priority::normal);
+        PIKA_TEST_EQ(
+            ex::with_priority(sched, pika::threads::thread_priority::low)
+                .get_next_stream()
+                .get_priority(),
+            pika::threads::thread_priority::normal);
+        PIKA_TEST_EQ(
+            ex::with_priority(sched, pika::threads::thread_priority::default_)
+                .get_next_stream()
+                .get_priority(),
+            pika::threads::thread_priority::normal);
+        PIKA_TEST_EQ(
+            ex::with_priority(sched, pika::threads::thread_priority::high)
+                .get_next_stream()
+                .get_priority(),
+            pika::threads::thread_priority::high);
     }
 }

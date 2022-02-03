@@ -10,6 +10,7 @@
 namespace pika::cuda::experimental {
     cuda_scheduler::cuda_scheduler(cuda_pool pool)
       : pool(PIKA_MOVE(pool))
+      , priority(pika::threads::thread_priority::default_)
     {
     }
 
