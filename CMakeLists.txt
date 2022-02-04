@@ -1087,9 +1087,9 @@ pika_option(
 
 # Check if the selected compiler versions are supposed to work with our codebase
 if(CMAKE_COMPILER_IS_GNUCXX AND PIKA_WITH_GCC_VERSION_CHECK)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
     pika_error(
-      "GCC 7.0 or higher is required. Specify PIKA_WITH_GCC_VERSION_CHECK=OFF to ignore this error."
+      "GCC 9.0 or higher is required. Specify PIKA_WITH_GCC_VERSION_CHECK=OFF to ignore this error."
     )
   endif()
 endif()
@@ -1215,6 +1215,10 @@ if(NOT WIN32)
 
   if(APPLE)
     pika_add_compile_flag_if_available(-ftemplate-depth=256)
+  endif()
+
+  if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+    pika_add_link_flag_if_available(-Wl,-lstdc++fs)
   endif()
 endif()
 
@@ -1564,20 +1568,6 @@ set(PIKA_WITH_TARGET_ARCHITECTURE
     CACHE INTERNAL "" FORCE
 )
 
-# Compatibility with using Boost.FileSystem, introduced in V1.4.0
-set(__filesystem_compatibility_default ON)
-if(PIKA_WITH_CXX17_FILESYSTEM)
-  set(__filesystem_compatibility_default OFF)
-endif()
-pika_option(
-  PIKA_FILESYSTEM_WITH_BOOST_FILESYSTEM_COMPATIBILITY
-  BOOL
-  "Enable Boost.FileSystem compatibility. (default: ${__filesystem_compatibility_default})"
-  ${__filesystem_compatibility_default}
-  ADVANCED
-  CATEGORY "Modules"
-)
-
 # Compatibility with using Boost.Iterator traversal tags, introduced in V1.7.0
 pika_option(
   PIKA_ITERATOR_SUPPORT_WITH_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY BOOL
@@ -1598,7 +1588,6 @@ endif()
 
 include(pika_setup_threads)
 include(pika_setup_boost)
-include(pika_setup_boost_filesystem)
 include(pika_setup_allocator)
 include(pika_setup_hwloc)
 include(pika_setup_mpi)
@@ -1747,6 +1736,7 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
       <ctime>
       <deque>
       <exception>
+      <filesystem>
       <forward_list>
       <fstream>
       <functional>
@@ -1790,10 +1780,6 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
       <boost/optional.hpp>
       <boost/tokenizer.hpp>
   )
-
-  if(PIKA_WITH_CXX17_FILESYSTEM)
-    list(APPEND system_precompiled_headers <filesystem>)
-  endif()
 
   if(PIKA_WITH_CXX17_STD_EXECUTION_POLICIES)
     list(APPEND system_precompiled_headers <execution>)

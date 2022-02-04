@@ -10,14 +10,12 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
 
+#include <filesystem>
 #include <functional>
 #include "boost/regex.hpp"
 #include "deprecated_macro_check.hpp"
 #include "function_hyper.hpp"
-
-namespace fs = pika::filesystem;
 
 namespace {
     const char* boost150macros[] = {"BOOST_NO_0X_HDR_ARRAY",
@@ -55,8 +53,8 @@ namespace {
 namespace boost { namespace inspect {
     deprecated_macro_check::deprecated_macro_check()
       : m_files_with_errors(0)
-      , m_from_boost_root(fs::exists(search_root_path() / "boost") &&
-            fs::exists(search_root_path() / "libs"))
+      , m_from_boost_root(std::filesystem::exists(search_root_path() / "boost") &&
+            std::filesystem::exists(search_root_path() / "libs"))
     {
         register_signature(".c");
         register_signature(".cpp");
@@ -69,7 +67,7 @@ namespace boost { namespace inspect {
     }
 
     void deprecated_macro_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

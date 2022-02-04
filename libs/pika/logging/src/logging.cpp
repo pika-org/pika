@@ -8,7 +8,7 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_LOGGING)
-#include <pika/modules/filesystem.hpp>
+#include <pika/detail/filesystem.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/util/from_string.hpp>
 

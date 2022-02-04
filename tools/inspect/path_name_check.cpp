@@ -9,7 +9,6 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
 #include <pika/util/to_string.hpp>
 
 #include "function_hyper.hpp"
@@ -18,6 +17,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstring>
+#include <filesystem>
 #include <string>
 
 using std::string;
@@ -37,7 +37,7 @@ namespace boost { namespace inspect {
     }
 
     void file_name_check::inspect(
-        const string& library_name, const path& full_path)
+        const string& library_name, const std::filesystem::path& full_path)
     {
         string::size_type pos;
 
@@ -68,7 +68,7 @@ namespace boost { namespace inspect {
         // We want to inspect some of the hidden dirs
 
         ////  rules for dot characters differ slightly for directories and files
-        //if ( pika::filesystem::is_directory( full_path ) )
+        //if ( std::filesystem::is_directory( full_path ) )
         //{
         //  if ( std::strchr( leaf.c_str(), '.' ) )
         //  {
@@ -90,7 +90,7 @@ namespace boost { namespace inspect {
         //}
 
         //  the path, including a presumed root, does not exceed the maximum size
-        path const relative_path(relative_to(full_path, search_root_path()));
+        std::filesystem::path const relative_path(relative_to(full_path, search_root_path()));
         const unsigned max_relative_path =
             207;    // ISO 9660:1999 sets this limit
         const string generic_root("boost_X_XX_X/");

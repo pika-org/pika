@@ -23,6 +23,9 @@ module load daint-mc
 spack load cmake@3.18.6
 spack load ninja@1.10.0
 
+configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${CXX_STD}"
+configure_extra_options+=" -DPIKA_WITH_MAX_CPU_COUNT=128"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"
-configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
+configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=OFF"
+configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"

@@ -10,7 +10,6 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/filesystem.hpp>
 #include <pika/prefix/find_prefix.hpp>
 #include <pika/string_util/classification.hpp>
 #include <pika/string_util/split.hpp>
@@ -36,14 +35,14 @@
 #include <boost/tokenizer.hpp>
 
 #include <cstdint>
+#include <filesystem>
 #include <string>
 
 namespace pika { namespace util {
     ///////////////////////////////////////////////////////////////////////////////
     std::string get_executable_prefix(char const* argv0)
     {
-        using pika::filesystem::path;
-        path p(get_executable_filename(argv0));
+        std::filesystem::path p(get_executable_filename(argv0));
 
         return p.parent_path().parent_path().string();
     }

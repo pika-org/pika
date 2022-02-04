@@ -24,12 +24,13 @@ const char* pika_no_inspect = "pika-"
 //  Files that contain the pika_no_inspect value are not inspected.
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
+#include <pika/detail/filesystem.hpp>
 #include <pika/modules/program_options.hpp>
 
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -87,12 +88,10 @@ const char* pika_no_inspect = "pika-"
 #include "boost/test/included/prg_exec_monitor.hpp"
 #endif
 
-namespace fs = pika::filesystem;
-
 using namespace boost::inspect;
 
 namespace {
-    fs::path search_root = fs::initial_path();
+    std::filesystem::path search_root = pika::detail::filesystem::initial_path();
 
     class inspector_element
     {
@@ -165,7 +164,7 @@ namespace {
 
     //   struct svn_check
     //   {
-    //     explicit svn_check(const fs::path & inspect_root) :
+    //     explicit svn_check(const std::filesystem::path & inspect_root) :
     //       inspect_root(inspect_root), fp(0) {}
     //
     //     int operator()() {
@@ -196,7 +195,7 @@ namespace {
     //
     //     ~svn_check() { if (fp) PCLOSE(fp); }
     //
-    //     const fs::path & inspect_root;
+    //     const std::filesystem::path & inspect_root;
     //     std::string result;
     //     FILE* fp;
     //   private:
@@ -221,7 +220,7 @@ namespace {
 
     //  get info (as a string) if inspect_root is svn working copy  --------------//
 
-    //   string info( const fs::path & inspect_root )
+    //   string info( const std::filesystem::path & inspect_root )
     //   {
     //     svn_check check_(inspect_root);
     //
@@ -251,9 +250,9 @@ namespace {
 
     //  visit_predicate (determines which directories are visited)  --------------//
 
-    typedef bool (*pred_type)(const path&);
+    typedef bool (*pred_type)(const std::filesystem::path&);
 
-    bool visit_predicate(const path& pth)
+    bool visit_predicate(const std::filesystem::path& pth)
     {
         string local(boost::inspect::relative_to(pth, search_root_path()));
         string leaf(pth.filename().string());
@@ -270,7 +269,7 @@ namespace {
             && local.find("doc/xml") != 0 &&
             local.find("doc\\xml") != 0
             // ignore if tag file present
-            && !pika::filesystem::exists(pth / pika_no_inspect);
+            && !std::filesystem::exists(pth / pika_no_inspect);
     }
 
     //  library_from_content  ----------------------------------------------------//
@@ -301,7 +300,7 @@ namespace {
     //  find_signature  ----------------------------------------------------------//
 
     bool find_signature(
-        const path& file_path, const boost::inspect::string_set& signatures)
+        const std::filesystem::path& file_path, const boost::inspect::string_set& signatures)
     {
         string name(file_path.filename().string());
         if (signatures.find(name) == signatures.end())
@@ -316,7 +315,7 @@ namespace {
 
     //  load_content  ------------------------------------------------------------//
 
-    void load_content(const path& file_path, string& target)
+    void load_content(const std::filesystem::path& file_path, string& target)
     {
         target = "";
 
@@ -334,7 +333,7 @@ namespace {
 
     //  check  -------------------------------------------------------------------//
 
-    void check_(const string& lib, const path& pth, const string& content,
+    void check_(const string& lib, const std::filesystem::path& pth, const string& content,
         const inspector_list& insp_list)
     {
         // invoke each inspector
@@ -355,14 +354,14 @@ namespace {
 
     template <class DirectoryIterator>
     void visit_all(
-        const string& lib, const path& dir_path, const inspector_list& insps)
+        const string& lib, const std::filesystem::path& dir_path, const inspector_list& insps)
     {
         static DirectoryIterator end_itr;
         ++directory_count;
 
         for (DirectoryIterator itr(dir_path); itr != end_itr; ++itr)
         {
-            if (fs::is_directory(*itr))
+            if (std::filesystem::is_directory(*itr))
             {
                 if (visit_predicate(*itr))
                 {
@@ -480,8 +479,8 @@ namespace {
                     }
                     else
                     {
-                        path current_rel_path(current.rel_path);
-                        path this_rel_path(itr->rel_path);
+                        std::filesystem::path current_rel_path(current.rel_path);
+                        std::filesystem::path this_rel_path(itr->rel_path);
                         if (current_rel_path.parent_path() !=
                             this_rel_path.parent_path())
                         {
@@ -550,7 +549,7 @@ namespace {
                     if (itr->line_number)
                     {
                         string line = std::to_string(itr->line_number);
-                        const path& full_path = itr->library;
+                        const std::filesystem::path& full_path = itr->library;
                         string link = linelink(full_path, line);
                         out << sep << itr->msg << "(line " << link << ") ";
                         //Since the brackets are not used in inspect besides for formatting
@@ -682,7 +681,7 @@ namespace boost { namespace inspect {
 
     //  search_root_path  --------------------------------------------------------//
 
-    path search_root_path()
+    std::filesystem::path search_root_path()
     {
         return search_root;
     }
@@ -703,7 +702,7 @@ namespace boost { namespace inspect {
 
     //  error  -------------------------------------------------------------------//
 
-    void inspector::error(const string& library_name, const path& full_path,
+    void inspector::error(const string& library_name, const std::filesystem::path& full_path,
         const string& msg, std::size_t line_number)
     {
         ++error_count;
@@ -798,9 +797,9 @@ namespace boost { namespace inspect {
     //  impute_library  ----------------------------------------------------------//
 
     // may return an empty string [gps]
-    string impute_library(const path& full_dir_path)
+    string impute_library(const std::filesystem::path& full_dir_path)
     {
-        path relative(relative_to(full_dir_path, search_root_path()));
+        std::filesystem::path relative(relative_to(full_dir_path, search_root_path()));
         if (relative.empty())
             return "boost-root";
         string first((*relative.begin()).string());
@@ -950,16 +949,16 @@ int cpp_main(int argc_param, char* argv_param[])
         return 0;
     }
 
-    std::vector<fs::path> search_roots;
+    std::vector<std::filesystem::path> search_roots;
     if (vm.count("pika:positional"))
     {
         for (auto const& s :
             vm["pika:positional"].as<std::vector<std::string>>())
-            search_roots.push_back(fs::canonical(s, fs::initial_path()));
+            search_roots.push_back(pika::detail::filesystem::canonical(s, pika::detail::filesystem::initial_path()));
     }
     else
     {
-        search_roots.push_back(fs::canonical(fs::initial_path()));
+        search_roots.push_back(std::filesystem::canonical(pika::detail::filesystem::initial_path()));
     }
 
     if (vm.count("text"))
@@ -1066,7 +1065,7 @@ int cpp_main(int argc_param, char* argv_param[])
     for (auto const& search_root : search_roots)
     {
         ::search_root = search_root;
-        visit_all<fs::directory_iterator>(
+        visit_all<std::filesystem::directory_iterator>(
             search_root.filename().string(), search_root, inspectors);
     }
 

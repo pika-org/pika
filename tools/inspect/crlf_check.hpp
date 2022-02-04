@@ -13,6 +13,8 @@
 
 #include "inspector.hpp"
 
+#include <filesystem>
+
 namespace boost { namespace inspect {
     class crlf_check : public source_inspector
     {
@@ -30,7 +32,7 @@ namespace boost { namespace inspect {
         }
 
         virtual void inspect(const std::string& library_name,
-            const path& full_path, const std::string& contents);
+            const std::filesystem::path& full_path, const std::string& contents);
 
         virtual void print_summary(std::ostream& out)
         {

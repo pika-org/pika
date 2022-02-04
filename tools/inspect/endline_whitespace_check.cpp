@@ -8,10 +8,10 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -20,7 +20,6 @@
 #include "function_hyper.hpp"
 
 using namespace std;
-namespace fs = pika::filesystem;
 
 namespace boost { namespace inspect {
     whitespace_check::whitespace_check()
@@ -41,7 +40,7 @@ namespace boost { namespace inspect {
     }
 
     void whitespace_check::inspect(const string& library_name,
-        const path& full_path,     // ex: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // ex: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

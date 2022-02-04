@@ -44,13 +44,12 @@ namespace pika {
         ///             exception should encapsulate.
         explicit exception(error e = success);
 
-        /// Construct a pika::exception from a boost#system_error.
+        /// Construct a pika::exception from a std#system_error.
         explicit exception(std::system_error const& e);
 
-        /// Construct a pika::exception from a boost#system#error_code (this is
-        /// new for Boost V1.69). This constructor is required to compensate
-        /// for the changes introduced as a resolution to LWG3162
-        /// (https://cplusplus.github.io/LWG/issue3162).
+        /// Construct a pika::exception from a std#system#error_code. This
+        /// constructor is required to compensate for the changes introduced as
+        /// a resolution to LWG3162 (https://cplusplus.github.io/LWG/issue3162).
         explicit exception(std::error_code const& e);
 
         /// Construct a pika::exception from a \a pika::error and an error message.

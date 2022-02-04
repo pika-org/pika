@@ -12,6 +12,8 @@
 #include "function_hyper.hpp"
 #include "license_check.hpp"
 
+#include <filesystem>
+
 namespace {
     boost::regex license_regex(
         //~ The next two lines change the regex so that it detects when the license
@@ -31,7 +33,7 @@ namespace boost { namespace inspect {
     }
 
     void license_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

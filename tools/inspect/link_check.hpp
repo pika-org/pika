@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <filesystem>
 #include <map>
 
 #include "inspector.hpp"
@@ -30,7 +31,7 @@ namespace boost { namespace inspect {
         m_path_map m_paths;    // first() is relative to search_root_path()
 
         void do_url(const string& url, const string& library_name,
-            const path& full_source_path, bool no_link_errors,
+            const std::filesystem::path& full_source_path, bool no_link_errors,
             bool allow_external_links,
             std::string::const_iterator contents_begin,
             std::string::const_iterator url_start);
@@ -48,10 +49,10 @@ namespace boost { namespace inspect {
         }
 
         virtual void inspect(
-            const std::string& library_name, const path& full_path);
+            const std::string& library_name, const std::filesystem::path& full_path);
 
         virtual void inspect(const std::string& library_name,
-            const path& full_path, const std::string& contents);
+            const std::filesystem::path& full_path, const std::string& contents);
 
         virtual void close();
 

@@ -14,6 +14,8 @@
 #include "crlf_check.hpp"
 #include "function_hyper.hpp"
 
+#include <filesystem>
+
 namespace boost { namespace inspect {
     crlf_check::crlf_check()
       : m_files_with_errors(0)
@@ -21,7 +23,7 @@ namespace boost { namespace inspect {
     }
 
     void crlf_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

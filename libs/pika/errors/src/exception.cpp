@@ -49,15 +49,14 @@ namespace pika {
         }
     }
 
-    /// Construct a pika::exception from a boost#system_error.
+    /// Construct a pika::exception from a std#system_error.
     exception::exception(std::system_error const& e)
       : std::system_error(e)
     {
         LERR_(error).format("created exception: {}", this->what());
     }
 
-    /// Construct a pika::exception from a boost#system#error_code (this is
-    /// new for Boost V1.69).
+    /// Construct a pika::exception from a std#system#error_code.
     exception::exception(std::error_code const& e)
       : std::system_error(e)
     {

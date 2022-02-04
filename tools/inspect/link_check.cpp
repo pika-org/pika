@@ -8,18 +8,16 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/modules/filesystem.hpp>
 #include <pika/modules/string_util.hpp>
 
 #include <cstdlib>
+#include <filesystem>
 #include <set>
 #include "boost/regex.hpp"
 #include "function_hyper.hpp"
 #include "link_check.hpp"
 
 // #include <iostream>
-
-namespace fs = pika::filesystem;
 
 namespace {
     boost::regex html_bookmark_regex(
@@ -109,7 +107,7 @@ namespace {
         return result;
     }
 
-    bool is_css(const path& p)
+    bool is_css(const std::filesystem::path& p)
     {
         return p.extension() == ".css";
     }
@@ -135,17 +133,17 @@ namespace boost { namespace inspect {
     //  inspect (all)  -----------------------------------------------------------//
 
     void link_check::inspect(
-        const string& /*library_name*/, const path& full_path)
+        const string& /*library_name*/, const std::filesystem::path& full_path)
     {
         // keep track of paths already encountered to reduce disk activity
-        if (!fs::is_directory(full_path))
+        if (!std::filesystem::is_directory(full_path))
             m_paths[relative_to(full_path, search_root_path())] |= m_present;
     }
 
     //  inspect ( .htm, .html, .shtml, .css )  -----------------------------------//
 
     void link_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"
@@ -274,7 +272,7 @@ namespace boost { namespace inspect {
     //  do_url  ------------------------------------------------------------------//
 
     void link_check::do_url(const string& url, const string& library_name,
-        const path& source_path, bool no_link_errors,
+        const std::filesystem::path& source_path, bool no_link_errors,
         bool allow_external_content, std::string::const_iterator contents_begin,
         std::string::const_iterator url_start)
     // precondition: source_path.is_complete()
@@ -503,12 +501,12 @@ namespace boost { namespace inspect {
 
         // url is relative source_path.branch()
         // convert to target_path, which is_complete()
-        path target_path;
+        std::filesystem::path target_path;
         try
         {
-            target_path = source_path.parent_path() /= path(decoded_path);
+            target_path = source_path.parent_path() /= std::filesystem::path(decoded_path);
         }
-        catch (const fs::filesystem_error&)
+        catch (const std::filesystem::filesystem_error&)
         {
             if (!no_link_errors)
             {
@@ -527,7 +525,7 @@ namespace boost { namespace inspect {
         m_path_map::iterator itr(m_paths.find(entry.first));
         if (itr == m_paths.end())
         {
-            if (fs::exists(target_path))
+            if (std::filesystem::exists(target_path))
                 entry.second = m_present;
             itr = m_paths.insert(entry).first;
         }
@@ -562,7 +560,7 @@ namespace boost { namespace inspect {
                 itr->first.rfind("index.htm") == string::npos)
             {
                 ++m_unlinked_errors;
-                path full_path(search_root_path() / path(itr->first));
+                std::filesystem::path full_path(search_root_path() / std::filesystem::path(itr->first));
                 error(impute_library(full_path), full_path,
                     loclink(full_path, "Unlinked file"));
             }

@@ -39,8 +39,6 @@ function(pika_perform_cxx_feature_tests)
     DEFINITIONS PIKA_HAVE_CXX17_STD_EXECUTION_POLICES
   )
 
-  pika_check_for_cxx17_filesystem(DEFINITIONS PIKA_HAVE_CXX17_FILESYSTEM)
-
   pika_check_for_cxx17_hardware_destructive_interference_size(
     DEFINITIONS PIKA_HAVE_CXX17_HARDWARE_DESTRUCTIVE_INTERFERENCE_SIZE
   )

@@ -6,8 +6,8 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/assert.hpp>
+#include <pika/detail/filesystem.hpp>
 #include <pika/errors/exception.hpp>
-#include <pika/modules/filesystem.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/prefix/find_prefix.hpp>
 #include <pika/preprocessor/expand.hpp>

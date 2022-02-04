@@ -20,8 +20,8 @@ pika requires:
 
 * a C++17-capable compiler:
 
-  * `GCC <https://gcc.gnu.org>`_ 7 or greater
-  * `clang <https://clang.llvm.org>`_ 7 or greater
+  * `GCC <https://gcc.gnu.org>`_ 9 or greater
+  * `clang <https://clang.llvm.org>`_ 9 or greater
   * MSVC is likely to work but is not regularly tested
 
 * `CMake <https://cmake.org>`_ 3.18.0 or greater

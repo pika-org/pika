@@ -13,6 +13,7 @@
 #include "function_hyper.hpp"
 #include "unnamed_namespace_check.hpp"
 
+#include <filesystem>
 #include <string>
 
 namespace {
@@ -37,7 +38,7 @@ namespace boost { namespace inspect {
     }
 
     void unnamed_namespace_check::inspect(const string& library_name,
-        const path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

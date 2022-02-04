@@ -5,7 +5,7 @@
 //  (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/modules/filesystem.hpp>
+#include <pika/detail/filesystem.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/testing.hpp>
 
@@ -145,7 +145,7 @@ int main()
     simple_required_test(config_file);
 
     // delete the config file
-    pika::filesystem::remove(config_file);
+    std::filesystem::remove(config_file);
 
     return pika::util::report_errors();
 }
