@@ -10,7 +10,7 @@ export CXX_STD="17"
 export HWLOC_ROOT="${APPS_ROOT}/hwloc-2.0.3-gcc-8.3.0"
 
 module load daint-gpu
-module load cudatoolkit/11.0.2_3.38-8.1__g5b73779
+module load cudatoolkit/11.2.0_3.39-2.1__gf93aa1c
 module load Boost/1.75.0-CrayCCE-20.11
 spack load cmake@3.18.6
 spack load ninja@1.10.0

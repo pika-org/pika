@@ -7,42 +7,22 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/errors/exception.hpp>
 
-// CUDA runtime
-#include <pika/async_cuda/custom_gpu_api.hpp>
-//
 #include <string>
+#include <utility>
 
-namespace pika { namespace cuda { namespace experimental {
-
-    // -------------------------------------------------------------------------
-    // exception type for failed launch of cuda functions
+namespace pika::cuda::experimental {
     struct cuda_exception : pika::exception
     {
-        cuda_exception(const std::string& msg, cudaError_t err)
-          : pika::exception(pika::bad_function_call, msg)
-          , err_(err)
-        {
-        }
-        cudaError_t get_cuda_errorcode()
-        {
-            return err_;
-        }
+        PIKA_EXPORT explicit cuda_exception(cudaError_t err);
+        PIKA_EXPORT cuda_exception(const std::string& msg, cudaError_t err);
+        PIKA_EXPORT cudaError_t get_cuda_errorcode() const noexcept;
 
     protected:
         cudaError_t err_;
     };
 
-    // -------------------------------------------------------------------------
-    // Error message handler for cuda calls
-    inline void check_cuda_error(cudaError_t err)
-    {
-        if (err != cudaSuccess)
-        {
-            auto temp = std::string("cuda function returned error code :") +
-                cudaGetErrorString(err);
-            throw cuda_exception(temp, err);
-        }
-    }
-}}}    // namespace pika::cuda::experimental
+    PIKA_EXPORT void check_cuda_error(cudaError_t err);
+}    // namespace pika::cuda::experimental

@@ -537,6 +537,8 @@ namespace pika { namespace util {
 
 namespace pika {
 
+    using util::nullopt;
+    using util::nullopt_t;
     using util::optional;
 }    // namespace pika
 
