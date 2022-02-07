@@ -151,5 +151,7 @@ int main()
         PIKA_TEST(receiver_set_value_called);
     }
 
+    test_adl_isolation(ex::split(my_namespace::my_sender{}));
+
     return pika::util::report_errors();
 }

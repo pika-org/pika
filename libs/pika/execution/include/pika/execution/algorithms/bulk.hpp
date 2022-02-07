@@ -30,9 +30,18 @@
 namespace pika { namespace execution { namespace experimental {
 
     ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
+    namespace bulk_detail {
         template <typename Sender, typename Shape, typename F>
-        struct bulk_sender
+        struct bulk_sender_impl
+        {
+            struct type;
+        };
+
+        template <typename Sender, typename Shape, typename F>
+        using bulk_sender = typename bulk_sender_impl<Sender, Shape, F>::type;
+
+        template <typename Sender, typename Shape, typename F>
+        struct bulk_sender_impl<Sender, Shape, F>::type
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;
@@ -63,7 +72,7 @@ namespace pika { namespace execution { namespace experimental {
                 >
             friend constexpr auto tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                bulk_sender const& sender)
+                type const& sender)
             {
                 return pika::execution::experimental::get_completion_scheduler<
                     CPO>(sender.sender);
@@ -133,8 +142,7 @@ namespace pika { namespace execution { namespace experimental {
             };
 
             template <typename Receiver>
-            friend auto tag_invoke(
-                connect_t, bulk_sender&& s, Receiver&& receiver)
+            friend auto tag_invoke(connect_t, type&& s, Receiver&& receiver)
             {
                 return pika::execution::experimental::connect(
                     PIKA_MOVE(s.sender),
@@ -143,15 +151,14 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(
-                connect_t, bulk_sender& s, Receiver&& receiver)
+            friend auto tag_invoke(connect_t, type& s, Receiver&& receiver)
             {
                 return pika::execution::experimental::connect(s.sender,
                     bulk_receiver<Receiver>(
                         PIKA_FORWARD(Receiver, receiver), s.shape, s.f));
             }
         };
-    }    // namespace detail
+    }    // namespace bulk_detail
 
     ///////////////////////////////////////////////////////////////////////////
     inline constexpr struct bulk_t final
@@ -187,7 +194,7 @@ namespace pika { namespace execution { namespace experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             bulk_t, Sender&& sender, Shape const& shape, F&& f)
         {
-            return detail::bulk_sender<Sender,
+            return bulk_detail::bulk_sender<Sender,
                 pika::util::detail::counting_shape_type<Shape>, F>{
                 PIKA_FORWARD(Sender, sender),
                 pika::util::detail::make_counting_shape(shape),
@@ -204,7 +211,7 @@ namespace pika { namespace execution { namespace experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             bulk_t, Sender&& sender, Shape&& shape, F&& f)
         {
-            return detail::bulk_sender<Sender, Shape, F>{
+            return bulk_detail::bulk_sender<Sender, Shape, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Shape, shape),
                 PIKA_FORWARD(F, f)};
         }

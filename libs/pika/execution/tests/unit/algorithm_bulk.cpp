@@ -230,5 +230,7 @@ int main()
         PIKA_TEST_EQ(custom_bulk_call_count, 3);
     }
 
+    test_adl_isolation(ex::bulk(ex::just(), 1, my_namespace::my_type{}));
+
     return pika::util::report_errors();
 }

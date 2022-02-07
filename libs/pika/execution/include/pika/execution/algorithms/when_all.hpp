@@ -27,24 +27,34 @@
 #include <utility>
 
 namespace pika { namespace execution { namespace experimental {
-    namespace detail {
+    namespace when_all_detail {
         // This is a receiver to be connected to the ith predecessor sender
         // passed to when_all. When set_value is called, it will emplace the
         // values sent into the appropriate position in the pack used to store
         // values from all predecessor senders.
         template <typename OperationState>
-        struct when_all_receiver
+        struct when_all_receiver_impl
+        {
+            struct type;
+        };
+
+        template <typename OperationState>
+        using when_all_receiver =
+            typename when_all_receiver_impl<OperationState>::type;
+
+        template <typename OperationState>
+        struct when_all_receiver_impl<OperationState>::type
         {
             std::decay_t<OperationState>& op_state;
 
-            when_all_receiver(std::decay_t<OperationState>& op_state)
+            type(std::decay_t<OperationState>& op_state)
               : op_state(op_state)
             {
             }
 
             template <typename Error>
             friend void tag_invoke(
-                set_error_t, when_all_receiver&& r, Error&& error) noexcept
+                set_error_t, type&& r, Error&& error) noexcept
             {
                 if (!r.op_state.set_done_error_called.exchange(true))
                 {
@@ -62,7 +72,7 @@ namespace pika { namespace execution { namespace experimental {
                 r.op_state.finish();
             }
 
-            friend void tag_invoke(set_done_t, when_all_receiver&& r) noexcept
+            friend void tag_invoke(set_done_t, type&& r) noexcept
             {
                 r.op_state.set_done_error_called = true;
                 r.op_state.finish();
@@ -121,24 +131,36 @@ namespace pika { namespace execution { namespace experimental {
         // of when_all_receiver. The trailing decltype for SFINAE in the member
         // set_value would give an error about accessing an incomplete type, if
         // the member set_value were a hidden friend tag_invoke overload
-        // instead.
-        template <typename OperationState, typename... Ts>
-        auto tag_invoke(set_value_t, when_all_receiver<OperationState>&& r,
-            Ts&&... ts) noexcept
+        // instead. Note that the receiver is unconstrained. That is because
+        // OperationState in when_all_receiver<OperationState> cannot be deduced
+        // when when_all_receiver is an alias template. Since this is in a
+        // unique namespace nothing but when_all_receiver should ever find this
+        // overload.
+        template <typename Receiver, typename... Ts>
+        auto tag_invoke(set_value_t, Receiver&& r, Ts&&... ts) noexcept
             -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...))
         {
             r.set_value(PIKA_FORWARD(Ts, ts)...);
         }
 
         template <typename... Senders>
-        struct when_all_sender
+        struct when_all_sender_impl
+        {
+            struct type;
+        };
+
+        template <typename... Senders>
+        using when_all_sender = typename when_all_sender_impl<Senders...>::type;
+
+        template <typename... Senders>
+        struct when_all_sender_impl<Senders...>::type
         {
             using senders_type =
                 pika::util::member_pack_for<std::decay_t<Senders>...>;
             senders_type senders;
 
             template <typename... Senders_>
-            explicit constexpr when_all_sender(Senders_&&... senders)
+            explicit constexpr type(Senders_&&... senders)
               : senders(std::piecewise_construct,
                     PIKA_FORWARD(Senders_, senders)...)
             {
@@ -179,9 +201,10 @@ namespace pika { namespace execution { namespace experimental {
 
             template <std::size_t I>
             static constexpr std::size_t sender_pack_size_at_index =
-                single_variant_t<typename sender_traits<pika::util::at_index_t<
-                    I, Senders...>>::template value_types<pika::util::pack,
-                    pika::util::pack>>::size;
+                detail::single_variant_t<
+                    typename sender_traits<pika::util::at_index_t<I,
+                        Senders...>>::template value_types<pika::util::pack,
+                        pika::util::pack>>::size;
 
             template <typename Receiver, typename SendersPack,
                 std::size_t I = num_predecessors - 1>
@@ -204,7 +227,7 @@ namespace pika { namespace execution { namespace experimental {
                 // here and complains about incmplete types. Lifting the helper
                 // explicitly in here works.
                 static constexpr std::size_t sender_pack_size =
-                    single_variant_t<
+                    detail::single_variant_t<
                         typename sender_traits<pika::util::at_index_t<i,
                             Senders...>>::template value_types<pika::util::pack,
                             pika::util::pack>>::size;
@@ -364,8 +387,7 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(
-                connect_t, when_all_sender&& s, Receiver&& receiver)
+            friend auto tag_invoke(connect_t, type&& s, Receiver&& receiver)
             {
                 return operation_state<Receiver, senders_type&&,
                     num_predecessors - 1>(
@@ -373,14 +395,13 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(
-                connect_t, when_all_sender& s, Receiver&& receiver)
+            friend auto tag_invoke(connect_t, type& s, Receiver&& receiver)
             {
                 return operation_state<Receiver, senders_type&,
                     num_predecessors - 1>(receiver, s.senders);
             }
         };
-    }    // namespace detail
+    }    // namespace when_all_detail
 
     inline constexpr struct when_all_t final
       : pika::functional::detail::tag_fallback<when_all_t>
@@ -395,7 +416,7 @@ namespace pika { namespace execution { namespace experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             when_all_t, Senders&&... senders)
         {
-            return detail::when_all_sender<Senders...>{
+            return when_all_detail::when_all_sender<Senders...>{
                 PIKA_FORWARD(Senders, senders)...};
         }
     } when_all{};

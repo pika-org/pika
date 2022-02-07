@@ -38,7 +38,7 @@
 #include <utility>
 
 namespace pika { namespace execution { namespace experimental {
-    namespace detail {
+    namespace split_detail {
         enum class submission_type
         {
             eager,
@@ -75,8 +75,25 @@ namespace pika { namespace execution { namespace experimental {
         };
 
         template <typename Sender, typename Allocator, submission_type Type>
-        struct split_sender
+        struct split_sender_impl
         {
+            struct type;
+        };
+
+        template <typename Sender, typename Allocator, submission_type Type>
+        using split_sender =
+            typename split_sender_impl<Sender, Allocator, Type>::type;
+
+        template <typename Sender, typename Allocator, submission_type Type>
+        struct split_sender_impl<Sender, Allocator, Type>::type
+        {
+            struct split_sender_tag
+            {
+            };
+
+            using allocator_type = Allocator;
+            static constexpr submission_type subm_type = Type;
+
             template <typename Tuple>
             struct value_types_helper
             {
@@ -375,7 +392,7 @@ namespace pika { namespace execution { namespace experimental {
             pika::intrusive_ptr<shared_state> state;
 
             template <typename Sender_>
-            split_sender(Sender_&& sender, Allocator const& allocator)
+            type(Sender_&& sender, Allocator const& allocator)
             {
                 using allocator_type = Allocator;
                 using other_allocator = typename std::allocator_traits<
@@ -401,10 +418,10 @@ namespace pika { namespace execution { namespace experimental {
                 }
             }
 
-            split_sender(split_sender const&) = default;
-            split_sender& operator=(split_sender const&) = default;
-            split_sender(split_sender&&) = default;
-            split_sender& operator=(split_sender&&) = default;
+            type(type const&) = default;
+            type& operator=(type const&) = default;
+            type(type&&) = default;
+            type& operator=(type&&) = default;
 
             template <typename Receiver>
             struct operation_state
@@ -441,56 +458,95 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
-                connect_t, split_sender&& s, Receiver&& receiver)
+                connect_t, type&& s, Receiver&& receiver)
             {
                 return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
             }
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
-                connect_t, split_sender& s, Receiver&& receiver)
+                connect_t, type& s, Receiver&& receiver)
             {
                 return {PIKA_FORWARD(Receiver, receiver), s.state};
             }
         };
-    }    // namespace detail
+
+        template <typename Sender, typename Enable = void>
+        struct is_split_sender_impl : std::false_type
+        {
+        };
+
+        template <typename Sender>
+        struct is_split_sender_impl<Sender,
+            std::void_t<typename Sender::split_sender_tag>> : std::true_type
+        {
+        };
+
+        template <typename Sender>
+        inline constexpr bool is_split_sender_v =
+            is_split_sender_impl<std::decay_t<Sender>>::value;
+    }    // namespace split_detail
 
     inline constexpr struct split_t final
       : pika::functional::detail::tag_fallback<split_t>
     {
     private:
-        // clang-format off
         template <typename Sender,
-            typename Allocator = pika::util::internal_allocator<>,
-            PIKA_CONCEPT_REQUIRES_(
-                is_sender_v<Sender> &&
-                pika::traits::is_allocator_v<Allocator>
-            )>
-        // clang-format on
+            PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender> &&
+                !split_detail::is_split_sender_v<Sender>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            split_t, Sender&& sender, Allocator const& allocator = {})
+            split_t, Sender&& sender)
         {
-            return detail::split_sender<Sender, Allocator,
-                detail::submission_type::lazy>{
+            return split_detail::split_sender<Sender,
+                pika::util::internal_allocator<>,
+                split_detail::submission_type::lazy>{
+                PIKA_FORWARD(Sender, sender), {}};
+        }
+
+        template <typename Sender, typename Allocator,
+            PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender> &&
+                !split_detail::is_split_sender_v<Sender> &&
+                pika::traits::is_allocator_v<Allocator>)>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            split_t, Sender&& sender, Allocator const& allocator)
+        {
+            return split_detail::split_sender<Sender, Allocator,
+                split_detail::submission_type::lazy>{
                 PIKA_FORWARD(Sender, sender), allocator};
         }
 
-        template <typename Sender, typename Allocator>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(split_t,
-            detail::split_sender<Sender, Allocator,
-                detail::submission_type::lazy>
-                sender,
-            Allocator const& = {})
+        template <typename Sender, typename Allocator,
+            PIKA_CONCEPT_REQUIRES_(
+                split_detail::is_split_sender_v<Sender>&& std::is_same_v<
+                    typename Sender::allocator_type, std::decay_t<Allocator>>)>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            split_t, Sender&& sender, Allocator const&)
         {
-            return sender;
+            return PIKA_FORWARD(Sender, sender);
         }
 
-        // clang-format off
+        template <typename Sender, typename Allocator,
+            PIKA_CONCEPT_REQUIRES_(split_detail::is_split_sender_v<Sender> &&
+                !std::is_same_v<typename Sender::allocator_type,
+                    std::decay_t<Allocator>>)>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            split_t, Sender&& sender, Allocator const& allocator)
+        {
+            return split_detail::split_sender<Sender, Allocator,
+                split_detail::submission_type::lazy>{
+                PIKA_FORWARD(Sender, sender), allocator};
+        }
+
+        template <typename Sender,
+            PIKA_CONCEPT_REQUIRES_(split_detail::is_split_sender_v<Sender>)>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            split_t, Sender&& sender)
+        {
+            return PIKA_FORWARD(Sender, sender);
+        }
+
         template <typename Allocator = pika::util::internal_allocator<>,
-            PIKA_CONCEPT_REQUIRES_(
-                pika::traits::is_allocator_v<Allocator>
-            )>
-        // clang-format on
+            PIKA_CONCEPT_REQUIRES_(pika::traits::is_allocator_v<Allocator>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             split_t, Allocator const& allocator = {})
         {
