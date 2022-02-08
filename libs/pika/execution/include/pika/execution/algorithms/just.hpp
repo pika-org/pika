@@ -26,31 +26,32 @@ namespace pika { namespace execution { namespace experimental {
         template <typename std::size_t... Is, typename... Ts>
         struct just_sender_impl<pika::util::index_pack<Is...>, Ts...>
         {
-            struct type
+            struct just_sender_type
             {
                 pika::util::member_pack_for<std::decay_t<Ts>...> ts;
 
-                constexpr type() = default;
+                constexpr just_sender_type() = default;
 
                 template <typename T,
                     typename = std::enable_if_t<
-                        !std::is_same_v<std::decay_t<T>, type>>>
-                explicit constexpr type(T&& t)
+                        !std::is_same_v<std::decay_t<T>, just_sender_type>>>
+                explicit constexpr just_sender_type(T&& t)
                   : ts(std::piecewise_construct, PIKA_FORWARD(T, t))
                 {
                 }
 
                 template <typename T0, typename T1, typename... Ts_>
-                explicit constexpr type(T0&& t0, T1&& t1, Ts_&&... ts)
+                explicit constexpr just_sender_type(
+                    T0&& t0, T1&& t1, Ts_&&... ts)
                   : ts(std::piecewise_construct, PIKA_FORWARD(T0, t0),
                         PIKA_FORWARD(T1, t1), PIKA_FORWARD(Ts_, ts)...)
                 {
                 }
 
-                type(type&&) = default;
-                type(type const&) = default;
-                type& operator=(type&&) = default;
-                type& operator=(type const&) = default;
+                just_sender_type(just_sender_type&&) = default;
+                just_sender_type(just_sender_type const&) = default;
+                just_sender_type& operator=(just_sender_type&&) = default;
+                just_sender_type& operator=(just_sender_type const&) = default;
 
                 template <template <typename...> class Tuple,
                     template <typename...> class Variant>
@@ -97,14 +98,16 @@ namespace pika { namespace execution { namespace experimental {
                 };
 
                 template <typename Receiver>
-                friend auto tag_invoke(connect_t, type&& s, Receiver&& receiver)
+                friend auto tag_invoke(
+                    connect_t, just_sender_type&& s, Receiver&& receiver)
                 {
                     return operation_state<Receiver>{
                         PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.ts)};
                 }
 
                 template <typename Receiver>
-                friend auto tag_invoke(connect_t, type& s, Receiver&& receiver)
+                friend auto tag_invoke(
+                    connect_t, just_sender_type& s, Receiver&& receiver)
                 {
                     return operation_state<Receiver>{
                         PIKA_FORWARD(Receiver, receiver), s.ts};
@@ -113,7 +116,8 @@ namespace pika { namespace execution { namespace experimental {
         };
 
         template <typename Is, typename... Ts>
-        using just_sender = typename just_sender_impl<Is, Ts...>::type;
+        using just_sender =
+            typename just_sender_impl<Is, Ts...>::just_sender_type;
     }    // namespace just_detail
 
     inline constexpr struct just_t final

@@ -35,26 +35,26 @@ namespace pika { namespace execution { namespace experimental {
         template <typename OperationState>
         struct when_all_receiver_impl
         {
-            struct type;
+            struct when_all_receiver_type;
         };
 
         template <typename OperationState>
-        using when_all_receiver =
-            typename when_all_receiver_impl<OperationState>::type;
+        using when_all_receiver = typename when_all_receiver_impl<
+            OperationState>::when_all_receiver_type;
 
         template <typename OperationState>
-        struct when_all_receiver_impl<OperationState>::type
+        struct when_all_receiver_impl<OperationState>::when_all_receiver_type
         {
             std::decay_t<OperationState>& op_state;
 
-            type(std::decay_t<OperationState>& op_state)
+            when_all_receiver_type(std::decay_t<OperationState>& op_state)
               : op_state(op_state)
             {
             }
 
             template <typename Error>
             friend void tag_invoke(
-                set_error_t, type&& r, Error&& error) noexcept
+                set_error_t, when_all_receiver_type&& r, Error&& error) noexcept
             {
                 if (!r.op_state.set_done_error_called.exchange(true))
                 {
@@ -72,7 +72,8 @@ namespace pika { namespace execution { namespace experimental {
                 r.op_state.finish();
             }
 
-            friend void tag_invoke(set_done_t, type&& r) noexcept
+            friend void tag_invoke(
+                set_done_t, when_all_receiver_type&& r) noexcept
             {
                 r.op_state.set_done_error_called = true;
                 r.op_state.finish();
@@ -146,21 +147,22 @@ namespace pika { namespace execution { namespace experimental {
         template <typename... Senders>
         struct when_all_sender_impl
         {
-            struct type;
+            struct when_all_sender_type;
         };
 
         template <typename... Senders>
-        using when_all_sender = typename when_all_sender_impl<Senders...>::type;
+        using when_all_sender =
+            typename when_all_sender_impl<Senders...>::when_all_sender_type;
 
         template <typename... Senders>
-        struct when_all_sender_impl<Senders...>::type
+        struct when_all_sender_impl<Senders...>::when_all_sender_type
         {
             using senders_type =
                 pika::util::member_pack_for<std::decay_t<Senders>...>;
             senders_type senders;
 
             template <typename... Senders_>
-            explicit constexpr type(Senders_&&... senders)
+            explicit constexpr when_all_sender_type(Senders_&&... senders)
               : senders(std::piecewise_construct,
                     PIKA_FORWARD(Senders_, senders)...)
             {
@@ -387,7 +389,8 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(connect_t, type&& s, Receiver&& receiver)
+            friend auto tag_invoke(
+                connect_t, when_all_sender_type&& s, Receiver&& receiver)
             {
                 return operation_state<Receiver, senders_type&&,
                     num_predecessors - 1>(
@@ -395,7 +398,8 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(connect_t, type& s, Receiver&& receiver)
+            friend auto tag_invoke(
+                connect_t, when_all_sender_type& s, Receiver&& receiver)
             {
                 return operation_state<Receiver, senders_type&,
                     num_predecessors - 1>(receiver, s.senders);

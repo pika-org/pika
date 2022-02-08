@@ -25,27 +25,28 @@ namespace pika { namespace execution { namespace experimental {
         template <typename Receiver, typename F>
         struct then_receiver_impl
         {
-            struct type;
+            struct then_receiver_type;
         };
 
         template <typename Receiver, typename F>
-        using then_receiver = typename then_receiver_impl<Receiver, F>::type;
+        using then_receiver =
+            typename then_receiver_impl<Receiver, F>::then_receiver_type;
 
         template <typename Receiver, typename F>
-        struct then_receiver_impl<Receiver, F>::type
+        struct then_receiver_impl<Receiver, F>::then_receiver_type
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
 
             template <typename Error>
             friend void tag_invoke(
-                set_error_t, type&& r, Error&& error) noexcept
+                set_error_t, then_receiver_type&& r, Error&& error) noexcept
             {
                 pika::execution::experimental::set_error(
                     PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
             }
 
-            friend void tag_invoke(set_done_t, type&& r) noexcept
+            friend void tag_invoke(set_done_t, then_receiver_type&& r) noexcept
             {
                 pika::execution::experimental::set_done(PIKA_MOVE(r.receiver));
             }
@@ -92,7 +93,8 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename... Ts,
                 typename = std::enable_if_t<pika::is_invocable_v<F, Ts...>>>
-            friend void tag_invoke(set_value_t, type&& r, Ts&&... ts) noexcept
+            friend void tag_invoke(
+                set_value_t, then_receiver_type&& r, Ts&&... ts) noexcept
             {
                 // GCC 7 fails with an internal compiler error unless the actual
                 // body is in a helper function.
@@ -103,14 +105,15 @@ namespace pika { namespace execution { namespace experimental {
         template <typename Sender, typename F>
         struct then_sender_impl
         {
-            struct type;
+            struct then_sender_type;
         };
 
         template <typename Sender, typename F>
-        using then_sender = typename then_sender_impl<Sender, F>::type;
+        using then_sender =
+            typename then_sender_impl<Sender, F>::then_sender_type;
 
         template <typename Sender, typename F>
-        struct then_sender_impl<Sender, F>::type
+        struct then_sender_impl<Sender, F>::then_sender_type
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
@@ -154,14 +157,15 @@ namespace pika { namespace execution { namespace experimental {
                 >
             friend constexpr auto tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                type const& sender)
+                then_sender_type const& sender)
             {
                 return pika::execution::experimental::get_completion_scheduler<
                     CPO>(sender.sender);
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(connect_t, type&& s, Receiver&& receiver)
+            friend auto tag_invoke(
+                connect_t, then_sender_type&& s, Receiver&& receiver)
             {
                 return pika::execution::experimental::connect(
                     PIKA_MOVE(s.sender),
@@ -170,7 +174,8 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(connect_t, type& r, Receiver&& receiver)
+            friend auto tag_invoke(
+                connect_t, then_sender_type& r, Receiver&& receiver)
             {
                 return pika::execution::experimental::connect(r.sender,
                     then_receiver<Receiver, F>{
