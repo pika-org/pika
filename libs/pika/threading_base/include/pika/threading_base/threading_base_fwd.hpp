@@ -26,11 +26,15 @@
 #include <memory>
 #include <utility>
 
-#if defined(PIKA_HAVE_APEX)
 namespace pika::util::external_timer {
+#if defined(PIKA_HAVE_APEX)
     using apex::task_wrapper;
-}    // namespace pika::util::external_timer
+#else
+    struct task_wrapper
+    {
+    };
 #endif
+}    // namespace pika::util::external_timer
 
 namespace pika::threads {
 

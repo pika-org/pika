@@ -11,6 +11,8 @@ set(threading_base_headers
     pika/threading_base/callback_notifier.hpp
     pika/threading_base/create_thread.hpp
     pika/threading_base/create_work.hpp
+    pika/threading_base/detail/external_timer/apex.hpp
+    pika/threading_base/detail/external_timer/default.hpp
     pika/threading_base/detail/get_default_pool.hpp
     pika/threading_base/detail/reset_backtrace.hpp
     pika/threading_base/detail/reset_lco_description.hpp
