@@ -72,7 +72,7 @@ namespace pika {
         if (get_config_entry("pika.diagnostics_on_terminate", "1") == "1")
         {
             int const verbosity = util::from_string<int>(
-                get_config_entry("pika.exception_verbosity", "2"));
+                get_config_entry("pika.exception_verbosity", "1"));
 
             if (verbosity >= 2)
             {
@@ -145,7 +145,7 @@ namespace pika {
         if (get_config_entry("pika.diagnostics_on_terminate", "1") == "1")
         {
             int const verbosity = util::from_string<int>(
-                get_config_entry("pika.exception_verbosity", "2"));
+                get_config_entry("pika.exception_verbosity", "1"));
 
             char* reason = strsignal(signum);
 

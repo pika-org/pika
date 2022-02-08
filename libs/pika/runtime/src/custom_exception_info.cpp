@@ -62,7 +62,7 @@ namespace pika {
     std::string diagnostic_information(pika::exception_info const& xi)
     {
         int const verbosity = util::from_string<int>(
-            get_config_entry("pika.exception_verbosity", "2"));
+            get_config_entry("pika.exception_verbosity", "1"));
 
         std::ostringstream strm;
         strm << "\n";
