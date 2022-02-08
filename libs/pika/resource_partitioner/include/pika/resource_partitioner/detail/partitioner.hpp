@@ -131,8 +131,8 @@ namespace pika { namespace resource { namespace detail {
         // assigned affinity data
         std::size_t threads_needed()
         {
-            PIKA_ASSERT(pus_needed_ != std::size_t(-1));
-            return pus_needed_;
+            PIKA_ASSERT(affinity_data_.get_num_pus_needed() != std::size_t(-1));
+            return affinity_data_.get_num_pus_needed();
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -221,7 +221,6 @@ namespace pika { namespace resource { namespace detail {
         // holds all of the command line switches
         util::section rtcfg_;
         std::size_t first_core_;
-        std::size_t pus_needed_;
 
         // contains the basic characteristics of the thread pool partitioning ...
         // that will be passed to the runtime
