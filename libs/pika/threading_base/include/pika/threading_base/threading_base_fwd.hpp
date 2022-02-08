@@ -26,7 +26,7 @@
 #include <memory>
 #include <utility>
 
-namespace pika::util::external_timer {
+namespace pika::detail::external_timer {
 #if defined(PIKA_HAVE_APEX)
     using apex::task_wrapper;
 #else
@@ -34,7 +34,7 @@ namespace pika::util::external_timer {
     {
     };
 #endif
-}    // namespace pika::util::external_timer
+}    // namespace pika::detail::external_timer
 
 namespace pika::threads {
 
@@ -65,10 +65,10 @@ namespace pika::threads {
     using thread_self_impl_type = coroutines::detail::coroutine_impl;
 
 #if defined(PIKA_HAVE_APEX)
-    PIKA_EXPORT std::shared_ptr<pika::util::external_timer::task_wrapper>
+    PIKA_EXPORT std::shared_ptr<pika::detail::external_timer::task_wrapper>
     get_self_timer_data(void);
     PIKA_EXPORT void set_self_timer_data(
-        std::shared_ptr<pika::util::external_timer::task_wrapper> data);
+        std::shared_ptr<pika::detail::external_timer::task_wrapper> data);
 #endif
     /// \endcond
 }    // namespace pika::threads

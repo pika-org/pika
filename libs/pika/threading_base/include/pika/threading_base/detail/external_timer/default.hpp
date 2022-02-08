@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace pika::util::external_timer {
+namespace pika::detail::external_timer {
     inline std::shared_ptr<task_wrapper> new_task(
         thread_description const&, std::uint32_t, threads::thread_id_type)
     {
@@ -34,4 +34,4 @@ namespace pika::util::external_timer {
         void stop(void) {}
         void yield(void) {}
     };
-}    // namespace pika::util::external_timer
+}    // namespace pika::detail::external_timer

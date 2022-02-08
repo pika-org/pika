@@ -712,8 +712,8 @@ namespace pika { namespace threads { namespace detail {
 
                                 // the address of tmp_data is getting stored
                                 // by APEX during this call
-                                util::external_timer::scoped_timer profiler(
-                                    thrdptr->get_timer_data());
+                                pika::detail::external_timer::scoped_timer
+                                    profiler(thrdptr->get_timer_data());
 
                                 thrd_stat = (*thrdptr)(context_storage);
 

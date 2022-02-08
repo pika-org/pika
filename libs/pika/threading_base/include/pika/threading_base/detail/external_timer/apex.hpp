@@ -17,7 +17,7 @@
 #include <memory>
 #include <string>
 
-namespace pika::util::external_timer {
+namespace pika::detail::external_timer {
     inline uint64_t init(const char* thread_name, const uint64_t comm_rank,
         const uint64_t comm_size)
     {
@@ -85,12 +85,12 @@ namespace pika::util::external_timer {
     }
 
     PIKA_EXPORT std::shared_ptr<task_wrapper> new_task(
-        thread_description const& description, std::uint32_t parent_locality_id,
-        threads::thread_id_type parent_task);
+        pika::util::thread_description const& description,
+        std::uint32_t parent_locality_id, threads::thread_id_type parent_task);
 
     PIKA_EXPORT std::shared_ptr<task_wrapper> update_task(
         std::shared_ptr<task_wrapper> wrapper,
-        thread_description const& description);
+        pika::util::thread_description const& description);
 
     // This is a scoped object around task scheduling to measure the time
     // spent executing pika threads
@@ -106,7 +106,7 @@ namespace pika::util::external_timer {
             if (data_ptr != nullptr)
             {
                 data_ = data_ptr;
-                pika::util::external_timer::start(data_);
+                pika::detail::external_timer::start(data_);
             }
         }
         ~scoped_timer()
@@ -124,7 +124,7 @@ namespace pika::util::external_timer {
                 // null task wrapper pointer here.
                 if (data_ != nullptr)
                 {
-                    pika::util::external_timer::stop(data_);
+                    pika::detail::external_timer::stop(data_);
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace pika::util::external_timer {
                 // null task wrapper pointer here.
                 if (data_ != nullptr)
                 {
-                    pika::util::external_timer::yield(data_);
+                    pika::detail::external_timer::yield(data_);
                 }
             }
         }
@@ -147,4 +147,4 @@ namespace pika::util::external_timer {
         bool stopped;
         std::shared_ptr<task_wrapper> data_;
     };
-}    // namespace pika::util::external_timer
+}    // namespace pika::detail::external_timer

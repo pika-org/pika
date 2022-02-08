@@ -1298,7 +1298,7 @@ namespace pika {
 
         // initialize instrumentation system
 #ifdef PIKA_HAVE_APEX
-        util::external_timer::init(nullptr, 0, 1);
+        detail::external_timer::init(nullptr, 0, 1);
 #endif
 
         LRT_(info).format("cmd_line: {}", get_config().get_cmd_line());
@@ -1395,7 +1395,7 @@ namespace pika {
 
 #if defined(PIKA_HAVE_APEX)
         // not registering helper threads - for now
-        //util::external_timer::register_thread(thread_name.c_str());
+        //detail::external_timer::register_thread(thread_name.c_str());
 #endif
 
         wait_finalize();
@@ -1443,7 +1443,7 @@ namespace pika {
         thread_manager_->stop(false);    // just initiate shutdown
 
 #ifdef PIKA_HAVE_APEX
-        util::external_timer::finalize();
+        detail::external_timer::finalize();
 #endif
 
         if (threads::get_self_ptr())
@@ -1711,7 +1711,7 @@ namespace pika {
 
 #if defined(PIKA_HAVE_APEX)
         if (std::strstr(name, "worker") != nullptr)
-            util::external_timer::register_thread(name);
+            detail::external_timer::register_thread(name);
 #endif
 
         // call thread-specific user-supplied on_start handler
