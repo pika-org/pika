@@ -31,15 +31,16 @@ namespace pika { namespace execution { namespace experimental {
         template <typename Sender, typename Scheduler>
         struct schedule_from_sender_impl
         {
-            struct type;
+            struct schedule_from_sender_type;
         };
 
         template <typename Sender, typename Scheduler>
-        using schedule_from_sender =
-            typename schedule_from_sender_impl<Sender, Scheduler>::type;
+        using schedule_from_sender = typename schedule_from_sender_impl<Sender,
+            Scheduler>::schedule_from_sender_type;
 
         template <typename Sender, typename Scheduler>
-        struct schedule_from_sender_impl<Sender, Scheduler>::type
+        struct schedule_from_sender_impl<Sender,
+            Scheduler>::schedule_from_sender_type
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> predecessor_sender;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
@@ -84,7 +85,7 @@ namespace pika { namespace execution { namespace experimental {
                 >
             friend constexpr auto tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                type const& sender)
+                schedule_from_sender_type const& sender)
             {
                 if constexpr (std::is_same_v<std::decay_t<CPO>,
                                   pika::execution::experimental::set_value_t>)
@@ -304,7 +305,7 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
-                connect_t, type&& s, Receiver&& receiver)
+                connect_t, schedule_from_sender_type&& s, Receiver&& receiver)
             {
                 return {PIKA_MOVE(s.predecessor_sender), PIKA_MOVE(s.scheduler),
                     PIKA_FORWARD(Receiver, receiver)};
@@ -312,7 +313,7 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
-                connect_t, type& s, Receiver&& receiver)
+                connect_t, schedule_from_sender_type& s, Receiver&& receiver)
             {
                 return {s.predecessor_sender, s.scheduler,
                     PIKA_FORWARD(Receiver, receiver)};

@@ -31,15 +31,17 @@ namespace pika { namespace execution { namespace experimental {
         template <typename PredecessorSender, typename F>
         struct let_value_sender_impl
         {
-            struct type;
+            struct let_value_sender_type;
         };
 
         template <typename PredecessorSender, typename F>
         using let_value_sender =
-            typename let_value_sender_impl<PredecessorSender, F>::type;
+            typename let_value_sender_impl<PredecessorSender,
+                F>::let_value_sender_type;
 
         template <typename PredecessorSender, typename F>
-        struct let_value_sender_impl<PredecessorSender, F>::type
+        struct let_value_sender_impl<PredecessorSender,
+            F>::let_value_sender_type
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<PredecessorSender>
                 predecessor_sender;
@@ -314,7 +316,8 @@ namespace pika { namespace execution { namespace experimental {
             };
 
             template <typename Receiver>
-            friend auto tag_invoke(connect_t, type&& s, Receiver&& receiver)
+            friend auto tag_invoke(
+                connect_t, let_value_sender_type&& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
                     PIKA_MOVE(s.predecessor_sender),

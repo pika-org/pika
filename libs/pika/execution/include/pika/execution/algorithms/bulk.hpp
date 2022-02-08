@@ -34,14 +34,15 @@ namespace pika { namespace execution { namespace experimental {
         template <typename Sender, typename Shape, typename F>
         struct bulk_sender_impl
         {
-            struct type;
+            struct bulk_sender_type;
         };
 
         template <typename Sender, typename Shape, typename F>
-        using bulk_sender = typename bulk_sender_impl<Sender, Shape, F>::type;
+        using bulk_sender =
+            typename bulk_sender_impl<Sender, Shape, F>::bulk_sender_type;
 
         template <typename Sender, typename Shape, typename F>
-        struct bulk_sender_impl<Sender, Shape, F>::type
+        struct bulk_sender_impl<Sender, Shape, F>::bulk_sender_type
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;
@@ -72,7 +73,7 @@ namespace pika { namespace execution { namespace experimental {
                 >
             friend constexpr auto tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                type const& sender)
+                bulk_sender_type const& sender)
             {
                 return pika::execution::experimental::get_completion_scheduler<
                     CPO>(sender.sender);
@@ -142,7 +143,8 @@ namespace pika { namespace execution { namespace experimental {
             };
 
             template <typename Receiver>
-            friend auto tag_invoke(connect_t, type&& s, Receiver&& receiver)
+            friend auto tag_invoke(
+                connect_t, bulk_sender_type&& s, Receiver&& receiver)
             {
                 return pika::execution::experimental::connect(
                     PIKA_MOVE(s.sender),
@@ -151,7 +153,8 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(connect_t, type& s, Receiver&& receiver)
+            friend auto tag_invoke(
+                connect_t, bulk_sender_type& s, Receiver&& receiver)
             {
                 return pika::execution::experimental::connect(s.sender,
                     bulk_receiver<Receiver>(

@@ -77,15 +77,15 @@ namespace pika { namespace execution { namespace experimental {
         template <typename Sender, typename Allocator, submission_type Type>
         struct split_sender_impl
         {
-            struct type;
+            struct split_sender_type;
         };
 
         template <typename Sender, typename Allocator, submission_type Type>
-        using split_sender =
-            typename split_sender_impl<Sender, Allocator, Type>::type;
+        using split_sender = typename split_sender_impl<Sender, Allocator,
+            Type>::split_sender_type;
 
         template <typename Sender, typename Allocator, submission_type Type>
-        struct split_sender_impl<Sender, Allocator, Type>::type
+        struct split_sender_impl<Sender, Allocator, Type>::split_sender_type
         {
             struct split_sender_tag
             {
@@ -392,7 +392,7 @@ namespace pika { namespace execution { namespace experimental {
             pika::intrusive_ptr<shared_state> state;
 
             template <typename Sender_>
-            type(Sender_&& sender, Allocator const& allocator)
+            split_sender_type(Sender_&& sender, Allocator const& allocator)
             {
                 using allocator_type = Allocator;
                 using other_allocator = typename std::allocator_traits<
@@ -418,10 +418,10 @@ namespace pika { namespace execution { namespace experimental {
                 }
             }
 
-            type(type const&) = default;
-            type& operator=(type const&) = default;
-            type(type&&) = default;
-            type& operator=(type&&) = default;
+            split_sender_type(split_sender_type const&) = default;
+            split_sender_type& operator=(split_sender_type const&) = default;
+            split_sender_type(split_sender_type&&) = default;
+            split_sender_type& operator=(split_sender_type&&) = default;
 
             template <typename Receiver>
             struct operation_state
@@ -458,14 +458,14 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
-                connect_t, type&& s, Receiver&& receiver)
+                connect_t, split_sender_type&& s, Receiver&& receiver)
             {
                 return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
             }
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
-                connect_t, type& s, Receiver&& receiver)
+                connect_t, split_sender_type& s, Receiver&& receiver)
             {
                 return {PIKA_FORWARD(Receiver, receiver), s.state};
             }

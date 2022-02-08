@@ -29,15 +29,17 @@ namespace pika { namespace execution { namespace experimental {
         template <typename PredecessorSender, typename F>
         struct let_error_sender_impl
         {
-            struct type;
+            struct let_error_sender_type;
         };
 
         template <typename PredecessorSender, typename F>
         using let_error_sender =
-            typename let_error_sender_impl<PredecessorSender, F>::type;
+            typename let_error_sender_impl<PredecessorSender,
+                F>::let_error_sender_type;
 
         template <typename PredecessorSender, typename F>
-        struct let_error_sender_impl<PredecessorSender, F>::type
+        struct let_error_sender_impl<PredecessorSender,
+            F>::let_error_sender_type
         {
             PIKA_NO_UNIQUE_ADDRESS typename std::decay_t<PredecessorSender>
                 predecessor_sender;
@@ -298,7 +300,8 @@ namespace pika { namespace execution { namespace experimental {
             };
 
             template <typename Receiver>
-            friend auto tag_invoke(connect_t, type&& s, Receiver&& receiver)
+            friend auto tag_invoke(
+                connect_t, let_error_sender_type&& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
                     PIKA_MOVE(s.predecessor_sender),
