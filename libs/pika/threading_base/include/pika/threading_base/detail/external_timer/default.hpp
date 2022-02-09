@@ -1,3 +1,4 @@
+//  Copyright (c)      2022 ETH Zurich
 //  Copyright (c) 2007-2016 Hartmut Kaiser
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -15,23 +16,28 @@
 
 namespace pika::detail::external_timer {
     inline std::shared_ptr<task_wrapper> new_task(
-        thread_description const&, std::uint32_t, threads::thread_id_type)
+        pika::util::thread_description const&, std::uint32_t,
+        threads::thread_id_type)
     {
         return nullptr;
     }
 
     inline std::shared_ptr<task_wrapper> update_task(
-        std::shared_ptr<task_wrapper>, thread_description const&)
+        std::shared_ptr<task_wrapper>, pika::util::thread_description const&)
     {
         return nullptr;
     }
 
-    struct scoped_timer
+    struct PIKA_NODISCARD scoped_timer
     {
-        explicit scoped_timer(std::shared_ptr<task_wrapper>) {}
+        explicit scoped_timer(std::shared_ptr<task_wrapper>){};
+        scoped_timer(scoped_timer&&) = delete;
+        scoped_timer(scoped_timer const&) = delete;
+        scoped_timer& operator=(scoped_timer&&) = delete;
+        scoped_timer& operator=(scoped_timer const&) = delete;
         ~scoped_timer() = default;
 
-        void stop(void) {}
-        void yield(void) {}
+        void stop() {}
+        void yield() {}
     };
 }    // namespace pika::detail::external_timer

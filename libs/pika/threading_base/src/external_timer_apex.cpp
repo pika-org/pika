@@ -1,3 +1,4 @@
+//  Copyright (c)      2022 ETH Zurich
 //  Copyright (c) 2007-2013 Kevin Huck
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -11,9 +12,9 @@
 #include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/thread_data.hpp>
 
-#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <string>
 
 namespace pika::detail::external_timer {
     std::shared_ptr<task_wrapper> new_task(
@@ -65,6 +66,55 @@ namespace pika::detail::external_timer {
                 pika::util::thread_description::data_type_address);
             return external_timer::update_task(
                 wrapper, description.get_address());
+        }
+    }
+
+    scoped_timer::scoped_timer(std::shared_ptr<task_wrapper> data_ptr)
+      : stopped(false)
+      , data_(nullptr)
+    {
+        // APEX internal actions are not timed. Otherwise, we would end
+        // up with recursive timers. So it's possible to have a null
+        // task wrapper pointer here.
+        if (data_ptr != nullptr)
+        {
+            data_ = data_ptr;
+            pika::detail::external_timer::start(data_);
+        }
+    }
+
+    scoped_timer::~scoped_timer()
+    {
+        stop();
+    }
+
+    void scoped_timer::stop()
+    {
+        if (!stopped)
+        {
+            stopped = true;
+            // APEX internal actions are not timed. Otherwise, we would
+            // end up with recursive timers. So it's possible to have a
+            // null task wrapper pointer here.
+            if (data_ != nullptr)
+            {
+                pika::detail::external_timer::stop(data_);
+            }
+        }
+    }
+
+    void scoped_timer::yield()
+    {
+        if (!stopped)
+        {
+            stopped = true;
+            // APEX internal actions are not timed. Otherwise, we would
+            // end up with recursive timers. So it's possible to have a
+            // null task wrapper pointer here.
+            if (data_ != nullptr)
+            {
+                pika::detail::external_timer::yield(data_);
+            }
         }
     }
 }    // namespace pika::detail::external_timer

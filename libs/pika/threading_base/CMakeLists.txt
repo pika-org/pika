@@ -45,7 +45,7 @@ set(threading_base_sources
     create_thread.cpp
     create_work.cpp
     execution_agent.cpp
-    external_timer.cpp
+    external_timer_apex.cpp
     get_default_pool.cpp
     print.cpp
     scheduler_base.cpp
