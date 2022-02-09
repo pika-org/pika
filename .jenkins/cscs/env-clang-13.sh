@@ -19,8 +19,6 @@ export CXX="${CLANG_ROOT}/bin/clang++"
 export CC="${CLANG_ROOT}/bin/clang"
 export CPP="${CLANG_ROOT}/bin/clang -E"
 
-module load daint-mc
-
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${CXX_STD}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"

@@ -21,14 +21,25 @@ source "${src_dir}/.jenkins/cscs/env-common.sh"
 source "${src_dir}/.jenkins/cscs/env-${configuration_name}.sh"
 
 set +e
-ctest \
-    --verbose \
-    -S ${src_dir}/.jenkins/cscs/ctest.cmake \
-    -DCTEST_BUILD_EXTRA_OPTIONS="${build_extra_options}" \
-    -DCTEST_CONFIGURE_EXTRA_OPTIONS="${configure_extra_options} -DCMAKE_INSTALL_PREFIX=${install_dir}" \
-    -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name_with_build_type}" \
-    -DCTEST_SOURCE_DIRECTORY="${src_dir}" \
-    -DCTEST_BINARY_DIRECTORY="${build_dir}"
+if [[ -n "${spack_spec:-}" ]]; then
+    spack build-env ${spack_spec} -- ctest \
+        --verbose \
+        -S ${src_dir}/.jenkins/cscs/ctest.cmake \
+        -DCTEST_BUILD_EXTRA_OPTIONS="${build_extra_options:-}" \
+        -DCTEST_CONFIGURE_EXTRA_OPTIONS="${configure_extra_options} -DCMAKE_INSTALL_PREFIX=${install_dir}" \
+        -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name_with_build_type}" \
+        -DCTEST_SOURCE_DIRECTORY="${src_dir}" \
+        -DCTEST_BINARY_DIRECTORY="${build_dir}"
+else
+    ctest \
+        --verbose \
+        -S ${src_dir}/.jenkins/cscs/ctest.cmake \
+        -DCTEST_BUILD_EXTRA_OPTIONS="${build_extra_options:-}" \
+        -DCTEST_CONFIGURE_EXTRA_OPTIONS="${configure_extra_options} -DCMAKE_INSTALL_PREFIX=${install_dir}" \
+        -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name_with_build_type}" \
+        -DCTEST_SOURCE_DIRECTORY="${src_dir}" \
+        -DCTEST_BINARY_DIRECTORY="${build_dir}"
+fi
 set -e
 
 # Copy the testing directory for saving as an artifact

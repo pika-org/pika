@@ -217,17 +217,6 @@ jobs:
                 -DPIKA_WITH_TESTS=Off \
                 -DPIKA_WITH_EXAMPLES=On
             rm -rf *
-      - run:
-          name: Running CMake with APEX on
-          command: |
-            cmake \
-                /pika/source \
-                -G "Ninja" \
-                -DPIKA_WITH_MALLOC=system \
-                -DPIKA_WITH_APEX=On \
-                -DPIKA_WITH_TESTS=On \
-                -DPIKA_WITH_EXAMPLES=On
-            rm -rf *
       - persist_to_workspace:
           root: /pika
           paths:
