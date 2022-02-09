@@ -54,6 +54,7 @@ set(threading_base_sources
     thread_data_stackless.cpp
     thread_description.cpp
     thread_helpers.cpp
+    thread_num_tss.cpp
     thread_pool_base.cpp
 )
 

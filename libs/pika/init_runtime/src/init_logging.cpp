@@ -35,8 +35,7 @@ namespace pika { namespace util {
     {
         void operator()(std::ostream& to) const override
         {
-            error_code ec(lightweight);
-            std::size_t thread_num = pika::get_worker_thread_num(ec);
+            std::size_t thread_num = pika::get_worker_thread_num();
 
             if (std::size_t(-1) != thread_num)
             {

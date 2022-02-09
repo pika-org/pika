@@ -27,7 +27,7 @@ namespace pika { namespace threads { namespace detail {
         std::size_t thread_pool_num;
     };
 
-    inline static thread_local thread_nums thread_nums_tss_ = {
+    inline thread_local thread_nums thread_nums_tss_ = {
         std::size_t(-1), std::size_t(-1), std::size_t(-1)};
 
     /// Set the global thread id to thread local storage.
@@ -116,10 +116,7 @@ namespace pika {
     ///
     /// \note   This function needs to be executed on a pika-thread. It will
     ///         fail otherwise (it will return -1).
-    inline std::size_t get_worker_thread_num()
-    {
-        return threads::detail::thread_nums_tss_.global_thread_num;
-    }
+    PIKA_EXPORT std::size_t get_worker_thread_num();
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Return the number of the current OS-thread running in the current
@@ -135,10 +132,7 @@ namespace pika {
     ///
     /// \note This function needs to be executed on a pika-thread. It will fail
     ///         otherwise (it will return -1).
-    inline std::size_t get_local_worker_thread_num()
-    {
-        return threads::detail::thread_nums_tss_.local_thread_num;
-    }
+    PIKA_EXPORT std::size_t get_local_worker_thread_num();
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Return the number of the current thread pool the current
@@ -154,10 +148,8 @@ namespace pika {
     ///
     /// \note This function needs to be executed on a pika-thread. It will fail
     ///         otherwise (it will return -1).
-    inline std::size_t get_thread_pool_num()
-    {
-        return threads::detail::thread_nums_tss_.thread_pool_num;
-    }
+    PIKA_EXPORT std::size_t get_thread_pool_num();
+
 }    // namespace pika
 
 #include <pika/config/warnings_suffix.hpp>
