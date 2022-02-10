@@ -4,7 +4,9 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests)
+set(tests resume_suspended_same_thread)
+
+set(resume_suspended_same_thread_PARAMETERS THREADS 2)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)
@@ -13,7 +15,7 @@ foreach(test ${tests})
 
   pika_add_executable(
     ${test}_test INTERNAL_FLAGS
-    SOURCES ${sources} ${${test}_FLAGS} ${${test}_LIBRARIES}
+    SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
     FOLDER "Tests/Unit/Modules/Local/ThreadingBase"
   )
