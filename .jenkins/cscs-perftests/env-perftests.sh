@@ -24,5 +24,5 @@ export CPP="${CLANG_ROOT}/bin/clang -E"
 
 module load cray-jemalloc/5.1.0.3
 module load daint-mc
-spack load cmake@3.18.6
-spack load ninja@1.10.0
+spack load cmake@3.18.6 %gcc@10.3.0
+spack load ninja@1.10.0 %gcc@10.3.0
