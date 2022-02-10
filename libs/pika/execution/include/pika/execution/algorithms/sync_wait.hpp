@@ -63,8 +63,7 @@ namespace pika { namespace execution { namespace experimental {
 
             // Constant to indicate if the type of the result from the
             // predecessor sender is void or not
-            static constexpr bool is_void_result =
-                std::is_same_v<result_type, void>;
+            static constexpr bool is_void_result = std::is_void_v<result_type>;
 
             // Dummy type to indicate that set_value with void has been called
             struct void_value_type

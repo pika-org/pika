@@ -196,7 +196,7 @@ struct error_typed_sender
 
     template <typename R>
     friend auto tag_invoke(
-        pika::execution::experimental::connect_t, error_typed_sender&&, R&& r)
+        pika::execution::experimental::connect_t, error_typed_sender, R&& r)
     {
         return operation_state<R>{std::forward<R>(r)};
     }
