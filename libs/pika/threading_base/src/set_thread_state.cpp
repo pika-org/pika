@@ -18,6 +18,7 @@
 #include <pika/threading_base/threading_base_fwd.hpp>
 
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <string>
 #include <utility>
@@ -57,10 +58,13 @@ namespace pika { namespace threads { namespace detail {
                 thread_schedule_state::terminated, invalid_thread_id);
         }
 
+        thread_schedule_hint schedulehint{static_cast<std::int16_t>(
+            get_thread_id_data(thrd)->get_last_worker_thread_num())};
+
         // just retry, set_state will create new thread if target is still active
         error_code ec(lightweight);    // do not throw
         detail::set_thread_state(thrd.noref(), newstate, newstate_ex, priority,
-            thread_schedule_hint(), true, ec);
+            schedulehint, true, ec);
 
         return thread_result_type(
             thread_schedule_state::terminated, invalid_thread_id);
