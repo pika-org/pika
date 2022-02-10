@@ -12,8 +12,6 @@ module switch PrgEnv-cray PrgEnv-gnu
 module load cudatoolkit/11.0.2_3.38-8.1__g5b73779
 module load Boost/1.75.0-CrayGNU-20.11
 module load hwloc/.2.0.3
-spack load cmake@3.18.6
-spack load ninja@1.10.0
 
 export CXX=`which CC`
 export CC=`which cc`
