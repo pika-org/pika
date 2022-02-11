@@ -151,7 +151,15 @@ int main()
         PIKA_TEST(receiver_set_value_called);
     }
 
-    test_adl_isolation(ex::split(my_namespace::my_sender{}));
+    {
+        auto s = ex::split(my_namespace::my_sender{});
+        test_adl_isolation(s);
+
+        // This is not required by the ADL test, but required by split. The
+        // shared state destructor of the sender returned by split asserts that
+        // the sender has been connected and started before being released.
+        ex::sync_wait(std::move(s));
+    }
 
     return pika::util::report_errors();
 }
