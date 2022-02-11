@@ -156,23 +156,21 @@ namespace pika { namespace execution { namespace experimental {
 
                 struct split_receiver
                 {
-                    pika::intrusive_ptr<shared_state> state;
+                    shared_state& state;
 
                     template <typename Error>
                     friend void tag_invoke(
                         set_error_t, split_receiver&& r, Error&& error) noexcept
                     {
-                        r.state->v.template emplace<error_type>(
+                        r.state.v.template emplace<error_type>(
                             error_type(PIKA_FORWARD(Error, error)));
-                        r.state->set_predecessor_done();
-                        r.state.reset();
+                        r.state.set_predecessor_done();
                     }
 
                     friend void tag_invoke(
                         set_done_t, split_receiver&& r) noexcept
                     {
-                        r.state->set_predecessor_done();
-                        r.state.reset();
+                        r.state.set_predecessor_done();
                     };
 
                     // This typedef is duplicated from the parent struct. The
@@ -194,11 +192,10 @@ namespace pika { namespace execution { namespace experimental {
                                         PIKA_FORWARD(Ts, ts)...)),
                             void())
                     {
-                        r.state->v.template emplace<value_type>(
+                        r.state.v.template emplace<value_type>(
                             pika::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
 
-                        r.state->set_predecessor_done();
-                        r.state.reset();
+                        r.state.set_predecessor_done();
                     }
                 };
 
@@ -216,9 +213,9 @@ namespace pika { namespace execution { namespace experimental {
                 {
                     PIKA_ASSERT_MSG(start_called,
                         "start was never called on the operation state of "
-                        "split or ensure_started. Did you forget to connect the"
-                        "sender to a receiver, or call start on the operation "
-                        "state?");
+                        "split or ensure_started. Did you forget to connect "
+                        "the sender to a receiver, or call start on the "
+                        "operation state?");
                 }
 
                 template <typename Receiver>
