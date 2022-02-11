@@ -161,6 +161,15 @@ namespace pika { namespace threads {
         PIKA_ASSERT(thrd_data);
         thrd_data->interruption_point();
 
+        // Misbehaved threads may try to yield while handling an exception. This
+        // is dangerous if the thread can migrate to other worker threads since
+        // the count for std::uncaught_exceptions may become inconsistent
+        // (including negative). If at any point in the future there is a
+        // legitimate use case for yielding with uncaught exceptions this
+        // assertion can be revisited, but until then we prefer to be strict
+        // about it.
+        PIKA_ASSERT(std::uncaught_exceptions() == 0);
+
         thrd_data->set_last_worker_thread_num(
             pika::get_local_worker_thread_num());
 
