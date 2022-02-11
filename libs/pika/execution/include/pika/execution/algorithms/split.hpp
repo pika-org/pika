@@ -13,6 +13,7 @@
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
+#include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -27,6 +28,7 @@
 #include <pika/modules/memory.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/atomic_count.hpp>
+#include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <atomic>
@@ -134,7 +136,11 @@ namespace pika { namespace execution { namespace experimental {
 
                 using operation_state_type =
                     std::decay_t<connect_result_t<Sender, split_receiver>>;
-                operation_state_type os;
+                // We store the operation state in an optional so that we can
+                // reset it as soon as the the split_receiver has been signaled.
+                // This is useful to ensure that resources held by the
+                // predecessor work is released as soon as possible.
+                pika::optional<operation_state_type> os;
 
                 struct done_type
                 {
@@ -204,9 +210,12 @@ namespace pika { namespace execution { namespace experimental {
                         std::decay_t<Sender_>, shared_state>::value>>
                 shared_state(Sender_&& sender, allocator_type const& alloc)
                   : alloc(alloc)
-                  , os(pika::execution::experimental::connect(
-                        PIKA_FORWARD(Sender_, sender), split_receiver{this}))
                 {
+                    os.emplace(pika::util::detail::with_result_of([&]() {
+                        return pika::execution::experimental::connect(
+                            PIKA_FORWARD(Sender_, sender),
+                            split_receiver{*this});
+                    }));
                 }
 
                 ~shared_state()
@@ -251,6 +260,12 @@ namespace pika { namespace execution { namespace experimental {
 
                 void set_predecessor_done()
                 {
+                    // We reset the operation state as soon as the predecessor
+                    // is done to release any resources held by it. Any values
+                    // sent by the predecessor have already been stored in the
+                    // shared state by now.
+                    os.reset();
+
                     predecessor_done = true;
 
                     {
@@ -364,7 +379,8 @@ namespace pika { namespace execution { namespace experimental {
                 {
                     if (!start_called.exchange(true))
                     {
-                        pika::execution::experimental::start(os);
+                        PIKA_ASSERT(os.has_value());
+                        pika::execution::experimental::start(os.value());
                     }
                 }
 
