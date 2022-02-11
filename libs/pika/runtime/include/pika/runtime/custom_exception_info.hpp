@@ -119,9 +119,6 @@ namespace pika {
         PIKA_EXPORT void set_get_full_build_string(
             get_full_build_string_type f);
         PIKA_EXPORT std::string get_full_build_string();
-
-        PIKA_EXPORT std::string trace_on_new_stack(
-            std::size_t frames_no = PIKA_HAVE_THREAD_BACKTRACE_DEPTH);
     }    // namespace detail
 
     namespace detail {

@@ -162,49 +162,6 @@ namespace pika {
     }
 }    // namespace pika
 
-namespace pika::detail {
-    // This is a local helper used to get the backtrace on a new new stack if
-    // possible.
-    std::string trace_on_new_stack(std::size_t frames_no)
-    {
-#if defined(PIKA_HAVE_STACKTRACES)
-        if (frames_no == 0)
-        {
-            return std::string();
-        }
-
-        pika::util::backtrace bt(frames_no);
-
-        // avoid infinite recursion on handling errors
-        auto* self = threads::get_self_ptr();
-        if (nullptr == self ||
-            self->get_thread_id() == threads::invalid_thread_id)
-        {
-            return bt.trace();
-        }
-
-        lcos::local::futures_factory<std::string()> p(
-            [&bt]() { return bt.trace(); });
-
-        error_code ec(lightweight);
-        threads::thread_id_ref_type tid =
-            p.apply("pika::detail::trace_on_new_stack",
-                launch::fork_policy(threads::thread_priority::default_,
-                    threads::thread_stacksize::medium),
-                ec);
-        if (ec)
-            return "<couldn't retrieve stack backtrace>";
-
-        // make sure this thread is executed last
-        pika::this_thread::yield_to(thread::id(tid));
-
-        return p.get_future().get(ec);
-#else
-        return "";
-#endif
-    }
-}    // namespace pika::detail
-
 namespace pika {
     namespace detail {
         void pre_exception_handler()
@@ -421,8 +378,8 @@ namespace pika {
                 util::from_string<std::size_t>(get_config_entry(
                     "pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
 
-            std::string back_trace(
-                pika::detail::trace_on_new_stack(trace_depth));
+            pika::util::backtrace bt(trace_depth);
+            std::string back_trace = bt.trace();
 
             std::string state_name("not running");
             std::string hostname;
