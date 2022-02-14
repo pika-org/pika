@@ -116,6 +116,9 @@ namespace pika { namespace util {
             "spinlock_deadlock_detection_limit = "
             "${PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT)) "}",
+            "spinlock_deadlock_warning_limit = "
+            "${PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT:" PIKA_PP_STRINGIZE(
+                PIKA_PP_EXPAND(PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT)) "}",
 #endif
             "expect_connecting_localities = "
             "${PIKA_EXPECT_CONNECTING_LOCALITIES:0}",
@@ -504,6 +507,22 @@ namespace pika { namespace util {
                 PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT);
         }
         return PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT;
+#else
+        return std::size_t(-1);
+#endif
+    }
+
+    std::size_t runtime_configuration::get_spinlock_deadlock_warning_limit()
+        const
+    {
+#ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
+        if (util::section const* sec = get_section("pika"); nullptr != sec)
+        {
+            return pika::util::get_entry_as<std::size_t>(*sec,
+                "spinlock_deadlock_warning_limit",
+                PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT);
+        }
+        return PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT;
 #else
         return std::size_t(-1);
 #endif

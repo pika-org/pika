@@ -12,6 +12,7 @@
 #include <pika/coroutines/detail/context_impl.hpp>
 #include <pika/detail/filesystem.hpp>
 #include <pika/execution/detail/execution_parameter_callbacks.hpp>
+#include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>
 #include <pika/executors/exception_list.hpp>
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/function.hpp>
@@ -254,6 +255,8 @@ namespace pika {
                 cmdline.rtcfg_.enable_spinlock_deadlock_detection());
             util::detail::set_spinlock_deadlock_detection_limit(
                 cmdline.rtcfg_.get_spinlock_deadlock_detection_limit());
+            util::detail::set_spinlock_deadlock_warning_limit(
+                cmdline.rtcfg_.get_spinlock_deadlock_warning_limit());
 #endif
 #if defined(PIKA_HAVE_LOGGING)
             util::detail::init_logging_local(cmdline.rtcfg_);
