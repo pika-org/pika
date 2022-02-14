@@ -117,6 +117,10 @@ namespace pika { namespace detail {
         if (stop_requested(old_state))
         {
             cb->execute();
+
+            cb->callback_finished_executing_.store(
+                true, std::memory_order_release);
+
             return false;
         }
         else if (!stop_possible(old_state))
@@ -137,6 +141,10 @@ namespace pika { namespace detail {
                 if (stop_requested(old_state))
                 {
                     cb->execute();
+
+                    cb->callback_finished_executing_.store(
+                        true, std::memory_order_release);
+
                     return false;
                 }
                 else if (!stop_possible(old_state))
