@@ -123,8 +123,6 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    std::set_terminate([]() { PIKA_TEST(false); });
-
     try
     {
         producer_consumer(0, 0, false);

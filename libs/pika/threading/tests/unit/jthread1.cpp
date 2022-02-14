@@ -475,8 +475,6 @@ void test_jthread_api()
 ////////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    std::set_terminate([]() { PIKA_TEST(false); });
-
     test_jthread_without_token();
     test_jthread_with_token();
     test_join();

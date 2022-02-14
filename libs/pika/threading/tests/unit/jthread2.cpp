@@ -315,8 +315,6 @@ void test_jthread_move()
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    std::set_terminate([]() { PIKA_TEST(false); });
-
     test_interrupt_by_destructor();
     test_interrupt_started_thread();
     test_interrupt_started_thread_with_subthread();
