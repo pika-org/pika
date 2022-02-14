@@ -210,13 +210,12 @@ namespace pika { namespace detail {
         {
             // Callback is currently executing on another thread,
             // block until it finishes executing.
-            for (std::size_t k = 0; !cb->callback_finished_executing_.load(
-                     std::memory_order_relaxed);
-                 ++k)
-            {
-                pika::execution_base::this_thread::yield_k(
-                    k, "stop_state::remove_callback");
-            }
+            pika::util::yield_while(
+                [&]() {
+                    return !cb->callback_finished_executing_.load(
+                        std::memory_order_relaxed);
+                },
+                "stop_state::remove_callback");
         }
     }
 
