@@ -9,13 +9,8 @@
 #include <pika/config.hpp>
 #include <pika/execution_base/agent_base.hpp>
 #include <pika/execution_base/agent_ref.hpp>
-#include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>
 #include <pika/timing/high_resolution_timer.hpp>
 #include <pika/timing/steady_clock.hpp>
-
-#ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-#include <pika/errors/throw_exception.hpp>
-#endif
 
 #include <chrono>
 #include <cstddef>
@@ -71,21 +66,6 @@ namespace pika { namespace execution_base {
 }}       // namespace pika::execution_base
 
 namespace pika { namespace util {
-    namespace detail {
-        inline void yield_k(std::size_t k, const char* thread_name)
-        {
-#ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
-            if (k > 32 && get_spinlock_break_on_deadlock_enabled() &&
-                k > get_spinlock_deadlock_detection_limit())
-            {
-                PIKA_THROW_EXCEPTION(
-                    deadlock, thread_name, "possible deadlock detected");
-            }
-#endif
-            pika::execution_base::this_thread::yield_k(k, thread_name);
-        }
-    }    // namespace detail
-
     template <typename Predicate>
     void yield_while(Predicate&& predicate, const char* thread_name = nullptr,
         bool allow_timed_suspension = true)
@@ -94,14 +74,14 @@ namespace pika { namespace util {
         {
             for (std::size_t k = 0; predicate(); ++k)
             {
-                detail::yield_k(k, thread_name);
+                pika::execution_base::this_thread::yield_k(k, thread_name);
             }
         }
         else
         {
             for (std::size_t k = 0; predicate(); ++k)
             {
-                detail::yield_k(k % 16, thread_name);
+                pika::execution_base::this_thread::yield_k(k % 16, thread_name);
             }
         }
     }
@@ -135,7 +115,8 @@ namespace pika { namespace util {
                     else
                     {
                         count = 0;
-                        detail::yield_k(k, thread_name);
+                        pika::execution_base::this_thread::yield_k(
+                            k, thread_name);
                     }
                 }
             }
@@ -153,7 +134,8 @@ namespace pika { namespace util {
                     else
                     {
                         count = 0;
-                        detail::yield_k(k % 16, thread_name);
+                        pika::execution_base::this_thread::yield_k(
+                            k % 16, thread_name);
                     }
                 }
             }
@@ -196,7 +178,8 @@ namespace pika { namespace util {
                     else
                     {
                         count = 0;
-                        detail::yield_k(k, thread_name);
+                        pika::execution_base::this_thread::yield_k(
+                            k, thread_name);
                     }
                 }
             }
@@ -219,7 +202,8 @@ namespace pika { namespace util {
                     else
                     {
                         count = 0;
-                        detail::yield_k(k % 16, thread_name);
+                        pika::execution_base::this_thread::yield_k(
+                            k % 16, thread_name);
                     }
                 }
             }
