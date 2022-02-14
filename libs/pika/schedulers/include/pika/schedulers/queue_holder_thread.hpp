@@ -92,7 +92,7 @@ namespace pika { namespace threads { namespace policies {
         // a mask that hold a bit per queue to indicate ownership of the queue
         const std::size_t owner_mask_;
 
-        // we must use OS mutexes here because we cannot suspend an pika
+        // we must use OS mutexes here because we cannot suspend a pika
         // thread whilst processing the Queues for that thread, this code
         // is running at the OS level in effect.
         using mutex_type = std::mutex;
@@ -405,7 +405,9 @@ namespace pika { namespace threads { namespace policies {
         void create_thread(thread_init_data& data, thread_id_ref_type* tid,
             std::size_t thread_num, error_code& ec)
         {
-            if (thread_num != thread_num_)
+            PIKA_ASSERT(
+                (!data.run_now || (data.run_now && thread_num == thread_num_)));
+            if (data.run_now && thread_num != thread_num_)
             {
                 data.run_now = false;
             }
@@ -464,7 +466,7 @@ namespace pika { namespace threads { namespace policies {
             threads::thread_id_ref_type& tid, threads::thread_init_data& data)
         {
             PIKA_ASSERT(data.stacksize >= thread_stacksize::minimal);
-            PIKA_ASSERT(data.stacksize <= thread_stacksize::maximal);
+            PIKA_ASSERT(data.stacksize <= thread_stacksize::nostack);
 
             std::ptrdiff_t const stacksize =
                 data.scheduler_base->get_stack_size(data.stacksize);
