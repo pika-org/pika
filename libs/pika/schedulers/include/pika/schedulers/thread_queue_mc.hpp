@@ -44,18 +44,8 @@
 #include <utility>
 #include <vector>
 
-#if !defined(THREAD_QUEUE_MC_DEBUG)
-#if defined(PIKA_DEBUG)
-#define THREAD_QUEUE_MC_DEBUG false
-#else
-#define THREAD_QUEUE_MC_DEBUG false
-#endif
-#endif
-
-//#define DEBUG_QUEUE_EXTRA 1
-
 namespace pika {
-    static pika::debug::enable_print<THREAD_QUEUE_MC_DEBUG> tqmc_deb("_TQ_MC_");
+    static pika::debug::enable_print<false> tqmc_deb("_TQ_MC_");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -260,14 +250,15 @@ namespace pika { namespace threads { namespace policies {
         }
 
         // ----------------------------------------------------------------
-        /// Return the next thread to be executed, return false if none is
-        /// available
+        /// Return the next thread to be executed,
+        /// return false if none is available
         bool get_next_thread(threads::thread_id_ref_type& thrd, bool other_end,
             bool check_new = false) PIKA_HOT
         {
             std::int64_t work_items_count_count =
                 work_items_count_.data_.load(std::memory_order_relaxed);
 
+            // If there is an available thread on the work queue
             if (0 != work_items_count_count && work_items_.pop(thrd, other_end))
             {
                 --work_items_count_.data_;
@@ -279,9 +270,13 @@ namespace pika { namespace threads { namespace policies {
                     debug::threadinfo<threads::thread_id_ref_type*>(&thrd));
                 return true;
             }
-            if (check_new && add_new(32, this, false) > 0)
+
+            // if there is not any work ready, convert ready tasks into threads
+            // not that if other_end is true = stealing, so do not convert
+            // for thread safety reasons
+            if (!other_end && check_new && add_new(32, this, false) > 0)
             {
-                // use check_now false to prevent infinite recursion
+                // use check_new false to prevent infinite recursion
                 return get_next_thread(thrd, other_end, false);
             }
             return false;
