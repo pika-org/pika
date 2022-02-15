@@ -191,7 +191,7 @@ namespace pika { namespace functional {
     };
 #else
     template <typename Tag, typename... Args>
-    struct is_nothrow_tag_invocable : std::true_type
+    struct is_nothrow_tag_invocable : is_tag_invocable<Tag, Args...>
     {
     };
 #endif

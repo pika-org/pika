@@ -1766,6 +1766,12 @@ void test_completion_scheduler()
     }
 }
 
+void test_scheduler_queries()
+{
+    PIKA_TEST(ex::get_forward_progress_guarantee(ex::thread_pool_scheduler{}) ==
+        ex::forward_progress_guarantee::weakly_parallel);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
@@ -1796,6 +1802,7 @@ int pika_main()
     test_detach();
     test_bulk();
     test_completion_scheduler();
+    test_scheduler_queries();
 
     return pika::finalize();
 }
