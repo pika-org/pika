@@ -16,19 +16,27 @@
 #include <pika/functional/unique_function.hpp>
 #include <pika/modules/errors.hpp>
 
+#if defined(PIKA_HAVE_APEX)
+#include <apex_api.hpp>
+#endif
+
 #include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <utility>
 
+namespace pika::detail::external_timer {
 #if defined(PIKA_HAVE_APEX)
-namespace pika { namespace util { namespace external_timer {
-    struct task_wrapper;
-}}}    // namespace pika::util::external_timer
+    using apex::task_wrapper;
+#else
+    struct task_wrapper
+    {
+    };
 #endif
+}    // namespace pika::detail::external_timer
 
-namespace pika { namespace threads {
+namespace pika::threads {
 
     class thread_data;
     class thread_data_stackful;
@@ -57,10 +65,10 @@ namespace pika { namespace threads {
     using thread_self_impl_type = coroutines::detail::coroutine_impl;
 
 #if defined(PIKA_HAVE_APEX)
-    PIKA_EXPORT std::shared_ptr<pika::util::external_timer::task_wrapper>
+    PIKA_EXPORT std::shared_ptr<pika::detail::external_timer::task_wrapper>
     get_self_timer_data(void);
     PIKA_EXPORT void set_self_timer_data(
-        std::shared_ptr<pika::util::external_timer::task_wrapper> data);
+        std::shared_ptr<pika::detail::external_timer::task_wrapper> data);
 #endif
     /// \endcond
-}}    // namespace pika::threads
+}    // namespace pika::threads

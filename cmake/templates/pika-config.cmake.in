@@ -92,6 +92,10 @@ include(pika_setup_cuda)
 
 include(pika_setup_mpi)
 
+# APEX
+set(PIKA_APEX_ROOT "@APEX_ROOT@")
+include(pika_setup_apex)
+
 set(PIKA_WITH_MALLOC_DEFAULT @PIKA_WITH_MALLOC@)
 
 if(PIKA_WITH_DATAPAR_VC AND NOT Vc_DIR)

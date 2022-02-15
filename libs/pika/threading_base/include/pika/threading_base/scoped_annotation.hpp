@@ -82,7 +82,7 @@ namespace pika {
 #if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
             threads::set_self_timer_data(
-                pika::util::external_timer::update_task(
+                pika::detail::external_timer::update_task(
                     threads::get_self_timer_data(), std::string(name)));
 #endif
         }
@@ -105,7 +105,7 @@ namespace pika {
 #if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
             threads::set_self_timer_data(
-                pika::util::external_timer::update_task(
+                pika::detail::external_timer::update_task(
                     threads::get_self_timer_data(), PIKA_MOVE(name)));
 #endif
         }

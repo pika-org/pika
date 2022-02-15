@@ -18,8 +18,6 @@ export LDFLAGS="-L${GCC_ROOT}/lib64"
 export CXX=${GCC_ROOT}/bin/g++
 export CC=${GCC_ROOT}/bin/gcc
 
-module load daint-mc
-
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${CXX_STD}"
 configure_extra_options+=" -DPIKA_WITH_MAX_CPU_COUNT=128"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"

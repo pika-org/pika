@@ -403,7 +403,7 @@ namespace pika { namespace threads {
     }
 
 #if defined(PIKA_HAVE_APEX)
-    std::shared_ptr<pika::util::external_timer::task_wrapper>
+    std::shared_ptr<pika::detail::external_timer::task_wrapper>
     get_self_timer_data()
     {
         thread_data* thrd_data = get_self_id_data();
@@ -414,7 +414,7 @@ namespace pika { namespace threads {
         return nullptr;
     }
     void set_self_timer_data(
-        std::shared_ptr<pika::util::external_timer::task_wrapper> data)
+        std::shared_ptr<pika::detail::external_timer::task_wrapper> data)
     {
         thread_data* thrd_data = get_self_id_data();
         if (PIKA_LIKELY(nullptr != thrd_data))

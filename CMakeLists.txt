@@ -1592,6 +1592,7 @@ include(pika_setup_allocator)
 include(pika_setup_hwloc)
 include(pika_setup_mpi)
 include(pika_setup_hip)
+include(pika_setup_apex)
 include(pika_setup_valgrind)
 
 if(PIKA_WITH_SANITIZERS)

@@ -92,7 +92,7 @@ namespace pika { namespace threads {
 #ifdef PIKA_HAVE_APEX
           // PIKA_HAVE_APEX forces the PIKA_HAVE_THREAD_DESCRIPTION and
           // PIKA_HAVE_THREAD_PARENT_REFERENCE settings to be on
-          , timer_data(util::external_timer::new_task(
+          , timer_data(pika::detail::external_timer::new_task(
                 description, parent_locality_id, parent_id))
 #endif
           , priority(rhs.priority)
@@ -125,7 +125,7 @@ namespace pika { namespace threads {
 #ifdef PIKA_HAVE_APEX
           // PIKA_HAVE_APEX forces the PIKA_HAVE_THREAD_DESCRIPTION and
           // PIKA_HAVE_THREAD_PARENT_REFERENCE settings to be on
-          , timer_data(util::external_timer::new_task(
+          , timer_data(pika::detail::external_timer::new_task(
                 description, parent_locality_id, parent_id))
 #endif
           , priority(priority_)
@@ -158,7 +158,7 @@ namespace pika { namespace threads {
 #ifdef PIKA_HAVE_APEX
         // PIKA_HAVE_APEX forces the PIKA_HAVE_THREAD_DESCRIPTION and
         // PIKA_HAVE_THREAD_PARENT_REFERENCE settings to be on
-        std::shared_ptr<util::external_timer::task_wrapper> timer_data;
+        std::shared_ptr<pika::detail::external_timer::task_wrapper> timer_data;
 #endif
 
         thread_priority priority;

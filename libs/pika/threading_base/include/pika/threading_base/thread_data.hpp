@@ -561,13 +561,14 @@ namespace pika { namespace threads {
         virtual void rebind(thread_init_data& init_data) = 0;
 
 #if defined(PIKA_HAVE_APEX)
-        std::shared_ptr<util::external_timer::task_wrapper> get_timer_data()
-            const noexcept
+        std::shared_ptr<pika::detail::external_timer::task_wrapper>
+        get_timer_data() const noexcept
         {
             return timer_data_;
         }
         void set_timer_data(
-            std::shared_ptr<util::external_timer::task_wrapper> data) noexcept
+            std::shared_ptr<pika::detail::external_timer::task_wrapper>
+                data) noexcept
         {
             timer_data_ = data;
         }
@@ -633,7 +634,7 @@ namespace pika { namespace threads {
 
     public:
 #if defined(PIKA_HAVE_APEX)
-        std::shared_ptr<util::external_timer::task_wrapper> timer_data_;
+        std::shared_ptr<pika::detail::external_timer::task_wrapper> timer_data_;
 #endif
     };
 
