@@ -204,8 +204,11 @@ namespace pika { namespace threads {
     void execution_agent::do_resume(
         const char* /* desc */, pika::threads::thread_restart_state statex)
     {
-        threads::detail::set_thread_state(self_.get_thread_id(),
+        auto thrd = self_.get_thread_id();
+        threads::detail::set_thread_state(PIKA_MOVE(thrd),
             thread_schedule_state::pending, statex, thread_priority::normal,
-            thread_schedule_hint{}, false);
+            thread_schedule_hint{static_cast<std::int16_t>(
+                get_thread_id_data(thrd)->get_last_worker_thread_num())},
+            false);
     }
 }}    // namespace pika::threads
