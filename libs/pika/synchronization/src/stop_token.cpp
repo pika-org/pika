@@ -70,16 +70,21 @@ namespace pika { namespace detail {
     {
         auto old_state = state_.load(std::memory_order_relaxed);
 
-        while (!state_.compare_exchange_weak(old_state,
+        auto expected = old_state & ~stop_state::locked_flag;
+        while (!state_.compare_exchange_weak(expected,
             old_state | stop_state::locked_flag, std::memory_order_acquire,
             std::memory_order_relaxed))
         {
+            old_state = expected;
+
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
                 pika::execution_base::this_thread::yield_k(
                     k, "stop_state::lock");
                 old_state = state_.load(std::memory_order_relaxed);
             }
+
+            expected = old_state & ~stop_state::locked_flag;
         }
     }
 
@@ -91,11 +96,14 @@ namespace pika { namespace detail {
         if (stop_requested(old_state))
             return false;
 
-        while (!state_.compare_exchange_weak(old_state,
+        auto expected = old_state & ~stop_state::locked_flag;
+        while (!state_.compare_exchange_weak(expected,
             old_state | stop_state::stop_requested_flag |
                 stop_state::locked_flag,
             std::memory_order_acquire, std::memory_order_relaxed))
         {
+            old_state = expected;
+
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
                 pika::execution_base::this_thread::yield_k(
@@ -105,7 +113,10 @@ namespace pika { namespace detail {
                 if (stop_requested(old_state))
                     return false;
             }
+
+            expected = old_state & ~stop_state::locked_flag;
         }
+
         return true;
     }
 
@@ -128,10 +139,13 @@ namespace pika { namespace detail {
             return false;
         }
 
-        while (!state_.compare_exchange_weak(old_state,
+        auto expected = old_state & ~stop_state::locked_flag;
+        while (!state_.compare_exchange_weak(expected,
             old_state | stop_state::locked_flag, std::memory_order_acquire,
             std::memory_order_relaxed))
         {
+            old_state = expected;
+
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
                 pika::execution_base::this_thread::yield_k(
@@ -152,7 +166,10 @@ namespace pika { namespace detail {
                     return false;
                 }
             }
+
+            expected = old_state & ~stop_state::locked_flag;
         }
+
         return true;
     }
 
@@ -197,7 +214,9 @@ namespace pika { namespace detail {
         {
             std::lock_guard<stop_state> l(*this);
             if (cb->remove_this_callback())
+            {
                 return;
+            }
         }
 
         // Callback has either already executed or is executing concurrently
