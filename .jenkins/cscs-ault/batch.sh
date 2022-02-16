@@ -24,8 +24,8 @@ src_dir="${pika_dir}/src_${job_name}"
 build_dir="${pika_dir}/build_${job_name}"
 install_dir="${pika_dir}/install_${job_name}"
 
-# Clean up directories older than 7 days, find fails if dir does not exist
-test -d ${pika_dir} && find ${pika_dir} -mindepth 1 -type d -ctime +4 -exec rm -rf {} \;
+# Clean up directories older than 4 days, find fails if dir does not exist
+test -d ${pika_dir} && find ${pika_dir} -mindepth 1 -type d -ctime +4 -exec rm -rf {} \; 2> /dev/null
 
 rm -rf ${src_dir} ${build_dir}
 # Copy source directory to /dev/shm for faster builds
