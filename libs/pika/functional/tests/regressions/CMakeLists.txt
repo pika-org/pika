@@ -18,7 +18,7 @@ foreach(test ${function_tests})
     NOLIBS
     DEPENDENCIES pika
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Regressions/Modules/Local/Functional"
+    FOLDER "Tests/Regressions/Modules/Functional"
   )
 
   pika_add_regression_test("modules.functional" ${test} ${${test}_PARAMETERS})

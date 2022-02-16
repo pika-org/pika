@@ -132,7 +132,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/Algorithms/Container"
+    FOLDER "Tests/Unit/Modules/Algorithms/Container"
   )
 
   target_link_libraries(

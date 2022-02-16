@@ -13,7 +13,7 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Local/Algorithms/Util")
+  set(folder_name "Tests/Unit/Modules/Algorithms/Util")
 
   # add example executable
   pika_add_executable(

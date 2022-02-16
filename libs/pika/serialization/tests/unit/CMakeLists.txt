@@ -42,7 +42,7 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Local/Serialization")
+  set(folder_name "Tests/Unit/Modules/Serialization")
 
   # add example executable
   pika_add_executable(
@@ -64,7 +64,7 @@ foreach(test ${full_tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Local/Serialization")
+  set(folder_name "Tests/Unit/Modules/Serialization")
 
   # add example executable
   pika_add_executable(
@@ -99,7 +99,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
     pika_add_unit_compile_test(
       "modules.serialization" ${compile_test}
       SOURCES ${sources} ${${compile_test}_FLAGS}
-      FOLDER "Tests/Unit/Modules/Local/Serialization/CompileOnly"
+      FOLDER "Tests/Unit/Modules/Serialization/CompileOnly"
     )
 
   endforeach()

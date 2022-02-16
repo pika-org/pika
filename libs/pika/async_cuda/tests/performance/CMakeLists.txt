@@ -25,7 +25,7 @@ foreach(benchmark ${benchmarks})
     SOURCES ${sources}
     EXCLUDE_FROM_ALL ${${benchmark}_FLAGS}
     DEPENDENCIES pika_async_cuda ${${benchmark}_FLAGS}
-    FOLDER "Benchmarks/Modules/Local/AsyncCuda"
+    FOLDER "Benchmarks/Modules/AsyncCuda"
   )
 
   # add a custom target for this benchmark

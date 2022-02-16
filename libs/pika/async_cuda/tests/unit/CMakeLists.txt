@@ -52,7 +52,7 @@ foreach(test ${tests})
     SOURCES ${sources} ${${test}_FLAGS}
     DEPENDENCIES ${${test_program}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/AsyncCuda"
+    FOLDER "Tests/Unit/Modules/AsyncCuda"
   )
 
   pika_add_unit_test(

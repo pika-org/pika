@@ -18,7 +18,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/Affinity"
+    FOLDER "Tests/Unit/Modules/Affinity"
   )
 
   pika_add_unit_test("modules.affinity" ${test} ${${test}_PARAMETERS})

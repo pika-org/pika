@@ -16,7 +16,7 @@ foreach(test ${tests})
     ${test}_test
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Regressions/Modules/Local/ResourcePartitioner/"
+    FOLDER "Tests/Regressions/Modules/ResourcePartitioner/"
   )
 
   pika_add_regression_test(

@@ -17,7 +17,7 @@ foreach(test ${tests})
     NOLIBS
     DEPENDENCIES pika
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/Assertion/"
+    FOLDER "Tests/Unit/Modules/Assertion/"
   )
 
   pika_add_unit_test("modules.assertion" ${test} ${${test}_PARAMETERS})

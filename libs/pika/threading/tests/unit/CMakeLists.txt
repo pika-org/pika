@@ -57,7 +57,7 @@ foreach(test ${threading_tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/Threading"
+    FOLDER "Tests/Unit/Modules/Threading"
   )
 
   pika_add_unit_test("modules.threading" ${test} ${${test}_PARAMETERS})

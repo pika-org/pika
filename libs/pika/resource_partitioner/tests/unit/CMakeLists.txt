@@ -48,7 +48,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/ResourcePartitioner/"
+    FOLDER "Tests/Unit/Modules/ResourcePartitioner/"
   )
 
   pika_add_unit_test(

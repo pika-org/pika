@@ -9,7 +9,7 @@
 include(pika_setup_boost_regex)
 
 pika_add_executable(
-  inspect INTERNAL_FLAGS AUTOGLOB NOLIBS FOLDER "Tools/Local/Inspect"
+  inspect INTERNAL_FLAGS AUTOGLOB NOLIBS FOLDER "Tools/Inspect"
 )
 
 if(NOT Boost_REGEX_FOUND)

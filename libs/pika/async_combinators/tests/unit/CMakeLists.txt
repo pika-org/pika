@@ -28,7 +28,7 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Local/AsyncCombinators")
+  set(folder_name "Tests/Unit/Modules/AsyncCombinators")
 
   pika_add_executable(
     ${test}_test INTERNAL_FLAGS

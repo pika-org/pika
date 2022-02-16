@@ -21,7 +21,7 @@ foreach(example_program ${example_programs})
   pika_add_executable(
     ${example_program} INTERNAL_FLAGS
     SOURCES ${sources} ${${example_program}_FLAGS}
-    FOLDER "Examples/Local/Balancing"
+    FOLDER "Examples/Balancing"
   )
 
   pika_add_example_target_dependencies("balancing" ${example_program})

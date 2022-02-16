@@ -64,7 +64,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/Synchronization"
+    FOLDER "Tests/Unit/Modules/Synchronization"
   )
 
   pika_add_unit_test("modules.synchronization" ${test} ${${test}_PARAMETERS})
@@ -92,7 +92,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
     pika_add_unit_compile_test(
       "modules.synchronization" ${compile_test}
       SOURCES ${sources} ${${compile_test}_FLAGS}
-      FOLDER "Tests/Unit/Modules/Local/Synchronization/CompileOnly"
+      FOLDER "Tests/Unit/Modules/Synchronization/CompileOnly"
     )
 
   endforeach()

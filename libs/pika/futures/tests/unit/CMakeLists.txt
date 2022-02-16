@@ -29,7 +29,7 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Local/Futures")
+  set(folder_name "Tests/Unit/Modules/Futures")
 
   pika_add_executable(
     ${test}_test INTERNAL_FLAGS

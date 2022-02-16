@@ -17,7 +17,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS} ${${test}_LIBRARIES}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/Concurrency"
+    FOLDER "Tests/Unit/Modules/Concurrency"
   )
 
   pika_add_unit_test("modules.concurrency" ${test} ${${test}_PARAMETERS})

@@ -16,7 +16,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Regressions/Modules/Local/AsyncCombinators"
+    FOLDER "Tests/Regressions/Modules/AsyncCombinators"
   )
 
   pika_add_regression_test(
@@ -35,7 +35,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
     pika_add_regression_compile_test(
       "modules.async_combinators" ${compile_test}
       SOURCES ${sources} ${${compile_test}_FLAGS}
-      FOLDER "Tests/Regressions/Modules/Local/AsyncCombinators/CompileOnly"
+      FOLDER "Tests/Regressions/Modules/AsyncCombinators/CompileOnly"
     )
   endforeach()
 endif()

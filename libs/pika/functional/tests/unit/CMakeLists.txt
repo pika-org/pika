@@ -50,7 +50,7 @@ foreach(test ${function_tests})
     NOLIBS
     DEPENDENCIES pika
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/Functional"
+    FOLDER "Tests/Unit/Modules/Functional"
   )
 
   pika_add_unit_test("modules.functional" ${test})

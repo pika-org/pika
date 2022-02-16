@@ -23,7 +23,7 @@ foreach(test ${tests})
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
     DEPENDENCIES Mpi::mpi ${${test}_DEPENDENCIES}
-    FOLDER "Tests/Unit/Modules/Local/AsyncMPI"
+    FOLDER "Tests/Unit/Modules/AsyncMPI"
   )
 
   pika_add_unit_test("modules.async_mpi" ${test} ${${test}_PARAMETERS})
