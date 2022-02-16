@@ -70,6 +70,10 @@ function(pika_add_test category name)
 
   set(cmd ${_exe})
 
+  if(PIKA_WITH_TESTS_VALGRIND)
+    list(PREPEND cmd valgrind --leak-check=full --error-exitcode=1)
+  endif()
+
   if(${name}_RUNWRAPPER)
     set(_preflags_list_ ${MPIEXEC_PREFLAGS})
     separate_arguments(_preflags_list_)

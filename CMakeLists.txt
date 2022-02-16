@@ -835,6 +835,13 @@ pika_option(
   ADVANCED
 )
 
+pika_option(
+  PIKA_WITH_TESTS_VALGRIND BOOL "Run tests under valgrind."
+  OFF
+  CATEGORY "Debugging"
+  ADVANCED
+)
+
 set(PIKA_WITH_VERIFY_LOCKS_DEFAULT OFF)
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   set(PIKA_WITH_VERIFY_LOCKS_DEFAULT ON)
