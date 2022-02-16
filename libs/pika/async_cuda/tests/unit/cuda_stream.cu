@@ -4,9 +4,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/async_cuda/cuda_exception.hpp>
-#include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/testing.hpp>
+#include <pika/cuda.hpp>
 
 #include <cstddef>
 #include <utility>

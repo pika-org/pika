@@ -27,13 +27,11 @@
 
 #include <pika/algorithm.hpp>
 #include <pika/assert.hpp>
-#include <pika/async_cuda/custom_blas_api.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/chrono.hpp>
+#include <pika/cuda.hpp>
 #include <pika/execution.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/async_cuda.hpp>
 #include <pika/testing.hpp>
 
 #include <algorithm>

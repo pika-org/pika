@@ -804,6 +804,8 @@ pika_option(
 )
 
 if(PIKA_WITH_MPI)
+  pika_add_config_define(PIKA_HAVE_MPI)
+
   # mpi settings
   pika_option(
     PIKA_WITH_MPI_ENV

@@ -7,7 +7,7 @@
 #include <pika/execution.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/async_mpi.hpp>
+#include <pika/mpi.hpp>
 #include <pika/program_options.hpp>
 #include <pika/testing.hpp>
 
