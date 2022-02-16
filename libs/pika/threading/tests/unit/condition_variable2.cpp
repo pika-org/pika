@@ -590,8 +590,6 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    std::set_terminate([]() { PIKA_TEST(false); });
-
     try
     {
         test_minimal_wait(0);

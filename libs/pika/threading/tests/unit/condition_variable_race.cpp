@@ -220,7 +220,6 @@ void test_cv_any_mutex()
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    std::set_terminate([]() { PIKA_TEST(false); });
     try
     {
         test_cv_mutex();

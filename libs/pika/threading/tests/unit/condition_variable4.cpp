@@ -60,6 +60,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
                     if (prod_sec > 0)
                     {
                         std::this_thread::sleep_for(prod_sleep);
+                        pika::this_thread::yield();
                     }
                 }
 
@@ -80,6 +81,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
                 if (cons_sec > 0)
                 {
                     std::this_thread::sleep_for(cons_sleep);
+                    pika::this_thread::yield();
                 }
             }
 
@@ -112,6 +114,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
         if (prod_sec > 0)
         {
             std::this_thread::sleep_for(prod_sleep * 10);
+            pika::this_thread::yield();
         }
         ssource.request_stop();
     }
@@ -123,8 +126,6 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    std::set_terminate([]() { PIKA_TEST(false); });
-
     try
     {
         producer_consumer(0, 0, false);

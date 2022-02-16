@@ -66,6 +66,7 @@ namespace pika { namespace util {
         bool enable_minimal_deadlock_detection() const;
         bool enable_spinlock_deadlock_detection() const;
         std::size_t get_spinlock_deadlock_detection_limit() const;
+        std::size_t get_spinlock_deadlock_warning_limit() const;
 
 #if defined(__linux) || defined(linux) || defined(__linux__) ||                \
     defined(__FreeBSD__)

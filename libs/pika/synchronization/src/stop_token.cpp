@@ -70,16 +70,21 @@ namespace pika { namespace detail {
     {
         auto old_state = state_.load(std::memory_order_relaxed);
 
-        while (!state_.compare_exchange_weak(old_state,
+        auto expected = old_state & ~stop_state::locked_flag;
+        while (!state_.compare_exchange_weak(expected,
             old_state | stop_state::locked_flag, std::memory_order_acquire,
             std::memory_order_relaxed))
         {
+            old_state = expected;
+
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
                 pika::execution_base::this_thread::yield_k(
                     k, "stop_state::lock");
                 old_state = state_.load(std::memory_order_relaxed);
             }
+
+            expected = old_state & ~stop_state::locked_flag;
         }
     }
 
@@ -91,11 +96,14 @@ namespace pika { namespace detail {
         if (stop_requested(old_state))
             return false;
 
-        while (!state_.compare_exchange_weak(old_state,
+        auto expected = old_state & ~stop_state::locked_flag;
+        while (!state_.compare_exchange_weak(expected,
             old_state | stop_state::stop_requested_flag |
                 stop_state::locked_flag,
             std::memory_order_acquire, std::memory_order_relaxed))
         {
+            old_state = expected;
+
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
                 pika::execution_base::this_thread::yield_k(
@@ -105,7 +113,10 @@ namespace pika { namespace detail {
                 if (stop_requested(old_state))
                     return false;
             }
+
+            expected = old_state & ~stop_state::locked_flag;
         }
+
         return true;
     }
 
@@ -117,6 +128,10 @@ namespace pika { namespace detail {
         if (stop_requested(old_state))
         {
             cb->execute();
+
+            cb->callback_finished_executing_.store(
+                true, std::memory_order_release);
+
             return false;
         }
         else if (!stop_possible(old_state))
@@ -124,10 +139,13 @@ namespace pika { namespace detail {
             return false;
         }
 
-        while (!state_.compare_exchange_weak(old_state,
+        auto expected = old_state & ~stop_state::locked_flag;
+        while (!state_.compare_exchange_weak(expected,
             old_state | stop_state::locked_flag, std::memory_order_acquire,
             std::memory_order_relaxed))
         {
+            old_state = expected;
+
             for (std::size_t k = 0; is_locked(old_state); ++k)
             {
                 pika::execution_base::this_thread::yield_k(
@@ -137,6 +155,10 @@ namespace pika { namespace detail {
                 if (stop_requested(old_state))
                 {
                     cb->execute();
+
+                    cb->callback_finished_executing_.store(
+                        true, std::memory_order_release);
+
                     return false;
                 }
                 else if (!stop_possible(old_state))
@@ -144,7 +166,10 @@ namespace pika { namespace detail {
                     return false;
                 }
             }
+
+            expected = old_state & ~stop_state::locked_flag;
         }
+
         return true;
     }
 
@@ -189,7 +214,9 @@ namespace pika { namespace detail {
         {
             std::lock_guard<stop_state> l(*this);
             if (cb->remove_this_callback())
+            {
                 return;
+            }
         }
 
         // Callback has either already executed or is executing concurrently
@@ -210,13 +237,12 @@ namespace pika { namespace detail {
         {
             // Callback is currently executing on another thread,
             // block until it finishes executing.
-            for (std::size_t k = 0; !cb->callback_finished_executing_.load(
-                     std::memory_order_relaxed);
-                 ++k)
-            {
-                pika::execution_base::this_thread::yield_k(
-                    k, "stop_state::remove_callback");
-            }
+            pika::util::yield_while(
+                [&]() {
+                    return !cb->callback_finished_executing_.load(
+                        std::memory_order_relaxed);
+                },
+                "stop_state::remove_callback");
         }
     }
 

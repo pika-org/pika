@@ -48,7 +48,6 @@ void test_cv_callback()
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    std::set_terminate([]() { PIKA_TEST(false); });
     try
     {
         test_cv_callback();

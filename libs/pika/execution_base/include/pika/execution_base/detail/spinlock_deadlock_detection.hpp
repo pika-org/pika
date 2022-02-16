@@ -15,6 +15,8 @@ namespace pika { namespace util { namespace detail {
     PIKA_EXPORT void set_spinlock_break_on_deadlock_enabled(bool enabled);
     PIKA_EXPORT bool get_spinlock_break_on_deadlock_enabled();
     PIKA_EXPORT void set_spinlock_deadlock_detection_limit(std::size_t limit);
+    PIKA_EXPORT void set_spinlock_deadlock_warning_limit(std::size_t limit);
     PIKA_EXPORT std::size_t get_spinlock_deadlock_detection_limit();
+    PIKA_EXPORT std::size_t get_spinlock_deadlock_warning_limit();
 }}}    // namespace pika::util::detail
 #endif
