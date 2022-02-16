@@ -13,6 +13,7 @@
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
+#include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -27,6 +28,7 @@
 #include <pika/modules/memory.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/atomic_count.hpp>
+#include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <atomic>
@@ -134,7 +136,11 @@ namespace pika { namespace execution { namespace experimental {
 
                 using operation_state_type =
                     std::decay_t<connect_result_t<Sender, split_receiver>>;
-                operation_state_type os;
+                // We store the operation state in an optional so that we can
+                // reset it as soon as the the split_receiver has been signaled.
+                // This is useful to ensure that resources held by the
+                // predecessor work is released as soon as possible.
+                pika::optional<operation_state_type> os;
 
                 struct done_type
                 {
@@ -156,23 +162,21 @@ namespace pika { namespace execution { namespace experimental {
 
                 struct split_receiver
                 {
-                    pika::intrusive_ptr<shared_state> state;
+                    shared_state& state;
 
                     template <typename Error>
                     friend void tag_invoke(
                         set_error_t, split_receiver&& r, Error&& error) noexcept
                     {
-                        r.state->v.template emplace<error_type>(
+                        r.state.v.template emplace<error_type>(
                             error_type(PIKA_FORWARD(Error, error)));
-                        r.state->set_predecessor_done();
-                        r.state.reset();
+                        r.state.set_predecessor_done();
                     }
 
                     friend void tag_invoke(
                         set_done_t, split_receiver&& r) noexcept
                     {
-                        r.state->set_predecessor_done();
-                        r.state.reset();
+                        r.state.set_predecessor_done();
                     };
 
                     // This typedef is duplicated from the parent struct. The
@@ -194,11 +198,10 @@ namespace pika { namespace execution { namespace experimental {
                                         PIKA_FORWARD(Ts, ts)...)),
                             void())
                     {
-                        r.state->v.template emplace<value_type>(
+                        r.state.v.template emplace<value_type>(
                             pika::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
 
-                        r.state->set_predecessor_done();
-                        r.state.reset();
+                        r.state.set_predecessor_done();
                     }
                 };
 
@@ -207,18 +210,21 @@ namespace pika { namespace execution { namespace experimental {
                         std::decay_t<Sender_>, shared_state>::value>>
                 shared_state(Sender_&& sender, allocator_type const& alloc)
                   : alloc(alloc)
-                  , os(pika::execution::experimental::connect(
-                        PIKA_FORWARD(Sender_, sender), split_receiver{this}))
                 {
+                    os.emplace(pika::util::detail::with_result_of([&]() {
+                        return pika::execution::experimental::connect(
+                            PIKA_FORWARD(Sender_, sender),
+                            split_receiver{*this});
+                    }));
                 }
 
                 ~shared_state()
                 {
                     PIKA_ASSERT_MSG(start_called,
                         "start was never called on the operation state of "
-                        "split or ensure_started. Did you forget to connect the"
-                        "sender to a receiver, or call start on the operation "
-                        "state?");
+                        "split or ensure_started. Did you forget to connect "
+                        "the sender to a receiver, or call start on the "
+                        "operation state?");
                 }
 
                 template <typename Receiver>
@@ -254,6 +260,12 @@ namespace pika { namespace execution { namespace experimental {
 
                 void set_predecessor_done()
                 {
+                    // We reset the operation state as soon as the predecessor
+                    // is done to release any resources held by it. Any values
+                    // sent by the predecessor have already been stored in the
+                    // shared state by now.
+                    os.reset();
+
                     predecessor_done = true;
 
                     {
@@ -367,7 +379,8 @@ namespace pika { namespace execution { namespace experimental {
                 {
                     if (!start_called.exchange(true))
                     {
-                        pika::execution::experimental::start(os);
+                        PIKA_ASSERT(os.has_value());
+                        pika::execution::experimental::start(os.value());
                     }
                 }
 
