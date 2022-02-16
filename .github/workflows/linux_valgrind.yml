@@ -1,0 +1,57 @@
+# Copyright (c) 2022 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: Linux CI (Valgrind)
+
+on:
+  push:
+    branches:
+      - staging
+      - trying
+  pull_request:
+
+jobs:
+  build:
+    name: github/linux/msan/fast
+    runs-on: ubuntu-latest
+    container: stellargroup/build_env:10
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Configure
+      shell: bash
+      run: |
+          cmake \
+              . \
+              -Bbuild \
+              -GNinja \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DPIKA_WITH_UNITY_BUILD=ON \
+              -DPIKA_WITH_MALLOC=system \
+              -DPIKA_WITH_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS=ON \
+              -DPIKA_WITH_TESTS_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS_EXTERNAL_BUILD=OFF \
+              -DPIKA_WITH_TESTS_HEADERS=OFF \
+              -DPIKA_WITH_TESTS_MAX_THREADS=2 \
+              -DPIKA_WITH_TESTS_VALGRIND=ON \
+              -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
+              -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
+    - name: Build
+      shell: bash
+      run: |
+          cmake --build build --target all
+          cmake --build build --target examples
+          cmake --build build --target tests
+    - name: Test
+      shell: bash
+      run: |
+          # TODO: Make this part of the image
+          apt update && apt install -y valgrind
+          cd build
+          ctest \
+            --timeout 120 \
+            --output-on-failure
