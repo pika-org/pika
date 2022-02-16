@@ -18,7 +18,7 @@ on:
 
 jobs:
   build:
-    name: github/linux/sanitizers/fast
+    name: github/linux/asan_ubsan/fast
     runs-on: ubuntu-latest
     container: pikaorg/pika-ci-base:7
 
@@ -37,6 +37,8 @@ jobs:
               -DPIKA_WITH_EXAMPLES=ON \
               -DPIKA_WITH_TESTS=ON \
               -DPIKA_WITH_TESTS_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS_EXTERNAL_BUILD=OFF \
+              -DPIKA_WITH_TESTS_HEADERS=OFF \
               -DPIKA_WITH_TESTS_MAX_THREADS=2 \
               -DPIKA_WITH_SANITIZERS=On \
               -DCMAKE_CXX_FLAGS="-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer" \
@@ -47,6 +49,7 @@ jobs:
       run: |
           cmake --build build --target all
           cmake --build build --target examples
+          cmake --build build --target tests
     - name: Test
       shell: bash
       run: |
@@ -56,5 +59,4 @@ jobs:
           cd build
           ctest \
             --timeout 120 \
-            --output-on-failure \
-            --tests-regex tests.examples
+            --output-on-failure
