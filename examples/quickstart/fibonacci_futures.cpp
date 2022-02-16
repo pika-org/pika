@@ -230,6 +230,8 @@ pika::future<std::uint64_t> fibonacci_future_all_when_all(std::uint64_t n)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
+    pika::scoped_finalize f;
+
     // extract command line argument, i.e. fib(N)
     std::uint64_t n = vm["n-value"].as<std::uint64_t>();
     std::string test = vm["test"].as<std::string>();
@@ -240,7 +242,7 @@ int pika_main(pika::program_options::variables_map& vm)
         std::cerr << "fibonacci_futures: wrong command line argument value for "
                      "option 'n-runs', should not be zero"
                   << std::endl;
-        return pika::finalize();    // Handles pika shutdown
+        return -1;
     }
 
     threshold = vm["threshold"].as<unsigned int>();
@@ -250,7 +252,7 @@ int pika_main(pika::program_options::variables_map& vm)
                      "option 'threshold', should be in between 2 and n-value"
                      ", value specified: "
                   << threshold << std::endl;
-        return pika::finalize();    // Handles pika shutdown
+        return -1;
     }
 
     bool executed_one = false;
@@ -463,7 +465,7 @@ int pika_main(pika::program_options::variables_map& vm)
                   << test << std::endl;
     }
 
-    return pika::finalize();    // Handles pika shutdown
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

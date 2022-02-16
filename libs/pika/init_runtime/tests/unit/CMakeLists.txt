@@ -5,7 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(tests
-    config_entry
+    config_entry scoped_finalize
     # shutdown_suspended_thread # Disabled due to unavailable timed suspension
 )
 
