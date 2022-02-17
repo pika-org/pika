@@ -21,7 +21,7 @@ foreach(test ${tests})
     NOLIBS
     DEPENDENCIES pika ${BOOST_UNDERLYING_THREAD_LIBRARY}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/ExecutionBase"
+    FOLDER "Tests/Unit/Modules/ExecutionBase"
   )
 
   pika_add_unit_test("modules.execution_base" ${test} ${${test}_PARAMETERS})

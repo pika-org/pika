@@ -33,7 +33,7 @@ foreach(benchmark ${benchmarks})
     SOURCES ${sources} ${${benchmark}_FLAGS}
     DEPENDENCIES ${${benchmark}_LIBRARIES}
     EXCLUDE_FROM_ALL
-    FOLDER "Benchmarks/Local/HTTS v2"
+    FOLDER "Benchmarks/HTTS v2"
   )
 
   target_include_directories(

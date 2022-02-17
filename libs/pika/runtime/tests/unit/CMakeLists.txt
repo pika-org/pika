@@ -18,7 +18,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/RuntimeLocal"
+    FOLDER "Tests/Unit/Modules/Runtime"
   )
 
   pika_add_unit_test("modules.runtime" ${test} ${${test}_PARAMETERS})

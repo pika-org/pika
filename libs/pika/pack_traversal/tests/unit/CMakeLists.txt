@@ -15,7 +15,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/PackTraversal"
+    FOLDER "Tests/Unit/Modules/PackTraversal"
   )
 
   pika_add_unit_test("modules.pack_traversal" ${test} ${${test}_PARAMETERS})

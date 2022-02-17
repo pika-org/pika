@@ -124,7 +124,7 @@ foreach(benchmark ${benchmarks})
     ${benchmark}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${benchmark}_FLAGS} ${${benchmark}_HEADERS}
     EXCLUDE_FROM_ALL
-    FOLDER "Benchmarks/Local"
+    FOLDER "Benchmarks"
   )
 
   target_include_directories(

@@ -25,7 +25,7 @@ foreach(test ${tests})
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL NOLIBS
     DEPENDENCIES pika
-    FOLDER "Tests/Unit/Modules/Local/Memory"
+    FOLDER "Tests/Unit/Modules/Memory"
   )
 
   pika_add_unit_test("modules.memory" ${test} ${${test}_PARAMETERS})

@@ -47,7 +47,7 @@ foreach(jacobi_smp_application ${jacobi_smp_applications})
   pika_add_executable(
     ${jacobi_smp_application} INTERNAL_FLAGS MODULE jacobi_smp
     SOURCES ${sources} ${${jacobi_smp_application}_FLAGS}
-    FOLDER "Examples/Local/JacobiSMP"
+    FOLDER "Examples/JacobiSMP"
   )
 
   pika_add_example_target_dependencies("jacobi_smp" ${jacobi_smp_application})

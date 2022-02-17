@@ -39,7 +39,7 @@ if(PIKA_WITH_EXAMPLES)
 
     source_group("Source Files" FILES ${sources})
 
-    set(folder_name "Examples/Modules/Local/ProgramOptions")
+    set(folder_name "Examples/Modules/ProgramOptions")
 
     # add example executable
     pika_add_executable(

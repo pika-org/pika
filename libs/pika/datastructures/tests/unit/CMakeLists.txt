@@ -15,7 +15,7 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Local/Datastructures")
+  set(folder_name "Tests/Unit/Modules/Datastructures")
 
   # add example executable
   pika_add_executable(

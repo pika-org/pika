@@ -62,7 +62,7 @@ foreach(example_program ${example_programs})
   pika_add_executable(
     ${example_program} INTERNAL_FLAGS
     SOURCES ${sources} ${${example_program}_FLAGS}
-    FOLDER "Examples/Local/Quickstart"
+    FOLDER "Examples/Quickstart"
   )
 
   target_link_libraries(

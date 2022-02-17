@@ -17,7 +17,7 @@ foreach(example_program ${example_programs})
   pika_add_executable(
     ${example_program} INTERNAL_FLAGS
     SOURCES ${sources} ${${example_program}_FLAGS}
-    FOLDER "Examples/Local/FutureReduce"
+    FOLDER "Examples/FutureReduce"
   )
 
   pika_add_example_target_dependencies("future_reduce" ${example_program})

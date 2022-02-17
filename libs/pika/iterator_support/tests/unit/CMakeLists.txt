@@ -36,7 +36,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS} ${${test}_LIBS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/IteratorSupport"
+    FOLDER "Tests/Unit/Modules/IteratorSupport"
   )
 
   target_link_libraries(

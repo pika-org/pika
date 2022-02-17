@@ -11,7 +11,7 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Regressions/Modules/Local/ThreadingBase")
+  set(folder_name "Tests/Regressions/Modules/ThreadingBase")
 
   # add example executable
   pika_add_executable(

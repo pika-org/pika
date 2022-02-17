@@ -17,7 +17,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Regressions/Modules/Local/Util"
+    FOLDER "Tests/Regressions/Modules/Util"
   )
 
   pika_add_regression_test("util" ${test} ${${test}_PARAMETERS})

@@ -42,7 +42,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/Algorithms/Datapar"
+    FOLDER "Tests/Unit/Modules/Algorithms/Datapar"
   )
 
   pika_add_unit_test(

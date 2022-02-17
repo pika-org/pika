@@ -12,7 +12,7 @@ foreach(benchmark ${benchmarks})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Benchmarks/Modules/Local/Serialization")
+  set(folder_name "Benchmarks/Modules/Serialization")
 
   # add example executable
   pika_add_executable(

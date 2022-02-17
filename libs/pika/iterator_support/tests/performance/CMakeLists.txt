@@ -16,7 +16,7 @@ foreach(benchmark ${benchmarks})
     ${benchmark}_test INTERNAL_FLAGS
     SOURCES ${sources}
     EXCLUDE_FROM_ALL ${${benchmark}_FLAGS}
-    FOLDER "Benchmarks/Modules/Local/IteratorSupport"
+    FOLDER "Benchmarks/Modules/IteratorSupport"
   )
 
   pika_add_performance_test(

@@ -33,7 +33,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/LocalLCOs"
+    FOLDER "Tests/Unit/Modules/LCOs"
   )
 
   pika_add_unit_test("modules.lcos" ${test} ${${test}_PARAMETERS})

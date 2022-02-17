@@ -32,7 +32,7 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Local/Executors")
+  set(folder_name "Tests/Unit/Modules/Executors")
 
   # add example executable
   pika_add_executable(

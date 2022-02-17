@@ -29,7 +29,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Regressions/Modules/Local/Futures"
+    FOLDER "Tests/Regressions/Modules/Futures"
   )
 
   pika_add_regression_test("modules.futures" ${test} ${${test}_PARAMETERS})
@@ -56,7 +56,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
     pika_add_regression_compile_test(
       "modules.futures" ${compile_test}
       SOURCES ${sources} ${${compile_test}_FLAGS}
-      FOLDER "Tests/Regressions/Modules/Local/Futures/CompileOnly"
+      FOLDER "Tests/Regressions/Modules/Futures/CompileOnly"
     )
   endforeach()
 endif()

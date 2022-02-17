@@ -26,7 +26,7 @@ foreach(test ${tests})
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL NOLIBS
     DEPENDENCIES pika
-    FOLDER "Tests/Unit/Modules/Local/Serialization/Polymorphic"
+    FOLDER "Tests/Unit/Modules/Serialization/Polymorphic"
   )
 
   pika_add_unit_test("modules.serialization" ${test} ${${test}_PARAMETERS})

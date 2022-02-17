@@ -18,7 +18,7 @@ foreach(test ${function_tests})
     NOLIBS
     DEPENDENCIES pika
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Unit/Modules/Local/TagInvoke"
+    FOLDER "Tests/Unit/Modules/TagInvoke"
   )
 
   pika_add_unit_test("modules.tag_invoke" ${test})

@@ -36,7 +36,7 @@ foreach(benchmark ${benchmarks})
     ${benchmark}_test INTERNAL_FLAGS
     SOURCES ${sources}
     EXCLUDE_FROM_ALL ${${benchmark}_FLAGS}
-    FOLDER "Benchmarks/Modules/Local/Algorithms"
+    FOLDER "Benchmarks/Modules/Algorithms"
   )
 
   pika_add_performance_test(

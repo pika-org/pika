@@ -24,7 +24,7 @@ foreach(test ${tests})
 
   source_group("Source Files" FILES ${sources})
 
-  set(folder_name "Tests/Unit/Modules/Local/ProgramOptions")
+  set(folder_name "Tests/Unit/Modules/ProgramOptions")
 
   # add example executable
   pika_add_executable(

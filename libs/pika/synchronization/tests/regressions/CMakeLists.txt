@@ -21,7 +21,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    FOLDER "Tests/Regressions/Modules/Local/Synchronization"
+    FOLDER "Tests/Regressions/Modules/Synchronization"
   )
 
   target_link_libraries(${test}_test PRIVATE ${${test}_LIBRARIES})
