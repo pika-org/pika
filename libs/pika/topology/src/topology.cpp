@@ -1586,10 +1586,6 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    struct hardware_concurrency_tag
-    {
-    };
-
     struct hw_concurrency
     {
         hw_concurrency()
