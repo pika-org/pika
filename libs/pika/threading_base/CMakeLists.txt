@@ -86,7 +86,6 @@ pika_add_module(
     pika_coroutines
     pika_debugging
     pika_errors
-    pika_format
     pika_functional
     pika_hardware
     pika_itt_notify

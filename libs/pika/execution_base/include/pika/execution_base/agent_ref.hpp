@@ -9,9 +9,12 @@
 #include <pika/config.hpp>
 #include <pika/timing/steady_clock.hpp>
 
+#include <fmt/format.h>
+
 #include <chrono>
 #include <cstddef>
 #include <iosfwd>
+#include <string>
 
 namespace pika { namespace execution_base {
 
@@ -99,7 +102,20 @@ namespace pika { namespace execution_base {
             return lhs.impl_ != rhs.impl_;
         }
 
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream&, agent_ref const&);
+        friend std::string format(agent_ref const&);
     };
+
+    PIKA_EXPORT std::string format(agent_ref const&);
 }}    // namespace pika::execution_base
+
+template <>
+struct fmt::formatter<pika::execution_base::agent_ref>
+  : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(pika::execution_base::agent_ref const& a, FormatContext& ctx)
+    {
+        return fmt::formatter<std::string>::format(
+            pika::execution_base::format(a), ctx);
+    }
+};

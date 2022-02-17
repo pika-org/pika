@@ -7,11 +7,14 @@
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
 #include <pika/chrono.hpp>
-#include <pika/format.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/program_options.hpp>
 #include <pika/testing/performance.hpp>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -121,22 +124,19 @@ int pika_main(pika::program_options::variables_map& vm)
             << std::endl;
     }
 
-    std::string const tasks_str = pika::util::format("{}", num_tasks);
-    std::string const chunks_str = pika::util::format("{}", num_chunks);
-    std::string const delay_str = pika::util::format("{}", delay);
+    std::string const tasks_str = fmt::format("{}", num_tasks);
+    std::string const chunks_str = fmt::format("{}", num_chunks);
+    std::string const delay_str = fmt::format("{}", delay);
 
-    pika::util::format_to(std::cout, "{:10},{:10},{:10},{:10},{:10.12}\n",
-        tasks_str, std::string("1"), delay_str, elapsed_seq,
-        elapsed_seq / num_tasks)
-        << std::endl;
+    fmt::print(std::cout, "{:10},{:10},{:10},{:10.12},{:10.12}\n", tasks_str,
+        std::string("1"), delay_str, elapsed_seq, elapsed_seq / num_tasks);
     pika::util::print_cdash_timing("WaitAll", elapsed_seq / num_tasks);
 
     if (num_chunks != 1)
     {
-        pika::util::format_to(std::cout,
-            "{:10},{:10},{:10},{:10},{:10.12},{:10.12}\n", tasks_str,
-            chunks_str, delay_str, elapsed_chunks, elapsed_chunks / num_tasks)
-            << std::endl;
+        fmt::print(std::cout, "{:10},{:10},{:10},{:10.12},{:10.12}\n",
+            tasks_str, chunks_str, delay_str, elapsed_chunks,
+            elapsed_chunks / num_tasks);
         pika::util::print_cdash_timing(
             "WaitAllChunks", elapsed_chunks / num_tasks);
     }

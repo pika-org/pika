@@ -32,7 +32,6 @@ set(_pika_modules
     execution_base
     executors
     filesystem
-    format
     functional
     futures
     hardware

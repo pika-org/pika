@@ -29,7 +29,6 @@ pika_add_module(
     pika_runtime
     pika_errors
     pika_filesystem
-    pika_format
     pika_lock_registration
     pika_logging
     pika_schedulers

@@ -12,7 +12,7 @@
 #include <pika/program_options/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/program_options/errors.hpp>
-#include <pika/util/from_string.hpp>
+#include <pika/string_util/from_string.hpp>
 
 #include <any>
 #include <cstddef>

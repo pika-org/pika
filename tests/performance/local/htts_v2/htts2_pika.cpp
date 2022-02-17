@@ -10,10 +10,12 @@
 #include <pika/barrier.hpp>
 #include <pika/functional.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/thread.hpp>
 
 #include "htts2.hpp"
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <atomic>
 #include <chrono>
@@ -223,7 +225,7 @@ private:
                 << "Total Walltime [nanoseconds]"
                 << "\n";
 
-        pika::util::format_to(std::cout, "{},{},{},{:.14g}\n", this->osthreads_,
+        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_,
             this->tasks_, this->payload_duration_, results);
     }
 

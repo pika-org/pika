@@ -15,6 +15,8 @@
 #include <pika/pack_traversal/pack_traversal.hpp>
 #include <pika/testing.hpp>
 
+#include <fmt/format.h>
+
 #include <chrono>
 #include <complex>
 #include <cstddef>
@@ -25,6 +27,17 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+
+template <typename T>
+struct fmt::formatter<std::complex<T>> : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(std::complex<T> const& x, FormatContext& ctx)
+    {
+        return fmt::formatter<std::string>::format(
+            fmt::format("({}, {})", x.real(), x.imag()), ctx);
+    }
+};
 
 // --------------------------------------------------------------------
 // custom executor async/then/when/dataflow specialization example

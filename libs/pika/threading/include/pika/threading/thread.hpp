@@ -19,6 +19,8 @@
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/timing/steady_clock.hpp>
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <exception>
 #include <functional>
@@ -296,6 +298,18 @@ namespace pika {
         };
     }    // namespace this_thread
 }    // namespace pika
+
+template <>
+struct fmt::formatter<pika::thread::id>
+  : fmt::formatter<pika::threads::detail::thread_id>
+{
+    template <typename FormatContext>
+    auto format(pika::thread::id const& id, FormatContext& ctx)
+    {
+        return fmt::formatter<pika::threads::detail::thread_id>::format(
+            id.native_handle(), ctx);
+    }
+};
 
 namespace std {
 

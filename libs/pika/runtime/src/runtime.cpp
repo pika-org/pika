@@ -29,16 +29,18 @@
 #include <pika/runtime/state.hpp>
 #include <pika/runtime/thread_hooks.hpp>
 #include <pika/runtime/thread_mapper.hpp>
+#include <pika/string_util/from_string.hpp>
 #include <pika/thread_support/set_thread_name.hpp>
 #include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/topology/topology.hpp>
-#include <pika/util/from_string.hpp>
 #include <pika/version.hpp>
 
 #if defined(PIKA_HAVE_TRACY)
 #include <common/TracySystem.hpp>
 #endif
+
+#include <fmt/format.h>
 
 #include <atomic>
 #include <chrono>
@@ -1195,13 +1197,10 @@ namespace pika {
                             threads::detail::to_string(pu_mask);
                         PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                             "handle_print_bind",
-                            pika::util::format(
-                                "unexpected mismatch between locality {1}: "
-                                "binding reported from HWLOC({2}) and "
-                                "pika({3}) "
-                                "on thread {4}",
-                                pika::get_locality_id(), boundcpu_str,
-                                pu_mask_str, i));
+                            "unexpected mismatch between locality {}: binding "
+                            "reported from HWLOC({}) and pika({}) on thread {}",
+                            pika::get_locality_id(), boundcpu_str, pu_mask_str,
+                            i);
                     }
                 }
 

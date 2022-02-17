@@ -6,11 +6,12 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/modules/format.hpp>
 #include <pika/pika.hpp>
 #include <pika/pika_init.hpp>
 #include <pika/string_util/classification.hpp>
 #include <pika/string_util/split.hpp>
+
+#include <fmt/printf.h>
 
 #include <chrono>
 #include <cstdint>
@@ -78,8 +79,8 @@ void print_results(double w_M)
     //     double E = w_T/w_M;
     double O = w_M - w_T;
 
-    pika::util::format_to(cout, "{} {} {} {} {} {:.14g}", payload,
-        os_thread_count, contexts, iterations, seed,
+    fmt::print(cout, "{} {} {} {} {} {:.14g}", payload, os_thread_count,
+        contexts, iterations, seed,
         (O / (2 * iterations * os_thread_count)) * 1e9);
 
     cout << "\n";

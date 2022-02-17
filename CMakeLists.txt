@@ -1541,6 +1541,7 @@ endif()
 
 include(pika_setup_threads)
 include(pika_setup_boost)
+include(pika_setup_fmt)
 include(pika_setup_allocator)
 include(pika_setup_hwloc)
 include(pika_setup_mpi)
@@ -1730,6 +1731,8 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
       <boost/lockfree/queue.hpp>
       <boost/optional.hpp>
       <boost/tokenizer.hpp>
+      <fmt/format.h>
+      <fmt/printf.h>
   )
 
   if(PIKA_WITH_CXX17_STD_EXECUTION_POLICIES)

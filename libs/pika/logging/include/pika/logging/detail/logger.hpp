@@ -19,7 +19,6 @@
 #include <pika/config.hpp>
 #include <pika/logging/format/named_write.hpp>
 #include <pika/logging/level.hpp>
-#include <pika/modules/format.hpp>
 
 #include <utility>
 #include <vector>

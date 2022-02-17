@@ -13,8 +13,6 @@
 
 #include <whip.hpp>
 
-#include <ostream>
-
 namespace pika::cuda::experimental {
     cusolverDnHandle_t cusolver_handle::create_handle(
         int device, whip::stream_t stream)
@@ -109,11 +107,5 @@ namespace pika::cuda::experimental {
     {
         check_cusolver_error(cusolverDnSetStream(handle, stream.get()));
         this->stream = stream.get();
-    }
-
-    std::ostream& operator<<(std::ostream& os, cusolver_handle const& handle)
-    {
-        os << "cusolver_handle(" << handle.get() << ")";
-        return os;
     }
 }    // namespace pika::cuda::experimental

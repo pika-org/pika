@@ -9,7 +9,6 @@
 #define PIKA_NO_VERSION_CHECK
 
 #include <pika/assert.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/util.hpp>
 #include <pika/testing.hpp>
 

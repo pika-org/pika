@@ -19,8 +19,9 @@
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
 #include <pika/coroutines/detail/posix_utility.hpp>
 #include <pika/coroutines/detail/swap_context.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/util/get_and_reset_value.hpp>
+
+#include <fmt/format.h>
 
 #include <atomic>
 #include <cstddef>
@@ -219,15 +220,15 @@ namespace pika::threads::coroutines {
                 if (0 != (m_stack_size % EXEC_PAGESIZE))
                 {
                     throw std::runtime_error(
-                        pika::util::format("stack size of {1} is not page "
-                                           "aligned, page size is {2}",
+                        fmt::format("stack size of {} is not page "
+                                    "aligned, page size is {}",
                             m_stack_size, EXEC_PAGESIZE));
                 }
 
                 if (0 >= m_stack_size)
                 {
-                    throw std::runtime_error(pika::util::format(
-                        "stack size of {1} is invalid", m_stack_size));
+                    throw std::runtime_error(fmt::format(
+                        "stack size of {} is invalid", m_stack_size));
                 }
 
                 m_stack =

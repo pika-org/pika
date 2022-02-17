@@ -13,10 +13,11 @@
 #include <pika/assertion/current_function.hpp>
 #include <pika/errors/error.hpp>
 #include <pika/errors/exception_fwd.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/preprocessor/cat.hpp>
 #include <pika/preprocessor/expand.hpp>
 #include <pika/preprocessor/nargs.hpp>
+
+#include <fmt/format.h>
 
 #include <exception>
 #include <string>
@@ -157,7 +158,7 @@ namespace pika {
 ///
 #define PIKA_THROW_EXCEPTION(errcode, f, ...)                                  \
     pika::detail::throw_exception(                                             \
-        errcode, pika::util::format(__VA_ARGS__), f, __FILE__, __LINE__) /**/
+        errcode, fmt::format(__VA_ARGS__), f, __FILE__, __LINE__) /**/
 
 /// \def PIKA_THROWS_IF(ec, errcode, f, msg)
 /// \brief Either throw a pika::exception or initialize \a pika::error_code from
@@ -175,7 +176,7 @@ namespace pika {
 /// holds the error message the new exception should encapsulate.
 ///
 #define PIKA_THROWS_IF(ec, errcode, f, ...)                                    \
-    pika::detail::throws_if(ec, errcode, pika::util::format(__VA_ARGS__), f,   \
-        __FILE__, __LINE__) /**/
+    pika::detail::throws_if(                                                   \
+        ec, errcode, fmt::format(__VA_ARGS__), f, __FILE__, __LINE__) /**/
 
 #include <pika/config/warnings_suffix.hpp>

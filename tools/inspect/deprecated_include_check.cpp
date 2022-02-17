@@ -10,7 +10,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/util/to_string.hpp>
+#include <pika/string_util/to_string.hpp>
 
 #include <algorithm>
 #include <filesystem>
@@ -54,7 +54,7 @@ namespace boost { namespace inspect {
         {"boost/program_options([^\\s]*)\\.hpp", "pika/program_options\\2.hpp"},
         {"boost/filesystem([^\\s]*)\\.hpp", "filesystem"},
         {"boost/lexical_cast\\.hpp",
-            "pika/util/((from_string)|(to_string)).hpp"},
+            "pika/string_util/((from_string)|(to_string)).hpp"},
         {"boost/system([^\\s]*)\\.hpp", "system_error"}, {nullptr, nullptr}};
 
     //  deprecated_include_check constructor  -------------------------------//

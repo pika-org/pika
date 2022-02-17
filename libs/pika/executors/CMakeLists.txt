@@ -35,9 +35,7 @@ set(executors_headers
     pika/executors/thread_pool_scheduler_bulk.hpp
 )
 
-set(executors_sources current_executor.cpp exception_list_callbacks.cpp
-                      fork_join_executor.cpp
-)
+set(executors_sources current_executor.cpp exception_list_callbacks.cpp)
 
 include(pika_add_module)
 pika_add_module(

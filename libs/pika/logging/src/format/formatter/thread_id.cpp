@@ -17,10 +17,15 @@
 #include <pika/logging/format/formatters.hpp>
 
 #include <pika/config.hpp>
-#include <pika/modules/format.hpp>
+
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <memory>
 #include <ostream>
+#include <type_traits>
 
 #if defined(PIKA_WINDOWS)
 #include <windows.h>
@@ -36,13 +41,20 @@ namespace pika { namespace util { namespace logging { namespace formatter {
     {
         void operator()(std::ostream& to) const override
         {
-            util::format_to(to, "{}",
+            auto id =
 #if defined(PIKA_WINDOWS)
-                ::GetCurrentThreadId()
+                ::GetCurrentThreadId();
 #else
-                pthread_self()
+                pthread_self();
 #endif
-            );
+            if constexpr (std::is_pointer_v<decltype(id)>)
+            {
+                fmt::print(to, "{}", fmt::ptr(id));
+            }
+            else
+            {
+                fmt::print(to, "{}", id);
+            }
         }
     };
 

@@ -11,9 +11,10 @@
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/async_cuda/custom_lapack_api.hpp>
 
+#include <fmt/format.h>
 #include <whip.hpp>
 
-#include <iosfwd>
+#include <string>
 
 namespace pika::cuda::experimental {
     /// RAII wrapper for a cuSOLVER handle.
@@ -54,10 +55,20 @@ namespace pika::cuda::experimental {
         {
             return !(lhs == rhs);
         }
-
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream&, cusolver_handle const&);
         /// \endcond
     };
 }    // namespace pika::cuda::experimental
+
+template <>
+struct fmt::formatter<pika::cuda::experimental::cusolver_handle>
+  : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(pika::cuda::experimental::cusolver_handle const& handle,
+        FormatContext& ctx)
+    {
+        return fmt::formatter<std::string>::format(
+            fmt::format("cusolver_handle({})", fmt::ptr(handle.get())), ctx);
+    }
+};
 #endif

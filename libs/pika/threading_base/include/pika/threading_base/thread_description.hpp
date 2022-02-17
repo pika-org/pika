@@ -11,9 +11,12 @@
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
+#include <pika/type_support/unused.hpp>
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
 #include <pika/modules/itt_notify.hpp>
 #endif
+
+#include <fmt/format.h>
 
 #include <cstddef>
 #include <iosfwd>
@@ -296,3 +299,26 @@ namespace pika::threads::detail {
             ::pika::detail::thread_description(),
         error_code& ec = throws);
 }    // namespace pika::threads::detail
+
+template <>
+struct fmt::formatter<pika::detail::thread_description>
+  : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto
+    format(pika::detail::thread_description const& desc, FormatContext& ctx)
+    {
+#if defined(PIKA_HAVE_THREAD_DESCRIPTION)
+        if (desc.kind() ==
+            pika::detail::thread_description::data_type_description)
+            return fmt::formatter<std::string>::format(
+                desc ? desc.get_description() : "<unknown>", ctx);
+
+        return fmt::formatter<std::string>::format(
+            fmt::format("{}", desc.get_address()), ctx);
+#else
+        PIKA_UNUSED(desc);
+        return fmt::formatter<std::string>::format("<unknown>", ctx);
+#endif
+    }
+};

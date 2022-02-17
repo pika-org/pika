@@ -11,12 +11,14 @@
 #include <pika/execution.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/synchronization.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/runtime.hpp>
 #include <pika/thread.hpp>
 #include <pika/threading_base/annotated_function.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <array>
 #include <atomic>
@@ -53,16 +55,15 @@ void print_stats(const char* title, const char* wait, const char* exec,
     double us = 1e6 * duration / count;
     if (csv)
     {
-        pika::util::format_to(temp,
-            "{1}, {:27}, {:15}, {:45}, {:8}, {:8}, {:20}, {:4}, {:4}, "
-            "{:20}",
+        fmt::print(temp,
+            "{}, {:27}, {:15}, {:45}, {:8}, {:8}, {:20}, {:4}, {:4}, {:20}",
             count, title, wait, exec, duration, us, queuing, numa_sensitive,
             num_threads, info_string);
     }
     else
     {
-        pika::util::format_to(temp,
-            "invoked {:1}, futures {:27} {:15} {:45} in {:8} seconds : {:8} "
+        fmt::print(temp,
+            "invoked {:1}, futures {:27} {:15} {:18} in {:8} seconds : {:8} "
             "us/future, queue {:20}, numa {:4}, threads {:4}, info {:20}",
             count, title, wait, exec, duration, us, queuing, numa_sensitive,
             num_threads, info_string);

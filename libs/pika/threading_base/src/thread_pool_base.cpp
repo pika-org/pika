@@ -117,13 +117,4 @@ namespace pika::threads::detail {
     {
         thread_offset_ = threads_offset;
     }
-
-    std::ostream& operator<<(
-        std::ostream& os, thread_pool_base const& thread_pool)
-    {
-        auto id = thread_pool.get_pool_id();
-        os << id.name() << "(" << id.index() << ")";
-
-        return os;
-    }
 }    // namespace pika::threads::detail

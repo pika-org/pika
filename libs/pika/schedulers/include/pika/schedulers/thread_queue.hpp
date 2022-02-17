@@ -13,7 +13,6 @@
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/schedulers/maintain_queue_wait_times.hpp>
@@ -29,6 +28,8 @@
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
 #include <pika/timing/tick_counter.hpp>
 #endif
+
+#include <fmt/format.h>
 
 #include <atomic>
 #include <chrono>
@@ -360,7 +361,7 @@ namespace pika::threads {
             else
             {
                 PIKA_ASSERT_MSG(
-                    false, util::format("Invalid stack size {1}", stacksize));
+                    false, fmt::format("Invalid stack size {}", stacksize));
             }
         }
 
@@ -1077,7 +1078,7 @@ namespace pika::threads {
                             "thread_queue::wait_or_add_new: not enough threads "
                             "to steal from queue {} to queue {}, have {} but "
                             "need at least {}",
-                            addfrom, this, new_tasks_count,
+                            fmt::ptr(addfrom), fmt::ptr(this), new_tasks_count,
                             parameters_.min_tasks_to_steal_staged_);
                     }
 

@@ -11,8 +11,6 @@
 
 #include <whip.hpp>
 
-#include <ostream>
-
 namespace pika::cuda::experimental {
     cuda_stream::priorities cuda_stream::get_available_priorities()
     {
@@ -122,11 +120,5 @@ namespace pika::cuda::experimental {
     whip::stream_t cuda_stream::get() const noexcept
     {
         return stream;
-    }
-
-    std::ostream& operator<<(std::ostream& os, cuda_stream const& stream)
-    {
-        os << "cuda_stream(" << stream.get() << ")";
-        return os;
     }
 }    // namespace pika::cuda::experimental

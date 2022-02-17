@@ -13,8 +13,6 @@
 
 #include <whip.hpp>
 
-#include <ostream>
-
 namespace pika::cuda::experimental {
     cublasHandle_t cublas_handle::create_handle(
         int device, whip::stream_t stream)
@@ -113,11 +111,5 @@ namespace pika::cuda::experimental {
     void cublas_handle::set_pointer_mode(cublasPointerMode_t pointer_mode)
     {
         check_cublas_error(cublasSetPointerMode(handle, pointer_mode));
-    }
-
-    std::ostream& operator<<(std::ostream& os, cublas_handle const& handle)
-    {
-        os << "cublas_handle(" << handle.get() << ")";
-        return os;
     }
 }    // namespace pika::cuda::experimental

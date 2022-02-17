@@ -12,8 +12,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace util {
-
+namespace pika::util {
     class PIKA_EXPORT bad_lexical_cast : public std::bad_cast
     {
     public:
@@ -64,6 +63,6 @@ namespace pika { namespace util {
         }
     }    // namespace detail
 
-}}    // namespace pika::util
+}    // namespace pika::util
 
 #include <pika/config/warnings_suffix.hpp>

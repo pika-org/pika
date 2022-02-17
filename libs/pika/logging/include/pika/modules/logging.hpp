@@ -23,7 +23,6 @@ namespace pika {
 #include <pika/assertion/current_function.hpp>
 #include <pika/logging/level.hpp>
 #include <pika/logging/logging.hpp>
-#include <pika/modules/format.hpp>
 
 #include <string>
 
@@ -49,7 +48,7 @@ namespace pika { namespace util {
 
 #define LTIM_(lvl)                                                             \
     PIKA_LOG_FORMAT(pika::util::timing, ::pika::util::logging::level::lvl,     \
-        "{} ", ::pika::util::logging::level::lvl) /**/
+        "{:>10} ", ::pika::util::logging::level::lvl) /**/
 #define LPROGRESS_                                                             \
     PIKA_LOG_FORMAT(pika::util::timing, ::pika::util::logging::level::fatal,   \
         " {}:{} {} ", __FILE__, __LINE__, PIKA_ASSERT_CURRENT_FUNCTION) /**/
@@ -63,7 +62,7 @@ namespace pika { namespace util {
 
 #define LPIKA_(lvl, cat)                                                       \
     PIKA_LOG_FORMAT(pika::util::pika, ::pika::util::logging::level::lvl,       \
-        "{}{}", ::pika::util::logging::level::lvl, (cat)) /**/
+        "{:>10}{}", ::pika::util::logging::level::lvl, (cat)) /**/
 
 #define LPIKA_ENABLED(lvl)                                                     \
     pika::util::pika_logger()->is_enabled(                                     \
@@ -73,8 +72,8 @@ namespace pika { namespace util {
         PIKA_EXPORT PIKA_DECLARE_LOG(app)
 
 #define LAPP_(lvl)                                                             \
-    PIKA_LOG_FORMAT(pika::util::app, ::pika::util::logging::level::lvl, "{} ", \
-        ::pika::util::logging::level::lvl) /**/
+    PIKA_LOG_FORMAT(pika::util::app, ::pika::util::logging::level::lvl,        \
+        "{:>10} ", ::pika::util::logging::level::lvl) /**/
 
 #define LAPP_ENABLED(lvl)                                                      \
     pika::util::app_logger()->is_enabled(::pika::util::logging::level::lvl) /**/
@@ -85,7 +84,7 @@ namespace pika { namespace util {
 
 #define LDEB_                                                                  \
     PIKA_LOG_FORMAT(pika::util::debuglog, ::pika::util::logging::level::error, \
-        "{} ", ::pika::util::logging::level::error) /**/
+        "{:>10} ", ::pika::util::logging::level::error) /**/
 
 #define LDEB_ENABLED                                                           \
     pika::util::debuglog_logger()->is_enabled(                                 \
@@ -98,7 +97,7 @@ namespace pika { namespace util {
 
 #define LFATAL_                                                                \
     PIKA_LOG_FORMAT(pika::util::pika_error,                                    \
-        ::pika::util::logging::level::fatal, "{} [ERR] ",                      \
+        ::pika::util::logging::level::fatal, "{:>10} [ERR] ",                  \
         ::pika::util::logging::level::fatal) /**/
 
         //

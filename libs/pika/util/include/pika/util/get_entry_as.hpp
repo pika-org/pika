@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/util/from_string.hpp>
+#include <pika/string_util/from_string.hpp>
 
 #include <string>
 #include <type_traits>

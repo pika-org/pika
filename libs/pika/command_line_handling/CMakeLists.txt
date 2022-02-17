@@ -33,7 +33,6 @@ pika_add_module(
     pika_debugging
     pika_errors
     pika_filesystem
-    pika_format
     pika_topology
     pika_util
     pika_version

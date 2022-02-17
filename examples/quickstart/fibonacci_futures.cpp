@@ -10,7 +10,9 @@
 #include <pika/chrono.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/format.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -274,9 +276,9 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt = "fibonacci_serial({1}) == {2},"
-                          "elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt = "fibonacci_serial({}) == {},"
+                                    "elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -296,9 +298,9 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt = "fibonacci_future_one({1}) == {2},"
-                          "elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt = "fibonacci_future_one({}) == {},"
+                                    "elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -318,8 +320,9 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt = "fibonacci({1}) == {2},elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt =
+            "fibonacci({}) == {},elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -339,8 +342,9 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt = "fibonacci_fork({1}) == {2},elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt =
+            "fibonacci_fork({}) == {},elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -360,9 +364,9 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt =
-            "fibonacci_future({1}) == {2},elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt =
+            "fibonacci_future({}) == {},elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -382,9 +386,9 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt =
-            "fibonacci_future_fork({1}) == {2},elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt =
+            "fibonacci_future_fork({}) == {},elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -404,9 +408,9 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt =
-            "fibonacci_future_when_all({1}) == {2},elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt =
+            "fibonacci_future_when_all({}) == {},elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -426,9 +430,10 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt = "fibonacci_future_unwrapped_when_all({1}) == "
-                          "{2},elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt =
+            "fibonacci_future_unwrapped_when_all({}) == "
+            "{},elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -448,9 +453,9 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt =
-            "fibonacci_future_all({1}) == {2},elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt =
+            "fibonacci_future_all({}) == {},elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }
@@ -470,9 +475,9 @@ int pika_main(pika::program_options::variables_map& vm)
         std::uint64_t d =
             duration_cast<nanoseconds>(high_resolution_clock::now() - start)
                 .count();
-        char const* fmt =
-            "fibonacci_future_all_when_all({1}) == {2},elapsed time:,{3},[s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
+        constexpr char const* fmt =
+            "fibonacci_future_all_when_all({}) == {},elapsed time:,{},[s]\n";
+        fmt::print(std::cout, fmt, n, r, d / max_runs);
 
         executed_one = true;
     }

@@ -13,7 +13,6 @@
 
 #include <cstddef>
 #include <memory>
-#include <ostream>
 #include <vector>
 
 namespace pika::cuda::experimental {
@@ -86,20 +85,5 @@ namespace pika::cuda::experimental {
         {
             return data->high_priority_streams.get_next_stream();
         }
-    }
-
-    std::ostream& operator<<(std::ostream& os, cuda_pool const& pool)
-    {
-        bool valid{pool.data};
-        os << "cuda_pool(" << pool.data.get()
-           << ", num_high_priority_streams_per_thread = "
-           << (valid ? pool.data->high_priority_streams.num_streams_per_thread :
-                       0)
-           << ", num_normal_priority_streams_per_thread = "
-           << (valid ? pool.data->normal_priority_streams
-                           .num_streams_per_thread :
-                       0)
-           << ")";
-        return os;
     }
 }    // namespace pika::cuda::experimental

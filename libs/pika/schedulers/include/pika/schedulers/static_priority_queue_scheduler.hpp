@@ -14,6 +14,8 @@
 #include <pika/schedulers/local_priority_queue_scheduler.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <mutex>
@@ -80,5 +82,20 @@ namespace pika::threads {
         }
     };
 }    // namespace pika::threads
+
+template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
+    typename TerminatedQueuing>
+struct fmt::formatter<pika::threads::static_priority_queue_scheduler<Mutex,
+    PendingQueuing, StagedQueuing, TerminatedQueuing>>
+  : fmt::formatter<pika::threads::detail::scheduler_base>
+{
+    template <typename FormatContext>
+    auto format(pika::threads::detail::scheduler_base const& scheduler,
+        FormatContext& ctx)
+    {
+        return fmt::formatter<pika::threads::detail::scheduler_base>::format(
+            scheduler, ctx);
+    }
+};
 
 #include <pika/config/warnings_suffix.hpp>

@@ -10,9 +10,10 @@
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/async_cuda/custom_blas_api.hpp>
 
+#include <fmt/format.h>
 #include <whip.hpp>
 
-#include <iosfwd>
+#include <string>
 
 namespace pika::cuda::experimental {
     /// RAII wrapper for a cuBLAS handle.
@@ -54,9 +55,19 @@ namespace pika::cuda::experimental {
         {
             return !(lhs == rhs);
         }
-
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream&, cublas_handle const&);
         /// \endcond
     };
 }    // namespace pika::cuda::experimental
+
+template <>
+struct fmt::formatter<pika::cuda::experimental::cublas_handle>
+  : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(pika::cuda::experimental::cublas_handle const& handle,
+        FormatContext& ctx)
+    {
+        return fmt::formatter<std::string>::format(
+            fmt::format("cublas_handle({})", fmt::ptr(handle.get())), ctx);
+    }
+};

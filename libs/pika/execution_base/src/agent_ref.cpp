@@ -10,10 +10,11 @@
 #include <pika/lock_registration/detail/register_locks.hpp>
 #endif
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/modules/format.hpp>
+
+#include <fmt/format.h>
 
 #include <cstddef>
-#include <ostream>
+#include <string>
 
 namespace pika { namespace execution_base {
 
@@ -73,9 +74,8 @@ namespace pika { namespace execution_base {
         impl_->sleep_until(sleep_time, desc);
     }
 
-    std::ostream& operator<<(std::ostream& os, agent_ref const& a)
+    std::string format(pika::execution_base::agent_ref const& a)
     {
-        pika::util::format_to(os, "agent_ref{{{}}}", a.impl_->description());
-        return os;
+        return fmt::format("agent_ref{{{}}}", a.impl_->description());
     }
 }}    // namespace pika::execution_base

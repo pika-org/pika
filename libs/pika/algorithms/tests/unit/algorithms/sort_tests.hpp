@@ -7,11 +7,13 @@
 
 #pragma once
 
-#include <pika/modules/format.hpp>
 #include <pika/parallel/algorithms/sort.hpp>
 #include <pika/testing.hpp>
 
 #include "test_utils.hpp"
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -98,16 +100,15 @@ int verify_(
             if (comp((*it), temp))
             {
                 if (print)
-                    pika::util::format_to(std::cout, "fail {:8.6}", elapsed)
-                        << A.size() << std::endl;
+                    fmt::print(std::cout, "fail {} {}\n", elapsed, A.size());
                 return 0;
             }
             temp = (*it);
         }
     }
     if (print)
-        pika::util::format_to(std::cout, "OK {:8.6}", elapsed)
-            << A.size() << std::endl;
+        fmt::print(std::cout, "OK {} {}\n", elapsed, A.size());
+
     return 1;
 }
 

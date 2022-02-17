@@ -6,8 +6,8 @@
 
 #include <pika/init.hpp>
 #include <pika/runtime.hpp>
+#include <pika/string_util/from_string.hpp>
 #include <pika/testing.hpp>
-#include <pika/util/from_string.hpp>
 
 #include <cstddef>
 #include <string>

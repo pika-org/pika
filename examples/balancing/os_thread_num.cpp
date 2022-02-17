@@ -7,11 +7,13 @@
 #include <pika/barrier.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/allocator_support.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/runtime.hpp>
 #include <pika/thread.hpp>
 
 #include <boost/lockfree/queue.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -108,14 +110,10 @@ int pika_main(variables_map& vm)
         for (sorter::value_type const& result : sort)
         {
             if (csv)
-                pika::util::format_to(
-                    std::cout, "{1},{2}\n", result.second, result.first)
-                    << std::flush;
+                fmt::print(std::cout, "{},{}\n", result.second, result.first);
             else
-                pika::util::format_to(std::cout,
-                    "OS-thread {1} ran {2} PX-threads\n", result.second,
-                    result.first)
-                    << std::flush;
+                fmt::print(std::cout, "OS-thread {} ran {} PX-threads\n",
+                    result.second, result.first);
         }
     }
 

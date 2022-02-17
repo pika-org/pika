@@ -36,7 +36,6 @@ pika_add_module(
     pika_assertion
     pika_config
     pika_errors
-    pika_format
     pika_functional
     pika_iterator_support
     pika_lock_registration

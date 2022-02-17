@@ -9,9 +9,10 @@
 #include <pika/config.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 
+#include <fmt/format.h>
 #include <whip.hpp>
 
-#include <iosfwd>
+#include <string>
 
 namespace pika::cuda::experimental {
     /// RAII wrapper for a CUDA stream.
@@ -67,9 +68,19 @@ namespace pika::cuda::experimental {
         {
             return !(lhs == rhs);
         }
-
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream&, cuda_stream const&);
         /// \endcond
     };
 }    // namespace pika::cuda::experimental
+
+template <>
+struct fmt::formatter<pika::cuda::experimental::cuda_stream>
+  : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(
+        pika::cuda::experimental::cuda_stream const& stream, FormatContext& ctx)
+    {
+        return fmt::formatter<std::string>::format(
+            fmt::format("cuda_stream({})", fmt::ptr(stream.get())), ctx);
+    }
+};

@@ -11,10 +11,12 @@
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 
+#include <fmt/format.h>
+
 #include <atomic>
 #include <cstddef>
-#include <iosfwd>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace pika::cuda::experimental {
@@ -98,8 +100,31 @@ namespace pika::cuda::experimental {
             return !(lhs == rhs);
         }
 
-        PIKA_EXPORT friend std::ostream& operator<<(
-            std::ostream&, cuda_pool const&);
+        friend struct fmt::formatter<pika::cuda::experimental::cuda_pool>;
         /// \endcond
     };
 }    // namespace pika::cuda::experimental
+
+template <>
+struct fmt::formatter<pika::cuda::experimental::cuda_pool>
+  : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto
+    format(pika::cuda::experimental::cuda_pool const& pool, FormatContext& ctx)
+    {
+        bool valid{pool.data};
+        auto high_priority_streams =
+            valid ? pool.data->high_priority_streams.num_streams_per_thread : 0;
+        auto normal_priority_streams = valid ?
+            pool.data->normal_priority_streams.num_streams_per_thread :
+            0;
+        return fmt::formatter<std::string>::format(
+            fmt::format("cuda_pool({}, num_high_priority_streams_per_thread "
+                        "= {}, num_normal_priority_streams_per_thread = "
+                        "{})",
+                fmt::ptr(pool.data.get()), high_priority_streams,
+                normal_priority_streams),
+            ctx);
+    }
+};

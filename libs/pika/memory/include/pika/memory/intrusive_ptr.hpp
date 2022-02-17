@@ -16,6 +16,8 @@
 #include <pika/memory/config/defines.hpp>
 #include <pika/memory/detail/sp_convertible.hpp>
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <functional>
 #include <iosfwd>
@@ -343,6 +345,16 @@ namespace pika {
     using pika::memory::dynamic_pointer_cast;
     using pika::memory::static_pointer_cast;
 }    // namespace pika
+
+template <typename T>
+struct fmt::formatter<pika::memory::intrusive_ptr<T>> : fmt::formatter<void*>
+{
+    template <typename FormatContext>
+    auto format(pika::memory::intrusive_ptr<T> p, FormatContext& ctx)
+    {
+        return fmt::formatter<void*>::format(static_cast<void*>(p.get()), ctx);
+    }
+};
 
 namespace std {
 

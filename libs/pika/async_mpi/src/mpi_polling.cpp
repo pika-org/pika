@@ -298,7 +298,7 @@ namespace pika::mpi::experimental {
         {
             mpi_debug.debug(debug::detail::str<>("pika_MPI_Handler"));
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                "pika_MPI_Handler", error_message(*errorcode));
+                "pika_MPI_Handler", "{}", error_message(*errorcode));
         }
 
         // set an error handler for communicators that will be called

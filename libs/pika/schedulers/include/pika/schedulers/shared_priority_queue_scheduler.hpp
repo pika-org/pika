@@ -26,6 +26,8 @@
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
 #include <pika/topology/topology.hpp>
 
+#include <fmt/format.h>
+
 #include <array>
 #include <atomic>
 #include <cstddef>
@@ -1455,5 +1457,18 @@ namespace pika::threads {
         std::size_t pool_index_;
     };
 }    // namespace pika::threads
+
+template <typename Mutex>
+struct fmt::formatter<pika::threads::shared_priority_queue_scheduler<Mutex>>
+  : fmt::formatter<pika::threads::detail::scheduler_base>
+{
+    template <typename FormatContext>
+    auto format(pika::threads::detail::scheduler_base const& scheduler,
+        FormatContext& ctx)
+    {
+        return fmt::formatter<pika::threads::detail::scheduler_base>::format(
+            scheduler, ctx);
+    }
+};
 
 #include <pika/config/warnings_suffix.hpp>

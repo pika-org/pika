@@ -18,7 +18,6 @@
 
 #include <pika/config.hpp>
 #include <pika/logging/message.hpp>
-#include <pika/modules/format.hpp>
 
 #include <iosfwd>
 #include <string>

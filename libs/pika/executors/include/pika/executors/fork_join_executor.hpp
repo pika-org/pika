@@ -24,6 +24,8 @@
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/threading/thread.hpp>
 
+#include <fmt/format.h>
+
 #include <atomic>
 #include <chrono>
 #include <cstddef>
@@ -32,6 +34,7 @@
 #include <iosfwd>
 #include <memory>
 #include <optional>
+#include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -664,10 +667,42 @@ namespace pika { namespace execution { namespace experimental {
                 priority, stacksize, schedule, yield_delay);
         }
     };
-
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream& os, fork_join_executor::loop_schedule const& schedule);
 }}}    // namespace pika::execution::experimental
+
+template <>
+struct fmt::formatter<
+    pika::execution::experimental::fork_join_executor::loop_schedule>
+  : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(pika::execution::experimental::fork_join_executor::loop_schedule
+                    schedule,
+        FormatContext& ctx)
+    {
+        using pika::execution::experimental::fork_join_executor;
+
+        const char* schedule_str;
+        switch (schedule)
+        {
+        case fork_join_executor::loop_schedule::static_:
+            schedule_str = "static";
+            break;
+        case fork_join_executor::loop_schedule::dynamic:
+            schedule_str = "dynamic";
+            break;
+        default:
+            schedule_str = "<unknown>";
+            break;
+        }
+
+        return fmt::formatter<std::string>::format(
+            fmt::format("{} ({})", schedule_str,
+                static_cast<
+                    std::underlying_type_t<fork_join_executor::loop_schedule>>(
+                    schedule)),
+            ctx);
+    }
+};
 
 namespace pika { namespace parallel { namespace execution {
     /// \cond NOINTERNAL

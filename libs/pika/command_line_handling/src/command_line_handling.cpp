@@ -10,19 +10,21 @@
 #include <pika/command_line_handling/parse_command_line.hpp>
 #include <pika/debugging/attach_debugger.hpp>
 #include <pika/functional/detail/reset_function.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/program_options/options_description.hpp>
 #include <pika/program_options/variables_map.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
+#include <pika/string_util/from_string.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
 #include <pika/type_support/unused.hpp>
-#include <pika/util/from_string.hpp>
 #include <pika/util/manage_config.hpp>
 #include <pika/version.hpp>
 
 #include <boost/tokenizer.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <algorithm>
 #include <cstddef>
@@ -996,7 +998,7 @@ namespace pika::detail {
                 get_number_of_default_cores(false) != 1 &&
                 !command_line_arguments_given)
             {
-                pika::util::format_to(std::cerr,
+                fmt::print(std::cerr,
                     "The pika runtime will be started on only one core with {} "
                     "worker threads because the process mask has restricted "
                     "the available resources to only one core. If this is "

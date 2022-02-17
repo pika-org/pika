@@ -120,6 +120,7 @@ namespace pika::concurrency::detail {
             initial_range = other.initial_range;
             current_range =
                 other.current_range.data_.load(std::memory_order_relaxed);
+            return *this;
         }
 
         /// \brief Attempt to pop an item from the left of the queue.

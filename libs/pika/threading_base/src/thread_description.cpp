@@ -6,11 +6,12 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/modules/format.hpp>
+#include <pika/string_util/to_string.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/type_support/unused.hpp>
-#include <pika/util/to_string.hpp>
+
+#include <fmt/format.h>
 
 #include <ostream>
 #include <string>
@@ -41,7 +42,7 @@ namespace pika::detail {
         if (desc.kind() == detail::thread_description::data_type_description)
             return desc ? desc.get_description() : "<unknown>";
 
-        return pika::util::format("address: {:#x}", desc.get_address());
+        return fmt::format("address: {:#x}", desc.get_address());
 #else
         PIKA_UNUSED(desc);
         return "<unknown>";

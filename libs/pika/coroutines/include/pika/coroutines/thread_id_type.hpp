@@ -12,8 +12,12 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
-#include <pika/modules/format.hpp>
+#include <pika/modules/memory.hpp>
 #include <pika/thread_support/atomic_count.hpp>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstddef>
 #include <functional>
@@ -137,16 +141,6 @@ namespace pika::threads::detail {
         {
             os << id.get();
             return os;
-        }
-
-        friend void format_value(
-            std::ostream& os, std::string_view spec, thread_id const& id)
-        {
-            // propagate spec
-            char format[16];
-            std::snprintf(
-                format, 16, "{:%.*s}", (int) spec.size(), spec.data());
-            pika::util::format_to(os, format, id.get());
         }
 
     private:
@@ -381,16 +375,6 @@ namespace pika::threads::detail {
             return os;
         }
 
-        friend void format_value(
-            std::ostream& os, std::string_view spec, thread_id_ref const& id)
-        {
-            // propagate spec
-            char format[16];
-            std::snprintf(
-                format, 16, "{:%.*s}", (int) spec.size(), spec.data());
-            pika::util::format_to(os, format, id.get());
-        }
-
     private:
         thread_id_repr thrd_;
     };
@@ -421,3 +405,25 @@ namespace std {
         }
     };
 }    // namespace std
+
+template <>
+struct fmt::formatter<pika::threads::detail::thread_id> : fmt::formatter<void*>
+{
+    template <typename FormatContext>
+    auto format(pika::threads::detail::thread_id id, FormatContext& ctx)
+    {
+        return fmt::formatter<void*>::format(static_cast<void*>(id.get()), ctx);
+    }
+};
+
+template <>
+struct fmt::formatter<pika::threads::detail::thread_id_ref>
+  : fmt::formatter<void*>
+{
+    template <typename FormatContext>
+    auto format(pika::threads::detail::thread_id_ref id, FormatContext& ctx)
+    {
+        return fmt::formatter<void*>::format(
+            static_cast<void*>(id.noref().get()), ctx);
+    }
+};

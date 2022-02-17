@@ -9,7 +9,6 @@
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/errors/throw_exception.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
@@ -24,6 +23,8 @@
 #include <pika/debugging/backtrace.hpp>
 #include <pika/threading_base/detail/reset_backtrace.hpp>
 #endif
+
+#include <fmt/format.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -49,7 +50,7 @@ namespace pika::threads::detail {
                 "pika-thread?)");
         }
 
-        return pika::util::format(
+        return fmt::format(
             "{}: {}", id, get_thread_id_data(id)->get_description());
     }
 

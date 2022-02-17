@@ -7,13 +7,15 @@
 //  Distributed under the Boost Software License, Version 1.0. (See acctbbanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/modules/format.hpp>
 #include "htts2.hpp"
 
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_for.h>
 #include <tbb/task.h>
 #include <tbb/task_scheduler_init.h>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <chrono>
 #include <cstdint>
@@ -157,7 +159,7 @@ private:
                 << "Total Walltime [nanoseconds]"
                 << "\n";
 
-        pika::util::format_to(std::cout, "{},{},{},{:.14g}\n", this->osthreads_,
+        fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_,
             this->tasks_, this->payload_duration_, results);
     }
 };

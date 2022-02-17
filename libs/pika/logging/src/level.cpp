@@ -18,8 +18,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace util { namespace logging {
-
-    static std::string levelname(level value)
+    std::string levelname(level value)
     {
         switch (value)
         {
@@ -43,16 +42,6 @@ namespace pika { namespace util { namespace logging {
 
         return '<' + std::to_string(static_cast<int>(value)) + '>';
     }
-
-    void format_value(std::ostream& os, std::string_view spec, level value)
-    {
-        if (!spec.empty())
-            throw std::runtime_error("Not a valid format specifier");
-
-        os << std::right << std::setfill(' ') << std::setw(10)
-           << levelname(value);
-    }
-
 }}}    // namespace pika::util::logging
 
 #endif    // PIKA_HAVE_LOGGING

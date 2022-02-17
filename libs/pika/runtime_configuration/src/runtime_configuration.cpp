@@ -15,7 +15,7 @@
 #include <pika/runtime_configuration/init_ini_data.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
 #include <pika/runtime_configuration/runtime_mode.hpp>
-#include <pika/util/from_string.hpp>
+#include <pika/string_util/from_string.hpp>
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
 

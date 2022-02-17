@@ -18,6 +18,11 @@
 #include <pika/thread_support/spinlock.hpp>
 #include <pika/util/ios_flags_saver.hpp>
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+#include <fmt/std.h>
+
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -32,6 +37,20 @@ namespace pika { namespace util {
     };
 
     namespace detail {
+        // Helper to wrap pointers in fmt::ptr so that users of PIKA_TEST* don't
+        // have to wrap values to be tested in fmt::ptr.
+        template <typename T>
+        auto make_fmt_ptr(T* x)
+        {
+            return fmt::ptr(x);
+        }
+
+        template <typename T>
+        T& make_fmt_ptr(T& x)
+        {
+            return x;
+        }
+
         struct fixture final
         {
         public:
@@ -64,10 +83,8 @@ namespace pika { namespace util {
                 if (!t)
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::detail::ios_flags_saver ifs(stream_);
-                    stream_ << file << "(" << line << "): " << msg
-                            << " failed in function '" << function << "'"
-                            << std::endl;
+                    fmt::print(stream_, "{}({}): {} failed in function '{}'\n",
+                        file, line, msg, function);
                     increment_failures(c);
                     return false;
                 }
@@ -83,10 +100,10 @@ namespace pika { namespace util {
                 if (!(t == u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::detail::ios_flags_saver ifs(stream_);
-                    stream_ << file << "(" << line << "): " << msg
-                            << " failed in function '" << function << "': "
-                            << "'" << t << "' != '" << u << "'" << std::endl;
+                    fmt::print(stream_,
+                        "{}({}): {} failed in function '{}': '{} != {}'\n",
+                        file, line, msg, function, make_fmt_ptr(t),
+                        make_fmt_ptr(u));
                     increment_failures(c);
                     return false;
                 }
@@ -103,10 +120,10 @@ namespace pika { namespace util {
                 if (!(t != u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::detail::ios_flags_saver ifs(stream_);
-                    stream_ << file << "(" << line << "): " << msg
-                            << " failed in function '" << function << "': "
-                            << "'" << t << "' != '" << u << "'" << std::endl;
+                    fmt::print(stream_,
+                        "{}({}): {} failed in function '{}': '{} == {}'\n",
+                        file, line, msg, function, make_fmt_ptr(t),
+                        make_fmt_ptr(u));
                     increment_failures(c);
                     return false;
                 }
@@ -123,9 +140,10 @@ namespace pika { namespace util {
                 {
                     std::lock_guard<mutex_type> l(mutex_);
                     pika::detail::ios_flags_saver ifs(stream_);
-                    stream_ << file << "(" << line << "): " << msg
-                            << " failed in function '" << function << "': "
-                            << "'" << t << "' >= '" << u << "'" << std::endl;
+                    fmt::print(stream_,
+                        "{}({}): {} failed in function '{}': '{} >= {}'\n",
+                        file, line, msg, function, make_fmt_ptr(t),
+                        make_fmt_ptr(u));
                     increment_failures(c);
                     return false;
                 }
@@ -142,10 +160,9 @@ namespace pika { namespace util {
                 if (!(t <= u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::detail::ios_flags_saver ifs(stream_);
-                    stream_ << file << "(" << line << "): " << msg
-                            << " failed in function '" << function << "': "
-                            << "'" << t << "' > '" << u << "'" << std::endl;
+                    fmt::print(stream_,
+                        "{}({}): {} failed in function '{}': '{} > {}'\n", file,
+                        line, msg, function, make_fmt_ptr(t), make_fmt_ptr(u));
                     increment_failures(c);
                     return false;
                 }
@@ -162,18 +179,18 @@ namespace pika { namespace util {
                 if (!(t >= u && t <= v))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::detail::ios_flags_saver ifs(stream_);
                     if (!(t >= u))
                     {
-                        stream_ << file << "(" << line << "): " << msg
-                                << " failed in function '" << function << "': "
-                                << "'" << t << "' < '" << u << "'" << std::endl;
+                        fmt::print(stream_,
+                            "{}({}): {} failed in function '{}': '{} < {}'\n",
+                            file, line, msg, function, make_fmt_ptr(t),
+                            make_fmt_ptr(u));
                     }
                     else
                     {
-                        stream_ << file << "(" << line << "): " << msg
-                                << " failed in function '" << function << "': "
-                                << "'" << t << "' > '" << v << "'" << std::endl;
+                        fmt::print(stream_,
+                            "{}({}): {} failed in function '{}': '{} > {}'\n",
+                            file, line, msg, function, make_fmt_ptr(t), u);
                     }
                     increment_failures(c);
                     return false;

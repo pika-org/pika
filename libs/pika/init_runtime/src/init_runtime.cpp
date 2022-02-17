@@ -21,7 +21,6 @@
 #include <pika/init_runtime/init_runtime.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/timing.hpp>
@@ -41,7 +40,6 @@
 #include <pika/threading/thread.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>
-#include <pika/util/from_string.hpp>
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
 

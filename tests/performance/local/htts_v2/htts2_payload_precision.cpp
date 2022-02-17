@@ -7,8 +7,10 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/modules/format.hpp>
 #include "htts2.hpp"
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <chrono>
 #include <cstdint>
@@ -183,11 +185,10 @@ private:
                 << "Amortized Overhead per Task Uncertainty [nanoseconds/task]"
                 << "\n";
 
-        pika::util::format_to(std::cout,
-            "{},{},{},{:.14g},{:.14g},{:.14g},{:.14g}\n", this->osthreads_,
-            this->tasks_, this->payload_duration_, results.average_precision_,
-            results.precision_uncertainty_, results.amortized_overhead_,
-            results.overhead_uncertainty_);
+        fmt::print(std::cout, "{},{},{},{:.14g},{:.14g},{:.14g},{:.14g}\n",
+            this->osthreads_, this->tasks_, this->payload_duration_,
+            results.average_precision_, results.precision_uncertainty_,
+            results.amortized_overhead_, results.overhead_uncertainty_);
     }
 };
 

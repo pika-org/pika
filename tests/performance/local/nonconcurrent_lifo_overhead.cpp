@@ -7,11 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <pika/concurrency/barrier.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/timing.hpp>
 
 #include <boost/lockfree/stack.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <chrono>
 #include <cstdint>
@@ -86,16 +88,15 @@ void print_results(variables_map& vm, std::pair<double, double> elapsed_control,
     }
 
     if (iterations != 0)
-        pika::util::format_to(std::cout,
-            "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n", iterations, blocksize,
-            threads, (elapsed_lockfree.first / (threads * iterations)) * 1e9,
+        fmt::print(std::cout, "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n",
+            iterations, blocksize, threads,
+            (elapsed_lockfree.first / (threads * iterations)) * 1e9,
             (elapsed_lockfree.second / (threads * iterations)) * 1e9,
             (elapsed_control.first / (threads * iterations)) * 1e9,
             (elapsed_control.second / (threads * iterations)) * 1e9);
     else
-        pika::util::format_to(std::cout,
-            "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n", iterations, blocksize,
-            threads, elapsed_lockfree.first * 1e9,
+        fmt::print(std::cout, "{} {} {} {:.14g} {:.14g} {:.14g} {:.14g}\n",
+            iterations, blocksize, threads, elapsed_lockfree.first * 1e9,
             elapsed_lockfree.second * 1e9, elapsed_control.first * 1e9,
             elapsed_control.second * 1e9);
 }
