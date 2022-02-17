@@ -1586,25 +1586,27 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    struct hw_concurrency
-    {
-        hw_concurrency()
-#if defined(__ANDROID__) && defined(ANDROID)
-          : num_of_cores_(::android_getCpuCount())
-#else
-          : num_of_cores_(detail::hwloc_hardware_concurrency())
-#endif
+    namespace detail {
+        struct hw_concurrency
         {
-            if (num_of_cores_ == 0)
-                num_of_cores_ = 1;
-        }
+            hw_concurrency()
+#if defined(__ANDROID__) && defined(ANDROID)
+              : num_of_cores_(::android_getCpuCount())
+#else
+              : num_of_cores_(hwloc_hardware_concurrency())
+#endif
+            {
+                if (num_of_cores_ == 0)
+                    num_of_cores_ = 1;
+            }
 
-        std::size_t num_of_cores_;
-    };
+            std::size_t num_of_cores_;
+        };
+    }    // namespace detail
 
     unsigned int hardware_concurrency()
     {
-        static hw_concurrency hwc;
+        static detail::hw_concurrency hwc;
         return static_cast<unsigned int>(hwc.num_of_cores_);
     }
 }}    // namespace pika::threads
