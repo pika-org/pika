@@ -6,33 +6,16 @@
 
 #pragma once
 
-#include <pika/config.hpp>
-#include <pika/type_support/always_void.hpp>
-
 #include <type_traits>
 
 namespace pika { namespace traits {
-    namespace detail {
-        template <typename Action, typename Enable = void>
-        struct is_action_impl : std::false_type
-        {
-        };
-
-        template <typename Action>
-        struct is_action_impl<Action,
-            typename util::always_void<typename Action::action_tag>::type>
-          : std::true_type
-        {
-        };
-    }    // namespace detail
-
     template <typename Action, typename Enable = void>
-    struct is_action : detail::is_action_impl<typename std::decay<Action>::type>
+    struct is_action : std::false_type
     {
     };
 
     template <typename T>
-    inline constexpr bool is_action_v = is_action<T>::value;
+    inline constexpr bool is_action_v = false;
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Action>
@@ -41,5 +24,5 @@ namespace pika { namespace traits {
     };
 
     template <typename T>
-    inline constexpr bool is_bound_action_v = is_bound_action<T>::value;
+    inline constexpr bool is_bound_action_v = false;
 }}    // namespace pika::traits
