@@ -11,7 +11,6 @@
 #include <pika/functional/traits/get_action_name.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/functional/traits/is_action.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
 #include <pika/modules/itt_notify.hpp>
@@ -75,9 +74,7 @@ namespace pika { namespace util {
 
         /* The priority of description is name, altname, address */
         template <typename F,
-            typename = typename std::enable_if<
-                !std::is_same<F, thread_description>::value &&
-                !traits::is_action<F>::value>::type>
+            typename = std::enable_if_t<!std::is_same_v<F, thread_description>>>
         explicit thread_description(
             F const& f, char const* altname = nullptr) noexcept
           : type_(data_type_description)
@@ -112,19 +109,6 @@ namespace pika { namespace util {
             {
                 desc_itt_ = util::itt::string_handle(get_description());
             }
-#endif
-        }
-
-        template <typename Action,
-            typename =
-                typename std::enable_if<traits::is_action<Action>::value>::type>
-        explicit thread_description(
-            Action, char const* /* altname */ = nullptr) noexcept
-          : type_(data_type_description)
-        {
-            data_.desc_ = pika::actions::detail::get_action_name<Action>();
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-            desc_itt_ = pika::actions::detail::get_action_name_itt<Action>();
 #endif
         }
 
@@ -208,19 +192,10 @@ namespace pika { namespace util {
         constexpr thread_description(char const* /*desc*/) noexcept {}
 
         template <typename F,
-            typename = typename std::enable_if<
-                !std::is_same<F, thread_description>::value &&
-                !traits::is_action<F>::value>::type>
+            typename = typename std::enable_if_t<
+                !std::is_same_v<F, thread_description>>>
         explicit constexpr thread_description(
             F const& /*f*/, char const* /*altname*/ = nullptr) noexcept
-        {
-        }
-
-        template <typename Action,
-            typename =
-                typename std::enable_if<traits::is_action<Action>::value>::type>
-        explicit constexpr thread_description(
-            Action, char const* /*altname*/ = nullptr) noexcept
         {
         }
 
