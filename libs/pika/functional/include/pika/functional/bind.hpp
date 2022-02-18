@@ -15,7 +15,6 @@
 #include <pika/functional/one_shot.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
-#include <pika/functional/traits/is_action.hpp>
 #include <pika/functional/traits/is_bind_expression.hpp>
 #include <pika/functional/traits/is_placeholder.hpp>
 #include <pika/type_support/decay.hpp>
@@ -216,9 +215,7 @@ namespace pika { namespace util {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename F, typename... Ts,
-        typename Enable =
-            std::enable_if_t<!traits::is_action_v<std::decay_t<F>>>>
+    template <typename F, typename... Ts>
     constexpr detail::bound<std::decay_t<F>,
         util::make_index_pack_t<sizeof...(Ts)>, util::decay_unwrap_t<Ts>...>
     bind(F&& f, Ts&&... vs)
