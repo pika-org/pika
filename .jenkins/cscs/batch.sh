@@ -21,25 +21,14 @@ source "${src_dir}/.jenkins/cscs/env-common.sh"
 source "${src_dir}/.jenkins/cscs/env-${configuration_name}.sh"
 
 set +e
-if [[ -n "${spack_spec:-}" ]]; then
-    spack build-env ${spack_spec} -- ctest \
-        --verbose \
-        -S ${src_dir}/.jenkins/cscs/ctest.cmake \
-        -DCTEST_BUILD_EXTRA_OPTIONS="${build_extra_options:-}" \
-        -DCTEST_CONFIGURE_EXTRA_OPTIONS="${configure_extra_options} -DCMAKE_INSTALL_PREFIX=${install_dir}" \
-        -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name_with_build_type}" \
-        -DCTEST_SOURCE_DIRECTORY="${src_dir}" \
-        -DCTEST_BINARY_DIRECTORY="${build_dir}"
-else
-    ctest \
-        --verbose \
-        -S ${src_dir}/.jenkins/cscs/ctest.cmake \
-        -DCTEST_BUILD_EXTRA_OPTIONS="${build_extra_options:-}" \
-        -DCTEST_CONFIGURE_EXTRA_OPTIONS="${configure_extra_options} -DCMAKE_INSTALL_PREFIX=${install_dir}" \
-        -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name_with_build_type}" \
-        -DCTEST_SOURCE_DIRECTORY="${src_dir}" \
-        -DCTEST_BINARY_DIRECTORY="${build_dir}"
-fi
+spack build-env ${spack_spec} -- ctest \
+    --verbose \
+    -S ${src_dir}/.jenkins/cscs/ctest.cmake \
+    -DCTEST_BUILD_EXTRA_OPTIONS="${build_extra_options:-}" \
+    -DCTEST_CONFIGURE_EXTRA_OPTIONS="${configure_extra_options} -DCMAKE_INSTALL_PREFIX=${install_dir}" \
+    -DCTEST_BUILD_CONFIGURATION_NAME="${configuration_name_with_build_type}" \
+    -DCTEST_SOURCE_DIRECTORY="${src_dir}" \
+    -DCTEST_BINARY_DIRECTORY="${build_dir}"
 set -e
 
 # Copy the testing directory for saving as an artifact
@@ -67,7 +56,7 @@ if [[ -f "${build_dir}/Testing/TAG" ]]; then
         test_errors=$(grep '<Test Status=\"failed\">' "${build_dir}/Testing/${tag}/Test.xml" | wc -l)
     fi
 fi
-ctest_status=$(( ctest_exit_code + file_errors + configure_errors + build_errors + test_errors ))
+ctest_status=$((ctest_exit_code + file_errors + configure_errors + build_errors + test_errors))
 
-echo "${ctest_status}" > "jenkins-pika-${configuration_name_with_build_type}-ctest-status.txt"
+echo "${ctest_status}" >"jenkins-pika-${configuration_name_with_build_type}-ctest-status.txt"
 exit $ctest_status

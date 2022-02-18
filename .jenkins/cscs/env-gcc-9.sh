@@ -4,23 +4,16 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-export CRAYPE_LINK_TYPE=dynamic
-export APPS_ROOT="/apps/daint/SSL/pika/packages"
-export GCC_VER="9.4.0"
-export CXX_STD="17"
-export BOOST_VER="1.71.0"
-export HWLOC_VER="1.11.5"
-export GCC_ROOT="${APPS_ROOT}/gcc-${GCC_VER}"
-export BOOST_ROOT="${APPS_ROOT}/boost-${BOOST_VER}-gcc-${GCC_VER}-c++${CXX_STD}-debug"
-export HWLOC_ROOT="${APPS_ROOT}/hwloc-${HWLOC_VER}-gcc-${GCC_VER}"
-export CXXFLAGS="-nostdinc++ -I${GCC_ROOT}/include/c++/${GCC_VER} -I${GCC_ROOT}/include/c++/${GCC_VER}/x86_64-unknown-linux-gnu -I${GCC_ROOT}/include/c++/${GCC_VER}/x86_64-pc-linux-gnu -L${GCC_ROOT}/lib64 -Wl,-rpath,${GCC_ROOT}/lib64"
-export LDFLAGS="-L${GCC_ROOT}/lib64"
-export CXX=${GCC_ROOT}/bin/g++
-export CC=${GCC_ROOT}/bin/gcc
+cxx_std="17"
+gcc_version="9.3.0"
+boost_version="1.71.0"
+hwloc_version="1.11.5"
+spack_compiler="gcc@${gcc_version}"
+spack_arch="cray-cnl7-broadwell"
 
-module load daint-mc
+spack_spec="pika@main +generic_coroutines arch=${spack_arch} %${spack_compiler} malloc=system cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version}"
 
-configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${CXX_STD}"
+configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MAX_CPU_COUNT=128"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON"

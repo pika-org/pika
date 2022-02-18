@@ -4,30 +4,22 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-export CRAYPE_LINK_TYPE=dynamic
-export APPS_ROOT="/apps/daint/SSL/pika/packages"
-export CLANG_VER="13.0.0"
-export CXX_STD="20"
-export BOOST_VER="1.78.0"
-export HWLOC_VER="2.2.0"
-export CLANG_ROOT="${APPS_ROOT}/llvm-${CLANG_VER}"
-export BOOST_ROOT="${APPS_ROOT}/boost-${BOOST_VER}-clang-${CLANG_VER}-c++20-debug"
-export HWLOC_ROOT="${APPS_ROOT}/hwloc-${HWLOC_VER}-gcc-10.2.0"
-export CXXFLAGS="-Wno-unused-command-line-argument -stdlib=libc++ -nostdinc++ -isystem${CLANG_ROOT}/include/c++/v1 -L${CLANG_ROOT}/lib -Wl,-rpath,${CLANG_ROOT}/lib,-lsupc++"
-export LDCXXFLAGS="-stdlib=libc++ -L${CLANG_ROOT}/lib -Wl,-rpath,${CLANG_ROOT}/lib,-lsupc++"
-export CXX="${CLANG_ROOT}/bin/clang++"
-export CC="${CLANG_ROOT}/bin/clang"
-export CPP="${CLANG_ROOT}/bin/clang -E"
+cxx_std="20"
+clang_version="11.0.1"
+boost_version="1.78.0"
+hwloc_version="2.2.0"
+spack_compiler="clang@${clang_version}"
+spack_arch="cray-cnl7-broadwell"
 
-configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${CXX_STD}"
+spack_spec="pika@main arch=${spack_arch} %${spack_compiler} malloc=system cxxstd=${cxx_std} ^boost@${boost_version} ^hwloc@${hwloc_version}"
+
+configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"
 configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 configure_extra_options+=" -DPIKA_WITH_UNITY_BUILD=ON"
 configure_extra_options+=" -DPIKA_WITH_TESTS_HEADERS=ON"
-
-# enable extra counters to verify everything compiles
 configure_extra_options+=" -DPIKA_WITH_BACKGROUND_THREAD_COUNTERS=ON"
 configure_extra_options+=" -DPIKA_WITH_COROUTINE_COUNTERS=ON"
 configure_extra_options+=" -DPIKA_WITH_THREAD_IDLE_RATES=ON"
