@@ -6,4 +6,6 @@
 
 #pragma once
 
+#include <pika/modules/resource_partitioner.hpp>
+#include <pika/modules/threadmanager.hpp>
 #include <pika/runtime/runtime_fwd.hpp>
