@@ -8,8 +8,8 @@
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
 #include <pika/functional/bind.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/runtime/config_entry.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <string>

@@ -6,8 +6,8 @@
 
 #include <pika/executors/execution_policy.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/spmd_block.hpp>
+#include <pika/testing.hpp>
 
 #include <array>
 #include <atomic>

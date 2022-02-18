@@ -5,9 +5,9 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/modules/testing.hpp>
 #include <pika/string_util/classification.hpp>
 #include <pika/string_util/split.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

@@ -31,7 +31,6 @@ pika_add_module(
     pika_lock_registration
     pika_logging
     pika_schedulers
-    pika_testing
     pika_threading_base
     pika_timing
   CMAKE_SUBDIRS examples tests

@@ -11,8 +11,8 @@
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/pack_traversal/unwrap.hpp>
+#include <pika/testing.hpp>
 
 // define large action
 double func(double x1, double, double, double, double, double, double)

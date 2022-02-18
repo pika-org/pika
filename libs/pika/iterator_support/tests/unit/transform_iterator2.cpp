@@ -18,7 +18,7 @@
 
 #include <pika/iterator_support/tests/iterator_tests.hpp>
 #include <pika/modules/iterator_support.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <iterator>

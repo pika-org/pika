@@ -23,7 +23,6 @@ namespace pika { namespace detail {
 #if defined(PIKA_HAVE_APEX)
     PIKA_EXPORT bool enable_parent_task_handler();
 #endif
-    PIKA_EXPORT void test_failure_handler();
 #if defined(PIKA_HAVE_VERIFY_LOCKS)
     PIKA_EXPORT void registered_locks_error_handler();
     PIKA_EXPORT bool register_locks_predicate();

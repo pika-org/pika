@@ -9,7 +9,7 @@
 #include <pika/serialization/serialize.hpp>
 #include <pika/serialization/vector.hpp>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <cstdint>

@@ -6,7 +6,7 @@
 
 #include <pika/iterator_support/tests/iter_sent.hpp>
 #include <pika/iterator_support/traits/is_sentinel_for.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <cstdint>
 #include <string>

@@ -7,8 +7,8 @@
 #pragma once
 
 #include <pika/execution.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/uninitialized_move.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <cstddef>

@@ -63,7 +63,6 @@ Core modules
    /libs/core/string_util/docs/index.rst
    /libs/core/synchronization/docs/index.rst
    /libs/core/tag_invoke/docs/index.rst
-   /libs/core/testing/docs/index.rst
    /libs/core/thread_pool_util/docs/index.rst
    /libs/core/thread_pools/docs/index.rst
    /libs/core/thread_support/docs/index.rst

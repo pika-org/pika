@@ -7,7 +7,7 @@
 
 #include <pika/detail/filesystem.hpp>
 #include <pika/modules/program_options.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <fstream>
 #include <iostream>

@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pika/execution.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/is_sorted.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <functional>

@@ -8,7 +8,7 @@
 #include <pika/modules/async_mpi.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/execution.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include "algorithm_test_utils.hpp"
 

@@ -11,8 +11,8 @@
 #include <pika/assert.hpp>
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/partial_sort_copy.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <cstdint>

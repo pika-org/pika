@@ -6,7 +6,7 @@
 
 #include <pika/config.hpp>
 #include <pika/modules/format.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <ctime>
 #include <string>

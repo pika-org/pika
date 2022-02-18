@@ -7,7 +7,7 @@
 #include <pika/config.hpp>
 #include <pika/modules/async_base.hpp>
 #include <pika/modules/coroutines.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <cstdint>
 

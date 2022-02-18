@@ -60,7 +60,6 @@ set(_pika_modules
     string_util
     synchronization
     tag_invoke
-    testing
     thread_pool_util
     thread_pools
     thread_support

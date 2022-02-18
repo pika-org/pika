@@ -7,7 +7,7 @@
 #include <pika/memory/serialization/intrusive_ptr.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/modules/serialization.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <memory>
 #include <vector>

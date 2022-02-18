@@ -21,7 +21,7 @@
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/format.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/version.hpp>

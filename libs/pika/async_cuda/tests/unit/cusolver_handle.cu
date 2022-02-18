@@ -9,7 +9,7 @@
 #include <pika/async_cuda/cusolver_exception.hpp>
 #include <pika/async_cuda/cusolver_handle.hpp>
 #include <pika/async_cuda/custom_lapack_api.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <iostream>
 #include <utility>

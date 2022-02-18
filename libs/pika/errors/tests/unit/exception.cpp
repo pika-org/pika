@@ -9,7 +9,7 @@
 #include <pika/errors/exception.hpp>
 #include <pika/errors/throw_exception.hpp>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <exception>
 #include <thread>

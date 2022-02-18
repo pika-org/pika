@@ -8,8 +8,8 @@
 //            types, instead of using the provided `conv` function
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/transform_inclusive_scan.hpp>
+#include <pika/testing.hpp>
 
 #include <vector>
 

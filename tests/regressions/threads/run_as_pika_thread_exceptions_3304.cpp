@@ -8,9 +8,9 @@
 #include <pika/exception.hpp>
 #include <pika/functional.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/mutex.hpp>
 #include <pika/runtime/run_as_pika_thread.hpp>
+#include <pika/testing.hpp>
 
 #include <functional>
 #include <mutex>

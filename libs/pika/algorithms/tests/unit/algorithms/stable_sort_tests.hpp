@@ -9,8 +9,8 @@
 
 #include <pika/init.hpp>
 #include <pika/modules/format.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/stable_sort.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <cstdint>

@@ -9,11 +9,11 @@
 #include <pika/init.hpp>
 #include <pika/modules/format.hpp>
 #include <pika/modules/program_options.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/parallel/algorithms/copy.hpp>
 #include <pika/parallel/algorithms/generate.hpp>
 #include <pika/parallel/algorithms/remove.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <array>

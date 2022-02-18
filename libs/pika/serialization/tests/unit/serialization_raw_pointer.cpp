@@ -19,7 +19,7 @@
 #include <pika/serialization/std_tuple.hpp>
 #include <pika/serialization/tuple.hpp>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <string>

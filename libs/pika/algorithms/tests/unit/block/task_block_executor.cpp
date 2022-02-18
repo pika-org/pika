@@ -6,9 +6,9 @@
 
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
 #include <pika/task_block.hpp>
+#include <pika/testing.hpp>
 
 #include <iostream>
 #include <string>

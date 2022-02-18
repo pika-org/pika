@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/transform_reduce.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <cstddef>

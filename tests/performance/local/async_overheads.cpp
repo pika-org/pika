@@ -7,7 +7,7 @@
 #include <pika/chrono.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include "worker_timed.hpp"
 

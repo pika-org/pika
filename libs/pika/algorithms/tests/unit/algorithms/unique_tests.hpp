@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/unique.hpp>
+#include <pika/testing.hpp>
 #include <pika/type_support/unused.hpp>
 
 #include <algorithm>

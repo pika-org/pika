@@ -26,10 +26,6 @@
 #include <ostream>
 
 namespace pika { namespace util {
-
-    using test_failure_handler_type = function_nonser<void()>;
-    PIKA_EXPORT void set_test_failure_handler(test_failure_handler_type f);
-
     enum counter_type
     {
         counter_sanity,

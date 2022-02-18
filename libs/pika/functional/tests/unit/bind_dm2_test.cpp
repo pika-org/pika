@@ -27,7 +27,7 @@ namespace placeholders = pika::util::placeholders;
 #include <iostream>
 #include <string>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 struct X
 {

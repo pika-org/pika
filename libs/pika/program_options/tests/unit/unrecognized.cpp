@@ -4,12 +4,12 @@
 // (See accompanying file LICENSE_1_0.txt
 // or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/modules/testing.hpp>
 #include <pika/program_options/cmdline.hpp>
 #include <pika/program_options/detail/cmdline.hpp>
 #include <pika/program_options/option.hpp>
 #include <pika/program_options/options_description.hpp>
 #include <pika/program_options/parsers.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

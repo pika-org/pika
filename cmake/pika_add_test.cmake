@@ -87,6 +87,12 @@ function(pika_add_test category name)
   if(${name}_FAILURE_EXPECTED)
     set_tests_properties("${_full_name}" PROPERTIES WILL_FAIL TRUE)
   endif()
+
+  # Only real tests, i.e. executables ending in _test, link to pika_testing
+  if(TARGET ${${name}_EXECUTABLE}_test)
+    target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE pika_testing)
+  endif()
+
 endfunction(pika_add_test)
 
 function(pika_add_test_target_dependencies category name)

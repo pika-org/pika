@@ -6,7 +6,7 @@
 
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <algorithm>

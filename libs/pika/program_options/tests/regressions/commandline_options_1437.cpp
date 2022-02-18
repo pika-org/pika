@@ -7,7 +7,7 @@
 // Demonstrating #1437: pika::init() should strip pika-related flags from argv
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 bool invoked_main = false;
 

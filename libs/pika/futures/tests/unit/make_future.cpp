@@ -7,7 +7,7 @@
 #include <pika/init.hpp>
 #include <pika/modules/execution.hpp>
 #include <pika/modules/futures.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <string>
 #include <utility>

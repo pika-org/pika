@@ -12,8 +12,8 @@
 #include <pika/functional/bind_back.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/synchronization.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/threading.hpp>
+#include <pika/testing.hpp>
 
 #include <array>
 #include <chrono>

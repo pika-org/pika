@@ -12,7 +12,7 @@
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/program_options.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <cstdint>

@@ -25,7 +25,7 @@
 
 #include <iostream>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 unsigned int hash = 0;
 

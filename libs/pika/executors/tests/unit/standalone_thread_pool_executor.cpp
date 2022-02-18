@@ -14,8 +14,8 @@
 #include <pika/execution.hpp>
 #include <pika/future.hpp>
 #include <pika/modules/schedulers.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/thread_pools.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <algorithm>

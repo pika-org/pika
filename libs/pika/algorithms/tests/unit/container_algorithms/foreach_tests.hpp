@@ -7,8 +7,8 @@
 #pragma once
 
 #include <pika/iterator_support/iterator_range.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/for_each.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

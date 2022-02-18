@@ -7,9 +7,9 @@
 #include <pika/assert.hpp>
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/mutex.hpp>
 #include <pika/synchronization/async_rw_mutex.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <cstddef>

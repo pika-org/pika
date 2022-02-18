@@ -5,9 +5,9 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/set_difference.hpp>
 #include <pika/parallel/algorithms/set_intersection.hpp>
+#include <pika/testing.hpp>
 
 #include <string>
 #include <vector>

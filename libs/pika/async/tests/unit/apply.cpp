@@ -8,8 +8,8 @@
 #include <pika/condition_variable.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/mutex.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <chrono>

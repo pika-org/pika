@@ -7,8 +7,8 @@
 #include <pika/algorithm.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/iterator_support.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/datapar.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <type_traits>

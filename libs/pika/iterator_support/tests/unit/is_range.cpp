@@ -6,7 +6,7 @@
 
 #include <pika/config.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <vector>
 

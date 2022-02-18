@@ -8,8 +8,8 @@
 #include <pika/execution.hpp>
 #include <pika/functional.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/mutex.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <array>

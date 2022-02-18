@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/is_heap.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

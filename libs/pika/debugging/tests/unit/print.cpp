@@ -9,8 +9,8 @@
 // are completely elided
 
 #include <pika/debugging/print.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/timing.hpp>
+#include <pika/testing.hpp>
 #include <pika/threading_base/print.hpp>
 
 #include <atomic>

@@ -6,7 +6,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/assert.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <pika/program_options/cmdline.hpp>
 #include <pika/program_options/detail/cmdline.hpp>

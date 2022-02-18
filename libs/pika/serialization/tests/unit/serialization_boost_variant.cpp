@@ -14,7 +14,7 @@
 #include <pika/serialization/string.hpp>
 #include <pika/serialization/variant.hpp>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <string>
 #include <vector>

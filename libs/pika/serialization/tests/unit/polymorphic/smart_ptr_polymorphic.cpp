@@ -14,7 +14,7 @@
 #include <pika/serialization/serialize.hpp>
 #include <pika/serialization/shared_ptr.hpp>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #if defined(PIKA_SERIALIZATION_HAVE_BOOST_TYPES)
 #include <boost/intrusive_ptr.hpp>

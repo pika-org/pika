@@ -7,8 +7,8 @@
 #include <pika/futures/future.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/futures/traits/is_future.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/pack_traversal/pack_traversal.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <array>

@@ -10,7 +10,7 @@
 #include <pika/config.hpp>
 #include <pika/allocator_support/aligned_allocator.hpp>
 #include <pika/functional/bind.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <pika/modules/program_options.hpp>
 #include <boost/lockfree/queue.hpp>

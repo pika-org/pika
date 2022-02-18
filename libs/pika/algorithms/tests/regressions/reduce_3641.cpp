@@ -10,8 +10,8 @@
 
 #include <pika/init.hpp>
 #include <pika/iterator_support/tests/iter_sent.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/reduce.hpp>
+#include <pika/testing.hpp>
 
 #include <cstdint>
 

@@ -7,7 +7,7 @@
 
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 struct s
 {

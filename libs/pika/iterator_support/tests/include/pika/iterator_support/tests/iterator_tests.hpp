@@ -13,7 +13,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 #include <pika/type_support/always_void.hpp>
 
 #include <cstddef>

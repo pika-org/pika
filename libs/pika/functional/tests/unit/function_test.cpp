@@ -28,7 +28,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <functional>
 #include <string>

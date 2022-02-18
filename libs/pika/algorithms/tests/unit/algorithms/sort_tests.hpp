@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pika/modules/format.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/sort.hpp>
+#include <pika/testing.hpp>
 
 #include "test_utils.hpp"
 

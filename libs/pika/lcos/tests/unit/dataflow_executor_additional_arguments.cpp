@@ -9,9 +9,9 @@
 #include <pika/execution.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/pack_traversal/unwrap.hpp>
 #include <pika/program_options.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <atomic>

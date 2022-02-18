@@ -10,8 +10,8 @@
 
 #include <pika/iterator_support/tests/iterator_tests.hpp>
 #include <pika/modules/datastructures.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/util/detail/chunk_size_iterator.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <cstddef>

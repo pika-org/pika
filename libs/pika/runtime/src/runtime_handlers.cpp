@@ -81,11 +81,6 @@ namespace pika { namespace detail {
     }
 #endif
 
-    void test_failure_handler()
-    {
-        pika::util::may_attach_debugger("test-failure");
-    }
-
 #if defined(PIKA_HAVE_VERIFY_LOCKS)
     void registered_locks_error_handler()
     {

@@ -11,8 +11,8 @@
 #include <pika/iterator_support/iterator_range.hpp>
 #include <pika/iterator_support/tests/iter_sent.hpp>
 #include <pika/modules/format.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/stable_sort.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <cstddef>

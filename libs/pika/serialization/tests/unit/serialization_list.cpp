@@ -9,7 +9,7 @@
 #include <pika/serialization/output_archive.hpp>
 #include <pika/serialization/serialize.hpp>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <list>

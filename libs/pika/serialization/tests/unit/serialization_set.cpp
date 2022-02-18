@@ -10,7 +10,7 @@
 #include <pika/serialization/serialize.hpp>
 #include <pika/serialization/set.hpp>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <set>
 #include <vector>

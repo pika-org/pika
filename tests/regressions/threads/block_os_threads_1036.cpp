@@ -10,8 +10,8 @@
 #include <pika/barrier.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/timing.hpp>
+#include <pika/testing.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/topology/topology.hpp>
 
