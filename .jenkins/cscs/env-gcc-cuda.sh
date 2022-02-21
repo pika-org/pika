@@ -6,11 +6,13 @@
 
 export CRAYPE_LINK_TYPE=dynamic
 export CXX_STD="17"
+export BOOST_ROOT=/apps/dom/UES/jenkins/7.0.UP03/21.09/dom-gpu/software/Boost/1.78.0-CrayGNU-21.09
+export HWLOC_ROOT=/apps/dom/UES/jenkins/7.0.UP03/21.09/dom-gpu/software/hwloc/2.4.1/
 
 module switch PrgEnv-cray PrgEnv-gnu
-module load cudatoolkit/11.0.2_3.38-8.1__g5b73779
-module load Boost/1.75.0-CrayGNU-20.11
-module load hwloc/.2.0.3
+module switch gcc gcc/9.3.0
+module load cudatoolkit/21.5_11.3
+module load CMake/3.22.1
 
 export CXX=`which CC`
 export CC=`which cc`
@@ -22,4 +24,3 @@ configure_extra_options+=" -DPIKA_WITH_EXAMPLES_OPENMP=ON"
 configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"
 configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
 configure_extra_options+=" -DPIKA_WITH_TESTS_HEADERS=ON"
-configure_extra_options+=" -DHWLOC_ROOT=${EBROOTHWLOC}"

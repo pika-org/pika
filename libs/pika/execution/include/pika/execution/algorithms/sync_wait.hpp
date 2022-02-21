@@ -136,7 +136,7 @@ namespace pika { namespace execution { namespace experimental {
             {
                 std::unique_lock<mutex_type> l(state.mtx);
                 state.set_called = true;
-                pika::util::ignore_while_checking il(&l);
+                pika::util::ignore_while_checking<decltype(l)> il(&l);
                 PIKA_UNUSED(il);
 
                 state.cond_var.notify_one();

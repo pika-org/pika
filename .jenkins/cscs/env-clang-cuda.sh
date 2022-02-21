@@ -8,10 +8,10 @@ export CRAYPE_LINK_TYPE=dynamic
 export APPS_ROOT="/apps/daint/SSL/pika/packages"
 export CXX_STD="17"
 export HWLOC_ROOT="${APPS_ROOT}/hwloc-2.0.3-gcc-8.3.0"
+export BOOST_ROOT=/apps/dom/UES/jenkins/7.0.UP03/21.09/dom-gpu/software/Boost/1.78.0-CrayGNU-21.09
 
 module load daint-gpu
-module load cudatoolkit/11.2.0_3.39-2.1__gf93aa1c
-module load Boost/1.75.0-CrayCCE-20.11
+module load cudatoolkit/11.0.2_3.38-8.1__g5b73779
 
 export CXX=`which CC`
 export CC=`which cc`
