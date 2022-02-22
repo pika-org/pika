@@ -87,13 +87,13 @@ namespace pika::cuda::experimental::detail {
 
     template <typename... Ts>
     void extend_argument_lifetimes(
-        cuda_pool const& pool, cuda_stream const& stream, Ts&&... ts)
+        cuda_scheduler&& sched, cuda_stream const& stream, Ts&&... ts)
     {
         if constexpr (sizeof...(Ts) > 0)
         {
             detail::add_event_callback(
-                [keep_alive = pika::make_tuple(pool, PIKA_FORWARD(Ts, ts)...)](
-                    cudaError_t status) {
+                [keep_alive = pika::make_tuple(PIKA_MOVE(sched),
+                     PIKA_FORWARD(Ts, ts)...)](cudaError_t status) mutable {
                     PIKA_ASSERT(status != cudaErrorNotReady);
                     PIKA_UNUSED(status);
                 },
@@ -103,31 +103,32 @@ namespace pika::cuda::experimental::detail {
 
     template <typename R, typename... Ts>
     void set_value_immediate_void(
-        cuda_pool const& pool, cuda_stream const& stream, R&& r, Ts&&... ts)
+        cuda_scheduler&& sched, cuda_stream const& stream, R&& r, Ts&&... ts)
     {
         pika::execution::experimental::set_value(PIKA_FORWARD(R, r));
 
         // Even though we call set_value immediately, we still extend the
         // life time of the arguments by capturing them in a callback that
         // is triggered when the event is ready.
-        extend_argument_lifetimes(pool, stream, PIKA_FORWARD(Ts, ts)...);
+        extend_argument_lifetimes(
+            PIKA_MOVE(sched), stream, PIKA_FORWARD(Ts, ts)...);
     }
 
     template <typename R, typename... Ts>
     void set_value_event_callback_void(
-        cuda_pool const& pool, cuda_stream const& stream, R&& r, Ts&&... ts)
+        cuda_scheduler&& sched, cuda_stream const& stream, R&& r, Ts&&... ts)
     {
         detail::add_event_callback(
             [r = PIKA_FORWARD(R, r),
-                keep_alive = pika::make_tuple(pool, PIKA_FORWARD(Ts, ts)...)](
-                cudaError_t status) mutable {
+                keep_alive = pika::make_tuple(PIKA_MOVE(sched),
+                    PIKA_FORWARD(Ts, ts)...)](cudaError_t status) mutable {
                 set_value_event_callback_helper(status, PIKA_MOVE(r));
             },
             stream.get());
     }
 
     template <typename R, typename T, typename... Ts>
-    void set_value_immediate_non_void(cuda_pool const& pool,
+    void set_value_immediate_non_void(cuda_scheduler&& sched,
         cuda_stream const& stream, R&& r, T&& t, Ts&&... ts)
     {
         pika::execution::experimental::set_value(
@@ -136,17 +137,18 @@ namespace pika::cuda::experimental::detail {
         // Even though we call set_value immediately, we still extend the
         // life time of the arguments by capturing them in a callback that
         // is triggered when the event is ready.
-        extend_argument_lifetimes(pool, stream, PIKA_FORWARD(Ts, ts)...);
+        extend_argument_lifetimes(
+            PIKA_MOVE(sched), stream, PIKA_FORWARD(Ts, ts)...);
     }
 
     template <typename R, typename T, typename... Ts>
-    void set_value_event_callback_non_void(cuda_pool const& pool,
+    void set_value_event_callback_non_void(cuda_scheduler&& sched,
         cuda_stream const& stream, R&& r, T&& t, Ts&&... ts)
     {
         detail::add_event_callback(
             [t = PIKA_FORWARD(T, t), r = PIKA_FORWARD(R, r),
-                keep_alive = pika::make_tuple(pool, PIKA_FORWARD(Ts, ts)...)](
-                cudaError_t status) mutable {
+                keep_alive = pika::make_tuple(PIKA_MOVE(sched),
+                    PIKA_FORWARD(Ts, ts)...)](cudaError_t status) mutable {
                 set_value_event_callback_helper(
                     status, PIKA_MOVE(r), PIKA_MOVE(t));
             },
@@ -172,16 +174,14 @@ namespace pika::cuda::experimental::detail {
     {
         std::decay_t<R> r;
         std::decay_t<F> f;
-        cuda_pool pool;
-        std::reference_wrapper<const cuda_stream> stream;
+        cuda_scheduler sched;
+        pika::optional<std::reference_wrapper<const cuda_stream>> stream;
 
         template <typename R_, typename F_>
-        then_with_cuda_receiver(
-            R_&& r, F_&& f, cuda_pool pool, cuda_stream const& stream)
+        then_with_cuda_receiver(R_&& r, F_&& f, cuda_scheduler sched)
           : r(PIKA_FORWARD(R_, r))
           , f(PIKA_FORWARD(F_, f))
-          , pool(PIKA_MOVE(pool))
-          , stream(stream)
+          , sched(PIKA_MOVE(sched))
         {
         }
 
@@ -209,36 +209,59 @@ namespace pika::cuda::experimental::detail {
         void set_value(Ts&&... ts) noexcept
         {
             pika::detail::try_catch_exception_ptr(
-                [&]() {
+                [&]() mutable {
+                    if (!stream)
+                    {
+                        stream.emplace(sched.get_next_stream());
+                    }
+
+                    // If the next receiver is also a then_with_cuda_receiver
+                    // and it uses the same scheduler/pool we set its stream to
+                    // the same as for this task.
+                    bool successor_uses_same_stream = false;
+                    if constexpr (is_then_with_cuda_receiver<
+                                      std::decay_t<R>>::value)
+                    {
+                        if (sched == r.sched)
+                        {
+                            PIKA_ASSERT(stream);
+                            PIKA_ASSERT(!r.stream);
+                            r.stream = stream;
+
+                            successor_uses_same_stream = true;
+                        }
+                    }
+
                     if constexpr (std::is_void_v<
                                       typename pika::util::invoke_result<F,
                                           cuda_stream const&, Ts...>::type>)
                     {
                         // When the return type is void, there is no value to
                         // forward to the receiver
-                        PIKA_INVOKE(f, stream, ts...);
+                        PIKA_INVOKE(PIKA_MOVE(f), stream.value(), ts...);
 
                         if constexpr (is_then_with_cuda_receiver<
                                           std::decay_t<R>>::value)
                         {
-                            if (r.stream == stream)
+                            if (successor_uses_same_stream)
                             {
-                                // When the next receiver is also a
-                                // then_with_cuda_receiver, we can immediately
-                                // call set_value, with the knowledge that a
-                                // later receiver will synchronize the stream
-                                // when a non-then_with_cuda receiver is
-                                // connected.
-                                set_value_immediate_void(pool, stream,
-                                    PIKA_MOVE(r), PIKA_FORWARD(Ts, ts)...);
+                                // When the next receiver uses the same stream
+                                // we can immediately call set_value, with the
+                                // knowledge that a later receiver will
+                                // synchronize the stream when a
+                                // non-then_with_cuda receiver is connected.
+                                set_value_immediate_void(PIKA_MOVE(sched),
+                                    stream.value(), PIKA_MOVE(r),
+                                    PIKA_FORWARD(Ts, ts)...);
                             }
                             else
                             {
                                 // When the streams are different, we add a
                                 // callback which will call set_value on the
                                 // receiver.
-                                set_value_event_callback_void(pool, stream,
-                                    PIKA_MOVE(r), PIKA_FORWARD(Ts, ts)...);
+                                set_value_event_callback_void(PIKA_MOVE(sched),
+                                    stream.value(), PIKA_MOVE(r),
+                                    PIKA_FORWARD(Ts, ts)...);
                             }
                         }
                         else
@@ -246,30 +269,30 @@ namespace pika::cuda::experimental::detail {
                             // When the next receiver is not a
                             // then_with_cuda_receiver, we add a callback
                             // which will call set_value on the receiver.
-                            set_value_event_callback_void(pool, stream,
-                                PIKA_MOVE(r), PIKA_FORWARD(Ts, ts)...);
+                            set_value_event_callback_void(PIKA_MOVE(sched),
+                                stream.value(), PIKA_MOVE(r),
+                                PIKA_FORWARD(Ts, ts)...);
                         }
                     }
                     else
                     {
                         // When the return type is non-void, we have to forward
                         // the value to the receiver
-                        auto t =
-                            PIKA_INVOKE(f, stream, PIKA_FORWARD(Ts, ts)...);
+                        auto t = PIKA_INVOKE(PIKA_MOVE(f), stream.value(),
+                            PIKA_FORWARD(Ts, ts)...);
 
                         if constexpr (is_then_with_cuda_receiver<
                                           std::decay_t<R>>::value)
                         {
-                            if (r.stream == stream)
+                            if (successor_uses_same_stream)
                             {
-                                // When the next receiver is also a
-                                // then_with_cuda_receiver, we can immediately
-                                // call set_value, with the knowledge that a
-                                // later receiver will synchronize the stream
-                                // when a non-then_with_cuda receiver is
-                                // connected.
-                                set_value_immediate_non_void(pool, stream,
-                                    PIKA_MOVE(r), PIKA_MOVE(t),
+                                // When the next receiver uses the same stream
+                                // we can immediately call set_value, with the
+                                // knowledge that a later receiver will
+                                // synchronize the stream when a
+                                // non-then_with_cuda receiver is connected.
+                                set_value_immediate_non_void(PIKA_MOVE(sched),
+                                    stream.value(), PIKA_MOVE(r), PIKA_MOVE(t),
                                     PIKA_FORWARD(Ts, ts)...);
                             }
                             else
@@ -277,7 +300,8 @@ namespace pika::cuda::experimental::detail {
                                 // When the streams are different, we add a
                                 // callback which will call set_value on the
                                 // receiver.
-                                set_value_event_callback_non_void(pool, stream,
+                                set_value_event_callback_non_void(
+                                    PIKA_MOVE(sched), stream.value(),
                                     PIKA_MOVE(r), PIKA_MOVE(t),
                                     PIKA_FORWARD(Ts, ts)...);
                             }
@@ -287,13 +311,13 @@ namespace pika::cuda::experimental::detail {
                             // When the next receiver is not a
                             // then_with_cuda_receiver, we add a callback
                             // which will call set_value on the receiver.
-                            set_value_event_callback_non_void(pool, stream,
-                                PIKA_MOVE(r), PIKA_MOVE(t),
+                            set_value_event_callback_non_void(PIKA_MOVE(sched),
+                                stream.value(), PIKA_MOVE(r), PIKA_MOVE(t),
                                 PIKA_FORWARD(Ts, ts)...);
                         }
                     }
                 },
-                [&](std::exception_ptr ep) {
+                [&](std::exception_ptr ep) mutable {
                     pika::execution::experimental::set_error(
                         PIKA_MOVE(r), PIKA_MOVE(ep));
                 });
@@ -346,26 +370,12 @@ namespace pika::cuda::experimental::detail {
         std::decay_t<S> s;
         std::decay_t<F> f;
         cuda_scheduler sched;
-        std::reference_wrapper<const cuda_stream> stream;
-
-        cuda_stream const& initialize_stream()
-        {
-            if constexpr (is_then_with_cuda_sender<std::decay_t<S>>::value)
-            {
-                return s.stream;
-            }
-            else
-            {
-                return this->sched.get_next_stream();
-            }
-        }
 
         template <typename S_, typename F_>
         then_with_cuda_sender(S_&& s, F_&& f, cuda_scheduler sched)
           : s(PIKA_FORWARD(S_, s))
           , f(PIKA_FORWARD(F_, f))
           , sched(PIKA_MOVE(sched))
-          , stream(initialize_stream())
         {
         }
 
@@ -409,9 +419,8 @@ namespace pika::cuda::experimental::detail {
             then_with_cuda_sender&& s, R&& r)
         {
             return pika::execution::experimental::connect(PIKA_MOVE(s.s),
-                then_with_cuda_receiver<R, F>{PIKA_FORWARD(R, r),
-                    PIKA_MOVE(s.f), PIKA_MOVE(s.sched.get_pool()),
-                    PIKA_MOVE(s.stream)});
+                then_with_cuda_receiver<R, F>{
+                    PIKA_FORWARD(R, r), PIKA_MOVE(s.f), PIKA_MOVE(s.sched)});
         }
 
         template <typename R>
@@ -420,7 +429,7 @@ namespace pika::cuda::experimental::detail {
         {
             return pika::execution::experimental::connect(s.s,
                 then_with_cuda_receiver<R, F>{
-                    PIKA_FORWARD(R, r), s.f, s.sched.get_pool(), s.stream});
+                    PIKA_FORWARD(R, r), s.f, s.sched});
         }
 
         friend cuda_scheduler tag_invoke(
