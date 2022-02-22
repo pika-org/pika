@@ -172,8 +172,8 @@ namespace pika::cuda::experimental::detail {
     template <typename R, typename F>
     struct then_with_cuda_receiver
     {
-        std::decay_t<R> r;
-        std::decay_t<F> f;
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<R> r;
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
         cuda_scheduler sched;
         pika::optional<std::reference_wrapper<const cuda_stream>> stream;
 
@@ -367,8 +367,8 @@ namespace pika::cuda::experimental::detail {
             std::enable_if_t<is_cuda_stream_invocable_with_sender_v<S, F>>>
     struct then_with_cuda_sender
     {
-        std::decay_t<S> s;
-        std::decay_t<F> f;
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<S> s;
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
         cuda_scheduler sched;
 
         template <typename S_, typename F_>
