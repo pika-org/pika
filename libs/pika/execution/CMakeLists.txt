@@ -27,6 +27,7 @@ set(execution_headers
     pika/execution/algorithms/transfer.hpp
     pika/execution/algorithms/transfer_just.hpp
     pika/execution/algorithms/when_all.hpp
+    pika/execution/algorithms/when_all_vector.hpp
     pika/execution/detail/async_launch_policy_dispatch.hpp
     pika/execution/detail/execution_parameter_callbacks.hpp
     pika/execution/detail/future_exec.hpp

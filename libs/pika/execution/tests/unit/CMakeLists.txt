@@ -18,6 +18,7 @@ set(tests
     algorithm_transfer
     algorithm_transfer_just
     algorithm_when_all
+    algorithm_when_all_vector
     bulk_async
     executor_parameters
     executor_parameters_dispatching

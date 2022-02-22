@@ -609,11 +609,7 @@ void test_when_all()
         try
         {
             ex::when_all(std::move(work1), std::move(work2)) |
-                ex::then([parent_id](int x, std::string y) {
-                    PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
-                    PIKA_TEST_EQ(x, 42);
-                    PIKA_TEST_EQ(y, std::string("hello"));
-                }) |
+                ex::then([](int, std::string) { PIKA_TEST(false); }) |
                 ex::sync_wait();
             PIKA_TEST(false);
         }
@@ -648,11 +644,122 @@ void test_when_all()
         try
         {
             ex::when_all(std::move(work1), std::move(work2)) |
-                ex::then([parent_id](int x, std::string y) {
-                    PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
-                    PIKA_TEST_EQ(x, 42);
-                    PIKA_TEST_EQ(y, std::string("hello"));
-                }) |
+                ex::then([](int, std::string) { PIKA_TEST(false); }) |
+                ex::sync_wait();
+            PIKA_TEST(false);
+        }
+        catch (std::runtime_error const& e)
+        {
+            PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
+            exception_thrown = true;
+        }
+
+        PIKA_TEST(exception_thrown);
+    }
+}
+
+void test_when_all_vector()
+{
+    ex::thread_pool_scheduler sched{};
+
+    {
+        pika::thread::id parent_id = pika::this_thread::get_id();
+
+        std::vector<ex::unique_any_sender<double>> senders;
+
+        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
+            PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+            return 42.0;
+        }));
+
+        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
+            PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+            return 43.0;
+        }));
+
+        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
+            PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+            return 3.14;
+        }));
+
+        auto when1 = ex::when_all_vector(std::move(senders));
+
+        bool executed{false};
+        std::move(when1) |
+            ex::then([parent_id, &executed](std::vector<double> v) {
+                PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+                PIKA_TEST_EQ(v.size(), std::size_t(3));
+                PIKA_TEST_EQ(v[0], 42.0);
+                PIKA_TEST_EQ(v[1], 43.0);
+                PIKA_TEST_EQ(v[2], 3.14);
+                executed = true;
+            }) |
+            ex::sync_wait();
+        PIKA_TEST(executed);
+    }
+
+    {
+        pika::thread::id parent_id = pika::this_thread::get_id();
+
+        std::vector<ex::unique_any_sender<int>> senders;
+
+        // The exception is likely to be thrown before set_value from the second
+        // sender is called because the second sender sleeps.
+        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
+            PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+            throw std::runtime_error("error");
+            return 42;
+        }));
+
+        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
+            PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            return 43;
+        }));
+
+        bool exception_thrown = false;
+
+        try
+        {
+            ex::when_all_vector(std::move(senders)) |
+                ex::then([](std::vector<int>) { PIKA_TEST(false); }) |
+                ex::sync_wait();
+            PIKA_TEST(false);
+        }
+        catch (std::runtime_error const& e)
+        {
+            PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
+            exception_thrown = true;
+        }
+
+        PIKA_TEST(exception_thrown);
+    }
+
+    {
+        pika::thread::id parent_id = pika::this_thread::get_id();
+
+        std::vector<ex::unique_any_sender<int>> senders;
+
+        // The exception is likely to be thrown after set_value from the second
+        // sender is called because the first sender sleeps before throwing.
+        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
+            PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            return 42;
+        }));
+
+        senders.emplace_back(ex::schedule(sched) | ex::then([parent_id]() {
+            PIKA_TEST_NEQ(parent_id, pika::this_thread::get_id());
+            throw std::runtime_error("error");
+            return 43;
+        }));
+
+        bool exception_thrown = false;
+
+        try
+        {
+            ex::when_all_vector(std::move(senders)) |
+                ex::then([](std::vector<int>) { PIKA_TEST(false); }) |
                 ex::sync_wait();
             PIKA_TEST(false);
         }
@@ -1791,6 +1898,7 @@ int pika_main()
     test_transfer_just_one_arg();
     test_transfer_just_two_args();
     test_when_all();
+    test_when_all_vector();
     test_future_sender();
     test_keep_future_sender();
     test_ensure_started();
