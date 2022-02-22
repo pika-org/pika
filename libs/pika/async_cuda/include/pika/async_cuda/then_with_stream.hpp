@@ -31,31 +31,33 @@
 #include <utility>
 
 namespace pika::cuda::experimental::detail {
+    PIKA_EXPORT pika::cuda::experimental::cublas_handle const&
+    get_thread_local_cublas_handle(
+        cuda_stream const& stream, cublasPointerMode_t pointer_mode);
+
     template <typename F, typename... Ts>
     auto invoke_with_thread_local_cublas_handle(cuda_stream const& stream,
         cublasPointerMode_t pointer_mode, F&& f, Ts&&... ts)
         -> decltype(PIKA_INVOKE(PIKA_FORWARD(F, f),
             std::declval<cublasHandle_t>(), PIKA_FORWARD(Ts, ts)...))
     {
-        static thread_local pika::cuda::experimental::cublas_handle handle{
-            stream};
-        handle.set_stream(stream);
-        handle.set_pointer_mode(pointer_mode);
-        return PIKA_INVOKE(
-            PIKA_FORWARD(F, f), handle.get(), PIKA_FORWARD(Ts, ts)...);
+        return PIKA_INVOKE(PIKA_FORWARD(F, f),
+            get_thread_local_cublas_handle(stream, pointer_mode).get(),
+            PIKA_FORWARD(Ts, ts)...);
     }
 
 #if defined(PIKA_HAVE_CUDA)
+    PIKA_EXPORT pika::cuda::experimental::cusolver_handle const&
+    get_thread_local_cusolver_handle(cuda_stream const& stream);
+
     template <typename F, typename... Ts>
     auto invoke_with_thread_local_cusolver_handle(cuda_stream const& stream,
         F&& f, Ts&&... ts) -> decltype(PIKA_INVOKE(PIKA_FORWARD(F, f),
         std::declval<cusolverDnHandle_t>(), PIKA_FORWARD(Ts, ts)...))
     {
-        static thread_local pika::cuda::experimental::cusolver_handle handle{
-            stream};
-        handle.set_stream(stream);
-        return PIKA_INVOKE(
-            PIKA_FORWARD(F, f), handle.get(), PIKA_FORWARD(Ts, ts)...);
+        return PIKA_INVOKE(PIKA_FORWARD(F, f),
+            get_thread_local_cusolver_handle(stream).get(),
+            PIKA_FORWARD(Ts, ts)...);
     }
 #endif
 
