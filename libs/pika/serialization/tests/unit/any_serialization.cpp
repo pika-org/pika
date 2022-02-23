@@ -22,9 +22,9 @@ namespace std {
 #endif
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/serialization/serializable_any.hpp>
 #include <pika/serialization/serialize.hpp>
+#include <pika/testing.hpp>
 
 #include "small_big_object.hpp"
 

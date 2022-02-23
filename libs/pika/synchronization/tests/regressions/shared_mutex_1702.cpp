@@ -8,8 +8,8 @@
 // not compile with no_mutex cond_var
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/synchronization/shared_mutex.hpp>
+#include <pika/testing.hpp>
 
 #include <mutex>
 #include <shared_mutex>

@@ -8,7 +8,7 @@
 #include <pika/modules/async_cuda.hpp>
 #include <pika/modules/execution.hpp>
 #include <pika/modules/executors.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <cstddef>

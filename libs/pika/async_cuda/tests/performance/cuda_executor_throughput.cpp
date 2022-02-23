@@ -29,11 +29,11 @@
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/async_cuda.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/parallel/algorithms/copy.hpp>
 #include <pika/parallel/algorithms/for_each.hpp>
 #include <pika/parallel/algorithms/for_loop.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <cmath>

@@ -6,8 +6,8 @@
 
 #include <pika/init.hpp>
 #include <pika/modules/iterator_support.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/exclusive_scan.hpp>
+#include <pika/testing.hpp>
 
 #include <iostream>
 #include <iterator>

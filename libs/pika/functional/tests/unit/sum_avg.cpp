@@ -12,7 +12,7 @@
 // For more information, see http://www.boost.org/
 
 #include <pika/functional/function.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 void do_sum_avg(int values[], int n, int& sum, double& avg)
 {

@@ -5,7 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/execution/scheduler_queries.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <exception>
 #include <utility>

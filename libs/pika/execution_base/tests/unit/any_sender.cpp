@@ -10,7 +10,7 @@
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <exception>

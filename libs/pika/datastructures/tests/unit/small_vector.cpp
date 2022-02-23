@@ -12,7 +12,7 @@
 #include <pika/config.hpp>
 
 #include <pika/datastructures/detail/small_vector.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <climits>

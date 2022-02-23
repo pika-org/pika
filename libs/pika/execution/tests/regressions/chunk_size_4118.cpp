@@ -6,8 +6,8 @@
 
 #include <pika/algorithm.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/numeric.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <random>

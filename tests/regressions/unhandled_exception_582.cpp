@@ -8,7 +8,7 @@
 
 #include <pika/exception.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 int pika_main()
 {

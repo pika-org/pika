@@ -977,16 +977,6 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_ATTACH_DEBUGGER_ON_TEST_FAILURE BOOL
-  "Break the debugger if a test has failed  (default: OFF)" OFF
-  CATEGORY "Debugging"
-  ADVANCED
-)
-if(PIKA_WITH_ATTACH_DEBUGGER_ON_TEST_FAILURE)
-  pika_add_config_define(PIKA_HAVE_ATTACH_DEBUGGER_ON_TEST_FAILURE)
-endif()
-
-pika_option(
   PIKA_WITH_TESTS_DEBUG_LOG BOOL
   "Turn on debug logs (--pika:debug-pika-log) for tests (default: OFF)" OFF
   CATEGORY "Debugging"
@@ -1669,6 +1659,8 @@ if(PIKA_WITH_TESTS)
 
   enable_testing()
   include(CTest)
+
+  add_subdirectory(testing)
 endif()
 
 if(PIKA_WITH_EXAMPLES)

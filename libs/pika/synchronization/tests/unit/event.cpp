@@ -9,7 +9,7 @@
 #include <pika/init.hpp>
 #include <pika/modules/runtime.hpp>
 #include <pika/modules/synchronization.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <atomic>

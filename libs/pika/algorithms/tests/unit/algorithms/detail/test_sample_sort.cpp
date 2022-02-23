@@ -8,8 +8,8 @@
 #include <pika/init.hpp>
 
 #include <pika/execution.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/detail/sample_sort.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <cstdint>

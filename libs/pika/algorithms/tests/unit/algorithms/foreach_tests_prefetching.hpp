@@ -8,9 +8,9 @@
 #pragma once
 
 #include <pika/execution.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/for_each.hpp>
 #include <pika/parallel/util/prefetching.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iterator>

@@ -4,7 +4,6 @@
 // (See accompanying file LICENSE_1_0.txt
 // or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/modules/testing.hpp>
 #include <pika/program_options/detail/utf8_codecvt_facet.hpp>
 #include <pika/program_options/errors.hpp>
 #include <pika/program_options/option.hpp>
@@ -12,6 +11,7 @@
 #include <pika/program_options/parsers.hpp>
 #include <pika/program_options/value_semantic.hpp>
 #include <pika/program_options/variables_map.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <sstream>

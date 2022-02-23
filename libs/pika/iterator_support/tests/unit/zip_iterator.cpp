@@ -8,7 +8,7 @@
 
 #include <pika/datastructures/tuple.hpp>
 #include <pika/modules/iterator_support.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <functional>

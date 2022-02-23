@@ -7,8 +7,8 @@
 
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/rotate.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

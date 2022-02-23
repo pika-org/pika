@@ -5,9 +5,9 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/remove_copy.hpp>
 #include <pika/parallel/container_algorithms/copy.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

@@ -5,9 +5,9 @@
 // or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #if defined(PIKA_WINDOWS)
-#include <pika/modules/testing.hpp>
 #include <pika/preprocessor/cat.hpp>
 #include <pika/program_options/parsers.hpp>
+#include <pika/testing.hpp>
 
 #include <cctype>
 #include <cstdlib>

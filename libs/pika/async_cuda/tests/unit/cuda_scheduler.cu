@@ -6,7 +6,7 @@
 
 #include <pika/execution.hpp>
 #include <pika/modules/async_cuda.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <type_traits>
 

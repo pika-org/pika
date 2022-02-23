@@ -15,9 +15,9 @@
 
 #include <pika/functional/bind.hpp>
 #include <pika/modules/format.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/string_util/classification.hpp>
 #include <pika/string_util/split.hpp>
+#include <pika/testing.hpp>
 
 #include <boost/integer/common_factor.hpp>
 

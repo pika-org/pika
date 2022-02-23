@@ -7,8 +7,8 @@
 
 #include <pika/config.hpp>
 #include <pika/datastructures/tuple.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/pack_traversal/pack_traversal_async.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 #include <pika/type_support/unused.hpp>
 

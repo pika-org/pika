@@ -9,7 +9,7 @@
 #include <pika/datastructures/tuple.hpp>
 #include <pika/iterator_support/iterator_adaptor.hpp>
 #include <pika/iterator_support/tests/iterator_tests.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <cstddef>

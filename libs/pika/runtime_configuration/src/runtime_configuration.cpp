@@ -147,13 +147,7 @@ namespace pika { namespace util {
 #endif
             "default_scheduler_mode = ${PIKA_DEFAULT_SCHEDULER_MODE}",
 
-        /// If PIKA_HAVE_ATTACH_DEBUGGER_ON_TEST_FAILURE is set,
-        /// then apply the test-failure value as default.
-#if defined(PIKA_HAVE_ATTACH_DEBUGGER_ON_TEST_FAILURE)
-            "attach_debugger = ${PIKA_ATTACH_DEBUGGER:test-failure}",
-#else
             "attach_debugger = ${PIKA_ATTACH_DEBUGGER}",
-#endif
             "exception_verbosity = ${PIKA_EXCEPTION_VERBOSITY:1}",
             "trace_depth = ${PIKA_TRACE_DEPTH:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_HAVE_THREAD_BACKTRACE_DEPTH)) "}",

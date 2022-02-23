@@ -13,7 +13,7 @@
 // For more information, see http://www.boost.org
 
 #include <pika/functional/function_ref.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <functional>
 #include <string>

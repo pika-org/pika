@@ -10,8 +10,8 @@
 
 #include <pika/assert.hpp>
 #include <pika/modules/format.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/util.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -21,13 +21,6 @@
 #include <string>
 
 namespace pika { namespace util {
-    static test_failure_handler_type test_failure_handler;
-
-    void set_test_failure_handler(test_failure_handler_type f)
-    {
-        test_failure_handler = f;
-    }
-
     namespace detail {
 
         std::atomic<std::size_t> fixture::sanity_failures_(0);
@@ -35,11 +28,6 @@ namespace pika { namespace util {
 
         void fixture::increment(counter_type c)
         {
-            if (test_failure_handler)
-            {
-                test_failure_handler();
-            }
-
             switch (c)
             {
             case counter_sanity:

@@ -13,8 +13,8 @@
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/memory.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/program_options.hpp>
+#include <pika/testing.hpp>
 #include <pika/tuple.hpp>
 
 #include <atomic>

@@ -11,8 +11,8 @@
 
 #include <pika/datastructures/optional.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/threading.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <chrono>

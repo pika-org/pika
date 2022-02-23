@@ -7,7 +7,7 @@
 
 #include <pika/datastructures/optional.hpp>
 #include <pika/modules/program_options.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <string>
 #include <vector>

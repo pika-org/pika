@@ -11,7 +11,7 @@
 #include <pika/config.hpp>
 #include <pika/datastructures/traits/is_tuple_like.hpp>
 #include <pika/datastructures/tuple.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 void tuple_like_true()
 {

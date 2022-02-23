@@ -13,7 +13,7 @@
 // For more information, see http://www.boost.org
 
 #include <pika/functional/function.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 struct tried_to_copy
 {

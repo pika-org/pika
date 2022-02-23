@@ -13,7 +13,7 @@
 #include <pika/execution.hpp>
 #include <pika/executors/parallel_executor_aggregated.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include "foreach_scaling_helpers.hpp"
 

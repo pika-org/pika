@@ -7,7 +7,7 @@
 // This test illustrates #1111: pika::threads::get_thread_data always returns zero
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <cstddef>

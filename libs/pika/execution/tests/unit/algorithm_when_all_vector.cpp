@@ -6,7 +6,7 @@
 
 #include <pika/config.hpp>
 #include <pika/modules/execution.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include "algorithm_test_utils.hpp"
 

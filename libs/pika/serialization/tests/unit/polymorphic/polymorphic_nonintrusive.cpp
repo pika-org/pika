@@ -11,7 +11,7 @@
 #include <pika/serialization/serialize.hpp>
 #include <pika/serialization/shared_ptr.hpp>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <memory>
 #include <vector>

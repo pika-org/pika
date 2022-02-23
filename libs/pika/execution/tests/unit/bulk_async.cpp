@@ -7,7 +7,7 @@
 #include <pika/execution.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <iterator>

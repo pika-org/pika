@@ -10,8 +10,8 @@
 #include <pika/assert.hpp>
 #include <pika/condition_variable.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/mutex.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <cstddef>

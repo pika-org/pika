@@ -18,8 +18,8 @@
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/resource_partitioner.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/threadmanager.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <atomic>

@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/count.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

@@ -6,7 +6,7 @@
 
 #include <pika/init.hpp>
 #include <pika/modules/iterator_support.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <iterator>

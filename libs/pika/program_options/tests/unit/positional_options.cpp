@@ -6,12 +6,12 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/detail/filesystem.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/program_options/errors.hpp>
 #include <pika/program_options/options_description.hpp>
 #include <pika/program_options/parsers.hpp>
 #include <pika/program_options/positional_options.hpp>
 #include <pika/program_options/value_semantic.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <limits>

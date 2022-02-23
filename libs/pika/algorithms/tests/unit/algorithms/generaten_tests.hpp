@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/generate.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

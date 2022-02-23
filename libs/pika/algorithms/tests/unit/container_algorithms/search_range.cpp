@@ -6,9 +6,9 @@
 
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/container_algorithms/search.hpp>
 #include <pika/program_options.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

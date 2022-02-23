@@ -7,7 +7,7 @@
 // Demonstrating #565
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 int invoked_init = 0;
 

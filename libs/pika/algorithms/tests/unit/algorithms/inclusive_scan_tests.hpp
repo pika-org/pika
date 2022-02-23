@@ -8,8 +8,8 @@
 
 #include <pika/execution.hpp>
 #include <pika/modules/iterator_support.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/inclusive_scan.hpp>
+#include <pika/testing.hpp>
 
 #include <cstddef>
 #include <iostream>

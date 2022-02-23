@@ -24,7 +24,6 @@
 #include <pika/modules/format.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/parallel/util/detail/handle_exception_termination_handler.hpp>
 #include <pika/program_options/parsers.hpp>
@@ -363,8 +362,6 @@ namespace pika {
 
             pika::assertion::set_assertion_handler(
                 &pika::detail::assertion_handler);
-            pika::util::set_test_failure_handler(
-                &pika::detail::test_failure_handler);
             pika::set_custom_exception_info_handler(
                 &pika::detail::custom_exception_info);
             pika::serialization::detail::set_save_custom_exception_handler(

@@ -27,7 +27,7 @@
 #endif
 
 #include <pika/modules/memory.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 
 #include <algorithm>

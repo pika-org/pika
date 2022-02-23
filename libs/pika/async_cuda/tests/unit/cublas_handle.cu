@@ -8,7 +8,7 @@
 #include <pika/async_cuda/cublas_handle.hpp>
 #include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <utility>
 

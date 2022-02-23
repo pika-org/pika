@@ -11,8 +11,8 @@
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/schedulers.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/threadmanager.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 #include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>

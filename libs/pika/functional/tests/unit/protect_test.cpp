@@ -15,7 +15,7 @@
 
 namespace placeholders = pika::util::placeholders;
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 int f(int x)
 {

@@ -8,7 +8,7 @@
 // line arguments before last `=` sign)
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 char const* argv[] = {"command_line_argument_test",
     // We need only one thread, this argument should be gone in pika_main

@@ -12,7 +12,7 @@
 #include <pika/shared_mutex.hpp>
 #include <pika/thread.hpp>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <chrono>
 #include <mutex>

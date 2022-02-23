@@ -13,7 +13,7 @@
 
 #include <pika/functional/bind.hpp>
 #include <pika/functional/function.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <cstdlib>
 

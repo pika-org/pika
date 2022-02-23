@@ -8,8 +8,8 @@
 
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/threading.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <utility>

@@ -13,7 +13,7 @@
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/iterator_support/tests/iterator_tests.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 #include <pika/type_support/always_void.hpp>
 
 #include <type_traits>

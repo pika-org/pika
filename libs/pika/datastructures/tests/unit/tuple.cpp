@@ -22,7 +22,7 @@
 
 #include <pika/config.hpp>
 #include <pika/datastructures/tuple.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 // clang-format off
 #if defined(__clang__)

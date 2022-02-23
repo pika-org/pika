@@ -26,7 +26,7 @@
 #include <iostream>
 #include <memory>
 
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 struct X
 {

@@ -11,7 +11,7 @@
 #include <pika/assert.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/program_options.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 #include <chrono>
 #include <ciso646>
 

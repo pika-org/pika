@@ -23,9 +23,8 @@ set(example_programs simplest_resource_partitioner_1
                      simplest_resource_partitioner_2
 )
 
-set(example_programs
-    ${example_programs} async_customization
-    oversubscribing_resource_partitioner simple_resource_partitioner
+list(APPEND example_programs oversubscribing_resource_partitioner
+     simple_resource_partitioner
 )
 
 # Intel compilers have trouble compiling this example

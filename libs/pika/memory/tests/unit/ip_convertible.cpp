@@ -9,7 +9,7 @@
 
 #include <pika/config.hpp>
 #include <pika/modules/memory.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 //
 struct W

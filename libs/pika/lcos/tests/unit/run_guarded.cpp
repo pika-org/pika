@@ -6,7 +6,7 @@
 #include <pika/functional/bind.hpp>
 #include <pika/init.hpp>
 #include <pika/lcos/composable_guard.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <iostream>

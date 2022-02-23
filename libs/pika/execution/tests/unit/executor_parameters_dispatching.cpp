@@ -6,7 +6,7 @@
 
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <cstddef>

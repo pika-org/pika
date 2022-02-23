@@ -10,8 +10,8 @@
 //  (http://creativecommons.org/licenses/by/4.0/).
 
 #include <pika/init.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/modules/threading.hpp>
+#include <pika/testing.hpp>
 
 #include <atomic>
 #include <chrono>

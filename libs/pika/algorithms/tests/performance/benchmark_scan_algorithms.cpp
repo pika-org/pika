@@ -6,13 +6,13 @@
 
 #include <pika/init.hpp>
 #include <pika/modules/program_options.hpp>
-#include <pika/modules/testing.hpp>
 #include <pika/parallel/algorithms/copy.hpp>
 #include <pika/parallel/algorithms/exclusive_scan.hpp>
 #include <pika/parallel/algorithms/inclusive_scan.hpp>
 #include <pika/parallel/algorithms/transform_exclusive_scan.hpp>
 #include <pika/parallel/algorithms/transform_inclusive_scan.hpp>
 #include <pika/parallel/algorithms/unique.hpp>
+#include <pika/testing.hpp>
 
 #include <array>
 #include <cstddef>
