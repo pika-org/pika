@@ -9,8 +9,6 @@ set(example_programs transpose_serial transpose_serial_block transpose_smp
                      transpose_smp_block
 )
 
-set(transpose_serial_vector_FLAGS DEPENDENCIES partitioned_vector_component)
-
 set(transpose_smp_PARAMETERS THREADS 4)
 set(transpose_smp_block_PARAMETERS THREADS 4)
 

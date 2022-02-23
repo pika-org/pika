@@ -7,7 +7,7 @@
 #pragma once
 
 #include <pika/datastructures/tuple.hpp>
-#include <pika/functional/traits/is_action.hpp>
+
 #include <type_traits>
 
 namespace pika { namespace util {
@@ -69,29 +69,21 @@ namespace pika { namespace util {
     {
     };
 
-    // Specialization for actions
-    template <typename F>
-    struct first_argument<F,
-        typename std::enable_if<pika::traits::is_action<F>::value>::type>
-      : detail::tuple_first_argument<typename F::arguments_type>
-    {
-    };
-
     // Specialization for functions
     template <typename F>
     struct first_argument<F,
-        typename std::enable_if<!pika::traits::is_action<F>::value &&
-            std::is_function<typename std::remove_pointer<F>::type>::value>::
-            type> : detail::function_first_argument<F>
+        std::enable_if_t<
+            std::is_function_v<typename std::remove_pointer<F>::type>>>
+      : detail::function_first_argument<F>
     {
     };
 
     // Specialization for lambdas
     template <typename F>
     struct first_argument<F,
-        typename std::enable_if<!pika::traits::is_action<F>::value &&
-            !std::is_function<typename std::remove_pointer<F>::type>::value>::
-            type> : detail::lambda_first_argument<decltype(&F::operator())>
+        std::enable_if_t<
+            !std::is_function<typename std::remove_pointer<F>::type>::value>>
+      : detail::lambda_first_argument<decltype(&F::operator())>
     {
     };
 }}    // namespace pika::util
