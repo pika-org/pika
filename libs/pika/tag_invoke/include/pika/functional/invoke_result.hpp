@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/functional/detail/invoke.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -23,8 +22,8 @@ namespace pika { namespace util {
 
         template <typename F, typename... Ts>
         struct invoke_result_impl<F(Ts...),
-            typename util::always_void<decltype(
-                PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...))>::type>
+            std::void_t<decltype(
+                PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...))>>
         {
             using type =
                 decltype(PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...));

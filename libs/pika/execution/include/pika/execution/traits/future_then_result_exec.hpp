@@ -14,7 +14,6 @@
 #include <pika/futures/traits/future_then_result.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/futures/traits/is_future.hpp>
-#include <pika/type_support/always_void.hpp>
 #include <pika/type_support/identity.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
 
@@ -34,7 +33,7 @@ namespace pika { namespace traits {
 
         template <typename Executor, typename Future, typename F>
         struct future_then_executor_result<Executor, Future, F,
-            pika::util::always_void_t<pika::util::invoke_result_t<F&, Future>>>
+            std::void_t<pika::util::invoke_result_t<F&, Future>>>
         {
             using func_result_type = pika::util::invoke_result_t<F&, Future>;
 

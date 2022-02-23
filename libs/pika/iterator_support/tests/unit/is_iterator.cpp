@@ -46,7 +46,7 @@ struct has_nested_type : std::integral_constant<bool, false>
 };
 
 template <typename T>
-struct has_nested_type<T, pika::util::always_void<typename T::type>>
+struct has_nested_type<T, std::void_t<typename T::type>>
   : std::integral_constant<bool, true>
 {
 };

@@ -8,7 +8,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <functional>
 #include <type_traits>
@@ -38,8 +37,7 @@ namespace pika { namespace parallel { namespace execution {
 
     template <typename Executor>
     struct extract_executor_parameters<Executor,
-        typename pika::util::always_void<
-            typename Executor::executor_parameters_type>::type>
+        std::void_t<typename Executor::executor_parameters_type>>
     {
         using type = typename Executor::executor_parameters_type;
     };
@@ -57,8 +55,7 @@ namespace pika { namespace parallel { namespace execution {
 
     template <typename Parameters>
     struct extract_has_variable_chunk_size<Parameters,
-        typename pika::util::always_void<
-            typename Parameters::has_variable_chunk_size>::type>
+        std::void_t<typename Parameters::has_variable_chunk_size>>
     {
         using type = typename Parameters::has_variable_chunk_size;
     };

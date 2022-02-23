@@ -9,7 +9,6 @@
 
 #include <pika/config.hpp>
 #include <pika/preprocessor/cat.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <type_traits>
 
@@ -26,8 +25,7 @@
     };                                                                         \
                                                                                \
     template <typename T>                                                      \
-    struct PIKA_PP_CAT(has_,                                                   \
-        Name)<T, typename pika::util::always_void<typename T::Name>::type>     \
+    struct PIKA_PP_CAT(has_, Name)<T, std::void_t<typename T::Name>>           \
       : std::true_type                                                         \
     {                                                                          \
     };                                                                         \

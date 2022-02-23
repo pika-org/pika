@@ -16,7 +16,6 @@
 #include <pika/futures/traits/future_access.hpp>
 #include <pika/modules/memory.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
-#include <pika/type_support/always_void.hpp>
 #include <pika/type_support/decay.hpp>
 #include <pika/type_support/pack.hpp>
 
@@ -442,9 +441,8 @@ namespace pika {
             /// tuple like type. This function is SFINAEd out if the element
             /// isn't accepted by the visitor.
             template <typename Current,
-                typename = typename always_void<decltype(
-                    std::declval<Frame>()->traverse(
-                        *std::declval<Current>()))>::type>
+                typename = std::void_t<decltype(
+                    std::declval<Frame>()->traverse(*std::declval<Current>()))>>
             void async_traverse_one_impl(
                 container_category_tag<false, false>, Current&& current)
             /// SFINAE this out if the visitor doesn't accept

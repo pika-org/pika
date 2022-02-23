@@ -14,7 +14,6 @@
 #include <pika/functional/traits/is_invocable.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
 #include <pika/pack_traversal/traits/pack_traversal_rebind_container.hpp>
-#include <pika/type_support/always_void.hpp>
 #include <pika/type_support/decay.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/util/detail/reserve.hpp>
@@ -330,8 +329,8 @@ namespace pika { namespace util { namespace detail {
         };
         template <typename T, typename E>
         struct has_push_back<T, E,
-            typename always_void<decltype(std::declval<T>().push_back(
-                std::declval<E>()))>::type> : std::true_type
+            std::void_t<decltype(std::declval<T>().push_back(
+                std::declval<E>()))>> : std::true_type
         {
         };
 
@@ -602,8 +601,8 @@ namespace pika { namespace util { namespace detail {
             M mapper_;
 
             template <typename... Args>
-            auto operator()(Args&&... args) -> typename always_void<
-                typename invoke_result<M, OldArgs>::type...>::type
+            auto operator()(Args&&... args)
+                -> std::void_t<typename invoke_result<M, OldArgs>::type...>
             {
                 int dummy[] = {
                     0, ((void) mapper_(PIKA_FORWARD(Args, args)), 0)...};
