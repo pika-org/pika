@@ -7,7 +7,9 @@
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cuda_pool.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
+#include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
+#include <pika/threading_base/thread_num_tss.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -16,37 +18,48 @@
 
 namespace pika::cuda::experimental {
     cuda_pool::streams_holder::streams_holder(int device,
-        std::size_t num_streams, pika::threads::thread_priority priority)
+        std::size_t num_streams_per_thread,
+        pika::threads::thread_priority priority)
+      : num_streams_per_thread(num_streams_per_thread)
+      , concurrency(pika::threads::hardware_concurrency())
+      , streams(
+            num_streams_per_thread * concurrency, cuda_stream{device, priority})
+      , active_stream_indices(concurrency, {0})
     {
-        PIKA_ASSERT(num_streams > 0);
-
-        streams.reserve(num_streams);
-        for (std::size_t i = 0; i < num_streams; ++i)
-        {
-            streams.emplace_back(device, priority);
-        }
+        PIKA_ASSERT(num_streams_per_thread > 0);
     }
 
     cuda_stream const& cuda_pool::streams_holder::get_next_stream()
     {
-        return streams[active_stream_index++ % streams.size()];
+        // We do not care if there is oversubscription and t is bigger than
+        // hardware_concurrency; we simply wrap it around
+        auto const t =
+            pika::threads::detail::get_global_thread_num_tss() % concurrency;
+        auto const local_stream_index =
+            ++(active_stream_indices[t].data_) % num_streams_per_thread;
+        auto const global_stream_index =
+            t * num_streams_per_thread + local_stream_index;
+
+        return streams[global_stream_index];
     }
 
     cuda_pool::pool_data::pool_data(int device,
-        std::size_t num_normal_priority_streams,
-        std::size_t num_high_priority_streams)
+        std::size_t num_normal_priority_streams_per_thread,
+        std::size_t num_high_priority_streams_per_thread)
       : device(device)
-      , normal_priority_streams(device, num_normal_priority_streams,
+      , normal_priority_streams(device, num_normal_priority_streams_per_thread,
             pika::threads::thread_priority::normal)
-      , high_priority_streams(device, num_high_priority_streams,
+      , high_priority_streams(device, num_high_priority_streams_per_thread,
             pika::threads::thread_priority::high)
     {
     }
 
-    cuda_pool::cuda_pool(int device, std::size_t num_normal_priority_streams,
-        std::size_t num_high_priority_streams)
-      : data(std::make_shared<pool_data>(
-            device, num_normal_priority_streams, num_high_priority_streams))
+    cuda_pool::cuda_pool(int device,
+        std::size_t num_normal_priority_streams_per_thread,
+        std::size_t num_high_priority_streams_per_thread)
+      : data(std::make_shared<pool_data>(device,
+            num_normal_priority_streams_per_thread,
+            num_high_priority_streams_per_thread))
     {
     }
 
@@ -79,11 +92,12 @@ namespace pika::cuda::experimental {
     {
         bool valid{pool.data};
         os << "cuda_pool(" << pool.data.get()
-           << ", num_high_priority_streams = "
-           << (valid ? pool.data->normal_priority_streams.num_streams : 0)
-           << ", active_normal_priority_stream_index = "
-           << (valid ? pool.data->normal_priority_streams.active_stream_index
-                           .load(std::memory_order_relaxed) :
+           << ", num_high_priority_streams_per_thread = "
+           << (valid ? pool.data->high_priority_streams.num_streams_per_thread :
+                       0)
+           << ", num_normal_priority_streams_per_thread = "
+           << (valid ? pool.data->normal_priority_streams
+                           .num_streams_per_thread :
                        0)
            << ")";
         return os;

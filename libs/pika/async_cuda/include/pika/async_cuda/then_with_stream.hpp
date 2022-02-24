@@ -31,31 +31,33 @@
 #include <utility>
 
 namespace pika::cuda::experimental::detail {
+    PIKA_EXPORT pika::cuda::experimental::cublas_handle const&
+    get_thread_local_cublas_handle(
+        cuda_stream const& stream, cublasPointerMode_t pointer_mode);
+
     template <typename F, typename... Ts>
     auto invoke_with_thread_local_cublas_handle(cuda_stream const& stream,
         cublasPointerMode_t pointer_mode, F&& f, Ts&&... ts)
         -> decltype(PIKA_INVOKE(PIKA_FORWARD(F, f),
             std::declval<cublasHandle_t>(), PIKA_FORWARD(Ts, ts)...))
     {
-        static thread_local pika::cuda::experimental::cublas_handle handle{
-            stream};
-        handle.set_stream(stream);
-        handle.set_pointer_mode(pointer_mode);
-        return PIKA_INVOKE(
-            PIKA_FORWARD(F, f), handle.get(), PIKA_FORWARD(Ts, ts)...);
+        return PIKA_INVOKE(PIKA_FORWARD(F, f),
+            get_thread_local_cublas_handle(stream, pointer_mode).get(),
+            PIKA_FORWARD(Ts, ts)...);
     }
 
 #if defined(PIKA_HAVE_CUDA)
+    PIKA_EXPORT pika::cuda::experimental::cusolver_handle const&
+    get_thread_local_cusolver_handle(cuda_stream const& stream);
+
     template <typename F, typename... Ts>
     auto invoke_with_thread_local_cusolver_handle(cuda_stream const& stream,
         F&& f, Ts&&... ts) -> decltype(PIKA_INVOKE(PIKA_FORWARD(F, f),
         std::declval<cusolverDnHandle_t>(), PIKA_FORWARD(Ts, ts)...))
     {
-        static thread_local pika::cuda::experimental::cusolver_handle handle{
-            stream};
-        handle.set_stream(stream);
-        return PIKA_INVOKE(
-            PIKA_FORWARD(F, f), handle.get(), PIKA_FORWARD(Ts, ts)...);
+        return PIKA_INVOKE(PIKA_FORWARD(F, f),
+            get_thread_local_cusolver_handle(stream).get(),
+            PIKA_FORWARD(Ts, ts)...);
     }
 #endif
 
@@ -85,13 +87,13 @@ namespace pika::cuda::experimental::detail {
 
     template <typename... Ts>
     void extend_argument_lifetimes(
-        cuda_pool const& pool, cuda_stream const& stream, Ts&&... ts)
+        cuda_scheduler&& sched, cuda_stream const& stream, Ts&&... ts)
     {
         if constexpr (sizeof...(Ts) > 0)
         {
             detail::add_event_callback(
-                [keep_alive = pika::make_tuple(pool, PIKA_FORWARD(Ts, ts)...)](
-                    cudaError_t status) {
+                [keep_alive = pika::make_tuple(PIKA_MOVE(sched),
+                     PIKA_FORWARD(Ts, ts)...)](cudaError_t status) mutable {
                     PIKA_ASSERT(status != cudaErrorNotReady);
                     PIKA_UNUSED(status);
                 },
@@ -101,31 +103,32 @@ namespace pika::cuda::experimental::detail {
 
     template <typename R, typename... Ts>
     void set_value_immediate_void(
-        cuda_pool const& pool, cuda_stream const& stream, R&& r, Ts&&... ts)
+        cuda_scheduler&& sched, cuda_stream const& stream, R&& r, Ts&&... ts)
     {
         pika::execution::experimental::set_value(PIKA_FORWARD(R, r));
 
         // Even though we call set_value immediately, we still extend the
         // life time of the arguments by capturing them in a callback that
         // is triggered when the event is ready.
-        extend_argument_lifetimes(pool, stream, PIKA_FORWARD(Ts, ts)...);
+        extend_argument_lifetimes(
+            PIKA_MOVE(sched), stream, PIKA_FORWARD(Ts, ts)...);
     }
 
     template <typename R, typename... Ts>
     void set_value_event_callback_void(
-        cuda_pool const& pool, cuda_stream const& stream, R&& r, Ts&&... ts)
+        cuda_scheduler&& sched, cuda_stream const& stream, R&& r, Ts&&... ts)
     {
         detail::add_event_callback(
             [r = PIKA_FORWARD(R, r),
-                keep_alive = pika::make_tuple(pool, PIKA_FORWARD(Ts, ts)...)](
-                cudaError_t status) mutable {
+                keep_alive = pika::make_tuple(PIKA_MOVE(sched),
+                    PIKA_FORWARD(Ts, ts)...)](cudaError_t status) mutable {
                 set_value_event_callback_helper(status, PIKA_MOVE(r));
             },
             stream.get());
     }
 
     template <typename R, typename T, typename... Ts>
-    void set_value_immediate_non_void(cuda_pool const& pool,
+    void set_value_immediate_non_void(cuda_scheduler&& sched,
         cuda_stream const& stream, R&& r, T&& t, Ts&&... ts)
     {
         pika::execution::experimental::set_value(
@@ -134,17 +137,18 @@ namespace pika::cuda::experimental::detail {
         // Even though we call set_value immediately, we still extend the
         // life time of the arguments by capturing them in a callback that
         // is triggered when the event is ready.
-        extend_argument_lifetimes(pool, stream, PIKA_FORWARD(Ts, ts)...);
+        extend_argument_lifetimes(
+            PIKA_MOVE(sched), stream, PIKA_FORWARD(Ts, ts)...);
     }
 
     template <typename R, typename T, typename... Ts>
-    void set_value_event_callback_non_void(cuda_pool const& pool,
+    void set_value_event_callback_non_void(cuda_scheduler&& sched,
         cuda_stream const& stream, R&& r, T&& t, Ts&&... ts)
     {
         detail::add_event_callback(
             [t = PIKA_FORWARD(T, t), r = PIKA_FORWARD(R, r),
-                keep_alive = pika::make_tuple(pool, PIKA_FORWARD(Ts, ts)...)](
-                cudaError_t status) mutable {
+                keep_alive = pika::make_tuple(PIKA_MOVE(sched),
+                    PIKA_FORWARD(Ts, ts)...)](cudaError_t status) mutable {
                 set_value_event_callback_helper(
                     status, PIKA_MOVE(r), PIKA_MOVE(t));
             },
@@ -152,53 +156,54 @@ namespace pika::cuda::experimental::detail {
     }
 
     template <typename R, typename F>
-    struct then_with_cuda_receiver;
+    struct then_with_cuda_stream_receiver;
 
     template <typename R>
-    struct is_then_with_cuda_receiver : std::false_type
+    struct is_then_with_cuda_stream_receiver : std::false_type
     {
     };
 
     template <typename R, typename F>
-    struct is_then_with_cuda_receiver<then_with_cuda_receiver<R, F>>
-      : std::true_type
+    struct is_then_with_cuda_stream_receiver<
+        then_with_cuda_stream_receiver<R, F>> : std::true_type
     {
     };
 
     template <typename R, typename F>
-    struct then_with_cuda_receiver
+    struct then_with_cuda_stream_receiver
     {
-        std::decay_t<R> r;
-        std::decay_t<F> f;
-        cuda_pool pool;
-        std::reference_wrapper<const cuda_stream> stream;
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<R> r;
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
+        cuda_scheduler sched;
+        pika::optional<std::reference_wrapper<const cuda_stream>> stream;
 
         template <typename R_, typename F_>
-        then_with_cuda_receiver(
-            R_&& r, F_&& f, cuda_pool pool, cuda_stream const& stream)
+        then_with_cuda_stream_receiver(R_&& r, F_&& f, cuda_scheduler sched)
           : r(PIKA_FORWARD(R_, r))
           , f(PIKA_FORWARD(F_, f))
-          , pool(PIKA_MOVE(pool))
-          , stream(stream)
+          , sched(PIKA_MOVE(sched))
         {
         }
 
-        then_with_cuda_receiver(then_with_cuda_receiver&&) = default;
-        then_with_cuda_receiver& operator=(then_with_cuda_receiver&&) = default;
-        then_with_cuda_receiver(then_with_cuda_receiver const&) = delete;
-        then_with_cuda_receiver& operator=(
-            then_with_cuda_receiver const&) = delete;
+        then_with_cuda_stream_receiver(
+            then_with_cuda_stream_receiver&&) = default;
+        then_with_cuda_stream_receiver& operator=(
+            then_with_cuda_stream_receiver&&) = default;
+        then_with_cuda_stream_receiver(
+            then_with_cuda_stream_receiver const&) = delete;
+        then_with_cuda_stream_receiver& operator=(
+            then_with_cuda_stream_receiver const&) = delete;
 
         template <typename E>
         friend void tag_invoke(pika::execution::experimental::set_error_t,
-            then_with_cuda_receiver&& r, E&& e) noexcept
+            then_with_cuda_stream_receiver&& r, E&& e) noexcept
         {
             pika::execution::experimental::set_error(
                 PIKA_MOVE(r.r), PIKA_FORWARD(E, e));
         }
 
         friend void tag_invoke(pika::execution::experimental::set_done_t,
-            then_with_cuda_receiver&& r) noexcept
+            then_with_cuda_stream_receiver&& r) noexcept
         {
             pika::execution::experimental::set_done(PIKA_MOVE(r.r));
         }
@@ -207,67 +212,93 @@ namespace pika::cuda::experimental::detail {
         void set_value(Ts&&... ts) noexcept
         {
             pika::detail::try_catch_exception_ptr(
-                [&]() {
+                [&]() mutable {
+                    if (!stream)
+                    {
+                        stream.emplace(sched.get_next_stream());
+                    }
+
+                    // If the next receiver is also a
+                    // then_with_cuda_stream_receiver and it uses the same
+                    // scheduler/pool we set its stream to the same as for this
+                    // task.
+                    bool successor_uses_same_stream = false;
+                    if constexpr (is_then_with_cuda_stream_receiver<
+                                      std::decay_t<R>>::value)
+                    {
+                        if (sched == r.sched)
+                        {
+                            PIKA_ASSERT(stream);
+                            PIKA_ASSERT(!r.stream);
+                            r.stream = stream;
+
+                            successor_uses_same_stream = true;
+                        }
+                    }
+
                     if constexpr (std::is_void_v<
                                       typename pika::util::invoke_result<F,
                                           cuda_stream const&, Ts...>::type>)
                     {
                         // When the return type is void, there is no value to
                         // forward to the receiver
-                        PIKA_INVOKE(f, stream, ts...);
+                        PIKA_INVOKE(PIKA_MOVE(f), stream.value(), ts...);
 
-                        if constexpr (is_then_with_cuda_receiver<
+                        if constexpr (is_then_with_cuda_stream_receiver<
                                           std::decay_t<R>>::value)
                         {
-                            if (r.stream == stream)
+                            if (successor_uses_same_stream)
                             {
-                                // When the next receiver is also a
-                                // then_with_cuda_receiver, we can immediately
-                                // call set_value, with the knowledge that a
-                                // later receiver will synchronize the stream
-                                // when a non-then_with_cuda receiver is
+                                // When the next receiver uses the same stream
+                                // we can immediately call set_value, with the
+                                // knowledge that a later receiver will
+                                // synchronize the stream when a
+                                // non-then_with_cuda_stream receiver is
                                 // connected.
-                                set_value_immediate_void(pool, stream,
-                                    PIKA_MOVE(r), PIKA_FORWARD(Ts, ts)...);
+                                set_value_immediate_void(PIKA_MOVE(sched),
+                                    stream.value(), PIKA_MOVE(r),
+                                    PIKA_FORWARD(Ts, ts)...);
                             }
                             else
                             {
                                 // When the streams are different, we add a
                                 // callback which will call set_value on the
                                 // receiver.
-                                set_value_event_callback_void(pool, stream,
-                                    PIKA_MOVE(r), PIKA_FORWARD(Ts, ts)...);
+                                set_value_event_callback_void(PIKA_MOVE(sched),
+                                    stream.value(), PIKA_MOVE(r),
+                                    PIKA_FORWARD(Ts, ts)...);
                             }
                         }
                         else
                         {
                             // When the next receiver is not a
-                            // then_with_cuda_receiver, we add a callback
+                            // then_with_cuda_stream_receiver, we add a callback
                             // which will call set_value on the receiver.
-                            set_value_event_callback_void(pool, stream,
-                                PIKA_MOVE(r), PIKA_FORWARD(Ts, ts)...);
+                            set_value_event_callback_void(PIKA_MOVE(sched),
+                                stream.value(), PIKA_MOVE(r),
+                                PIKA_FORWARD(Ts, ts)...);
                         }
                     }
                     else
                     {
                         // When the return type is non-void, we have to forward
                         // the value to the receiver
-                        auto t =
-                            PIKA_INVOKE(f, stream, PIKA_FORWARD(Ts, ts)...);
+                        auto t = PIKA_INVOKE(PIKA_MOVE(f), stream.value(),
+                            PIKA_FORWARD(Ts, ts)...);
 
-                        if constexpr (is_then_with_cuda_receiver<
+                        if constexpr (is_then_with_cuda_stream_receiver<
                                           std::decay_t<R>>::value)
                         {
-                            if (r.stream == stream)
+                            if (successor_uses_same_stream)
                             {
-                                // When the next receiver is also a
-                                // then_with_cuda_receiver, we can immediately
-                                // call set_value, with the knowledge that a
-                                // later receiver will synchronize the stream
-                                // when a non-then_with_cuda receiver is
+                                // When the next receiver uses the same stream
+                                // we can immediately call set_value, with the
+                                // knowledge that a later receiver will
+                                // synchronize the stream when a
+                                // non-then_with_cuda_stream receiver is
                                 // connected.
-                                set_value_immediate_non_void(pool, stream,
-                                    PIKA_MOVE(r), PIKA_MOVE(t),
+                                set_value_immediate_non_void(PIKA_MOVE(sched),
+                                    stream.value(), PIKA_MOVE(r), PIKA_MOVE(t),
                                     PIKA_FORWARD(Ts, ts)...);
                             }
                             else
@@ -275,7 +306,8 @@ namespace pika::cuda::experimental::detail {
                                 // When the streams are different, we add a
                                 // callback which will call set_value on the
                                 // receiver.
-                                set_value_event_callback_non_void(pool, stream,
+                                set_value_event_callback_non_void(
+                                    PIKA_MOVE(sched), stream.value(),
                                     PIKA_MOVE(r), PIKA_MOVE(t),
                                     PIKA_FORWARD(Ts, ts)...);
                             }
@@ -283,15 +315,15 @@ namespace pika::cuda::experimental::detail {
                         else
                         {
                             // When the next receiver is not a
-                            // then_with_cuda_receiver, we add a callback
+                            // then_with_cuda_stream_receiver, we add a callback
                             // which will call set_value on the receiver.
-                            set_value_event_callback_non_void(pool, stream,
-                                PIKA_MOVE(r), PIKA_MOVE(t),
+                            set_value_event_callback_non_void(PIKA_MOVE(sched),
+                                stream.value(), PIKA_MOVE(r), PIKA_MOVE(t),
                                 PIKA_FORWARD(Ts, ts)...);
                         }
                     }
                 },
-                [&](std::exception_ptr ep) {
+                [&](std::exception_ptr ep) mutable {
                     pika::execution::experimental::set_error(
                         PIKA_MOVE(r), PIKA_MOVE(ep));
                 });
@@ -299,16 +331,16 @@ namespace pika::cuda::experimental::detail {
     };
 
     template <typename S, typename F, typename Enable>
-    struct then_with_cuda_sender;
+    struct then_with_cuda_stream_sender;
 
     template <typename S>
-    struct is_then_with_cuda_sender : std::false_type
+    struct is_then_with_cuda_stream_sender : std::false_type
     {
     };
 
     template <typename S, typename F, typename Enable>
-    struct is_then_with_cuda_sender<then_with_cuda_sender<S, F, Enable>>
-      : std::true_type
+    struct is_then_with_cuda_stream_sender<
+        then_with_cuda_stream_sender<S, F, Enable>> : std::true_type
     {
     };
 
@@ -339,39 +371,27 @@ namespace pika::cuda::experimental::detail {
     template <typename S, typename F,
         typename Enable =
             std::enable_if_t<is_cuda_stream_invocable_with_sender_v<S, F>>>
-    struct then_with_cuda_sender
+    struct then_with_cuda_stream_sender
     {
-        std::decay_t<S> s;
-        std::decay_t<F> f;
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<S> s;
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
         cuda_scheduler sched;
-        std::reference_wrapper<const cuda_stream> stream;
-
-        cuda_stream const& initialize_stream()
-        {
-            if constexpr (is_then_with_cuda_sender<std::decay_t<S>>::value)
-            {
-                return s.stream;
-            }
-            else
-            {
-                return this->sched.get_next_stream();
-            }
-        }
 
         template <typename S_, typename F_>
-        then_with_cuda_sender(S_&& s, F_&& f, cuda_scheduler sched)
+        then_with_cuda_stream_sender(S_&& s, F_&& f, cuda_scheduler sched)
           : s(PIKA_FORWARD(S_, s))
           , f(PIKA_FORWARD(F_, f))
           , sched(PIKA_MOVE(sched))
-          , stream(initialize_stream())
         {
         }
 
-        then_with_cuda_sender(then_with_cuda_sender&&) = default;
-        then_with_cuda_sender& operator=(then_with_cuda_sender&&) = default;
-        then_with_cuda_sender(then_with_cuda_sender const&) = default;
-        then_with_cuda_sender& operator=(
-            then_with_cuda_sender const&) = default;
+        then_with_cuda_stream_sender(then_with_cuda_stream_sender&&) = default;
+        then_with_cuda_stream_sender& operator=(
+            then_with_cuda_stream_sender&&) = default;
+        then_with_cuda_stream_sender(
+            then_with_cuda_stream_sender const&) = default;
+        then_with_cuda_stream_sender& operator=(
+            then_with_cuda_stream_sender const&) = default;
 
         template <typename Tuple>
         struct invoke_result_helper;
@@ -404,47 +424,48 @@ namespace pika::cuda::experimental::detail {
 
         template <typename R>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
-            then_with_cuda_sender&& s, R&& r)
+            then_with_cuda_stream_sender&& s, R&& r)
         {
             return pika::execution::experimental::connect(PIKA_MOVE(s.s),
-                then_with_cuda_receiver<R, F>{PIKA_FORWARD(R, r),
-                    PIKA_MOVE(s.f), PIKA_MOVE(s.sched.get_pool()),
-                    PIKA_MOVE(s.stream)});
+                then_with_cuda_stream_receiver<R, F>{
+                    PIKA_FORWARD(R, r), PIKA_MOVE(s.f), PIKA_MOVE(s.sched)});
         }
 
         template <typename R>
         friend auto tag_invoke(pika::execution::experimental::connect_t,
-            then_with_cuda_sender& s, R&& r)
+            then_with_cuda_stream_sender& s, R&& r)
         {
             return pika::execution::experimental::connect(s.s,
-                then_with_cuda_receiver<R, F>{
-                    PIKA_FORWARD(R, r), s.f, s.sched.get_pool(), s.stream});
+                then_with_cuda_stream_receiver<R, F>{
+                    PIKA_FORWARD(R, r), s.f, s.sched});
         }
 
         friend cuda_scheduler tag_invoke(
             pika::execution::experimental::get_completion_scheduler_t<
                 pika::execution::experimental::set_value_t>,
-            then_with_cuda_sender const& s)
+            then_with_cuda_stream_sender const& s)
         {
             return s.sched;
         }
     };
 
-    // This should be a hidden friend in then_with_cuda_receiver. However,
-    // nvcc does not know how to compile it with some argument types
+    // This should be a hidden friend in then_with_cuda_stream_receiver.
+    // However, nvcc does not know how to compile it with some argument types
     // ("error: no instance of overloaded function std::forward matches the
     // argument list").
     template <typename R, typename F, typename... Ts>
     void tag_invoke(pika::execution::experimental::set_value_t,
-        then_with_cuda_receiver<R, F>&& r, Ts&&... ts)
+        then_with_cuda_stream_receiver<R, F>&& r, Ts&&... ts)
     {
         r.set_value(PIKA_FORWARD(Ts, ts)...);
     }
 
+    /// This is a helper that calls f with the values sent by s and a
+    /// cuda_stream as the last argument.
     template <typename S, typename F>
-    auto then_with_cuda_pool(S&& s, F&& f)
-        -> decltype(detail::then_with_cuda_sender<S, F>{PIKA_FORWARD(S, s),
-            PIKA_FORWARD(F, f),
+    auto then_with_cuda_stream(S&& s, F&& f)
+        -> decltype(detail::then_with_cuda_stream_sender<S, F>{
+            PIKA_FORWARD(S, s), PIKA_FORWARD(F, f),
             pika::execution::experimental::get_completion_scheduler<
                 pika::execution::experimental::set_value_t>(s)})
     {
@@ -453,10 +474,10 @@ namespace pika::cuda::experimental::detail {
                 pika::execution::experimental::set_value_t>(s);
         static_assert(std::is_same_v<std::decay_t<decltype(completion_sched)>,
                           cuda_scheduler>,
-            "then_with_cuda_pool can only be used with senders whose "
+            "then_with_cuda_stream can only be used with senders whose "
             "completion scheduler is cuda_scheduler");
 
-        return detail::then_with_cuda_sender<S, F>{PIKA_FORWARD(S, s),
+        return detail::then_with_cuda_stream_sender<S, F>{PIKA_FORWARD(S, s),
             PIKA_FORWARD(F, f), std::move(completion_sched)};
     }
 
@@ -551,10 +572,10 @@ namespace pika::cuda::experimental {
     {
         template <typename S, typename F>
         constexpr PIKA_FORCEINLINE auto operator()(S&& s, F&& f) const
-            -> decltype(detail::then_with_cuda_pool(PIKA_FORWARD(S, s),
+            -> decltype(detail::then_with_cuda_stream(PIKA_FORWARD(S, s),
                 detail::cuda_stream_callable<F>{PIKA_FORWARD(F, f)}))
         {
-            return detail::then_with_cuda_pool(PIKA_FORWARD(S, s),
+            return detail::then_with_cuda_stream(PIKA_FORWARD(S, s),
                 detail::cuda_stream_callable<F>{PIKA_FORWARD(F, f)});
         }
 
@@ -581,11 +602,11 @@ namespace pika::cuda::experimental {
         template <typename S, typename F>
         constexpr PIKA_FORCEINLINE auto operator()(
             S&& s, F&& f, cublasPointerMode_t pointer_mode) const
-            -> decltype(detail::then_with_cuda_pool(PIKA_FORWARD(S, s),
+            -> decltype(detail::then_with_cuda_stream(PIKA_FORWARD(S, s),
                 detail::cublas_handle_callable<F>{
                     PIKA_FORWARD(F, f), pointer_mode}))
         {
-            return detail::then_with_cuda_pool(PIKA_FORWARD(S, s),
+            return detail::then_with_cuda_stream(PIKA_FORWARD(S, s),
                 detail::cublas_handle_callable<F>{
                     PIKA_FORWARD(F, f), pointer_mode});
         }
@@ -617,10 +638,10 @@ namespace pika::cuda::experimental {
     {
         template <typename S, typename F>
         constexpr PIKA_FORCEINLINE auto operator()(S&& s, F&& f) const
-            -> decltype(detail::then_with_cuda_pool(PIKA_FORWARD(S, s),
+            -> decltype(detail::then_with_cuda_stream(PIKA_FORWARD(S, s),
                 detail::cusolver_handle_callable<F>{PIKA_FORWARD(F, f)}))
         {
-            return detail::then_with_cuda_pool(PIKA_FORWARD(S, s),
+            return detail::then_with_cuda_stream(PIKA_FORWARD(S, s),
                 detail::cusolver_handle_callable<F>{PIKA_FORWARD(F, f)});
         }
 

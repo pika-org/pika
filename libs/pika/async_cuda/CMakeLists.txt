@@ -52,6 +52,7 @@ set(async_cuda_sources
     cusolver_exception.cpp
     cusolver_handle.cpp
     get_targets.cpp
+    then_with_stream.cpp
 )
 
 if(PIKA_WITH_HIP AND TARGET roc::hipblas)
