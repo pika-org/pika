@@ -162,6 +162,55 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+    {
+        std::atomic<bool> set_value_called{false};
+        std::vector<ex::any_sender<custom_type_non_default_constructible>>
+            senders;
+        senders.emplace_back(
+            ex::just(custom_type_non_default_constructible{42}));
+        senders.emplace_back(
+            ex::just(custom_type_non_default_constructible{43}));
+        senders.emplace_back(
+            ex::just(custom_type_non_default_constructible{44}));
+        auto s = ex::when_all_vector(std::move(senders));
+        auto f = [](std::vector<custom_type_non_default_constructible> v) {
+            PIKA_TEST_EQ(v.size(), std::size_t(3));
+            PIKA_TEST_EQ(v[0].x, 42);
+            PIKA_TEST_EQ(v[1].x, 43);
+            PIKA_TEST_EQ(v[2].x, 44);
+        };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
+    {
+        std::atomic<bool> set_value_called{false};
+        std::vector<ex::unique_any_sender<
+            custom_type_non_default_constructible_non_copyable>>
+            senders;
+        senders.emplace_back(
+            ex::just(custom_type_non_default_constructible_non_copyable{42}));
+        senders.emplace_back(
+            ex::just(custom_type_non_default_constructible_non_copyable{43}));
+        senders.emplace_back(
+            ex::just(custom_type_non_default_constructible_non_copyable{44}));
+        auto s = ex::when_all_vector(std::move(senders));
+        auto f =
+            [](std::vector<custom_type_non_default_constructible_non_copyable>
+                    v) {
+                PIKA_TEST_EQ(v.size(), std::size_t(3));
+                PIKA_TEST_EQ(v[0].x, 42);
+                PIKA_TEST_EQ(v[1].x, 43);
+                PIKA_TEST_EQ(v[2].x, 44);
+            };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
     // Test a combination with when_all
     {
         std::atomic<bool> set_value_called{false};
