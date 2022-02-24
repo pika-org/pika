@@ -1,4 +1,4 @@
-//  Copyright (c)      2021 ETH Zurich
+//  Copyright (c) 2022 ETH Zurich
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -6,5 +6,13 @@
 
 #pragma once
 
+#include <pika/config.hpp>
 #include <pika/init_runtime/init_runtime.hpp>
-#include <pika/init_runtime/scoped_finalize.hpp>
+
+namespace pika {
+    struct PIKA_NODISCARD scoped_finalize
+    {
+        scoped_finalize() = default;
+        PIKA_EXPORT ~scoped_finalize();
+    };
+}    // namespace pika

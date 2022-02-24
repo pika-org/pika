@@ -208,6 +208,8 @@ std::uint64_t averageout_sequential_forloop(std::size_t vector_size)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
+    pika::scoped_finalize f;
+
     // pull values from cmd
     std::size_t vector_size = vm["vector_size"].as<std::size_t>();
     bool csvoutput = vm.count("csv_output") != 0;
@@ -230,13 +232,11 @@ int pika_main(pika::program_options::variables_map& vm)
     if (test_count == 0 || test_count < 0)
     {
         std::cerr << "test_count cannot be zero or negative...\n" << std::flush;
-        pika::finalize();
         return -1;
     }
     else if (delay < 0)
     {
         std::cerr << "delay cannot be a negative number...\n" << std::flush;
-        pika::finalize();
         return -1;
     }
     else
@@ -400,7 +400,6 @@ int pika_main(pika::program_options::variables_map& vm)
             std::cerr << "unknown executor option (should be aggregated, "
                          "forkjoin, scheduler or parallel (default)\n"
                       << std::flush;
-            pika::finalize();
             return -1;
         }
 
@@ -497,7 +496,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
     }
 
-    return pika::finalize();
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

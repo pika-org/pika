@@ -85,6 +85,10 @@ void add_entry(jacobi_smp::crs_matrix<double>& M, std::size_t& row,
 
 int pika_main(variables_map& vm)
 {
+#if !defined(JACOBI_SMP_NO_pika)
+    pika::scoped_finalize f;
+#endif
+
     {
         std::size_t iterations = vm["iterations"].as<std::size_t>();
         std::size_t block_size = vm["block-size"].as<std::size_t>();
@@ -122,9 +126,6 @@ int pika_main(variables_map& vm)
             {
                 std::cerr << "Parsed zero non zero values in matrix file "
                           << matrix << "\n";
-#if !defined(JACOBI_SMP_NO_pika)
-                pika::finalize();
-#endif
                 return 1;
             }
 
@@ -185,18 +186,11 @@ int pika_main(variables_map& vm)
         else
         {
             std::cout << "Unknown mode " << mode << "\n";
-#if !defined(JACOBI_SMP_NO_pika)
-            pika::finalize();
-#endif
             return 1;
         }
     }
 
-#if defined(JACOBI_SMP_NO_pika)
     return 0;
-#else
-    return pika::finalize();
-#endif
 }
 
 int main(int argc, char** argv)

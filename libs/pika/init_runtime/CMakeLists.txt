@@ -8,11 +8,13 @@ cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(init_runtime_headers pika/init_runtime/detail/init_logging.hpp
-                         pika/init_runtime/init_runtime.hpp pika/init.hpp
+set(init_runtime_headers
+    pika/init_runtime/detail/init_logging.hpp
+    pika/init_runtime/init_runtime.hpp pika/init_runtime/scoped_finalize.hpp
+    pika/init.hpp
 )
 
-set(init_runtime_sources init_logging.cpp init_runtime.cpp)
+set(init_runtime_sources init_logging.cpp init_runtime.cpp scoped_finalize.cpp)
 
 include(pika_add_module)
 pika_add_module(

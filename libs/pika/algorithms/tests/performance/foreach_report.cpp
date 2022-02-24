@@ -33,6 +33,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
+    pika::scoped_finalize f;
+
     std::size_t vector_size = vm["vector_size"].as<std::size_t>();
     delay = vm["work_delay"].as<int>();
     test_count = vm["test_count"].as<int>();
@@ -44,13 +46,11 @@ int pika_main(pika::program_options::variables_map& vm)
     if (test_count == 0 || test_count < 0)
     {
         std::cerr << "test_count cannot be zero or negative...\n" << std::flush;
-        pika::finalize();
         return -1;
     }
     else if (delay < 0)
     {
         std::cerr << "delay cannot be a negative number...\n" << std::flush;
-        pika::finalize();
         return -1;
     }
 
@@ -108,7 +108,7 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::util::perftests_print_times();
     }
 
-    return pika::finalize();
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
