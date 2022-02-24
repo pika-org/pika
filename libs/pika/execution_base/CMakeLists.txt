@@ -8,11 +8,12 @@ set(execution_base_headers
     pika/execution_base/agent_base.hpp
     pika/execution_base/agent_ref.hpp
     pika/execution_base/any_sender.hpp
+    pika/execution_base/completion_scheduler.hpp
     pika/execution_base/context_base.hpp
     pika/execution_base/detail/spinlock_deadlock_detection.hpp
     pika/execution_base/execution.hpp
-    pika/execution_base/completion_scheduler.hpp
     pika/execution_base/operation_state.hpp
+    pika/execution_base/p2300_forward.hpp
     pika/execution_base/receiver.hpp
     pika/execution_base/resource_base.hpp
     pika/execution_base/sender.hpp

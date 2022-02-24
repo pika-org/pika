@@ -9,6 +9,8 @@
 #include <pika/assert.hpp>
 #include <pika/errors/error.hpp>
 #include <pika/errors/throw_exception.hpp>
+#include <pika/execution_base/operation_state.hpp>
+#include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 
 #include <cstddef>
@@ -370,7 +372,7 @@ namespace pika::execution::experimental::detail {
         virtual void move_into(void* p) = 0;
         virtual void set_value(Ts... ts) && = 0;
         virtual void set_error(std::exception_ptr ep) && noexcept = 0;
-        virtual void set_done() && noexcept = 0;
+        virtual void set_stopped() && noexcept = 0;
         virtual bool empty() const noexcept
         {
             return false;
@@ -403,9 +405,9 @@ namespace pika::execution::experimental::detail {
             throw_bad_any_call("any_receiver", "set_error");
         }
 
-        PIKA_NORETURN void set_done() && noexcept override
+        PIKA_NORETURN void set_stopped() && noexcept override
         {
-            throw_bad_any_call("any_receiver", "set_done");
+            throw_bad_any_call("any_receiver", "set_stopped");
         }
     };
 }    // namespace pika::execution::experimental::detail
@@ -451,9 +453,9 @@ namespace pika::execution::experimental::detail {
                 PIKA_MOVE(receiver), PIKA_MOVE(ep));
         }
 
-        void set_done() && noexcept override
+        void set_stopped() && noexcept override
         {
-            pika::execution::experimental::set_done(PIKA_MOVE(receiver));
+            pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
         }
     };
 
@@ -495,7 +497,7 @@ namespace pika::execution::experimental::detail {
         any_receiver& operator=(any_receiver const&) = delete;
 
         friend void tag_invoke(pika::execution::experimental::set_value_t,
-            any_receiver&& r, Ts... ts)
+            any_receiver&& r, Ts... ts) noexcept
         {
             // We first move the storage to a temporary variable so that
             // this any_receiver is empty after this set_value. Doing
@@ -516,15 +518,22 @@ namespace pika::execution::experimental::detail {
             PIKA_MOVE(moved_storage.get()).set_error(PIKA_MOVE(ep));
         }
 
-        friend void tag_invoke(pika::execution::experimental::set_done_t,
+        friend void tag_invoke(pika::execution::experimental::set_stopped_t,
             any_receiver&& r) noexcept
         {
             // We first move the storage to a temporary variable so that
-            // this any_receiver is empty after this set_done. Doing
-            // PIKA_MOVE(storage.get()).set_done(...) would leave us with a
+            // this any_receiver is empty after this set_stopped. Doing
+            // PIKA_MOVE(storage.get()).set_stopped(...) would leave us with a
             // non-empty any_receiver holding a moved-from receiver.
             auto moved_storage = PIKA_MOVE(r.storage);
-            PIKA_MOVE(moved_storage.get()).set_done();
+            PIKA_MOVE(moved_storage.get()).set_stopped();
+        }
+
+        friend constexpr pika::execution::experimental::detail::empty_env
+        tag_invoke(pika::execution::experimental::get_env_t,
+            any_receiver const&) noexcept
+        {
+            return {};
         }
     };
 
@@ -748,6 +757,11 @@ namespace pika::execution::experimental {
 
         static constexpr bool sends_done = false;
 
+        using completion_signatures =
+            pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t(Ts...),
+                pika::execution::experimental::set_error_t(std::exception_ptr)>;
+
         template <typename R>
         friend detail::any_operation_state tag_invoke(
             pika::execution::experimental::connect_t, unique_any_sender&& s,
@@ -823,6 +837,11 @@ namespace pika::execution::experimental {
         using error_types = Variant<std::exception_ptr>;
 
         static constexpr bool sends_done = false;
+
+        using completion_signatures =
+            pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t(Ts...),
+                pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
         template <typename R>
         friend detail::any_operation_state tag_invoke(

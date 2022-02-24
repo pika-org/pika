@@ -7,6 +7,11 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#endif
+
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/optional.hpp>
@@ -58,6 +63,46 @@ namespace pika::execution::experimental {
             {
             }
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            // We expect a single value type or nothing from the predecessor
+            // sender type
+            using element_value_type = detail::single_result_t<
+                pika::execution::experimental::value_types_of_t<Sender,
+                    detail::empty_env, pika::util::pack, pika::util::pack>>;
+
+            static constexpr bool is_void_value_type =
+                std::is_void_v<element_value_type>;
+
+            // This is a helper empty type for the case that nothing is sent
+            // from the predecessors
+            struct void_value_type
+            {
+            };
+
+            // This sender sends a single vector of the type sent by the
+            // predecessor senders or nothing if the predecessor senders send
+            // nothing
+            template <template <typename...> class Tuple,
+                template <typename...> class Variant>
+            using value_types = Variant<std::conditional_t<is_void_value_type,
+                Tuple<>, Tuple<std::vector<element_value_type>>>>;
+
+            // This sender sends any error types sent by the predecessor senders
+            // or std::exception_ptr
+            template <template <typename...> class Variant>
+            using error_types = pika::util::detail::unique_concat_t<
+                pika::execution::experimental::error_types_of_t<Sender,
+                    detail::empty_env, Variant>,
+                Variant<std::exception_ptr>>;
+
+            static constexpr bool sends_done = false;
+
+            using completion_signatures =
+                pika::execution::experimental::completion_signatures<
+                    std::conditional_t<is_void_value_type, set_value_t(),
+                        set_value_t(std::vector<element_value_type>)>,
+                    set_error_t(std::exception_ptr)>;
+#else
             // We expect a single value type or nothing from the predecessor
             // sender type
             using element_value_type = detail::single_result_t<
@@ -90,6 +135,7 @@ namespace pika::execution::experimental {
                 Variant<std::exception_ptr>>;
 
             static constexpr bool sends_done = false;
+#endif
 
             template <typename Receiver>
             struct operation_state
@@ -103,7 +149,7 @@ namespace pika::execution::experimental {
                     friend void tag_invoke(set_error_t,
                         when_all_vector_receiver&& r, Error&& error) noexcept
                     {
-                        if (!r.op_state.set_done_error_called.exchange(true))
+                        if (!r.op_state.set_stopped_error_called.exchange(true))
                         {
                             try
                             {
@@ -120,9 +166,9 @@ namespace pika::execution::experimental {
                     }
 
                     friend void tag_invoke(
-                        set_done_t, when_all_vector_receiver&& r) noexcept
+                        set_stopped_t, when_all_vector_receiver&& r) noexcept
                     {
-                        r.op_state.set_done_error_called = true;
+                        r.op_state.set_stopped_error_called = true;
                         r.op_state.finish();
                     };
 
@@ -130,7 +176,7 @@ namespace pika::execution::experimental {
                     friend void tag_invoke(set_value_t,
                         when_all_vector_receiver&& r, Ts&&... ts) noexcept
                     {
-                        if (!r.op_state.set_done_error_called)
+                        if (!r.op_state.set_stopped_error_called)
                         {
                             try
                             {
@@ -146,8 +192,8 @@ namespace pika::execution::experimental {
                             }
                             catch (...)
                             {
-                                if (!r.op_state.set_done_error_called.exchange(
-                                        true))
+                                if (!r.op_state.set_stopped_error_called
+                                         .exchange(true))
                                 {
                                     // NOLINTNEXTLINE(bugprone-throw-keyword-missing)
                                     r.op_state.error = std::current_exception();
@@ -156,6 +202,14 @@ namespace pika::execution::experimental {
                         }
 
                         r.op_state.finish();
+                    }
+
+                    friend constexpr pika::execution::experimental::detail::
+                        empty_env
+                        tag_invoke(pika::execution::experimental::get_env_t,
+                            when_all_vector_receiver const&) noexcept
+                    {
+                        return {};
                     }
                 };
 
@@ -181,8 +235,8 @@ namespace pika::execution::experimental {
                     pika::optional<error_types<pika::variant>>;
                 error_types_storage_type error;
 
-                // Set to true when set_done or set_error has been called
-                std::atomic<bool> set_done_error_called{false};
+                // Set to true when set_stopped or set_error has been called
+                std::atomic<bool> set_stopped_error_called{false};
 
                 // The operation states are stored in an array of optionals of
                 // the operation states to handle the non-movability and
@@ -230,7 +284,7 @@ namespace pika::execution::experimental {
                 {
                     if (--predecessors_remaining == 0)
                     {
-                        if (!set_done_error_called)
+                        if (!set_stopped_error_called)
                         {
                             if constexpr (is_void_value_type)
                             {
@@ -261,7 +315,7 @@ namespace pika::execution::experimental {
                         }
                         else
                         {
-                            pika::execution::experimental::set_done(
+                            pika::execution::experimental::set_stopped(
                                 PIKA_MOVE(receiver));
                         }
                     }

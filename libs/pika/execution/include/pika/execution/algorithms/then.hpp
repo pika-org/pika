@@ -7,6 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#else
 #include <pika/concepts/concepts.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -46,9 +50,11 @@ namespace pika { namespace execution { namespace experimental {
                     PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
             }
 
-            friend void tag_invoke(set_done_t, then_receiver_type&& r) noexcept
+            friend void tag_invoke(
+                set_stopped_t, then_receiver_type&& r) noexcept
             {
-                pika::execution::experimental::set_done(PIKA_MOVE(r.receiver));
+                pika::execution::experimental::set_stopped(
+                    PIKA_MOVE(r.receiver));
             }
 
         private:
@@ -208,3 +214,4 @@ namespace pika { namespace execution { namespace experimental {
         }
     } then{};
 }}}    // namespace pika::execution::experimental
+#endif

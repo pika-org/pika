@@ -7,6 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#else
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/tuple.hpp>
@@ -79,7 +83,7 @@ namespace pika { namespace execution { namespace experimental {
                                 pika::execution::experimental::set_error_t,
                                 std::decay_t<Sender>> ||
                         pika::execution::experimental::detail::has_completion_scheduler_v<
-                                pika::execution::experimental::set_done_t,
+                                pika::execution::experimental::set_stopped_t,
                                 std::decay_t<Sender>>))
                 // clang-format on
                 >
@@ -162,9 +166,9 @@ namespace pika { namespace execution { namespace experimental {
                     }
 
                     friend void tag_invoke(
-                        set_done_t, predecessor_sender_receiver&& r) noexcept
+                        set_stopped_t, predecessor_sender_receiver&& r) noexcept
                     {
-                        r.op_state.set_done_predecessor_sender();
+                        r.op_state.set_stopped_predecessor_sender();
                     }
 
                     // This typedef is duplicated from the parent struct. The
@@ -196,9 +200,9 @@ namespace pika { namespace execution { namespace experimental {
                         PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
                 }
 
-                void set_done_predecessor_sender() noexcept
+                void set_stopped_predecessor_sender() noexcept
                 {
-                    pika::execution::experimental::set_done(
+                    pika::execution::experimental::set_stopped(
                         PIKA_MOVE(receiver));
                 }
 
@@ -245,9 +249,9 @@ namespace pika { namespace execution { namespace experimental {
                     }
 
                     friend void tag_invoke(
-                        set_done_t, scheduler_sender_receiver&& r) noexcept
+                        set_stopped_t, scheduler_sender_receiver&& r) noexcept
                     {
-                        r.op_state.set_done_scheduler_sender();
+                        r.op_state.set_stopped_scheduler_sender();
                     }
 
                     friend void tag_invoke(
@@ -287,10 +291,10 @@ namespace pika { namespace execution { namespace experimental {
                         PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
                 }
 
-                void set_done_scheduler_sender() noexcept
+                void set_stopped_scheduler_sender() noexcept
                 {
                     scheduler_op_state.reset();
-                    pika::execution::experimental::set_done(
+                    pika::execution::experimental::set_stopped(
                         PIKA_MOVE(receiver));
                 }
 
@@ -345,3 +349,4 @@ namespace pika { namespace execution { namespace experimental {
         }
     } schedule_from{};
 }}}    // namespace pika::execution::experimental
+#endif

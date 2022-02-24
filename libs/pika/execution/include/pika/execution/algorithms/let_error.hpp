@@ -7,6 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#else
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
@@ -217,10 +221,10 @@ namespace pika { namespace execution { namespace experimental {
                             });
                     }
 
-                    friend void tag_invoke(
-                        set_done_t, let_error_predecessor_receiver&& r) noexcept
+                    friend void tag_invoke(set_stopped_t,
+                        let_error_predecessor_receiver&& r) noexcept
                     {
-                        pika::execution::experimental::set_done(
+                        pika::execution::experimental::set_stopped(
                             PIKA_MOVE(r.receiver));
                     };
 
@@ -337,3 +341,4 @@ namespace pika { namespace execution { namespace experimental {
         }
     } let_error{};
 }}}    // namespace pika::execution::experimental
+#endif

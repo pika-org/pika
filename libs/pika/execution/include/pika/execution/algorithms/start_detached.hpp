@@ -7,6 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#else
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/allocator_support/traits/is_allocator.hpp>
@@ -61,7 +65,7 @@ namespace pika { namespace execution { namespace experimental {
                 }
 
                 friend void tag_invoke(
-                    set_done_t, start_detached_receiver&& r) noexcept
+                    set_stopped_t, start_detached_receiver&& r) noexcept
                 {
                     r.op_state.reset();
                 };
@@ -165,3 +169,4 @@ namespace pika { namespace execution { namespace experimental {
         }
     } start_detached{};
 }}}    // namespace pika::execution::experimental
+#endif

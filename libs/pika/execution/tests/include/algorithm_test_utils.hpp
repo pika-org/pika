@@ -4,11 +4,13 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/functional/tag_invoke.hpp>
 #include <pika/modules/execution.hpp>
 #include <pika/testing.hpp>
 
 #include <atomic>
 #include <exception>
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -26,6 +28,10 @@ struct void_sender
     using error_types = Variant<>;
 
     static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t()>;
 
     template <typename R>
     struct operation_state
@@ -57,6 +63,11 @@ struct error_sender
     using error_types = Variant<std::exception_ptr>;
 
     static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     template <typename R>
     struct operation_state
@@ -98,8 +109,8 @@ struct callback_receiver
         PIKA_TEST(false);
     }
 
-    friend void tag_invoke(
-        pika::execution::experimental::set_done_t, callback_receiver&&) noexcept
+    friend void tag_invoke(pika::execution::experimental::set_stopped_t,
+        callback_receiver&&) noexcept
     {
         PIKA_TEST(false);
     };
@@ -111,6 +122,13 @@ struct callback_receiver
     {
         PIKA_INVOKE(r.f, std::forward<Ts>(ts)...);
         r.set_value_called = true;
+    }
+
+    friend constexpr pika::execution::experimental::detail::empty_env
+    tag_invoke(pika::execution::experimental::get_env_t,
+        callback_receiver const&) noexcept
+    {
+        return {};
     }
 };
 
@@ -129,7 +147,7 @@ struct error_callback_receiver
         r.set_error_called = true;
     }
 
-    friend void tag_invoke(pika::execution::experimental::set_done_t,
+    friend void tag_invoke(pika::execution::experimental::set_stopped_t,
         error_callback_receiver&&) noexcept
     {
         PIKA_TEST(false);
@@ -140,6 +158,13 @@ struct error_callback_receiver
         error_callback_receiver&& r, Ts&&...) noexcept
     {
         PIKA_TEST(r.expect_set_value);
+    }
+
+    friend constexpr pika::execution::experimental::detail::empty_env
+    tag_invoke(pika::execution::experimental::get_env_t,
+        error_callback_receiver const&) noexcept
+    {
+        return {};
     }
 };
 
@@ -173,6 +198,11 @@ struct error_typed_sender
     using error_types = Variant<std::exception_ptr>;
 
     static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(T),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     template <typename R>
     struct operation_state
@@ -227,6 +257,10 @@ struct custom_sender_tag_invoke
 
     static constexpr bool sends_done = false;
 
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t()>;
+
     template <typename R>
     struct operation_state
     {
@@ -258,6 +292,11 @@ struct custom_sender
     using error_types = Variant<std::exception_ptr>;
 
     static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     template <typename R>
     struct operation_state
@@ -292,12 +331,17 @@ struct custom_typed_sender
 
     template <template <class...> class Tuple,
         template <class...> class Variant>
-    using value_types = Variant<Tuple<>>;
+    using value_types = Variant<Tuple<std::decay_t<T>>>;
 
     template <template <class...> class Variant>
     using error_types = Variant<std::exception_ptr>;
 
     static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(std::decay_t<T>),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     template <typename R>
     struct operation_state
@@ -373,20 +417,24 @@ struct custom_type_non_default_constructible_non_copyable
 
 struct scheduler
 {
-    std::atomic<bool>& schedule_called;
-    std::atomic<bool>& execute_called;
-    std::atomic<bool>& tag_invoke_overload_called;
+    std::reference_wrapper<std::atomic<bool>> schedule_called;
+    std::reference_wrapper<std::atomic<bool>> execute_called;
+    std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
     template <typename F>
     friend void tag_invoke(
         pika::execution::experimental::execute_t, scheduler s, F&& f)
     {
-        s.execute_called = true;
+        s.execute_called.get() = true;
         PIKA_INVOKE(std::forward<F>(f), );
     }
 
     struct sender
     {
+        std::reference_wrapper<std::atomic<bool>> schedule_called;
+        std::reference_wrapper<std::atomic<bool>> execute_called;
+        std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
+
         template <template <class...> class Tuple,
             template <class...> class Variant>
         using value_types = Variant<Tuple<>>;
@@ -395,6 +443,10 @@ struct scheduler
         using error_types = Variant<std::exception_ptr>;
 
         static constexpr bool sends_done = false;
+
+        using completion_signatures =
+            pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t()>;
 
         template <typename R>
         struct operation_state
@@ -414,13 +466,23 @@ struct scheduler
         {
             return operation_state<R>{std::forward<R>(r)};
         }
+
+        friend scheduler tag_invoke(
+            pika::execution::experimental::get_completion_scheduler_t<
+                pika::execution::experimental::set_value_t>,
+            sender const& s) noexcept
+        {
+            return {s.schedule_called, s.execute_called,
+                s.tag_invoke_overload_called};
+        }
     };
 
     friend sender tag_invoke(
         pika::execution::experimental::schedule_t, scheduler s)
     {
-        s.schedule_called = true;
-        return {};
+        s.schedule_called.get() = true;
+        return {
+            s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
     }
 
     bool operator==(scheduler const&) const noexcept
@@ -434,11 +496,84 @@ struct scheduler
     }
 };
 
-struct scheduler2 : scheduler
+struct scheduler2
 {
-    explicit scheduler2(scheduler s)
-      : scheduler(std::move(s))
+    std::reference_wrapper<std::atomic<bool>> schedule_called;
+    std::reference_wrapper<std::atomic<bool>> execute_called;
+    std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
+
+    template <typename F>
+    friend void tag_invoke(
+        pika::execution::experimental::execute_t, scheduler2 s, F&& f)
     {
+        s.execute_called.get() = true;
+        PIKA_INVOKE(std::forward<F>(f), );
+    }
+
+    struct sender
+    {
+        std::reference_wrapper<std::atomic<bool>> schedule_called;
+        std::reference_wrapper<std::atomic<bool>> execute_called;
+        std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
+
+        template <template <class...> class Tuple,
+            template <class...> class Variant>
+        using value_types = Variant<Tuple<>>;
+
+        template <template <class...> class Variant>
+        using error_types = Variant<std::exception_ptr>;
+
+        static constexpr bool sends_done = false;
+
+        using completion_signatures =
+            pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t()>;
+
+        template <typename R>
+        struct operation_state
+        {
+            std::decay_t<R> r;
+
+            friend void tag_invoke(pika::execution::experimental::start_t,
+                operation_state& os) noexcept
+            {
+                pika::execution::experimental::set_value(std::move(os.r));
+            };
+        };
+
+        template <typename R>
+        friend auto tag_invoke(
+            pika::execution::experimental::connect_t, sender&&, R&& r)
+        {
+            return operation_state<R>{std::forward<R>(r)};
+        }
+
+        friend scheduler2 tag_invoke(
+            pika::execution::experimental::get_completion_scheduler_t<
+                pika::execution::experimental::set_value_t>,
+            sender const& s) noexcept
+        {
+            return {s.schedule_called, s.execute_called,
+                s.tag_invoke_overload_called};
+        }
+    };
+
+    friend sender tag_invoke(
+        pika::execution::experimental::schedule_t, scheduler2 s)
+    {
+        s.schedule_called.get() = true;
+        return {
+            s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+    }
+
+    bool operator==(scheduler2 const&) const noexcept
+    {
+        return true;
+    }
+
+    bool operator!=(scheduler2 const&) const noexcept
+    {
+        return false;
     }
 };
 
@@ -490,6 +625,10 @@ namespace my_namespace {
 
             static constexpr bool sends_done = false;
 
+            using completion_signatures =
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_value_t()>;
+
             template <typename R>
             struct operation_state
             {
@@ -507,6 +646,14 @@ namespace my_namespace {
                 pika::execution::experimental::connect_t, sender&&, R&& r)
             {
                 return operation_state<R>{std::forward<R>(r)};
+            }
+
+            friend my_scheduler tag_invoke(
+                pika::execution::experimental::get_completion_scheduler_t<
+                    pika::execution::experimental::set_value_t>,
+                sender const&) noexcept
+            {
+                return {};
             }
         };
 
@@ -537,6 +684,10 @@ namespace my_namespace {
         using error_types = Variant<>;
 
         static constexpr bool sends_done = false;
+
+        using completion_signatures =
+            pika::execution::experimental::completion_signatures<
+                pika::execution::experimental::set_value_t()>;
 
         template <typename R>
         struct operation_state

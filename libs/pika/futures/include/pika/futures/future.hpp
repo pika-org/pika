@@ -325,6 +325,24 @@ namespace pika { namespace lcos { namespace detail {
             future_data_base<traits::detail::shared_state_ptr_result_t<R>>;
 
         // Sender compatibility
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+        template <typename T>
+        struct set_value_signature
+        {
+            using type = pika::execution::experimental::set_value_t(T);
+        };
+
+        template <>
+        struct set_value_signature<void>
+        {
+            using type = pika::execution::experimental::set_value_t();
+        };
+
+        using completion_signatures =
+            pika::execution::experimental::completion_signatures<
+                typename set_value_signature<result_type>::type,
+                pika::execution::experimental::set_error_t(std::exception_ptr)>;
+#else
         template <template <typename...> class Tuple,
             template <typename...> class Variant>
         using value_types = std::conditional_t<std::is_void_v<result_type>,
@@ -334,6 +352,7 @@ namespace pika { namespace lcos { namespace detail {
         using error_types = Variant<std::exception_ptr>;
 
         static constexpr bool sends_done = false;
+#endif
 
     private:
         template <typename F>
@@ -603,9 +622,13 @@ namespace pika {
         using shared_state_type = typename base_type::shared_state_type;
 
         // Sender compatibility
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+        using typename base_type::completion_signatures;
+#else
         using base_type::error_types;
         using base_type::sends_done;
         using base_type::value_types;
+#endif
 
         template <typename Receiver>
         friend lcos::detail::operation_state<Receiver, future> tag_invoke(
@@ -908,9 +931,13 @@ namespace pika {
         using shared_state_type = typename base_type::shared_state_type;
 
         // Sender compatibility
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+        using typename base_type::completion_signatures;
+#else
         using base_type::error_types;
         using base_type::sends_done;
         using base_type::value_types;
+#endif
 
         template <typename Receiver>
         friend lcos::detail::operation_state<Receiver, shared_future>

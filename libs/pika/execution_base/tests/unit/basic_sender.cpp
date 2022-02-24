@@ -4,15 +4,19 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/modules/functional.hpp>
 #include <pika/testing.hpp>
 
 #include <cstddef>
 #include <exception>
+#include <functional>
 #include <string>
 #include <type_traits>
 #include <utility>
+
+namespace ex = pika::execution::experimental;
 
 static std::size_t friend_tag_invoke_connect_calls = 0;
 static std::size_t tag_invoke_connect_calls = 0;
@@ -68,21 +72,25 @@ struct non_sender_7
 
 struct receiver
 {
-    friend void tag_invoke(pika::execution::experimental::set_error_t,
-        receiver&&, std::exception_ptr) noexcept
-    {
-    }
     friend void tag_invoke(
-        pika::execution::experimental::set_done_t, receiver&&) noexcept
+        ex::set_error_t, receiver&&, std::exception_ptr) noexcept
     {
-    }
-    friend void tag_invoke(
-        pika::execution::experimental::set_value_t, receiver&& r, int v)
-    {
-        r.i = v;
     }
 
-    int i = -1;
+    friend void tag_invoke(ex::set_stopped_t, receiver&&) noexcept {}
+
+    friend void tag_invoke(ex::set_value_t, receiver&& r, int v) noexcept
+    {
+        r.i.get() = v;
+    }
+
+    friend constexpr ex::detail::empty_env tag_invoke(
+        ex::get_env_t, receiver const&) noexcept
+    {
+        return {};
+    }
+
+    std::reference_wrapper<int> i;
 };
 
 struct sender_1
@@ -96,18 +104,20 @@ struct sender_1
 
     static constexpr bool sends_done = false;
 
+    using completion_signatures =
+        ex::completion_signatures<ex::set_value_t(int),
+            ex::set_error_t(std::exception_ptr)>;
+
     struct operation_state
     {
-        receiver& r;
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
+        receiver r;
+        friend void tag_invoke(ex::start_t, operation_state& os) noexcept
         {
-            pika::execution::experimental::set_value(std::move(os.r), 4711);
+            ex::set_value(std::move(os.r), 4711);
         };
     };
 
-    friend operation_state tag_invoke(
-        pika::execution::experimental::connect_t, sender_1&&, receiver& r)
+    friend operation_state tag_invoke(ex::connect_t, sender_1&&, receiver r)
     {
         ++friend_tag_invoke_connect_calls;
         return {r};
@@ -125,19 +135,21 @@ struct sender_2
 
     static constexpr bool sends_done = false;
 
+    using completion_signatures =
+        ex::completion_signatures<ex::set_value_t(int),
+            ex::set_error_t(std::exception_ptr)>;
+
     struct operation_state
     {
-        receiver& r;
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
+        receiver r;
+        friend void tag_invoke(ex::start_t, operation_state& os) noexcept
         {
-            pika::execution::experimental::set_value(std::move(os.r), 4711);
+            ex::set_value(std::move(os.r), 4711);
         };
     };
 };
 
-sender_2::operation_state tag_invoke(
-    pika::execution::experimental::connect_t, sender_2, receiver& r)
+sender_2::operation_state tag_invoke(ex::connect_t, sender_2, receiver r)
 {
     ++tag_invoke_connect_calls;
     return {r};
@@ -147,21 +159,26 @@ static std::size_t void_receiver_set_value_calls = 0;
 
 struct void_receiver
 {
-    friend void tag_invoke(pika::execution::experimental::set_error_t,
-        void_receiver&&, std::exception_ptr) noexcept
+    friend void tag_invoke(
+        ex::set_error_t, void_receiver&&, std::exception_ptr) noexcept
     {
     }
-    friend void tag_invoke(
-        pika::execution::experimental::set_done_t, void_receiver&&) noexcept
-    {
-    }
-    friend void tag_invoke(
-        pika::execution::experimental::set_value_t, void_receiver&&)
+
+    friend void tag_invoke(ex::set_stopped_t, void_receiver&&) noexcept {}
+
+    friend void tag_invoke(ex::set_value_t, void_receiver&&) noexcept
     {
         ++void_receiver_set_value_calls;
     }
+
+    friend constexpr ex::detail::empty_env tag_invoke(
+        ex::get_env_t, void_receiver const&) noexcept
+    {
+        return {};
+    }
 };
 
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
 template <typename Sender>
 constexpr bool unspecialized(...)
 {
@@ -170,14 +187,15 @@ constexpr bool unspecialized(...)
 
 template <typename Sender>
 constexpr bool unspecialized(
-    typename pika::execution::experimental::sender_traits<
-        Sender>::__unspecialized*)
+    typename ex::sender_traits<Sender>::__unspecialized*)
 {
     return true;
 }
+#endif
 
 int main()
 {
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     static_assert(
         unspecialized<void>(nullptr), "void should not have sender_traits");
     static_assert(unspecialized<std::nullptr_t>(nullptr),
@@ -204,59 +222,61 @@ int main()
         "sender_1 should have sender_traits");
     static_assert(!unspecialized<sender_2>(nullptr),
         "sender_2 should have sender_traits");
+#endif
 
-    using pika::execution::experimental::is_sender;
-    using pika::execution::experimental::is_sender_to;
+    static_assert(!ex::is_sender_v<void>, "void is not a sender");
+    static_assert(
+        !ex::is_sender_v<std::nullptr_t>, "std::nullptr_t is not a sender");
+    static_assert(!ex::is_sender_v<int>, "int is not a sender");
+    static_assert(!ex::is_sender_v<double>, "double is not a sender");
+    static_assert(
+        !ex::is_sender_v<non_sender_1>, "non_sender_1 is not a sender");
+    static_assert(
+        !ex::is_sender_v<non_sender_2>, "non_sender_2 is not a sender");
+    static_assert(
+        !ex::is_sender_v<non_sender_3>, "non_sender_3 is not a sender");
+    static_assert(
+        !ex::is_sender_v<non_sender_4>, "non_sender_4 is not a sender");
+    static_assert(
+        !ex::is_sender_v<non_sender_5>, "non_sender_5 is not a sender");
+    static_assert(
+        !ex::is_sender_v<non_sender_6>, "non_sender_6 is not a sender");
+    static_assert(
+        !ex::is_sender_v<non_sender_7>, "non_sender_7 is not a sender");
+    static_assert(ex::is_sender_v<sender_1>, "sender_1 is a sender");
+    static_assert(ex::is_sender_v<sender_2>, "sender_2 is a sender");
 
-    static_assert(!is_sender<void>::value, "void is not a sender");
-    static_assert(
-        !is_sender<std::nullptr_t>::value, "std::nullptr_t is not a sender");
-    static_assert(!is_sender<int>::value, "int is not a sender");
-    static_assert(!is_sender<double>::value, "double is not a sender");
-    static_assert(
-        !is_sender<non_sender_1>::value, "non_sender_1 is not a sender");
-    static_assert(
-        !is_sender<non_sender_2>::value, "non_sender_2 is not a sender");
-    static_assert(
-        !is_sender<non_sender_3>::value, "non_sender_3 is not a sender");
-    static_assert(
-        !is_sender<non_sender_4>::value, "non_sender_4 is not a sender");
-    static_assert(
-        !is_sender<non_sender_5>::value, "non_sender_5 is not a sender");
-    static_assert(
-        !is_sender<non_sender_6>::value, "non_sender_6 is not a sender");
-    static_assert(
-        !is_sender<non_sender_7>::value, "non_sender_7 is not a sender");
-    static_assert(is_sender<sender_1>::value, "sender_1 is a sender");
-    static_assert(is_sender<sender_2>::value, "sender_2 is a sender");
-
-    static_assert(is_sender_to<sender_1, receiver>::value,
+    static_assert(ex::is_sender_to_v<sender_1, receiver>,
         "sender_1 is a sender to receiver");
-    static_assert(!is_sender_to<sender_1, non_sender_1>::value,
+    static_assert(ex::is_sender_to_v<sender_1, receiver>,
+        "sender_1 is a sender to receiver");
+    static_assert(!ex::is_sender_to_v<sender_1, non_sender_1>,
         "sender_1 is not a sender to non_sender_1");
-    static_assert(!is_sender_to<sender_1, sender_1>::value,
+    static_assert(!ex::is_sender_to_v<sender_1, sender_1>,
         "sender_1 is not a sender to sender_1");
-    static_assert(is_sender_to<sender_2, receiver>::value,
+    static_assert(ex::is_sender_to_v<sender_2, receiver>,
         "sender_2 is a sender to receiver");
-    static_assert(!is_sender_to<sender_2, non_sender_2>::value,
+    static_assert(!ex::is_sender_to_v<sender_2, non_sender_2>,
         "sender_2 is not a sender to non_sender_2");
-    static_assert(!is_sender_to<sender_2, sender_2>::value,
+    static_assert(!ex::is_sender_to_v<sender_2, sender_2>,
         "sender_2 is not a sender to sender_2");
 
     {
-        receiver r1;
-        auto os = pika::execution::experimental::connect(sender_1{}, r1);
-        pika::execution::experimental::start(os);
-        PIKA_TEST_EQ(r1.i, 4711);
+        int i = 1;
+        receiver r1{i};
+        auto os = ex::connect(sender_1{}, std::move(r1));
+        ex::start(os);
+        PIKA_TEST_EQ(i, 4711);
         PIKA_TEST_EQ(friend_tag_invoke_connect_calls, std::size_t(1));
         PIKA_TEST_EQ(tag_invoke_connect_calls, std::size_t(0));
     }
 
     {
-        receiver r2;
-        auto os = pika::execution::experimental::connect(sender_2{}, r2);
-        pika::execution::experimental::start(os);
-        PIKA_TEST_EQ(r2.i, 4711);
+        int i = 1;
+        receiver r2{i};
+        auto os = ex::connect(sender_2{}, std::move(r2));
+        ex::start(os);
+        PIKA_TEST_EQ(i, 4711);
         PIKA_TEST_EQ(friend_tag_invoke_connect_calls, std::size_t(1));
         PIKA_TEST_EQ(tag_invoke_connect_calls, std::size_t(1));
     }

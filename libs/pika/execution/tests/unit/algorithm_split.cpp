@@ -31,6 +31,9 @@ auto tag_invoke(
 
 int main()
 {
+    // TODO: split doesn't have a default implementation in the reference
+    // implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     // Success path
     {
         std::atomic<bool> set_value_called{false};
@@ -161,6 +164,7 @@ int main()
         // the sender has been connected and started before being released.
         tt::sync_wait(std::move(s));
     }
+#endif
 
     return pika::util::report_errors();
 }

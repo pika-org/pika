@@ -52,10 +52,11 @@ namespace pika::cuda::experimental {
                     PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_done_t,
+            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                 then_on_host_receiver&& r) noexcept
             {
-                pika::execution::experimental::set_done(PIKA_MOVE(r.receiver));
+                pika::execution::experimental::set_stopped(
+                    PIKA_MOVE(r.receiver));
             }
 
             template <typename... Ts>

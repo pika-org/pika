@@ -7,6 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#else
 #include <pika/execution/algorithms/start_detached.hpp>
 #include <pika/execution/algorithms/then.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -29,3 +33,4 @@ namespace pika { namespace execution { namespace experimental {
         }
     } execute{};
 }}}    // namespace pika::execution::experimental
+#endif

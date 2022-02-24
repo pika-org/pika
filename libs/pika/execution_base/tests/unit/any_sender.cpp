@@ -43,12 +43,17 @@ struct non_copyable_sender
 
     template <template <class...> class Tuple,
         template <class...> class Variant>
-    using value_types = Variant<Tuple<>>;
+    using value_types = Variant<Tuple<Ts...>>;
 
     template <template <class...> class Variant>
     using error_types = Variant<std::exception_ptr>;
 
     static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(Ts...),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     non_copyable_sender() = default;
     template <typename T,
@@ -100,12 +105,17 @@ struct sender
 
     template <template <class...> class Tuple,
         template <class...> class Variant>
-    using value_types = Variant<Tuple<>>;
+    using value_types = Variant<Tuple<Ts...>>;
 
     template <template <class...> class Variant>
     using error_types = Variant<std::exception_ptr>;
 
     static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(Ts...),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     sender() = default;
     template <typename T,
@@ -221,6 +231,11 @@ struct error_sender
 
     static constexpr bool sends_done = false;
 
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
+
     template <typename R>
     struct operation_state
     {
@@ -261,8 +276,8 @@ struct callback_receiver
         PIKA_TEST(false);
     }
 
-    friend void tag_invoke(
-        pika::execution::experimental::set_done_t, callback_receiver&&) noexcept
+    friend void tag_invoke(pika::execution::experimental::set_stopped_t,
+        callback_receiver&&) noexcept
     {
         PIKA_TEST(false);
     };
@@ -273,6 +288,13 @@ struct callback_receiver
     {
         PIKA_INVOKE(std::move(r.f), std::forward<Ts>(ts)...);
         r.set_value_called = true;
+    }
+
+    friend constexpr pika::execution::experimental::detail::empty_env
+    tag_invoke(pika::execution::experimental::get_env_t,
+        callback_receiver const&) noexcept
+    {
+        return {};
     }
 };
 
@@ -299,7 +321,7 @@ struct error_receiver
     }
 
     friend void tag_invoke(
-        pika::execution::experimental::set_done_t, error_receiver&&) noexcept
+        pika::execution::experimental::set_stopped_t, error_receiver&&) noexcept
     {
         PIKA_TEST(false);
     };
@@ -309,6 +331,13 @@ struct error_receiver
         error_receiver&&, Ts&&...) noexcept
     {
         PIKA_TEST(false);
+    }
+
+    friend constexpr pika::execution::experimental::detail::empty_env
+    tag_invoke(pika::execution::experimental::get_env_t,
+        error_receiver const&) noexcept
+    {
+        return {};
     }
 };
 
@@ -582,10 +611,13 @@ struct wait_globals
 
 void test_globals()
 {
+    // TODO: No ensure_started implementation in reference implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     global_unique_any_sender =
         std::move(global_unique_any_sender) | ex::ensure_started();
     global_any_sender =
         std::move(global_any_sender) | ex::ensure_started() | ex::split();
+#endif
 }
 
 int main()

@@ -30,6 +30,9 @@ auto tag_invoke(ex::ensure_started_t, custom_sender_tag_invoke s,
 
 int main()
 {
+    // TODO: ensure_started doesn't have a default implementation in the
+    // reference implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     // Success path
     {
         std::atomic<bool> set_value_called{false};
@@ -175,6 +178,7 @@ int main()
     {
         ex::just() | ex::ensure_started();
     }
+#endif
 
     return pika::util::report_errors();
 }
