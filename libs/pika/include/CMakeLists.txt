@@ -41,7 +41,7 @@ if(PIKA_WITH_GPU_SUPPORT)
 endif()
 
 if(PIKA_WITH_MPI)
-  list(APPEND include_additional_module_dependencies pika_async_cuda)
+  list(APPEND include_additional_module_dependencies pika_async_mpi)
 endif()
 
 include(pika_add_module)
