@@ -243,7 +243,7 @@ namespace pika::execution::experimental {
                                 values.reserve(num_predecessors);
                                 for (auto&& t : ts)
                                 {
-                                    values.push_back(t.value());
+                                    values.push_back(PIKA_MOVE(t.value()));
                                 }
                                 pika::execution::experimental::set_value(
                                     PIKA_MOVE(receiver), PIKA_MOVE(values));
