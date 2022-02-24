@@ -134,7 +134,6 @@ namespace pika {
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/modules/memory.hpp>
-#include <pika/type_support/always_void.hpp>
 #include <pika/type_support/decay.hpp>
 #include <pika/type_support/unwrap_ref.hpp>
 

@@ -46,30 +46,29 @@ namespace pika {
     namespace adl_barrier {
 
         template <std::size_t I, typename Tuple,
-            typename Enable = typename util::always_void<
-                typename pika::tuple_element<I, Tuple>::type>::type>
+            typename Enable =
+                std::void_t<typename pika::tuple_element<I, Tuple>::type>>
         constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE
             typename pika::tuple_element<I, Tuple>::type&
             get(Tuple& t) noexcept;
 
         template <std::size_t I, typename Tuple,
-            typename Enable = typename util::always_void<
-                typename pika::tuple_element<I, Tuple>::type>::type>
+            typename Enable =
+                std::void_t<typename pika::tuple_element<I, Tuple>::type>>
         constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE
             typename pika::tuple_element<I, Tuple>::type const&
             get(Tuple const& t) noexcept;
 
         template <std::size_t I, typename Tuple,
-            typename Enable =
-                typename util::always_void<typename pika::tuple_element<I,
-                    typename std::decay<Tuple>::type>::type>::type>
+            typename Enable = std::void_t<typename pika::tuple_element<I,
+                typename std::decay<Tuple>::type>::type>>
         constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE
             typename pika::tuple_element<I, Tuple>::type&&
             get(Tuple&& t) noexcept;
 
         template <std::size_t I, typename Tuple,
-            typename Enable = typename util::always_void<
-                typename pika::tuple_element<I, Tuple>::type>::type>
+            typename Enable =
+                std::void_t<typename pika::tuple_element<I, Tuple>::type>>
         constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE
             typename pika::tuple_element<I, Tuple>::type const&&
             get(Tuple const&& t) noexcept;
@@ -511,21 +510,21 @@ namespace pika {
 
     template <std::size_t I, typename T>
     struct tuple_element<I, const T,
-        typename util::always_void<typename tuple_element<I, T>::type>::type>
+        std::void_t<typename tuple_element<I, T>::type>>
       : std::add_const<typename tuple_element<I, T>::type>
     {
     };
 
     template <std::size_t I, typename T>
     struct tuple_element<I, volatile T,
-        typename util::always_void<typename tuple_element<I, T>::type>::type>
+        std::void_t<typename tuple_element<I, T>::type>>
       : std::add_volatile<typename tuple_element<I, T>::type>
     {
     };
 
     template <std::size_t I, typename T>
     struct tuple_element<I, const volatile T,
-        typename util::always_void<typename tuple_element<I, T>::type>::type>
+        std::void_t<typename tuple_element<I, T>::type>>
       : std::add_cv<typename tuple_element<I, T>::type>
     {
     };

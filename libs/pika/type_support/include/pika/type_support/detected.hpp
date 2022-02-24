@@ -7,7 +7,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -35,8 +34,7 @@ namespace pika { namespace util {
 
         template <typename Default, template <typename...> class Op,
             typename... Args>
-        struct detector<Default, typename always_void<Op<Args...>>::type, Op,
-            Args...>
+        struct detector<Default, std::void_t<Op<Args...>>, Op, Args...>
         {
             using value_t = std::true_type;
             using type = Op<Args...>;

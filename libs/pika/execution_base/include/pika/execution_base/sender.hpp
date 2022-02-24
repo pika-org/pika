@@ -171,8 +171,8 @@ namespace pika { namespace execution { namespace experimental {
 
         template <typename S, typename R>
         struct has_member_connect<S, R,
-            typename pika::util::always_void<decltype(std::declval<S>().connect(
-                std::declval<R>()))>::type> : std::true_type
+            std::void_t<decltype(std::declval<S>().connect(std::declval<R>()))>>
+          : std::true_type
         {
         };
     }    // namespace detail
@@ -229,8 +229,8 @@ namespace pika { namespace execution { namespace experimental {
 
         template <typename S>
         struct has_member_schedule<S,
-            typename pika::util::always_void<decltype(
-                std::declval<S>().schedule())>::type> : std::true_type
+            std::void_t<decltype(std::declval<S>().schedule())>>
+          : std::true_type
         {
         };
     }    // namespace detail

@@ -153,7 +153,6 @@ namespace pika {
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/preprocessor/strip_parens.hpp>
-#include <pika/type_support/always_void.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <algorithm>

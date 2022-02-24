@@ -9,9 +9,9 @@
 
 #include <pika/config.hpp>
 #include <pika/futures/traits/future_traits.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <iterator>
+#include <type_traits>
 
 namespace pika { namespace lcos { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
@@ -22,8 +22,7 @@ namespace pika { namespace lcos { namespace detail {
 
     template <typename Iterator>
     struct future_iterator_traits<Iterator,
-        pika::util::always_void_t<
-            typename std::iterator_traits<Iterator>::value_type>>
+        std::void_t<typename std::iterator_traits<Iterator>::value_type>>
     {
         using type = typename std::iterator_traits<Iterator>::value_type;
         using traits_type = pika::traits::future_traits<type>;

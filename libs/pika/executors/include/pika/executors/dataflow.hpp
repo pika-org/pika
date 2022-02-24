@@ -30,7 +30,6 @@
 #include <pika/pack_traversal/pack_traversal_async.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <cstddef>
 #include <exception>
@@ -152,10 +151,9 @@ namespace pika { namespace lcos { namespace detail {
     template <typename Executor, typename Frame, typename Func,
         typename Futures>
     struct has_dataflow_finalize<Executor, Frame, Func, Futures,
-        typename pika::util::always_void<decltype(
-            std::declval<Executor>().dataflow_finalize(std::declval<Frame>(),
-                std::declval<Func>(), std::declval<Futures>()))>::type>
-      : std::true_type
+        std::void_t<decltype(std::declval<Executor>().dataflow_finalize(
+            std::declval<Frame>(), std::declval<Func>(),
+            std::declval<Futures>()))>> : std::true_type
     {
     };
 

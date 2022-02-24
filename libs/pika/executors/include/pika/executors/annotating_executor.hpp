@@ -14,7 +14,6 @@
 #include <pika/execution_base/execution.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>
 #include <pika/threading_base/annotated_function.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <string>
 #include <type_traits>

@@ -165,8 +165,7 @@ namespace pika { namespace parallel { namespace execution {
 
         template <typename Executor, typename T>
         struct exposes_future_type<Executor, T,
-            typename pika::util::always_void<
-                typename Executor::template future_type<T>>::type>
+            std::void_t<typename Executor::template future_type<T>>>
           : std::true_type
         {
         };

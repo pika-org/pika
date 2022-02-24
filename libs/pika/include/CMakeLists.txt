@@ -11,12 +11,14 @@ set(include_headers
     pika/channel.hpp
     pika/chrono.hpp
     pika/condition_variable.hpp
+    pika/cuda.hpp
     pika/exception.hpp
     pika/execution.hpp
     pika/functional.hpp
     pika/future.hpp
     pika/latch.hpp
     pika/memory.hpp
+    pika/mpi.hpp
     pika/mutex.hpp
     pika/numeric.hpp
     pika/optional.hpp
@@ -31,6 +33,16 @@ set(include_headers
     pika/type_traits.hpp
     pika/unwrap.hpp
 )
+
+set(include_additional_module_dependencies)
+
+if(PIKA_WITH_GPU_SUPPORT)
+  list(APPEND include_additional_module_dependencies pika_async_cuda)
+endif()
+
+if(PIKA_WITH_MPI)
+  list(APPEND include_additional_module_dependencies pika_async_cuda)
+endif()
 
 include(pika_add_module)
 pika_add_module(
@@ -48,5 +60,6 @@ pika_add_module(
     pika_futures
     pika_lcos
     pika_runtime
+    ${include_additional_module_dependencies}
   CMAKE_SUBDIRS examples tests
 )

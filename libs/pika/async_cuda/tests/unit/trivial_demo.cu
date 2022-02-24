@@ -4,13 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/preprocessor/seq/for_each.hpp>
-
 #include <pika/config.hpp>
-
 #include <pika/assert.hpp>
-#include <pika/async_cuda/cuda_exception.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
+#include <pika/cuda.hpp>
+
+#include <boost/preprocessor/seq/for_each.hpp>
 
 #include <iostream>
 

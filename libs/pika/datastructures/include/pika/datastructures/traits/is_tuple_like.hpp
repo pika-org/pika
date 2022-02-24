@@ -6,10 +6,9 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include <pika/datastructures/tuple.hpp>
-#include <pika/type_support/always_void.hpp>
+
+#include <type_traits>
 
 namespace pika { namespace traits {
     namespace detail {
@@ -20,8 +19,7 @@ namespace pika { namespace traits {
 
         template <typename T>
         struct is_tuple_like_impl<T,
-            typename util::always_void<decltype(
-                pika::tuple_size<T>::value)>::type> : std::true_type
+            std::void_t<decltype(pika::tuple_size<T>::value)>> : std::true_type
         {
         };
     }    // namespace detail

@@ -8,7 +8,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -24,8 +23,8 @@ namespace pika { namespace traits {
 
         template <typename T, typename U>
         struct equality_result<T, U,
-            typename util::always_void<decltype(
-                std::declval<const T&>() == std::declval<const U&>())>::type>
+            std::void_t<decltype(
+                std::declval<const T&>() == std::declval<const U&>())>>
         {
             using type =
                 decltype(std::declval<const T&>() == std::declval<const U&>());
@@ -39,8 +38,8 @@ namespace pika { namespace traits {
 
         template <typename T, typename U>
         struct inequality_result<T, U,
-            typename util::always_void<decltype(
-                std::declval<const T&>() != std::declval<const U&>())>::type>
+            std::void_t<decltype(
+                std::declval<const T&>() != std::declval<const U&>())>>
         {
             using type =
                 decltype(std::declval<const T&>() != std::declval<const U&>());
@@ -54,11 +53,10 @@ namespace pika { namespace traits {
 
         template <typename T, typename U>
         struct is_weakly_equality_comparable_with<T, U,
-            typename util::always_void<
-                typename detail::equality_result<T, U>::type,
+            std::void_t<typename detail::equality_result<T, U>::type,
                 typename detail::equality_result<U, T>::type,
                 typename detail::inequality_result<T, U>::type,
-                typename detail::inequality_result<U, T>::type>::type>
+                typename detail::inequality_result<U, T>::type>>
           : std::true_type
         {
         };

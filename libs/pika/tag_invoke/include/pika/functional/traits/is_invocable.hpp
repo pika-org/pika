@@ -11,7 +11,6 @@
 
 #include <pika/config.hpp>
 #include <pika/functional/detail/invoke.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -28,8 +27,8 @@ namespace pika {
 
         template <typename F, typename... Ts>
         struct is_invocable_impl<F(Ts...),
-            typename util::always_void<decltype(PIKA_INVOKE(std::declval<F>(),
-                std::declval<Ts>()...))>::type> : std::true_type
+            std::void_t<decltype(PIKA_INVOKE(
+                std::declval<F>(), std::declval<Ts>()...))>> : std::true_type
         {
         };
 
@@ -41,8 +40,8 @@ namespace pika {
 
         template <typename F, typename... Ts, typename R>
         struct is_invocable_r_impl<F(Ts...), R,
-            typename util::always_void<decltype(
-                PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...))>::type>
+            std::void_t<decltype(
+                PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...))>>
           : std::integral_constant<bool,
                 std::is_void<R>::value ||
                     std::is_convertible<decltype(PIKA_INVOKE(std::declval<F>(),

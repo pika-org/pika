@@ -26,9 +26,9 @@
 // cudaMalloc/cudaMemcpy etc, so we do not #define PIKA_CUBLAS_DEMO_WITH_ALLOCATOR
 
 #include <pika/algorithm.hpp>
+#include <pika/cuda.hpp>
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/async_cuda.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/parallel/algorithms/copy.hpp>
 #include <pika/parallel/algorithms/for_each.hpp>

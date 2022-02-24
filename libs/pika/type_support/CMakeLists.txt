@@ -7,7 +7,6 @@
 set(type_support_headers
     pika/type_support/detail/with_result_of.hpp
     pika/type_support/detail/wrap_int.hpp
-    pika/type_support/always_void.hpp
     pika/type_support/decay.hpp
     pika/type_support/detected.hpp
     pika/type_support/empty_function.hpp

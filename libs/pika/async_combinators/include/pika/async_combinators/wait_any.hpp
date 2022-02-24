@@ -125,7 +125,6 @@ namespace pika {
 #include <pika/futures/future.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/preprocessor/strip_parens.hpp>
-#include <pika/type_support/always_void.hpp>
 
 #include <array>
 #include <cstddef>

@@ -100,6 +100,9 @@ namespace boost { namespace inspect {
         {"((\\bpika::\\b)?\\butil\\s*::\\bresult_of\\b)",
             "\\2util::invoke_result"},
         {"((\\bpika::\\b)?\\butil\\s*::\\bdecay\\b)", "std::decay"},
+        {"((\\bpika::\\b)?\\butil\\s*::\\bdecay_t\\b)", "std::decay_t"},
+        {"((\\bpika::\\b)?\\butil\\s*::\\bvoid\\b)", "std::void"},
+        {"((\\bpika::\\b)?\\butil\\s*::\\bvoid_t\\b)", "std::void_t"},
         {"(\\bNULL\\b)", "nullptr"},
         // Boost preprocessor macros
         {"\\b(BOOST_PP_CAT)\\b", "PIKA_PP_CAT"},

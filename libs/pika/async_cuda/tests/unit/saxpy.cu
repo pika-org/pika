@@ -5,9 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/future.hpp>
-
-#include <pika/async_cuda/cuda_executor.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
+#include <pika/cuda.hpp>
 
 #include <cstddef>
 
