@@ -69,11 +69,11 @@ fi
 # Extract the changelog for this version from CHANGELOG.md
 VERSION_DESCRIPTION=$(
     # Find the correct heading and print everything from there to the end of the file
-    awk "/## ${VERSION_FULL_NOTAG}/,EOF" ${changelog_path} |
+    awk "/^## ${VERSION_FULL_NOTAG}/,EOF" ${changelog_path} |
         # Remove the heading
         tail -n+3 |
         # Find the next heading or the end of the file and print everything until that heading
-        sed '/## /Q'
+        sed '/^## /Q'
 )
 
 echo ""
