@@ -538,6 +538,7 @@ workflows:
             - checkout_code
       - inspect:
           requires:
+            - core
             - configure
       - core:
           requires:
