@@ -9,6 +9,7 @@
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/allocator_support/traits/is_allocator.hpp>
+#include <pika/datastructures/optional.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
@@ -18,6 +19,7 @@
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/promise.hpp>
 #include <pika/modules/memory.hpp>
+#include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>
 
@@ -28,17 +30,44 @@
 namespace pika { namespace execution { namespace experimental {
     namespace detail {
         template <typename T, typename Allocator>
+        struct resettable_operation_state_future_data
+          : pika::lcos::detail::future_data_allocator<T, Allocator>
+        {
+            PIKA_NON_COPYABLE(resettable_operation_state_future_data);
+
+            virtual void reset_operation_state() = 0;
+
+            using init_no_addref =
+                typename pika::lcos::detail::future_data_allocator<T,
+                    Allocator>::init_no_addref;
+
+            template <typename Allocator_>
+            resettable_operation_state_future_data(
+                init_no_addref no_addref, Allocator_ const& alloc)
+              : pika::lcos::detail::future_data_allocator<T, Allocator>(
+                    no_addref, alloc)
+            {
+            }
+        };
+
+        template <typename T, typename Allocator>
         struct make_future_receiver
         {
             pika::intrusive_ptr<
-                pika::lcos::detail::future_data_allocator<T, Allocator>>
+                resettable_operation_state_future_data<T, Allocator>>
                 data;
 
             friend void tag_invoke(set_error_t, make_future_receiver&& r,
                 std::exception_ptr ep) noexcept
             {
-                r.data->set_exception(PIKA_MOVE(ep));
-                r.data.reset();
+                // We move the receiver into a local variable from the operation
+                // state which the receiver refers to. This allows us to safely
+                // reset the operation state without destroying the receiver.
+                make_future_receiver r_local = PIKA_MOVE(r);
+
+                r_local.data->set_exception(PIKA_MOVE(ep));
+                r_local.data->reset_operation_state();
+                r_local.data.reset();
             }
 
             friend void tag_invoke(set_done_t, make_future_receiver&&) noexcept
@@ -50,12 +79,18 @@ namespace pika { namespace execution { namespace experimental {
             friend void tag_invoke(
                 set_value_t, make_future_receiver&& r, U&& u) noexcept
             {
+                // We move the receiver into a local variable from the operation
+                // state which the receiver refers to. This allows us to safely
+                // reset the operation state without destroying the receiver.
+                make_future_receiver r_local = PIKA_MOVE(r);
+
                 pika::detail::try_catch_exception_ptr(
-                    [&]() { r.data->set_value(PIKA_FORWARD(U, u)); },
+                    [&]() { r_local.data->set_value(PIKA_FORWARD(U, u)); },
                     [&](std::exception_ptr ep) {
-                        r.data->set_exception(PIKA_MOVE(ep));
+                        r_local.data->set_exception(PIKA_MOVE(ep));
                     });
-                r.data.reset();
+                r_local.data->reset_operation_state();
+                r_local.data.reset();
             }
         };
 
@@ -63,14 +98,20 @@ namespace pika { namespace execution { namespace experimental {
         struct make_future_receiver<void, Allocator>
         {
             pika::intrusive_ptr<
-                pika::lcos::detail::future_data_allocator<void, Allocator>>
+                resettable_operation_state_future_data<void, Allocator>>
                 data;
 
             friend void tag_invoke(set_error_t, make_future_receiver&& r,
                 std::exception_ptr ep) noexcept
             {
-                r.data->set_exception(PIKA_MOVE(ep));
-                r.data.reset();
+                // We move the receiver into a local variable from the operation
+                // state which the receiver refers to. This allows us to safely
+                // reset the operation state without destroying the receiver.
+                make_future_receiver r_local = PIKA_MOVE(r);
+
+                r_local.data->set_exception(PIKA_MOVE(ep));
+                r_local.data->reset_operation_state();
+                r_local.data.reset();
             }
 
             friend void tag_invoke(set_done_t, make_future_receiver&&) noexcept
@@ -81,40 +122,55 @@ namespace pika { namespace execution { namespace experimental {
             friend void tag_invoke(
                 set_value_t, make_future_receiver&& r) noexcept
             {
+                // We move the receiver into a local variable from the operation
+                // state which the receiver refers to. This allows us to safely
+                // reset the operation state without destroying the receiver.
+                make_future_receiver r_local = PIKA_MOVE(r);
+
                 pika::detail::try_catch_exception_ptr(
-                    [&]() { r.data->set_value(pika::util::unused); },
+                    [&]() { r_local.data->set_value(pika::util::unused); },
                     [&](std::exception_ptr ep) {
-                        r.data->set_exception(PIKA_MOVE(ep));
+                        r_local.data->set_exception(PIKA_MOVE(ep));
                     });
-                r.data.reset();
+                r_local.data->reset_operation_state();
+                r_local.data.reset();
             }
         };
 
         template <typename T, typename Allocator, typename OperationState>
         struct future_data
-          : pika::lcos::detail::future_data_allocator<T, Allocator>
+          : resettable_operation_state_future_data<T, Allocator>
         {
             PIKA_NON_COPYABLE(future_data);
 
             using operation_state_type = std::decay_t<OperationState>;
+            using other_allocator = typename std::allocator_traits<
+                Allocator>::template rebind_alloc<future_data>;
             using init_no_addref =
                 typename pika::lcos::detail::future_data_allocator<T,
                     Allocator>::init_no_addref;
-            using other_allocator = typename std::allocator_traits<
-                Allocator>::template rebind_alloc<future_data>;
 
-            operation_state_type op_state;
+            // The operation state is stored in an optional so that it can be
+            // reset explicitly as soon as set_* is called.
+            pika::optional<operation_state_type> op_state;
 
             template <typename Sender>
             future_data(init_no_addref no_addref, other_allocator const& alloc,
                 Sender&& sender)
-              : pika::lcos::detail::future_data_allocator<T, Allocator>(
+              : resettable_operation_state_future_data<T, Allocator>(
                     no_addref, alloc)
-              , op_state(pika::execution::experimental::connect(
-                    PIKA_FORWARD(Sender, sender),
-                    detail::make_future_receiver<T, Allocator>{this}))
             {
-                pika::execution::experimental::start(op_state);
+                op_state.emplace(pika::util::detail::with_result_of([&]() {
+                    return pika::execution::experimental::connect(
+                        PIKA_FORWARD(Sender, sender),
+                        detail::make_future_receiver<T, Allocator>{this});
+                }));
+                pika::execution::experimental::start(op_state.value());
+            }
+
+            void reset_operation_state() override
+            {
+                op_state.reset();
             }
         };
 
