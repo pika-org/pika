@@ -152,12 +152,12 @@ namespace pika { namespace util {
     template <typename F, typename... Ts>
     constexpr detail::bound_front<typename std::decay<F>::type,
         typename util::make_index_pack<sizeof...(Ts)>::type,
-        typename util::decay_unwrap<Ts>::type...>
+        std::decay_t<Ts>...>
     bind_front(F&& f, Ts&&... vs)
     {
         typedef detail::bound_front<typename std::decay<F>::type,
             typename util::make_index_pack<sizeof...(Ts)>::type,
-            typename util::decay_unwrap<Ts>::type...>
+            std::decay_t<Ts>...>
             result_type;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
