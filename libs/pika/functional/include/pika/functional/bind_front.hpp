@@ -43,8 +43,8 @@ namespace pika { namespace util {
             bound_front() = default;    // needed for serialization
 
             template <typename F_, typename... Ts_,
-                typename = typename std::enable_if<
-                    std::is_constructible<F, F_>::value>::type>
+                typename =
+                    typename std::enable_if_t<std::is_constructible_v<F, F_>>>
             constexpr explicit bound_front(F_&& f, Ts_&&... vs)
               : _f(PIKA_FORWARD(F_, f))
               , _args(std::piecewise_construct, PIKA_FORWARD(Ts_, vs)...)
@@ -150,14 +150,14 @@ namespace pika { namespace util {
     }    // namespace detail
 
     template <typename F, typename... Ts>
-    constexpr detail::bound_front<typename std::decay<F>::type,
+    constexpr detail::bound_front<std::decay_t<F>,
         typename util::make_index_pack<sizeof...(Ts)>::type,
-        typename util::decay_unwrap<Ts>::type...>
+        std::decay_t<Ts>...>
     bind_front(F&& f, Ts&&... vs)
     {
-        typedef detail::bound_front<typename std::decay<F>::type,
+        typedef detail::bound_front<std::decay_t<F>,
             typename util::make_index_pack<sizeof...(Ts)>::type,
-            typename util::decay_unwrap<Ts>::type...>
+            std::decay_t<Ts>...>
             result_type;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
@@ -165,7 +165,7 @@ namespace pika { namespace util {
 
     // nullary functions do not need to be bound again
     template <typename F>
-    constexpr typename std::decay<F>::type bind_front(F&& f)
+    constexpr std::decay_t<F> bind_front(F&& f)
     {
         return PIKA_FORWARD(F, f);
     }
