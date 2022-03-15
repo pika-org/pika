@@ -12,7 +12,6 @@
 #include <pika/allocator_support/traits/is_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
@@ -150,7 +149,7 @@ namespace pika { namespace execution { namespace experimental {
 
                 using continuation_type =
                     pika::util::unique_function_nonser<void()>;
-                pika::detail::small_vector<continuation_type, 1> continuations;
+                pika::optional<continuation_type> continuation;
 
                 struct ensure_started_receiver
                 {
@@ -289,14 +288,10 @@ namespace pika { namespace execution { namespace experimental {
                         std::unique_lock<mutex_type> l{mtx};
                     }
 
-                    if (!continuations.empty())
+                    if (continuation)
                     {
-                        for (auto const& continuation : continuations)
-                        {
-                            continuation();
-                        }
-
-                        continuations.clear();
+                        continuation.value()();
+                        continuation.reset();
                     }
                 }
 
@@ -306,6 +301,8 @@ namespace pika { namespace execution { namespace experimental {
                 template <typename Receiver>
                 void add_continuation(Receiver&& receiver)
                 {
+                    PIKA_ASSERT(!continuation.has_value());
+
                     if (predecessor_done)
                     {
                         // If we read predecessor_done here it means that one of
@@ -347,7 +344,7 @@ namespace pika { namespace execution { namespace experimental {
                             // to the vector and the vector is not threadsafe in
                             // itself. The continuation will be called later
                             // when set_error/set_done/set_value is called.
-                            continuations.emplace_back(
+                            continuation.emplace(
                                 [this,
                                     receiver = PIKA_FORWARD(
                                         Receiver, receiver)]() mutable {
