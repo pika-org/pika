@@ -222,9 +222,8 @@ namespace pika { namespace execution { namespace experimental {
                 {
                     PIKA_ASSERT_MSG(start_called,
                         "start was never called on the operation state of "
-                        "split or ensure_started. Did you forget to connect "
-                        "the sender to a receiver, or call start on the "
-                        "operation state?");
+                        "split. Did you forget to connect the sender to a "
+                        "receiver, or call start on the operation state?");
                 }
 
                 template <typename Receiver>
