@@ -96,9 +96,22 @@ namespace pika { namespace mpi { namespace experimental {
             }
         }
 
+#if defined(PIKA_DEBUG)
+        std::atomic<std::size_t>& get_register_polling_count()
+        {
+            static std::atomic<std::size_t> register_polling_count{0};
+            return register_polling_count;
+        }
+#endif
+
         void add_request_callback(
             request_callback_function_type&& callback, MPI_Request request)
         {
+            PIKA_ASSERT_MSG(detail::get_register_polling_count() != 0,
+                "MPI event polling has not been enabled on any pool. Make sure "
+                "that MPI event polling is enabled on at least one thread "
+                "pool.");
+
             detail::add_to_request_callback_queue(
                 request_callback{request, std::move(callback)});
         }
@@ -148,14 +161,6 @@ namespace pika { namespace mpi { namespace experimental {
             static std::vector<MPI_Request> requests_vector;
             return requests_vector;
         }
-
-#if defined(PIKA_DEBUG)
-        std::atomic<std::size_t>& get_register_polling_count()
-        {
-            static std::atomic<std::size_t> register_polling_count{0};
-            return register_polling_count;
-        }
-#endif
     }    // namespace detail
 
     // return a future object from a user supplied MPI_Request
