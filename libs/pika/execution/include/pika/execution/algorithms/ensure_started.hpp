@@ -47,10 +47,10 @@ namespace pika { namespace execution { namespace experimental {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
             template <typename Error>
-            void operator()(Error const& error)
+            void operator()(Error&& error)
             {
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(receiver), error);
+                    PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
             }
         };
 
@@ -60,13 +60,13 @@ namespace pika { namespace execution { namespace experimental {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
             template <typename Ts>
-            void operator()(Ts const& ts)
+            void operator()(Ts&& ts)
             {
                 pika::util::invoke_fused(
                     pika::util::bind_front(
                         pika::execution::experimental::set_value,
                         PIKA_MOVE(receiver)),
-                    ts);
+                    PIKA_FORWARD(Ts, ts));
             }
         };
 
@@ -94,10 +94,7 @@ namespace pika { namespace execution { namespace experimental {
             template <typename Tuple>
             struct value_types_helper
             {
-                using const_type =
-                    pika::util::detail::transform_t<Tuple, std::add_const>;
-                using type = pika::util::detail::transform_t<const_type,
-                    std::add_lvalue_reference>;
+                using type = pika::util::detail::transform_t<Tuple, std::decay>;
             };
 
             template <template <typename...> class Tuple,
@@ -231,18 +228,18 @@ namespace pika { namespace execution { namespace experimental {
                             PIKA_MOVE(receiver));
                     }
 
-                    void operator()(error_type const& error)
+                    void operator()(error_type&& error)
                     {
                         pika::visit(error_visitor<Receiver>{PIKA_FORWARD(
                                         Receiver, receiver)},
-                            error);
+                            PIKA_MOVE(error));
                     }
 
-                    void operator()(value_type const& ts)
+                    void operator()(value_type&& ts)
                     {
                         pika::visit(value_visitor<Receiver>{PIKA_FORWARD(
                                         Receiver, receiver)},
-                            ts);
+                            PIKA_MOVE(ts));
                     }
                 };
 
@@ -320,7 +317,7 @@ namespace pika { namespace execution { namespace experimental {
                         pika::visit(
                             done_error_value_visitor<Receiver>{
                                 PIKA_FORWARD(Receiver, receiver)},
-                            v);
+                            PIKA_MOVE(v));
                     }
                     else
                     {
@@ -339,7 +336,7 @@ namespace pika { namespace execution { namespace experimental {
                             pika::visit(
                                 done_error_value_visitor<Receiver>{
                                     PIKA_FORWARD(Receiver, receiver)},
-                                v);
+                                PIKA_MOVE(v));
                         }
                         else
                         {
@@ -357,7 +354,7 @@ namespace pika { namespace execution { namespace experimental {
                                     pika::visit(
                                         done_error_value_visitor<Receiver>{
                                             PIKA_MOVE(receiver)},
-                                        v);
+                                        PIKA_MOVE(v));
                                 });
                         }
                     }
