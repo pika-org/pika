@@ -1004,7 +1004,8 @@ void test_ensure_started()
     }
 
     {
-        auto s = ex::transfer_just(sched, 42) | ex::ensure_started();
+        auto s =
+            ex::transfer_just(sched, 42) | ex::ensure_started() | ex::split();
         PIKA_TEST_EQ(ex::sync_wait(s), 42);
         PIKA_TEST_EQ(ex::sync_wait(s), 42);
         PIKA_TEST_EQ(ex::sync_wait(s), 42);
@@ -1027,7 +1028,8 @@ void test_ensure_started_when_all()
             std::lock_guard l{mtx};
             started = true;
             cond.notify_one();
-        }) | ex::ensure_started();
+        }) | ex::ensure_started() |
+            ex::split();
         {
             std::unique_lock l{mtx};
             cond.wait(l, [&]() { return started; });
@@ -1060,7 +1062,8 @@ void test_ensure_started_when_all()
             started = true;
             cond.notify_one();
             return 3;
-        }) | ex::ensure_started();
+        }) | ex::ensure_started() |
+            ex::split();
         {
             std::unique_lock l{mtx};
             cond.wait(l, [&]() { return started; });
@@ -1094,7 +1097,8 @@ void test_ensure_started_when_all()
             started = true;
             cond.notify_one();
             return 3;
-        }) | ex::ensure_started();
+        }) | ex::ensure_started() |
+            ex::split();
         {
             std::unique_lock l{mtx};
             cond.wait(l, [&]() { return started; });

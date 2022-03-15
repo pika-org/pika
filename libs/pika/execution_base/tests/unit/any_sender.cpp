@@ -561,18 +561,30 @@ void test_unique_any_sender_set_error()
 // are not destroyed too early. We use ensure_started inside the function to
 // trigger the use of the empty vtables for any_receiver and
 // any_operation_state. If the empty vtables are function-local statics they
-// would get constructed after s_global is constructed, and thus destroyed
-// before s_global is destroyed. This will typically lead to a segfault. If the
-// empty vtables are (constant) global variables they should be constructed
-// before s_global is constructed and destroyed after s_global is destroyed.
+// would get constructed after global_*any_sender is constructed, and thus
+// destroyed before global_*any_sender is destroyed. This will typically lead to
+// a segfault. If the empty vtables are (constant) global variables they should
+// be constructed before global_*any_sender is constructed and destroyed after
+// global_*any_sender is destroyed.
 ex::unique_any_sender<> global_unique_any_sender{ex::just()};
 ex::any_sender<> global_any_sender{ex::just()};
+
+// This helper only makes sure that the sender returned from split is actually
+// started before being destructed.
+struct wait_globals
+{
+    ~wait_globals()
+    {
+        ex::sync_wait(std::move(global_any_sender));
+    }
+} waiter{};
 
 void test_globals()
 {
     global_unique_any_sender =
         std::move(global_unique_any_sender) | ex::ensure_started();
-    global_any_sender = std::move(global_any_sender) | ex::ensure_started();
+    global_any_sender =
+        std::move(global_any_sender) | ex::ensure_started() | ex::split();
 }
 
 int main()

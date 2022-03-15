@@ -319,8 +319,7 @@ namespace pika { namespace execution { namespace experimental {
                     else
                     {
                         // If predecessor_done is false, we have to take the
-                        // lock to potentially add the continuation to the
-                        // vector of continuations.
+                        // lock to potentially store the continuation.
                         std::unique_lock<mutex_type> l{mtx};
 
                         if (predecessor_done)
@@ -337,13 +336,10 @@ namespace pika { namespace execution { namespace experimental {
                         }
                         else
                         {
-                            // If predecessor_done is still false, we add the
-                            // continuation to the vector of continuations. This
-                            // has to be done while holding the lock, since
-                            // other threads may also try to add continuations
-                            // to the vector and the vector is not threadsafe in
-                            // itself. The continuation will be called later
-                            // when set_error/set_done/set_value is called.
+                            // If predecessor_done is still false, we store the
+                            // continuation. This has to be done while holding
+                            // the lock since predecessor signalling completion
+                            // may otherwise not see the continuation.
                             continuation.emplace(
                                 [this,
                                     receiver = PIKA_FORWARD(
@@ -446,13 +442,6 @@ namespace pika { namespace execution { namespace experimental {
                 connect_t, ensure_started_sender_type&& s, Receiver&& receiver)
             {
                 return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
-            }
-
-            template <typename Receiver>
-            friend operation_state<Receiver> tag_invoke(
-                connect_t, ensure_started_sender_type& s, Receiver&& receiver)
-            {
-                return {PIKA_FORWARD(Receiver, receiver), s.state};
             }
         };
 
