@@ -132,13 +132,14 @@ namespace pika {
     }    // namespace detail
 
     inline int init(std::function<int(pika::program_options::variables_map&)> f,
-        int argc, char** argv, init_params const& params = init_params())
+        int const argc, char** const argv,
+        init_params const& params = init_params())
     {
         return detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, true);
     }
 
-    inline int init(std::function<int(int, char**)> f, int argc, char** argv,
-        init_params const& params = init_params())
+    inline int init(std::function<int(int, char**)> f, int const argc,
+        char** const argv, init_params const& params = init_params())
     {
         util::function_nonser<int(pika::program_options::variables_map&)>
             main_f = pika::util::bind_back(pika::detail::init_helper, f);
@@ -146,7 +147,7 @@ namespace pika {
             PIKA_MOVE(main_f), argc, argv, params, true);
     }
 
-    inline int init(std::function<int()> f, int argc, char** argv,
+    inline int init(std::function<int()> f, int const argc, char** const argv,
         init_params const& params = init_params())
     {
         util::function_nonser<int(pika::program_options::variables_map&)>
@@ -155,7 +156,7 @@ namespace pika {
             PIKA_MOVE(main_f), argc, argv, params, true);
     }
 
-    inline int init(std::nullptr_t, int argc, char** argv,
+    inline int init(std::nullptr_t, int const argc, char** const argv,
         init_params const& params = init_params())
     {
         util::function_nonser<int(pika::program_options::variables_map&)>
@@ -165,8 +166,9 @@ namespace pika {
     }
 
     inline bool start(
-        std::function<int(pika::program_options::variables_map&)> f, int argc,
-        char** argv, init_params const& params = init_params())
+        std::function<int(pika::program_options::variables_map&)> f,
+        int const argc, char** const argv,
+        init_params const& params = init_params())
     {
         return 0 ==
             detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false);
@@ -182,7 +184,7 @@ namespace pika {
                 PIKA_MOVE(main_f), argc, argv, params, false);
     }
 
-    inline bool start(std::function<int()> f, int argc, char** argv,
+    inline bool start(std::function<int()> f, int const argc, char** const argv,
         init_params const& params = init_params())
     {
         util::function_nonser<int(pika::program_options::variables_map&)>
@@ -192,7 +194,7 @@ namespace pika {
                 PIKA_MOVE(main_f), argc, argv, params, false);
     }
 
-    inline bool start(std::nullptr_t, int argc, char** argv,
+    inline bool start(std::nullptr_t, int const argc, char** const argv,
         init_params const& params = init_params())
     {
         util::function_nonser<int(pika::program_options::variables_map&)>
