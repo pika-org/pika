@@ -21,6 +21,7 @@ endif()
 set(cublas_matmul_PARAMETERS THREADS 4)
 set(cuda_future_PARAMETERS THREADS 4)
 set(then_with_stream_PARAMETERS THREADS 4)
+set(then_with_stream_DEPENDENCIES pika_execution_test_utilities)
 
 set(cublas_handle_CUDA ON)
 set(cuda_bulk_CUDA ON)
@@ -50,7 +51,7 @@ foreach(test ${tests})
   pika_add_executable(
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
-    DEPENDENCIES ${${test_program}_FLAGS}
+    DEPENDENCIES ${${test}_DEPENDENCIES}
     EXCLUDE_FROM_ALL
     FOLDER "Tests/Unit/Modules/AsyncCuda"
   )
