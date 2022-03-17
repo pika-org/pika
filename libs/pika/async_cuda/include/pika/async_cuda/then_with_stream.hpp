@@ -209,8 +209,8 @@ namespace pika::cuda::experimental::detail {
         }
 
         template <typename... Ts>
-        auto set_value(Ts&&... ts) noexcept
-            -> decltype(PIKA_INVOKE(PIKA_MOVE(f), stream.value(), ts...))
+        auto set_value(Ts&&... ts) noexcept -> decltype(
+            PIKA_INVOKE(PIKA_MOVE(f), stream.value(), ts...), void())
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() mutable {
@@ -460,7 +460,7 @@ namespace pika::cuda::experimental::detail {
     template <typename R, typename F, typename... Ts>
     auto tag_invoke(pika::execution::experimental::set_value_t,
         then_with_cuda_stream_receiver<R, F>&& r, Ts&&... ts) noexcept
-        -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...), void())
+        -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...))
     {
         r.set_value(PIKA_FORWARD(Ts, ts)...);
     }
