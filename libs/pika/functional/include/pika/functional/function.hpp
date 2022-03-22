@@ -10,7 +10,6 @@
 
 #include <pika/config.hpp>
 #include <pika/functional/detail/basic_function.hpp>
-#include <pika/functional/detail/function_registration.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
@@ -107,12 +106,3 @@ namespace pika { namespace traits {
 #endif
 }}    // namespace pika::traits
 #endif
-
-///////////////////////////////////////////////////////////////////////////////
-#define PIKA_UTIL_REGISTER_FUNCTION_DECLARATION(Sig, F, Name)                  \
-    PIKA_DECLARE_GET_FUNCTION_NAME(function_vtable<Sig>, F, Name)              \
-    /**/
-
-#define PIKA_UTIL_REGISTER_FUNCTION(Sig, F, Name)                              \
-    PIKA_DEFINE_GET_FUNCTION_NAME(function_vtable<Sig>, F, Name)               \
-    /**/
