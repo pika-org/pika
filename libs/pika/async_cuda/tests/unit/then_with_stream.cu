@@ -9,6 +9,8 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include "algorithm_test_utils.hpp"
+
 #include <atomic>
 #include <cstddef>
 #include <utility>
@@ -189,6 +191,17 @@ struct cuda_memcpy_async
     }
 };
 
+auto non_default_constructible_params(
+    custom_type_non_default_constructible& x, cudaStream_t stream)
+{
+    return std::move(x);
+}
+auto non_default_constructible_non_copyable_params(
+    custom_type_non_default_constructible_non_copyable& x, cudaStream_t stream)
+{
+    return std::move(x);
+}
+
 int pika_main()
 {
     namespace cu = ::pika::cuda::experimental;
@@ -290,6 +303,28 @@ int pika_main()
         PIKA_TEST_EQ(dummy::stream_int_calls.load(), std::size_t(2));
         PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
+    }
+
+    // Non-copyable or non-default-constructible types
+    {
+        auto s = ex::just(custom_type_non_default_constructible{42}) |
+            ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(&non_default_constructible_params);
+        PIKA_TEST_EQ(ex::sync_wait(ex::transfer(std::move(s),
+                                       ex::thread_pool_scheduler{}))
+                         .x,
+            42);
+    }
+
+    {
+        auto s =
+            ex::just(custom_type_non_default_constructible_non_copyable{42}) |
+            ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(&non_default_constructible_non_copyable_params);
+        PIKA_TEST_EQ(ex::sync_wait(ex::transfer(std::move(s),
+                                       ex::thread_pool_scheduler{}))
+                         .x,
+            42);
     }
 
     // Mixing stream transform with host scheduler with non-void values

@@ -209,7 +209,8 @@ namespace pika::cuda::experimental::detail {
         }
 
         template <typename... Ts>
-        void set_value(Ts&&... ts) noexcept
+        auto set_value(Ts&&... ts) noexcept -> decltype(
+            PIKA_INVOKE(PIKA_MOVE(f), stream.value(), ts...), void())
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() mutable {
@@ -236,9 +237,10 @@ namespace pika::cuda::experimental::detail {
                         }
                     }
 
-                    if constexpr (std::is_void_v<
-                                      typename pika::util::invoke_result<F,
-                                          cuda_stream const&, Ts...>::type>)
+                    if constexpr (std::is_void_v<pika::util::invoke_result_t<F,
+                                      cuda_stream const&,
+                                      std::add_lvalue_reference_t<
+                                          std::decay_t<Ts>>...>>)
                     {
                         // When the return type is void, there is no value to
                         // forward to the receiver
@@ -283,8 +285,8 @@ namespace pika::cuda::experimental::detail {
                     {
                         // When the return type is non-void, we have to forward
                         // the value to the receiver
-                        auto t = PIKA_INVOKE(PIKA_MOVE(f), stream.value(),
-                            PIKA_FORWARD(Ts, ts)...);
+                        auto t =
+                            PIKA_INVOKE(PIKA_MOVE(f), stream.value(), ts...);
 
                         if constexpr (is_then_with_cuda_stream_receiver<
                                           std::decay_t<R>>::value)
@@ -353,7 +355,8 @@ namespace pika::cuda::experimental::detail {
         template <template <typename...> class Tuple, typename... Ts>
         struct is_invocable_helper<Tuple<Ts...>>
         {
-            using type = pika::is_invocable<F, cuda_stream const&, Ts...>;
+            using type = pika::is_invocable<F, cuda_stream const&,
+                std::add_lvalue_reference_t<std::decay_t<Ts>>...>;
         };
 
         static constexpr bool value = pika::util::detail::change_pack_t<
@@ -400,7 +403,8 @@ namespace pika::cuda::experimental::detail {
         struct invoke_result_helper<Tuple<Ts...>>
         {
             using result_type =
-                pika::util::invoke_result_t<F, cuda_stream const&, Ts...>;
+                pika::util::invoke_result_t<F, cuda_stream const&,
+                    std::add_lvalue_reference_t<std::decay_t<Ts>>...>;
             using type = std::conditional_t<std::is_void_v<result_type>,
                 Tuple<>, Tuple<result_type>>;
         };
@@ -454,8 +458,9 @@ namespace pika::cuda::experimental::detail {
     // ("error: no instance of overloaded function std::forward matches the
     // argument list").
     template <typename R, typename F, typename... Ts>
-    void tag_invoke(pika::execution::experimental::set_value_t,
-        then_with_cuda_stream_receiver<R, F>&& r, Ts&&... ts)
+    auto tag_invoke(pika::execution::experimental::set_value_t,
+        then_with_cuda_stream_receiver<R, F>&& r, Ts&&... ts) noexcept
+        -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...))
     {
         r.set_value(PIKA_FORWARD(Ts, ts)...);
     }
