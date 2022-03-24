@@ -6,9 +6,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <pika/functional/serialization/serializable_function.hpp>
-#include <pika/modules/serialization.hpp>
-#include <pika/serialization/access.hpp>
+#include <pika/modules/functional.hpp>
 
 #include <cstdint>
 #include <iostream>
@@ -20,15 +18,6 @@ struct small_object
 {
 private:
     std::uint64_t x_;
-
-    friend class pika::serialization::access;
-
-    template <typename Archive>
-    void serialize(Archive& ar, unsigned const)
-    {
-        ar& x_;
-        std::cout << "small_object: serialize(" << x_ << ")\n";
-    }
 
 public:
     small_object()
@@ -74,16 +63,6 @@ struct big_object
 private:
     std::uint64_t x_;
     std::uint64_t y_;
-
-    friend class pika::serialization::access;
-
-    template <typename Archive>
-    void serialize(Archive& ar, unsigned const)
-    {
-        ar& x_;
-        ar& y_;
-        std::cout << "big_object: serialize(" << x_ << ", " << y_ << ")\n";
-    }
 
 public:
     big_object()
@@ -133,14 +112,10 @@ struct foo
     void operator()() {}
 };
 
-template <typename Archive>
-void serialize(Archive&, foo&, unsigned)
-{
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 int main()
 {
+    // non serializable version
     {
         if (sizeof(small_object) <= pika::util::detail::function_storage_size)
             std::cout << "object is small\n";
@@ -157,9 +132,9 @@ int main()
 
         f2 = f0;
 
-        f0(7);
-        f1(9);
-        f2(11);
+        f0(2);
+        f1(4);
+        f2(6);
     }
 
     {
@@ -177,55 +152,6 @@ int main()
             f0);
 
         function<std::uint64_t(std::uint64_t const&, std::uint64_t const&)> f2;
-
-        f2 = f0;
-
-        f0(0, 1);
-        f1(1, 0);
-        f2(1, 1);
-    }
-
-    // non serializable version
-    {
-        if (sizeof(small_object) <= pika::util::detail::function_storage_size)
-            std::cout << "object is small\n";
-        else
-            std::cout << "object is large\n";
-
-        small_object const f(17);
-
-        function<std::uint64_t(std::uint64_t const&), false> f0(f);
-
-        function<std::uint64_t(std::uint64_t const&), false> f1(f0);
-
-        function<std::uint64_t(std::uint64_t const&), false> f2;
-
-        f2 = f0;
-
-        f0(2);
-        f1(4);
-        f2(6);
-    }
-
-    {
-        if (sizeof(big_object) <= pika::util::detail::function_storage_size)
-            std::cout << "object is small\n";
-        else
-            std::cout << "object is large\n";
-
-        big_object const f(5, 12);
-
-        function<std::uint64_t(std::uint64_t const&, std::uint64_t const&),
-            false>
-            f0(f);
-
-        function<std::uint64_t(std::uint64_t const&, std::uint64_t const&),
-            false>
-            f1(f0);
-
-        function<std::uint64_t(std::uint64_t const&, std::uint64_t const&),
-            false>
-            f2;
 
         f2 = f0;
 

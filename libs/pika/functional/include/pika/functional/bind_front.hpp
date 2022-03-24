@@ -40,8 +40,6 @@ namespace pika { namespace util {
         class bound_front<F, index_pack<Is...>, Ts...>
         {
         public:
-            bound_front() = default;    // needed for serialization
-
             template <typename F_, typename... Ts_,
                 typename =
                     typename std::enable_if_t<std::is_constructible_v<F, F_>>>
@@ -108,13 +106,6 @@ namespace pika { namespace util {
                 return PIKA_INVOKE(PIKA_MOVE(_f),
                     PIKA_MOVE(_args).template get<Is>()...,
                     PIKA_FORWARD(Us, vs)...);
-            }
-
-            template <typename Archive>
-            void serialize(Archive& ar, unsigned int const /*version*/)
-            {
-                ar& _f;
-                ar& _args;
             }
 
             constexpr std::size_t get_function_address() const
@@ -209,15 +200,3 @@ namespace pika { namespace traits {
 #endif
 #endif
 }}    // namespace pika::traits
-
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace serialization {
-    // serialization of the bound_front object
-    template <typename Archive, typename F, typename... Ts>
-    void serialize(Archive& ar,
-        ::pika::util::detail::bound_front<F, Ts...>& bound,
-        unsigned int const version = 0)
-    {
-        bound.serialize(ar, version);
-    }
-}}    // namespace pika::serialization

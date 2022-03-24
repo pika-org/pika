@@ -167,16 +167,6 @@ namespace pika { namespace execution { namespace experimental {
         }
 
     private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            // clang-format off
-            ar & exec_;
-            // clang-format on
-        }
-
         BaseExecutor exec_;
         char const* const annotation_ = nullptr;
         /// \endcond

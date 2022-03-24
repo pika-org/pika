@@ -108,12 +108,11 @@ namespace pika { namespace util { namespace detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Sig, bool Copyable, bool Serializable>
+    template <typename Sig, bool Copyable>
     class basic_function;
 
     template <bool Copyable, typename R, typename... Ts>
-    class basic_function<R(Ts...), Copyable, /*Serializable*/ false>
-      : public function_base
+    class basic_function<R(Ts...), Copyable> : public function_base
     {
         using base_type = function_base;
         using vtable = function_vtable<R(Ts...), Copyable>;

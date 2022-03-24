@@ -26,8 +26,6 @@
 #include <pika/assert.hpp>
 #include <pika/ini/ini.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/serialization/map.hpp>
-#include <pika/serialization/serialize.hpp>
 #include <pika/string_util/classification.hpp>
 #include <pika/string_util/split.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
@@ -982,49 +980,5 @@ namespace pika { namespace util {
         expand_only(l, value, std::string::size_type(-1), expand_this);
         return value;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    // explicit instantiation for the correct archive types
-    void serialize(serialization::output_archive& ar,
-        section::entry_type const& data, unsigned int /* version */)
-    {
-        ar << data.first;
-        // do not handle callback function
-    }
-
-    void serialize(serialization::input_archive& ar, section::entry_type& data,
-        unsigned int /* version */)
-    {
-        ar >> data.first;
-        // do not handle callback function
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    template <typename Archive>
-    void section::save(Archive& ar, const unsigned int /* version */) const
-    {
-        ar << name_;
-        ar << parent_name_;
-        ar << entries_;
-        ar << sections_;
-    }
-
-    template <typename Archive>
-    void section::load(Archive& ar, const unsigned int /* version */)
-    {
-        ar >> name_;
-        ar >> parent_name_;
-        ar >> entries_;
-        ar >> sections_;
-
-        set_root(this, true);    // make this the current root
-    }
-
-    // explicit instantiation for the correct archive types
-    template PIKA_EXPORT void section::save(
-        serialization::output_archive&, const unsigned int version) const;
-
-    template PIKA_EXPORT void section::load(
-        serialization::input_archive&, const unsigned int version);
 
 }}    // namespace pika::util

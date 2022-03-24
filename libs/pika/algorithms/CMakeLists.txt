@@ -217,7 +217,6 @@ pika_add_module(
     pika_futures
     pika_lcos
     pika_pack_traversal
-    pika_serialization
     pika_threading_base
     pika_type_support
     pika_util

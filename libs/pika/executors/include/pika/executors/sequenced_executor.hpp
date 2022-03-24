@@ -126,14 +126,6 @@ namespace pika { namespace execution {
         {
             return 1;
         }
-
-    private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& /* ar */, const unsigned int /* version */)
-        {
-        }
         /// \endcond
     };
 }}    // namespace pika::execution

@@ -16,7 +16,6 @@ set(example_programs
     fibonacci_dataflow
     fibonacci_futures
     fibonacci
-    file_serialization
     hello_world
     latch_example # suffix added to avoid conflict with unit tests
     channel_example # suffix added to avoid conflict with unit tests

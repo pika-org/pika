@@ -10,7 +10,6 @@
 
 #include <pika/config.hpp>
 #include <pika/execution_base/traits/is_executor_parameters.hpp>
-#include <pika/serialization/serialize.hpp>
 
 #include <algorithm>
 #include <cstddef>
@@ -63,17 +62,6 @@ namespace pika { namespace execution {
             std::size_t cores, std::size_t num_tasks) const
         {
             return (std::max)(min_chunk_size_, (num_tasks + cores - 1) / cores);
-        }
-        /// \endcond
-
-    private:
-        /// \cond NOINTERNAL
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            ar& min_chunk_size_;
         }
         /// \endcond
 

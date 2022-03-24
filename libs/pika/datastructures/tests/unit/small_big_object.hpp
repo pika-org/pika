@@ -20,18 +20,6 @@ private:
     std::uint64_t x_;
 
 public:
-    template <typename Archive>
-    void serialize(Archive& ar, unsigned const)
-    {
-        ar& x_;
-
-        if (ENABLE_DEBUG)
-        {
-            std::cout << "small_object: serialize(" << x_ << ")\n";
-        }
-    }
-
-public:
     small_object()
       : x_(0)
     {
@@ -125,18 +113,6 @@ struct big_object
 private:
     std::uint64_t x_;
     std::uint64_t y_;
-
-public:
-    template <typename Archive>
-    void serialize(Archive& ar, unsigned const)
-    {
-        ar& x_;
-        ar& y_;
-        if (ENABLE_DEBUG)
-        {
-            std::cout << "big_object: serialize(" << x_ << ", " << y_ << ")\n";
-        }
-    }
 
 public:
     big_object()

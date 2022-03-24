@@ -28,7 +28,6 @@
 #include <pika/futures/future.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/iterator_support/range.hpp>
-#include <pika/serialization/serialize.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -328,19 +327,6 @@ namespace pika { namespace execution {
                     pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
                     shape, PIKA_FORWARD(Future, predecessor),
                     PIKA_FORWARD(Ts, ts)...);
-        }
-        /// \endcond
-
-    private:
-        /// \cond NOINTERNAL
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            // clang-format off
-            ar & policy_ & hierarchical_threshold_;
-            // clang-format on
         }
         /// \endcond
 

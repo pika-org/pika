@@ -11,7 +11,6 @@
 #include <pika/config.hpp>
 #include <pika/execution_base/traits/is_executor_parameters.hpp>
 #include <pika/modules/timing.hpp>
-#include <pika/serialization/serialize.hpp>
 
 #include <pika/execution/executors/execution_parameters.hpp>
 #include <pika/execution_base/execution.hpp>
@@ -95,19 +94,6 @@ namespace pika { namespace execution {
             }
 
             return (count + cores - 1) / cores;
-        }
-        /// \endcond
-
-    private:
-        /// \cond NOINTERNAL
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive& ar, const unsigned int /* version */)
-        {
-            // clang-format off
-            ar & min_time_ & num_iters_for_timing_;
-            // clang-format on
         }
         /// \endcond
 

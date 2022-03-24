@@ -10,27 +10,14 @@
 #include <pika/functional/unique_function.hpp>
 
 namespace pika { namespace util { namespace detail {
-    template <typename Sig, bool Serializable>
-    inline void reset_function(pika::util::function<Sig, Serializable>& f)
+    template <typename Sig>
+    inline void reset_function(pika::util::function<Sig>& f)
     {
         f.reset();
     }
 
     template <typename Sig>
-    inline void reset_function(pika::util::function_nonser<Sig>& f)
-    {
-        f.reset();
-    }
-
-    template <typename Sig, bool Serializable>
-    inline void reset_function(
-        pika::util::unique_function<Sig, Serializable>& f)
-    {
-        f.reset();
-    }
-
-    template <typename Sig>
-    inline void reset_function(pika::util::unique_function_nonser<Sig>& f)
+    inline void reset_function(pika::util::unique_function<Sig>& f)
     {
         f.reset();
     }

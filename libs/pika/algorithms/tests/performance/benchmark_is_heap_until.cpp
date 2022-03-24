@@ -43,11 +43,6 @@ struct random_fill
 
     std::mt19937 gen;
     std::uniform_int_distribution<> dist;
-
-    template <typename Archive>
-    void serialize(Archive&, unsigned)
-    {
-    }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

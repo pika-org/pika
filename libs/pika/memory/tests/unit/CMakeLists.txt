@@ -4,15 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests
-    intrusive_ptr
-    intrusive_ptr_move
-    intrusive_ptr_polymorphic
-    intrusive_ptr_polymorphic_nonintrusive
-    ip_convertible
-    ip_hash
-    serialization_intrusive_ptr
-)
+set(tests intrusive_ptr intrusive_ptr_move ip_convertible ip_hash)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)

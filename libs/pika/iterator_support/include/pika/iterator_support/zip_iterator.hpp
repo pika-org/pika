@@ -12,7 +12,6 @@
 #include <pika/functional/invoke_result.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/serialization/serialization_fwd.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <cstddef>
@@ -344,15 +343,6 @@ namespace pika { namespace util {
                 return apply(PIKA_FORWARD(F, f),
                     util::make_index_pack<
                         pika::tuple_size<IteratorTuple>::value>());
-            }
-
-        private:
-            friend class pika::serialization::access;
-
-            template <typename Archive>
-            void serialize(Archive& ar, unsigned)
-            {
-                ar& iterators_;
             }
 
         private:

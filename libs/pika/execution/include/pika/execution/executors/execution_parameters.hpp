@@ -17,7 +17,6 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/preprocessor/cat.hpp>
 #include <pika/preprocessor/stringize.hpp>
-#include <pika/serialization/base_object.hpp>
 #include <pika/type_support/decay.hpp>
 #include <pika/type_support/detail/wrap_int.hpp>
 #include <pika/type_support/pack.hpp>
@@ -510,15 +509,6 @@ namespace pika { namespace parallel { namespace execution {
         template <typename T>
         struct unwrapper : T
         {
-            // default constructor is needed for serialization purposes
-            template <typename Dependent = void,
-                typename Enable = std::enable_if_t<
-                    std::is_constructible<T>::value, Dependent>>
-            unwrapper()
-              : T()
-            {
-            }
-
             // generic poor-man's forwarding constructor
             template <typename U,
                 typename Enable = std::enable_if_t<
@@ -748,17 +738,6 @@ namespace pika { namespace parallel { namespace execution {
             constexpr executor_parameters(Params_&&... params)
               : unwrapper<Params>(PIKA_FORWARD(Params_, params))...
             {
-            }
-
-        private:
-            friend class pika::serialization::access;
-
-            template <typename Archive>
-            void serialize(Archive& ar, const unsigned int /* version */)
-            {
-                int const sequencer[] = {
-                    (ar & serialization::base_object<Params>(*this), 0)..., 0};
-                (void) sequencer;
             }
         };
 

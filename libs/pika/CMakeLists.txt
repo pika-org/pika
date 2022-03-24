@@ -56,7 +56,6 @@ set(_pika_modules
     runtime_configuration
     runtime
     schedulers
-    serialization
     string_util
     synchronization
     tag_invoke

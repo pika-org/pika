@@ -484,29 +484,6 @@ pika_option(
 )
 
 pika_option(
-  PIKA_WITH_AUTOMATIC_SERIALIZATION_REGISTRATION
-  BOOL
-  "Use automatic serialization registration for actions and functions. This affects compatibility between pika applications compiled with different compilers (default: ON)"
-  ON
-  ADVANCED
-)
-if(PIKA_WITH_AUTOMATIC_SERIALIZATION_REGISTRATION)
-  pika_add_config_define(PIKA_HAVE_AUTOMATIC_SERIALIZATION_REGISTRATION)
-endif()
-
-pika_option(
-  PIKA_WITH_ZERO_COPY_SERIALIZATION_THRESHOLD
-  STRING
-  "The threshold in bytes to when perform zero copy optimizations (default: 128)"
-  "128"
-  ADVANCED
-)
-pika_add_config_define(
-  PIKA_ZERO_COPY_SERIALIZATION_THRESHOLD
-  ${PIKA_WITH_ZERO_COPY_SERIALIZATION_THRESHOLD}
-)
-
-pika_option(
   PIKA_WITH_DISABLED_SIGNAL_EXCEPTION_HANDLERS
   BOOL
   "Disables the mechanism that produces debug output for caught signals and unhandled exceptions (default: OFF)"

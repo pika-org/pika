@@ -11,7 +11,6 @@ set(runtime_headers
     pika/runtime/custom_exception_info.hpp
     pika/runtime/debugging.hpp
     pika/runtime/detail/runtime_fwd.hpp
-    pika/runtime/detail/serialize_exception.hpp
     pika/runtime/get_locality_id.hpp
     pika/runtime/get_locality_name.hpp
     pika/runtime/get_num_all_localities.hpp
@@ -40,7 +39,6 @@ set(runtime_sources
     os_thread_type.cpp
     runtime_handlers.cpp
     runtime.cpp
-    serialize_exception.cpp
     state.cpp
     thread_mapper.cpp
     thread_pool_helpers.cpp

@@ -147,16 +147,3 @@ namespace pika { namespace util {
         member_pack<typename util::make_index_pack<sizeof...(Ts)>::type, Ts...>;
 
 }}    // namespace pika::util
-
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace serialization {
-    ///////////////////////////////////////////////////////////////////////////
-    template <typename Archive, std::size_t... Is, typename... Ts>
-    PIKA_FORCEINLINE void serialize(Archive& ar,
-        ::pika::util::member_pack<util::index_pack<Is...>, Ts...>& mp,
-        unsigned int const /*version*/ = 0)
-    {
-        int sequencer[] = {((ar & mp.template get<Is>()), 0)...};
-        (void) sequencer;
-    }
-}}    // namespace pika::serialization

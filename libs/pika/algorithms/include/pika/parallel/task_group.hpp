@@ -20,7 +20,6 @@
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/modules/memory.hpp>
-#include <pika/serialization/serialization_fwd.hpp>
 #include <pika/synchronization/latch.hpp>
 #include <pika/type_support/unused.hpp>
 
@@ -108,14 +107,6 @@ namespace pika { namespace execution { namespace experimental {
 
         // Add an exception to this task_group
         PIKA_EXPORT void add_exception(std::exception_ptr p);
-
-    private:
-        friend class serialization::access;
-
-        PIKA_EXPORT void serialize(
-            serialization::input_archive&, unsigned const);
-        PIKA_EXPORT void serialize(
-            serialization::output_archive&, unsigned const);
 
     private:
         using shared_state_type = lcos::detail::future_data<void>;

@@ -7,9 +7,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/futures/traits/future_access.hpp>
-#include <pika/lcos/detail/preprocess_future.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/serialization.hpp>
 #include <pika/parallel/task_group.hpp>
 
 #include <exception>
@@ -88,30 +86,4 @@ namespace pika::execution::experimental {
         errors_.add(PIKA_MOVE(p));
     }
 
-    void task_group::serialize(
-        serialization::output_archive& ar, unsigned const)
-    {
-        if (!latch_.is_ready())
-        {
-            if (ar.is_preprocessing())
-            {
-                using init_no_addref =
-                    typename shared_state_type::init_no_addref;
-                state_.reset(new shared_state_type(init_no_addref{}), false);
-                preprocess_future(ar, *state_);
-            }
-            else
-            {
-                PIKA_THROW_EXCEPTION(invalid_status, "task_group::serialize",
-                    "task_group must be ready in order for it to be "
-                    "serialized");
-            }
-            return;
-        }
-
-        // the state is not needed anymore
-        state_.reset();
-    }
-
-    void task_group::serialize(serialization::input_archive&, unsigned const) {}
 }    // namespace pika::execution::experimental

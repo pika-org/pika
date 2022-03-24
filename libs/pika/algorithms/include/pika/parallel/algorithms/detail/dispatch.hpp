@@ -18,7 +18,6 @@
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/detail/scoped_executor_parameters.hpp>
 #include <pika/parallel/util/result_types.hpp>
-#include <pika/serialization/serialization_fwd.hpp>
 
 #if defined(PIKA_HAVE_CXX17_STD_EXECUTION_POLICES)
 #include <execution>
@@ -229,14 +228,5 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
 
     private:
         char const* const name_;
-
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void serialize(Archive&, unsigned int)
-        {
-            // no need to serialize 'name_' as it is always initialized by the
-            // constructor
-        }
     };
 }}}}    // namespace pika::parallel::v1::detail

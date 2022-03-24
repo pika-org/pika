@@ -45,14 +45,6 @@ namespace pika { namespace parallel { namespace util {
         {
             return {PIKA_MOVE(in1), PIKA_MOVE(in2)};
         }
-
-        template <typename Archive>
-        void serialize(Archive& ar, unsigned)
-        {
-            // clang-format off
-            ar & in1 & in2;
-            // clang-format on
-        }
     };
 
     template <typename I1, typename I2>
@@ -91,14 +83,6 @@ namespace pika { namespace parallel { namespace util {
         constexpr operator in_out_result<I2, O2>() &&
         {
             return {PIKA_MOVE(in), PIKA_MOVE(out)};
-        }
-
-        template <typename Archive>
-        void serialize(Archive& ar, unsigned)
-        {
-            // clang-format off
-            ar & in & out;
-            // clang-format on
         }
     };
 
@@ -172,14 +156,6 @@ namespace pika { namespace parallel { namespace util {
         {
             return {PIKA_MOVE(min), PIKA_MOVE(max)};
         }
-
-        template <typename Archive>
-        void serialize(Archive& ar, unsigned)
-        {
-            // clang-format off
-            ar & min & max;
-            // clang-format on
-        }
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -207,14 +183,6 @@ namespace pika { namespace parallel { namespace util {
         constexpr operator in_in_out_result<II1, II2, O1>() &&
         {
             return {PIKA_MOVE(in1), PIKA_MOVE(in2), PIKA_MOVE(out)};
-        }
-
-        template <typename Archive>
-        void serialize(Archive& ar, unsigned)
-        {
-            // clang-format off
-            ar & in1 & in2 & out;
-            // clang-format on
         }
     };
 
@@ -259,14 +227,6 @@ namespace pika { namespace parallel { namespace util {
         constexpr operator in_out_out_result<II, OO1, OO2>() &&
         {
             return {PIKA_MOVE(in), PIKA_MOVE(out1), PIKA_MOVE(out2)};
-        }
-
-        template <typename Archive>
-        void serialize(Archive& ar, unsigned)
-        {
-            // clang-format off
-            ar & in & out1 & out2;
-            // clang-format on
         }
     };
 
@@ -319,14 +279,6 @@ namespace pika { namespace parallel { namespace util {
         constexpr operator in_fun_result<I2, F2>() &&
         {
             return {PIKA_MOVE(in), PIKA_MOVE(fun)};
-        }
-
-        template <typename Archive>
-        void serialize(Archive& ar, unsigned)
-        {
-            // clang-format off
-            ar & in & fun;
-            // clang-format on
         }
     };
 

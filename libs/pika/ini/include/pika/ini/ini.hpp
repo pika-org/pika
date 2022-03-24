@@ -11,7 +11,6 @@
 #include <pika/config.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/functional/function.hpp>
-#include <pika/serialization/serialization_fwd.hpp>
 #include <pika/util/to_string.hpp>
 
 #include <map>
@@ -26,10 +25,6 @@
 #pragma warning(push)
 #pragma warning(disable : 4091 4251 4231 4275 4660)
 #endif
-
-///////////////////////////////////////////////////////////////////////////////
-//  section serialization format version
-#define PIKA_SECTION_VERSION 0x10
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace util {
@@ -59,17 +54,6 @@ namespace pika { namespace util {
         std::string parent_name_;
 
         mutable mutex_type mtx_;
-
-    private:
-        friend class pika::serialization::access;
-
-        template <typename Archive>
-        void save(Archive& ar, const unsigned int version) const;
-
-        template <typename Archive>
-        void load(Archive& ar, const unsigned int version);
-
-        PIKA_SERIALIZATION_SPLIT_MEMBER()
 
     protected:
         void line_msg(std::string msg, std::string const& file, int lnum = 0,
