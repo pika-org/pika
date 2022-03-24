@@ -29,7 +29,7 @@ namespace pika { namespace lcos { namespace local {
     template <typename R, typename... Ts>
     class packaged_task<R(Ts...)>
     {
-        using function_type = util::unique_function_nonser<R(Ts...)>;
+        using function_type = util::unique_function<R(Ts...)>;
 
     public:
         // construction and destruction

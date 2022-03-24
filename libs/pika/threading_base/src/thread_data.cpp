@@ -136,7 +136,7 @@ namespace pika { namespace threads {
     }
 
     bool thread_data::add_thread_exit_callback(
-        util::function_nonser<void()> const& f)
+        util::function<void()> const& f)
     {
         std::lock_guard<pika::util::detail::spinlock> l(
             spinlock_pool::spinlock_for(this));

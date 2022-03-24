@@ -15,7 +15,7 @@
 namespace pika {
     /// The type of a function which is registered to be executed as a
     /// shutdown or pre-shutdown function.
-    typedef util::unique_function_nonser<void()> shutdown_function_type;
+    typedef util::unique_function<void()> shutdown_function_type;
 
     /// \brief Add a function to be executed by a pika thread during
     /// \a pika::finalize() but guaranteed before any shutdown function is

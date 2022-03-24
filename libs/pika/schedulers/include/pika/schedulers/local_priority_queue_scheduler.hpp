@@ -973,7 +973,7 @@ namespace pika { namespace threads { namespace policies {
         ///////////////////////////////////////////////////////////////////////
         // Enumerate matching threads from all queues
         bool enumerate_threads(
-            util::function_nonser<bool(thread_id_type)> const& f,
+            util::function<bool(thread_id_type)> const& f,
             thread_schedule_state state =
                 thread_schedule_state::unknown) const override
         {
@@ -1281,7 +1281,7 @@ namespace pika { namespace threads { namespace policies {
                 first_mask = pu_mask;
 
             auto iterate =
-                [&](pika::util::function_nonser<bool(std::size_t)> f) {
+                [&](pika::util::function<bool(std::size_t)> f) {
                     // check our neighbors in a radial fashion (left and right
                     // alternating, increasing distance each iteration)
                     std::ptrdiff_t i = 1;

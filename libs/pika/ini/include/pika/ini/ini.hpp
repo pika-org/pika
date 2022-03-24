@@ -32,7 +32,7 @@ namespace pika { namespace util {
     class PIKA_EXPORT section
     {
     public:
-        typedef util::function_nonser<void(
+        typedef util::function<void(
             std::string const&, std::string const&)>
             entry_changed_func;
         typedef std::pair<std::string, entry_changed_func> entry_type;

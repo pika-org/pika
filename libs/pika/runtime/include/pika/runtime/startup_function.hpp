@@ -16,7 +16,7 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     /// The type of a function which is registered to be executed as a
     /// startup or pre-startup function.
-    typedef util::unique_function_nonser<void()> startup_function_type;
+    typedef util::unique_function<void()> startup_function_type;
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Add a function to be executed by a pika thread before pika_main

@@ -111,7 +111,7 @@ namespace pika { namespace threads { namespace detail {
         }
 
         bool enumerate_threads(
-            util::function_nonser<bool(thread_id_type)> const& f,
+            util::function<bool(thread_id_type)> const& f,
             thread_schedule_state state) const override
         {
             return sched_->Scheduler::enumerate_threads(f, state);

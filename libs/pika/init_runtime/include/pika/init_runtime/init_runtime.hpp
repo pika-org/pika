@@ -50,7 +50,7 @@ extern char** environ;
 namespace pika {
     namespace detail {
         PIKA_EXPORT int init_helper(pika::program_options::variables_map&,
-            util::function_nonser<int(int, char**)> const&);
+            util::function<int(int, char**)> const&);
     }
 
     namespace detail {
@@ -86,7 +86,7 @@ namespace pika {
 
         // Utilities to init the thread_pools of the resource partitioner
         using rp_callback_type =
-            pika::util::function_nonser<void(pika::resource::partitioner&,
+            pika::util::function<void(pika::resource::partitioner&,
                 pika::program_options::variables_map const&)>;
     }    // namespace detail
 
@@ -104,12 +104,12 @@ namespace pika {
 
     namespace detail {
         PIKA_EXPORT int run_or_start(
-            util::function_nonser<int(
+            util::function<int(
                 pika::program_options::variables_map& vm)> const& f,
             int argc, char** argv, init_params const& params, bool blocking);
 
         inline int init_start_impl(
-            util::function_nonser<int(pika::program_options::variables_map&)> f,
+            util::function<int(pika::program_options::variables_map&)> f,
             int argc, char** argv, init_params const& params, bool blocking)
         {
             if (argc == 0 || argv == nullptr)
@@ -141,7 +141,7 @@ namespace pika {
     inline int init(std::function<int(int, char**)> f, int const argc,
         char** const argv, init_params const& params = init_params())
     {
-        util::function_nonser<int(pika::program_options::variables_map&)>
+        util::function<int(pika::program_options::variables_map&)>
             main_f = pika::util::bind_back(pika::detail::init_helper, f);
         return detail::init_start_impl(
             PIKA_MOVE(main_f), argc, argv, params, true);
@@ -150,7 +150,7 @@ namespace pika {
     inline int init(std::function<int()> f, int const argc, char** const argv,
         init_params const& params = init_params())
     {
-        util::function_nonser<int(pika::program_options::variables_map&)>
+        util::function<int(pika::program_options::variables_map&)>
             main_f = pika::util::bind(f);
         return detail::init_start_impl(
             PIKA_MOVE(main_f), argc, argv, params, true);
@@ -159,7 +159,7 @@ namespace pika {
     inline int init(std::nullptr_t, int const argc, char** const argv,
         init_params const& params = init_params())
     {
-        util::function_nonser<int(pika::program_options::variables_map&)>
+        util::function<int(pika::program_options::variables_map&)>
             main_f;
         return detail::init_start_impl(
             PIKA_MOVE(main_f), argc, argv, params, true);
@@ -177,7 +177,7 @@ namespace pika {
     inline bool start(std::function<int(int, char**)> f, int argc, char** argv,
         init_params const& params = init_params())
     {
-        util::function_nonser<int(pika::program_options::variables_map&)>
+        util::function<int(pika::program_options::variables_map&)>
             main_f = pika::util::bind_back(pika::detail::init_helper, f);
         return 0 ==
             detail::init_start_impl(
@@ -187,7 +187,7 @@ namespace pika {
     inline bool start(std::function<int()> f, int const argc, char** const argv,
         init_params const& params = init_params())
     {
-        util::function_nonser<int(pika::program_options::variables_map&)>
+        util::function<int(pika::program_options::variables_map&)>
             main_f = pika::util::bind(f);
         return 0 ==
             detail::init_start_impl(
@@ -197,7 +197,7 @@ namespace pika {
     inline bool start(std::nullptr_t, int const argc, char** const argv,
         init_params const& params = init_params())
     {
-        util::function_nonser<int(pika::program_options::variables_map&)>
+        util::function<int(pika::program_options::variables_map&)>
             main_f;
         return 0 ==
             detail::init_start_impl(

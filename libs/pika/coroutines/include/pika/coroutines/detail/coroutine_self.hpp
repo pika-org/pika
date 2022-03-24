@@ -74,7 +74,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         using arg_type = thread_restart_state;
 
         using yield_decorator_type =
-            util::function_nonser<arg_type(result_type)>;
+            util::function<arg_type(result_type)>;
 
         explicit coroutine_self(coroutine_self* next_self)
           : next_self_(next_self)

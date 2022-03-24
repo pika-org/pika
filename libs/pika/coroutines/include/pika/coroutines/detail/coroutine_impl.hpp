@@ -65,7 +65,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         using arg_type = thread_restart_state;
 
         using functor_type =
-            util::unique_function_nonser<result_type(arg_type)>;
+            util::unique_function<result_type(arg_type)>;
 
         coroutine_impl(
             functor_type&& f, thread_id_type id, std::ptrdiff_t stack_size)

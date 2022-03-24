@@ -381,7 +381,7 @@ namespace pika { namespace threads {
         thread_id_type const& id, error_code& ec = throws);
 
     PIKA_EXPORT bool add_thread_exit_callback(thread_id_type const& id,
-        util::function_nonser<void()> const& f, error_code& ec = throws);
+        util::function<void()> const& f, error_code& ec = throws);
 
     PIKA_EXPORT void free_thread_exit_callbacks(
         thread_id_type const& id, error_code& ec = throws);

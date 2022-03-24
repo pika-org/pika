@@ -31,7 +31,7 @@ namespace pika { namespace mpi { namespace experimental {
     namespace detail {
 
         using request_callback_function_type =
-            pika::util::unique_function_nonser<void(int)>;
+            pika::util::unique_function<void(int)>;
 
         PIKA_EXPORT void add_request_callback(
             request_callback_function_type&& f, MPI_Request req);

@@ -148,7 +148,7 @@ namespace pika { namespace execution { namespace experimental {
                     v;
 
                 using continuation_type =
-                    pika::util::unique_function_nonser<void()>;
+                    pika::util::unique_function<void()>;
                 pika::optional<continuation_type> continuation;
 
                 struct ensure_started_receiver

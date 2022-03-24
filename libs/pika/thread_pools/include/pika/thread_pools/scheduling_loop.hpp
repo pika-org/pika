@@ -398,8 +398,8 @@ namespace pika { namespace threads { namespace detail {
 
     struct scheduling_callbacks
     {
-        using callback_type = util::unique_function_nonser<void()>;
-        using background_callback_type = util::unique_function_nonser<bool()>;
+        using callback_type = util::unique_function<void()>;
+        using background_callback_type = util::unique_function<bool()>;
 
         explicit scheduling_callbacks(callback_type&& outer,
             callback_type&& inner = callback_type(),

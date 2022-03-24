@@ -150,7 +150,7 @@ namespace pika { namespace execution { namespace experimental {
                     v;
 
                 using continuation_type =
-                    pika::util::unique_function_nonser<void()>;
+                    pika::util::unique_function<void()>;
                 pika::detail::small_vector<continuation_type, 1> continuations;
 
                 struct split_receiver

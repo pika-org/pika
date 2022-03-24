@@ -14,7 +14,7 @@
 #include <pika/threading_base/thread_pool_base.hpp>
 
 namespace pika { namespace threads { namespace detail {
-    using get_default_pool_type = util::function_nonser<thread_pool_base*()>;
+    using get_default_pool_type = util::function<thread_pool_base*()>;
     PIKA_EXPORT void set_get_default_pool(get_default_pool_type f);
     PIKA_EXPORT thread_pool_base* get_self_or_default_pool();
 }}}    // namespace pika::threads::detail

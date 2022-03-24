@@ -25,12 +25,10 @@ namespace pika {
     using pika::util::bind_back;
     using pika::util::bind_front;
     using pika::util::function;
-    using pika::util::function_nonser;
     using pika::util::invoke;
     using pika::util::invoke_fused;
     using pika::util::mem_fn;
     using pika::util::unique_function;
-    using pika::util::unique_function_nonser;
 
     namespace placeholders {
         using namespace pika::util::placeholders;

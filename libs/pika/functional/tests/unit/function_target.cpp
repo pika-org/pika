@@ -21,13 +21,13 @@ struct foo
 int main()
 {
     {
-        pika::util::function_nonser<int()> fun = foo();
+        pika::util::function<int()> fun = foo();
 
         PIKA_TEST(fun.target<foo>() != nullptr);
     }
 
     {
-        pika::util::function_nonser<int()> fun = foo();
+        pika::util::function<int()> fun = foo();
 
         PIKA_TEST(fun.target<foo const>() != nullptr);
     }

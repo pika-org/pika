@@ -23,7 +23,7 @@ namespace pika::detail {
     {
         command_line_handling(pika::util::runtime_configuration rtcfg,
             std::vector<std::string> ini_config,
-            util::function_nonser<int(pika::program_options::variables_map& vm)>
+            util::function<int(pika::program_options::variables_map& vm)>
                 pika_main_f)
           : rtcfg_(rtcfg)
           , ini_config_(ini_config)
@@ -47,7 +47,7 @@ namespace pika::detail {
         pika::util::runtime_configuration rtcfg_;
 
         std::vector<std::string> ini_config_;
-        util::function_nonser<int(pika::program_options::variables_map& vm)>
+        util::function<int(pika::program_options::variables_map& vm)>
             pika_main_f_;
 
         std::size_t num_threads_;

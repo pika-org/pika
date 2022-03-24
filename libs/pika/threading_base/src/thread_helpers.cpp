@@ -331,7 +331,7 @@ namespace pika { namespace threads {
     }
 
     bool add_thread_exit_callback(thread_id_type const& id,
-        util::function_nonser<void()> const& f, error_code& ec)
+        util::function<void()> const& f, error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
         {

@@ -39,7 +39,7 @@ namespace pika { namespace experimental {
             shared_state_ptr_type next_state;
             pika::lcos::local::mutex mtx;
             pika::detail::small_vector<
-                pika::util::unique_function_nonser<void(shared_state_ptr_type)>,
+                pika::util::unique_function<void(shared_state_ptr_type)>,
                 1>
                 continuations;
 
@@ -108,7 +108,7 @@ namespace pika { namespace experimental {
             shared_state_ptr_type next_state;
             pika::lcos::local::mutex mtx;
             pika::detail::small_vector<
-                pika::util::unique_function_nonser<void(shared_state_ptr_type)>,
+                pika::util::unique_function<void(shared_state_ptr_type)>,
                 1>
                 continuations;
 
