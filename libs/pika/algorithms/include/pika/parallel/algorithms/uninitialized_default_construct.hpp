@@ -249,7 +249,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                     PIKA_MOVE(first));
             }
 
-            typedef std::pair<FwdIter, FwdIter> partition_result_type;
+            using partition_result_type = std::pair<FwdIter, FwdIter>;
             typedef
                 typename std::iterator_traits<FwdIter>::value_type value_type;
 

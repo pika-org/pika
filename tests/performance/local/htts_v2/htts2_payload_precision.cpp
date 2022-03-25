@@ -17,7 +17,7 @@
 template <typename BaseClock = std::chrono::steady_clock>
 struct payload_precision_tracker : htts2::clocksource<BaseClock>
 {
-    typedef typename htts2::clocksource<BaseClock>::rep rep;
+    using rep = typename htts2::clocksource<BaseClock>::rep;
 
     // 'expected' is the expected payload in nanosecond
     payload_precision_tracker(rep expected)

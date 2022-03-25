@@ -174,7 +174,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
 
     struct condition_variable_data
     {
-        typedef lcos::local::spinlock mutex_type;
+        using mutex_type = lcos::local::spinlock;
 
         condition_variable_data()
           : count_(1)

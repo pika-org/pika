@@ -29,8 +29,8 @@ void test_sorted_until1(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), 0);
@@ -57,8 +57,8 @@ void test_sorted_until1_async(ExPolicy p, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), 0);
@@ -83,8 +83,8 @@ void test_sorted_until1_async(ExPolicy p, IteratorTag)
 template <typename IteratorTag>
 void test_sorted_until1_seq(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), 0);
@@ -210,8 +210,8 @@ void test_sorted_until2(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     //Fill with sorted values from 0 to 10006
@@ -248,8 +248,8 @@ void test_sorted_until2_async(ExPolicy p, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     //Fill with sorted values from 0 to 10006
@@ -284,8 +284,8 @@ void test_sorted_until2_async(ExPolicy p, IteratorTag)
 template <typename IteratorTag>
 void test_sorted_until2_seq(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     //Fill with sorted values from 0 to 10006
@@ -450,8 +450,8 @@ void test_sorted_until3(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
     //test the following:
     // put unsorted elements at each ends
     // put two unsorted elements in the middle
@@ -504,8 +504,8 @@ void test_sorted_until3_async(ExPolicy p, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
     //test the following:
     // put unsorted elements at each ends
     // put two unsorted elements in the middle
@@ -557,8 +557,8 @@ void test_sorted_until3_async(ExPolicy p, IteratorTag)
 template <typename IteratorTag>
 void test_sorted_until3_seq(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
     //test the following:
     // put unsorted elements at each ends
     // put two unsorted elements in the middle
@@ -789,8 +789,8 @@ void test_sorted_until_exception(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -862,8 +862,8 @@ void test_sorted_until_exception(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_sorted_until_async_exception(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -942,8 +942,8 @@ void test_sorted_until_async_exception(ExPolicy p, IteratorTag)
 template <typename IteratorTag>
 void test_sorted_until_seq_exception(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -1197,8 +1197,8 @@ void test_sorted_until_bad_alloc(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -1267,8 +1267,8 @@ void test_sorted_until_bad_alloc(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_sorted_until_async_bad_alloc(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -1344,8 +1344,8 @@ void test_sorted_until_async_bad_alloc(ExPolicy p, IteratorTag)
 template <typename IteratorTag>
 void test_sorted_until_seq_bad_alloc(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 

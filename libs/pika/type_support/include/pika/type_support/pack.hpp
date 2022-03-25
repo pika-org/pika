@@ -16,14 +16,14 @@ namespace pika { namespace util {
     template <typename... Ts>
     struct pack
     {
-        typedef pack type;
+        using type = pack;
         static constexpr std::size_t size = sizeof...(Ts);
     };
 
     template <typename T, T... Vs>
     struct pack_c
     {
-        typedef pack_c type;
+        using type = pack_c;
         static constexpr std::size_t size = sizeof...(Vs);
     };
 

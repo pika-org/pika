@@ -82,7 +82,7 @@ namespace pika { namespace threads { namespace policies {
             threads::thread_id_ref_type& thrd,
             bool /*enable_stealing*/) override
         {
-            typedef typename base_type::thread_queue_type thread_queue_type;
+            using thread_queue_type = typename base_type::thread_queue_type;
 
             {
                 PIKA_ASSERT(num_thread < this->queues_.size());

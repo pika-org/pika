@@ -28,7 +28,7 @@ namespace pika { namespace util {
     template <typename T, typename Tag>
     struct PIKA_EXPORT_THREAD_SPECIFIC_PTR thread_specific_ptr
     {
-        typedef T element_type;
+        using element_type = T;
 
         T* get() const
         {
@@ -82,7 +82,7 @@ namespace pika { namespace util {
     template <typename T, typename Tag>
     struct PIKA_EXPORT_THREAD_SPECIFIC_PTR thread_specific_ptr
     {
-        typedef T element_type;
+        using element_type = T;
 
         static pthread_key_t get_key()
         {

@@ -22,7 +22,7 @@ namespace jacobi_smp {
     void jacobi(crs_matrix<double> const& A, std::vector<double> const& b,
         std::size_t iterations, std::size_t block_size)
     {
-        typedef std::vector<double> vector_type;
+        using vector_type = std::vector<double>;
 
         std::shared_ptr<vector_type> dst(new vector_type(b));
         std::shared_ptr<vector_type> src(new vector_type(b));

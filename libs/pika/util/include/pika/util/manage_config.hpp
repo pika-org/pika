@@ -18,7 +18,7 @@
 namespace pika { namespace util {
     struct PIKA_EXPORT manage_config
     {
-        typedef std::map<std::string, std::string> map_type;
+        using map_type = std::map<std::string, std::string>;
 
         manage_config(std::vector<std::string> const& cfg);
 

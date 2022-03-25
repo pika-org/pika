@@ -277,8 +277,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                         false);
                 }
 
-                typedef pika::util::zip_iterator<Iter1, Iter2> zip_iterator;
-                typedef typename zip_iterator::reference reference;
+                using zip_iterator = pika::util::zip_iterator<Iter1, Iter2>;
+                using reference = typename zip_iterator::reference;
 
                 util::cancellation_token<> tok;
 
@@ -353,7 +353,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 
                 typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
                     zip_iterator;
-                typedef typename zip_iterator::reference reference;
+                using reference = typename zip_iterator::reference;
 
                 util::cancellation_token<> tok;
                 auto f1 = [f, tok](zip_iterator it,

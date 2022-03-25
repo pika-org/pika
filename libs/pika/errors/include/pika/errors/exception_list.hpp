@@ -36,7 +36,7 @@ namespace pika {
         /// \cond NOINTERNAL
 
         // TODO: Does this need to be pika::lcos::local::spinlock?
-        // typedef pika::lcos::local::spinlock mutex_type;
+        // using mutex_type = pika::lcos::local::spinlock;
         // TODO: Add correct initialization of pika::util::detail spinlock.
         using mutex_type = pika::util::detail::spinlock;
 

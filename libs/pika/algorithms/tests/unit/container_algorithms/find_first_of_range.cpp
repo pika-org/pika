@@ -27,7 +27,7 @@ std::uniform_int_distribution<> dist(0, 2);
 template <typename IteratorTag>
 void test_find_first_of(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     int find_first_of_pos = dis(gen);
     int random_sub_seq_pos = dist(gen);
@@ -50,7 +50,7 @@ void test_find_first_of(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     int find_first_of_pos = dis(gen);
     int random_sub_seq_pos = dist(gen);
@@ -70,7 +70,7 @@ void test_find_first_of(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag>
 void test_find_first_of_proj(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     int find_first_of_pos = dis(gen);
     int random_sub_seq_pos = dist(gen);
@@ -96,7 +96,7 @@ void test_find_first_of_proj(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     int find_first_of_pos = dis(gen);
     int random_sub_seq_pos = dist(gen);
@@ -119,7 +119,7 @@ void test_find_first_of_proj(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_first_of_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     int find_first_of_pos = dis(gen);
     int random_sub_seq_pos = dist(gen);
@@ -141,7 +141,7 @@ void test_find_first_of_async(ExPolicy&& p, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_first_of_async_proj(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     int find_first_of_pos = dis(gen);
     int random_sub_seq_pos = dist(gen);

@@ -288,7 +288,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(ExPolicy&& policy, Iter first, Sent last, Pred&& pred,
                 Proj&& proj)
             {
-                typedef pika::util::zip_iterator<Iter, bool*> zip_iterator;
+                using zip_iterator = pika::util::zip_iterator<Iter, bool*>;
                 typedef util::detail::algorithm_result<ExPolicy, Iter>
                     algorithm_result;
                 typedef typename std::iterator_traits<Iter>::difference_type
@@ -483,7 +483,7 @@ namespace pika {
         friend FwdIter tag_fallback_invoke(
             pika::remove_t, FwdIter first, FwdIter last, T const& value)
         {
-            typedef typename std::iterator_traits<FwdIter>::value_type Type;
+            using Type = typename std::iterator_traits<FwdIter>::value_type;
 
             return pika::remove_if(pika::execution::seq, first, last,
                 [value](Type const& a) -> bool { return value == a; });
@@ -502,7 +502,7 @@ namespace pika {
         tag_fallback_invoke(pika::remove_t, ExPolicy&& policy, FwdIter first,
             FwdIter last, T const& value)
         {
-            typedef typename std::iterator_traits<FwdIter>::value_type Type;
+            using Type = typename std::iterator_traits<FwdIter>::value_type;
 
             return pika::remove_if(PIKA_FORWARD(ExPolicy, policy), first, last,
                 [value](Type const& a) -> bool { return value == a; });

@@ -18,8 +18,8 @@
 #include <string>
 #include <vector>
 
-typedef std::tuple<std::size_t, std::ptrdiff_t, std::ptrdiff_t> info;
-typedef std::stack<info> info_stack;
+using info = std::tuple<std::size_t, std::ptrdiff_t, std::ptrdiff_t>;
+using info_stack = std::stack<info>;
 
 void stack_remaining(const char* txt, info_stack& stack)
 {

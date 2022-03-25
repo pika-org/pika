@@ -27,7 +27,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename T, typename Abi, typename NewT>
     struct rebind_pack<Vc::Vector<T, Abi>, NewT>
     {
-        typedef Vc::Vector<NewT, Abi> type;
+        using type = Vc::Vector<NewT, Abi>;
     };
 
     template <typename T, std::size_t N, typename V, std::size_t W,
@@ -40,14 +40,14 @@ namespace pika { namespace parallel { namespace traits {
     template <typename T, typename NewT>
     struct rebind_pack<Vc::Scalar::Vector<T>, NewT>
     {
-        typedef Vc::Scalar::Vector<NewT> type;
+        using type = Vc::Scalar::Vector<NewT>;
     };
 
     // don't wrap types twice
     template <typename T, typename Abi1, typename NewT, typename Abi2>
     struct rebind_pack<Vc::Vector<T, Abi1>, Vc::Vector<NewT, Abi2>>
     {
-        typedef Vc::Vector<NewT, Abi2> type;
+        using type = Vc::Vector<NewT, Abi2>;
     };
 
     template <typename T, std::size_t N1, typename V1, std::size_t W1,
@@ -61,7 +61,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename T, typename NewT>
     struct rebind_pack<Vc::Scalar::Vector<T>, Vc::Scalar::Vector<NewT>>
     {
-        typedef Vc::Scalar::Vector<NewT> type;
+        using type = Vc::Scalar::Vector<NewT>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -182,14 +182,14 @@ namespace pika { namespace parallel { namespace traits {
     template <typename T, typename Abi, typename NewT>
     struct rebind_pack<Vc::datapar<T, Abi>, NewT>
     {
-        typedef Vc::datapar<NewT, Abi> type;
+        using type = Vc::datapar<NewT, Abi>;
     };
 
     // don't wrap types twice
     template <typename T, typename Abi1, typename NewT, typename Abi2>
     struct rebind_pack<Vc::datapar<T, Abi1>, Vc::datapar<NewT, Abi2>>
     {
-        typedef Vc::datapar<NewT, Abi2> type;
+        using type = Vc::datapar<NewT, Abi2>;
     };
 
     ///////////////////////////////////////////////////////////////////////////

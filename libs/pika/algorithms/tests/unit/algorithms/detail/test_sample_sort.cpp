@@ -168,7 +168,7 @@ void test6()
 
 void test7()
 {
-    typedef typename std::vector<std::uint64_t>::iterator iter_t;
+    using iter_t = typename std::vector<std::uint64_t>::iterator;
 
     constexpr std::uint32_t NELEM = 41667;
     std::vector<std::uint64_t> A;

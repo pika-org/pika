@@ -148,7 +148,7 @@ int main(void)
         cons_12_refs_type;
 
     // typedef for zip iterator with 12 elements
-    typedef pika::util::zip_iterator<cons_12_its_type> zip_it_12_type;
+    using zip_it_12_type = pika::util::zip_iterator<cons_12_its_type>;
 
     // Declare a 12-element zip iterator.
     zip_it_12_type zip_it_12(li1.begin(), se1.begin(), ve1.begin(), li2.begin(),

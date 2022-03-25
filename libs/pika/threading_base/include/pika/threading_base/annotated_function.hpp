@@ -101,7 +101,7 @@ namespace pika {
     detail::annotated_function<std::decay_t<F>> annotated_function(
         F&& f, char const* name = nullptr)
     {
-        typedef detail::annotated_function<std::decay_t<F>> result_type;
+        using result_type = detail::annotated_function<std::decay_t<F>>;
 
         return result_type(PIKA_FORWARD(F, f), name);
     }
@@ -110,7 +110,7 @@ namespace pika {
     detail::annotated_function<std::decay_t<F>> annotated_function(
         F&& f, std::string name)
     {
-        typedef detail::annotated_function<std::decay_t<F>> result_type;
+        using result_type = detail::annotated_function<std::decay_t<F>>;
 
         // Store string in a set to ensure it lives for the entire duration of
         // the task.

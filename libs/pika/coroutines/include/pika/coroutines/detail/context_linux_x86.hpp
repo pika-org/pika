@@ -195,7 +195,7 @@ namespace pika { namespace threads { namespace coroutines {
                 default_stack_size = 4 * EXEC_PAGESIZE
             };
 
-            typedef x86_linux_context_impl_base context_impl_base;
+            using context_impl_base = x86_linux_context_impl_base;
 
             /**
              * Create a context that on restore invokes Functor on
@@ -393,7 +393,7 @@ namespace pika { namespace threads { namespace coroutines {
                                 context_size;
                         }
 
-                        typedef std::atomic<std::int64_t> counter_type;
+                        using counter_type = std::atomic<std::int64_t>;
 
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
                     private:

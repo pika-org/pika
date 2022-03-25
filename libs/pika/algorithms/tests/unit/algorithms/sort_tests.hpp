@@ -226,7 +226,7 @@ void test_sort_exception(ExPolicy&& policy, T)
         bool caught_exception = false;
         try
         {
-            typedef typename std::vector<T>::iterator base_iterator;
+            using base_iterator = typename std::vector<T>::iterator;
             typedef test::decorated_iterator<base_iterator,
                 std::random_access_iterator_tag>
                 decorated_iterator;
@@ -259,7 +259,7 @@ void test_sort_exception(ExPolicy&& policy, T)
         bool caught_exception = false;
         try
         {
-            typedef typename std::vector<T>::iterator base_iterator;
+            using base_iterator = typename std::vector<T>::iterator;
             typedef test::decorated_iterator<base_iterator,
                 std::random_access_iterator_tag>
                 decorated_iterator;
@@ -305,7 +305,7 @@ void test_sort_exception(ExPolicy&& policy, T, Compare comp)
         bool caught_exception = false;
         try
         {
-            typedef typename std::vector<T>::iterator base_iterator;
+            using base_iterator = typename std::vector<T>::iterator;
             typedef test::decorated_iterator<base_iterator,
                 std::random_access_iterator_tag>
                 decorated_iterator;
@@ -338,7 +338,7 @@ void test_sort_exception(ExPolicy&& policy, T, Compare comp)
         bool caught_exception = false;
         try
         {
-            typedef typename std::vector<T>::iterator base_iterator;
+            using base_iterator = typename std::vector<T>::iterator;
             typedef test::decorated_iterator<base_iterator,
                 std::random_access_iterator_tag>
                 decorated_iterator;
@@ -385,7 +385,7 @@ void test_sort_exception_async(ExPolicy&& policy, T)
         bool returned_from_algorithm = false;
         try
         {
-            typedef typename std::vector<T>::iterator base_iterator;
+            using base_iterator = typename std::vector<T>::iterator;
             typedef test::decorated_iterator<base_iterator,
                 std::random_access_iterator_tag>
                 decorated_iterator;
@@ -423,7 +423,7 @@ void test_sort_exception_async(ExPolicy&& policy, T)
         bool returned_from_algorithm = false;
         try
         {
-            typedef typename std::vector<T>::iterator base_iterator;
+            using base_iterator = typename std::vector<T>::iterator;
             typedef test::decorated_iterator<base_iterator,
                 std::random_access_iterator_tag>
                 decorated_iterator;
@@ -474,7 +474,7 @@ void test_sort_exception_async(ExPolicy&& policy, T, Compare comp)
         bool returned_from_algorithm = false;
         try
         {
-            typedef typename std::vector<T>::iterator base_iterator;
+            using base_iterator = typename std::vector<T>::iterator;
             typedef test::decorated_iterator<base_iterator,
                 std::random_access_iterator_tag>
                 decorated_iterator;
@@ -512,7 +512,7 @@ void test_sort_exception_async(ExPolicy&& policy, T, Compare comp)
         bool returned_from_algorithm = false;
         try
         {
-            typedef typename std::vector<T>::iterator base_iterator;
+            using base_iterator = typename std::vector<T>::iterator;
             typedef test::decorated_iterator<base_iterator,
                 std::random_access_iterator_tag>
                 decorated_iterator;

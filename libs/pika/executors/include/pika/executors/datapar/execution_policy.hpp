@@ -36,7 +36,7 @@ namespace pika { namespace execution { inline namespace v1 {
     struct simd_task_policy
     {
         /// The type of the executor associated with this execution policy
-        typedef sequenced_executor executor_type;
+        using executor_type = sequenced_executor;
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
@@ -45,7 +45,7 @@ namespace pika { namespace execution { inline namespace v1 {
 
         /// The category of the execution agents created by this execution
         /// policy.
-        typedef unsequenced_execution_tag execution_category;
+        using execution_category = unsequenced_execution_tag;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -54,7 +54,7 @@ namespace pika { namespace execution { inline namespace v1 {
         struct rebind
         {
             /// The type of the rebound execution policy
-            typedef simd_task_policy_shim<Executor_, Parameters_> type;
+            using type = simd_task_policy_shim<Executor_, Parameters_>;
         };
 
         /// \cond NOINTERNAL
@@ -185,11 +185,11 @@ namespace pika { namespace execution { inline namespace v1 {
     struct simd_task_policy_shim : simd_task_policy
     {
         /// The type of the executor associated with this execution policy
-        typedef Executor executor_type;
+        using executor_type = Executor;
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
-        typedef Parameters executor_parameters_type;
+        using executor_parameters_type = Parameters;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -203,7 +203,7 @@ namespace pika { namespace execution { inline namespace v1 {
         struct rebind
         {
             /// The type of the rebound execution policy
-            typedef simd_task_policy_shim<Executor_, Parameters_> type;
+            using type = simd_task_policy_shim<Executor_, Parameters_>;
         };
 
         /// Create a new simd_task_policy_shim from itself
@@ -334,7 +334,7 @@ namespace pika { namespace execution { inline namespace v1 {
     struct simd_policy
     {
         /// The type of the executor associated with this execution policy
-        typedef sequenced_executor executor_type;
+        using executor_type = sequenced_executor;
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
@@ -343,7 +343,7 @@ namespace pika { namespace execution { inline namespace v1 {
 
         /// The category of the execution agents created by this execution
         /// policy.
-        typedef unsequenced_execution_tag execution_category;
+        using execution_category = unsequenced_execution_tag;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -352,7 +352,7 @@ namespace pika { namespace execution { inline namespace v1 {
         struct rebind
         {
             /// The type of the rebound execution policy
-            typedef simd_policy_shim<Executor_, Parameters_> type;
+            using type = simd_policy_shim<Executor_, Parameters_>;
         };
 
         /// \cond NOINTERNAL
@@ -481,11 +481,11 @@ namespace pika { namespace execution { inline namespace v1 {
     struct simd_policy_shim : simd_policy
     {
         /// The type of the executor associated with this execution policy
-        typedef Executor executor_type;
+        using executor_type = Executor;
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
-        typedef Parameters executor_parameters_type;
+        using executor_parameters_type = Parameters;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -499,7 +499,7 @@ namespace pika { namespace execution { inline namespace v1 {
         struct rebind
         {
             /// The type of the rebound execution policy
-            typedef simd_policy_shim<Executor_, Parameters_> type;
+            using type = simd_policy_shim<Executor_, Parameters_>;
         };
 
         /// Create a new simd_task_policy.
@@ -637,7 +637,7 @@ namespace pika { namespace execution { inline namespace v1 {
     struct par_simd_task_policy
     {
         /// The type of the executor associated with this execution policy
-        typedef parallel_executor executor_type;
+        using executor_type = parallel_executor;
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
@@ -646,7 +646,7 @@ namespace pika { namespace execution { inline namespace v1 {
 
         /// The category of the execution agents created by this execution
         /// policy.
-        typedef unsequenced_execution_tag execution_category;
+        using execution_category = unsequenced_execution_tag;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -655,7 +655,7 @@ namespace pika { namespace execution { inline namespace v1 {
         struct rebind
         {
             /// The type of the rebound execution policy
-            typedef par_simd_task_policy_shim<Executor_, Parameters_> type;
+            using type = par_simd_task_policy_shim<Executor_, Parameters_>;
         };
 
         /// \cond NOINTERNAL
@@ -778,7 +778,7 @@ namespace pika { namespace execution { inline namespace v1 {
     struct par_simd_policy
     {
         /// The type of the executor associated with this execution policy
-        typedef parallel_executor executor_type;
+        using executor_type = parallel_executor;
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
@@ -787,7 +787,7 @@ namespace pika { namespace execution { inline namespace v1 {
 
         /// The category of the execution agents created by this execution
         /// policy.
-        typedef unsequenced_execution_tag execution_category;
+        using execution_category = unsequenced_execution_tag;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of
@@ -796,7 +796,7 @@ namespace pika { namespace execution { inline namespace v1 {
         struct rebind
         {
             /// The type of the rebound execution policy
-            typedef par_simd_policy_shim<Executor_, Parameters_> type;
+            using type = par_simd_policy_shim<Executor_, Parameters_>;
         };
 
         /// \cond NOINTERNAL
@@ -920,11 +920,11 @@ namespace pika { namespace execution { inline namespace v1 {
     struct par_simd_policy_shim : par_simd_policy
     {
         /// The type of the executor associated with this execution policy
-        typedef Executor executor_type;
+        using executor_type = Executor;
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
-        typedef Parameters executor_parameters_type;
+        using executor_parameters_type = Parameters;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -938,7 +938,7 @@ namespace pika { namespace execution { inline namespace v1 {
         struct rebind
         {
             /// The type of the rebound execution policy
-            typedef par_simd_policy_shim<Executor_, Parameters_> type;
+            using type = par_simd_policy_shim<Executor_, Parameters_>;
         };
 
         /// Create a new par_simd_task_policy_shim
@@ -1074,11 +1074,11 @@ namespace pika { namespace execution { inline namespace v1 {
     struct par_simd_task_policy_shim : par_simd_task_policy
     {
         /// The type of the executor associated with this execution policy
-        typedef Executor executor_type;
+        using executor_type = Executor;
 
         /// The type of the associated executor parameters object which is
         /// associated with this execution policy
-        typedef Parameters executor_parameters_type;
+        using executor_parameters_type = Parameters;
 
         /// The category of the execution agents created by this execution
         /// policy.
@@ -1092,7 +1092,7 @@ namespace pika { namespace execution { inline namespace v1 {
         struct rebind
         {
             /// The type of the rebound execution policy
-            typedef par_simd_task_policy_shim<Executor_, Parameters_> type;
+            using type = par_simd_task_policy_shim<Executor_, Parameters_>;
         };
 
         /// Create a new par_simd_task_policy_shim from itself

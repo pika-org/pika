@@ -50,8 +50,8 @@ struct throw_bad_alloc
 template <typename IteratorTag>
 void test_transform_binary2(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c1(10007);
     std::vector<int> c2(c1.size());
@@ -90,8 +90,8 @@ void test_transform_binary2(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c1(10007);
     std::vector<int> c2(c1.size());
@@ -127,8 +127,8 @@ void test_transform_binary2(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_transform_binary2_async(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c1(10007);
     std::vector<int> c2(c1.size());
@@ -167,8 +167,8 @@ void test_transform_binary2_async(ExPolicy p, IteratorTag)
 template <typename IteratorTag>
 void test_transform_binary2_exception(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c1(10007);
     std::vector<int> c2(c1.size());
@@ -205,8 +205,8 @@ void test_transform_binary2_exception(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c1(10007);
     std::vector<int> c2(c1.size());
@@ -239,8 +239,8 @@ void test_transform_binary2_exception(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_transform_binary2_exception_async(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c1(10007);
     std::vector<int> c2(c1.size());
@@ -281,8 +281,8 @@ void test_transform_binary2_bad_alloc(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c1(10007);
     std::vector<int> c2(c1.size());
@@ -314,8 +314,8 @@ void test_transform_binary2_bad_alloc(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_transform_binary2_bad_alloc_async(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c1(10007);
     std::vector<int> c2(c1.size());

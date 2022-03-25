@@ -38,8 +38,8 @@ void test_generate(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
 
@@ -59,8 +59,8 @@ void test_generate(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_generate_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
 
@@ -85,7 +85,7 @@ void test_generate_exception(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
     std::vector<int> c(10007);
@@ -117,7 +117,7 @@ void test_generate_exception(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_generate_exception_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -159,7 +159,7 @@ void test_generate_bad_alloc(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -190,7 +190,7 @@ void test_generate_bad_alloc(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_generate_bad_alloc_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 

@@ -54,10 +54,10 @@ inline std::size_t idx(std::size_t i, int dir, std::size_t size)
 struct stepper
 {
     // Our partition type
-    typedef pika::shared_future<double> partition;
+    using partition = pika::shared_future<double>;
 
     // Our data for one time step
-    typedef std::vector<partition> space;
+    using space = std::vector<partition>;
 
     // Our operator
     static double heat(double left, double middle, double right)

@@ -21,7 +21,7 @@
 using std::string;
 
 namespace boost { namespace inspect {
-    typedef std::set<string> string_set;
+    using string_set = std::set<string>;
 
     const char* line_break();
 
@@ -46,7 +46,8 @@ namespace boost { namespace inspect {
 
         // called only for registered leaf() signatures:
         virtual void inspect(const string& library_name,    // "filesystem"
-            const std::filesystem::path& full_path,     // "c:/foo/boost/filesystem/path.hpp"
+            const std::filesystem::path&
+                full_path,             // "c:/foo/boost/filesystem/path.hpp"
             const string& contents)    // contents of file
             = 0;
 
@@ -69,8 +70,8 @@ namespace boost { namespace inspect {
         }
 
         // report error callback (from inspect(), close() ):
-        void error(const string& library_name, const std::filesystem::path& full_path,
-            const string& msg,
+        void error(const string& library_name,
+            const std::filesystem::path& full_path, const string& msg,
             std::size_t line_number =
                 0);    // 0 if not available or not applicable
 
@@ -103,7 +104,8 @@ namespace boost { namespace inspect {
         hypertext_inspector();
     };
 
-    inline string relative_to(const std::filesystem::path& src_arg, const std::filesystem::path& base_arg)
+    inline string relative_to(const std::filesystem::path& src_arg,
+        const std::filesystem::path& base_arg)
     {
         std::filesystem::path base(base_arg);
         base.lexically_normal();

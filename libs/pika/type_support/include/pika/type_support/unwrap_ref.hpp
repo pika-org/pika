@@ -14,19 +14,19 @@ namespace pika { namespace util {
     template <typename T>
     struct unwrap_reference
     {
-        typedef T type;
+        using type = T;
     };
 
     template <typename T>
     struct unwrap_reference<std::reference_wrapper<T>>
     {
-        typedef T type;
+        using type = T;
     };
 
     template <typename T>
     struct unwrap_reference<std::reference_wrapper<T> const>
     {
-        typedef T type;
+        using type = T;
     };
 
     template <typename T>

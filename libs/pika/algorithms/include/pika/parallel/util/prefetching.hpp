@@ -465,7 +465,7 @@ namespace pika { namespace parallel { namespace util {
         struct loop<prefetching::prefetching_iterator<Itr, Ts...>>
         {
             typedef prefetching::prefetching_iterator<Itr, Ts...> iterator_type;
-            typedef typename iterator_type::base_iterator type;
+            using type = typename iterator_type::base_iterator;
             typedef typename pika::util::make_index_pack<sizeof...(Ts)>::type
                 index_pack_type;
 
@@ -525,7 +525,7 @@ namespace pika { namespace parallel { namespace util {
         struct loop_ind<prefetching::prefetching_iterator<Itr, Ts...>>
         {
             typedef prefetching::prefetching_iterator<Itr, Ts...> iterator_type;
-            typedef typename iterator_type::base_iterator type;
+            using type = typename iterator_type::base_iterator;
             typedef typename pika::util::make_index_pack<sizeof...(Ts)>::type
                 index_pack_type;
 

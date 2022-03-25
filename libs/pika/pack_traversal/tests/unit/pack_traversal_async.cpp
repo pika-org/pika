@@ -36,7 +36,7 @@ struct not_accepted_tag
 
 struct thread_safe_counter
 {
-    typedef pika::util::atomic_count type;
+    using type = pika::util::atomic_count;
 
     static unsigned int load(pika::util::atomic_count const& counter) noexcept
     {
@@ -69,7 +69,7 @@ template <typename Derived, typename CounterPolicy>
 class intrusive_ref_counter
 {
 private:
-    typedef typename CounterPolicy::type counter_type;
+    using counter_type = typename CounterPolicy::type;
 
     mutable counter_type ref_counter;
 

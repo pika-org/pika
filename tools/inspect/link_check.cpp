@@ -40,7 +40,7 @@ namespace {
         "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$",
         boost::regbase::normal);
 
-    typedef std::set<std::string> bookmark_set;
+    using bookmark_set = std::set<std::string>;
     bookmark_set bookmarks;
     bookmark_set
         bookmarks_lowercase;    // duplicate check needs case insensitive
@@ -143,7 +143,8 @@ namespace boost { namespace inspect {
     //  inspect ( .htm, .html, .shtml, .css )  -----------------------------------//
 
     void link_check::inspect(const string& library_name,
-        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path&
+            full_path,             // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"
@@ -504,7 +505,8 @@ namespace boost { namespace inspect {
         std::filesystem::path target_path;
         try
         {
-            target_path = source_path.parent_path() /= std::filesystem::path(decoded_path);
+            target_path = source_path.parent_path() /=
+                std::filesystem::path(decoded_path);
         }
         catch (const std::filesystem::filesystem_error&)
         {
@@ -560,7 +562,8 @@ namespace boost { namespace inspect {
                 itr->first.rfind("index.htm") == string::npos)
             {
                 ++m_unlinked_errors;
-                std::filesystem::path full_path(search_root_path() / std::filesystem::path(itr->first));
+                std::filesystem::path full_path(
+                    search_root_path() / std::filesystem::path(itr->first));
                 error(impute_library(full_path), full_path,
                     loclink(full_path, "Unlinked file"));
             }

@@ -19,7 +19,7 @@ namespace pika { namespace chrono {
 
     class steady_time_point
     {
-        typedef steady_clock::time_point value_type;
+        using value_type = steady_clock::time_point;
 
     public:
         steady_time_point(value_type const& abs_time)
@@ -46,7 +46,7 @@ namespace pika { namespace chrono {
 
     class steady_duration
     {
-        typedef steady_clock::duration value_type;
+        using value_type = steady_clock::duration;
 
     public:
         steady_duration(value_type const& rel_time)

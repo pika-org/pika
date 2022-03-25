@@ -23,7 +23,7 @@
 template <typename IteratorTag>
 void test_transform_binary(IteratorTag)
 {
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c1(10007);
     test_vector c2(10007);
@@ -60,7 +60,7 @@ void test_transform_binary(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c1(10007);
     test_vector c2(10007);
@@ -94,7 +94,7 @@ void test_transform_binary(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_transform_binary_async(ExPolicy p, IteratorTag)
 {
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c1(10007);
     test_vector c2(10007);
@@ -151,8 +151,8 @@ void transform_binary_test()
 template <typename IteratorTag>
 void test_transform_binary_exception(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c1(10007);
     std::vector<std::size_t> c2(c1.size());
@@ -192,8 +192,8 @@ void test_transform_binary_exception(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c1(10007);
     std::vector<std::size_t> c2(c1.size());
@@ -230,8 +230,8 @@ void test_transform_binary_exception(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_transform_binary_exception_async(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c1(10007);
     std::vector<std::size_t> c2(c1.size());
@@ -298,8 +298,8 @@ void test_transform_binary_bad_alloc(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c1(10007);
     std::vector<std::size_t> c2(c1.size());
@@ -335,8 +335,8 @@ void test_transform_binary_bad_alloc(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_transform_binary_bad_alloc_async(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c1(10007);
     std::vector<std::size_t> c2(c1.size());

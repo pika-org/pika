@@ -27,8 +27,8 @@ namespace pika { namespace lcos { namespace local {
     struct receive_buffer
     {
     protected:
-        typedef Mutex mutex_type;
-        typedef pika::lcos::local::promise<T> buffer_promise_type;
+        using mutex_type = Mutex;
+        using buffer_promise_type = pika::lcos::local::promise<T>;
 
         struct entry_data
         {
@@ -72,7 +72,7 @@ namespace pika { namespace lcos { namespace local {
 
         typedef std::map<std::size_t, std::shared_ptr<entry_data>>
             buffer_map_type;
-        typedef typename buffer_map_type::iterator iterator;
+        using iterator = typename buffer_map_type::iterator;
 
         struct erase_on_exit
         {
@@ -252,8 +252,8 @@ namespace pika { namespace lcos { namespace local {
     struct receive_buffer<void, Mutex>
     {
     protected:
-        typedef Mutex mutex_type;
-        typedef pika::lcos::local::promise<void> buffer_promise_type;
+        using mutex_type = Mutex;
+        using buffer_promise_type = pika::lcos::local::promise<void>;
 
         struct entry_data
         {
@@ -296,7 +296,7 @@ namespace pika { namespace lcos { namespace local {
 
         typedef std::map<std::size_t, std::shared_ptr<entry_data>>
             buffer_map_type;
-        typedef typename buffer_map_type::iterator iterator;
+        using iterator = typename buffer_map_type::iterator;
 
         struct erase_on_exit
         {

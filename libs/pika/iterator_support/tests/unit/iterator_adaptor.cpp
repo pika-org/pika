@@ -64,9 +64,9 @@ struct one_or_four
     }
 };
 
-typedef std::deque<int> storage;
+using storage = std::deque<int>;
 typedef std::deque<int*> pointer_deque;
-typedef std::set<storage::iterator> iterator_set;
+using iterator_set = std::set<storage::iterator>;
 
 template <class T>
 struct foo;
@@ -75,7 +75,7 @@ void blah(int) {}
 
 struct my_gen
 {
-    typedef int result_type;
+    using result_type = int;
 
     my_gen()
       : n(0)
@@ -201,7 +201,7 @@ int main()
     // Test the iterator_traits
     {
         // Test computation of defaults
-        typedef ptr_iterator<int> Iter1;
+        using Iter1 = ptr_iterator<int>;
 
         // don't use std::iterator_traits here to avoid VC++ problems
         PIKA_TEST((std::is_same<Iter1::value_type, int>::value));
@@ -228,8 +228,8 @@ int main()
 
     {
         // Test constant iterator idiom
-        typedef ptr_iterator<int> BaseIter;
-        typedef constant_iterator<BaseIter> Iter;
+        using BaseIter = ptr_iterator<int>;
+        using Iter = constant_iterator<BaseIter>;
 
         Iter it;
 
@@ -263,7 +263,7 @@ int main()
     {
         tests::forward_iterator_archetype<tests::dummy_type> forward_iter;
 
-        typedef fwd_iterator<tests::dummy_type> adaptor_type;
+        using adaptor_type = fwd_iterator<tests::dummy_type>;
 
         adaptor_type i(forward_iter);
         int zero = 0;
@@ -276,7 +276,7 @@ int main()
     // check operator-> with an input iterator
     {
         tests::input_iterator_archetype_no_proxy<tests::dummy_type> input_iter;
-        typedef in_iterator<tests::dummy_type> adaptor_type;
+        using adaptor_type = in_iterator<tests::dummy_type>;
         adaptor_type i(input_iter);
         int zero = 0;
         if (zero)    // don't do this, just make sure it compiles
@@ -288,7 +288,7 @@ int main()
     // check that base_type is correct
     {
         // Test constant iterator idiom
-        typedef ptr_iterator<int> BaseIter;
+        using BaseIter = ptr_iterator<int>;
 
         PIKA_TEST((std::is_same<BaseIter::base_type, int*>::value));
         PIKA_TEST((std::is_same<constant_iterator<BaseIter>::base_type,

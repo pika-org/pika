@@ -53,7 +53,8 @@ namespace {
 namespace boost { namespace inspect {
     deprecated_macro_check::deprecated_macro_check()
       : m_files_with_errors(0)
-      , m_from_boost_root(std::filesystem::exists(search_root_path() / "boost") &&
+      , m_from_boost_root(
+            std::filesystem::exists(search_root_path() / "boost") &&
             std::filesystem::exists(search_root_path() / "libs"))
     {
         register_signature(".c");
@@ -67,7 +68,8 @@ namespace boost { namespace inspect {
     }
 
     void deprecated_macro_check::inspect(const string& library_name,
-        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path&
+            full_path,             // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

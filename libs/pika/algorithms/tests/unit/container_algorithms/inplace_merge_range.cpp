@@ -170,8 +170,8 @@ void test_inplace_merge_stable(
         "pika::is_execution_policy<ExPolicy>::value");
 
     typedef typename std::pair<DataType, int> ElemType;
-    typedef typename std::vector<ElemType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<ElemType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<ElemType> res(left_size + right_size);
@@ -269,7 +269,7 @@ void test_inplace_merge_stable()
 template <typename IteratorTag, typename DataType>
 void test_inplace_merge_etc(IteratorTag, DataType, int rand_base)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<DataType> res(left_size + right_size), sol, org;
@@ -290,7 +290,7 @@ void test_inplace_merge_etc(IteratorTag, DataType, int rand_base)
 
     // Test projection.
     {
-        typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+        using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
         sol = res = org;
 
@@ -317,7 +317,7 @@ void test_inplace_merge_etc(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<DataType> res(left_size + right_size), sol, org;
@@ -338,7 +338,7 @@ void test_inplace_merge_etc(
 
     // Test projection.
     {
-        typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+        using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
         sol = res = org;
 

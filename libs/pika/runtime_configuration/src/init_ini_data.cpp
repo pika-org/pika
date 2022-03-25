@@ -80,7 +80,7 @@ namespace pika { namespace util {
             ini.get_entry("pika.master_ini_path_suffixes"));
 
         // split off the separate paths from the given path list
-        typedef boost::tokenizer<boost::char_separator<char>> tokenizer_type;
+        using tokenizer_type = boost::tokenizer<boost::char_separator<char>>;
 
         boost::char_separator<char> sep(PIKA_INI_PATH_DELIMITER);
         tokenizer_type tok_paths(ini_paths, sep);
@@ -172,7 +172,7 @@ namespace pika { namespace util {
         std::vector<std::string> ini_paths;
 
         // split off the separate paths from the given path list
-        typedef boost::tokenizer<boost::char_separator<char>> tokenizer_type;
+        using tokenizer_type = boost::tokenizer<boost::char_separator<char>>;
 
         boost::char_separator<char> sep(PIKA_INI_PATH_DELIMITER);
         tokenizer_type tok(ini_path, sep);

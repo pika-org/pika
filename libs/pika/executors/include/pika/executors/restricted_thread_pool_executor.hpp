@@ -29,11 +29,11 @@ namespace pika { namespace parallel { namespace execution {
     public:
         /// Associate the parallel_execution_tag executor tag type as a default
         /// with this executor.
-        typedef pika::execution::parallel_execution_tag execution_category;
+        using execution_category = pika::execution::parallel_execution_tag;
 
         /// Associate the static_chunk_size executor parameters type as a default
         /// with this executor.
-        typedef pika::execution::static_chunk_size executor_parameters_type;
+        using executor_parameters_type = pika::execution::static_chunk_size;
 
         /// Create a new parallel executor
         restricted_thread_pool_executor(std::size_t first_thread = 0,

@@ -28,10 +28,10 @@ namespace htts2 {
     template <typename BaseClock>
     struct clocksource
     {
-        typedef BaseClock base_clock;
-        typedef typename base_clock::rep rep;
-        typedef typename std::nano period;
-        typedef std::chrono::duration<rep, period> duration;
+        using base_clock = BaseClock;
+        using rep = typename base_clock::rep;
+        using period = typename std::nano;
+        using duration = std::chrono::duration<rep, period>;
 
         static_assert(
             base_clock::is_steady == true, "base_clock is not steady");
@@ -61,7 +61,7 @@ namespace htts2 {
     typename clocksource<BaseClock>::rep payload(
         typename clocksource<BaseClock>::rep expected)
     {
-        typedef typename clocksource<BaseClock>::rep rep;
+        using rep = typename clocksource<BaseClock>::rep;
 
         rep const start = clocksource<BaseClock>::now();
 
@@ -77,7 +77,7 @@ namespace htts2 {
     template <typename BaseClock = std::chrono::steady_clock>
     struct timer : clocksource<BaseClock>
     {
-        typedef typename clocksource<BaseClock>::rep rep;
+        using rep = typename clocksource<BaseClock>::rep;
 
         timer()
           : start_(clocksource<BaseClock>::now())

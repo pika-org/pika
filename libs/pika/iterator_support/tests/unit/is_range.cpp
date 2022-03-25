@@ -48,7 +48,7 @@ struct member
 
 void member_range()
 {
-    typedef member range;
+    using range = member;
 
     PIKA_TEST_MSG(
         (pika::traits::is_range<range>::value == true), "member-const");
@@ -86,7 +86,7 @@ namespace adl {
 
 void adl_range()
 {
-    typedef adl::free range;
+    using range = adl::free;
 
     PIKA_TEST_MSG((pika::traits::is_range<range>::value == true), "adl-const");
     PIKA_TEST_MSG(
@@ -96,7 +96,7 @@ void adl_range()
 ///////////////////////////////////////////////////////////////////////////////
 void vector_range()
 {
-    typedef std::vector<int> range;
+    using range = std::vector<int>;
 
     PIKA_TEST_MSG((pika::traits::is_range<range>::value == true), "vector");
     PIKA_TEST_MSG(

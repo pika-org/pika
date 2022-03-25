@@ -23,7 +23,7 @@
 #include <vector>
 
 using pika::util::deferred_call;
-typedef std::vector<int>::iterator iter;
+using iter = std::vector<int>::iterator;
 
 ////////////////////////////////////////////////////////////////////////////////
 // A parallel executor that returns void for bulk_execute and pika::future<void>
@@ -75,7 +75,7 @@ void bulk_test(int, pika::thread::id tid, int passed_through)    //-V813
 
 void test_void_bulk_sync()
 {
-    typedef void_parallel_executor executor;
+    using executor = void_parallel_executor;
 
     pika::thread::id tid = pika::this_thread::get_id();
 
@@ -93,7 +93,7 @@ void test_void_bulk_sync()
 
 void test_void_bulk_async()
 {
-    typedef void_parallel_executor executor;
+    using executor = void_parallel_executor;
 
     pika::thread::id tid = pika::this_thread::get_id();
 
@@ -119,7 +119,7 @@ void test_void_bulk_async()
 std::vector<pika::util::iterator_range<iter>> split(
     iter first, iter last, int parts)
 {
-    typedef std::iterator_traits<iter>::difference_type sz_type;
+    using sz_type = std::iterator_traits<iter>::difference_type;
     sz_type count = std::distance(first, last);
     sz_type increment = count / parts;
 

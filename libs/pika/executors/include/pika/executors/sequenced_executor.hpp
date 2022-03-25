@@ -51,7 +51,7 @@ namespace pika { namespace execution {
         /// \endcond
 
         /// \cond NOINTERNAL
-        typedef sequenced_execution_tag execution_category;
+        using execution_category = sequenced_execution_tag;
 
         // OneWayExecutor interface
         template <typename F, typename... Ts>

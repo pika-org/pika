@@ -25,8 +25,8 @@ std::chrono::milliseconds const timeout_resolution(100);
 template <typename M>
 struct test_lock
 {
-    typedef M mutex_type;
-    typedef std::unique_lock<M> lock_type;
+    using mutex_type = M;
+    using lock_type = std::unique_lock<M>;
 
     void operator()()
     {
@@ -63,8 +63,8 @@ struct test_lock
 template <typename M>
 struct test_trylock
 {
-    typedef M mutex_type;
-    typedef std::unique_lock<M> try_lock_type;
+    using mutex_type = M;
+    using try_lock_type = std::unique_lock<M>;
 
     void operator()()
     {
@@ -109,7 +109,7 @@ struct test_trylock
 template <typename Mutex>
 struct test_lock_times_out_if_other_thread_has_lock
 {
-    typedef std::unique_lock<Mutex> Lock;
+    using Lock = std::unique_lock<Mutex>;
 
     Mutex m;
     pika::lcos::local::mutex done_mutex;
@@ -149,7 +149,7 @@ struct test_lock_times_out_if_other_thread_has_lock
         return done;
     }
 
-    typedef test_lock_times_out_if_other_thread_has_lock<Mutex> this_type;
+    using this_type = test_lock_times_out_if_other_thread_has_lock<Mutex>;
 
     void do_test(void (this_type::*test_func)())
     {
@@ -190,8 +190,8 @@ struct test_lock_times_out_if_other_thread_has_lock
 template <typename M>
 struct test_timedlock
 {
-    typedef M mutex_type;
-    typedef std::unique_lock<M> try_lock_for_type;
+    using mutex_type = M;
+    using try_lock_for_type = std::unique_lock<M>;
 
     static bool fake_predicate()
     {
@@ -264,8 +264,8 @@ struct test_timedlock
 template <typename M>
 struct test_recursive_lock
 {
-    typedef M mutex_type;
-    typedef std::unique_lock<M> lock_type;
+    using mutex_type = M;
+    using lock_type = std::unique_lock<M>;
 
     void operator()()
     {

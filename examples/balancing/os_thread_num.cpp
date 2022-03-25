@@ -55,7 +55,7 @@ void get_os_thread_num(barrier& barr, queue<std::size_t>& os_threads)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-typedef std::map<std::size_t, std::size_t> result_map;
+using result_map = std::map<std::size_t, std::size_t>;
 
 typedef std::multimap<std::size_t, std::size_t, std::greater<std::size_t>>
     sorter;

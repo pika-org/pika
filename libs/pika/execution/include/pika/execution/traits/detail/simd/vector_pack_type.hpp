@@ -23,7 +23,7 @@ namespace pika { namespace parallel { namespace traits {
         template <typename T, std::size_t N, typename Abi>
         struct vector_pack_type
         {
-            typedef std::experimental::fixed_size_simd<T, N> type;
+            using type = std::experimental::fixed_size_simd<T, N>;
         };
 
         template <typename T, typename Abi>
@@ -32,7 +32,7 @@ namespace pika { namespace parallel { namespace traits {
             typedef typename std::conditional<std::is_void<Abi>::value,
                 std::experimental::simd_abi::native<T>, Abi>::type abi_type;
 
-            typedef std::experimental::simd<T, abi_type> type;
+            using type = std::experimental::simd<T, abi_type>;
         };
 
         template <typename T, typename Abi>

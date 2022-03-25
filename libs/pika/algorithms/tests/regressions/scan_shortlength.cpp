@@ -21,7 +21,7 @@
 void test_zero()
 {
     using namespace pika::execution;
-    typedef std::vector<int>::iterator Iter;
+    using Iter = std::vector<int>::iterator;
     std::vector<int> a;
     std::vector<int> b, c, d;
 
@@ -46,7 +46,7 @@ void test_zero()
 void test_async_zero()
 {
     using namespace pika::execution;
-    typedef std::vector<int>::iterator Iter;
+    using Iter = std::vector<int>::iterator;
     std::vector<int> a;
     std::vector<int> b, c, d;
 

@@ -442,7 +442,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1,
                 Proj2&& proj2)
             {
-                typedef util::in_in_out_result<Iter1, Iter2, Iter3> result_type;
+                using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
                 typedef util::detail::algorithm_result<ExPolicy, result_type>
                     algorithm_result;
 

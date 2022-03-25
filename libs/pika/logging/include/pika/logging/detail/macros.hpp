@@ -101,7 +101,7 @@ Note that @c logger_type only needs to be a declaration (a @c typedef, for insta
 
 Example:
 @code
-typedef logger_format_write logger_type;
+using logger_type = logger_format_write;
 PIKA_DECLARE_LOG(g_l, logger_type)
 @endcode
 
@@ -117,7 +117,7 @@ It should be used in a source file, to define the log
 
 Example:
 @code
-typedef logger_format_write logger_type;
+using logger_type = logger_format_write;
 ...
 PIKA_DEFINE_LOG(g_l, logger_type)
 @endcode

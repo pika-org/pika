@@ -28,8 +28,8 @@ namespace pika { namespace lcos { namespace local {
         template <typename R, typename SharedState>
         class promise_base
         {
-            typedef SharedState shared_state_type;
-            typedef typename shared_state_type::init_no_addref init_no_addref;
+            using shared_state_type = SharedState;
+            using init_no_addref = typename shared_state_type::init_no_addref;
 
         public:
             promise_base()
@@ -52,7 +52,7 @@ namespace pika { namespace lcos { namespace local {
                 typedef typename std::allocator_traits<Allocator>::
                     template rebind_alloc<allocator_shared_state_type>
                         other_allocator;
-                typedef std::allocator_traits<other_allocator> traits;
+                using traits = std::allocator_traits<other_allocator>;
                 typedef std::unique_ptr<allocator_shared_state_type,
                     pika::detail::allocator_deleter<other_allocator>>
                     unique_pointer;

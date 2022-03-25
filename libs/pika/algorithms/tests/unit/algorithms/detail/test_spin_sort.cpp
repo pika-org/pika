@@ -157,7 +157,7 @@ void test4()
 
 void test5()
 {
-    typedef std::less<std::uint64_t> compare;
+    using compare = std::less<std::uint64_t>;
     constexpr std::uint32_t KMax = NUMELEMS;
     std::vector<std::uint64_t> K, M;
     std::mt19937_64 my_rand(std::rand());
@@ -204,7 +204,7 @@ void test6()
 
 void test7(void)
 {
-    typedef typename std::vector<std::uint64_t>::iterator iter_t;
+    using iter_t = typename std::vector<std::uint64_t>::iterator;
     constexpr std::uint32_t NELEM = 41667;
     constexpr std::uint32_t N1 = (NELEM + 1) / 2;
     std::vector<std::uint64_t> A;

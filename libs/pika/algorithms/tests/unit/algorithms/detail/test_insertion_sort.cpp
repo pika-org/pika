@@ -79,7 +79,7 @@ void test01()
 
 void test02()
 {
-    typedef typename std::vector<std::uint64_t>::iterator iter_t;
+    using iter_t = typename std::vector<std::uint64_t>::iterator;
 #if defined(PIKA_DEBUG)
     constexpr std::uint32_t NELEM = 667;
 #else

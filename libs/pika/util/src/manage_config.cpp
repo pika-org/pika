@@ -14,7 +14,7 @@ namespace pika { namespace util {
     ///////////////////////////////////////////////////////////////////////////
     inline std::string trim_whitespace(std::string const& s)
     {
-        typedef std::string::size_type size_type;
+        using size_type = std::string::size_type;
 
         size_type first = s.find_first_not_of(" \t");
         if (std::string::npos == first)

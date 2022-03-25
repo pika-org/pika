@@ -17,7 +17,7 @@
 #include <cstdint>
 #include <iostream>
 
-typedef std::chrono::steady_clock BaseClock;
+using BaseClock = std::chrono::steady_clock;
 
 extern "C" void stage_tasks(size_t start, size_t stop, void* payload_duration_)
 {
@@ -48,7 +48,7 @@ struct qthreads_driver : htts2::driver
     }
 
 private:
-    typedef double results_type;
+    using results_type = double;
 
     results_type kernel()
     {

@@ -23,7 +23,7 @@
 template <typename Parameters>
 void chunk_size_test_seq(Parameters&& params)
 {
-    typedef std::random_access_iterator_tag iterator_tag;
+    using iterator_tag = std::random_access_iterator_tag;
     test_for_each(pika::execution::seq.with(std::ref(params)), iterator_tag());
     test_for_each_async(
         pika::execution::seq(pika::execution::task).with(std::ref(params)),
@@ -41,7 +41,7 @@ void chunk_size_test_seq(Parameters&& params)
 template <typename Parameters>
 void chunk_size_test_par(Parameters&& params)
 {
-    typedef std::random_access_iterator_tag iterator_tag;
+    using iterator_tag = std::random_access_iterator_tag;
     test_for_each(pika::execution::par.with(std::ref(params)), iterator_tag());
     test_for_each_async(
         pika::execution::par(pika::execution::task).with(std::ref(params)),

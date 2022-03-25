@@ -115,7 +115,7 @@ namespace pika { namespace parallel { namespace util {
             PIKA_ASSERT(
                 pika::util::size(data) >= pika::util::size(chunk_sizes));
 
-            typedef typename std::decay<Data>::type data_type;
+            using data_type = typename std::decay<Data>::type;
 
             typename data_type::const_iterator data_it =
                 pika::util::begin(data);

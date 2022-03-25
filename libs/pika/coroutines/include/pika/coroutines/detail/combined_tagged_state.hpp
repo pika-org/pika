@@ -19,11 +19,11 @@ namespace pika { namespace threads { namespace detail {
     class combined_tagged_state
     {
     private:
-        typedef std::int64_t tagged_state_type;
+        using tagged_state_type = std::int64_t;
 
-        typedef std::int8_t thread_state_type;
-        typedef std::int8_t thread_state_ex_type;
-        typedef std::int64_t tag_type;
+        using thread_state_type = std::int8_t;
+        using thread_state_ex_type = std::int8_t;
+        using tag_type = std::int64_t;
 
         static const std::size_t state_shift = 56;       // 8th byte
         static const std::size_t state_ex_shift = 48;    // 7th byte

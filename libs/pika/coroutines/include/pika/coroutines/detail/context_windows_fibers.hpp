@@ -74,7 +74,7 @@ namespace pika { namespace threads { namespace coroutines {
     };
 
     namespace detail { namespace windows {
-        typedef LPVOID fiber_ptr;
+        using fiber_ptr = LPVOID;
 
 #if _WIN32_WINNT < 0x0600
         /*
@@ -239,7 +239,7 @@ namespace pika { namespace threads { namespace coroutines {
             PIKA_NON_COPYABLE(fibers_context_impl);
 
         public:
-            typedef fibers_context_impl_base context_impl_base;
+            using context_impl_base = fibers_context_impl_base;
 
             enum
             {
@@ -310,7 +310,7 @@ namespace pika { namespace threads { namespace coroutines {
             }
 
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
-            typedef std::atomic<std::int64_t> counter_type;
+            using counter_type = std::atomic<std::int64_t>;
 
         private:
             static counter_type& get_stack_recycle_counter() noexcept

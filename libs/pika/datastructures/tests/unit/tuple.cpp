@@ -121,12 +121,12 @@ public:
 // Testing different element types --------------------------------------------
 // ----------------------------------------------------------------------------
 
-typedef pika::tuple<int> t1;
+using t1 = pika::tuple<int>;
 typedef pika::tuple<double&, const double&, const double, double*,
     const double*>
     t2;
 typedef pika::tuple<A, int (*)(char, int), C> t3;
-typedef pika::tuple<std::string, std::pair<A, B>> t4;
+using t4 = pika::tuple<std::string, std::pair<A, B>>;
 typedef pika::tuple<A*, pika::tuple<const A*, const B&, C>, bool, void*> t5;
 typedef pika::tuple<volatile int, const volatile char&, int (&)(float)> t6;
 typedef pika::tuple<B (A::*)(C&), A&> t7;
@@ -500,8 +500,8 @@ void const_tuple_test()
 // ----------------------------------------------------------------------------
 void tuple_length_test()
 {
-    typedef pika::tuple<int, float, double> t1;
-    typedef pika::tuple<> t2;
+    using t1 = pika::tuple<int, float, double>;
+    using t2 = pika::tuple<>;
 
     PIKA_TEST_EQ(pika::tuple_size<t1>::value, std::size_t(3));
     PIKA_TEST_EQ(pika::tuple_size<t2>::value, std::size_t(0));

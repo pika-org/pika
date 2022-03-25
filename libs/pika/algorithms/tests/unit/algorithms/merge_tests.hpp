@@ -122,8 +122,8 @@ struct random_fill
 template <typename IteratorTag, typename DataType, typename Comp>
 void test_merge(IteratorTag, DataType, Comp comp, int rand_base)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<DataType> src1(size1), src2(size2), dest_res(size1 + size2),
@@ -154,8 +154,8 @@ void test_merge(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<DataType> src1(size1), src2(size2), dest_res(size1 + size2),
@@ -186,8 +186,8 @@ void test_merge_async(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<DataType> src1(size1), src2(size2), dest_res(size1 + size2),
@@ -215,8 +215,8 @@ void test_merge_async(
 template <typename IteratorTag>
 void test_merge_exception(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<int> src1(size1), src2(size2), dest(size1 + size2);
@@ -257,8 +257,8 @@ void test_merge_exception(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<int> src1(size1), src2(size2), dest(size1 + size2);
@@ -295,8 +295,8 @@ void test_merge_exception(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_merge_exception_async(ExPolicy&& policy, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<int> src1(size1), src2(size2), dest(size1 + size2);
@@ -337,8 +337,8 @@ void test_merge_exception_async(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag>
 void test_merge_bad_alloc(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<int> src1(size1), src2(size2), dest(size1 + size2);
@@ -377,8 +377,8 @@ void test_merge_bad_alloc(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<int> src1(size1), src2(size2), dest(size1 + size2);
@@ -414,8 +414,8 @@ void test_merge_bad_alloc(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_merge_bad_alloc_async(ExPolicy&& policy, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<int> src1(size1), src2(size2), dest(size1 + size2);
@@ -455,7 +455,7 @@ void test_merge_bad_alloc_async(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag, typename DataType>
 void test_merge_etc(IteratorTag, DataType, int rand_base)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<DataType> src1(size1), src2(size2), dest_res(size1 + size2),
@@ -468,7 +468,7 @@ void test_merge_etc(IteratorTag, DataType, int rand_base)
 
     // Test default comparison.
     {
-        typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+        using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
         auto result = pika::merge(iterator(std::begin(src1)),
             iterator(std::end(src1)), iterator(std::begin(src2)),
@@ -512,7 +512,7 @@ void test_merge_etc(ExPolicy&& policy, IteratorTag, DataType, int rand_base)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<DataType> src1(size1), src2(size2), dest_res(size1 + size2),
@@ -525,7 +525,7 @@ void test_merge_etc(ExPolicy&& policy, IteratorTag, DataType, int rand_base)
 
     // Test default comparison.
     {
-        typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+        using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
         auto result = pika::merge(policy, iterator(std::begin(src1)),
             iterator(std::end(src1)), iterator(std::begin(src2)),

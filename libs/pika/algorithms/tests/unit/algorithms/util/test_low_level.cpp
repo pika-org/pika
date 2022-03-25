@@ -92,7 +92,7 @@ void test1()
 // TEST OF FULL_MERGE
 void test2()
 {
-    typedef std::less<std::uint64_t> compare;
+    using compare = std::less<std::uint64_t>;
     std::vector<std::uint64_t> A, B;
     size_t NA = 0;
 
@@ -133,7 +133,7 @@ void test2()
 // TEST OF HALF_MERGE
 void test3()
 {
-    typedef std::less<std::uint64_t> compare;
+    using compare = std::less<std::uint64_t>;
     std::vector<std::uint64_t> A, B;
 
     A.clear();
@@ -201,7 +201,7 @@ void test5()
     char K[1600];
     forensic* PAux = reinterpret_cast<forensic*>(&K[0]);
 
-    typedef std::less<forensic> compare;
+    using compare = std::less<forensic>;
     std::vector<forensic> A;
 
     A.clear();
@@ -243,7 +243,7 @@ void test5()
 // TEST OF in_place_MERGE
 void test6()
 {
-    typedef std::less<std::uint64_t> compare;
+    using compare = std::less<std::uint64_t>;
     std::vector<std::uint64_t> A, B;
     compare comp;
 
@@ -290,7 +290,7 @@ void test6()
 // TEST OF in_place_MERGE
 void test7()
 {
-    typedef std::less<std::uint64_t> compare;
+    using compare = std::less<std::uint64_t>;
     compare comp;
     std::vector<std::uint64_t> A, B;
 
@@ -360,7 +360,7 @@ void test7()
 // TEST OF STABILITY
 void test8()
 {
-    typedef std::less<xk> compare;
+    using compare = std::less<xk>;
     compare comp;
     std::vector<xk> A, B;
 
@@ -415,7 +415,7 @@ void test8()
 // TEST OF IN_PLACE_MERGE_UNCONTIGUOUS
 void test9()
 {
-    typedef std::less<std::uint64_t> compare;
+    using compare = std::less<std::uint64_t>;
     bool SW;
 
     std::vector<std::uint64_t> A, B, C;
@@ -479,7 +479,7 @@ void test9()
 // TEST OF in_place_MERGE
 void test10()
 {
-    typedef std::less<std::uint64_t> compare;
+    using compare = std::less<std::uint64_t>;
     compare comp;
     std::vector<std::uint64_t> A, B, C;
     bool SW;
@@ -561,7 +561,7 @@ void test10()
 // TEST OF STABILITY
 void test11()
 {
-    typedef std::less<xk> compare;
+    using compare = std::less<xk>;
     compare comp;
     std::vector<xk> A, B, C;
     bool SW;

@@ -93,14 +93,14 @@
 // Platform-specific definitions of a numeric thread ID type and an invalid value
 namespace pika { namespace concurrency { namespace details {
     template<typename thread_id_t> struct thread_id_converter {
-        typedef thread_id_t thread_id_numeric_size_t;
-        typedef thread_id_t thread_id_hash_t;
+        using thread_id_numeric_size_t = thread_id_t;
+        using thread_id_hash_t = thread_id_t;
         static thread_id_hash_t prehash(thread_id_t const& x) { return x; }
     };
 } } }
 #if defined(MCDBGQ_USE_RELACY)
 namespace pika { namespace concurrency { namespace details {
-    typedef std::uint32_t thread_id_t;
+    using thread_id_t = std::uint32_t;
     static const thread_id_t invalid_thread_id  = 0xFFFFFFFFU;
     static const thread_id_t invalid_thread_id2 = 0xFFFFFFFEU;
     static inline thread_id_t thread_id() { return rl::thread_index(); }
@@ -111,7 +111,7 @@ namespace pika { namespace concurrency { namespace details {
 extern "C" __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId(void);
 namespace pika { namespace concurrency { namespace details {
     static_assert(sizeof(unsigned long) == sizeof(std::uint32_t), "Expected size of unsigned long to be 32 bits on Windows");
-    typedef std::uint32_t thread_id_t;
+    using thread_id_t = std::uint32_t;
     static const thread_id_t invalid_thread_id  = 0;      // See http://blogs.msdn.com/b/oldnewthing/archive/2004/02/23/78395.aspx
     static const thread_id_t invalid_thread_id2 = 0xFFFFFFFFU;  // Not technically guaranteed to be invalid, but is never used in practice. Note that all Win32 thread IDs are presently multiples of 4.
     static inline thread_id_t thread_id() { return static_cast<thread_id_t>(::GetCurrentThreadId()); }
@@ -120,7 +120,7 @@ namespace pika { namespace concurrency { namespace details {
 namespace pika { namespace concurrency { namespace details {
     static_assert(sizeof(std::thread::id) == 4 || sizeof(std::thread::id) == 8, "std::thread::id is expected to be either 4 or 8 bytes");
 
-    typedef std::thread::id thread_id_t;
+    using thread_id_t = std::thread::id;
     static const thread_id_t invalid_thread_id;         // Default ctor creates invalid ID
 
     // Note we don't define a invalid_thread_id2 since std::thread::id doesn't have one; it's
@@ -129,15 +129,15 @@ namespace pika { namespace concurrency { namespace details {
     static inline thread_id_t thread_id() { return std::this_thread::get_id(); }
 
     template<std::size_t> struct thread_id_size { };
-    template<> struct thread_id_size<4> { typedef std::uint32_t numeric_t; };
-    template<> struct thread_id_size<8> { typedef std::uint64_t numeric_t; };
+    template<> struct thread_id_size<4> { using numeric_t = std::uint32_t; };
+    template<> struct thread_id_size<8> { using numeric_t = std::uint64_t; };
 
     template<> struct thread_id_converter<thread_id_t> {
         typedef thread_id_size<sizeof(thread_id_t)>::numeric_t thread_id_numeric_size_t;
 #if !defined(__APPLE__)
-        typedef std::size_t thread_id_hash_t;
+        using thread_id_hash_t = std::size_t;
 #else
-        typedef thread_id_numeric_size_t thread_id_hash_t;
+        using thread_id_hash_t = thread_id_numeric_size_t;
 #endif
 
         static thread_id_hash_t prehash(thread_id_t const& x)
@@ -163,7 +163,7 @@ namespace pika { namespace concurrency { namespace details {
 #define MOODYCAMEL_THREADLOCAL thread_local
 #endif
 namespace pika { namespace concurrency { namespace details {
-    typedef std::uintptr_t thread_id_t;
+    using thread_id_t = std::uintptr_t;
     static const thread_id_t invalid_thread_id  = 0;    // Address can't be nullptr
     static const thread_id_t invalid_thread_id2 = 1;    // Member accesses off a null pointer are also generally invalid. Plus it's not aligned.
     static inline thread_id_t thread_id() { static MOODYCAMEL_THREADLOCAL int x; return reinterpret_cast<thread_id_t>(&x); }
@@ -260,9 +260,9 @@ namespace details {
     };
 
 #if defined(__GLIBCXX__)
-    typedef ::max_align_t std_max_align_t;      // libstdc++ forgot to add it to std:: for a while
+    using std_max_align_t = ::max_align_t;      // libstdc++ forgot to add it to std:: for a while
 #else
-    typedef std::max_align_t std_max_align_t;   // Others (e.g. MSVC) insist it can *only* be accessed via std::
+    using std_max_align_t = std::max_align_t;   // Others (e.g. MSVC) insist it can *only* be accessed via std::
 #endif
 
     // Some platforms have incorrectly set max_align_t to a type with <8 bytes alignment even while supporting
@@ -283,7 +283,7 @@ namespace details {
 struct ConcurrentQueueDefaultTraits
 {
     // General-purpose size type. std::size_t is strongly recommended.
-    typedef std::size_t size_t;
+    using size_t = std::size_t;
 
     // The type used for the enqueue and dequeue indices. Must be at least as
     // large as size_t. Should be significantly larger than the number of elements
@@ -295,7 +295,7 @@ struct ConcurrentQueueDefaultTraits
     // prevent a race condition no matter the usage of the queue. Note that
     // whether the queue is lock-free with a 64-int type depends on the whether
     // std::atomic<std::uint64_t> is lock-free, which is platform-specific.
-    typedef std::size_t index_t;
+    using index_t = std::size_t;
 
     // Internally, all elements are enqueued and dequeued from multi-element
     // blocks; this is the smallest controllable unit. If you expect few elements
@@ -509,8 +509,8 @@ namespace details
 
 #ifdef MOODYCAMEL_CPP11_THREAD_LOCAL_SUPPORTED
 #ifdef MCDBGQ_USE_RELACY
-    typedef RelacyThreadExitListener ThreadExitListener;
-    typedef RelacyThreadExitNotifier ThreadExitNotifier;
+    using ThreadExitListener = RelacyThreadExitListener;
+    using ThreadExitNotifier = RelacyThreadExitNotifier;
 #else
     struct ThreadExitListener
     {
@@ -703,11 +703,11 @@ template<typename T, typename Traits = ConcurrentQueueDefaultTraits>
 class ConcurrentQueue
 {
 public:
-    typedef ::pika::concurrency::ProducerToken producer_token_t;
-    typedef ::pika::concurrency::ConsumerToken consumer_token_t;
+    using producer_token_t = ::pika::concurrency::ProducerToken;
+    using consumer_token_t = ::pika::concurrency::ConsumerToken;
 
-    typedef typename Traits::index_t index_t;
-    typedef typename Traits::size_t size_t;
+    using index_t = typename Traits::index_t;
+    using size_t = typename Traits::size_t;
 
     static const size_t BLOCK_SIZE = static_cast<size_t>(Traits::BLOCK_SIZE);
     static const size_t EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD = static_cast<size_t>(Traits::EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD);

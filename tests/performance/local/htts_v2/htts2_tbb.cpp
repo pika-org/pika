@@ -116,7 +116,7 @@ struct tbb_driver : htts2::driver
     }
 
 private:
-    typedef double results_type;
+    using results_type = double;
 
     results_type kernel()
     {

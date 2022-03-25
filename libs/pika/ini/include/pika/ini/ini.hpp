@@ -34,9 +34,9 @@ namespace pika { namespace util {
     public:
         typedef util::function<void(std::string const&, std::string const&)>
             entry_changed_func;
-        typedef std::pair<std::string, entry_changed_func> entry_type;
-        typedef std::map<std::string, entry_type> entry_map;
-        typedef std::map<std::string, section> section_map;
+        using entry_type = std::pair<std::string, entry_changed_func>;
+        using entry_map = std::map<std::string, entry_type>;
+        using section_map = std::map<std::string, section>;
 
     private:
         section* this_()

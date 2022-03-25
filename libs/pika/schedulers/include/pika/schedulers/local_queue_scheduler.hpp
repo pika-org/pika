@@ -57,7 +57,7 @@ namespace pika { namespace threads { namespace policies {
     class PIKA_EXPORT local_queue_scheduler : public scheduler_base
     {
     public:
-        typedef std::false_type has_periodic_maintenance;
+        using has_periodic_maintenance = std::false_type;
 
         typedef thread_queue<Mutex, PendingQueuing, StagedQueuing,
             TerminatedQueuing>
@@ -91,7 +91,7 @@ namespace pika { namespace threads { namespace policies {
             pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
-        typedef init_parameter init_parameter_type;
+        using init_parameter_type = init_parameter;
 
         local_queue_scheduler(init_parameter_type const& init,
             bool deferred_initialization = true)

@@ -38,7 +38,7 @@ std::size_t const data_size = 10007;
 template <typename IteratorTag>
 void test_uninitialized_value_construct_range_sent(IteratorTag)
 {
-    typedef std::vector<value_constructable> base_iterator;
+    using base_iterator = std::vector<value_constructable>;
 
     base_iterator c(data_size, {10});
     auto end_size = rand() % data_size;
@@ -69,7 +69,7 @@ template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_value_construct_range_sent(
     ExPolicy&& policy, IteratorTag)
 {
-    typedef std::vector<value_constructable> base_iterator;
+    using base_iterator = std::vector<value_constructable>;
 
     base_iterator c(data_size, {10});
     auto end_size = rand() % data_size;
@@ -99,7 +99,7 @@ void test_uninitialized_value_construct_range_sent(
 template <typename IteratorTag>
 void test_uninitialized_value_construct_range(IteratorTag)
 {
-    typedef std::vector<value_constructable> base_iterator;
+    using base_iterator = std::vector<value_constructable>;
 
     base_iterator c(data_size, {10});
     pika::ranges::uninitialized_value_construct(c);
@@ -119,7 +119,7 @@ void test_uninitialized_value_construct_range(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<value_constructable> base_iterator;
+    using base_iterator = std::vector<value_constructable>;
 
     base_iterator c(data_size, {10});
     pika::ranges::uninitialized_value_construct(
@@ -141,7 +141,7 @@ void test_uninitialized_value_construct_range_async(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<value_constructable> base_iterator;
+    using base_iterator = std::vector<value_constructable>;
 
     base_iterator c(data_size, {10});
     auto f = pika::ranges::uninitialized_value_construct(

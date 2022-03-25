@@ -123,8 +123,8 @@ struct random_fill
 template <typename IteratorTag, typename DataType, typename Comp>
 void test_inplace_merge(IteratorTag, DataType, Comp comp, int rand_base)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<DataType> res(left_size + right_size), sol;
@@ -160,8 +160,8 @@ void test_inplace_merge(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<DataType> res(left_size + right_size), sol;
@@ -197,8 +197,8 @@ void test_inplace_merge_async(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<DataType> res(left_size + right_size), sol;
@@ -231,8 +231,8 @@ void test_inplace_merge_async(
 template <typename IteratorTag>
 void test_inplace_merge_exception(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<int> res(left_size + right_size);
@@ -274,8 +274,8 @@ void test_inplace_merge_exception(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<int> res(left_size + right_size);
@@ -313,8 +313,8 @@ void test_inplace_merge_exception(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_inplace_merge_exception_async(ExPolicy&& policy, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<int> res(left_size + right_size);
@@ -357,8 +357,8 @@ void test_inplace_merge_exception_async(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag>
 void test_inplace_merge_bad_alloc(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<int> res(left_size + right_size);
@@ -398,8 +398,8 @@ void test_inplace_merge_bad_alloc(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<int> res(left_size + right_size);
@@ -436,8 +436,8 @@ void test_inplace_merge_bad_alloc(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_inplace_merge_bad_alloc_async(ExPolicy&& policy, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<int> res(left_size + right_size);
@@ -479,7 +479,7 @@ void test_inplace_merge_bad_alloc_async(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag, typename DataType>
 void test_inplace_merge_etc(IteratorTag, DataType, int rand_base)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<DataType> res(left_size + right_size), sol;
@@ -500,7 +500,7 @@ void test_inplace_merge_etc(IteratorTag, DataType, int rand_base)
 
     // Test default comparison.
     {
-        typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+        using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
         pika::inplace_merge(
             iterator(res_first), iterator(res_middle), iterator(res_last));
@@ -519,7 +519,7 @@ void test_inplace_merge_etc(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
 
     std::size_t const left_size = 300007, right_size = 123456;
     std::vector<DataType> res(left_size + right_size), sol;
@@ -540,7 +540,7 @@ void test_inplace_merge_etc(
 
     // Test default comparison.
     {
-        typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+        using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
         pika::inplace_merge(policy, iterator(res_first), iterator(res_middle),
             iterator(res_last));

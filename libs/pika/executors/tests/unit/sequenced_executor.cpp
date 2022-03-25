@@ -33,7 +33,7 @@ void test_sync()
 
 void test_async()
 {
-    typedef pika::execution::parallel_executor executor;
+    using executor = pika::execution::parallel_executor;
 
     executor exec(pika::launch::fork);
     PIKA_TEST(pika::parallel::execution::async_execute(exec, &test, 42).get() !=
@@ -53,7 +53,7 @@ pika::thread::id test_f(pika::future<void> f, int passed_through)
 
 void test_then()
 {
-    typedef pika::execution::sequenced_executor executor;
+    using executor = pika::execution::sequenced_executor;
 
     pika::future<void> f = pika::make_ready_future();
 
@@ -100,7 +100,7 @@ void bulk_test_f(int, pika::shared_future<void> f, pika::thread::id tid,
 
 void test_bulk_then()
 {
-    typedef pika::execution::sequenced_executor executor;
+    using executor = pika::execution::sequenced_executor;
 
     pika::thread::id tid = pika::this_thread::get_id();
 
@@ -124,7 +124,7 @@ void test_bulk_then()
 
 void test_bulk_async()
 {
-    typedef pika::execution::sequenced_executor executor;
+    using executor = pika::execution::sequenced_executor;
 
     pika::thread::id tid = pika::this_thread::get_id();
 

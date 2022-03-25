@@ -201,7 +201,7 @@ void test_merge()
 template <typename IteratorTag, typename DataType>
 void test_merge_etc(IteratorTag, DataType, int rand_base)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<DataType> src1(size1), src2(size2), dest_res(size1 + size2),
@@ -214,7 +214,7 @@ void test_merge_etc(IteratorTag, DataType, int rand_base)
 
     // Test projection.
     {
-        typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+        using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
         DataType val;
         pika::ranges::merge(
@@ -247,7 +247,7 @@ void test_merge_etc(ExPolicy&& policy, IteratorTag, DataType, int rand_base)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<DataType> src1(size1), src2(size2), dest_res(size1 + size2),
@@ -260,7 +260,7 @@ void test_merge_etc(ExPolicy&& policy, IteratorTag, DataType, int rand_base)
 
     // Test projection.
     {
-        typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+        using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
         DataType val;
         pika::ranges::merge(
@@ -292,8 +292,8 @@ template <typename IteratorTag, typename DataType>
 void test_merge_stable(IteratorTag, DataType, int rand_base)
 {
     typedef typename std::pair<DataType, int> ElemType;
-    typedef typename std::vector<ElemType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<ElemType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<ElemType> src1(size1), src2(size2), dest(size1 + size2);
@@ -351,8 +351,8 @@ void test_merge_stable(ExPolicy&& policy, IteratorTag, DataType, int rand_base)
         "pika::is_execution_policy<ExPolicy>::value");
 
     typedef typename std::pair<DataType, int> ElemType;
-    typedef typename std::vector<ElemType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<ElemType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size1 = 300007, size2 = 123456;
     std::vector<ElemType> src1(size1), src2(size2), dest(size1 + size2);

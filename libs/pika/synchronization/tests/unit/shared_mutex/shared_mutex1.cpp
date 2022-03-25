@@ -31,8 +31,8 @@
 
 void test_multiple_readers()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     unsigned const number_of_threads = 10;
 
@@ -86,8 +86,8 @@ void test_multiple_readers()
 
 void test_only_one_writer_permitted()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     unsigned const number_of_threads = 10;
 
@@ -135,8 +135,8 @@ void test_only_one_writer_permitted()
 
 void test_reader_blocks_writer()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     test::thread_group pool;
 
@@ -195,8 +195,8 @@ void test_reader_blocks_writer()
 
 void test_unlocking_writer_unblocks_all_readers()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     test::thread_group pool;
 
@@ -257,8 +257,8 @@ void test_unlocking_writer_unblocks_all_readers()
 
 void test_unlocking_last_reader_only_unblocks_one_writer()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     test::thread_group pool;
 

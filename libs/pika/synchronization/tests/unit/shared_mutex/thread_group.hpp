@@ -30,7 +30,7 @@ namespace test {
     class thread_group
     {
     private:
-        typedef pika::lcos::local::shared_mutex mutex_type;
+        using mutex_type = pika::lcos::local::shared_mutex;
 
     public:
         thread_group() {}

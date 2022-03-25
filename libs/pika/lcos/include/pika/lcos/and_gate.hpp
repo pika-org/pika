@@ -29,7 +29,7 @@ namespace pika { namespace lcos { namespace local {
     struct base_and_gate
     {
     protected:
-        typedef Mutex mutex_type;
+        using mutex_type = Mutex;
 
     private:
         typedef std::list<conditional_trigger*> condition_list_type;
@@ -377,7 +377,7 @@ namespace pika { namespace lcos { namespace local {
     struct and_gate : public base_and_gate<no_mutex>
     {
     private:
-        typedef base_and_gate<no_mutex> base_type;
+        using base_type = base_and_gate<no_mutex>;
 
     public:
         and_gate(std::size_t count = 0)

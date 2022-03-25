@@ -706,7 +706,7 @@ namespace pika::detail {
 
         if (!unregistered_options.empty())
         {
-            typedef std::vector<std::string>::const_iterator iterator_type;
+            using iterator_type = std::vector<std::string>::const_iterator;
 
             iterator_type end = unregistered_options.end();
             for (iterator_type it = unregistered_options.begin(); it != end;

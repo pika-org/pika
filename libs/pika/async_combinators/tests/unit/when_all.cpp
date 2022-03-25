@@ -82,7 +82,7 @@ void test_wait_for_all_one_future()
     pika::future<int> f1 = pt1.get_future();
     pt1.apply();
 
-    typedef pika::tuple<pika::future<int>> result_type;
+    using result_type = pika::tuple<pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1);
 
     result_type result = r.get();
@@ -101,7 +101,7 @@ void test_wait_for_all_two_futures()
     pika::future<int> f2 = pt2.get_future();
     pt2.apply();
 
-    typedef pika::tuple<pika::future<int>, pika::future<int>> result_type;
+    using result_type = pika::tuple<pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2);
 
     result_type result = r.get();
@@ -219,7 +219,7 @@ void test_wait_for_all_late_futures()
     pika::lcos::local::futures_factory<int()> pt2(make_int_slowly);
     pika::future<int> f2 = pt2.get_future();
 
-    typedef pika::tuple<pika::future<int>, pika::future<int>> result_type;
+    using result_type = pika::tuple<pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2);
 
     PIKA_TEST(!f1.valid());
@@ -240,7 +240,7 @@ void test_wait_for_all_deferred_futures()
     pika::future<int> f2 =
         pika::async(pika::launch::deferred, &make_int_slowly);
 
-    typedef pika::tuple<pika::future<int>, pika::future<int>> result_type;
+    using result_type = pika::tuple<pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2);
 
     PIKA_TEST(!f1.valid());

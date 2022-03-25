@@ -33,12 +33,12 @@ namespace jacobi_smp {
     void jacobi(std::size_t n, std::size_t iterations, std::size_t block_size,
         std::string const& output_filename)
     {
-        typedef std::vector<double> vector;
+        using vector = std::vector<double>;
 
         std::shared_ptr<vector> grid_new(new vector(n * n, 1));
         std::shared_ptr<vector> grid_old(new vector(n * n, 1));
 
-        typedef std::vector<pika::shared_future<void>> deps_vector;
+        using deps_vector = std::vector<pika::shared_future<void>>;
 
         std::size_t n_block =
             static_cast<std::size_t>(std::ceil(double(n) / block_size));

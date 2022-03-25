@@ -30,8 +30,8 @@
 
 void test_only_one_upgrade_lock_permitted()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     unsigned const number_of_threads = 2;
 
@@ -79,8 +79,8 @@ void test_only_one_upgrade_lock_permitted()
 
 void test_can_lock_upgrade_if_currently_locked_shared()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     test::thread_group pool;
 
@@ -144,7 +144,7 @@ void test_can_lock_upgrade_if_currently_locked_shared()
 
 void test_can_lock_upgrade_to_unique_if_currently_locked_upgrade()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
 
     shared_mutex_type mtx;
     pika::upgrade_lock<shared_mutex_type> l(mtx);
@@ -154,8 +154,8 @@ void test_can_lock_upgrade_to_unique_if_currently_locked_upgrade()
 
 void test_if_other_thread_has_write_lock_try_lock_shared_returns_false()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     shared_mutex_type rw_mutex;
     mutex_type finish_mutex;
@@ -182,8 +182,8 @@ void test_if_other_thread_has_write_lock_try_lock_shared_returns_false()
 
 void test_if_other_thread_has_write_lock_try_lock_upgrade_returns_false()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     shared_mutex_type rw_mutex;
     mutex_type finish_mutex;
@@ -210,7 +210,7 @@ void test_if_other_thread_has_write_lock_try_lock_upgrade_returns_false()
 
 void test_if_no_thread_has_lock_try_lock_shared_returns_true()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
 
     shared_mutex_type rw_mutex;
     bool const try_succeeded = rw_mutex.try_lock_shared();
@@ -223,7 +223,7 @@ void test_if_no_thread_has_lock_try_lock_shared_returns_true()
 
 void test_if_no_thread_has_lock_try_lock_upgrade_returns_true()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
 
     shared_mutex_type rw_mutex;
     bool const try_succeeded = rw_mutex.try_lock_upgrade();
@@ -236,8 +236,8 @@ void test_if_no_thread_has_lock_try_lock_upgrade_returns_true()
 
 void test_if_other_thread_has_shared_lock_try_lock_shared_returns_true()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     shared_mutex_type rw_mutex;
     mutex_type finish_mutex;
@@ -264,8 +264,8 @@ void test_if_other_thread_has_shared_lock_try_lock_shared_returns_true()
 
 void test_if_other_thread_has_shared_lock_try_lock_upgrade_returns_true()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
-    typedef pika::lcos::local::mutex mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
+    using mutex_type = pika::lcos::local::mutex;
 
     shared_mutex_type rw_mutex;
     mutex_type finish_mutex;

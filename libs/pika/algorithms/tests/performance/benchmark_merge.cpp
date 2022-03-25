@@ -89,8 +89,8 @@ void run_benchmark(std::size_t vector_size1, std::size_t vector_size2,
 {
     std::cout << "* Preparing Benchmark..." << std::endl;
 
-    typedef test_container<IteratorTag> test_container;
-    typedef typename test_container::type container;
+    using test_container = test_container<IteratorTag>;
+    using container = typename test_container::type;
 
     container src1 = test_container::get_container(vector_size1);
     container src2 = test_container::get_container(vector_size2);

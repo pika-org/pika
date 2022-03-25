@@ -186,12 +186,12 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             FwdIter2 s_first, FwdIter2 s_last, Pred&& op, Proj1&& proj1,
             Proj2&& proj2)
         {
-            typedef typename std::iterator_traits<FwdIter>::reference reference;
+            using reference = typename std::iterator_traits<FwdIter>::reference;
             typedef typename std::iterator_traits<FwdIter>::difference_type
                 difference_type;
             typedef typename std::iterator_traits<FwdIter2>::difference_type
                 s_difference_type;
-            typedef util::detail::algorithm_result<ExPolicy, FwdIter> result;
+            using result = util::detail::algorithm_result<ExPolicy, FwdIter>;
 
             s_difference_type diff = std::distance(s_first, s_last);
             if (diff <= 0)
@@ -200,7 +200,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             if (diff > s_difference_type(count))
                 return result::get(PIKA_MOVE(first));
 
-            typedef util::partitioner<ExPolicy, FwdIter, void> partitioner;
+            using partitioner = util::partitioner<ExPolicy, FwdIter, void>;
 
             util::cancellation_token<difference_type> tok(count);
 

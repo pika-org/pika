@@ -39,7 +39,7 @@ namespace pika { namespace lcos { namespace local {
         PIKA_NON_COPYABLE(mutex);
 
     protected:
-        typedef lcos::local::spinlock mutex_type;
+        using mutex_type = lcos::local::spinlock;
 
     public:
         PIKA_EXPORT mutex(char const* const description = "");

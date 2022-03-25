@@ -16,7 +16,8 @@
 #include <string>
 
 // When you have a specific line and the line is the location of the link
-inline std::string linelink(std::filesystem::path const& full_path, std::string const& linenumb)
+inline std::string linelink(
+    std::filesystem::path const& full_path, std::string const& linenumb)
 {
     std::string commit = PIKA_HAVE_GIT_COMMIT;
     std::string location = boost::inspect::relative_to(
@@ -32,8 +33,8 @@ inline std::string linelink(std::filesystem::path const& full_path, std::string 
 }
 
 // When you have a specific line, but a word is the location of the link
-inline std::string wordlink(
-    std::filesystem::path const& full_path, std::string const& linenumb, std::string const& word)
+inline std::string wordlink(std::filesystem::path const& full_path,
+    std::string const& linenumb, std::string const& word)
 {
     std::string commit = PIKA_HAVE_GIT_COMMIT;
     std::string location = boost::inspect::relative_to(
@@ -46,7 +47,8 @@ inline std::string wordlink(
 }
 
 // When you don't have a specific line
-inline std::string loclink(std::filesystem::path const& full_path, std::string const& word)
+inline std::string loclink(
+    std::filesystem::path const& full_path, std::string const& word)
 {
     std::string commit = PIKA_HAVE_GIT_COMMIT;
     std::string location = boost::inspect::relative_to(

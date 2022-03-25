@@ -85,7 +85,7 @@ namespace pika { namespace util {
     {
     public:
         /// this is the type representing the result of this hash
-        typedef std::uint32_t size_type;
+        using size_type = std::uint32_t;
 
         /// The seedenum is used as a dummy parameter to distinguish the different
         /// constructors

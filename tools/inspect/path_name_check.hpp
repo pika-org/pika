@@ -32,10 +32,12 @@ namespace boost { namespace inspect {
             return "file and directory name issues";
         }
 
-        virtual void inspect(const string& library_name, const std::filesystem::path& full_path);
+        virtual void inspect(
+            const string& library_name, const std::filesystem::path& full_path);
 
         virtual void inspect(const string&,    // "filesystem"
-            const std::filesystem::path&,    // "c:/foo/boost/filesystem/path.hpp"
+            const std::filesystem::
+                path&,    // "c:/foo/boost/filesystem/path.hpp"
             const string&)
         { /* empty */
         }

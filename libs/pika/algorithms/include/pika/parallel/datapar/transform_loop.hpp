@@ -33,7 +33,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_transform_loop_n
         {
-            typedef typename std::decay<Iterator>::type iterator_type;
+            using iterator_type = typename std::decay<Iterator>::type;
 
             typedef typename traits::vector_pack_type<
                 typename std::iterator_traits<iterator_type>::value_type>::type
@@ -105,7 +105,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_transform_loop_n_ind
         {
-            typedef typename std::decay<Iterator>::type iterator_type;
+            using iterator_type = typename std::decay<Iterator>::type;
 
             typedef typename traits::vector_pack_type<
                 typename std::iterator_traits<iterator_type>::value_type>::type
@@ -177,11 +177,11 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_transform_loop
         {
-            typedef typename std::decay<Iterator>::type iterator_type;
+            using iterator_type = typename std::decay<Iterator>::type;
             typedef typename std::iterator_traits<iterator_type>::value_type
                 value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
             typedef typename traits::vector_pack_type<value_type, 1>::type V1;
 
             template <typename InIter, typename OutIter, typename F>
@@ -244,11 +244,11 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_transform_loop_ind
         {
-            typedef typename std::decay<Iterator>::type iterator_type;
+            using iterator_type = typename std::decay<Iterator>::type;
             typedef typename std::iterator_traits<iterator_type>::value_type
                 value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
             typedef typename traits::vector_pack_type<value_type, 1>::type V1;
 
             template <typename InIter, typename OutIter, typename F>
@@ -313,11 +313,11 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iter1, typename Iter2>
         struct datapar_transform_binary_loop_n
         {
-            typedef typename std::decay<Iter1>::type iterator1_type;
+            using iterator1_type = typename std::decay<Iter1>::type;
             typedef typename std::iterator_traits<iterator1_type>::value_type
                 value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
 
             template <typename InIter1, typename InIter2, typename OutIter,
                 typename F>
@@ -396,8 +396,8 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iter1, typename Iter2>
         struct datapar_transform_binary_loop
         {
-            typedef typename std::decay<Iter1>::type iterator1_type;
-            typedef typename std::decay<Iter2>::type iterator2_type;
+            using iterator1_type = typename std::decay<Iter1>::type;
+            using iterator2_type = typename std::decay<Iter2>::type;
 
             typedef typename std::iterator_traits<iterator1_type>::value_type
                 value1_type;
@@ -407,8 +407,8 @@ namespace pika { namespace parallel { namespace util {
             typedef typename traits::vector_pack_type<value1_type, 1>::type V11;
             typedef typename traits::vector_pack_type<value2_type, 1>::type V12;
 
-            typedef typename traits::vector_pack_type<value1_type>::type V1;
-            typedef typename traits::vector_pack_type<value2_type>::type V2;
+            using V1 = typename traits::vector_pack_type<value1_type>::type;
+            using V2 = typename traits::vector_pack_type<value2_type>::type;
 
             template <typename InIter1, typename InIter2, typename OutIter,
                 typename F>
@@ -523,11 +523,11 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iter1, typename Iter2>
         struct datapar_transform_binary_loop_ind_n
         {
-            typedef typename std::decay<Iter1>::type iterator1_type;
+            using iterator1_type = typename std::decay<Iter1>::type;
             typedef typename std::iterator_traits<iterator1_type>::value_type
                 value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
 
             template <typename InIter1, typename InIter2, typename OutIter,
                 typename F>
@@ -609,8 +609,8 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iter1, typename Iter2>
         struct datapar_transform_binary_loop_ind
         {
-            typedef typename std::decay<Iter1>::type iterator1_type;
-            typedef typename std::decay<Iter2>::type iterator2_type;
+            using iterator1_type = typename std::decay<Iter1>::type;
+            using iterator2_type = typename std::decay<Iter2>::type;
 
             typedef typename std::iterator_traits<iterator1_type>::value_type
                 value1_type;
@@ -620,8 +620,8 @@ namespace pika { namespace parallel { namespace util {
             typedef typename traits::vector_pack_type<value1_type, 1>::type V11;
             typedef typename traits::vector_pack_type<value2_type, 1>::type V12;
 
-            typedef typename traits::vector_pack_type<value1_type>::type V1;
-            typedef typename traits::vector_pack_type<value2_type>::type V2;
+            using V1 = typename traits::vector_pack_type<value1_type>::type;
+            using V2 = typename traits::vector_pack_type<value2_type>::type;
 
             template <typename InIter1, typename InIter2, typename OutIter,
                 typename F>

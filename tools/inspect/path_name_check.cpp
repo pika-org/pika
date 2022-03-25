@@ -90,7 +90,8 @@ namespace boost { namespace inspect {
         //}
 
         //  the path, including a presumed root, does not exceed the maximum size
-        std::filesystem::path const relative_path(relative_to(full_path, search_root_path()));
+        std::filesystem::path const relative_path(
+            relative_to(full_path, search_root_path()));
         const unsigned max_relative_path =
             207;    // ISO 9660:1999 sets this limit
         const string generic_root("boost_X_XX_X/");

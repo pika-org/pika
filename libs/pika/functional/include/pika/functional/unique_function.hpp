@@ -30,7 +30,7 @@ namespace pika { namespace util {
         using base_type = detail::basic_function<R(Ts...), false>;
 
     public:
-        typedef R result_type;
+        using result_type = R;
 
         constexpr unique_function(std::nullptr_t = nullptr) noexcept {}
 

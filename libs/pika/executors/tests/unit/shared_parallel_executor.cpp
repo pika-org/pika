@@ -45,7 +45,7 @@ pika::thread::id test(int passed_through)
 
 void test_sync()
 {
-    typedef shared_parallel_executor executor;
+    using executor = shared_parallel_executor;
 
     executor exec;
     PIKA_TEST(pika::parallel::execution::sync_execute(exec, &test, 42) !=
@@ -54,7 +54,7 @@ void test_sync()
 
 void test_async()
 {
-    typedef shared_parallel_executor executor;
+    using executor = shared_parallel_executor;
 
     executor exec;
 
@@ -73,7 +73,7 @@ void bulk_test(int, pika::thread::id tid, int passed_through)    //-V813
 
 void test_bulk_sync()
 {
-    typedef shared_parallel_executor executor;
+    using executor = shared_parallel_executor;
 
     pika::thread::id tid = pika::this_thread::get_id();
 
@@ -91,7 +91,7 @@ void test_bulk_sync()
 
 void test_bulk_async()
 {
-    typedef shared_parallel_executor executor;
+    using executor = shared_parallel_executor;
 
     pika::thread::id tid = pika::this_thread::get_id();
 
@@ -120,7 +120,7 @@ void void_test(int passed_through)
 
 void test_sync_void()
 {
-    typedef shared_parallel_executor executor;
+    using executor = shared_parallel_executor;
 
     executor exec;
     pika::parallel::execution::sync_execute(exec, &void_test, 42);
@@ -128,7 +128,7 @@ void test_sync_void()
 
 void test_async_void()
 {
-    typedef shared_parallel_executor executor;
+    using executor = shared_parallel_executor;
 
     executor exec;
     pika::shared_future<void> fut =

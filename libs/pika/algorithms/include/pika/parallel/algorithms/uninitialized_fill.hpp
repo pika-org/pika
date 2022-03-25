@@ -252,8 +252,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 return util::detail::algorithm_result<ExPolicy, Iter>::get(
                     PIKA_MOVE(first));
 
-            typedef std::pair<Iter, Iter> partition_result_type;
-            typedef typename std::iterator_traits<Iter>::value_type value_type;
+            using partition_result_type = std::pair<Iter, Iter>;
+            using value_type = typename std::iterator_traits<Iter>::value_type;
 
             util::cancellation_token<util::detail::no_data> tok;
             return util::partitioner_with_cleanup<ExPolicy, Iter,

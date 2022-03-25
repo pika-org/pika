@@ -250,7 +250,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename Value>
         struct count : public detail::algorithm<count<Value>, Value>
         {
-            typedef Value difference_type;
+            using difference_type = Value;
 
             count()
               : count::algorithm("count")
@@ -313,7 +313,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename Value>
         struct count_if : public detail::algorithm<count_if<Value>, Value>
         {
-            typedef Value difference_type;
+            using difference_type = Value;
 
             count_if()
               : count_if::algorithm("count_if")

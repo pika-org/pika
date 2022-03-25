@@ -796,7 +796,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(
                 ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
             {
-                typedef minmax_element_result<FwdIter> result_type;
+                using result_type = minmax_element_result<FwdIter>;
 
                 result_type result = {first, first};
                 if (first == last || ++first == last)

@@ -31,7 +31,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     {
         static PIKA_FORCEINLINE bool call(Iter const& it)
         {
-            typedef typename std::iterator_traits<Iter>::value_type value_type;
+            using value_type = typename std::iterator_traits<Iter>::value_type;
             return (reinterpret_cast<std::uintptr_t>(std::addressof(*it)) &
                        (traits::vector_pack_alignment<value_type>::value -
                            1)) == 0;
@@ -48,8 +48,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iter1, typename Iter2>
     struct iterators_datapar_compatible_impl
     {
-        typedef typename std::decay<Iter1>::type iterator1_type;
-        typedef typename std::decay<Iter2>::type iterator2_type;
+        using iterator1_type = typename std::decay<Iter1>::type;
+        using iterator2_type = typename std::decay<Iter2>::type;
 
         typedef typename std::iterator_traits<iterator1_type>::value_type
             value1_type;
@@ -94,8 +94,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iter, typename V, typename Enable = void>
     struct store_on_exit
     {
-        typedef V pack_type;
-        typedef typename std::iterator_traits<Iter>::value_type value_type;
+        using pack_type = V;
+        using value_type = typename std::iterator_traits<Iter>::value_type;
 
         store_on_exit(Iter const& iter)
           : value_(traits::vector_pack_load<V, value_type>::aligned(iter))
@@ -125,8 +125,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         typename std::enable_if<std::is_const<
             typename std::iterator_traits<Iter>::value_type>::value>::type>
     {
-        typedef V pack_type;
-        typedef typename std::iterator_traits<Iter>::value_type value_type;
+        using pack_type = V;
+        using value_type = typename std::iterator_traits<Iter>::value_type;
 
         store_on_exit(Iter const& iter)
           : value_(traits::vector_pack_load<V, value_type>::aligned(iter))
@@ -149,8 +149,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iter, typename V, typename Enable = void>
     struct store_on_exit_unaligned
     {
-        typedef V pack_type;
-        typedef typename std::iterator_traits<Iter>::value_type value_type;
+        using pack_type = V;
+        using value_type = typename std::iterator_traits<Iter>::value_type;
 
         store_on_exit_unaligned(Iter const& iter)
           : value_(traits::vector_pack_load<V, value_type>::unaligned(iter))
@@ -180,8 +180,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         typename std::enable_if<std::is_const<
             typename std::iterator_traits<Iter>::value_type>::value>::type>
     {
-        typedef V pack_type;
-        typedef typename std::iterator_traits<Iter>::value_type value_type;
+        using pack_type = V;
+        using value_type = typename std::iterator_traits<Iter>::value_type;
 
         store_on_exit_unaligned(Iter const& iter)
           : value_(traits::vector_pack_load<V, value_type>::unaligned(iter))
@@ -204,10 +204,10 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iter, typename Enable = void>
     struct datapar_loop_step
     {
-        typedef typename std::iterator_traits<Iter>::value_type value_type;
+        using value_type = typename std::iterator_traits<Iter>::value_type;
 
         typedef typename traits::vector_pack_type<value_type, 1>::type V1;
-        typedef typename traits::vector_pack_type<value_type>::type V;
+        using V = typename traits::vector_pack_type<value_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(F&& f, Iter& it)
@@ -232,10 +232,10 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iter, typename Enable = void>
     struct datapar_loop_step_ind
     {
-        typedef typename std::iterator_traits<Iter>::value_type value_type;
+        using value_type = typename std::iterator_traits<Iter>::value_type;
 
         typedef typename traits::vector_pack_type<value_type, 1>::type V1;
-        typedef typename traits::vector_pack_type<value_type>::type V;
+        using V = typename traits::vector_pack_type<value_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(F&& f, Iter& it)
@@ -260,10 +260,10 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iter>
     struct datapar_loop_idx_step
     {
-        typedef typename std::iterator_traits<Iter>::value_type value_type;
+        using value_type = typename std::iterator_traits<Iter>::value_type;
 
         typedef typename traits::vector_pack_type<value_type, 1>::type V1;
-        typedef typename traits::vector_pack_type<value_type>::type V;
+        using V = typename traits::vector_pack_type<value_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(
@@ -288,10 +288,10 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iter, typename Enable = void>
     struct datapar_loop_step_tok
     {
-        typedef typename std::iterator_traits<Iter>::value_type value_type;
+        using value_type = typename std::iterator_traits<Iter>::value_type;
 
         typedef typename traits::vector_pack_type<value_type, 1>::type V1;
-        typedef typename traits::vector_pack_type<value_type>::type V;
+        using V = typename traits::vector_pack_type<value_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(F&& f, Iter& it)
@@ -364,14 +364,14 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iter1, typename Iter2>
     struct datapar_loop_step2
     {
-        typedef typename std::iterator_traits<Iter1>::value_type value1_type;
-        typedef typename std::iterator_traits<Iter2>::value_type value2_type;
+        using value1_type = typename std::iterator_traits<Iter1>::value_type;
+        using value2_type = typename std::iterator_traits<Iter2>::value_type;
 
         typedef typename traits::vector_pack_type<value1_type, 1>::type V11;
         typedef typename traits::vector_pack_type<value2_type, 1>::type V12;
 
-        typedef typename traits::vector_pack_type<value1_type>::type V1;
-        typedef typename traits::vector_pack_type<value2_type>::type V2;
+        using V1 = typename traits::vector_pack_type<value1_type>::type;
+        using V2 = typename traits::vector_pack_type<value2_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static
@@ -627,7 +627,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
 
             PIKA_ASSERT(is_data_aligned(it) && is_data_aligned(dest));
             invoke_vectorized_inout1<V>::call_aligned(
@@ -644,8 +644,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value2_type;
 
-            typedef typename traits::vector_pack_type<value1_type>::type V1;
-            typedef typename traits::vector_pack_type<value2_type>::type V2;
+            using V1 = typename traits::vector_pack_type<value1_type>::type;
+            using V2 = typename traits::vector_pack_type<value2_type>::type;
 
             PIKA_ASSERT(is_data_aligned(it1) && is_data_aligned(it2) &&
                 is_data_aligned(dest));
@@ -694,7 +694,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
 
             PIKA_ASSERT(is_data_aligned(it) && is_data_aligned(dest));
             invoke_vectorized_inout1_ind<V>::call_aligned(
@@ -711,8 +711,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value2_type;
 
-            typedef typename traits::vector_pack_type<value1_type>::type V1;
-            typedef typename traits::vector_pack_type<value2_type>::type V2;
+            using V1 = typename traits::vector_pack_type<value1_type>::type;
+            using V2 = typename traits::vector_pack_type<value2_type>::type;
 
             PIKA_ASSERT(is_data_aligned(it1) && is_data_aligned(it2) &&
                 is_data_aligned(dest));

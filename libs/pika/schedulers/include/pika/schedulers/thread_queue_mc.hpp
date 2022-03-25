@@ -67,7 +67,7 @@ namespace pika { namespace threads { namespace policies {
     {
     public:
         // we use a simple mutex to protect the data members for now
-        typedef Mutex mutex_type;
+        using mutex_type = Mutex;
 
         using thread_queue_type = thread_queue_mc<Mutex, PendingQueuing,
             StagedQueuing, TerminatedQueuing>;

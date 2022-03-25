@@ -114,8 +114,8 @@ struct random_fill
 template <typename IteratorTag, typename DataType, typename ValueType>
 void test_remove(IteratorTag, DataType, ValueType value, int rand_base)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;
@@ -140,8 +140,8 @@ void test_remove(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;
@@ -166,8 +166,8 @@ void test_remove_async(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;
@@ -189,8 +189,8 @@ void test_remove_async(
 template <typename IteratorTag, typename DataType, typename Pred>
 void test_remove_if(IteratorTag, DataType, Pred pred, int rand_base)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;
@@ -215,8 +215,8 @@ void test_remove_if(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;
@@ -241,8 +241,8 @@ void test_remove_if_async(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;
@@ -264,7 +264,7 @@ void test_remove_if_async(
 template <typename IteratorTag>
 void test_remove_exception(IteratorTag, bool test_for_remove_if = false)
 {
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -309,7 +309,7 @@ void test_remove_exception(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -352,7 +352,7 @@ template <typename ExPolicy, typename IteratorTag>
 void test_remove_exception_async(
     ExPolicy policy, IteratorTag, bool test_for_remove_if = false)
 {
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -402,7 +402,7 @@ void test_remove_exception_async(
 template <typename IteratorTag>
 void test_remove_bad_alloc(IteratorTag, bool test_for_remove_if = false)
 {
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -446,7 +446,7 @@ void test_remove_bad_alloc(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -488,7 +488,7 @@ template <typename ExPolicy, typename IteratorTag>
 void test_remove_bad_alloc_async(
     ExPolicy policy, IteratorTag, bool test_for_remove_if = false)
 {
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 

@@ -478,7 +478,7 @@ namespace pika {
             static_assert((pika::traits::is_output_iterator<InIter>::value),
                 "Requires at least output iterator.");
 
-            typedef typename std::iterator_traits<InIter>::value_type Type;
+            using Type = typename std::iterator_traits<InIter>::value_type;
 
             return pika::remove_copy_if(first, last, dest,
                 [value](Type const& a) -> bool { return value == a; });
@@ -504,7 +504,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Required at least forward iterator.");
 
-            typedef typename std::iterator_traits<FwdIter1>::value_type Type;
+            using Type = typename std::iterator_traits<FwdIter1>::value_type;
 
             return pika::remove_copy_if(PIKA_FORWARD(ExPolicy, policy), first,
                 last, dest,
