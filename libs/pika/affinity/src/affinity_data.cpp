@@ -7,7 +7,7 @@
 #include <pika/affinity/affinity_data.hpp>
 #include <pika/affinity/parse_affinity_options.hpp>
 #include <pika/assert.hpp>
-#include <pika/modules/errors.hpp>
+#include <pika/errors/error_code.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
 
@@ -18,11 +18,12 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace threads { namespace policies { namespace detail {
-    inline std::size_t count_initialized(std::vector<mask_type> const& masks)
+namespace pika::detail {
+    inline std::size_t count_initialized(
+        std::vector<threads::mask_type> const& masks)
     {
         std::size_t count = 0;
-        for (mask_cref_type m : masks)
+        for (threads::mask_cref_type m : masks)
         {
             if (threads::any(m))
                 ++count;
@@ -42,7 +43,7 @@ namespace pika { namespace threads { namespace policies { namespace detail {
       , use_process_mask_(false)
       , num_pus_needed_(0)
     {
-        threads::resize(no_affinity_, hardware_concurrency());
+        threads::resize(no_affinity_, threads::hardware_concurrency());
     }
 
     affinity_data::~affinity_data()
@@ -61,7 +62,7 @@ namespace pika { namespace threads { namespace policies { namespace detail {
 
         use_process_mask_ = use_process_mask;
         num_threads_ = num_threads;
-        std::size_t num_system_pus = hardware_concurrency();
+        std::size_t num_system_pus = threads::hardware_concurrency();
 
         if (pu_offset == std::size_t(-1))
         {
@@ -94,7 +95,7 @@ namespace pika { namespace threads { namespace policies { namespace detail {
         else if (!affinity_description.empty())
         {
             affinity_masks_.clear();
-            affinity_masks_.resize(num_threads_, mask_type{});
+            affinity_masks_.resize(num_threads_, threads::mask_type{});
 
             for (std::size_t i = 0; i != num_threads_; ++i)
                 threads::resize(affinity_masks_[i], num_system_pus);
@@ -149,14 +150,14 @@ namespace pika { namespace threads { namespace policies { namespace detail {
         num_pus_needed_ = (std::max)(num_unique_cores, max_cores);
     }
 
-    mask_cref_type affinity_data::get_pu_mask(
+    threads::mask_cref_type affinity_data::get_pu_mask(
         threads::topology const& topo, std::size_t global_thread_num) const
     {
         // --pika:bind=none disables all affinity
         if (threads::test(no_affinity_, global_thread_num))
         {
-            static mask_type m = mask_type();
-            threads::resize(m, hardware_concurrency());
+            static threads::mask_type m = threads::mask_type();
+            threads::resize(m, threads::hardware_concurrency());
             return m;
         }
 
@@ -193,11 +194,11 @@ namespace pika { namespace threads { namespace policies { namespace detail {
         return topo.get_machine_affinity_mask();
     }
 
-    mask_type affinity_data::get_used_pus_mask(
+    threads::mask_type affinity_data::get_used_pus_mask(
         threads::topology const& topo, std::size_t pu_num) const
     {
-        mask_type ret = mask_type();
-        threads::resize(ret, hardware_concurrency());
+        threads::mask_type ret = threads::mask_type();
+        threads::resize(ret, threads::hardware_concurrency());
 
         // --pika:bind=none disables all affinity
         if (threads::test(no_affinity_, pu_num))
@@ -225,15 +226,16 @@ namespace pika { namespace threads { namespace policies { namespace detail {
         }
         else
         {
-            mask_type pu_mask = mask_type();
+            threads::mask_type pu_mask = threads::mask_type();
 
-            threads::resize(pu_mask, hardware_concurrency());
+            threads::resize(pu_mask, threads::hardware_concurrency());
             threads::set(pu_mask, pu_num);
 
             for (std::size_t num_thread = 0; num_thread < num_threads_;
                  ++num_thread)
             {
-                mask_cref_type affinity_mask = get_pu_mask(topo, num_thread);
+                threads::mask_cref_type affinity_mask =
+                    get_pu_mask(topo, num_thread);
                 if (threads::any(pu_mask & affinity_mask))
                     ++count;
             }
@@ -244,7 +246,7 @@ namespace pika { namespace threads { namespace policies { namespace detail {
     // means of adding a processing unit after initialization
     void affinity_data::add_punit(std::size_t virt_core, std::size_t thread_num)
     {
-        std::size_t num_system_pus = hardware_concurrency();
+        std::size_t num_system_pus = threads::hardware_concurrency();
 
         // initialize affinity_masks and set the mask for the given virt_core
         if (affinity_masks_.empty())
@@ -309,4 +311,4 @@ namespace pika { namespace threads { namespace policies { namespace detail {
     }
 
     std::atomic<int> affinity_data::instance_number_counter_(-1);
-}}}}    // namespace pika::threads::policies::detail
+}    // namespace pika::detail

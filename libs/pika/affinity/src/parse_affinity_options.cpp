@@ -20,7 +20,9 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace detail {
+namespace pika::detail {
+    using bounds_type = std::vector<std::int64_t>;
+
     ///////////////////////////////////////////////////////////////////////////
     void parse_mappings(
         std::string const& spec, mappings_type& mappings, error_code& ec)
@@ -53,20 +55,20 @@ namespace pika { namespace threads { namespace detail {
 
     ///////////////////////////////////////////////////////////////////////////
     //                  index,       mask
-    typedef pika::tuple<std::size_t, mask_type> mask_info;
+    typedef pika::tuple<std::size_t, threads::mask_type> mask_info;
 
     inline std::size_t get_index(mask_info const& smi)
     {
         return pika::get<0>(smi);
     }
-    inline mask_cref_type get_mask(mask_info const& smi)
+    inline threads::mask_cref_type get_mask(mask_info const& smi)
     {
         return pika::get<1>(smi);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     std::vector<mask_info> extract_socket_masks(
-        topology const& t, bounds_type const& b)
+        threads::topology const& t, bounds_type const& b)
     {
         std::vector<mask_info> masks;
         for (std::int64_t index : b)
@@ -79,7 +81,7 @@ namespace pika { namespace threads { namespace detail {
     }
 
     std::vector<mask_info> extract_numanode_masks(
-        topology const& t, bounds_type const& b)
+        threads::topology const& t, bounds_type const& b)
     {
         std::vector<mask_info> masks;
         for (std::int64_t index : b)
@@ -91,13 +93,14 @@ namespace pika { namespace threads { namespace detail {
         return masks;
     }
 
-    mask_cref_type extract_machine_mask(topology const& t, error_code& ec)
+    threads::mask_cref_type extract_machine_mask(
+        threads::topology const& t, error_code& ec)
     {
         return t.get_machine_affinity_mask(ec);
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    bool pu_in_process_mask(bool use_process_mask, topology& t,
+    bool pu_in_process_mask(bool use_process_mask, threads::topology& t,
         std::size_t num_core, std::size_t num_pu)
     {
         if (!use_process_mask)
@@ -112,7 +115,7 @@ namespace pika { namespace threads { namespace detail {
         return threads::bit_and(proc_mask, pu_mask);
     }
 
-    void check_num_threads(bool use_process_mask, topology& t,
+    void check_num_threads(bool use_process_mask, threads::topology& t,
         std::size_t num_threads, error_code& ec)
     {
         if (use_process_mask)
@@ -143,8 +146,8 @@ namespace pika { namespace threads { namespace detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void decode_compact_distribution(topology& t,
-        std::vector<mask_type>& affinities, std::size_t used_cores,
+    void decode_compact_distribution(threads::topology& t,
+        std::vector<threads::mask_type>& affinities, std::size_t used_cores,
         std::size_t max_cores, std::vector<std::size_t>& num_pus,
         bool use_process_mask, error_code& ec)
     {
@@ -175,7 +178,7 @@ namespace pika { namespace threads { namespace detail {
                         continue;
                     }
 
-                    if (any(affinities[num_thread]))
+                    if (threads::any(affinities[num_thread]))
                     {
                         PIKA_THROWS_IF(ec, bad_parameter,
                             "decode_compact_distribution",
@@ -196,8 +199,8 @@ namespace pika { namespace threads { namespace detail {
         }
     }
 
-    void decode_scatter_distribution(topology& t,
-        std::vector<mask_type>& affinities, std::size_t used_cores,
+    void decode_scatter_distribution(threads::topology& t,
+        std::vector<threads::mask_type>& affinities, std::size_t used_cores,
         std::size_t max_cores, std::vector<std::size_t>& num_pus,
         bool use_process_mask, error_code& ec)
     {
@@ -220,7 +223,7 @@ namespace pika { namespace threads { namespace detail {
         {
             for (std::size_t num_core = 0; num_core < num_cores; ++num_core)
             {
-                if (any(affinities[num_thread]))
+                if (threads::any(affinities[num_thread]))
                 {
                     PIKA_THROWS_IF(ec, bad_parameter,
                         "decode_scatter_distribution",
@@ -265,8 +268,8 @@ namespace pika { namespace threads { namespace detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void decode_balanced_distribution(topology& t,
-        std::vector<mask_type>& affinities, std::size_t used_cores,
+    void decode_balanced_distribution(threads::topology& t,
+        std::vector<threads::mask_type>& affinities, std::size_t used_cores,
         std::size_t max_cores, std::vector<std::size_t>& num_pus,
         bool use_process_mask, error_code& ec)
     {
@@ -334,7 +337,7 @@ namespace pika { namespace threads { namespace detail {
             for (std::size_t num_pu = 0; num_pu < num_pus_cores[num_core];
                  ++num_pu)
             {
-                if (any(affinities[num_thread]))
+                if (threads::any(affinities[num_thread]))
                 {
                     PIKA_THROWS_IF(ec, bad_parameter,
                         "decode_balanced_distribution",
@@ -353,8 +356,8 @@ namespace pika { namespace threads { namespace detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void decode_numabalanced_distribution(topology& t,
-        std::vector<mask_type>& affinities, std::size_t used_cores,
+    void decode_numabalanced_distribution(threads::topology& t,
+        std::vector<threads::mask_type>& affinities, std::size_t used_cores,
         std::size_t max_cores, std::vector<std::size_t>& num_pus,
         bool use_process_mask, error_code& ec)
     {
@@ -481,7 +484,7 @@ namespace pika { namespace threads { namespace detail {
                 for (std::size_t num_pu = 0; num_pu < num_pus_cores[num_core];
                      ++num_pu)
                 {
-                    if (any(affinities[num_thread]))
+                    if (threads::any(affinities[num_thread]))
                     {
                         PIKA_THROWS_IF(ec, bad_parameter,
                             "decode_numabalanced_distribution",
@@ -502,8 +505,8 @@ namespace pika { namespace threads { namespace detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void decode_distribution(distribution_type d, topology& t,
-        std::vector<mask_type>& affinities, std::size_t used_cores,
+    void decode_distribution(distribution_type d, threads::topology& t,
+        std::vector<threads::mask_type>& affinities, std::size_t used_cores,
         std::size_t max_cores, std::size_t num_threads,
         std::vector<std::size_t>& num_pus, bool use_process_mask,
         error_code& ec)
@@ -535,18 +538,16 @@ namespace pika { namespace threads { namespace detail {
             PIKA_ASSERT(false);
         }
     }
-}}}    // namespace pika::threads::detail
 
-namespace pika { namespace threads {
     ///////////////////////////////////////////////////////////////////////////
     void parse_affinity_options(std::string const& spec,
-        std::vector<mask_type>& affinities, std::size_t used_cores,
+        std::vector<threads::mask_type>& affinities, std::size_t used_cores,
         std::size_t max_cores, std::size_t num_threads,
         std::vector<std::size_t>& num_pus, bool use_process_mask,
         error_code& ec)
     {
-        detail::mappings_type mappings;
-        detail::parse_mappings(spec, mappings, ec);
+        mappings_type mappings;
+        parse_mappings(spec, mappings, ec);
         if (ec)
             return;
 
@@ -554,9 +555,9 @@ namespace pika { namespace threads {
         // been initialized yet
         threads::topology& t = threads::create_topology();
 
-        detail::decode_distribution(mappings, t, affinities, used_cores,
-            max_cores, num_threads, num_pus, use_process_mask, ec);
+        decode_distribution(mappings, t, affinities, used_cores, max_cores,
+            num_threads, num_pus, use_process_mask, ec);
         if (ec)
             return;
     }
-}}    // namespace pika::threads
+}    // namespace pika::detail

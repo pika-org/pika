@@ -123,7 +123,7 @@ namespace pika { namespace threads { namespace policies {
         {
             init_parameter(std::size_t num_worker_threads,
                 const core_ratios& cores_per_queue,
-                detail::affinity_data const& affinity_data,
+                pika::detail::affinity_data const& affinity_data,
                 const thread_queue_init_parameters& thread_queue_init,
                 char const* description = "shared_priority_queue_scheduler")
               : num_worker_threads_(num_worker_threads)
@@ -136,7 +136,7 @@ namespace pika { namespace threads { namespace policies {
 
             init_parameter(std::size_t num_worker_threads,
                 const core_ratios& cores_per_queue,
-                detail::affinity_data const& affinity_data,
+                pika::detail::affinity_data const& affinity_data,
                 char const* description)
               : num_worker_threads_(num_worker_threads)
               , cores_per_queue_(cores_per_queue)
@@ -149,7 +149,7 @@ namespace pika { namespace threads { namespace policies {
             std::size_t num_worker_threads_;
             core_ratios cores_per_queue_;
             thread_queue_init_parameters thread_queue_init_;
-            detail::affinity_data const& affinity_data_;
+            pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
         typedef init_parameter init_parameter_type;
@@ -1398,7 +1398,7 @@ namespace pika { namespace threads { namespace policies {
         // number of numa domains that the threads are occupying
         std::size_t num_domains_;
 
-        detail::affinity_data const& affinity_data_;
+        pika::detail::affinity_data const& affinity_data_;
 
         const thread_queue_init_parameters queue_parameters_;
 

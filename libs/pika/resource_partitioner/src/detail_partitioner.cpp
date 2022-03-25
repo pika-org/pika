@@ -871,8 +871,7 @@ namespace pika { namespace resource { namespace detail {
     }
 
     void partitioner::init(resource::partitioner_mode rpmode,
-        pika::util::section rtcfg,
-        pika::threads::policies::detail::affinity_data affinity_data)
+        pika::util::section rtcfg, pika::detail::affinity_data affinity_data)
     {
         mode_ = rpmode;
         rtcfg_ = rtcfg;

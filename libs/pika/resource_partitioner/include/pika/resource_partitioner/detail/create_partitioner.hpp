@@ -22,6 +22,6 @@
 namespace pika { namespace resource { namespace detail {
     PIKA_EXPORT partitioner& create_partitioner(
         resource::partitioner_mode rpmode, pika::util::section rtcfg,
-        pika::threads::policies::detail::affinity_data affinity_data);
+        pika::detail::affinity_data affinity_data);
 
 }}}    // namespace pika::resource::detail

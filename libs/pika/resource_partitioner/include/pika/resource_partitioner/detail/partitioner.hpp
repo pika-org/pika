@@ -115,8 +115,7 @@ namespace pika { namespace resource { namespace detail {
         void add_resource(const std::vector<pika::resource::numa_domain>& ndv,
             std::string const& pool_name, bool exclusive = true);
 
-        threads::policies::detail::affinity_data const& get_affinity_data()
-            const
+        pika::detail::affinity_data const& get_affinity_data() const
         {
             return affinity_data_;
         }
@@ -156,7 +155,7 @@ namespace pika { namespace resource { namespace detail {
             std::size_t global_thread_num) const;
 
         void init(resource::partitioner_mode rpmode, pika::util::section cfg,
-            pika::threads::policies::detail::affinity_data affinity_data);
+            pika::detail::affinity_data affinity_data);
 
         scheduler_function get_pool_creator(size_t index) const;
 
@@ -228,7 +227,7 @@ namespace pika { namespace resource { namespace detail {
         std::vector<detail::init_pool_data> initial_thread_pools_;
 
         // reference to the topology and affinity data
-        pika::threads::policies::detail::affinity_data affinity_data_;
+        pika::detail::affinity_data affinity_data_;
 
         // contains the internal topology back-end used to add resources to
         // initial_thread_pools

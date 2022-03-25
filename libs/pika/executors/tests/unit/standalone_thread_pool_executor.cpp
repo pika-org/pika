@@ -169,7 +169,7 @@ int main()
         std::size_t const num_threads = (std::min)(
             std::size_t(4), std::size_t(pika::threads::hardware_concurrency()));
         std::size_t const max_cores = num_threads;
-        pika::threads::policies::detail::affinity_data ad{};
+        pika::detail::affinity_data ad{};
         ad.init(num_threads, max_cores, 0, 1, 0, "core", "balanced", true);
         pika::threads::policies::callback_notifier notifier{};
         pika::threads::policies::thread_queue_init_parameters
