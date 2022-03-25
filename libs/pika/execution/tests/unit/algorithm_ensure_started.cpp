@@ -88,7 +88,7 @@ int main()
             });
         auto s2 = ex::ensure_started(std::move(s1));
         PIKA_TEST(started);
-        auto f = [](auto& x) { PIKA_TEST_EQ(x.x, 42); };
+        auto f = [](auto&& x) { PIKA_TEST_EQ(x.x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s2), std::move(r));
         ex::start(os);

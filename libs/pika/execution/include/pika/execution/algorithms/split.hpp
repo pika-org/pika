@@ -41,12 +41,6 @@
 
 namespace pika { namespace execution { namespace experimental {
     namespace split_detail {
-        enum class submission_type
-        {
-            eager,
-            lazy
-        };
-
         template <typename Receiver>
         struct error_visitor
         {
@@ -76,25 +70,24 @@ namespace pika { namespace execution { namespace experimental {
             }
         };
 
-        template <typename Sender, typename Allocator, submission_type Type>
+        template <typename Sender, typename Allocator>
         struct split_sender_impl
         {
             struct split_sender_type;
         };
 
-        template <typename Sender, typename Allocator, submission_type Type>
-        using split_sender = typename split_sender_impl<Sender, Allocator,
-            Type>::split_sender_type;
+        template <typename Sender, typename Allocator>
+        using split_sender =
+            typename split_sender_impl<Sender, Allocator>::split_sender_type;
 
-        template <typename Sender, typename Allocator, submission_type Type>
-        struct split_sender_impl<Sender, Allocator, Type>::split_sender_type
+        template <typename Sender, typename Allocator>
+        struct split_sender_impl<Sender, Allocator>::split_sender_type
         {
             struct split_sender_tag
             {
             };
 
             using allocator_type = Allocator;
-            static constexpr submission_type subm_type = Type;
 
             template <typename Tuple>
             struct value_types_helper
@@ -222,9 +215,8 @@ namespace pika { namespace execution { namespace experimental {
                 {
                     PIKA_ASSERT_MSG(start_called,
                         "start was never called on the operation state of "
-                        "split or ensure_started. Did you forget to connect "
-                        "the sender to a receiver, or call start on the "
-                        "operation state?");
+                        "split. Did you forget to connect the sender to a "
+                        "receiver, or call start on the operation state?");
                 }
 
                 template <typename Receiver>
@@ -421,14 +413,6 @@ namespace pika { namespace execution { namespace experimental {
                 new (p.get())
                     shared_state{PIKA_FORWARD(Sender_, sender), allocator};
                 state = p.release();
-
-                // Eager submission means that we start the predecessor
-                // operation state already when creating the sender. We don't
-                // wait for another receiver to be connected.
-                if constexpr (Type == submission_type::eager)
-                {
-                    state->start();
-                }
             }
 
             split_sender_type(split_sender_type const&) = default;
@@ -457,14 +441,7 @@ namespace pika { namespace execution { namespace experimental {
 
                 friend void tag_invoke(start_t, operation_state& os) noexcept
                 {
-                    // Lazy submission means that we wait to start the
-                    // predecessor operation state when a downstream operation
-                    // state is started, i.e. this start function is called.
-                    if constexpr (Type == submission_type::lazy)
-                    {
-                        os.state->start();
-                    }
-
+                    os.state->start();
                     os.state->add_continuation(PIKA_MOVE(os.receiver));
                 }
             };
@@ -511,8 +488,7 @@ namespace pika { namespace execution { namespace experimental {
             split_t, Sender&& sender)
         {
             return split_detail::split_sender<Sender,
-                pika::util::internal_allocator<>,
-                split_detail::submission_type::lazy>{
+                pika::util::internal_allocator<>>{
                 PIKA_FORWARD(Sender, sender), {}};
         }
 
@@ -523,8 +499,7 @@ namespace pika { namespace execution { namespace experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             split_t, Sender&& sender, Allocator const& allocator)
         {
-            return split_detail::split_sender<Sender, Allocator,
-                split_detail::submission_type::lazy>{
+            return split_detail::split_sender<Sender, Allocator>{
                 PIKA_FORWARD(Sender, sender), allocator};
         }
 
@@ -545,8 +520,7 @@ namespace pika { namespace execution { namespace experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             split_t, Sender&& sender, Allocator const& allocator)
         {
-            return split_detail::split_sender<Sender, Allocator,
-                split_detail::submission_type::lazy>{
+            return split_detail::split_sender<Sender, Allocator>{
                 PIKA_FORWARD(Sender, sender), allocator};
         }
 
