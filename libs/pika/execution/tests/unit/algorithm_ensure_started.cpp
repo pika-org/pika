@@ -20,7 +20,7 @@ namespace ex = pika::execution::experimental;
 
 // This overload is only used to check dispatching. It is not a useful
 // implementation.
-template <typename Allocator = pika::util::internal_allocator<>>
+template <typename Allocator = pika::detail::internal_allocator<>>
 auto tag_invoke(ex::ensure_started_t, custom_sender_tag_invoke s,
     Allocator const& = Allocator{})
 {

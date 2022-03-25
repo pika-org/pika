@@ -742,11 +742,11 @@ namespace pika { namespace lcos { namespace detail {
         using init_no_addref = typename shared_state::init_no_addref;
 
         using unique_ptr = std::unique_ptr<shared_state,
-            util::allocator_deleter<other_allocator>>;
+            pika::detail::allocator_deleter<other_allocator>>;
 
         other_allocator alloc(a);
         unique_ptr p(traits::allocate(alloc, 1),
-            util::allocator_deleter<other_allocator>{alloc});
+            pika::detail::allocator_deleter<other_allocator>{alloc});
 
         traits::construct(alloc, p.get(), init_no_addref{}, alloc);
 
@@ -762,8 +762,8 @@ namespace pika { namespace lcos { namespace detail {
     inline traits::detail::shared_state_ptr_t<future_unwrap_result_t<Future>>
     unwrap_impl(Future&& future, error_code& ec)
     {
-        return unwrap_impl_alloc(
-            util::internal_allocator<>{}, PIKA_FORWARD(Future, future), ec);
+        return unwrap_impl_alloc(pika::detail::internal_allocator<>{},
+            PIKA_FORWARD(Future, future), ec);
     }
 
     template <typename Allocator, typename Future>

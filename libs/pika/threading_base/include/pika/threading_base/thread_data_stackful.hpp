@@ -53,7 +53,8 @@ namespace pika { namespace threads {
             return this;
         }
 
-        static util::internal_allocator<thread_data_stackful> thread_alloc_;
+        static pika::detail::internal_allocator<thread_data_stackful>
+            thread_alloc_;
 
     public:
         PIKA_FORCEINLINE coroutine_type::result_type call(

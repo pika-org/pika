@@ -15,12 +15,12 @@ namespace pika { namespace cuda { namespace experimental { namespace detail {
     pika::future<void> get_future_with_callback(cudaStream_t stream)
     {
         return get_future_with_callback(
-            pika::util::internal_allocator<>{}, stream);
+            pika::detail::internal_allocator<>{}, stream);
     }
 
     pika::future<void> get_future_with_event(cudaStream_t stream)
     {
         return get_future_with_event(
-            pika::util::internal_allocator<>{}, stream);
+            pika::detail::internal_allocator<>{}, stream);
     }
 }}}}    // namespace pika::cuda::experimental::detail

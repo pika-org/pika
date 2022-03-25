@@ -21,7 +21,7 @@
 
 template <typename T>
 using queue =
-    boost::lockfree::queue<T, pika::util::aligned_allocator<std::size_t>>;
+    boost::lockfree::queue<T, pika::detail::aligned_allocator<std::size_t>>;
 
 using pika::program_options::options_description;
 using pika::program_options::value;

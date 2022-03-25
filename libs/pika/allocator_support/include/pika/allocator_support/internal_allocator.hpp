@@ -25,28 +25,28 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace util {
+namespace pika::detail {
 #if defined(PIKA_HAVE_JEMALLOC_PREFIX)
     ///////////////////////////////////////////////////////////////////////////
     template <typename T = int>
     struct internal_allocator
     {
-        typedef T value_type;
-        typedef T* pointer;
-        typedef const T* const_pointer;
-        typedef T& reference;
-        typedef T const& const_reference;
-        typedef std::size_t size_type;
-        typedef std::ptrdiff_t difference_type;
+        using value_type = T;
+        using pointer = T*;
+        using const_pointer = const T*;
+        using reference = T&;
+        using const_reference = T const&;
+        using size_type = std::size_t;
+        using difference_type = std::ptrdiff_t;
 
         template <typename U>
         struct rebind
         {
-            typedef internal_allocator<U> other;
+            using other = internal_allocator<U>;
         };
 
-        typedef std::true_type is_always_equal;
-        typedef std::true_type propagate_on_container_move_assignment;
+        using is_always_equal = std::true_type;
+        using propagate_on_container_move_assignment = std::true_type;
 
         internal_allocator() = default;
 
@@ -122,6 +122,6 @@ namespace pika { namespace util {
     template <typename T = int>
     using internal_allocator = std::allocator<T>;
 #endif
-}}    // namespace pika::util
+}    // namespace pika::detail
 
 #include <pika/config/warnings_suffix.hpp>

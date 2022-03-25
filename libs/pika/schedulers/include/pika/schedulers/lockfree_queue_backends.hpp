@@ -38,10 +38,10 @@ namespace pika { namespace threads { namespace policies {
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
         using container_type =
             boost::lockfree::deque<T, boost::lockfree::caching_freelist_t,
-                pika::util::aligned_allocator<T>>;
+                pika::detail::aligned_allocator<T>>;
 #else
         using container_type =
-            boost::lockfree::queue<T, pika::util::aligned_allocator<T>>;
+            boost::lockfree::queue<T, pika::detail::aligned_allocator<T>>;
 #endif
 
         using value_type = T;
@@ -162,7 +162,7 @@ namespace pika { namespace threads { namespace policies {
     {
         using container_type =
             boost::lockfree::deque<T, boost::lockfree::caching_freelist_t,
-                pika::util::aligned_allocator<T>>;
+                pika::detail::aligned_allocator<T>>;
 
         using value_type = T;
         using reference = T&;
@@ -223,7 +223,7 @@ namespace pika { namespace threads { namespace policies {
     {
         using container_type =
             boost::lockfree::deque<T, boost::lockfree::caching_freelist_t,
-                pika::util::aligned_allocator<T>>;
+                pika::detail::aligned_allocator<T>>;
 
         using value_type = T;
         using reference = T&;
@@ -281,7 +281,7 @@ namespace pika { namespace threads { namespace policies {
     {
         using container_type =
             boost::lockfree::deque<T, boost::lockfree::caching_freelist_t,
-                pika::util::aligned_allocator<T>>;
+                pika::detail::aligned_allocator<T>>;
 
         using value_type = T;
         using reference = T&;

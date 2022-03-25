@@ -72,8 +72,8 @@ namespace pika { namespace threads { namespace policies {
         using thread_queue_type = thread_queue_mc<Mutex, PendingQueuing,
             StagedQueuing, TerminatedQueuing>;
 
-        using thread_heap_type =
-            std::list<thread_id_type, util::internal_allocator<thread_id_type>>;
+        using thread_heap_type = std::list<thread_id_type,
+            pika::detail::internal_allocator<thread_id_type>>;
 
         using task_description = thread_init_data;
         using thread_description = thread_data;

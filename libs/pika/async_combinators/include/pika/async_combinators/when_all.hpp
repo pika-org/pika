@@ -234,7 +234,7 @@ namespace pika {
             using no_addref = typename frame_type::base_type::init_no_addref;
 
             auto frame = pika::util::traverse_pack_async_allocator(
-                pika::util::internal_allocator<>{},
+                pika::detail::internal_allocator<>{},
                 pika::util::async_traverse_in_place_tag<frame_type>{},
                 no_addref{},
                 pika::traits::acquire_future_disp()(PIKA_FORWARD(T, args))...);

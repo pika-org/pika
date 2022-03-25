@@ -119,10 +119,10 @@ namespace pika { namespace execution { namespace experimental {
     private:
         // clang-format off
         template <typename Sender,
-            typename Allocator = pika::util::internal_allocator<>,
+            typename Allocator = pika::detail::internal_allocator<>,
             PIKA_CONCEPT_REQUIRES_(
                 is_sender_v<Sender> &&
-                pika::traits::is_allocator_v<Allocator>
+                pika::detail::is_allocator_v<Allocator>
             )>
         // clang-format on
         friend constexpr PIKA_FORCEINLINE void tag_fallback_invoke(
@@ -136,11 +136,11 @@ namespace pika { namespace execution { namespace experimental {
                 allocator_type>::template rebind_alloc<operation_state_type>;
             using allocator_traits = std::allocator_traits<other_allocator>;
             using unique_ptr = std::unique_ptr<operation_state_type,
-                util::allocator_deleter<other_allocator>>;
+                pika::detail::allocator_deleter<other_allocator>>;
 
             other_allocator alloc(allocator);
             unique_ptr p(allocator_traits::allocate(alloc, 1),
-                pika::util::allocator_deleter<other_allocator>{alloc});
+                pika::detail::allocator_deleter<other_allocator>{alloc});
 
             new (p.get())
                 operation_state_type{PIKA_FORWARD(Sender, sender), alloc};
@@ -148,9 +148,9 @@ namespace pika { namespace execution { namespace experimental {
         }
 
         // clang-format off
-        template <typename Allocator = pika::util::internal_allocator<>,
+        template <typename Allocator = pika::detail::internal_allocator<>,
             PIKA_CONCEPT_REQUIRES_(
-                pika::traits::is_allocator_v<Allocator>
+                pika::detail::is_allocator_v<Allocator>
             )>
         // clang-format on
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(

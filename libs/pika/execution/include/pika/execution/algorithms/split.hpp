@@ -404,11 +404,11 @@ namespace pika { namespace execution { namespace experimental {
                     allocator_type>::template rebind_alloc<shared_state>;
                 using allocator_traits = std::allocator_traits<other_allocator>;
                 using unique_ptr = std::unique_ptr<shared_state,
-                    util::allocator_deleter<other_allocator>>;
+                    pika::detail::allocator_deleter<other_allocator>>;
 
                 other_allocator alloc(allocator);
                 unique_ptr p(allocator_traits::allocate(alloc, 1),
-                    pika::util::allocator_deleter<other_allocator>{alloc});
+                    pika::detail::allocator_deleter<other_allocator>{alloc});
 
                 new (p.get())
                     shared_state{PIKA_FORWARD(Sender_, sender), allocator};
@@ -488,14 +488,14 @@ namespace pika { namespace execution { namespace experimental {
             split_t, Sender&& sender)
         {
             return split_detail::split_sender<Sender,
-                pika::util::internal_allocator<>>{
+                pika::detail::internal_allocator<>>{
                 PIKA_FORWARD(Sender, sender), {}};
         }
 
         template <typename Sender, typename Allocator,
             PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender> &&
                 !split_detail::is_split_sender_v<Sender> &&
-                pika::traits::is_allocator_v<Allocator>)>
+                pika::detail::is_allocator_v<Allocator>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             split_t, Sender&& sender, Allocator const& allocator)
         {
@@ -532,8 +532,8 @@ namespace pika { namespace execution { namespace experimental {
             return PIKA_FORWARD(Sender, sender);
         }
 
-        template <typename Allocator = pika::util::internal_allocator<>,
-            PIKA_CONCEPT_REQUIRES_(pika::traits::is_allocator_v<Allocator>)>
+        template <typename Allocator = pika::detail::internal_allocator<>,
+            PIKA_CONCEPT_REQUIRES_(pika::detail::is_allocator_v<Allocator>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             split_t, Allocator const& allocator = {})
         {
