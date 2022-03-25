@@ -25,6 +25,8 @@
 #include <utility>
 #include <vector>
 
+namespace ex = pika::execution::experimental;
+
 //
 // This test generates a set of tasks with certain names, then checks
 // if the names are present in the screen output from apex.
@@ -52,6 +54,22 @@ void dummy_task(std::size_t n)
             std::chrono::duration_cast<std::chrono::microseconds>(now - start);
         sleep = (elapsed < std::chrono::microseconds(n));
     } while (sleep);
+}
+
+auto test_senders()
+{
+    ex::execute(
+        ex::with_annotation(ex::thread_pool_scheduler{}, "0-execute"), [] {});
+    auto s1 = ex::schedule(
+        ex::with_annotation(ex::thread_pool_scheduler{}, "0-schedule"));
+    auto s2 = ex::schedule(ex::thread_pool_scheduler{}) |
+        ex::then(pika::annotated_function(
+            [] { dummy_task(1000); }, "0-schedule-then"));
+    auto s3 = ex::just() |
+        ex::transfer(
+            ex::with_annotation(ex::thread_pool_scheduler{}, "0-transfer"));
+
+    return ex::when_all(std::move(s1), std::move(s2), std::move(s3));
 }
 
 // --------------------------------------------------------------------------
@@ -196,6 +214,8 @@ pika::future<void> test_execution(Execution& exec)
 
 int pika_main()
 {
+    ex::sync_wait(test_senders());
+
     // setup executors
     pika::execution::parallel_executor par_exec{};
 

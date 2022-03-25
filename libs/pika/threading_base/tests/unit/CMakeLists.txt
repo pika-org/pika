@@ -28,6 +28,8 @@ foreach(test ${tests})
 endforeach()
 
 if(PIKA_WITH_APEX)
+  set(REGEX_MATCH_S_ "0-execute.*0-schedule.*0-schedule-then.*0-transfer")
+
   set(launch_types_
       ""
       "Executor "
@@ -60,7 +62,8 @@ if(PIKA_WITH_APEX)
 
   set_tests_properties(
     tests.unit.modules.threading_base.annotation_check
-    PROPERTIES PASS_REGULAR_EXPRESSION
-               "${REGEX_MATCH_D_}${REGEX_MATCH_C_}${REGEX_MATCH_ANN_}"
+    PROPERTIES
+      PASS_REGULAR_EXPRESSION
+      "${REGEX_MATCH_S_}${REGEX_MATCH_D_}${REGEX_MATCH_C_}${REGEX_MATCH_ANN_}"
   )
 endif()
