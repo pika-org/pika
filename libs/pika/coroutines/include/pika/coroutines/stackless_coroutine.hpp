@@ -54,8 +54,7 @@ namespace pika { namespace threads { namespace coroutines {
         using result_type = std::pair<thread_schedule_state, thread_id_type>;
         using arg_type = thread_restart_state;
 
-        using functor_type =
-            util::unique_function<result_type(arg_type)>;
+        using functor_type = util::unique_function<result_type(arg_type)>;
 
         stackless_coroutine(functor_type&& f, thread_id_type id,
             std::ptrdiff_t /*stack_size*/ = default_stack_size)

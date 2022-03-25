@@ -58,8 +58,7 @@ namespace pika::threads {
     using thread_arg_type = thread_restart_state;
 
     using thread_function_sig = thread_result_type(thread_arg_type);
-    using thread_function_type =
-        util::unique_function<thread_function_sig>;
+    using thread_function_type = util::unique_function<thread_function_sig>;
 
     using thread_self = coroutines::detail::coroutine_self;
     using thread_self_impl_type = coroutines::detail::coroutine_impl;

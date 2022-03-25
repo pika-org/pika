@@ -801,8 +801,8 @@ namespace pika {
     }
 
     void set_config_entry_callback(std::string const& key,
-        util::function<void(
-            std::string const&, std::string const&)> const& callback)
+        util::function<void(std::string const&, std::string const&)> const&
+            callback)
     {
         if (get_runtime_ptr() != nullptr)
         {
@@ -1285,8 +1285,7 @@ namespace pika {
     }
 
     int runtime::start(
-        util::function<pika_main_function_type> const& func,
-        bool blocking)
+        util::function<pika_main_function_type> const& func, bool blocking)
     {
 #if defined(_WIN64) && defined(PIKA_DEBUG) &&                                  \
     !defined(PIKA_HAVE_FIBER_BASED_COROUTINES)

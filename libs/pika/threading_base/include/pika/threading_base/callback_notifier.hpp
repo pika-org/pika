@@ -23,8 +23,7 @@ namespace pika { namespace threads { namespace policies {
         typedef util::function<void(
             std::size_t, std::size_t, char const*, char const*)>
             on_startstop_type;
-        typedef util::function<bool(
-            std::size_t, std::exception_ptr const&)>
+        typedef util::function<bool(std::size_t, std::exception_ptr const&)>
             on_error_type;
 
         callback_notifier()

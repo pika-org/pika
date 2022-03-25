@@ -18,7 +18,6 @@ namespace pika { namespace threads { namespace detail {
     using network_background_callback_type =
         util::function<bool(std::size_t, std::int64_t&, std::int64_t&)>;
 #else
-    using network_background_callback_type =
-        util::function<bool(std::size_t)>;
+    using network_background_callback_type = util::function<bool(std::size_t)>;
 #endif
 }}}    // namespace pika::threads::detail

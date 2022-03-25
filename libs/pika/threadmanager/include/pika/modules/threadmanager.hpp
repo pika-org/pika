@@ -175,8 +175,7 @@ namespace pika { namespace threads {
         std::int64_t get_background_thread_count();
 
         // Enumerate all matching threads
-        bool enumerate_threads(
-            util::function<bool(thread_id_type)> const& f,
+        bool enumerate_threads(util::function<bool(thread_id_type)> const& f,
             thread_schedule_state state = thread_schedule_state::unknown) const;
 
         // \brief Abort all threads which are in suspended state. This will set

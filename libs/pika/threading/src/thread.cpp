@@ -161,8 +161,8 @@ namespace pika {
         return pika::threads::hardware_concurrency();
     }
 
-    void thread::start_thread(threads::thread_pool_base* pool,
-        util::unique_function<void()>&& func)
+    void thread::start_thread(
+        threads::thread_pool_base* pool, util::unique_function<void()>&& func)
     {
         PIKA_ASSERT(pool);
 

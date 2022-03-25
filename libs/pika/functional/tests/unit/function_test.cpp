@@ -649,8 +649,7 @@ static void test_one_arg()
 
 static void test_two_args()
 {
-    pika::util::function<string(const string&, const string&)> cat(
-        &string_cat);
+    pika::util::function<string(const string&, const string&)> cat(&string_cat);
     PIKA_TEST_EQ(cat("str", "ing"), "string");
 
     pika::util::function<int(short, short)> sum(&sum_ints);

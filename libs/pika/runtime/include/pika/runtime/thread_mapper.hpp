@@ -36,8 +36,7 @@ namespace pika { namespace util {
     namespace detail {
 
         // type for callback function invoked when thread is unregistered
-        using thread_mapper_callback_type =
-            util::function<bool(std::uint32_t)>;
+        using thread_mapper_callback_type = util::function<bool(std::uint32_t)>;
 
         // thread-specific data
         class PIKA_EXPORT os_thread_data

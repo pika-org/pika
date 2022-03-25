@@ -139,8 +139,7 @@ namespace pika {
         /// \returns          This function will return the value as returned
         ///                   as the result of the invocation of the function
         ///                   object given by the parameter \p func.
-        virtual int run(
-            util::function<pika_main_function_type> const& func);
+        virtual int run(util::function<pika_main_function_type> const& func);
 
         /// \brief Run the pika runtime system, initially use the given number
         ///        of (OS) threads in the thread-manager and block waiting for
@@ -170,8 +169,7 @@ namespace pika {
         ///                   return the value as returned as the result of the
         ///                   invocation of the function object given by the
         ///                   parameter \p func. Otherwise it will return zero.
-        virtual int start(
-            util::function<pika_main_function_type> const& func,
+        virtual int start(util::function<pika_main_function_type> const& func,
             bool blocking = false);
 
         /// \brief Start the runtime system
