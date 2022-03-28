@@ -129,7 +129,7 @@ namespace pika { namespace lcos { namespace detail {
         using base_type = pika::lcos::detail::future_data<T>;
         using init_no_addref = typename base_type::init_no_addref;
 
-        using allocator_type = pika::util::internal_allocator<char>;
+        using allocator_type = pika::detail::internal_allocator<char>;
 
         // the shared state is held alive by the coroutine
         coroutine_promise_base()
@@ -172,11 +172,11 @@ namespace pika { namespace lcos { namespace detail {
                 allocator_type>::template rebind_alloc<char>;
             using traits = std::allocator_traits<char_allocator>;
             using unique_ptr = std::unique_ptr<char,
-                pika::util::allocator_deleter<char_allocator>>;
+                pika::detail::allocator_deleter<char_allocator>>;
 
             char_allocator alloc{};
             unique_ptr p(traits::allocate(alloc, size),
-                pika::util::allocator_deleter<char_allocator>{alloc});
+                pika::detail::allocator_deleter<char_allocator>{alloc});
 
             return p.release();
         }
@@ -199,7 +199,8 @@ namespace std {
     template <typename T, typename... Ts>
     struct coroutine_traits<pika::future<T>, Ts...>
     {
-        using allocator_type = pika::util::internal_allocator<coroutine_traits>;
+        using allocator_type =
+            pika::detail::internal_allocator<coroutine_traits>;
 
         struct promise_type
           : pika::lcos::detail::coroutine_promise_base<T, promise_type>
@@ -237,7 +238,8 @@ namespace std {
     template <typename... Ts>
     struct coroutine_traits<pika::future<void>, Ts...>
     {
-        using allocator_type = pika::util::internal_allocator<coroutine_traits>;
+        using allocator_type =
+            pika::detail::internal_allocator<coroutine_traits>;
 
         struct promise_type
           : pika::lcos::detail::coroutine_promise_base<void, promise_type>
@@ -276,7 +278,8 @@ namespace std {
     template <typename T, typename... Ts>
     struct coroutine_traits<pika::shared_future<T>, Ts...>
     {
-        using allocator_type = pika::util::internal_allocator<coroutine_traits>;
+        using allocator_type =
+            pika::detail::internal_allocator<coroutine_traits>;
 
         struct promise_type
           : pika::lcos::detail::coroutine_promise_base<T, promise_type>
@@ -314,7 +317,8 @@ namespace std {
     template <typename... Ts>
     struct coroutine_traits<pika::shared_future<void>, Ts...>
     {
-        using allocator_type = pika::util::internal_allocator<coroutine_traits>;
+        using allocator_type =
+            pika::detail::internal_allocator<coroutine_traits>;
 
         struct promise_type
           : pika::lcos::detail::coroutine_promise_base<void, promise_type>

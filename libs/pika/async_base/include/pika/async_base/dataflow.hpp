@@ -23,11 +23,11 @@ namespace pika {
     template <typename F, typename... Ts>
     PIKA_FORCEINLINE auto dataflow(F&& f, Ts&&... ts) -> decltype(
         lcos::detail::dataflow_dispatch<typename std::decay<F>::type>::call(
-            pika::util::internal_allocator<>{}, PIKA_FORWARD(F, f),
+            pika::detail::internal_allocator<>{}, PIKA_FORWARD(F, f),
             PIKA_FORWARD(Ts, ts)...))
     {
         return lcos::detail::dataflow_dispatch<typename std::decay<F>::type>::
-            call(pika::util::internal_allocator<>{}, PIKA_FORWARD(F, f),
+            call(pika::detail::internal_allocator<>{}, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...);
     }
 

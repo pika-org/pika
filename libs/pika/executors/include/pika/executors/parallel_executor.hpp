@@ -280,7 +280,7 @@ namespace pika { namespace execution {
 
             typename pika::traits::detail::shared_state_ptr<result_type>::type
                 p = lcos::detail::make_continuation_alloc_nounwrap<result_type>(
-                    pika::util::internal_allocator<>{},
+                    pika::detail::internal_allocator<>{},
                     PIKA_FORWARD(Future, predecessor), policy_,
                     PIKA_MOVE(func));
 

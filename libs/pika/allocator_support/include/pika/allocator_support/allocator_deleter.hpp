@@ -12,7 +12,7 @@
 
 #include <memory>
 
-namespace pika { namespace util {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Allocator>
     struct allocator_deleter
@@ -26,4 +26,4 @@ namespace pika { namespace util {
 
         Allocator alloc_;
     };
-}}    // namespace pika::util
+}    // namespace pika::detail

@@ -52,7 +52,8 @@ namespace pika { namespace threads {
             return this;
         }
 
-        static util::internal_allocator<thread_data_stackless> thread_alloc_;
+        static pika::detail::internal_allocator<thread_data_stackless>
+            thread_alloc_;
 
     public:
         stackless_coroutine_type::result_type call()

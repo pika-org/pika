@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads {
 
-    util::internal_allocator<thread_data_stackless>
+    pika::detail::internal_allocator<thread_data_stackless>
         thread_data_stackless::thread_alloc_;
 
     thread_data_stackless::~thread_data_stackless()

@@ -468,11 +468,11 @@ namespace pika { namespace lcos { namespace local {
                 using init_no_addref = typename shared_state::init_no_addref;
 
                 using unique_ptr = std::unique_ptr<shared_state,
-                    util::allocator_deleter<other_allocator>>;
+                    pika::detail::allocator_deleter<other_allocator>>;
 
                 other_allocator alloc(a);
                 unique_ptr p(traits::allocate(alloc, 1),
-                    util::allocator_deleter<other_allocator>{alloc});
+                    pika::detail::allocator_deleter<other_allocator>{alloc});
                 traits::construct(alloc, p.get(), init_no_addref{}, alloc,
                     PIKA_FORWARD(F, f));
 
@@ -495,11 +495,11 @@ namespace pika { namespace lcos { namespace local {
                 using init_no_addref = typename shared_state::init_no_addref;
 
                 using unique_ptr = std::unique_ptr<shared_state,
-                    util::allocator_deleter<other_allocator>>;
+                    pika::detail::allocator_deleter<other_allocator>>;
 
                 other_allocator alloc(a);
                 unique_ptr p(traits::allocate(alloc, 1),
-                    util::allocator_deleter<other_allocator>{alloc});
+                    pika::detail::allocator_deleter<other_allocator>{alloc});
                 traits::construct(alloc, p.get(), init_no_addref{}, alloc, f);
 
                 return return_type(p.release(), false);
@@ -575,11 +575,11 @@ namespace pika { namespace lcos { namespace local {
                 using init_no_addref = typename shared_state::init_no_addref;
 
                 using unique_ptr = std::unique_ptr<shared_state,
-                    util::allocator_deleter<other_allocator>>;
+                    pika::detail::allocator_deleter<other_allocator>>;
 
                 other_allocator alloc(a);
                 unique_ptr p(traits::allocate(alloc, 1),
-                    util::allocator_deleter<other_allocator>{alloc});
+                    pika::detail::allocator_deleter<other_allocator>{alloc});
                 traits::construct(alloc, p.get(), init_no_addref{}, alloc,
                     PIKA_FORWARD(F, f));
 
@@ -602,11 +602,11 @@ namespace pika { namespace lcos { namespace local {
                 using init_no_addref = typename shared_state::init_no_addref;
 
                 using unique_ptr = std::unique_ptr<shared_state,
-                    util::allocator_deleter<other_allocator>>;
+                    pika::detail::allocator_deleter<other_allocator>>;
 
                 other_allocator alloc(a);
                 unique_ptr p(traits::allocate(alloc, 1),
-                    util::allocator_deleter<other_allocator>{alloc});
+                    pika::detail::allocator_deleter<other_allocator>{alloc});
                 traits::construct(alloc, p.get(), init_no_addref{}, alloc, f);
 
                 return return_type(p.release(), false);
@@ -673,13 +673,13 @@ namespace pika { namespace lcos { namespace local {
                 !std::is_same_v<std::decay_t<F>, futures_factory>>>
         explicit futures_factory(F&& f)
           : task_(detail::create_task_object<Result, Cancelable>::call(
-                pika::util::internal_allocator<>{}, PIKA_FORWARD(F, f)))
+                pika::detail::internal_allocator<>{}, PIKA_FORWARD(F, f)))
         {
         }
 
         explicit futures_factory(Result (*f)())
           : task_(detail::create_task_object<Result, Cancelable>::call(
-                pika::util::internal_allocator<>{}, f))
+                pika::detail::internal_allocator<>{}, f))
         {
         }
 

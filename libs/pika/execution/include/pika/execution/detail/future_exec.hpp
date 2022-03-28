@@ -62,7 +62,7 @@ namespace pika { namespace lcos { namespace detail {
 
             pika::traits::detail::shared_state_ptr_t<result_type> p =
                 detail::make_continuation_alloc<continuation_result_type>(
-                    pika::util::internal_allocator<>{}, PIKA_MOVE(fut),
+                    pika::detail::internal_allocator<>{}, PIKA_MOVE(fut),
                     PIKA_FORWARD(Policy_, policy), PIKA_FORWARD(F, f));
 
             return pika::traits::future_access<
@@ -211,13 +211,13 @@ namespace pika { namespace lcos { namespace detail {
         using init_no_addref = typename shared_state::init_no_addref;
 
         using unique_ptr = std::unique_ptr<shared_state,
-            util::allocator_deleter<other_allocator>>;
+            pika::detail::allocator_deleter<other_allocator>>;
 
         using spawner_type = post_policy_spawner;
 
         other_allocator alloc(a);
         unique_ptr p(traits::allocate(alloc, 1),
-            util::allocator_deleter<other_allocator>{alloc});
+            pika::detail::allocator_deleter<other_allocator>{alloc});
         traits::construct(
             alloc, p.get(), init_no_addref{}, alloc, PIKA_FORWARD(F, f));
 
@@ -252,13 +252,13 @@ namespace pika { namespace lcos { namespace detail {
         using init_no_addref = typename shared_state::init_no_addref;
 
         using unique_ptr = std::unique_ptr<shared_state,
-            util::allocator_deleter<other_allocator>>;
+            pika::detail::allocator_deleter<other_allocator>>;
 
         using spawner_type = post_policy_spawner;
 
         other_allocator alloc(a);
         unique_ptr p(traits::allocate(alloc, 1),
-            util::allocator_deleter<other_allocator>{alloc});
+            pika::detail::allocator_deleter<other_allocator>{alloc});
         traits::construct(
             alloc, p.get(), init_no_addref{}, alloc, PIKA_FORWARD(F, f));
 

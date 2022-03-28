@@ -187,11 +187,11 @@ namespace pika { namespace cuda { namespace experimental {
             using init_no_addref = typename shared_state::init_no_addref;
 
             using unique_ptr = std::unique_ptr<shared_state,
-                util::allocator_deleter<other_allocator>>;
+                pika::detail::allocator_deleter<other_allocator>>;
 
             other_allocator alloc(a);
             unique_ptr p(traits::allocate(alloc, 1),
-                pika::util::allocator_deleter<other_allocator>{alloc});
+                pika::detail::allocator_deleter<other_allocator>{alloc});
 
             traits::construct(alloc, p.get(), init_no_addref{}, alloc, stream);
 

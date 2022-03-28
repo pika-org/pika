@@ -54,12 +54,12 @@ namespace pika { namespace lcos { namespace local {
                         other_allocator;
                 typedef std::allocator_traits<other_allocator> traits;
                 typedef std::unique_ptr<allocator_shared_state_type,
-                    util::allocator_deleter<other_allocator>>
+                    pika::detail::allocator_deleter<other_allocator>>
                     unique_pointer;
 
                 other_allocator alloc(a);
                 unique_pointer p(traits::allocate(alloc, 1),
-                    util::allocator_deleter<other_allocator>{alloc});
+                    pika::detail::allocator_deleter<other_allocator>{alloc});
 
                 using lcos::detail::in_place;
                 traits::construct(

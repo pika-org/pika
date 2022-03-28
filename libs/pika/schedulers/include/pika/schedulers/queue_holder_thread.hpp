@@ -103,8 +103,8 @@ namespace pika { namespace threads { namespace policies {
 
         // every thread maintains lists of free thread data objects
         // sorted by their stack sizes
-        using thread_heap_type =
-            std::list<thread_id_type, util::internal_allocator<thread_id_type>>;
+        using thread_heap_type = std::list<thread_id_type,
+            pika::detail::internal_allocator<thread_id_type>>;
 
         thread_heap_type thread_heap_small_;
         thread_heap_type thread_heap_medium_;
@@ -122,7 +122,8 @@ namespace pika { namespace threads { namespace policies {
         // ----------------------------------------------------------------
         // ----------------------------------------------------------------
 
-        static util::internal_allocator<threads::thread_data> thread_alloc_;
+        static pika::detail::internal_allocator<threads::thread_data>
+            thread_alloc_;
 
         using task_description = thread_init_data;
 
@@ -131,7 +132,7 @@ namespace pika { namespace threads { namespace policies {
         // this is the type of a map holding all threads (except depleted/terminated)
         using thread_map_type = std::unordered_set<thread_id_type,
             std::hash<thread_id_type>, std::equal_to<thread_id_type>,
-            util::internal_allocator<thread_id_type>>;
+            pika::detail::internal_allocator<thread_id_type>>;
         thread_map_type thread_map_;
 
         mutable util::cache_line_data<std::atomic<std::int32_t>>
@@ -1024,6 +1025,6 @@ namespace pika { namespace threads { namespace policies {
     };
 
     template <typename QueueType>
-    util::internal_allocator<threads::thread_data>
+    pika::detail::internal_allocator<threads::thread_data>
         queue_holder_thread<QueueType>::thread_alloc_;
 }}}    // namespace pika::threads::policies

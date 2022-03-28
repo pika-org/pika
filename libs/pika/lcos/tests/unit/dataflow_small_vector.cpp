@@ -45,7 +45,7 @@ namespace pika { namespace traits {
 
 template <typename T>
 using small_vector =
-    pika::detail::small_vector<T, 3, pika::util::internal_allocator<T>>;
+    pika::detail::small_vector<T, 3, pika::detail::internal_allocator<T>>;
 
 ///////////////////////////////////////////////////////////////////////////////
 std::atomic<std::uint32_t> void_f_count;

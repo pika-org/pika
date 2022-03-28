@@ -704,11 +704,11 @@ namespace pika {
             using traits = std::allocator_traits<other_allocator>;
 
             using unique_ptr = std::unique_ptr<shared_state,
-                util::allocator_deleter<other_allocator>>;
+                pika::detail::allocator_deleter<other_allocator>>;
 
             other_allocator frame_alloc(a);
             unique_ptr p(traits::allocate(frame_alloc, 1),
-                util::allocator_deleter<other_allocator>{frame_alloc});
+                pika::detail::allocator_deleter<other_allocator>{frame_alloc});
             traits::construct(frame_alloc, p.get(), frame_alloc,
                 PIKA_FORWARD(Visitor, visitor), PIKA_FORWARD(Args, args)...);
 

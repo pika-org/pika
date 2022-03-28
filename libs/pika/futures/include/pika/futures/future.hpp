@@ -1244,12 +1244,12 @@ namespace pika {
         using init_no_addref = typename shared_state::init_no_addref;
 
         using unique_ptr = std::unique_ptr<shared_state,
-            util::allocator_deleter<other_allocator>>;
+            pika::detail::allocator_deleter<other_allocator>>;
 
         using lcos::detail::in_place;
         other_allocator alloc(a);
         unique_ptr p(traits::allocate(alloc, 1),
-            util::allocator_deleter<other_allocator>{alloc});
+            pika::detail::allocator_deleter<other_allocator>{alloc});
         traits::construct(alloc, p.get(), init_no_addref{}, in_place{}, alloc,
             PIKA_FORWARD(Ts, ts)...);
 
@@ -1264,7 +1264,7 @@ namespace pika {
     make_ready_future(Ts&&... ts)
     {
         return make_ready_future_alloc<T>(
-            pika::util::internal_allocator<>{}, PIKA_FORWARD(Ts, ts)...);
+            pika::detail::internal_allocator<>{}, PIKA_FORWARD(Ts, ts)...);
     }
     ///////////////////////////////////////////////////////////////////////////
     // extension: create a pre-initialized future object, with allocator
@@ -1282,7 +1282,7 @@ namespace pika {
         T&& init)
     {
         return pika::make_ready_future_alloc<pika::util::decay_unwrap_t<T>>(
-            pika::util::internal_allocator<>{}, PIKA_FORWARD(T, init));
+            pika::detail::internal_allocator<>{}, PIKA_FORWARD(T, init));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -1352,7 +1352,7 @@ namespace pika {
     PIKA_FORCEINLINE future<void> make_ready_future()
     {
         return make_ready_future_alloc<void>(
-            pika::util::internal_allocator<>{}, util::unused);
+            pika::detail::internal_allocator<>{}, util::unused);
     }
 
     // Extension (see wg21.link/P0319)

@@ -90,10 +90,10 @@ namespace pika { namespace threads { namespace policies {
         // this is the type of a map holding all threads (except depleted ones)
         using thread_map_type = std::unordered_set<thread_id_type,
             std::hash<thread_id_type>, std::equal_to<thread_id_type>,
-            util::internal_allocator<thread_id_type>>;
+            pika::detail::internal_allocator<thread_id_type>>;
 
         using thread_heap_type = std::vector<thread_id_type,
-            util::internal_allocator<thread_id_type>>;
+            pika::detail::internal_allocator<thread_id_type>>;
 
         struct task_description
         {
@@ -197,7 +197,7 @@ namespace pika { namespace threads { namespace policies {
             }
         }
 
-        static util::internal_allocator<task_description>
+        static pika::detail::internal_allocator<task_description>
             task_description_alloc_;
 
         ///////////////////////////////////////////////////////////////////////
@@ -1230,8 +1230,8 @@ namespace pika { namespace threads { namespace policies {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
         typename TerminatedQueuing>
-    util::internal_allocator<typename thread_queue<Mutex, PendingQueuing,
-        StagedQueuing, TerminatedQueuing>::task_description>
+    pika::detail::internal_allocator<typename thread_queue<Mutex,
+        PendingQueuing, StagedQueuing, TerminatedQueuing>::task_description>
         thread_queue<Mutex, PendingQueuing, StagedQueuing,
             TerminatedQueuing>::task_description_alloc_;
 }}}    // namespace pika::threads::policies

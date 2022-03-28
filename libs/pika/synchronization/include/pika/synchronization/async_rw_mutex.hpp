@@ -317,7 +317,7 @@ namespace pika { namespace experimental {
     ///
     /// The mutex is movable and non-copyable.
     template <typename ReadWriteT = void, typename ReadT = ReadWriteT,
-        typename Allocator = pika::util::internal_allocator<>>
+        typename Allocator = pika::detail::internal_allocator<>>
     class async_rw_mutex;
 
     // Implementation details:
