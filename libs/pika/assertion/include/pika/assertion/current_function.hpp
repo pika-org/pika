@@ -14,8 +14,7 @@
 
 #include <pika/config.hpp>
 
-namespace pika { namespace assertion { namespace detail {
-
+namespace pika::detail {
     constexpr inline void current_function_helper()
     {
 #if defined(__GNUC__) || (defined(__MWERKS__) && (__MWERKS__ >= 0x3000)) ||    \
@@ -55,5 +54,4 @@ namespace pika { namespace assertion { namespace detail {
 
 #endif
     }
-
-}}}    // namespace pika::assertion::detail
+}    // namespace pika::detail
