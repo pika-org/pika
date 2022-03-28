@@ -10,7 +10,7 @@
 
 #include <iosfwd>
 
-namespace pika { namespace assertion {
+namespace pika::detail {
     /// This contains the location information where \a PIKA_ASSERT has been
     /// called
     struct source_location
@@ -21,4 +21,4 @@ namespace pika { namespace assertion {
     };
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream& os, source_location const& loc);
-}}    // namespace pika::assertion
+}    // namespace pika::detail

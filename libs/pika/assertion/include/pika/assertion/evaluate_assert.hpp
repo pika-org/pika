@@ -13,9 +13,9 @@
 #include <string>
 #include <utility>
 
-namespace pika { namespace assertion { namespace detail {
+namespace pika::detail {
     /// \cond NOINTERNAL
     PIKA_EXPORT void handle_assert(source_location const& loc, const char* expr,
         std::string const& msg) noexcept;
     /// \endcond
-}}}    // namespace pika::assertion::detail
+}    // namespace pika::detail

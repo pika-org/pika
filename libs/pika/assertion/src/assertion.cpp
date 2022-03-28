@@ -10,16 +10,14 @@
 #include <iostream>
 #include <string>
 
-namespace pika { namespace assertion {
-    namespace detail {
-        assertion_handler& get_handler()
-        {
-            static assertion_handler handler = nullptr;
-            return handler;
-        }
-    }    // namespace detail
+namespace pika::detail {
+    assertion_handler_type& get_handler()
+    {
+        static assertion_handler_type handler = nullptr;
+        return handler;
+    }
 
-    void set_assertion_handler(assertion_handler handler)
+    void set_assertion_handler(assertion_handler_type handler)
     {
         if (detail::get_handler() == nullptr)
         {
@@ -27,24 +25,22 @@ namespace pika { namespace assertion {
         }
     }
 
-    namespace detail {
-        void handle_assert(source_location const& loc, const char* expr,
-            std::string const& msg) noexcept
+    void handle_assert(source_location const& loc, const char* expr,
+        std::string const& msg) noexcept
+    {
+        if (get_handler() == nullptr)
         {
-            if (get_handler() == nullptr)
+            std::cerr << loc << ": Assertion '" << expr << "' failed";
+            if (!msg.empty())
             {
-                std::cerr << loc << ": Assertion '" << expr << "' failed";
-                if (!msg.empty())
-                {
-                    std::cerr << " (" << msg << ")\n";
-                }
-                else
-                {
-                    std::cerr << '\n';
-                }
-                std::abort();
+                std::cerr << " (" << msg << ")\n";
             }
-            get_handler()(loc, expr, msg);
+            else
+            {
+                std::cerr << '\n';
+            }
+            std::abort();
         }
-    }    // namespace detail
-}}       // namespace pika::assertion
+        get_handler()(loc, expr, msg);
+    }
+}    // namespace pika::detail

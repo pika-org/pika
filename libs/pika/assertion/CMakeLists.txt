@@ -8,9 +8,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Default location is $PIKA_ROOT/libs/assertion/include
 set(assertion_headers
-    pika/assert.hpp pika/modules/assertion.hpp
-    pika/assertion/current_function.hpp pika/assertion/evaluate_assert.hpp
-    pika/assertion/source_location.hpp
+    pika/assert.hpp pika/assertion/current_function.hpp
+    pika/assertion/evaluate_assert.hpp pika/assertion/source_location.hpp
 )
 
 # Default location is $PIKA_ROOT/libs/assertion/src

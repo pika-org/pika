@@ -17,7 +17,7 @@ which are turned of during a release build.
 
 By default, the location and function where the assert has been called from are
 displayed when the assertion fires. This behavior can be modified by using
-:cpp:func:`pika::assertion::set_assertion_handler`. When pika initializes, it uses
+:cpp:func:`pika::detail::set_assertion_handler`. When pika initializes, it uses
 this function to specify a more elaborate assertion handler. If your application
 needs to customize this, it needs to do so before calling
 :cpp:func:`pika::pika_init`, :cpp:func:`pika::pika_main` or using the C-main
