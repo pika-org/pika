@@ -87,4 +87,8 @@ if(PIKA_WITH_DATAPAR_VC AND NOT TARGET Vc::vc)
   pika_info("Found Vc (vectorization):" ${Vc_INCLUDE_DIR} "- version:"
             ${Vc_VERSION_STRING}
   )
+
+  if(NOT PIKA_FIND_PACKAGE)
+    target_link_libraries(pika_base_libraries INTERFACE Vc::vc)
+  endif()
 endif()
