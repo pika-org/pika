@@ -127,7 +127,7 @@ namespace pika { namespace resource {
     namespace detail {
         inline ::pika::resource::partitioner make_partitioner(
             resource::partitioner_mode rpmode, pika::util::section rtcfg,
-            pika::threads::policies::detail::affinity_data affinity_data);
+            pika::detail::affinity_data affinity_data);
     }
 
     class partitioner
@@ -135,11 +135,11 @@ namespace pika { namespace resource {
     private:
         friend ::pika::resource::partitioner detail::make_partitioner(
             resource::partitioner_mode rpmode, pika::util::section rtcfg,
-            pika::threads::policies::detail::affinity_data affinity_data);
+            pika::detail::affinity_data affinity_data);
 
         partitioner(resource::partitioner_mode rpmode,
             pika::util::section rtcfg,
-            pika::threads::policies::detail::affinity_data affinity_data)
+            pika::detail::affinity_data affinity_data)
           : partitioner_(
                 detail::create_partitioner(rpmode, rtcfg, affinity_data))
         {
@@ -206,7 +206,7 @@ namespace pika { namespace resource {
     namespace detail {
         ::pika::resource::partitioner make_partitioner(
             resource::partitioner_mode rpmode, pika::util::section rtcfg,
-            pika::threads::policies::detail::affinity_data affinity_data)
+            pika::detail::affinity_data affinity_data)
         {
             return ::pika::resource::partitioner(rpmode, rtcfg, affinity_data);
         }

@@ -448,8 +448,7 @@ namespace pika {
                 {
                     result = cmdline.call(params.desc_cmdline, argc, argv);
 
-                    pika::threads::policies::detail::affinity_data
-                        affinity_data{};
+                    pika::detail::affinity_data affinity_data{};
                     affinity_data.init(
                         pika::util::get_entry_as<std::size_t>(
                             cmdline.rtcfg_, "pika.os_threads", 0),

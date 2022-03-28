@@ -66,7 +66,7 @@ namespace pika { namespace threads { namespace policies {
         struct init_parameter
         {
             init_parameter(std::size_t num_queues,
-                detail::affinity_data const& affinity_data,
+                pika::detail::affinity_data const& affinity_data,
                 thread_queue_init_parameters thread_queue_init = {},
                 char const* description = "local_queue_scheduler")
               : num_queues_(num_queues)
@@ -77,7 +77,7 @@ namespace pika { namespace threads { namespace policies {
             }
 
             init_parameter(std::size_t num_queues,
-                detail::affinity_data const& affinity_data,
+                pika::detail::affinity_data const& affinity_data,
                 char const* description)
               : num_queues_(num_queues)
               , thread_queue_init_()
@@ -88,7 +88,7 @@ namespace pika { namespace threads { namespace policies {
 
             std::size_t num_queues_;
             thread_queue_init_parameters thread_queue_init_;
-            detail::affinity_data const& affinity_data_;
+            pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
         typedef init_parameter init_parameter_type;
@@ -940,7 +940,7 @@ namespace pika { namespace threads { namespace policies {
         std::vector<thread_queue_type*> queues_;
         std::atomic<std::size_t> curr_queue_;
 
-        detail::affinity_data const& affinity_data_;
+        pika::detail::affinity_data const& affinity_data_;
 
 #if !defined(                                                                  \
     PIKA_NATIVE_MIC)    // we know that the MIC has one NUMA domain only

@@ -121,7 +121,7 @@ namespace pika { namespace threads {
         std::size_t num_threads_;
         std::size_t thread_offset_;
         pika::threads::policies::callback_notifier& notifier_;
-        pika::threads::policies::detail::affinity_data const& affinity_data_;
+        pika::detail::affinity_data const& affinity_data_;
         pika::threads::detail::network_background_callback_type const&
             network_background_callback_;
         std::size_t max_background_threads_;
@@ -133,7 +133,7 @@ namespace pika { namespace threads {
             policies::scheduler_mode mode, std::size_t num_threads,
             std::size_t thread_offset,
             pika::threads::policies::callback_notifier& notifier,
-            pika::threads::policies::detail::affinity_data const& affinity_data,
+            pika::detail::affinity_data const& affinity_data,
             pika::threads::detail::network_background_callback_type const&
                 network_background_callback =
                     pika::threads::detail::network_background_callback_type(),
@@ -543,7 +543,7 @@ namespace pika { namespace threads {
         // global index = thread_offset_ + local index.
         std::size_t thread_offset_;
 
-        policies::detail::affinity_data const& affinity_data_;
+        pika::detail::affinity_data const& affinity_data_;
 
         // scale timestamps to nanoseconds
         double timestamp_scale_;

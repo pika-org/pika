@@ -18,7 +18,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace threads { namespace policies { namespace detail {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     // Structure holding the information related to thread affinity selection
     // for the shepherd threads of this instance
@@ -54,10 +54,10 @@ namespace pika { namespace threads { namespace policies { namespace detail {
             return num_threads_;
         }
 
-        mask_cref_type get_pu_mask(
+        threads::mask_cref_type get_pu_mask(
             threads::topology const& topo, std::size_t num_thread) const;
 
-        mask_type get_used_pus_mask(
+        threads::mask_type get_used_pus_mask(
             threads::topology const& topo, std::size_t pu_num) const;
         std::size_t get_thread_occupancy(
             threads::topology const& topo, std::size_t pu_num) const;
@@ -95,9 +95,9 @@ namespace pika { namespace threads { namespace policies { namespace detail {
         std::size_t pu_step_;    ///< step between used processing units
         std::size_t used_cores_;
         std::string affinity_domain_;
-        std::vector<mask_type> affinity_masks_;
+        std::vector<threads::mask_type> affinity_masks_;
         std::vector<std::size_t> pu_nums_;
-        mask_type
+        threads::mask_type
             no_affinity_;    ///< mask of processing units which have no affinity
         bool
             use_process_mask_;    ///< use the process CPU mask to limit available PUs
@@ -105,6 +105,6 @@ namespace pika { namespace threads { namespace policies { namespace detail {
         static std::atomic<int>
             instance_number_counter_;    ///< counter for instance numbers
     };
-}}}}    // namespace pika::threads::policies::detail
+}    // namespace pika::detail
 
 #include <pika/config/warnings_suffix.hpp>
