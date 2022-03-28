@@ -128,7 +128,7 @@ namespace pika { namespace lcos { namespace local {
 
         PIKA_EXPORT void free(guard_task* task);
 
-        typedef util::unique_function_nonser<void()> guard_function;
+        typedef util::unique_function<void()> guard_function;
     }    // namespace detail
 
     class guard : public detail::debug_object

@@ -71,7 +71,7 @@ namespace pika {
     namespace detail {
 
         int init_helper(pika::program_options::variables_map& /*vm*/,
-            util::function_nonser<int(int, char**)> const& f)
+            util::function<int(int, char**)> const& f)
         {
             std::string cmdline(
                 pika::get_config_entry("pika.reconstructed_cmd_line", ""));
@@ -294,8 +294,8 @@ namespace pika {
 
         ///////////////////////////////////////////////////////////////////////
         int run(pika::runtime& rt,
-            util::function_nonser<int(
-                pika::program_options::variables_map& vm)> const& f,
+            util::function<int(pika::program_options::variables_map& vm)> const&
+                f,
             pika::program_options::variables_map& vm,
             startup_function_type startup, shutdown_function_type shutdown)
         {
@@ -313,8 +313,8 @@ namespace pika {
         }
 
         int start(pika::runtime& rt,
-            util::function_nonser<int(
-                pika::program_options::variables_map& vm)> const& f,
+            util::function<int(pika::program_options::variables_map& vm)> const&
+                f,
             pika::program_options::variables_map& vm,
             startup_function_type startup, shutdown_function_type shutdown)
         {
@@ -422,8 +422,8 @@ namespace pika {
 
         ///////////////////////////////////////////////////////////////////////
         int run_or_start(
-            util::function_nonser<int(
-                pika::program_options::variables_map& vm)> const& f,
+            util::function<int(pika::program_options::variables_map& vm)> const&
+                f,
             int argc, char** argv, init_params const& params, bool blocking)
         {
             init_environment();

@@ -64,6 +64,6 @@ namespace pika { namespace lcos { namespace local {
 
     private:
         lcos::local::promise<void> promise_;
-        util::function_nonser<bool()> cond_;
+        util::function<bool()> cond_;
     };
 }}}    // namespace pika::lcos::local

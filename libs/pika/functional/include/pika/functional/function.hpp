@@ -67,9 +67,6 @@ namespace pika { namespace util {
         using base_type::reset;
         using base_type::target;
     };
-
-    template <typename Sig>
-    using function_nonser = function<Sig>;
 }}    // namespace pika::util
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)

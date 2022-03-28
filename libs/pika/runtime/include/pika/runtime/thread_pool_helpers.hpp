@@ -101,6 +101,6 @@ namespace pika { namespace threads {
     /// \param state    [in] This specifies the thread-state for which the
     ///                 threads should be enumerated.
     PIKA_EXPORT bool enumerate_threads(
-        util::function_nonser<bool(thread_id_type)> const& f,
+        util::function<bool(thread_id_type)> const& f,
         thread_schedule_state state = thread_schedule_state::unknown);
 }}    // namespace pika::threads

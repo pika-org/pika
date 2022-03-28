@@ -43,6 +43,5 @@ int pika_main()
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-    return pika::init(
-        pika_main, argc, argv);    // Initialize and run pika.
+    return pika::init(pika_main, argc, argv);    // Initialize and run pika.
 }

@@ -60,8 +60,8 @@ bool MaybeThrowOnCopy::throwOnCopy = false;
 
 int main(int, char*[])
 {
-    pika::util::function_nonser<int()> f;
-    pika::util::function_nonser<int()> g;
+    pika::util::function<int()> f;
+    pika::util::function<int()> g;
 
     MaybeThrowOnCopy::throwOnCopy = false;
     f = MaybeThrowOnCopy(1);

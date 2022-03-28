@@ -38,9 +38,7 @@ struct pika_driver : htts2::driver
             "pika.os_threads=" + std::to_string(osthreads_),
             "pika.run_pika_main!=0", "pika.commandline.allow_unknown!=1"};
 
-        pika::util::function_nonser<int(
-            pika::program_options::variables_map & vm)>
-            f;
+        pika::util::function<int(pika::program_options::variables_map & vm)> f;
         pika::program_options::options_description desc;
 
         pika::init_params init_args;

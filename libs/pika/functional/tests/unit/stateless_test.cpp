@@ -41,7 +41,7 @@ struct stateless_integer_add
 
 int main(int, char*[])
 {
-    pika::util::function_nonser<int(int, int)> f;
+    pika::util::function<int(int, int)> f;
     f = stateless_integer_add();
 
     return pika::util::report_errors();

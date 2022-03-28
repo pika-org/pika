@@ -29,7 +29,7 @@ struct int_div
 
 int main()
 {
-    pika::util::function_nonser<double(int x, int y)> f;
+    pika::util::function<double(int x, int y)> f;
 
     f = int_div();
     PIKA_TEST(f);

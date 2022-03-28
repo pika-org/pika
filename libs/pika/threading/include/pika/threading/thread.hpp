@@ -33,7 +33,7 @@
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     using thread_termination_handler_type =
-        util::function_nonser<void(std::exception_ptr const& e)>;
+        util::function<void(std::exception_ptr const& e)>;
     PIKA_EXPORT void set_thread_termination_handler(
         thread_termination_handler_type f);
 
@@ -143,9 +143,9 @@ namespace pika {
             id_ = threads::invalid_thread_id;
         }
         void start_thread(threads::thread_pool_base* pool,
-            util::unique_function_nonser<void()>&& func);
+            util::unique_function<void()>&& func);
         static threads::thread_result_type thread_function_nullary(
-            util::unique_function_nonser<void()> const& func);
+            util::unique_function<void()> const& func);
 
         mutable mutex_type mtx_;
         threads::thread_id_ref_type id_;
