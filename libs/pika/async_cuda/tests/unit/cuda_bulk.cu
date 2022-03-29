@@ -16,8 +16,9 @@
 
 int hpx_main()
 {
-    namespace ex = pika::execution::experimental;
     namespace cu = pika::cuda::experimental;
+    namespace ex = pika::execution::experimental;
+    namespace tt = pika::this_thread::experimental;
 
     cu::enable_user_polling poll("default");
     cu::cuda_pool pool{};
@@ -69,7 +70,7 @@ int hpx_main()
         auto s = ex::transfer_just(sched, device_ptr, n) |
             cu::then_with_stream(malloc) | ex::bulk(n, f) |
             cu::then_with_stream(memcpy) | cu::then_with_stream(free);
-        ex::sync_wait(std::move(s));
+        tt::sync_wait(std::move(s));
 
         for (element_type i = 0; i < n; ++i)
         {
@@ -98,7 +99,7 @@ int hpx_main()
             cu::then_with_stream(malloc) |
             ex::bulk(pika::util::detail::make_counting_shape(n), f) |
             cu::then_with_stream(memcpy) | cu::then_with_stream(free);
-        ex::sync_wait(std::move(s));
+        tt::sync_wait(std::move(s));
 
         for (element_type i = 0; i < n; ++i)
         {

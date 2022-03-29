@@ -24,7 +24,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::this_thread::experimental {
     namespace detail {
         struct sync_wait_error_visitor
         {
@@ -58,8 +58,9 @@ namespace pika { namespace execution { namespace experimental {
             // The type of the single void or non-void result that we store. If
             // there are multiple variants or multiple values sync_wait will
             // fail to compile.
-            using result_type = std::decay_t<single_result_t<
-                predecessor_value_types<pika::util::pack, pika::util::pack>>>;
+            using result_type = std::decay_t<pika::execution::experimental::
+                    detail::single_result_t<predecessor_value_types<
+                        pika::util::pack, pika::util::pack>>>;
 
             // Constant to indicate if the type of the result from the
             // predecessor sender is void or not
@@ -142,15 +143,16 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             template <typename Error>
-            friend void tag_invoke(
-                set_error_t, sync_wait_receiver&& r, Error&& error) noexcept
+            friend void tag_invoke(pika::execution::experimental::set_error_t,
+                sync_wait_receiver&& r, Error&& error) noexcept
             {
                 r.state.value.template emplace<error_type>(
                     PIKA_FORWARD(Error, error));
                 r.signal_set_called();
             }
 
-            friend void tag_invoke(set_done_t, sync_wait_receiver&& r) noexcept
+            friend void tag_invoke(pika::execution::experimental::set_done_t,
+                sync_wait_receiver&& r) noexcept
             {
                 r.signal_set_called();
             }
@@ -159,8 +161,8 @@ namespace pika { namespace execution { namespace experimental {
                 typename =
                     std::enable_if_t<(is_void_result && sizeof...(Us) == 0) ||
                         (!is_void_result && sizeof...(Us) == 1)>>
-            friend void tag_invoke(
-                set_value_t, sync_wait_receiver&& r, Us&&... us) noexcept
+            friend void tag_invoke(pika::execution::experimental::set_value_t,
+                sync_wait_receiver&& r, Us&&... us) noexcept
             {
                 r.state.value.template emplace<value_type>(
                     PIKA_FORWARD(Us, us)...);
@@ -176,7 +178,7 @@ namespace pika { namespace execution { namespace experimental {
         // clang-format off
         template <typename Sender,
             PIKA_CONCEPT_REQUIRES_(
-                is_sender_v<Sender>
+                pika::execution::experimental::is_sender_v<Sender>
             )>
         // clang-format on
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
@@ -196,7 +198,8 @@ namespace pika { namespace execution { namespace experimental {
 
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(sync_wait_t)
         {
-            return detail::partial_algorithm<sync_wait_t>{};
+            return pika::execution::experimental::detail::partial_algorithm<
+                sync_wait_t>{};
         }
     } sync_wait{};
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::this_thread::experimental

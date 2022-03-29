@@ -216,9 +216,10 @@ namespace pika { namespace execution { namespace experimental {
         template <typename F, typename... Ts>
         decltype(auto) sync_execute(F&& f, Ts&&... ts)
         {
-            return sync_wait(then(schedule(sched_),
-                pika::util::deferred_call(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
+            return pika::this_thread::experimental::sync_wait(
+                then(schedule(sched_),
+                    pika::util::deferred_call(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 
         // TwoWayExecutor interface
@@ -304,9 +305,10 @@ namespace pika { namespace execution { namespace experimental {
         template <typename F, typename S, typename... Ts>
         void bulk_sync_execute(F&& f, S const& shape, Ts&&... ts)
         {
-            sync_wait(bulk(schedule(sched_), shape,
-                pika::util::bind_back(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
+            pika::this_thread::experimental::sync_wait(
+                bulk(schedule(sched_), shape,
+                    pika::util::bind_back(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 
         template <typename F, typename S, typename Future, typename... Ts>

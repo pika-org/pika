@@ -26,6 +26,7 @@
 #include <vector>
 
 namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 //
 // This test generates a set of tasks with certain names, then checks
@@ -214,7 +215,7 @@ pika::future<void> test_execution(Execution& exec)
 
 int pika_main()
 {
-    ex::sync_wait(test_senders());
+    tt::sync_wait(test_senders());
 
     // setup executors
     pika::execution::parallel_executor par_exec{};

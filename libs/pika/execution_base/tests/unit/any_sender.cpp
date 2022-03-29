@@ -18,6 +18,7 @@
 #include <utility>
 
 namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 struct custom_type_non_copyable
 {
@@ -575,7 +576,7 @@ struct wait_globals
 {
     ~wait_globals()
     {
-        ex::sync_wait(std::move(global_any_sender));
+        tt::sync_wait(std::move(global_any_sender));
     }
 } waiter{};
 

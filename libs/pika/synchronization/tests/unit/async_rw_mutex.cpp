@@ -19,11 +19,11 @@
 #include <vector>
 
 using pika::execution::experimental::execute;
-using pika::execution::experimental::sync_wait;
 using pika::execution::experimental::then;
 using pika::execution::experimental::thread_pool_scheduler;
 using pika::execution::experimental::transfer;
 using pika::experimental::async_rw_mutex;
+using pika::this_thread::experimental::sync_wait;
 
 unsigned int seed = std::random_device{}();
 

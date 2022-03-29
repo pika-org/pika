@@ -343,12 +343,13 @@ void test_for_each_sender(ExPolicy&& p, IteratorTag)
     std::iota(std::begin(c), std::end(c), std::rand());
 
     namespace ex = pika::execution::experimental;
+    namespace tt = pika::this_thread::experimental;
 
     auto rng = pika::util::make_iterator_range(
         iterator(std::begin(c)), iterator(std::end(c)));
     auto f = [](std::size_t& v) { v = 42; };
     auto result = ex::just(rng, f) |
-        pika::ranges::for_each(std::forward<ExPolicy>(p)) | ex::sync_wait();
+        pika::ranges::for_each(std::forward<ExPolicy>(p)) | tt::sync_wait();
     PIKA_TEST(result == iterator(std::end(c)));
 
     // verify values
@@ -364,6 +365,7 @@ template <typename ExPolicy, typename IteratorTag>
 void test_for_each_exception_sender(ExPolicy p, IteratorTag)
 {
     namespace ex = pika::execution::experimental;
+    namespace tt = pika::this_thread::experimental;
 
     typedef std::vector<std::size_t>::iterator base_iterator;
     typedef test::test_iterator<base_iterator, IteratorTag> iterator;
@@ -379,7 +381,7 @@ void test_for_each_exception_sender(ExPolicy p, IteratorTag)
     try
     {
         ex::just(rng, f) | pika::ranges::for_each(std::forward<ExPolicy>(p)) |
-            ex::sync_wait();
+            tt::sync_wait();
 
         PIKA_TEST(false);
     }
@@ -400,6 +402,7 @@ template <typename ExPolicy, typename IteratorTag>
 void test_for_each_bad_alloc_sender(ExPolicy p, IteratorTag)
 {
     namespace ex = pika::execution::experimental;
+    namespace tt = pika::this_thread::experimental;
 
     typedef std::vector<std::size_t>::iterator base_iterator;
     typedef test::test_iterator<base_iterator, IteratorTag> iterator;
@@ -415,7 +418,7 @@ void test_for_each_bad_alloc_sender(ExPolicy p, IteratorTag)
     try
     {
         ex::just(rng, f) | pika::ranges::for_each(std::forward<ExPolicy>(p)) |
-            ex::sync_wait();
+            tt::sync_wait();
 
         PIKA_TEST(false);
     }
