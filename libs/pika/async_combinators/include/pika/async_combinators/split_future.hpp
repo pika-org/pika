@@ -4,8 +4,6 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-/// \file lcos/split_future.hpp
-
 #pragma once
 
 #if defined(DOXYGEN)
@@ -88,13 +86,14 @@ namespace pika {
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos {
+namespace pika {
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
         template <typename ContResult>
-        class split_nth_continuation : public future_data<ContResult>
+        class split_nth_continuation
+          : public lcos::detail::future_data<ContResult>
         {
-            using base_type = future_data<ContResult>;
+            using base_type = lcos::detail::future_data<ContResult>;
 
         private:
             template <std::size_t I, typename T>
@@ -229,9 +228,9 @@ namespace pika { namespace lcos {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename ContResult>
-        class split_continuation : public future_data<ContResult>
+        class split_continuation : public lcos::detail::future_data<ContResult>
         {
-            using base_type = future_data<ContResult>;
+            using base_type = lcos::detail::future_data<ContResult>;
 
         private:
             template <typename T>
@@ -440,9 +439,5 @@ namespace pika { namespace lcos {
     {
         return detail::split_future_helper_vector<T>(PIKA_MOVE(f), size);
     }
-}}    // namespace pika::lcos
-
-namespace pika {
-    using lcos::split_future;
-}
+}    // namespace pika
 #endif

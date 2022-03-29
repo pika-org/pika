@@ -224,7 +224,7 @@ namespace pika {
         Sequence futures;
     };
 
-    namespace lcos { namespace detail {
+    namespace detail {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Sequence>
@@ -409,7 +409,7 @@ namespace pika {
             std::size_t needed_count_;
             std::atomic<bool> goal_reached_on_calling_thread_;
         };
-    }}    // namespace lcos::detail
+    }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Range>
@@ -433,7 +433,7 @@ namespace pika {
                     "number of results to wait for is out of bounds"));
         }
 
-        auto f = std::make_shared<lcos::detail::when_some<result_type>>(
+        auto f = std::make_shared<detail::when_some<result_type>>(
             PIKA_MOVE(values), n);
 
         lcos::local::futures_factory<when_some_result<result_type>()> p(
@@ -527,7 +527,7 @@ namespace pika {
         result_type values(
             func(PIKA_FORWARD(T, t)), func(PIKA_FORWARD(Ts, ts))...);
 
-        auto f = std::make_shared<lcos::detail::when_some<result_type>>(
+        auto f = std::make_shared<detail::when_some<result_type>>(
             PIKA_MOVE(values), n);
 
         lcos::local::futures_factory<when_some_result<result_type>()> p(

@@ -206,7 +206,7 @@ namespace pika {
         Sequence futures;
     };
 
-    namespace lcos { namespace detail {
+    namespace detail {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Sequence>
@@ -358,7 +358,7 @@ namespace pika {
                 {
                     // wait for any of the futures to return to become ready
                     pika::execution_base::this_thread::suspend(
-                        "pika::lcos::detail::when_any::operator()");
+                        "pika::detail::when_any::operator()");
                 }
 
                 // that should not happen
@@ -373,7 +373,7 @@ namespace pika {
             std::atomic<std::size_t> index_;
             bool goal_reached_on_calling_thread_;
         };
-    }}    // namespace lcos::detail
+    }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Range>
@@ -383,7 +383,7 @@ namespace pika {
     {
         using result_type = std::decay_t<Range>;
 
-        auto f = std::make_shared<lcos::detail::when_any<result_type>>(
+        auto f = std::make_shared<detail::when_any<result_type>>(
             pika::traits::acquire_future<result_type>()(values));
 
         lcos::local::futures_factory<pika::when_any_result<result_type>()> p(
@@ -453,8 +453,8 @@ namespace pika {
         result_type values(
             func(PIKA_FORWARD(T, t)), func(PIKA_FORWARD(Ts, ts))...);
 
-        auto f = std::make_shared<lcos::detail::when_any<result_type>>(
-            PIKA_MOVE(values));
+        auto f =
+            std::make_shared<detail::when_any<result_type>>(PIKA_MOVE(values));
 
         lcos::local::futures_factory<pika::when_any_result<result_type>()> p(
             [f = PIKA_MOVE(f)]() -> pika::when_any_result<result_type> {

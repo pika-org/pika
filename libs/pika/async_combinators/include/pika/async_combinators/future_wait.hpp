@@ -22,7 +22,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace detail {
+namespace pika::detail {
     template <typename Future>
     struct wait_acquire_future
     {
@@ -195,4 +195,4 @@ namespace pika { namespace lcos { namespace detail {
         std::atomic<std::size_t>* success_counter_;
         bool goal_reached_on_calling_thread_;
     };
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::detail
