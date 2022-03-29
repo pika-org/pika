@@ -321,15 +321,15 @@ namespace pika { namespace threads { namespace policies {
                 if (local_num == std::size_t(-1))
                 {
                     // clang-format off
-                            using namespace pika::threads::detail;
-                            spq_deb.debug(debug::str<>("create_thread")
-                                , "x-pool", "num_workers_", num_workers_
-                                , "thread_number"
-                                , "global", get_thread_nums_tss().global_thread_num
-                                , "local", get_thread_nums_tss().local_thread_num
-                                , "pool", get_thread_nums_tss().thread_pool_num
-                                , "parent offset", parent_pool_->get_thread_offset()
-                                , parent_pool_->get_pool_name());
+                    using namespace pika::threads::detail;
+                    spq_deb.debug(debug::str<>("create_thread")
+                        , "x-pool", "num_workers_", num_workers_
+                        , "thread_number"
+                        , "global", get_global_thread_num_tss()
+                        , "local", get_local_thread_num_tss()
+                        , "pool", get_thread_pool_num_tss()
+                        , "parent offset", parent_pool_->get_thread_offset()
+                        , parent_pool_->get_pool_name());
                     // clang-format on
                     // This is a task being injected from a thread on another
                     // pool - we can schedule on any thread available
@@ -738,17 +738,17 @@ namespace pika { namespace threads { namespace policies {
                         num_workers_);
                     q_index = 0;
                     // clang-format off
-                            using namespace pika::threads::detail;
-                            spq_deb.debug(debug::str<>("schedule_thread")
-                                , "x-pool thread schedule"
-                                , "num_workers_", num_workers_
-                                , "thread_number"
-                                , "global", get_thread_nums_tss().global_thread_num
-                                , "local", get_thread_nums_tss().local_thread_num
-                                , "pool", get_thread_nums_tss().thread_pool_num
-                                , "parent offset", parent_pool_->get_thread_offset()
-                                , parent_pool_->get_pool_name(),
-                                debug::threadinfo<threads::thread_id_ref_type*>(&thrd));
+                    using namespace pika::threads::detail;
+                    spq_deb.debug(debug::str<>("schedule_thread")
+                        , "x-pool thread schedule"
+                        , "num_workers_", num_workers_
+                        , "thread_number"
+                        , "global", get_global_thread_num_tss()
+                        , "local", get_local_thread_num_tss()
+                        , "pool", get_thread_pool_num_tss()
+                        , "parent offset", parent_pool_->get_thread_offset()
+                        , parent_pool_->get_pool_name(),
+                        debug::threadinfo<threads::thread_id_ref_type*>(&thrd));
                     // clang-format on
                 }
                 else if (!round_robin_) /*assign_parent*/

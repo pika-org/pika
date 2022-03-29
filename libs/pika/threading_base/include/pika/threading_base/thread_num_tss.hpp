@@ -7,77 +7,29 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/modules/errors.hpp>
 
 #include <cstddef>
-#include <cstdint>
-#include <tuple>
-#include <utility>
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace threads { namespace detail {
-
-    /// Holds the global and local thread numbers, and the pool number
-    /// associated with the thread.
-    struct thread_nums
-    {
-        std::size_t global_thread_num;
-        std::size_t local_thread_num;
-        std::size_t thread_pool_num;
-    };
-
-    inline thread_local thread_nums thread_nums_tss_ = {
-        std::size_t(-1), std::size_t(-1), std::size_t(-1)};
-
+namespace pika::threads::detail {
     /// Set the global thread id to thread local storage.
-    inline std::size_t set_global_thread_num_tss(std::size_t num)
-    {
-        std::swap(thread_nums_tss_.global_thread_num, num);
-        return num;
-    }
+    PIKA_EXPORT std::size_t set_global_thread_num_tss(std::size_t num);
 
     /// Get the global thread id from thread local storage.
-    inline std::size_t get_global_thread_num_tss()
-    {
-        return thread_nums_tss_.global_thread_num;
-    }
+    PIKA_EXPORT std::size_t get_global_thread_num_tss();
 
     /// Set the local thread id to thread local storage.
-    inline std::size_t set_local_thread_num_tss(std::size_t num)
-    {
-        std::swap(thread_nums_tss_.local_thread_num, num);
-        return num;
-    }
+    PIKA_EXPORT std::size_t set_local_thread_num_tss(std::size_t num);
 
     /// Get the local thread id from thread local storage.
-    inline std::size_t get_local_thread_num_tss()
-    {
-        return thread_nums_tss_.local_thread_num;
-    }
+    PIKA_EXPORT std::size_t get_local_thread_num_tss();
 
     /// Set the thread pool id to thread local storage.
-    inline std::size_t set_thread_pool_num_tss(std::size_t num)
-    {
-        std::swap(thread_nums_tss_.thread_pool_num, num);
-        return num;
-    }
+    PIKA_EXPORT std::size_t set_thread_pool_num_tss(std::size_t num);
 
     /// Get the thread pool id from thread local storage.
-    inline std::size_t get_thread_pool_num_tss()
-    {
-        return thread_nums_tss_.thread_pool_num;
-    }
-
-    inline void set_thread_nums_tss(const thread_nums& t)
-    {
-        thread_nums_tss_ = t;
-    }
-
-    inline const thread_nums& get_thread_nums_tss()
-    {
-        return thread_nums_tss_;
-    }
+    PIKA_EXPORT std::size_t get_thread_pool_num_tss();
 
     ///////////////////////////////////////////////////////////////////////////
     struct reset_tss_helper
@@ -100,7 +52,7 @@ namespace pika { namespace threads { namespace detail {
     private:
         std::size_t global_thread_num_;
     };
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
