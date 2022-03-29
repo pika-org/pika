@@ -41,8 +41,7 @@ namespace pika { namespace detail {
     };
 
     template <typename Policy>
-    struct async_dispatch<Policy,
-        std::enable_if_t<traits::is_launch_policy_v<Policy>>>
+    struct async_dispatch<Policy, std::enable_if_t<is_launch_policy_v<Policy>>>
     {
         template <typename Policy_, typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call(

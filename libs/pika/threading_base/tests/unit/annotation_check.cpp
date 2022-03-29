@@ -101,7 +101,7 @@ execution_string(const Executor& exec)
 }
 
 template <typename Policy>
-typename std::enable_if<pika::traits::is_launch_policy<Policy>::value,
+typename std::enable_if<pika::detail::is_launch_policy<Policy>::value,
     std::string>::type
 execution_string(const Policy& policy)
 {

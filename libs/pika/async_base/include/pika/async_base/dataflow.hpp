@@ -13,34 +13,32 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace detail {
+namespace pika::detail {
     template <typename FD, typename Enable = void>
     struct dataflow_dispatch;
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::detail
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
     template <typename F, typename... Ts>
-    PIKA_FORCEINLINE auto dataflow(F&& f, Ts&&... ts) -> decltype(
-        lcos::detail::dataflow_dispatch<typename std::decay<F>::type>::call(
+    PIKA_FORCEINLINE auto dataflow(F&& f, Ts&&... ts)
+        -> decltype(detail::dataflow_dispatch<std::decay_t<F>>::call(
             pika::detail::internal_allocator<>{}, PIKA_FORWARD(F, f),
             PIKA_FORWARD(Ts, ts)...))
     {
-        return lcos::detail::dataflow_dispatch<typename std::decay<F>::type>::
-            call(pika::detail::internal_allocator<>{}, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...);
+        return detail::dataflow_dispatch<std::decay_t<F>>::call(
+            pika::detail::internal_allocator<>{}, PIKA_FORWARD(F, f),
+            PIKA_FORWARD(Ts, ts)...);
     }
 
     template <typename Allocator, typename F, typename... Ts>
     PIKA_FORCEINLINE auto dataflow_alloc(
         Allocator const& alloc, F&& f, Ts&&... ts)
-        -> decltype(
-            lcos::detail::dataflow_dispatch<typename std::decay<F>::type>::call(
-                alloc, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
+        -> decltype(detail::dataflow_dispatch<std::decay_t<F>>::call(
+            alloc, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
     {
-        return lcos::detail::dataflow_dispatch<
-            typename std::decay<F>::type>::call(alloc, PIKA_FORWARD(F, f),
-            PIKA_FORWARD(Ts, ts)...);
+        return detail::dataflow_dispatch<std::decay_t<F>>::call(
+            alloc, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
     }
 }    // namespace pika
 

@@ -11,11 +11,11 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace detail {
+namespace pika::detail {
     // dispatch point used for sync implementations
     template <typename Func, typename Enable = void>
     struct sync_dispatch;
-}}    // namespace pika::detail
+}    // namespace pika::detail
 
 namespace pika {
     template <typename F, typename... Ts>

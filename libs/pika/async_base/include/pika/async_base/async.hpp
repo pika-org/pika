@@ -11,17 +11,17 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace detail {
+namespace pika::detail {
     // dispatch point used for async implementations
     template <typename Func, typename Enable = void>
     struct async_dispatch;
-}}    // namespace pika::detail
+}    // namespace pika::detail
 
 namespace pika {
     template <typename F, typename... Ts>
     PIKA_FORCEINLINE decltype(auto) async(F&& f, Ts&&... ts)
     {
-        return detail::async_dispatch<typename std::decay<F>::type>::call(
+        return detail::async_dispatch<std::decay_t<F>>::call(
             PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
     }
 }    // namespace pika
