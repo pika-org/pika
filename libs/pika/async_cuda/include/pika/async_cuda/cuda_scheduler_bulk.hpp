@@ -129,10 +129,10 @@ namespace pika::cuda::experimental {
             }
 
             template <typename T>
-            T operator()(T&& t, cudaStream_t stream) const
+            std::decay_t<T> operator()(T&& t, cudaStream_t stream) const
             {
                 launch_bulk_function(f, shape, t, stream);
-                return t;
+                return PIKA_MOVE(t);
             }
         };
     }    // namespace detail
