@@ -98,6 +98,11 @@ namespace pika { namespace execution { namespace experimental {
                         get_completion_scheduler<CPO>(
                             sender.predecessor_sender);
                 }
+                // This silences a bogus warning from nvcc about no return from
+                // a non-void function.
+#if defined(__NVCC__)
+                __builtin_unreachable();
+#endif
             }
 
             template <typename Receiver>

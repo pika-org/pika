@@ -33,6 +33,11 @@ namespace pika::cuda::experimental {
             {
                 return pika::util::size(PIKA_FORWARD(Shape, shape));
             }
+            // This silences a bogus warning from nvcc about no return from a
+            // non-void function.
+#if defined(__NVCC__)
+            __builtin_unreachable();
+#endif
         }
 
 #if defined(PIKA_COMPUTE_CODE)
@@ -47,6 +52,11 @@ namespace pika::cuda::experimental {
             {
                 return pika::util::begin(shape)[i];
             }
+            // This silences a bogus warning from nvcc about no return from a
+            // non-void function.
+#if defined(__NVCC__)
+            __builtin_unreachable();
+#endif
         }
 
         template <typename F, typename Shape, typename Size, typename... Ts>

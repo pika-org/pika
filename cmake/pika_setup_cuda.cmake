@@ -44,7 +44,11 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     Cuda::cuda PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON
   )
 
-  if(NOT PIKA_WITH_CLANG_CUDA)
+  if(PIKA_WITH_CLANG_CUDA)
+    if(NOT PIKA_FIND_PACKAGE)
+      pika_add_target_compile_option(-DBOOST_THREAD_USES_MOVE PUBLIC)
+    endif()
+  else()
     if(MSVC)
       set(CUDA_PROPAGATE_HOST_FLAGS OFF)
       target_compile_options(
@@ -87,9 +91,18 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
       INTERFACE $<$<COMPILE_LANGUAGE:CUDA>: --extended-lambda --default-stream
                 per-thread --expt-relaxed-constexpr >
     )
-  else()
     if(NOT PIKA_FIND_PACKAGE)
-      pika_add_target_compile_option(-DBOOST_THREAD_USES_MOVE PUBLIC)
+      if(PIKA_WITH_COMPILER_WARNINGS_AS_ERRORS)
+        target_compile_options(
+          pika_private_flags INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:--Werror
+                                       all-warnings>
+        )
+      endif()
+
+      target_compile_options(
+        pika_private_flags
+        INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:--display-error-number>
+      )
     endif()
   endif()
 

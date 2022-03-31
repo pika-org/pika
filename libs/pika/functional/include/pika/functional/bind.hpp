@@ -69,6 +69,7 @@ namespace pika { namespace util {
         struct bind_eval<T, NumUs, TD,
             std::enable_if_t<traits::is_bind_expression_v<TD>>>
         {
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
             static constexpr PIKA_HOST_DEVICE util::invoke_result_t<T, Us...>
             call(T&& t, Us&&... vs)
@@ -114,12 +115,14 @@ namespace pika { namespace util {
             bound(bound const&) = default;
             bound(bound&&) = default;
 #else
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             constexpr PIKA_HOST_DEVICE bound(bound const& other)
               : _f(other._f)
               , _args(other._args)
             {
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             constexpr PIKA_HOST_DEVICE bound(bound&& other)
               : _f(PIKA_MOVE(other._f))
               , _args(PIKA_MOVE(other._args))
@@ -129,6 +132,7 @@ namespace pika { namespace util {
 
             bound& operator=(bound const&) = delete;
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
             constexpr PIKA_HOST_DEVICE
                 invoke_bound_result_t<F&, util::pack<Ts&...>, Us&&...>
@@ -139,6 +143,7 @@ namespace pika { namespace util {
                         _args.template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
             constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F const&,
                 util::pack<Ts const&...>, Us&&...>
@@ -149,6 +154,7 @@ namespace pika { namespace util {
                         _args.template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
             constexpr PIKA_HOST_DEVICE
                 invoke_bound_result_t<F&&, util::pack<Ts&&...>, Us&&...>
@@ -160,6 +166,7 @@ namespace pika { namespace util {
                         PIKA_FORWARD(Us, vs)...)...);
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
             constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F const&&,
                 util::pack<Ts const&&...>, Us&&...>

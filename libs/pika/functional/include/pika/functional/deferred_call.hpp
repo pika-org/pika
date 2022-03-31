@@ -79,6 +79,7 @@ namespace pika { namespace util {
             deferred(deferred const&) = delete;
             deferred& operator=(deferred const&) = delete;
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE PIKA_FORCEINLINE util::invoke_result_t<F, Ts...>
             operator()()
             {

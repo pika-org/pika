@@ -151,6 +151,11 @@
 #endif
 #define PIKA_HOST_DEVICE PIKA_HOST PIKA_DEVICE
 
+#if defined(__NVCC__)
+#define PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE #pragma hd_warning_disable
+#else
+#define PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+#endif
 
 #if !defined(PIKA_CDECL)
 #define PIKA_CDECL

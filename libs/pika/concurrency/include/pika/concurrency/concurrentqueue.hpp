@@ -3617,7 +3617,7 @@ ConsumerToken::ConsumerToken(ConcurrentQueue<T, Traits>& queue)
     : itemsConsumedFromCurrent(0), currentProducer(nullptr), desiredProducer(nullptr)
 {
     initialOffset = queue.nextExplicitConsumerId.fetch_add(1, std::memory_order_release);
-    lastKnownGlobalOffset = -1;
+    lastKnownGlobalOffset = static_cast<std::uint32_t>(-1);
 }
 
 template<typename T, typename Traits>
@@ -3625,7 +3625,7 @@ ConsumerToken::ConsumerToken(BlockingConcurrentQueue<T, Traits>& queue)
     : itemsConsumedFromCurrent(0), currentProducer(nullptr), desiredProducer(nullptr)
 {
     initialOffset = reinterpret_cast<ConcurrentQueue<T, Traits>*>(&queue)->nextExplicitConsumerId.fetch_add(1, std::memory_order_release);
-    lastKnownGlobalOffset = -1;
+    lastKnownGlobalOffset = static_cast<std::uint32_t>(-1);
 }
 
 template<typename T, typename Traits>

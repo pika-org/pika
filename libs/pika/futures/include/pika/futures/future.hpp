@@ -1165,6 +1165,11 @@ namespace pika {
                     return util::void_guard<R>(), f.get();
                 });
         }
+        // This silences a bogus warning from nvcc about no return from a
+        // non-void function.
+#if defined(__NVCC__)
+        __builtin_unreachable();
+#endif
     }
 
     // Allow to convert any future<U> into any other future<R> based on a given

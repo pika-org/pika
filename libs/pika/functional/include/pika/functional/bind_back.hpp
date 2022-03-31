@@ -53,12 +53,14 @@ namespace pika { namespace util {
             bound_back(bound_back const&) = default;
             bound_back(bound_back&&) = default;
 #else
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             constexpr PIKA_HOST_DEVICE bound_back(bound_back const& other)
               : _f(other._f)
               , _args(other._args)
             {
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             constexpr PIKA_HOST_DEVICE bound_back(bound_back&& other)
               : _f(PIKA_MOVE(other._f))
               , _args(PIKA_MOVE(other._args))
@@ -68,6 +70,7 @@ namespace pika { namespace util {
 
             bound_back& operator=(bound_back const&) = delete;
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
             constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&,
                 util::pack<Ts&...>, Us&&...>::type
@@ -77,6 +80,7 @@ namespace pika { namespace util {
                     _f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
             constexpr PIKA_HOST_DEVICE
                 typename invoke_bound_back_result<F const&,
@@ -87,6 +91,7 @@ namespace pika { namespace util {
                     _f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
             constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&&,
                 util::pack<Ts&&...>, Us&&...>::type
@@ -96,6 +101,7 @@ namespace pika { namespace util {
                     PIKA_MOVE(_args).template get<Is>()...);
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
             constexpr PIKA_HOST_DEVICE
                 typename invoke_bound_back_result<F const&&,
