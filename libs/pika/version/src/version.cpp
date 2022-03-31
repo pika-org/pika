@@ -22,25 +22,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
-    std::uint8_t major_version()
-    {
-        return PIKA_VERSION_MAJOR;
-    }
-
-    std::uint8_t minor_version()
-    {
-        return PIKA_VERSION_MINOR;
-    }
-
-    std::uint8_t patch_version()
-    {
-        return PIKA_VERSION_PATCH;
-    }
-
-    std::uint32_t full_version()
-    {
-        return PIKA_VERSION_FULL;
-    }
 
     std::string full_version_as_string()
     {
@@ -48,25 +29,6 @@ namespace pika {
             PIKA_VERSION_MAJOR, PIKA_VERSION_MINOR, PIKA_VERSION_PATCH);
     }
 
-    std::string tag()
-    {
-        return PIKA_VERSION_TAG;
-    }
-
-    std::string copyright()
-    {
-        char const* const copyright =
-            "pika\n\n"
-            "Copyright (c) 2021-2022, ETH Zurich,\n"
-            "https://github.com/pika-org/pika\n\n"
-            "Distributed under the Boost Software License, "
-            "Version 1.0. (See accompanying\n"
-            "file LICENSE_1_0.txt or copy at "
-            "http://www.boost.org/LICENSE_1_0.txt)\n";
-        return copyright;
-    }
-
-    // Returns the pika full build information string.
     std::string full_build_string()
     {
         std::ostringstream strm;
@@ -111,11 +73,6 @@ namespace pika {
             build_string(), build_type(), build_date_time());
 
         return version;
-    }
-
-    std::string build_type()
-    {
-        return PIKA_PP_STRINGIZE(PIKA_BUILD_TYPE);
     }
 
     std::string build_date_time()
