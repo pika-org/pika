@@ -16,8 +16,9 @@ __global__ void dummy() {}
 
 int pika_main(pika::program_options::variables_map& vm)
 {
-    namespace ex = pika::execution::experimental;
     namespace cu = pika::cuda::experimental;
+    namespace ex = pika::execution::experimental;
+    namespace tt = pika::this_thread::experimental;
 
     std::size_t const iterations = vm["iterations"].as<std::size_t>();
     std::size_t const batch_size = 10;
@@ -89,7 +90,7 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::chrono::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
         {
-            ex::schedule(sched) | cu::then_with_stream(f) | ex::sync_wait();
+            ex::schedule(sched) | cu::then_with_stream(f) | tt::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -115,12 +116,12 @@ int pika_main(pika::program_options::variables_map& vm)
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) | ex::sync_wait();
+                cu::then_with_stream(f) | tt::sync_wait();
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
-            ex::schedule(sched) | cu::then_with_stream(f) | ex::sync_wait();
+            ex::schedule(sched) | cu::then_with_stream(f) | tt::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -162,12 +163,12 @@ int pika_main(pika::program_options::variables_map& vm)
                 ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
                 ex::transfer(sched) | cu::then_with_stream(f) |
                 ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) | ex::sync_wait();
+                ex::transfer(sched) | cu::then_with_stream(f) | tt::sync_wait();
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
-            ex::schedule(sched) | cu::then_with_stream(f) | ex::sync_wait();
+            ex::schedule(sched) | cu::then_with_stream(f) | tt::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -186,7 +187,7 @@ int pika_main(pika::program_options::variables_map& vm)
         for (std::size_t i = 0; i != iterations; ++i)
         {
             ex::schedule(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::sync_wait();
+                ex::transfer(ex::thread_pool_scheduler{}) | tt::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -213,13 +214,13 @@ int pika_main(pika::program_options::variables_map& vm)
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::sync_wait();
+                ex::transfer(ex::thread_pool_scheduler{}) | tt::sync_wait();
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
             ex::schedule(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | ex::sync_wait();
+                ex::transfer(ex::thread_pool_scheduler{}) | tt::sync_wait();
         }
         double elapsed = timer.elapsed();
         std::cout
