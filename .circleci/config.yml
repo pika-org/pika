@@ -126,11 +126,16 @@ jobs:
       - attach_workspace:
           at: /pika
       - run:
-          name: Check that the modules are well clang-formatted
+          name: Check that C++ files are well clang-formatted
           command: |
-              cd /pika/source/libs && shopt -s globstar # to activate the ** globbing
+              cd /pika/source
+              # activate the ** globbing
+              shopt -s globstar
+              # ignore globs that have no matches (e.g. no cu.in files exist
+              # currently)
+              shopt -s nullglob
               clang-format-11 --version
-              clang-format-11 -i **/*.{cpp,hpp}
+              clang-format-11 -i **/*.{cpp,hpp,cu}{,.in}
               git diff --exit-code > /tmp/modified_clang_format_files.txt
       - store_artifacts:
           path: /tmp/modified_clang_format_files.txt

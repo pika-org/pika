@@ -8,10 +8,10 @@
 
 #pragma once
 
+// clang-format off
 @pika_config_defines@
-#if defined(PIKA_HAVE_MAX_CPU_COUNT) && (PIKA_HAVE_MAX_CPU_COUNT > 64) &&       \
+// clang-format on
+#if defined(PIKA_HAVE_MAX_CPU_COUNT) && (PIKA_HAVE_MAX_CPU_COUNT > 64) &&      \
     !defined(PIKA_HAVE_MORE_THAN_64_THREADS)
 #define PIKA_HAVE_MORE_THAN_64_THREADS
 #endif
-
-

@@ -10,4 +10,6 @@
 
 #include <pika/config.hpp>
 
+// clang-format off
 @module_headers@
+    // clang-format on

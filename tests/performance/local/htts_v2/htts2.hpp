@@ -30,7 +30,7 @@ namespace htts2 {
     {
         using base_clock = BaseClock;
         using rep = typename base_clock::rep;
-        using period = typename std::nano;
+        using period = std::nano;
         using duration = std::chrono::duration<rep, period>;
 
         static_assert(
