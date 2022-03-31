@@ -45,12 +45,7 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
   )
 
   if(NOT PIKA_WITH_CLANG_CUDA)
-    if(NOT MSVC)
-      target_compile_options(
-        Cuda::cuda INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:-w>
-      )
-    else()
-      # Windows
+    if(MSVC)
       set(CUDA_PROPAGATE_HOST_FLAGS OFF)
       target_compile_options(
         Cuda::cuda
