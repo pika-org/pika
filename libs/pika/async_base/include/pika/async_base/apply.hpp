@@ -12,17 +12,17 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace detail {
+namespace pika::detail {
     // dispatch point used for apply implementations
     template <typename Func, typename Enable = void>
     struct apply_dispatch;
-}}    // namespace pika::detail
+}    // namespace pika::detail
 
 namespace pika {
     template <typename F, typename... Ts>
     PIKA_FORCEINLINE bool apply(F&& f, Ts&&... ts)
     {
-        return detail::apply_dispatch<typename std::decay<F>::type>::call(
+        return detail::apply_dispatch<std::decay_t<F>>::call(
             PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
     }
 }    // namespace pika

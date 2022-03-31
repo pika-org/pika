@@ -20,7 +20,6 @@
 namespace pika {
     /// \cond NOINTERNAL
     namespace detail {
-
         enum class launch_policy : std::int8_t
         {
             async = 0x01,
@@ -772,7 +771,7 @@ namespace pika {
 
         template <typename Launch,
             typename Enable =
-                std::enable_if_t<pika::traits::is_launch_policy_v<Launch>>>
+                std::enable_if_t<pika::detail::is_launch_policy_v<Launch>>>
         constexpr launch(Launch l, threads::thread_priority priority,
             threads::thread_stacksize stacksize,
             threads::thread_schedule_hint hint) noexcept

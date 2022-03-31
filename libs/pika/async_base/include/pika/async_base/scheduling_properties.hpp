@@ -9,10 +9,8 @@
 #include <pika/config.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 
-namespace pika { namespace execution { namespace experimental {
-
+namespace pika::execution::experimental {
     namespace detail {
-
         template <typename Tag, typename... Args>
         struct property_not_supported
         {
@@ -78,4 +76,4 @@ namespace pika { namespace execution { namespace experimental {
       : detail::property_base<get_annotation_t>
     {
     } get_annotation{};
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental

@@ -48,7 +48,7 @@ namespace pika { namespace lcos { namespace detail {
     // launch
     template <typename Future, typename Policy>
     struct future_then_dispatch<Future, Policy,
-        std::enable_if_t<traits::is_launch_policy_v<Policy>>>
+        std::enable_if_t<pika::detail::is_launch_policy_v<Policy>>>
     {
         template <typename Policy_, typename F>
         PIKA_FORCEINLINE static pika::traits::future_then_result_t<Future, F>
@@ -123,7 +123,7 @@ namespace pika { namespace lcos { namespace detail {
     // plain function, or function object
     template <typename Future, typename FD>
     struct future_then_dispatch<Future, FD,
-        std::enable_if_t<!traits::is_launch_policy_v<FD> &&
+        std::enable_if_t<!pika::detail::is_launch_policy_v<FD> &&
             !(traits::is_one_way_executor_v<FD> ||
                 traits::is_two_way_executor_v<FD>)>>
     {

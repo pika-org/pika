@@ -40,22 +40,23 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // forward declare the type we will get function annotations from
-namespace pika { namespace lcos { namespace detail {
+namespace pika::detail {
     template <typename Frame>
     struct dataflow_finalization;
-}}}    // namespace pika::lcos::detail
+}
+// namespace pika::lcos::detail
 
 namespace pika { namespace traits {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
     ///////////////////////////////////////////////////////////////////////////
     // traits specialization to get annotation from dataflow_finalization
     template <typename Frame>
-    struct get_function_annotation<lcos::detail::dataflow_finalization<Frame>>
+    struct get_function_annotation<pika::detail::dataflow_finalization<Frame>>
     {
         using function_type = typename Frame::function_type;
         //
         static constexpr char const* call(
-            lcos::detail::dataflow_finalization<Frame> const& f) noexcept
+            pika::detail::dataflow_finalization<Frame> const& f) noexcept
         {
             char const* annotation = pika::traits::get_function_annotation<
                 typename std::decay<function_type>::type>::call(f.this_->func_);
@@ -66,7 +67,7 @@ namespace pika { namespace traits {
 }}    // namespace pika::traits
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace detail {
+namespace pika::detail {
     template <typename Frame>
     struct dataflow_finalization
     {
@@ -109,7 +110,8 @@ namespace pika { namespace lcos { namespace detail {
     template <typename Policy, typename F, typename Args>
     struct dataflow_return_impl<
         /*IsAction=*/false, Policy, F, Args,
-        typename std::enable_if<traits::is_launch_policy<Policy>::value>::type>
+        typename std::enable_if<
+            pika::detail::is_launch_policy<Policy>::value>::type>
     {
         using type = pika::future<
             typename util::detail::invoke_fused_result<F, Args>::type>;
@@ -438,7 +440,8 @@ namespace pika { namespace lcos { namespace detail {
     // launch
     template <typename Policy>
     struct dataflow_dispatch_impl<false, Policy,
-        typename std::enable_if<traits::is_launch_policy<Policy>::value>::type>
+        typename std::enable_if<
+            pika::detail::is_launch_policy<Policy>::value>::type>
     {
         template <typename Allocator, typename Policy_, typename F,
             typename... Ts>
@@ -453,7 +456,8 @@ namespace pika { namespace lcos { namespace detail {
 
     template <typename Policy>
     struct dataflow_dispatch<Policy,
-        typename std::enable_if<traits::is_launch_policy<Policy>::value>::type>
+        typename std::enable_if<
+            pika::detail::is_launch_policy<Policy>::value>::type>
     {
         template <typename Allocator, typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call(
@@ -504,7 +508,7 @@ namespace pika { namespace lcos { namespace detail {
     // any action, plain function, or function object
     template <typename FD>
     struct dataflow_dispatch_impl<false, FD,
-        typename std::enable_if<!traits::is_launch_policy<FD>::value &&
+        typename std::enable_if<!pika::detail::is_launch_policy<FD>::value &&
             !(traits::is_one_way_executor<FD>::value ||
                 traits::is_two_way_executor<FD>::value)>::type>
     {
@@ -522,7 +526,7 @@ namespace pika { namespace lcos { namespace detail {
 
     template <typename FD>
     struct dataflow_dispatch<FD,
-        typename std::enable_if<!traits::is_launch_policy<FD>::value &&
+        typename std::enable_if<!pika::detail::is_launch_policy<FD>::value &&
             !(traits::is_one_way_executor<FD>::value ||
                 traits::is_two_way_executor<FD>::value)>::type>
     {
@@ -540,4 +544,4 @@ namespace pika { namespace lcos { namespace detail {
                 PIKA_FORWARD(Ts, ts)...);
         }
     };
-}}}    // namespace pika::lcos::detail
+}    // namespace pika::detail
