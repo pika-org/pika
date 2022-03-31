@@ -15,32 +15,6 @@
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/version.hpp>
 
-#include <boost/config.hpp>
-#include <boost/version.hpp>
-
-#if defined(PIKA_HAVE_MODULE_MPI_BASE)
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wcast-qual"
-#elif defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-
-// Intel MPI does not like to be included after stdio.h. As such, we include mpi.h
-// as soon as possible.
-#include <mpi.h>
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
-
-#endif
-
-#include <hwloc.h>
-
 #include <algorithm>
 #include <cstdint>
 #include <sstream>
@@ -79,33 +53,6 @@ namespace pika {
         return PIKA_VERSION_TAG;
     }
 
-#if defined(PIKA_HAVE_MODULE_MPI_BASE)
-    std::string mpi_version()
-    {
-        std::ostringstream strm;
-
-        // add type and library version
-#if defined(OPEN_MPI)
-        pika::util::format_to(strm, "OpenMPI V{}.{}.{}", OMPI_MAJOR_VERSION,
-            OMPI_MINOR_VERSION, OMPI_RELEASE_VERSION);
-#elif defined(MPICH)
-        pika::util::format_to(strm, "MPICH V{}", MPICH_VERSION);
-#elif defined(MVAPICH2_VERSION)
-        pika::util::format_to(strm, "MVAPICH2 V{}", MVAPICH2_VERSION);
-#else
-        strm << "Unknown MPI";
-#endif
-        // add general MPI version
-#if defined(MPI_VERSION) && defined(MPI_SUBVERSION)
-        pika::util::format_to(
-            strm, ", MPI V{}.{}", MPI_VERSION, MPI_SUBVERSION);
-#else
-        strm << ", unknown MPI version";
-#endif
-        return strm.str();
-    }
-#endif
-
     std::string copyright()
     {
         char const* const copyright =
@@ -126,12 +73,8 @@ namespace pika {
         strm << "{config}:\n"
              << configuration_string() << "{version}: " << build_string()
              << "\n"
-             << "{boost}: " << boost_version() << "\n"
              << "{build-type}: " << build_type() << "\n"
-             << "{date}: " << build_date_time() << "\n"
-             << "{platform}: " << boost_platform() << "\n"
-             << "{compiler}: " << boost_compiler() << "\n"
-             << "{stdlib}: " << boost_stdlib() << "\n";
+             << "{date}: " << build_date_time() << "\n";
 
         return strm.str();
     }
@@ -142,11 +85,6 @@ namespace pika {
         std::ostringstream strm;
 
         strm << "pika:\n";
-
-#if defined(PIKA_HAVE_MALLOC)
-        pika::util::format_to(
-            strm, "  PIKA_HAVE_MALLOC={}\n", PIKA_HAVE_MALLOC);
-#endif
 
         char const* const* p = pika::config_strings;
         while (*p)
@@ -162,68 +100,15 @@ namespace pika {
             full_version_as_string(), PIKA_VERSION_TAG, PIKA_HAVE_GIT_COMMIT);
     }
 
-    std::string boost_version()
-    {
-        // BOOST_VERSION: 107100
-        return pika::util::format("V{}.{}.{}", BOOST_VERSION / 100000,
-            BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
-    }
-
-    std::string hwloc_version()
-    {
-        // HWLOC_API_VERSION: 0x00010700
-        return pika::util::format("V{}.{}.{}", HWLOC_API_VERSION / 0x10000,
-            HWLOC_API_VERSION / 0x100 % 0x100, HWLOC_API_VERSION % 0x100);
-    }
-
-#if defined(PIKA_HAVE_MALLOC)
-    std::string malloc_version()
-    {
-        return PIKA_HAVE_MALLOC;
-    }
-#endif
-
-    std::string boost_platform()
-    {
-        return BOOST_PLATFORM;
-    }
-
-    std::string boost_compiler()
-    {
-        return BOOST_COMPILER;
-    }
-
-    std::string boost_stdlib()
-    {
-        return BOOST_STDLIB;
-    }
-
     std::string complete_version()
     {
-        std::string version = pika::util::format("Versions:\n"
+        std::string version = pika::util::format("Version:\n"
                                                  "  pika: {}\n"
-                                                 "  Boost: {}\n"
-                                                 "  Hwloc: {}\n"
-#if defined(PIKA_HAVE_MODULE_MPI_BASE)
-                                                 "  MPI: {}\n"
-#endif
                                                  "\n"
                                                  "Build:\n"
                                                  "  Type: {}\n"
-                                                 "  Date: {}\n"
-                                                 "  Platform: {}\n"
-                                                 "  Compiler: {}\n"
-                                                 "  Standard Library: {}\n",
-            build_string(), boost_version(), hwloc_version(),
-#if defined(PIKA_HAVE_MODULE_MPI_BASE)
-            mpi_version(),
-#endif
-            build_type(), build_date_time(), boost_platform(), boost_compiler(),
-            boost_stdlib());
-
-#if defined(PIKA_HAVE_MALLOC)
-        version += "  Allocator: " + malloc_version() + "\n";
-#endif
+                                                 "  Date: {}\n",
+            build_string(), build_type(), build_date_time());
 
         return version;
     }

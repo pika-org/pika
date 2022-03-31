@@ -39,18 +39,6 @@ namespace pika {
     // Returns the pika version string.
     PIKA_EXPORT std::string build_string();
 
-    // Returns the Boost version string.
-    PIKA_EXPORT std::string boost_version();
-
-    // Returns the Boost platform string.
-    PIKA_EXPORT std::string boost_platform();
-
-    // Returns the Boost compiler string.
-    PIKA_EXPORT std::string boost_compiler();
-
-    // Returns the Boost standard library string.
-    PIKA_EXPORT std::string boost_stdlib();
-
     // Returns the copyright string.
     PIKA_EXPORT std::string copyright();
 
