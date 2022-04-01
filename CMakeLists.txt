@@ -431,7 +431,6 @@ if(PIKA_WITH_DATAPAR_VC)
   pika_warn(
     "Vc support is deprecated. This option will be removed in a future release. It will be replaced with SIMD support from the C++ standard library"
   )
-  include(pika_setup_vc)
 endif()
 if(NOT PIKA_WITH_DATAPAR_VC)
   pika_info("No vectorization library configured")
@@ -1562,6 +1561,7 @@ include(pika_setup_hwloc)
 include(pika_setup_mpi)
 include(pika_setup_hip)
 include(pika_setup_apex)
+include(pika_setup_vc)
 include(pika_setup_valgrind)
 
 if(PIKA_WITH_SANITIZERS)
@@ -1766,6 +1766,9 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
     PRIVATE pika_public_flags pika_private_flags pika_base_libraries
             ${system_precompiled_headers_dependencies}
   )
+  set_target_properties(
+    pika_precompiled_headers PROPERTIES POSITION_INDEPENDENT_CODE ON
+  )
   target_precompile_headers(
     pika_precompiled_headers PRIVATE ${system_precompiled_headers}
   )
@@ -1777,8 +1780,17 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
   # can depend on the application (PIKA_PREFIX and
   # PIKA_APPLICATION_NAME_DEFAULT).
   list(REMOVE_ITEM pika_precompiled_headers_modules init_runtime)
-  # config, version, and the include modules don't have pika/module headers.
-  list(REMOVE_ITEM pika_precompiled_headers_modules config include version)
+  # config, filesystem, version, and the include modules don't have pika/module
+  # headers.
+  list(
+    REMOVE_ITEM
+    pika_precompiled_headers_modules
+    assertion
+    config
+    filesystem
+    include
+    version
+  )
   list(TRANSFORM pika_precompiled_headers_modules PREPEND "<pika/modules/")
   list(TRANSFORM pika_precompiled_headers_modules APPEND ".hpp>")
 
