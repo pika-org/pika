@@ -8,4 +8,6 @@
 
 #pragma once
 
+// clang-format off
 @MODULE_ENABLED_MODULE_DEFINES@
+    // clang-format on

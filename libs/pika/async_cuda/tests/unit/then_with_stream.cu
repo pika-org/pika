@@ -321,7 +321,8 @@ int pika_main()
         auto s =
             ex::just(custom_type_non_default_constructible_non_copyable{42}) |
             ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(&non_default_constructible_non_copyable_params);
+            cu::then_with_stream(
+                &non_default_constructible_non_copyable_params);
         PIKA_TEST_EQ(tt::sync_wait(ex::transfer(std::move(s),
                                        ex::thread_pool_scheduler{}))
                          .x,

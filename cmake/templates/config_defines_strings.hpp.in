@@ -9,11 +9,10 @@
 #pragma once
 
 namespace pika {
-
+    // clang-format off
     char const* const config_strings[] =
     {@pika_config_information@
         nullptr
     };
-}
-
-
+    // clang-format on
+}    // namespace pika
