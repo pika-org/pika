@@ -42,8 +42,8 @@ using pika::threads::set_thread_state;
 using pika::threads::thread_id_ref_type;
 using pika::threads::thread_id_type;
 
-typedef std::pair<thread_id_type, std::size_t> value_type;
-typedef std::vector<value_type> fifo_type;
+using value_type = std::pair<thread_id_type, std::size_t>;
+using fifo_type = std::vector<value_type>;
 
 ///////////////////////////////////////////////////////////////////////////////
 void lock_and_wait(mutex& m, barrier& b0, barrier& b1, value_type& entry,

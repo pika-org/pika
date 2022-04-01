@@ -103,8 +103,8 @@ std::ostream& operator<<(std::ostream& os, partition_data const& c)
 struct stepper
 {
     // Our data for one time step
-    typedef pika::shared_future<partition_data> partition;
-    typedef std::vector<partition> space;
+    using partition = pika::shared_future<partition_data>;
+    using space = std::vector<partition>;
 
     // Our operator
     static double heat(double left, double middle, double right)
@@ -120,7 +120,7 @@ struct stepper
         std::size_t size = middle.size();
         partition_data next(size);
 
-        typedef pika::util::counting_iterator<std::size_t> iterator;
+        using iterator = pika::util::counting_iterator<std::size_t>;
 
         next[0] = heat(left[size - 1], middle[0], middle[1]);
 
@@ -155,7 +155,7 @@ struct stepper
             space const& current = U[t % 2];
             space& next = U[(t + 1) % 2];
 
-            typedef pika::util::counting_iterator<std::size_t> iterator;
+            using iterator = pika::util::counting_iterator<std::size_t>;
 
             pika::for_each(pika::execution::par, iterator(0), iterator(np),
                 [&next, &current, np, &Op](std::size_t i) {

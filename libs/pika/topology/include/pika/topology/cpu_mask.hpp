@@ -34,8 +34,8 @@ namespace pika { namespace threads {
     /// \cond NOINTERNAL
 #if !defined(PIKA_HAVE_MORE_THAN_64_THREADS) ||                                \
     (defined(PIKA_HAVE_MAX_CPU_COUNT) && PIKA_HAVE_MAX_CPU_COUNT <= 64)
-    typedef std::uint64_t mask_type;
-    typedef std::uint64_t mask_cref_type;
+    using mask_type = std::uint64_t;
+    using mask_cref_type = std::uint64_t;
 
     inline std::uint64_t bits(std::size_t idx)
     {
@@ -135,10 +135,10 @@ namespace pika { namespace threads {
 // clang-format off
 #else
 #  if defined(PIKA_HAVE_MAX_CPU_COUNT)
-    typedef std::bitset<PIKA_HAVE_MAX_CPU_COUNT> mask_type;
+    using mask_type = std::bitset<PIKA_HAVE_MAX_CPU_COUNT>;
     typedef std::bitset<PIKA_HAVE_MAX_CPU_COUNT> const& mask_cref_type;
 #  else
-    typedef boost::dynamic_bitset<std::uint64_t> mask_type;
+    using mask_type = boost::dynamic_bitset<std::uint64_t>;
     typedef boost::dynamic_bitset<std::uint64_t> const& mask_cref_type;
 #  endif
     // clang-format on

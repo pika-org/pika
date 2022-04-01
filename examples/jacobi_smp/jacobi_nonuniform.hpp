@@ -13,10 +13,10 @@ namespace jacobi_smp {
     template <typename T>
     struct crs_matrix
     {
-        typedef std::vector<T> values_type;
-        typedef typename values_type::reference reference;
-        typedef typename values_type::const_reference const_reference;
-        typedef std::vector<std::size_t> indices_type;
+        using values_type = std::vector<T>;
+        using reference = typename values_type::reference;
+        using const_reference = typename values_type::const_reference;
+        using indices_type = std::vector<std::size_t>;
 
         std::size_t row_begin(std::size_t i) const
         {

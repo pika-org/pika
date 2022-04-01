@@ -24,7 +24,7 @@ struct test_container<RandIterTag, DataType,
     typename std::enable_if<std::is_same<RandIterTag,
         std::random_access_iterator_tag>::value>::type>
 {
-    typedef std::vector<DataType> type;
+    using type = std::vector<DataType>;
 
     static type get_container(std::size_t size)
     {
@@ -37,7 +37,7 @@ struct test_container<BidirIterTag, DataType,
     typename std::enable_if<std::is_same<BidirIterTag,
         std::bidirectional_iterator_tag>::value>::type>
 {
-    typedef std::list<DataType> type;
+    using type = std::list<DataType>;
 
     static type get_container(std::size_t size)
     {
@@ -50,7 +50,7 @@ struct test_container<FwdIterTag, DataType,
     typename std::enable_if<
         std::is_same<FwdIterTag, std::forward_iterator_tag>::value>::type>
 {
-    typedef std::forward_list<DataType> type;
+    using type = std::forward_list<DataType>;
 
     static type get_container(std::size_t size)
     {

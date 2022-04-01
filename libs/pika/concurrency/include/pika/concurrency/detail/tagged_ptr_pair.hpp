@@ -51,9 +51,9 @@ namespace boost { namespace lockfree {
     template <class Left, class Right>
     struct PIKA_LOCKFREE_DCAS_ALIGNMENT tagged_ptr_pair
     {
-        typedef __uint128_t compressed_ptr_pair_t;
-        typedef std::uint64_t compressed_ptr_t;
-        typedef std::uint16_t tag_t;
+        using compressed_ptr_pair_t = __uint128_t;
+        using compressed_ptr_t = std::uint64_t;
+        using tag_t = std::uint16_t;
 
         union PIKA_LOCKFREE_DCAS_ALIGNMENT cast_unit
         {
@@ -279,9 +279,9 @@ namespace boost { namespace lockfree {
     template <class Left, class Right>
     struct PIKA_LOCKFREE_DCAS_ALIGNMENT tagged_ptr_pair
     {
-        typedef uint128_type compressed_ptr_pair_t;
-        typedef std::uint64_t compressed_ptr_t;
-        typedef std::uint16_t tag_t;
+        using compressed_ptr_pair_t = uint128_type;
+        using compressed_ptr_t = std::uint64_t;
+        using tag_t = std::uint16_t;
 
         union PIKA_LOCKFREE_DCAS_ALIGNMENT cast_unit
         {

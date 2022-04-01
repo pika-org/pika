@@ -96,7 +96,7 @@ namespace pika { namespace threads { namespace policies {
         // thread whilst processing the Queues for that thread, this code
         // is running at the OS level in effect.
         using mutex_type = std::mutex;
-        typedef std::unique_lock<mutex_type> scoped_lock;
+        using scoped_lock = std::unique_lock<mutex_type>;
 
         // mutex protecting the thread map
         mutable util::cache_line_data<mutex_type> thread_map_mtx_;

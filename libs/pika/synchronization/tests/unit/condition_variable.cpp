@@ -526,7 +526,7 @@ void condition_test_waits(condition_test_data* data)
 
 void test_condition_waits()
 {
-    typedef std::unique_lock<pika::lcos::local::mutex> unique_lock;
+    using unique_lock = std::unique_lock<pika::lcos::local::mutex>;
 
     condition_test_data data;
 

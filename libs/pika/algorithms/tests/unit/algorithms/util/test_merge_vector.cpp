@@ -87,9 +87,9 @@ void test1()
 
 void test2()
 {
-    typedef typename std::vector<xk>::iterator iter_t;
-    typedef range<iter_t> rng;
-    typedef std::less<xk> compare;
+    using iter_t = typename std::vector<xk>::iterator;
+    using rng = range<iter_t>;
+    using compare = std::less<xk>;
 
     std::vector<xk> VA, VB;
     VB.resize(90);
@@ -161,9 +161,9 @@ void test3()
 
 void test4()
 {
-    typedef typename std::vector<xk>::iterator iter_t;
-    typedef range<iter_t> rng;
-    typedef std::less<xk> compare;
+    using iter_t = typename std::vector<xk>::iterator;
+    using rng = range<iter_t>;
+    using compare = std::less<xk>;
 
     std::vector<xk> VA;
     xk VB[90];
@@ -203,9 +203,9 @@ void test4()
 // TEST OF MERGE_VECTOR4
 void test5()
 {
-    typedef typename std::vector<std::uint64_t>::iterator iter_t;
-    typedef range<iter_t> rng;
-    typedef std::less<std::uint64_t> compare;
+    using iter_t = typename std::vector<std::uint64_t>::iterator;
+    using rng = range<iter_t>;
+    using compare = std::less<std::uint64_t>;
 
     std::vector<std::uint64_t> X, Y;
     compare comp;
@@ -237,9 +237,9 @@ void test5()
 
 void test6()
 {
-    typedef typename std::vector<xk>::iterator iter_t;
-    typedef range<iter_t> rng;
-    typedef std::less<xk> compare;
+    using iter_t = typename std::vector<xk>::iterator;
+    using rng = range<iter_t>;
+    using compare = std::less<xk>;
 
     std::vector<xk> VA, VB;
     VB.resize(160);

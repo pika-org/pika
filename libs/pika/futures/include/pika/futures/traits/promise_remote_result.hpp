@@ -12,13 +12,13 @@ namespace pika { namespace traits {
     template <typename Result, typename Enable = void>
     struct promise_remote_result
     {
-        typedef Result type;
+        using type = Result;
     };
 
     template <>
     struct promise_remote_result<void>
     {
-        typedef pika::util::unused_type type;
+        using type = pika::util::unused_type;
     };
 
     template <typename Result>

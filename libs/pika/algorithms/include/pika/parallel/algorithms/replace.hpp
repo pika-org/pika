@@ -534,7 +534,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 parallel(ExPolicy&& policy, FwdIter first, FwdIter last,
                     T1 const& old_value, T2 const& new_value, Proj&& proj)
             {
-                typedef typename std::iterator_traits<FwdIter>::value_type type;
+                using type = typename std::iterator_traits<FwdIter>::value_type;
 
                 return for_each_n<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first,
@@ -597,7 +597,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 parallel(ExPolicy&& policy, FwdIter first, Sent last, F&& f,
                     T const& new_value, Proj&& proj)
             {
-                typedef typename std::iterator_traits<FwdIter>::value_type type;
+                using type = typename std::iterator_traits<FwdIter>::value_type;
 
                 return for_each_n<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first,
@@ -667,7 +667,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
                     zip_iterator;
-                typedef typename zip_iterator::reference reference;
+                using reference = typename zip_iterator::reference;
 
                 return util::detail::get_in_out_result(
                     for_each_n<zip_iterator>().call(
@@ -742,7 +742,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
                     zip_iterator;
-                typedef typename zip_iterator::reference reference;
+                using reference = typename zip_iterator::reference;
 
                 return util::detail::get_in_out_result(
                     for_each_n<zip_iterator>().call(
@@ -846,7 +846,7 @@ namespace pika {
             static_assert((pika::traits::is_input_iterator<InIter>::value),
                 "Required at least input iterator.");
 
-            typedef typename std::iterator_traits<InIter>::value_type Type;
+            using Type = typename std::iterator_traits<InIter>::value_type;
 
             return pika::replace_if(
                 pika::execution::seq, first, last,
@@ -870,7 +870,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            typedef typename std::iterator_traits<FwdIter>::value_type Type;
+            using Type = typename std::iterator_traits<FwdIter>::value_type;
 
             return pika::replace_if(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
@@ -972,7 +972,7 @@ namespace pika {
             static_assert((pika::traits::is_output_iterator<OutIter>::value),
                 "Required at least output iterator.");
 
-            typedef typename std::iterator_traits<InIter>::value_type Type;
+            using Type = typename std::iterator_traits<InIter>::value_type;
 
             return pika::replace_copy_if(
                 pika::execution::seq, first, last, dest,
@@ -1001,7 +1001,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Required at least forward iterator.");
 
-            typedef typename std::iterator_traits<FwdIter1>::value_type Type;
+            using Type = typename std::iterator_traits<FwdIter1>::value_type;
 
             return pika::replace_copy_if(
                 PIKA_FORWARD(ExPolicy, policy), first, last, dest,

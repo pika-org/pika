@@ -285,7 +285,7 @@ namespace pika {
         struct thread_task_base : lcos::detail::future_data<void>
         {
         private:
-            typedef pika::intrusive_ptr<thread_task_base> future_base_type;
+            using future_base_type = pika::intrusive_ptr<thread_task_base>;
 
         protected:
             using base_type = lcos::detail::future_data<void>;

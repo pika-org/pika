@@ -141,7 +141,7 @@ private:
         finished.wait();
     }
 
-    typedef double results_type;
+    using results_type = double;
 
     results_type kernel()
     {

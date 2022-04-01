@@ -21,8 +21,8 @@
 template <typename IteratorTag>
 void test_min_element(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c = test::random_iota(10007);
 
@@ -52,8 +52,8 @@ void test_min_element(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c = test::random_iota(10007);
 
@@ -81,8 +81,8 @@ void test_min_element(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_min_element_async(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c = test::random_iota(10007);
 
@@ -132,7 +132,7 @@ void min_element_test()
 template <typename IteratorTag>
 void test_min_element_exception(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -191,7 +191,7 @@ void test_min_element_exception(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -247,7 +247,7 @@ void test_min_element_exception(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_min_element_exception_async(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -342,7 +342,7 @@ void min_element_exception_test()
 template <typename IteratorTag>
 void test_min_element_bad_alloc(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -397,7 +397,7 @@ void test_min_element_bad_alloc(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -451,7 +451,7 @@ void test_min_element_bad_alloc(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_min_element_bad_alloc_async(ExPolicy p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 

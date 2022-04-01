@@ -35,8 +35,8 @@ struct counter
 template <typename IteratorTag, typename Proj>
 void test_for_each_seq(IteratorTag, Proj&& proj)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));
@@ -57,8 +57,8 @@ void test_for_each(ExPolicy&& policy, IteratorTag, Proj&& proj)
 {
     BOOST_STATIC_ASSERT(pika::is_execution_policy<ExPolicy>::value);
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));
@@ -82,8 +82,8 @@ void test_for_each(ExPolicy&& policy, IteratorTag, Proj&& proj)
 template <typename ExPolicy, typename IteratorTag, typename Proj>
 void test_for_each_async(ExPolicy&& p, IteratorTag, Proj&& proj)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));
@@ -119,8 +119,8 @@ struct counter_exception
 template <typename IteratorTag, typename Proj>
 void test_for_each_exception_seq(IteratorTag, Proj&& proj)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));
@@ -154,8 +154,8 @@ void test_for_each_exception(ExPolicy policy, IteratorTag, Proj&& proj)
 {
     BOOST_STATIC_ASSERT(pika::is_execution_policy<ExPolicy>::value);
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));
@@ -187,8 +187,8 @@ void test_for_each_exception(ExPolicy policy, IteratorTag, Proj&& proj)
 template <typename ExPolicy, typename IteratorTag, typename Proj>
 void test_for_each_exception_async(ExPolicy p, IteratorTag, Proj&& proj)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));
@@ -235,8 +235,8 @@ struct counter_bad_alloc
 template <typename IteratorTag, typename Proj>
 void test_for_each_bad_alloc_seq(IteratorTag, Proj&& proj)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));
@@ -270,8 +270,8 @@ void test_for_each_bad_alloc(ExPolicy policy, IteratorTag, Proj&& proj)
 {
     BOOST_STATIC_ASSERT(pika::is_execution_policy<ExPolicy>::value);
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));
@@ -302,8 +302,8 @@ void test_for_each_bad_alloc(ExPolicy policy, IteratorTag, Proj&& proj)
 template <typename ExPolicy, typename IteratorTag, typename Proj>
 void test_for_each_bad_alloc_async(ExPolicy p, IteratorTag, Proj&& proj)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));

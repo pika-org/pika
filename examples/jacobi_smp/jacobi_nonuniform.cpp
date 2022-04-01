@@ -102,7 +102,7 @@ int pika_main(variables_map& vm)
         {
             std::ifstream file(matrix.c_str());
             file.unsetf(std::ios_base::skipws);
-            typedef boost::spirit::istream_iterator iterator;
+            using iterator = boost::spirit::istream_iterator;
             iterator begin(file);
             iterator end;
 
@@ -137,7 +137,7 @@ int pika_main(variables_map& vm)
             std::string vector = vm["vector"].as<std::string>();
             std::ifstream file(vector.c_str());
             file.unsetf(std::ios_base::skipws);
-            typedef boost::spirit::istream_iterator iterator;
+            using iterator = boost::spirit::istream_iterator;
             iterator begin(file);
             iterator end;
             qi::phrase_parse(begin, end, *qi::double_, qi::ascii::space, b);

@@ -48,13 +48,13 @@ namespace pika { namespace threads {
     private:
         // we use a simple mutex to protect the data members of the
         // thread manager for now
-        typedef std::mutex mutex_type;
+        using mutex_type = std::mutex;
 
     public:
-        typedef threads::policies::callback_notifier notification_policy_type;
-        typedef std::unique_ptr<thread_pool_base> pool_type;
-        typedef threads::policies::scheduler_base scheduler_type;
-        typedef std::vector<pool_type> pool_vector;
+        using notification_policy_type = threads::policies::callback_notifier;
+        using pool_type = std::unique_ptr<thread_pool_base>;
+        using scheduler_type = threads::policies::scheduler_base;
+        using pool_vector = std::vector<pool_type>;
 
         threadmanager(pika::util::runtime_configuration& rtcfg_,
             notification_policy_type& notifier,

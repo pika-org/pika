@@ -26,7 +26,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
     class counting_semaphore
     {
     private:
-        typedef lcos::local::spinlock mutex_type;
+        using mutex_type = lcos::local::spinlock;
 
     public:
         PIKA_EXPORT counting_semaphore(std::ptrdiff_t value = 0);

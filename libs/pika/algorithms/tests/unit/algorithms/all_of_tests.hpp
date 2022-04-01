@@ -23,8 +23,8 @@
 template <typename IteratorTag>
 void test_all_of(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -48,8 +48,8 @@ void test_all_of(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -71,8 +71,8 @@ template <typename IteratorTag,
     typename Proj = pika::parallel::util::projection_identity>
 void test_all_of_ranges_seq(IteratorTag, Proj proj = Proj())
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -98,8 +98,8 @@ void test_all_of_ranges(ExPolicy&& policy, IteratorTag, Proj proj = Proj())
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -121,8 +121,8 @@ void test_all_of_ranges(ExPolicy&& policy, IteratorTag, Proj proj = Proj())
 template <typename ExPolicy, typename IteratorTag>
 void test_all_of_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -145,8 +145,8 @@ template <typename ExPolicy, typename IteratorTag,
     typename Proj = pika::parallel::util::projection_identity>
 void test_all_of_ranges_async(ExPolicy&& p, IteratorTag, Proj proj = Proj())
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -173,8 +173,8 @@ void test_all_of_exception(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -208,8 +208,8 @@ void test_all_of_exception(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag>
 void test_all_of_exception(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -244,8 +244,8 @@ void test_all_of_exception(IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_all_of_exception_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -287,8 +287,8 @@ void test_all_of_bad_alloc(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)
@@ -319,8 +319,8 @@ void test_all_of_bad_alloc(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_all_of_bad_alloc_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int iseq[] = {0, 23, 10007};
     for (int i : iseq)

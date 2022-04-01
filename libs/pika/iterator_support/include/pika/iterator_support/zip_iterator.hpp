@@ -58,49 +58,49 @@ namespace pika { namespace util {
         struct zip_iterator_category_impl<std::random_access_iterator_tag,
             std::random_access_iterator_tag>
         {
-            typedef std::random_access_iterator_tag type;
+            using type = std::random_access_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::random_access_iterator_tag,
             std::bidirectional_iterator_tag>
         {
-            typedef std::bidirectional_iterator_tag type;
+            using type = std::bidirectional_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::bidirectional_iterator_tag,
             std::random_access_iterator_tag>
         {
-            typedef std::bidirectional_iterator_tag type;
+            using type = std::bidirectional_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::random_access_iterator_tag,
             std::forward_iterator_tag>
         {
-            typedef std::forward_iterator_tag type;
+            using type = std::forward_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::forward_iterator_tag,
             std::random_access_iterator_tag>
         {
-            typedef std::forward_iterator_tag type;
+            using type = std::forward_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::random_access_iterator_tag,
             std::input_iterator_tag>
         {
-            typedef std::input_iterator_tag type;
+            using type = std::input_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::input_iterator_tag,
             std::random_access_iterator_tag>
         {
-            typedef std::input_iterator_tag type;
+            using type = std::input_iterator_tag;
         };
 
         // bidirectional_iterator_tag
@@ -108,35 +108,35 @@ namespace pika { namespace util {
         struct zip_iterator_category_impl<std::bidirectional_iterator_tag,
             std::bidirectional_iterator_tag>
         {
-            typedef std::bidirectional_iterator_tag type;
+            using type = std::bidirectional_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::bidirectional_iterator_tag,
             std::forward_iterator_tag>
         {
-            typedef std::forward_iterator_tag type;
+            using type = std::forward_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::forward_iterator_tag,
             std::bidirectional_iterator_tag>
         {
-            typedef std::forward_iterator_tag type;
+            using type = std::forward_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::bidirectional_iterator_tag,
             std::input_iterator_tag>
         {
-            typedef std::input_iterator_tag type;
+            using type = std::input_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::input_iterator_tag,
             std::bidirectional_iterator_tag>
         {
-            typedef std::input_iterator_tag type;
+            using type = std::input_iterator_tag;
         };
 
         // forward_iterator_tag
@@ -144,21 +144,21 @@ namespace pika { namespace util {
         struct zip_iterator_category_impl<std::forward_iterator_tag,
             std::forward_iterator_tag>
         {
-            typedef std::forward_iterator_tag type;
+            using type = std::forward_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::input_iterator_tag,
             std::forward_iterator_tag>
         {
-            typedef std::input_iterator_tag type;
+            using type = std::input_iterator_tag;
         };
 
         template <>
         struct zip_iterator_category_impl<std::forward_iterator_tag,
             std::input_iterator_tag>
         {
-            typedef std::input_iterator_tag type;
+            using type = std::input_iterator_tag;
         };
 
         // input_iterator_tag
@@ -166,7 +166,7 @@ namespace pika { namespace util {
         struct zip_iterator_category_impl<std::input_iterator_tag,
             std::input_iterator_tag>
         {
-            typedef std::input_iterator_tag type;
+            using type = std::input_iterator_tag;
         };
 
         ///////////////////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ namespace pika { namespace util {
             typename std::enable_if<pika::tuple_size<pika::tuple<T>>::value ==
                 1>::type>
         {
-            typedef typename std::iterator_traits<T>::iterator_category type;
+            using type = typename std::iterator_traits<T>::iterator_category;
         };
 
         template <typename T, typename U>
@@ -283,7 +283,7 @@ namespace pika { namespace util {
             {
             }
 
-            typedef IteratorTuple iterator_tuple_type;
+            using iterator_tuple_type = IteratorTuple;
 
             PIKA_HOST_DEVICE iterator_tuple_type get_iterator_tuple() const
             {

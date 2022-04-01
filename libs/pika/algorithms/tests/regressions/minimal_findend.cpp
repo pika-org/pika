@@ -58,7 +58,7 @@ namespace test {
 
 void find_end_failing_test()
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator,
         std::random_access_iterator_tag>
         decorated_iterator;

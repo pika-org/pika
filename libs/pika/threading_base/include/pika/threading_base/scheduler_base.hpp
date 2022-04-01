@@ -58,7 +58,7 @@ namespace pika { namespace threads { namespace policies {
         PIKA_NON_COPYABLE(scheduler_base);
 
     public:
-        typedef std::mutex pu_mutex_type;
+        using pu_mutex_type = std::mutex;
 
         scheduler_base(std::size_t num_threads, char const* description = "",
             thread_queue_init_parameters thread_queue_init = {},

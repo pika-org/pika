@@ -26,7 +26,7 @@ pika::thread::id test(int passed_through)
 template <typename Policy>
 void test_sync()
 {
-    typedef pika::execution::parallel_policy_executor<Policy> executor;
+    using executor = pika::execution::parallel_policy_executor<Policy>;
 
     executor exec;
     PIKA_TEST(pika::parallel::execution::sync_execute(exec, &test, 42) ==
@@ -36,7 +36,7 @@ void test_sync()
 template <typename Policy>
 void test_async(bool sync)
 {
-    typedef pika::execution::parallel_policy_executor<Policy> executor;
+    using executor = pika::execution::parallel_policy_executor<Policy>;
 
     executor exec;
     bool result =
@@ -60,7 +60,7 @@ pika::thread::id test_f(pika::future<void> f, int passed_through)
 template <typename Policy>
 void test_then(bool sync)
 {
-    typedef pika::execution::parallel_policy_executor<Policy> executor;
+    using executor = pika::execution::parallel_policy_executor<Policy>;
 
     pika::future<void> f = pika::make_ready_future();
 
@@ -88,7 +88,7 @@ void bulk_test_a(int, pika::thread::id tid, int passed_through)    //-V813
 template <typename Policy>
 void test_bulk_sync(bool sync)
 {
-    typedef pika::execution::parallel_policy_executor<Policy> executor;
+    using executor = pika::execution::parallel_policy_executor<Policy>;
 
     pika::thread::id tid = pika::this_thread::get_id();
 
@@ -110,7 +110,7 @@ void test_bulk_sync(bool sync)
 template <typename Policy>
 void test_bulk_async(bool sync)
 {
-    typedef pika::execution::parallel_policy_executor<Policy> executor;
+    using executor = pika::execution::parallel_policy_executor<Policy>;
 
     pika::thread::id tid = pika::this_thread::get_id();
 
@@ -157,7 +157,7 @@ void bulk_test_f_a(int, pika::shared_future<void> f, pika::thread::id tid,
 template <typename Policy>
 void test_bulk_then(bool sync)
 {
-    typedef pika::execution::parallel_policy_executor<Policy> executor;
+    using executor = pika::execution::parallel_policy_executor<Policy>;
 
     pika::thread::id tid = pika::this_thread::get_id();
 

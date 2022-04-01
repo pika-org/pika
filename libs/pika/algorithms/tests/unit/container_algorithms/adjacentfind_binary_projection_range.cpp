@@ -40,8 +40,8 @@ void test_adjacent_find(ExPolicy policy, Proj&& proj, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     //fill vector with random values about 1
@@ -64,8 +64,8 @@ void test_adjacent_find(ExPolicy policy, Proj&& proj, IteratorTag)
 template <typename ExPolicy, typename Proj, typename IteratorTag>
 void test_adjacent_find_async(ExPolicy p, Proj&& proj, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     // fill vector with random values above 1
     std::vector<int> c(10007);
@@ -92,7 +92,7 @@ void test_adjacent_find(ExPolicy policy, Proj&& proj)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator iterator;
+    using iterator = std::vector<int>::iterator;
 
     std::vector<int> c(10007);
     //fill vector with random values about 1
@@ -114,7 +114,7 @@ void test_adjacent_find(ExPolicy policy, Proj&& proj)
 template <typename ExPolicy, typename Proj>
 void test_adjacent_find_async(ExPolicy p, Proj&& proj)
 {
-    typedef std::vector<int>::iterator iterator;
+    using iterator = std::vector<int>::iterator;
 
     // fill vector with random values above 1
     std::vector<int> c(10007);

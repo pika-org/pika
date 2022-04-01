@@ -30,7 +30,7 @@ namespace pika { namespace util { namespace logging { namespace detail {
 
     static std::string unescape(std::string escaped)
     {
-        typedef std::size_t size_type;
+        using size_type = std::size_t;
         size_type idx_start = 0;
         while (true)
         {
@@ -49,7 +49,7 @@ namespace pika { namespace util { namespace logging { namespace detail {
 
     void named_formatters::compute_write_steps()
     {
-        typedef std::size_t size_type;
+        using size_type = std::size_t;
 
         write_steps.clear();
         std::string remaining = format_string;

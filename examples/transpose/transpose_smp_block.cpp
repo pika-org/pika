@@ -21,7 +21,7 @@
 
 bool verbose = false;
 
-typedef std::vector<double> block;
+using block = std::vector<double>;
 typedef double* sub_block;
 
 void transpose(sub_block A, sub_block B, std::uint64_t block_order,

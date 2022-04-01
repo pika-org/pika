@@ -25,7 +25,7 @@ struct counting_allocator : public std::allocator<T>
     template <typename U>
     struct rebind
     {
-        typedef counting_allocator<U> other;
+        using other = counting_allocator<U>;
     };
 
     counting_allocator() {}

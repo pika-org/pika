@@ -71,7 +71,7 @@ void test_remove_copy_if_sent(ExPolicy policy)
 template <typename IteratorTag>
 void test_remove_copy_if(IteratorTag)
 {
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<int> d(c.size());
@@ -108,7 +108,7 @@ void test_remove_copy_if(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<int> d(c.size());
@@ -143,7 +143,7 @@ void test_remove_copy_if(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_remove_copy_if_async(ExPolicy p, IteratorTag)
 {
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<int> d(c.size());
@@ -182,7 +182,7 @@ void test_remove_copy_if_outiter(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<int> d(0);
@@ -208,7 +208,7 @@ void test_remove_copy_if_outiter(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_remove_copy_if_outiter_async(ExPolicy p, IteratorTag)
 {
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<int> d(0);
@@ -264,7 +264,7 @@ void test_remove_copy_if_exception(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<std::size_t> d(c.size());
@@ -295,7 +295,7 @@ void test_remove_copy_if_exception(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_remove_copy_if_exception_async(ExPolicy p, IteratorTag)
 {
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<std::size_t> d(c.size());
@@ -357,7 +357,7 @@ void test_remove_copy_if_bad_alloc(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<std::size_t> d(c.size());
@@ -386,7 +386,7 @@ void test_remove_copy_if_bad_alloc(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_remove_copy_if_bad_alloc_async(ExPolicy p, IteratorTag)
 {
-    typedef test::test_container<std::vector<int>, IteratorTag> test_vector;
+    using test_vector = test::test_container<std::vector<int>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<std::size_t> d(c.size());

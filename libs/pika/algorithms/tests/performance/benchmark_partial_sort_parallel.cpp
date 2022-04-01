@@ -23,7 +23,7 @@ std::mt19937 gen(seed);
 // Compare the speed with the implementation of the compiler
 void function01()
 {
-    typedef std::less<std::uint64_t> compare_t;
+    using compare_t = std::less<std::uint64_t>;
 #if defined(PIKA_DEBUG)
     constexpr std::uint32_t NELEM = 100;
 #else
@@ -126,7 +126,7 @@ void function02()
 // accumulate all the times and compare the two algorithms with 1 thread
 void function03()
 {
-    typedef std::less<std::uint64_t> compare_t;
+    using compare_t = std::less<std::uint64_t>;
 #if defined(PIKA_DEBUG)
     constexpr std::uint32_t NELEM = 10000;
 #else

@@ -28,7 +28,7 @@
 
 void test1()
 {
-    typedef std::less<std::uint64_t> compare;
+    using compare = std::less<std::uint64_t>;
 
     constexpr std::uint32_t NElem = NUMELEMS;
     std::vector<std::uint64_t> V1, V2;
@@ -86,7 +86,7 @@ void test1()
 
 void test2()
 {
-    typedef typename std::vector<std::uint64_t>::iterator iter_t;
+    using iter_t = typename std::vector<std::uint64_t>::iterator;
 
 #if defined(PIKA_DEBUG)
     constexpr std::uint32_t NELEM = 41667;
@@ -135,7 +135,7 @@ void test2()
 
 void test3()
 {
-    typedef std::less<std::uint32_t> compare;
+    using compare = std::less<std::uint32_t>;
 
     constexpr std::uint32_t NElem = NUMELEMS;
     std::vector<std::uint32_t> V1, V2;
@@ -273,7 +273,7 @@ void test4()
 template <typename IA>
 void test_int_array(std::uint32_t NELEM)
 {
-    typedef std::less<IA> compare;
+    using compare = std::less<IA>;
     std::mt19937_64 my_rand(std::rand());
 
     std::vector<IA> V1, V2;
@@ -352,7 +352,7 @@ void test6()
     }
 
     VAux = V;
-    typedef std::less<std::string> compare;
+    using compare = std::less<std::string>;
     pika::sort(pika::execution::par, V.begin(), V.end(), compare());
 
     for (unsigned i = 1; i < NString; i++)

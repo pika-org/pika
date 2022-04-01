@@ -247,7 +247,7 @@ namespace pika { namespace lcos { namespace local {
         }
     };
 
-    typedef counting_semaphore_var<> counting_semaphore;
+    using counting_semaphore = counting_semaphore_var<>;
 }}}    // namespace pika::lcos::local
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)

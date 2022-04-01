@@ -46,9 +46,9 @@ struct always_true
 template <typename IteratorTag>
 void test_count_if(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef std::vector<int>::difference_type diff_type;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using diff_type = std::vector<int>::difference_type;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(100007);
     std::iota(std::begin(c), std::begin(c) + 50, 0);
@@ -66,9 +66,9 @@ void test_count_if(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef std::vector<int>::difference_type diff_type;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using diff_type = std::vector<int>::difference_type;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(100007);
     std::iota(std::begin(c), std::begin(c) + 50, 0);
@@ -83,9 +83,9 @@ void test_count_if(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_count_if_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef std::vector<int>::difference_type diff_type;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using diff_type = std::vector<int>::difference_type;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::begin(c) + 50, 0);
@@ -101,7 +101,7 @@ void test_count_if_async(ExPolicy&& p, IteratorTag)
 template <typename IteratorTag>
 void test_count_if_exception(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -137,7 +137,7 @@ void test_count_if_exception(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -170,8 +170,8 @@ void test_count_if_exception(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_count_if_exception_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef std::vector<int>::difference_type diff_type;
+    using base_iterator = std::vector<int>::iterator;
+    using diff_type = std::vector<int>::difference_type;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -212,7 +212,7 @@ void test_count_if_bad_alloc(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
+    using base_iterator = std::vector<int>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -242,8 +242,8 @@ void test_count_if_bad_alloc(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_count_if_bad_alloc_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef std::vector<int>::difference_type diff_type;
+    using base_iterator = std::vector<int>::iterator;
+    using diff_type = std::vector<int>::difference_type;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 

@@ -39,12 +39,12 @@ namespace pika {
 
     class PIKA_EXPORT thread
     {
-        typedef lcos::local::spinlock mutex_type;
+        using mutex_type = lcos::local::spinlock;
         void terminate(const char* function, const char* reason) const;
 
     public:
         class id;
-        typedef threads::thread_id_type native_handle_type;
+        using native_handle_type = threads::thread_id_type;
 
         thread() noexcept;
 

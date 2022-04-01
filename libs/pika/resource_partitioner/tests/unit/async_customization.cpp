@@ -487,7 +487,7 @@ int pika_main()
         std::cout << "Exception " << e.what() << std::endl;
     }
 
-    typedef pika::parallel::execution::pool_numa_hint<dummy_tag> dummy_hint;
+    using dummy_hint = pika::parallel::execution::pool_numa_hint<dummy_tag>;
     try
     {
         pika::parallel::execution::guided_pool_executor<dummy_hint> exec2(

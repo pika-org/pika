@@ -31,8 +31,8 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    typedef std::vector<std::size_t> vector_type;
-    typedef std::vector<std::size_t>::iterator iterator_type;
+    using vector_type = std::vector<std::size_t>;
+    using iterator_type = std::vector<std::size_t>::iterator;
 
     vector_type v1, v2;
 
@@ -46,7 +46,7 @@ int pika_main()
     iterator_type itr_b = v1.begin();
     iterator_type itr_e = v1.end();
 
-    typedef pika::util::iterator_range<iterator_type> range_type;
+    using range_type = pika::util::iterator_range<iterator_type>;
 
     range_type my_range(itr_b, itr_e);
 

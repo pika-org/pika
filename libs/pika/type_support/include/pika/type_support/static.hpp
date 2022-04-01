@@ -40,7 +40,7 @@ namespace pika { namespace util {
         PIKA_NON_COPYABLE(static_);
 
     public:
-        typedef T value_type;
+        using value_type = T;
 
         typedef T& reference;
         typedef T const& const_reference;
@@ -98,7 +98,7 @@ namespace pika { namespace util {
         PIKA_NON_COPYABLE(static_);
 
     public:
-        typedef T value_type;
+        using value_type = T;
 
     private:
         struct destructor
@@ -148,7 +148,7 @@ namespace pika { namespace util {
         }
 
     private:
-        typedef typename std::add_pointer<value_type>::type pointer;
+        using pointer = typename std::add_pointer<value_type>::type;
 
         static pointer get_address()
         {

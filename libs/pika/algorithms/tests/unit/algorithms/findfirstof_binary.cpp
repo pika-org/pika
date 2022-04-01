@@ -28,8 +28,8 @@ std::uniform_int_distribution<> dist(0, 2);
 template <typename IteratorTag>
 void test_find_first_of(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int find_first_of_pos = dis(gen);
     int random_sub_seq_pos = dist(gen);
@@ -55,8 +55,8 @@ void test_find_first_of(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int find_first_of_pos = dis(gen);
     int random_sub_seq_pos = dist(gen);
@@ -79,8 +79,8 @@ void test_find_first_of(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_first_of_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     int find_first_of_pos = dis(gen);
     int random_sub_seq_pos = dist(gen);
@@ -127,7 +127,7 @@ void find_first_of_test()
 template <typename IteratorTag>
 void test_find_first_of_exception(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
     std::vector<std::size_t> c(10007);
@@ -166,7 +166,7 @@ void test_find_first_of_exception(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
     std::vector<std::size_t> c(10007);
@@ -202,7 +202,7 @@ void test_find_first_of_exception(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_first_of_exception_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -271,7 +271,7 @@ void test_find_first_of_bad_alloc(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 
@@ -306,7 +306,7 @@ void test_find_first_of_bad_alloc(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_first_of_bad_alloc_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
 

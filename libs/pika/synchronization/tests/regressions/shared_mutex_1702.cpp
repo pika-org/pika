@@ -16,7 +16,7 @@
 
 int pika_main()
 {
-    typedef pika::lcos::local::shared_mutex shared_mutex_type;
+    using shared_mutex_type = pika::lcos::local::shared_mutex;
 
     int data = 0;
     shared_mutex_type mtx;

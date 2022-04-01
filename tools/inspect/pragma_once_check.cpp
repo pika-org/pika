@@ -29,7 +29,8 @@ namespace boost { namespace inspect {
     }
 
     void pragma_once_check::inspect(const string& library_name,
-        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path&
+            full_path,             // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         if (contents.find("pikainspect:"

@@ -91,8 +91,8 @@ void test1(void)
         }
     };
 
-    typedef typename std::vector<forensic>::iterator fIter;
-    typedef pika::parallel::util::range<fIter> frange_t;
+    using fIter = typename std::vector<forensic>::iterator;
+    using frange_t = pika::parallel::util::range<fIter>;
 
     char K[160];
     forensic* PAux = reinterpret_cast<forensic*>(&K[0]);
@@ -345,9 +345,9 @@ void test5()
 // TEST OF FULL_MERGE
 void test6()
 {
-    typedef typename std::vector<std::uint64_t>::iterator Iter;
-    typedef range<Iter> rng;
-    typedef std::less<std::uint64_t> compare;
+    using Iter = typename std::vector<std::uint64_t>::iterator;
+    using rng = range<Iter>;
+    using compare = std::less<std::uint64_t>;
 
     compare comp;
     std::vector<std::uint64_t> A, B;
@@ -444,9 +444,9 @@ void test6()
 // TEST OF STABILITY
 void test7()
 {
-    typedef typename std::vector<xk>::iterator Iter;
-    typedef range<Iter> rng;
-    typedef std::less<xk> compare;
+    using Iter = typename std::vector<xk>::iterator;
+    using rng = range<Iter>;
+    using compare = std::less<xk>;
 
     compare comp;
     std::vector<xk> A, B;
@@ -516,7 +516,7 @@ void test7()
 // TEST OF UNINITIALIZED_FULL_MERGE
 void test8()
 {
-    typedef std::less<std::uint64_t> compare;
+    using compare = std::less<std::uint64_t>;
     typedef range<std::uint64_t*> rng;
 
     std::vector<std::uint64_t> A, B;
@@ -568,9 +568,9 @@ void test8()
 // TEST OF FULL_MERGE
 void test9()
 {
-    typedef typename std::vector<std::uint64_t>::iterator Iter;
-    typedef range<Iter> rng;
-    typedef std::less<std::uint64_t> compare;
+    using Iter = typename std::vector<std::uint64_t>::iterator;
+    using rng = range<Iter>;
+    using compare = std::less<std::uint64_t>;
 
     compare comp;
     std::vector<std::uint64_t> A, B;
@@ -669,9 +669,9 @@ void test9()
 // TEST OF STABILITY
 void test10()
 {
-    typedef typename std::vector<xk>::iterator Iter;
-    typedef range<Iter> rng;
-    typedef std::less<xk> compare;
+    using Iter = typename std::vector<xk>::iterator;
+    using rng = range<Iter>;
+    using compare = std::less<xk>;
 
     compare comp;
     std::vector<xk> A, B;

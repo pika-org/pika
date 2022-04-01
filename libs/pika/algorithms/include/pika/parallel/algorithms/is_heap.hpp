@@ -191,8 +191,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             operator()(ExPolicy&& policy, Iter first, Sent last, Comp&& comp,
                 Proj&& proj)
             {
-                typedef util::detail::algorithm_result<ExPolicy, bool> result;
-                typedef typename std::iterator_traits<Iter>::value_type type;
+                using result = util::detail::algorithm_result<ExPolicy, bool>;
+                using type = typename std::iterator_traits<Iter>::value_type;
                 typedef typename std::iterator_traits<Iter>::difference_type
                     difference_type;
 
@@ -303,8 +303,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             operator()(
                 ExPolicy&& policy, Iter first, Sent last, Comp comp, Proj proj)
             {
-                typedef util::detail::algorithm_result<ExPolicy, Iter> result;
-                typedef typename std::iterator_traits<Iter>::value_type type;
+                using result = util::detail::algorithm_result<ExPolicy, Iter>;
+                using type = typename std::iterator_traits<Iter>::value_type;
                 typedef typename std::iterator_traits<Iter>::difference_type
                     difference_type;
 

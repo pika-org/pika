@@ -35,7 +35,7 @@ void test_uninitialized_value_construct(ExPolicy&& policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     typedef value_constructable* base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     value_constructable* p = (value_constructable*) std::malloc(
         data_size * sizeof(value_constructable));
@@ -59,7 +59,7 @@ template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_value_construct_async(ExPolicy&& policy, IteratorTag)
 {
     typedef value_constructable* base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     value_constructable* p = (value_constructable*) std::malloc(
         data_size * sizeof(value_constructable));
@@ -87,7 +87,7 @@ void test_uninitialized_value_construct_exception(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef test::count_instances_v<value_constructable> data_type;
+    using data_type = test::count_instances_v<value_constructable>;
     typedef data_type* base_iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
@@ -134,7 +134,7 @@ template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_value_construct_exception_async(
     ExPolicy policy, IteratorTag)
 {
-    typedef test::count_instances_v<value_constructable> data_type;
+    using data_type = test::count_instances_v<value_constructable>;
     typedef data_type* base_iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
@@ -190,7 +190,7 @@ void test_uninitialized_value_construct_bad_alloc(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef test::count_instances_v<value_constructable> data_type;
+    using data_type = test::count_instances_v<value_constructable>;
     typedef data_type* base_iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;
@@ -237,7 +237,7 @@ template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_value_construct_bad_alloc_async(
     ExPolicy policy, IteratorTag)
 {
-    typedef test::count_instances_v<value_constructable> data_type;
+    using data_type = test::count_instances_v<value_constructable>;
     typedef data_type* base_iterator;
     typedef test::decorated_iterator<base_iterator, IteratorTag>
         decorated_iterator;

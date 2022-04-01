@@ -154,7 +154,7 @@ namespace tests {
     template <typename Iterator, typename T>
     void readable_iterator_test(const Iterator i1, T v)
     {
-        typedef typename std::iterator_traits<Iterator>::reference ref_t;
+        using ref_t = typename std::iterator_traits<Iterator>::reference;
 
         Iterator i2(i1);    // Copy Constructible
         ref_t r1 = *i1;
@@ -280,7 +280,7 @@ namespace tests {
         template <typename T>
         struct identity
         {
-            typedef T type;
+            using type = T;
         };
 
         // implementation originally suggested by C. Green in
@@ -383,8 +383,8 @@ namespace tests {
     void constant_lvalue_iterator_test(Iterator i, T v1)
     {
         Iterator i2(i);
-        typedef typename std::iterator_traits<Iterator>::value_type value_type;
-        typedef typename std::iterator_traits<Iterator>::reference reference;
+        using value_type = typename std::iterator_traits<Iterator>::value_type;
+        using reference = typename std::iterator_traits<Iterator>::reference;
         PIKA_TEST((std::is_same<const value_type&, reference>::value));
         const T& v2 = *i2;
         PIKA_TEST_EQ(v1, v2);
@@ -396,8 +396,8 @@ namespace tests {
     void non_const_lvalue_iterator_test(Iterator i, T v1, T v2)
     {
         Iterator i2(i);
-        typedef typename std::iterator_traits<Iterator>::value_type value_type;
-        typedef typename std::iterator_traits<Iterator>::reference reference;
+        using value_type = typename std::iterator_traits<Iterator>::value_type;
+        using reference = typename std::iterator_traits<Iterator>::reference;
         PIKA_TEST((std::is_same<value_type&, reference>::value));
         T& v3 = *i2;
         PIKA_TEST_EQ(v1, v3);
@@ -472,7 +472,7 @@ namespace tests {
     class input_output_iterator_archetype
     {
     private:
-        typedef input_output_iterator_archetype self;
+        using self = input_output_iterator_archetype;
         struct in_out_tag
           : public std::input_iterator_tag
           , public std::output_iterator_tag
@@ -480,8 +480,8 @@ namespace tests {
         };
 
     public:
-        typedef in_out_tag iterator_category;
-        typedef T value_type;
+        using iterator_category = in_out_tag;
+        using value_type = T;
         struct reference
         {
             reference& operator=(const T&)
@@ -495,7 +495,7 @@ namespace tests {
         };
 
         typedef const T* pointer;
-        typedef std::ptrdiff_t difference_type;
+        using difference_type = std::ptrdiff_t;
 
         input_output_iterator_archetype() {}
         self& operator=(const self&)
@@ -528,14 +528,14 @@ namespace tests {
     class input_iterator_archetype_no_proxy
     {
     private:
-        typedef input_iterator_archetype_no_proxy self;
+        using self = input_iterator_archetype_no_proxy;
 
     public:
-        typedef std::input_iterator_tag iterator_category;
-        typedef T value_type;
+        using iterator_category = std::input_iterator_tag;
+        using value_type = T;
         typedef const T& reference;
         typedef const T* pointer;
-        typedef std::ptrdiff_t difference_type;
+        using difference_type = std::ptrdiff_t;
         input_iterator_archetype_no_proxy() {}
         input_iterator_archetype_no_proxy(
             input_iterator_archetype_no_proxy const&)
@@ -571,14 +571,14 @@ namespace tests {
     class forward_iterator_archetype
     {
     public:
-        typedef forward_iterator_archetype self;
+        using self = forward_iterator_archetype;
 
     public:
-        typedef std::forward_iterator_tag iterator_category;
-        typedef T value_type;
+        using iterator_category = std::forward_iterator_tag;
+        using value_type = T;
         typedef const T& reference;
         typedef T const* pointer;
-        typedef std::ptrdiff_t difference_type;
+        using difference_type = std::ptrdiff_t;
         forward_iterator_archetype() {}
         forward_iterator_archetype(forward_iterator_archetype const&) {}
         self& operator=(const self&)

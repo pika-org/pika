@@ -604,7 +604,7 @@ namespace pika { namespace parallel { namespace execution {
     template <typename Hint>
     struct executor_execution_category<guided_pool_executor<Hint>>
     {
-        typedef pika::execution::parallel_execution_tag type;
+        using type = pika::execution::parallel_execution_tag;
     };
 
     template <typename Hint>
@@ -616,7 +616,7 @@ namespace pika { namespace parallel { namespace execution {
     template <typename Hint>
     struct executor_execution_category<guided_pool_executor_shim<Hint>>
     {
-        typedef pika::execution::parallel_execution_tag type;
+        using type = pika::execution::parallel_execution_tag;
     };
 
     template <typename Hint>

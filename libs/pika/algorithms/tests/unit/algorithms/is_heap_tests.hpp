@@ -79,8 +79,8 @@ struct user_defined_type
 template <typename IteratorTag, typename DataType>
 void test_is_heap(IteratorTag, DataType, bool test_for_is_heap = true)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<DataType> c(10007);
     std::iota(std::begin(c), std::end(c), DataType(gen()));
@@ -113,8 +113,8 @@ void test_is_heap(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<DataType> c(10007);
     std::iota(std::begin(c), std::end(c), DataType(gen()));
@@ -144,8 +144,8 @@ template <typename IteratorTag, typename DataType, typename Pred>
 void test_is_heap_with_pred(
     IteratorTag, DataType, Pred pred, bool test_for_is_heap = true)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<DataType> c(10007);
     std::iota(std::begin(c), std::end(c), DataType(gen()));
@@ -179,8 +179,8 @@ void test_is_heap_with_pred(ExPolicy&& policy, IteratorTag, DataType, Pred pred,
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<DataType> c(10007);
     std::iota(std::begin(c), std::end(c), DataType(gen()));
@@ -213,8 +213,8 @@ void test_is_heap_async(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<DataType> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
@@ -246,8 +246,8 @@ void test_is_heap_async(
 template <typename IteratorTag>
 void test_is_heap_exception(IteratorTag, bool test_for_is_heap = true)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
@@ -290,8 +290,8 @@ void test_is_heap_exception(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
@@ -330,8 +330,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_is_heap_exception_async(
     ExPolicy&& policy, IteratorTag, bool test_for_is_heap = true)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
@@ -376,8 +376,8 @@ void test_is_heap_exception_async(
 template <typename IteratorTag>
 void test_is_heap_bad_alloc(IteratorTag, bool test_for_is_heap = true)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
@@ -418,8 +418,8 @@ void test_is_heap_bad_alloc(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
@@ -457,8 +457,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_is_heap_bad_alloc_async(
     ExPolicy&& policy, IteratorTag, bool test_for_is_heap = true)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());

@@ -59,7 +59,7 @@ namespace pika { namespace util {
             bool locked;
         };
 
-        typedef pika::lcos::local::spinlock mutex_type;
+        using mutex_type = pika::lcos::local::spinlock;
 
     private:
         static mutex_type mtx_;

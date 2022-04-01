@@ -1238,7 +1238,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_input_iterator<Iter>::value),
                 "Required at least input iterator.");
 
-            typedef typename std::iterator_traits<Iter>::value_type Type;
+            using Type = typename std::iterator_traits<Iter>::value_type;
 
             return pika::ranges::replace_if(
                 first, sent,
@@ -1298,7 +1298,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_forward_iterator<Iter>::value),
                 "Required at least forward iterator.");
 
-            typedef typename std::iterator_traits<Iter>::value_type Type;
+            using Type = typename std::iterator_traits<Iter>::value_type;
 
             return pika::ranges::replace_if(
                 PIKA_FORWARD(ExPolicy, policy), first, sent,
@@ -1516,7 +1516,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_output_iterator<OutIter>::value),
                 "Required at least output iterator.");
 
-            typedef typename std::iterator_traits<InIter>::value_type Type;
+            using Type = typename std::iterator_traits<InIter>::value_type;
 
             return pika::ranges::replace_copy_if(
                 pika::execution::seq, first, sent, dest,
@@ -1586,7 +1586,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Required at least forward iterator.");
 
-            typedef typename std::iterator_traits<FwdIter1>::value_type Type;
+            using Type = typename std::iterator_traits<FwdIter1>::value_type;
 
             return pika::ranges::replace_copy_if(
                 PIKA_FORWARD(ExPolicy, policy), first, sent, dest,

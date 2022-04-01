@@ -787,8 +787,8 @@ static void test_exception()
     }
 }
 
-typedef pika::util::function<void*(void* reader)> reader_type;
-typedef std::pair<int, reader_type> mapped_type;
+using reader_type = pika::util::function<void*(void* reader)>;
+using mapped_type = std::pair<int, reader_type>;
 
 static void test_implicit()
 {
@@ -845,7 +845,7 @@ struct big_aggregating_structure
 template <class FunctionT>
 static void test_move_semantics()
 {
-    typedef FunctionT f1_type;
+    using f1_type = FunctionT;
 
     big_aggregating_structure obj;
 

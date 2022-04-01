@@ -22,7 +22,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 void test_persistent_executitor_parameters()
 {
-    typedef std::random_access_iterator_tag iterator_tag;
+    using iterator_tag = std::random_access_iterator_tag;
     {
         pika::execution::persistent_auto_chunk_size p;
         auto policy = pika::execution::par.with(p);
@@ -55,7 +55,7 @@ void test_persistent_executitor_parameters_ref()
 {
     using namespace pika::parallel;
 
-    typedef std::random_access_iterator_tag iterator_tag;
+    using iterator_tag = std::random_access_iterator_tag;
 
     {
         pika::execution::persistent_auto_chunk_size p;

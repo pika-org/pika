@@ -24,8 +24,8 @@
 template <typename IteratorTag>
 void test_transform_reduce_binary(IteratorTag)
 {
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c = test::random_iota<int>(1007);
     std::vector<int> d = test::random_iota<int>(1007);
@@ -44,8 +44,8 @@ void test_transform_reduce_binary(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c = test::random_iota<int>(1007);
     std::vector<int> d = test::random_iota<int>(1007);
@@ -64,8 +64,8 @@ void test_transform_reduce_binary_async(ExPolicy&& p, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<int>::iterator base_iterator;
-    typedef test::test_iterator<base_iterator, IteratorTag> iterator;
+    using base_iterator = std::vector<int>::iterator;
+    using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c = test::random_iota<int>(1007);
     std::vector<int> d = test::random_iota<int>(1007);

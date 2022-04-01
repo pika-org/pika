@@ -23,7 +23,7 @@ std::mt19937 gen(seed);
 // Compare the speed with the implementation of the compiler
 void function01(void)
 {
-    typedef std::less<std::uint64_t> compare_t;
+    using compare_t = std::less<std::uint64_t>;
 #if defined(PIKA_DEBUG)
     constexpr std::uint32_t NELEM = 100;
 #else

@@ -132,7 +132,7 @@ void category_test(CountingIterator start, CountingIterator finish, Value v1,
 template <typename CountingIterator, typename Value>
 void test_aux(CountingIterator start, CountingIterator finish, Value v1)
 {
-    typedef typename CountingIterator::iterator_category category;
+    using category = typename CountingIterator::iterator_category;
 
     // If it's a RandomAccessIterator we can do a few delicate tests
     category_test(start, finish, v1, category());

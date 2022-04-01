@@ -33,7 +33,7 @@ namespace jacobi_smp {
     void jacobi(crs_matrix<double> const& A, std::vector<double> const& b,
         std::size_t iterations, std::size_t block_size)
     {
-        typedef std::vector<double> vector_type;
+        using vector_type = std::vector<double>;
 
         std::shared_ptr<vector_type> dst(new vector_type(b));
         std::shared_ptr<vector_type> src(new vector_type(b));
@@ -77,7 +77,7 @@ namespace jacobi_smp {
             }
         }
 
-        typedef std::vector<pika::shared_future<void>> future_vector;
+        using future_vector = std::vector<pika::shared_future<void>>;
         std::shared_ptr<future_vector> deps_dst(
             new future_vector(dependencies.size(), pika::make_ready_future()));
         std::shared_ptr<future_vector> deps_src(

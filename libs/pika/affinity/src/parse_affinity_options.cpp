@@ -55,7 +55,7 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     //                  index,       mask
-    typedef pika::tuple<std::size_t, threads::mask_type> mask_info;
+    using mask_info = pika::tuple<std::size_t, threads::mask_type>;
 
     inline std::size_t get_index(mask_info const& smi)
     {

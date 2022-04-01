@@ -448,7 +448,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(ExPolicy&& policy, FwdIter1 first, FwdIter2 last,
                 FwdIter3 dest, Pred&& pred, Proj&& proj /* = Proj()*/)
             {
-                typedef pika::util::zip_iterator<FwdIter1, bool*> zip_iterator;
+                using zip_iterator = pika::util::zip_iterator<FwdIter1, bool*>;
                 typedef util::detail::algorithm_result<ExPolicy,
                     util::in_out_result<FwdIter1, FwdIter3>>
                     result;

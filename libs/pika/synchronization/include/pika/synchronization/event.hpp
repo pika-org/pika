@@ -24,7 +24,7 @@ namespace pika { namespace lcos { namespace local {
     class event
     {
     private:
-        typedef lcos::local::spinlock mutex_type;
+        using mutex_type = lcos::local::spinlock;
 
     public:
         /// \brief Construct a new event semaphore

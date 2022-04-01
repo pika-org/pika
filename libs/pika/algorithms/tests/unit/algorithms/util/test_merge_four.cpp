@@ -51,9 +51,9 @@ struct xk
 
 void test1()
 {
-    typedef typename std::vector<std::uint64_t>::iterator iter_t;
-    typedef range<iter_t> range_t;
-    typedef std::less<std::uint64_t> compare;
+    using iter_t = typename std::vector<std::uint64_t>::iterator;
+    using range_t = range<iter_t>;
+    using compare = std::less<std::uint64_t>;
 
     std::vector<std::uint64_t> A, B, C, D, X;
     range_t R[4];
@@ -232,9 +232,9 @@ void test1()
 
 void test2()
 {
-    typedef typename std::vector<xk>::iterator iter_t;
-    typedef range<iter_t> range_t;
-    typedef std::less<xk> compare;
+    using iter_t = typename std::vector<xk>::iterator;
+    using range_t = range<iter_t>;
+    using compare = std::less<xk>;
 
     std::vector<xk> A, B, C, D, X;
     range_t R[4];
@@ -267,9 +267,9 @@ void test2()
 
 void test3()
 {
-    typedef typename std::vector<std::uint64_t>::iterator iter_t;
-    typedef range<iter_t> range_t;
-    typedef std::less<std::uint64_t> compare;
+    using iter_t = typename std::vector<std::uint64_t>::iterator;
+    using range_t = range<iter_t>;
+    using compare = std::less<std::uint64_t>;
 
     std::uint64_t X[40];
     for (int i = 0; i < 40; ++i)
@@ -451,9 +451,9 @@ void test3()
 
 void test4()
 {
-    typedef typename std::vector<xk>::iterator iter_t;
-    typedef range<iter_t> range_t;
-    typedef std::less<xk> compare;
+    using iter_t = typename std::vector<xk>::iterator;
+    using range_t = range<iter_t>;
+    using compare = std::less<xk>;
 
     xk X[40];
     std::vector<xk> A, B, C, D;

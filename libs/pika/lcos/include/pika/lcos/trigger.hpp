@@ -28,7 +28,7 @@ namespace pika { namespace lcos { namespace local {
     struct base_trigger
     {
     protected:
-        typedef Mutex mutex_type;
+        using mutex_type = Mutex;
 
     private:
         typedef std::list<conditional_trigger*> condition_list_type;
@@ -222,7 +222,7 @@ namespace pika { namespace lcos { namespace local {
     struct trigger : public base_trigger<no_mutex>
     {
     private:
-        typedef base_trigger<no_mutex> base_type;
+        using base_type = base_trigger<no_mutex>;
 
     public:
         trigger() {}

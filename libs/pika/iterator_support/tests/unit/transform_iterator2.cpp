@@ -205,7 +205,7 @@ int main()
 
 // Test transform_iterator as projection iterator
 {
-    typedef std::pair<int, int> pair_t;
+    using pair_t = std::pair<int, int>;
 
     int x[N];
     int y[N];

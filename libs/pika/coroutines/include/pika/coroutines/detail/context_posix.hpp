@@ -224,7 +224,7 @@ namespace pika { namespace threads { namespace coroutines {
             PIKA_NON_COPYABLE(ucontext_context_impl);
 
         public:
-            typedef ucontext_context_impl_base context_impl_base;
+            using context_impl_base = ucontext_context_impl_base;
 
             /**
              * Create a context that on restore invokes Functor on
@@ -377,7 +377,7 @@ namespace pika { namespace threads { namespace coroutines {
             }
 
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
-            typedef std::atomic<std::int64_t> counter_type;
+            using counter_type = std::atomic<std::int64_t>;
 
         private:
             static counter_type& get_stack_unbind_counter()

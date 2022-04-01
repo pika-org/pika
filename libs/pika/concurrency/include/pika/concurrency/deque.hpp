@@ -45,10 +45,10 @@ namespace boost { namespace lockfree {
     template <typename T>
     struct deque_node    //-V690
     {
-        typedef detail::tagged_ptr<deque_node> pointer;
-        typedef std::atomic<pointer> atomic_pointer;
+        using pointer = detail::tagged_ptr<deque_node>;
+        using atomic_pointer = std::atomic<pointer>;
 
-        typedef typename pointer::tag_t tag_t;
+        using tag_t = typename pointer::tag_t;
 
         atomic_pointer left;
         atomic_pointer right;

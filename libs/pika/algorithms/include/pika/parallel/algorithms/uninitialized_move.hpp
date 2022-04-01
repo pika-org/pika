@@ -287,8 +287,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     get(util::in_out_result<Iter, FwdIter2>{first, dest});
             }
 
-            typedef pika::util::zip_iterator<Iter, FwdIter2> zip_iterator;
-            typedef std::pair<FwdIter2, FwdIter2> partition_result_type;
+            using zip_iterator = pika::util::zip_iterator<Iter, FwdIter2>;
+            using partition_result_type = std::pair<FwdIter2, FwdIter2>;
             typedef
                 typename std::iterator_traits<FwdIter2>::value_type value_type;
 

@@ -27,7 +27,7 @@ namespace boost { namespace inspect {
         long m_bookmark_errors;
         long m_duplicate_bookmark_errors;
 
-        typedef std::map<string, int> m_path_map;
+        using m_path_map = std::map<string, int>;
         m_path_map m_paths;    // first() is relative to search_root_path()
 
         void do_url(const string& url, const string& library_name,
@@ -48,11 +48,12 @@ namespace boost { namespace inspect {
                    " invalid urls, broken links, unlinked files";
         }
 
-        virtual void inspect(
-            const std::string& library_name, const std::filesystem::path& full_path);
+        virtual void inspect(const std::string& library_name,
+            const std::filesystem::path& full_path);
 
         virtual void inspect(const std::string& library_name,
-            const std::filesystem::path& full_path, const std::string& contents);
+            const std::filesystem::path& full_path,
+            const std::string& contents);
 
         virtual void close();
 

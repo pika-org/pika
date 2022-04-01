@@ -27,7 +27,7 @@ namespace pika { namespace parallel { namespace traits {
         template <typename T, std::size_t N, typename Abi>
         struct vector_pack_type
         {
-            typedef Vc::SimdArray<T, N> type;
+            using type = Vc::SimdArray<T, N>;
         };
 
         template <typename T, typename Abi>
@@ -36,13 +36,13 @@ namespace pika { namespace parallel { namespace traits {
             typedef typename std::conditional<std::is_void<Abi>::value,
                 Vc::VectorAbi::Best<T>, Abi>::type abi_type;
 
-            typedef Vc::Vector<T, abi_type> type;
+            using type = Vc::Vector<T, abi_type>;
         };
 
         template <typename T, typename Abi>
         struct vector_pack_type<T, 1, Abi>
         {
-            typedef Vc::Scalar::Vector<T> type;
+            using type = Vc::Scalar::Vector<T>;
         };
     }    // namespace detail
 
@@ -56,7 +56,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename T, std::size_t N, typename Abi1, typename Abi2>
     struct vector_pack_type<Vc::Vector<T, Abi1>, N, Abi2>
     {
-        typedef Vc::Vector<T, Abi1> type;
+        using type = Vc::Vector<T, Abi1>;
     };
 
     template <typename T, std::size_t N1, typename V, std::size_t W,
@@ -69,7 +69,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename T, std::size_t N, typename Abi>
     struct vector_pack_type<Vc::Scalar::Vector<T>, N, Abi>
     {
-        typedef Vc::Scalar::Vector<T> type;
+        using type = Vc::Scalar::Vector<T>;
     };
 }}}    // namespace pika::parallel::traits
 
@@ -88,7 +88,7 @@ namespace pika { namespace parallel { namespace traits {
         template <typename T, std::size_t N>
         struct vector_pack_type<T, N, void>
         {
-            typedef Vc::datapar<T, Vc::datapar_abi::fixed_size<N>> type;
+            using type = Vc::datapar<T, Vc::datapar_abi::fixed_size<N>>;
         };
 
         template <typename T, typename Abi>
@@ -97,13 +97,13 @@ namespace pika { namespace parallel { namespace traits {
             typedef typename std::conditional<std::is_void<Abi>::value,
                 Vc::datapar_abi::native<T>, Abi>::type abi_type;
 
-            typedef Vc::datapar<T, abi_type> type;
+            using type = Vc::datapar<T, abi_type>;
         };
 
         template <typename T, typename Abi>
         struct vector_pack_type<T, 1, Abi>
         {
-            typedef Vc::datapar<T, Vc::datapar_abi::scalar> type;
+            using type = Vc::datapar<T, Vc::datapar_abi::scalar>;
         };
     }    // namespace detail
 
@@ -117,7 +117,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename T, std::size_t N, typename Abi1, typename Abi2>
     struct vector_pack_type<Vc::datapar<T, Abi1>, N, Abi2>
     {
-        typedef Vc::datapar<T, Abi1> type;
+        using type = Vc::datapar<T, Abi1>;
     };
 }}}    // namespace pika::parallel::traits
 

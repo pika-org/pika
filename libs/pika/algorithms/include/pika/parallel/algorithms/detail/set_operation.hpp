@@ -70,7 +70,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             T const* item_;
         };
 
-        typedef typename std::iterator_traits<FwdIter>::value_type value_type;
+        using value_type = typename std::iterator_traits<FwdIter>::value_type;
         typedef typename std::conditional<std::is_scalar<value_type>::value,
             value_type, rewritable_ref<value_type>>::type type;
     };

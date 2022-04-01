@@ -30,7 +30,7 @@ std::uniform_int_distribution<> dist(7, 106);
 template <typename IteratorTag>
 void test_find_end1(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -55,7 +55,7 @@ void test_find_end1(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -77,7 +77,7 @@ void test_find_end1(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag>
 void test_find_end1_proj(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -103,7 +103,7 @@ void test_find_end1_proj(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -126,7 +126,7 @@ void test_find_end1_proj(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_end1_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -150,7 +150,7 @@ void test_find_end1_async(ExPolicy&& p, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_end1_async_proj(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -202,7 +202,7 @@ void find_end_test1()
 template <typename IteratorTag>
 void test_find_end2(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values about 2
@@ -229,7 +229,7 @@ void test_find_end2(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values about 2
@@ -253,7 +253,7 @@ void test_find_end2(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag>
 void test_find_end2_proj(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values about 2
@@ -283,7 +283,7 @@ void test_find_end2_proj(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values about 2
@@ -310,7 +310,7 @@ void test_find_end2_proj(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_end2_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 2
     std::vector<std::size_t> c(10007);
@@ -336,7 +336,7 @@ void test_find_end2_async(ExPolicy&& p, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_end2_async_proj(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 2
     std::vector<std::size_t> c(10007);
@@ -393,7 +393,7 @@ void find_end_test2()
 template <typename IteratorTag>
 void test_find_end3(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 2
     std::vector<std::size_t> c(10007);
@@ -419,7 +419,7 @@ void test_find_end3(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 2
     std::vector<std::size_t> c(10007);
@@ -442,7 +442,7 @@ void test_find_end3(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag>
 void test_find_end3_proj(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 2
     std::vector<std::size_t> c(10007);
@@ -471,7 +471,7 @@ void test_find_end3_proj(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 2
     std::vector<std::size_t> c(10007);
@@ -497,7 +497,7 @@ void test_find_end3_proj(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_end3_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 6
     std::vector<std::size_t> c(10007);
@@ -524,7 +524,7 @@ void test_find_end3_async(ExPolicy&& p, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_end3_async_proj(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 6
     std::vector<std::size_t> c(10007);
@@ -581,7 +581,7 @@ void find_end_test3()
 template <typename IteratorTag>
 void test_find_end4(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -607,7 +607,7 @@ void test_find_end4(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -630,7 +630,7 @@ void test_find_end4(ExPolicy&& policy, IteratorTag)
 template <typename IteratorTag>
 void test_find_end4_proj(IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -659,7 +659,7 @@ void test_find_end4_proj(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     std::vector<std::size_t> c(10007);
     // fill vector with random values above 2
@@ -685,7 +685,7 @@ void test_find_end4_proj(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_end4_async(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 2
     std::vector<std::size_t> c(10007);
@@ -710,7 +710,7 @@ void test_find_end4_async(ExPolicy&& p, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_find_end4_async_proj(ExPolicy&& p, IteratorTag)
 {
-    typedef std::vector<std::size_t>::iterator base_iterator;
+    using base_iterator = std::vector<std::size_t>::iterator;
 
     // fill vector with random values above 2
     std::vector<std::size_t> c(10007);

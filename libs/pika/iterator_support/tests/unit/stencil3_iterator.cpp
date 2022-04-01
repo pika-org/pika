@@ -47,7 +47,7 @@ namespace test {
             template <typename Iterator>
             typename result<Iterator>::type operator()(Iterator const& it) const
             {
-                typedef typename result<Iterator>::type type;
+                using type = typename result<Iterator>::type;
                 return type(*test::previous(it), *it, *test::next(it));
             }
         };
@@ -60,7 +60,7 @@ namespace test {
       : public pika::util::transform_iterator<Iterator, Transformer>
     {
     private:
-        typedef pika::util::transform_iterator<Iterator, Transformer> base_type;
+        using base_type = pika::util::transform_iterator<Iterator, Transformer>;
 
     public:
         stencil3_iterator() {}
@@ -143,7 +143,7 @@ namespace test {
             typedef typename pika::util::invoke_result<F, element_type>::type
                 value_type;
 
-            typedef pika::tuple<value_type, element_type, value_type> type;
+            using type = pika::tuple<value_type, element_type, value_type>;
         };
 
         custom_stencil_transformer(F f)
@@ -155,7 +155,7 @@ namespace test {
         template <typename Iterator>
         typename result<Iterator>::type operator()(Iterator const& it) const
         {
-            typedef typename result<Iterator>::type type;
+            using type = typename result<Iterator>::type;
             return type(f_(*test::previous(it)), *it, f_(*test::next(it)));
         }
 

@@ -243,7 +243,7 @@ void test_executor(std::array<std::size_t, 2> expected)
 ///////////////////////////////////////////////////////////////////////////////
 struct test_sync_executor1
 {
-    typedef pika::execution::sequenced_execution_tag execution_category;
+    using execution_category = pika::execution::sequenced_execution_tag;
 
     template <typename F, typename... Ts>
     static typename pika::util::detail::invoke_deferred_result<F, Ts...>::type
@@ -263,7 +263,7 @@ namespace pika { namespace parallel { namespace execution {
 
 struct test_sync_executor2 : test_sync_executor1
 {
-    typedef pika::execution::sequenced_execution_tag execution_category;
+    using execution_category = pika::execution::sequenced_execution_tag;
 
     template <typename F, typename Shape, typename... Ts>
     static typename pika::parallel::execution::detail::bulk_execute_result<F,

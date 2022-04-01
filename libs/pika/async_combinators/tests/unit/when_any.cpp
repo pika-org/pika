@@ -353,7 +353,7 @@ void test_wait_for_either_of_five_futures_1_from_list()
 template <class Container>
 void test_wait_for_either_of_five_futures_1_from_list_iterators()
 {
-    typedef typename Container::iterator iterator;
+    using iterator = typename Container::iterator;
 
     Container futures;
 

@@ -54,8 +54,8 @@ namespace pika { namespace parallel { namespace util {
         tag_invoke(pika::parallel::util::detail::accumulate_values_t<ExPolicy>,
             F&& f, Vector const& value)
         {
-            typedef typename std::decay<Vector>::type vector_type;
-            typedef typename vector_type::value_type entry_type;
+            using vector_type = typename std::decay<Vector>::type;
+            using entry_type = typename vector_type::value_type;
 
             entry_type accum = value[0];
             for (size_t i = 1; i != value.size(); ++i)
@@ -105,7 +105,7 @@ namespace pika { namespace parallel { namespace util {
             {
                 typedef
                     typename std::iterator_traits<Iter_>::value_type value_type;
-                typedef typename traits::vector_pack_type<value_type>::type V;
+                using V = typename traits::vector_pack_type<value_type>::type;
 
                 return traits::vector_pack_size<V>::value <=
                     (std::size_t) parallel::v1::detail::distance(first, last);
@@ -118,11 +118,11 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_loop
         {
-            typedef typename std::decay<Iterator>::type iterator_type;
+            using iterator_type = typename std::decay<Iterator>::type;
             typedef typename std::iterator_traits<iterator_type>::value_type
                 value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
 
             template <typename Begin, typename End, typename F>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE static typename std::enable_if<
@@ -222,11 +222,11 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_loop_ind
         {
-            typedef typename std::decay<Iterator>::type iterator_type;
+            using iterator_type = typename std::decay<Iterator>::type;
             typedef typename std::iterator_traits<iterator_type>::value_type
                 value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
 
             template <typename Begin, typename End, typename F>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE static typename std::enable_if<
@@ -285,11 +285,11 @@ namespace pika { namespace parallel { namespace util {
                 std::pair<InIter1, InIter2>>::type
             call(InIter1 it1, InIter1 last1, InIter2 it2, F&& f)
             {
-                typedef typename std::decay<InIter1>::type iterator_type;
+                using iterator_type = typename std::decay<InIter1>::type;
                 typedef typename std::iterator_traits<iterator_type>::value_type
                     value_type;
 
-                typedef typename traits::vector_pack_type<value_type>::type V;
+                using V = typename traits::vector_pack_type<value_type>::type;
 
                 if (!detail::is_data_aligned(it1) ||
                     !detail::is_data_aligned(it2))
@@ -340,11 +340,11 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_loop_n
         {
-            typedef typename std::decay<Iterator>::type iterator_type;
+            using iterator_type = typename std::decay<Iterator>::type;
             typedef typename std::iterator_traits<iterator_type>::value_type
                 value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
 
             template <typename InIter, typename F>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE static typename std::enable_if<
@@ -446,11 +446,11 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_loop_n_ind
         {
-            typedef typename std::decay<Iterator>::type iterator_type;
+            using iterator_type = typename std::decay<Iterator>::type;
             typedef typename std::iterator_traits<iterator_type>::value_type
                 value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
 
             template <typename InIter, typename F>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE static typename std::enable_if<
@@ -498,11 +498,11 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_loop_idx_n
         {
-            typedef typename std::decay<Iterator>::type iterator_type;
+            using iterator_type = typename std::decay<Iterator>::type;
             typedef typename std::iterator_traits<iterator_type>::value_type
                 value_type;
 
-            typedef typename traits::vector_pack_type<value_type>::type V;
+            using V = typename traits::vector_pack_type<value_type>::type;
 
             template <typename Iter, typename F>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE static Iter call(

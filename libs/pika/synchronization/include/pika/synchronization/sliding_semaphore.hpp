@@ -45,7 +45,7 @@ namespace pika { namespace lcos { namespace local {
     class sliding_semaphore_var
     {
     private:
-        typedef Mutex mutex_type;
+        using mutex_type = Mutex;
 
     public:
         /// \brief Construct a new sliding semaphore
@@ -128,7 +128,7 @@ namespace pika { namespace lcos { namespace local {
         detail::sliding_semaphore sem_;
     };
 
-    typedef sliding_semaphore_var<> sliding_semaphore;
+    using sliding_semaphore = sliding_semaphore_var<>;
 }}}    // namespace pika::lcos::local
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)

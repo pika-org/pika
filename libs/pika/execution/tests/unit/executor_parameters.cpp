@@ -31,7 +31,7 @@ void parameters_test_impl(Parameters&&... params)
             pika::traits::is_executor_parameters<Parameters>...>::value,
         "pika::traits::is_executor_parameters<Parameters>::value");
 
-    typedef std::random_access_iterator_tag iterator_tag;
+    using iterator_tag = std::random_access_iterator_tag;
     test_for_each(pika::execution::seq.with(params...), iterator_tag());
     test_for_each(pika::execution::par.with(params...), iterator_tag());
     test_for_each_async(

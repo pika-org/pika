@@ -155,7 +155,7 @@ namespace pika { namespace experimental {
         {
             typedef previous_transformer<IterBegin, IterValueBegin>
                 left_transformer;
-            typedef next_transformer<IterEnd, IterValueEnd> right_transformer;
+            using right_transformer = next_transformer<IterEnd, IterValueEnd>;
 
             typedef util::transform_iterator<Iterator, left_transformer>
                 left_iterator;
@@ -200,7 +200,7 @@ namespace pika { namespace experimental {
         typedef detail::stencil3_iterator_base<Iterator, IterBegin,
             IterValueBegin, IterEnd, IterValueEnd>
             base_maker;
-        typedef typename base_maker::type base_type;
+        using base_type = typename base_maker::type;
 
     public:
         stencil3_iterator_full() {}
@@ -379,7 +379,7 @@ namespace pika { namespace experimental {
             template <typename Iterator>
             typename result<Iterator>::type operator()(Iterator const& it) const
             {
-                typedef typename result<Iterator>::type type;
+                using type = typename result<Iterator>::type;
                 return type(*detail::previous(it), *it, *detail::next(it));
             }
         };
@@ -392,7 +392,7 @@ namespace pika { namespace experimental {
       : public pika::util::transform_iterator<Iterator, Transformer>
     {
     private:
-        typedef pika::util::transform_iterator<Iterator, Transformer> base_type;
+        using base_type = pika::util::transform_iterator<Iterator, Transformer>;
 
     public:
         stencil3_iterator_v2() {}

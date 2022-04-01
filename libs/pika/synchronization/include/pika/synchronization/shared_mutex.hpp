@@ -19,7 +19,7 @@ namespace pika { namespace lcos { namespace local {
         class shared_mutex
         {
         private:
-            typedef Mutex mutex_type;
+            using mutex_type = Mutex;
 
             struct state_data
             {
@@ -234,5 +234,5 @@ namespace pika { namespace lcos { namespace local {
         };
     }    // namespace detail
 
-    typedef detail::shared_mutex<> shared_mutex;
+    using shared_mutex = detail::shared_mutex<>;
 }}}    // namespace pika::lcos::local

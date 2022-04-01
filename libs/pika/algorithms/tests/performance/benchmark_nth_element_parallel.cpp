@@ -36,7 +36,7 @@ void function01(void)
         << "Accumulate the times of all the positions with 10000 elements\n";
     std::cout
         << "-----------------------------------------------------------\n";
-    typedef std::less<uint64_t> compare_t;
+    using compare_t = std::less<uint64_t>;
     std::mt19937 my_rand(0);
     std::vector<uint64_t> A, B;
     const uint32_t NELEM = 10000;
@@ -81,7 +81,7 @@ void function02(void)
     std::cout << "\nBENCHMARK 2\n";
     std::cout << "Times with different positionss with 10000000 elements\n";
     std::cout << "-------------------------------------------------\n";
-    typedef std::less<uint64_t> compare_t;
+    using compare_t = std::less<uint64_t>;
     std::mt19937 my_rand(0);
     std::vector<uint64_t> A, B;
     const uint32_t NELEM = 10000000;

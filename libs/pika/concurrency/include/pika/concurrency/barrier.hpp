@@ -21,7 +21,7 @@ namespace pika { namespace util {
     class PIKA_EXPORT barrier
     {
     private:
-        typedef std::mutex mutex_type;
+        using mutex_type = std::mutex;
 
         static constexpr std::size_t barrier_flag = static_cast<std::size_t>(1)
             << (CHAR_BIT * sizeof(std::size_t) - 1);

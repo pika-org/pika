@@ -311,7 +311,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             }
         }
 
-        typedef less_ptr_no_null<Iter, Compare> compare_ptr;
+        using compare_ptr = less_ptr_no_null<Iter, Compare>;
         spin_sort(vsample.begin(), vsample.end(), compare_ptr(comp));
 
         // Create the final milestone vector

@@ -31,19 +31,19 @@ class test_allocator : public test_alloc_base
     friend class test_allocator;
 
 public:
-    typedef std::size_t size_type;
-    typedef std::int64_t difference_type;
-    typedef T value_type;
+    using size_type = std::size_t;
+    using difference_type = std::int64_t;
+    using value_type = T;
     typedef value_type* pointer;
     typedef const value_type* const_pointer;
-    typedef typename std::add_lvalue_reference<value_type>::type reference;
+    using reference = typename std::add_lvalue_reference<value_type>::type;
     typedef typename std::add_lvalue_reference<value_type const>::type
         const_reference;
 
     template <typename U>
     struct rebind
     {
-        typedef test_allocator<U> other;
+        using other = test_allocator<U>;
     };
 
     test_allocator() noexcept
@@ -130,16 +130,16 @@ class test_allocator<void> : public test_alloc_base
     friend class test_allocator;
 
 public:
-    typedef std::size_t size_type;
-    typedef std::int64_t difference_type;
-    typedef void value_type;
+    using size_type = std::size_t;
+    using difference_type = std::int64_t;
+    using value_type = void;
     typedef value_type* pointer;
     typedef value_type const* const_pointer;
 
     template <typename U>
     struct rebind
     {
-        typedef test_allocator<U> other;
+        using other = test_allocator<U>;
     };
 
     test_allocator() noexcept

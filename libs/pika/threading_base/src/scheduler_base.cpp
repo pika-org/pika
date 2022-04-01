@@ -255,7 +255,7 @@ namespace pika { namespace threads { namespace policies {
 
     void scheduler_base::set_all_states(pika::state s)
     {
-        typedef std::atomic<pika::state> state_type;
+        using state_type = std::atomic<pika::state>;
         for (state_type& state : states_)
         {
             state.store(s);
@@ -264,7 +264,7 @@ namespace pika { namespace threads { namespace policies {
 
     void scheduler_base::set_all_states_at_least(pika::state s)
     {
-        typedef std::atomic<pika::state> state_type;
+        using state_type = std::atomic<pika::state>;
         for (state_type& state : states_)
         {
             if (state < s)
@@ -277,7 +277,7 @@ namespace pika { namespace threads { namespace policies {
     // return whether all states are at least at the given one
     bool scheduler_base::has_reached_state(pika::state s) const
     {
-        typedef std::atomic<pika::state> state_type;
+        using state_type = std::atomic<pika::state>;
         for (state_type const& state : states_)
         {
             if (state.load(std::memory_order_relaxed) < s)
@@ -288,7 +288,7 @@ namespace pika { namespace threads { namespace policies {
 
     bool scheduler_base::is_state(pika::state s) const
     {
-        typedef std::atomic<pika::state> state_type;
+        using state_type = std::atomic<pika::state>;
         for (state_type const& state : states_)
         {
             if (state.load(std::memory_order_relaxed) != s)
@@ -302,7 +302,7 @@ namespace pika { namespace threads { namespace policies {
         std::pair<pika::state, pika::state> result(
             last_valid_runtime_state, first_valid_runtime_state);
 
-        typedef std::atomic<pika::state> state_type;
+        using state_type = std::atomic<pika::state>;
         for (state_type const& state_iter : states_)
         {
             pika::state s = state_iter.load();

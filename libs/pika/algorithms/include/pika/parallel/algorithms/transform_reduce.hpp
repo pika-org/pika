@@ -423,7 +423,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename Op1, typename Op2, typename T>
         struct transform_reduce_binary_partition
         {
-            typedef typename std::decay<T>::type value_type;
+            using value_type = typename std::decay<T>::type;
 
             Op1 op1_;
             Op2 op2_;
@@ -505,8 +505,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(ExPolicy&& policy, Iter first1, Sent last1, Iter2 first2,
                 T_&& init, Op1&& op1, Op2&& op2)
             {
-                typedef util::detail::algorithm_result<ExPolicy, T> result;
-                typedef pika::util::zip_iterator<Iter, Iter2> zip_iterator;
+                using result = util::detail::algorithm_result<ExPolicy, T>;
+                using zip_iterator = pika::util::zip_iterator<Iter, Iter2>;
                 typedef typename std::iterator_traits<Iter>::difference_type
                     difference_type;
 

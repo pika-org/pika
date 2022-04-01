@@ -24,7 +24,7 @@ namespace pika { namespace threads {
     class thread_specific_ptr
     {
     private:
-        typedef coroutines::detail::tss_cleanup_function cleanup_function;
+        using cleanup_function = coroutines::detail::tss_cleanup_function;
 
         thread_specific_ptr(thread_specific_ptr&);
         thread_specific_ptr& operator=(thread_specific_ptr&);
@@ -56,7 +56,7 @@ namespace pika { namespace threads {
         std::shared_ptr<cleanup_function> cleanup_;
 
     public:
-        typedef T element_type;
+        using element_type = T;
 
         thread_specific_ptr()
           : cleanup_(std::make_shared<delete_data>())

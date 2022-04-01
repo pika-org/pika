@@ -26,7 +26,7 @@ namespace pika { namespace parallel { namespace util {
     class cancellation_token
     {
     private:
-        typedef std::atomic<T> flag_type;
+        using flag_type = std::atomic<T>;
         std::shared_ptr<flag_type> was_cancelled_;
 
     public:
@@ -66,7 +66,7 @@ namespace pika { namespace parallel { namespace util {
     class cancellation_token<detail::no_data, std::less_equal<detail::no_data>>
     {
     private:
-        typedef std::atomic<bool> flag_type;
+        using flag_type = std::atomic<bool>;
         std::shared_ptr<flag_type> was_cancelled_;
 
     public:

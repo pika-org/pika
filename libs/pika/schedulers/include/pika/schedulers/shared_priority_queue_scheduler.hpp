@@ -152,7 +152,7 @@ namespace pika { namespace threads { namespace policies {
             pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
-        typedef init_parameter init_parameter_type;
+        using init_parameter_type = init_parameter;
 
         explicit shared_priority_queue_scheduler(init_parameter const& init)
           : scheduler_base(init.num_worker_threads_, init.description_,
@@ -1348,7 +1348,7 @@ namespace pika { namespace threads { namespace policies {
 #endif
 
     protected:
-        typedef queue_holder_numa<thread_queue_type> numa_queues;
+        using numa_queues = queue_holder_numa<thread_queue_type>;
 
         // for each numa domain, the number of queues available
         std::array<std::size_t, PIKA_HAVE_MAX_NUMA_DOMAIN_COUNT> q_counts_;

@@ -94,7 +94,7 @@ namespace pika { namespace lcos {
         template <typename ContResult>
         class split_nth_continuation : public future_data<ContResult>
         {
-            typedef future_data<ContResult> base_type;
+            using base_type = future_data<ContResult>;
 
         private:
             template <std::size_t I, typename T>
@@ -144,7 +144,7 @@ namespace pika { namespace lcos {
             typename pika::tuple_element<I, Tuple>::type>::type
         extract_nth_continuation(Future& future)
         {
-            typedef split_nth_continuation<Result> shared_state;
+            using shared_state = split_nth_continuation<Result>;
 
             typename pika::traits::detail::shared_state_ptr<Result>::type p(
                 new shared_state());
@@ -231,7 +231,7 @@ namespace pika { namespace lcos {
         template <typename ContResult>
         class split_continuation : public future_data<ContResult>
         {
-            typedef future_data<ContResult> base_type;
+            using base_type = future_data<ContResult>;
 
         private:
             template <typename T>
@@ -283,7 +283,7 @@ namespace pika { namespace lcos {
         inline pika::future<T> extract_future_array(
             std::size_t i, Future& future)
         {
-            typedef split_continuation<T> shared_state;
+            using shared_state = split_continuation<T>;
 
             typename pika::traits::detail::shared_state_ptr<T>::type p(
                 new shared_state());

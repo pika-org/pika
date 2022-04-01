@@ -49,7 +49,7 @@ namespace pika { namespace util {
         ///////////////////////////////////////////////////////////////////////////
         inline std::string trim_whitespace(std::string const& s)
         {
-            typedef std::string::size_type size_type;
+            using size_type = std::string::size_type;
 
             size_type first = s.find_first_not_of(" \t\r\n");
             if (std::string::npos == first)
@@ -661,7 +661,7 @@ namespace pika { namespace util {
     std::string section::get_entry(std::unique_lock<mutex_type>& l,
         std::string const& key, std::string const& default_val) const
     {
-        typedef std::vector<std::string> string_vector;
+        using string_vector = std::vector<std::string>;
 
         string_vector split_key;
         pika::string_util::split(

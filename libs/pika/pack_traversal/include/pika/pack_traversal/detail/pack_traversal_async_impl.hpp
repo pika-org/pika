@@ -222,7 +222,7 @@ namespace pika {
         private:
             void destroy() noexcept override
             {
-                typedef std::allocator_traits<other_allocator> traits;
+                using traits = std::allocator_traits<other_allocator>;
 
                 other_allocator alloc(alloc_);
                 traits::destroy(alloc, this);

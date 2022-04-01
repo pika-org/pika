@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-typedef std::atomic<int> int_atomic;
+using int_atomic = std::atomic<int>;
 int_atomic i1(0), i2(0);
 pika::lcos::local::guard_set guards;
 std::shared_ptr<pika::lcos::local::guard> l1(new pika::lcos::local::guard());

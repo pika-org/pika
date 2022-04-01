@@ -30,7 +30,7 @@ namespace placeholders = pika::util::placeholders;
 
 int main()
 {
-    typedef std::pair<int, int> pair_type;
+    using pair_type = std::pair<int, int>;
 
     pair_type pair(10, 20);
 

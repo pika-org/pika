@@ -39,7 +39,7 @@ namespace pika { namespace cuda { namespace experimental {
     public:
         struct PIKA_EXPORT native_handle_type
         {
-            typedef pika::lcos::local::spinlock mutex_type;
+            using mutex_type = pika::lcos::local::spinlock;
 
             native_handle_type(int device = 0);
 

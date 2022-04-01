@@ -89,7 +89,8 @@ namespace boost { namespace inspect {
     //  inspect ( C++ source files )  ---------------------------------------//
 
     void deprecated_include_check::inspect(const string& library_name,
-        const std::filesystem::path& full_path,     // example: c:/foo/boost/filesystem/path.hpp
+        const std::filesystem::path&
+            full_path,             // example: c:/foo/boost/filesystem/path.hpp
         const string& contents)    // contents of file to be inspected
     {
         std::string::size_type p = contents.find("pikainspect:"

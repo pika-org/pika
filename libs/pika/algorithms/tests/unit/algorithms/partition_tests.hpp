@@ -106,7 +106,7 @@ template <typename IteratorTag, typename DataType, typename Pred>
 void test_partition(
     IteratorTag, DataType, Pred pred, std::size_t size, random_fill gen_functor)
 {
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<DataType> c(size), c_org;
@@ -141,7 +141,7 @@ void test_partition(ExPolicy policy, IteratorTag, DataType, Pred pred,
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<DataType> c(size), c_org;
@@ -176,7 +176,7 @@ void test_partition_async(ExPolicy policy, IteratorTag, DataType, Pred pred,
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::vector<DataType>::iterator base_iterator;
+    using base_iterator = typename std::vector<DataType>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     std::vector<DataType> c(size), c_org;

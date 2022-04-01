@@ -48,10 +48,10 @@ double dx = 1.;        // grid spacing
 struct stepper
 {
     // Our partition type
-    typedef double partition;
+    using partition = double;
 
     // Our data for one time step
-    typedef std::vector<partition> space;
+    using space = std::vector<partition>;
 
     // Our operator
     static double heat(double left, double middle, double right)

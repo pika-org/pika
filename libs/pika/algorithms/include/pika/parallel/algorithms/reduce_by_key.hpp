@@ -183,7 +183,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         pika::future<util::in_out_result<iKey, iVal>> make_pair_result(
             pika::future<ZIter>&& ziter, iKey key_start, iVal val_start)
         {
-            typedef util::in_out_result<iKey, iVal> result_type;
+            using result_type = util::in_out_result<iKey, iVal>;
 
             return pika::make_future<result_type>(
                 PIKA_MOVE(ziter), [=](ZIter zipiter) {

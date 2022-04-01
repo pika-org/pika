@@ -103,8 +103,8 @@ std::ostream& operator<<(std::ostream& os, partition_data const& c)
 struct stepper
 {
     // Our data for one time step
-    typedef partition_data partition;
-    typedef std::vector<partition> space;
+    using partition = partition_data;
+    using space = std::vector<partition>;
 
     // Our operator
     static double heat(double left, double middle, double right)

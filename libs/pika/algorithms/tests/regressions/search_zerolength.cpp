@@ -18,7 +18,7 @@ void search_zero_dist_test()
     using pika::execution::seq;
     using pika::execution::task;
 
-    typedef std::vector<int>::iterator iterator;
+    using iterator = std::vector<int>::iterator;
 
     std::vector<int> c(10007);
     std::iota(c.begin(), c.end(), 1);

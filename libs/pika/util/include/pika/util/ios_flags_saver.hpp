@@ -15,8 +15,8 @@ namespace pika { namespace util {
     class ios_flags_saver
     {
     public:
-        typedef ::std::ios_base state_type;
-        typedef ::std::ios_base::fmtflags aspect_type;
+        using state_type = ::std::ios_base;
+        using aspect_type = ::std::ios_base::fmtflags;
 
         explicit ios_flags_saver(state_type& s)
           : s_save_(s)

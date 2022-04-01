@@ -22,7 +22,7 @@
 #if !(defined(PIKA_INTEL_VERSION) && PIKA_INTEL_VERSION == 1500)
 void test_zero()
 {
-    typedef std::vector<int>::iterator Iter;
+    using Iter = std::vector<int>::iterator;
     std::vector<int> a;
     std::vector<int> b, c, d, e, f, g;
     auto policy = pika::execution::par;
@@ -55,8 +55,8 @@ void test_zero()
 }
 void test_async_zero()
 {
-    typedef std::vector<int>::iterator Iter;
-    typedef pika::future<Iter> Fut_Iter;
+    using Iter = std::vector<int>::iterator;
+    using Fut_Iter = pika::future<Iter>;
     std::vector<int> a;
     std::vector<int> b, c, d, e, f, g;
     auto policy = pika::execution::par(pika::execution::task);
@@ -89,7 +89,7 @@ void test_async_zero()
 }
 void test_one(std::vector<int> a)
 {
-    typedef std::vector<int>::iterator Iter;
+    using Iter = std::vector<int>::iterator;
     std::size_t n = a.size();
     std::vector<int> b(n), c(n), d(n), e(n), f(n), g(n);
     std::vector<int> b_ans(n), c_ans(n), d_ans(n), e_ans(n), f_ans(n), g_ans(n);
@@ -145,8 +145,8 @@ void test_one(std::vector<int> a)
 void test_async_one(std::vector<int> a)
 {
     using namespace pika::execution;
-    typedef std::vector<int>::iterator Iter;
-    typedef pika::future<Iter> Fut_Iter;
+    using Iter = std::vector<int>::iterator;
+    using Fut_Iter = pika::future<Iter>;
     std::size_t n = a.size();
     std::vector<int> b(n), c(n), d(n), e(n), f(n), g(n);
     std::vector<int> b_ans(n), c_ans(n), d_ans(n), e_ans(n), f_ans(n), g_ans(n);

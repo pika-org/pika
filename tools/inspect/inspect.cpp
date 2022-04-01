@@ -91,11 +91,12 @@ const char* pika_no_inspect = "pika-"
 using namespace boost::inspect;
 
 namespace {
-    std::filesystem::path search_root = pika::detail::filesystem::initial_path();
+    std::filesystem::path search_root =
+        pika::detail::filesystem::initial_path();
 
     class inspector_element
     {
-        typedef std::shared_ptr<boost::inspect::inspector> inspector_ptr;
+        using inspector_ptr = std::shared_ptr<boost::inspect::inspector>;
 
     public:
         inspector_ptr inspector;
@@ -105,7 +106,7 @@ namespace {
         }
     };
 
-    typedef std::list<inspector_element> inspector_list;
+    using inspector_list = std::list<inspector_element>;
 
     long file_count = 0;
     long directory_count = 0;
@@ -140,7 +141,7 @@ namespace {
         }
     };
 
-    typedef std::vector<error_msg> error_msg_vector;
+    using error_msg_vector = std::vector<error_msg>;
     error_msg_vector msgs;
 
     struct lib_error_count
@@ -154,7 +155,7 @@ namespace {
         }
     };
 
-    typedef std::vector<lib_error_count> lib_error_count_vector;
+    using lib_error_count_vector = std::vector<lib_error_count>;
     lib_error_count_vector libs;
 
     //  run subversion to get revisions info  ------------------------------------//
@@ -299,8 +300,8 @@ namespace {
 
     //  find_signature  ----------------------------------------------------------//
 
-    bool find_signature(
-        const std::filesystem::path& file_path, const boost::inspect::string_set& signatures)
+    bool find_signature(const std::filesystem::path& file_path,
+        const boost::inspect::string_set& signatures)
     {
         string name(file_path.filename().string());
         if (signatures.find(name) == signatures.end())
@@ -333,8 +334,8 @@ namespace {
 
     //  check  -------------------------------------------------------------------//
 
-    void check_(const string& lib, const std::filesystem::path& pth, const string& content,
-        const inspector_list& insp_list)
+    void check_(const string& lib, const std::filesystem::path& pth,
+        const string& content, const inspector_list& insp_list)
     {
         // invoke each inspector
         for (inspector_list::const_iterator itr = insp_list.begin();
@@ -353,8 +354,8 @@ namespace {
     //  visit_all  ---------------------------------------------------------------//
 
     template <class DirectoryIterator>
-    void visit_all(
-        const string& lib, const std::filesystem::path& dir_path, const inspector_list& insps)
+    void visit_all(const string& lib, const std::filesystem::path& dir_path,
+        const inspector_list& insps)
     {
         static DirectoryIterator end_itr;
         ++directory_count;
@@ -479,7 +480,8 @@ namespace {
                     }
                     else
                     {
-                        std::filesystem::path current_rel_path(current.rel_path);
+                        std::filesystem::path current_rel_path(
+                            current.rel_path);
                         std::filesystem::path this_rel_path(itr->rel_path);
                         if (current_rel_path.parent_path() !=
                             this_rel_path.parent_path())
@@ -702,8 +704,9 @@ namespace boost { namespace inspect {
 
     //  error  -------------------------------------------------------------------//
 
-    void inspector::error(const string& library_name, const std::filesystem::path& full_path,
-        const string& msg, std::size_t line_number)
+    void inspector::error(const string& library_name,
+        const std::filesystem::path& full_path, const string& msg,
+        std::size_t line_number)
     {
         ++error_count;
         error_msg err_msg;
@@ -799,7 +802,8 @@ namespace boost { namespace inspect {
     // may return an empty string [gps]
     string impute_library(const std::filesystem::path& full_dir_path)
     {
-        std::filesystem::path relative(relative_to(full_dir_path, search_root_path()));
+        std::filesystem::path relative(
+            relative_to(full_dir_path, search_root_path()));
         if (relative.empty())
             return "boost-root";
         string first((*relative.begin()).string());
@@ -954,11 +958,13 @@ int cpp_main(int argc_param, char* argv_param[])
     {
         for (auto const& s :
             vm["pika:positional"].as<std::vector<std::string>>())
-            search_roots.push_back(pika::detail::filesystem::canonical(s, pika::detail::filesystem::initial_path()));
+            search_roots.push_back(pika::detail::filesystem::canonical(
+                s, pika::detail::filesystem::initial_path()));
     }
     else
     {
-        search_roots.push_back(std::filesystem::canonical(pika::detail::filesystem::initial_path()));
+        search_roots.push_back(std::filesystem::canonical(
+            pika::detail::filesystem::initial_path()));
     }
 
     if (vm.count("text"))

@@ -31,7 +31,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename T, typename NewT>
     struct rebind_pack
     {
-        typedef typename vector_pack_type<T>::type type;
+        using type = typename vector_pack_type<T>::type;
     };
 }}}    // namespace pika::parallel::traits
 

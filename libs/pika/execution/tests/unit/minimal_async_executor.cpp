@@ -147,7 +147,7 @@ void test_executor(std::array<std::size_t, 5> expected)
 ///////////////////////////////////////////////////////////////////////////////
 struct test_async_executor1
 {
-    typedef pika::execution::parallel_execution_tag execution_category;
+    using execution_category = pika::execution::parallel_execution_tag;
 
     template <typename F, typename... Ts>
     static pika::future<typename pika::util::invoke_result<F, Ts...>::type>
@@ -168,7 +168,7 @@ namespace pika { namespace parallel { namespace execution {
 
 struct test_async_executor2 : test_async_executor1
 {
-    typedef pika::execution::parallel_execution_tag execution_category;
+    using execution_category = pika::execution::parallel_execution_tag;
 
     template <typename F, typename... Ts>
     static typename pika::util::detail::invoke_deferred_result<F, Ts...>::type
@@ -190,7 +190,7 @@ namespace pika { namespace parallel { namespace execution {
 
 struct test_async_executor3 : test_async_executor1
 {
-    typedef pika::execution::parallel_execution_tag execution_category;
+    using execution_category = pika::execution::parallel_execution_tag;
 
     template <typename F, typename Shape, typename... Ts>
     static void bulk_sync_execute(F f, Shape const& shape, Ts&&... ts)
@@ -214,7 +214,7 @@ namespace pika { namespace parallel { namespace execution {
 
 struct test_async_executor4 : test_async_executor1
 {
-    typedef pika::execution::parallel_execution_tag execution_category;
+    using execution_category = pika::execution::parallel_execution_tag;
 
     template <typename F, typename Shape, typename... Ts>
     static std::vector<pika::future<void>> bulk_async_execute(
@@ -244,7 +244,7 @@ namespace pika { namespace parallel { namespace execution {
 
 struct test_async_executor5 : test_async_executor1
 {
-    typedef pika::execution::parallel_execution_tag execution_category;
+    using execution_category = pika::execution::parallel_execution_tag;
 
     template <typename F, typename... Ts>
     static void post(F&& f, Ts&&... ts)
