@@ -149,8 +149,7 @@ namespace pika {
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
-
-    namespace lcos { namespace detail {
+    namespace detail {
 
         template <typename Tuple, typename F>
         struct when_each_frame    //-V690
@@ -339,7 +338,7 @@ namespace pika {
             std::size_t count_;
             std::size_t needed_count_;
         };
-    }}    // namespace lcos::detail
+    }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename Future,
@@ -348,7 +347,7 @@ namespace pika {
     {
         using argument_type = pika::tuple<std::vector<Future>>;
         using frame_type =
-            lcos::detail::when_each_frame<argument_type, std::decay_t<F>>;
+            detail::when_each_frame<argument_type, std::decay_t<F>>;
 
         std::vector<Future> values;
         values.reserve(lazy_values.size());
@@ -436,7 +435,7 @@ namespace pika {
     {
         using argument_type = pika::tuple<traits::acquire_future_t<Ts>...>;
         using frame_type =
-            lcos::detail::when_each_frame<argument_type, std::decay_t<F>>;
+            detail::when_each_frame<argument_type, std::decay_t<F>>;
 
         traits::acquire_future_disp func;
         argument_type values(func(PIKA_FORWARD(Ts, ts))...);

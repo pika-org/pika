@@ -154,8 +154,7 @@ namespace pika {
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika {
-
-    namespace lcos { namespace detail {
+    namespace detail {
         ///////////////////////////////////////////////////////////////////////
         template <typename T, typename Enable = void>
         struct when_all_result
@@ -185,7 +184,7 @@ namespace pika {
 
         template <typename Tuple>
         class async_when_all_frame
-          : public future_data<when_all_result_t<Tuple>>
+          : public lcos::detail::future_data<when_all_result_t<Tuple>>
         {
         public:
             using result_type = when_all_result_t<Tuple>;
@@ -242,14 +241,14 @@ namespace pika {
             return pika::traits::future_access<
                 typename frame_type::type>::create(PIKA_MOVE(frame));
         }
-    }}    // namespace lcos::detail
+    }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename... Args>
-    auto when_all(Args&&... args) -> decltype(
-        pika::lcos::detail::when_all_impl(PIKA_FORWARD(Args, args)...))
+    auto when_all(Args&&... args)
+        -> decltype(pika::detail::when_all_impl(PIKA_FORWARD(Args, args)...))
     {
-        return pika::lcos::detail::when_all_impl(PIKA_FORWARD(Args, args)...);
+        return pika::detail::when_all_impl(PIKA_FORWARD(Args, args)...);
     }
 
     template <typename Iterator,
@@ -259,7 +258,7 @@ namespace pika {
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     decltype(auto) when_all(Iterator begin, Iterator end)
     {
-        return pika::lcos::detail::when_all_impl(
+        return pika::detail::when_all_impl(
             pika::lcos::detail::acquire_future_iterators<Iterator, Container>(
                 begin, end));
     }
@@ -271,7 +270,7 @@ namespace pika {
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
     decltype(auto) when_all_n(Iterator begin, std::size_t count)
     {
-        return pika::lcos::detail::when_all_impl(
+        return pika::detail::when_all_impl(
             pika::lcos::detail::acquire_future_n<Iterator, Container>(
                 begin, count));
     }

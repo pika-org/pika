@@ -552,7 +552,7 @@ namespace pika {
 
         if (n > sizeof...(Ts))
         {
-            PIKA_THROW_EXCEPTION(pika::bad_parameter, "pika::lcos::wait_some",
+            PIKA_THROW_EXCEPTION(pika::bad_parameter, "pika::wait_some",
                 "number of results to wait for is out of bounds");
             return;
         }
