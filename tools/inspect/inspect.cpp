@@ -111,7 +111,6 @@ namespace {
     long file_count = 0;
     long directory_count = 0;
     long error_count = 0;
-    //const int max_offenders = 5;  // maximum "worst offenders" to display
 
     boost::inspect::string_set content_signatures;
     boost::inspect::string_set skip_content_signatures;
@@ -157,97 +156,6 @@ namespace {
 
     using lib_error_count_vector = std::vector<lib_error_count>;
     lib_error_count_vector libs;
-
-    //  run subversion to get revisions info  ------------------------------------//
-    //
-    // implemented as function object that can be passed to boost::execution_monitor
-    // in order to swallow any errors from 'svn info'.
-
-    //   struct svn_check
-    //   {
-    //     explicit svn_check(const std::filesystem::path & inspect_root) :
-    //       inspect_root(inspect_root), fp(0) {}
-    //
-    //     int operator()() {
-    //       string rev("unknown");
-    //       string repos("unknown");
-    //       string command("cd ");
-    //       command += inspect_root.string() + " && svn info";
-    //
-    //       fp = (POPEN(command.c_str(), "r"));
-    //       if (fp)
-    //       {
-    //         static const int line_max = 128;
-    //         char line[line_max];
-    //         while (fgets(line, line_max, fp) != nullptr)
-    //         {
-    //           string ln(line);
-    //           string::size_type pos;
-    //           if ((pos = ln.find("Revision: ")) != string::npos)
-    //             rev = ln.substr(pos + 10);
-    //           else if ((pos = ln.find("URL: ")) != string::npos)
-    //             repos = ln.substr(pos + 5);
-    //         }
-    //       }
-    //
-    //       result = repos + " at revision " + rev;
-    //       return 0;
-    //     }
-    //
-    //     ~svn_check() { if (fp) PCLOSE(fp); }
-    //
-    //     const std::filesystem::path & inspect_root;
-    //     std::string result;
-    //     FILE* fp;
-    //   private:
-    //     svn_check(svn_check const&);
-    //     svn_check const& operator=(svn_check const&);
-    //   };
-
-    // Small helper class because svn_check can't be passed by copy.
-    template <typename F, typename R>
-    struct nullary_function_ref
-    {
-        explicit nullary_function_ref(F& f)
-          : f(f)
-        {
-        }
-        R operator()() const
-        {
-            return f();
-        }
-        F& f;
-    };
-
-    //  get info (as a string) if inspect_root is svn working copy  --------------//
-
-    //   string info( const std::filesystem::path & inspect_root )
-    //   {
-    //     svn_check check_(inspect_root);
-    //
-    // #if !INSPECT_USE_BOOST_TEST
-    //     check_();
-    // #else
-    //
-    //     try {
-    //       boost::execution_monitor e;
-    //       e.execute(nullary_function_ref<svn_check, int>(check_));
-    //     }
-    //     catch(boost::execution_exception const& e) {
-    //       if (e.code() == boost::execution_exception::system_error) {
-    //         // There was an error running 'svn info' - it probably
-    //         // wasn't run in a subversion repo.
-    //         return string("unknown");
-    //       }
-    //       else {
-    //         throw;
-    //       }
-    //     }
-    //
-    // #endif
-    //
-    //     return check.result;
-    //   }
 
     //  visit_predicate (determines which directories are visited)  --------------//
 
@@ -554,13 +462,9 @@ namespace {
                         const std::filesystem::path& full_path = itr->library;
                         string link = linelink(full_path, line);
                         out << sep << itr->msg << "(line " << link << ") ";
-                        //Since the brackets are not used in inspect besides for formatting
-                        //html_encode is unnecessary
-                        //out << sep << "(line " << link << ") " << html_encode(itr->msg);
                     }
                     else
                         out << sep << itr->msg;
-                    //else out << sep << html_encode(itr->msg);
 
                     first_sep = false;
                 }
@@ -573,103 +477,11 @@ namespace {
         }
     }
 
-    //  worst_offenders_count_helper  --------------------------------------------------//
-    //
-    //   void worst_offenders_count_helper( const string & current_library, int err_count )
-    //   {
-    //         lib_error_count lec;
-    //         lec.library = current_library;
-    //         lec.error_count = err_count;
-    //         libs.push_back( lec );
-    //   }
-    // //  worst_offenders_count  -----------------------------------------------------//
-    //
-    //   void worst_offenders_count()
-    //   {
-    //     if ( msgs.empty() )
-    //     {
-    //       return;
-    //     }
-    //     string current_library( msgs.begin()->library );
-    //     int err_count = 0;
-    //     for ( error_msg_vector::iterator itr ( msgs.begin() );
-    //       itr != msgs.end(); ++itr )
-    //     {
-    //       if ( current_library != itr->library )
-    //       {
-    //         worst_offenders_count_helper( current_library, err_count );
-    //         current_library = itr->library;
-    //         err_count = 0;
-    //       }
-    //       ++err_count;
-    //     }
-    //     worst_offenders_count_helper( current_library, err_count );
-    //   }
-    //
-    // //  display_worst_offenders  -------------------------------------------------//
-    //
-    //   void display_worst_offenders(std::ostream& out)
-    //   {
-    //     if (display_mode == display_brief)
-    //       return;
-    //     if (display_format == display_text)
-    //     {
-    //       out << "Worst Offenders:\n";
-    //     }
-    //     else
-    //     {
-    //       out <<
-    //         "<h2>Worst Offenders</h2>\n"
-    //         "<blockquote>\n"
-    //         ;
-    //     }
-    //
-    //     int display_count = 0;
-    //     int last_error_count = 0;
-    //     for ( lib_error_count_vector::iterator itr ( libs.begin() );
-    //           itr != libs.end()
-    //             && (display_count < max_offenders
-    //                 || itr->error_count == last_error_count);
-    //           ++itr, ++display_count )
-    //     {
-    //       if (display_format == display_text)
-    //       {
-    //         out << itr->library << " " << itr->error_count << "\n";
-    //       }
-    //       else
-    //       {
-    //         out
-    //           << "  <a href=\"#"
-    //           << itr->library
-    //           << "\">" << itr->library
-    //           << "</a> ("
-    //           << itr->error_count << ")<br>\n";
-    //       }
-    //       last_error_count = itr->error_count;
-    //     }
-    //
-    //     if (display_format == display_text)
-    //       out << "\n";
-    //     else
-    //       out << "</blockquote>\n";
-    //   }
-
     const char* doctype_declaration()
     {
         return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n"
                "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">";
     }
-
-    //   std::string validator_link(const std::string & text)
-    //   {
-    //     return
-    //         // with link to validation service
-    //         "<a href=\"http://validator.w3.org/check?uri=referer\">"
-    //         + text
-    //         + "</a>"
-    //         ;
-    //   }
-
 }    // unnamed namespace
 
 namespace boost { namespace inspect {
@@ -715,10 +527,6 @@ namespace boost { namespace inspect {
         err_msg.msg = msg;
         err_msg.line_number = line_number;
         msgs.push_back(err_msg);
-
-        //     std::cout << library_name << ": "
-        //        << full_path.string() << ": "
-        //        << msg << '\n';
     }
 
     header_inspector::header_inspector()
@@ -745,15 +553,7 @@ namespace boost { namespace inspect {
         register_signature(".css");
         register_signature(".cxx");
 
-        // Boost.Build BJam source code...
-        //       register_signature( "Jamfile" );
-        //       register_signature( ".jam" );
-        //       register_signature( ".v2" );
-
         // Other scripts; Python, shell, autoconfig, etc.
-        //       register_signature( "configure.in" );
-        //       register_signature( "GNUmakefile" );
-        //       register_signature( "Makefile" );
         register_signature(".bat");
         register_signature(".mak");
         register_signature(".pl");
@@ -1151,7 +951,6 @@ void print_output(std::ostream& out, inspector_list const& inspectors)
                "<b>Run Date:</b> "
             << run_date
             << "<br>\n"
-               //"&nbsp;&nbsp;/ " << validator_link( "validate me" ) << " /\n"
                "<b>Commit:</b> "
             << "<a href = \"https://github.com/pika-org/pika/commit/"
             << PIKA_HAVE_GIT_COMMIT << "\">"
@@ -1168,12 +967,6 @@ void print_output(std::ostream& out, inspector_list const& inspectors)
                "tool is based on the <a "
                "href=\"http://www.boost.org/tools/inspect/\">"
                "Boost.Inspect</a> tool.</p>\n";
-
-        // FIXME: Extract latest GIT commit hash here
-        //     out
-        //       << "<p>The files checked were from "
-        //       << info( search_root_path() )
-        //       << ".</p>\n";
 
         out << "<h2>Totals</h2>\n"
             << file_count << " files scanned<br>\n"
@@ -1204,12 +997,6 @@ void print_output(std::ostream& out, inspector_list const& inspectors)
         out << "</p></blockquote>\n";
 
     std::sort(msgs.begin(), msgs.end());
-
-    //   worst_offenders_count();
-    //   std::stable_sort( libs.begin(), libs.end() );
-    //
-    //   if ( !libs.empty() && display_mode != display_brief)
-    //     display_worst_offenders(out);
 
     if (!msgs.empty())
     {
