@@ -223,7 +223,7 @@ namespace pika::cuda::experimental::detail {
                     // then_with_cuda_stream_receiver and it uses the same
                     // scheduler/pool we set its stream to the same as for this
                     // task.
-                    bool successor_uses_same_stream = false;
+                    [[maybe_unused]] bool successor_uses_same_stream = false;
                     if constexpr (is_then_with_cuda_stream_receiver<
                                       std::decay_t<R>>::value)
                     {
@@ -700,6 +700,11 @@ namespace pika::cuda::experimental {
                     "invocable with a CUDA stream as the last argument or "
                     "cuBLAS/cuSOLVER handle as the first argument.");
             }
+            // This silences a bogus warning from nvcc about no return from a
+            // non-void function.
+#if defined(__NVCC__)
+            __builtin_unreachable();
+#endif
         }
 
         template <typename F>

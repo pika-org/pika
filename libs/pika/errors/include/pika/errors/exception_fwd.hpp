@@ -56,13 +56,7 @@ namespace pika {
     /// \a get_errorcode() member function returns a reference to an
     /// \a pika::error_code object with the behavior as specified above.
     ///
-#if defined(PIKA_COMPUTE_DEVICE_CODE) && !defined(PIKA_HAVE_HIP)
-    // We can't actually refer to this in device code. This is only to satisfy
-    // the compiler.
-    extern PIKA_DEVICE error_code throws;
-#else
     PIKA_EXPORT extern error_code throws;
-#endif
 }    // namespace pika
 
 #include <pika/errors/throw_exception.hpp>

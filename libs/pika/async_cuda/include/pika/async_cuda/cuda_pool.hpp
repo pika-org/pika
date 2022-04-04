@@ -68,9 +68,13 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT explicit cuda_pool(int device = 0,
             std::size_t num_normal_priority_streams_per_thread = 3,
             std::size_t num_high_priority_streams_per_thread = 3);
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         cuda_pool(cuda_pool&&) = default;
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         cuda_pool(cuda_pool const&) = default;
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         cuda_pool& operator=(cuda_pool&&) = default;
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         cuda_pool& operator=(cuda_pool const&) = default;
 
         PIKA_EXPORT bool valid() const noexcept;

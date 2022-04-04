@@ -400,13 +400,7 @@ namespace pika { namespace threads {
         thread_id_repr thrd_;
     };
 
-#if defined(PIKA_COMPUTE_DEVICE_CODE)
-    // We can't actually refer to this in device code. This is only to satisfy
-    // the compiler.
-    extern PIKA_DEVICE thread_id invalid_thread_id;
-#else
     inline constexpr thread_id const invalid_thread_id;
-#endif
 }}    // namespace pika::threads
 
 namespace std {

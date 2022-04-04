@@ -19,6 +19,7 @@ namespace pika { namespace util { namespace detail {
     using counting_shape_type = pika::util::iterator_range<
         pika::util::counting_iterator<Incrementable>>;
 
+    PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
     template <typename Incrementable>
     PIKA_HOST_DEVICE inline counting_shape_type<Incrementable>
     make_counting_shape(Incrementable n)

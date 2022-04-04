@@ -121,6 +121,7 @@ namespace pika::functional::detail {
 
         struct tag_fallback_invoke_t
         {
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename Tag, typename... Ts>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
                 Tag tag, Ts&&... ts) const
@@ -258,6 +259,7 @@ namespace pika::functional::detail {
         struct tag_fallback
         {
             // is tag-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable =
                     std::enable_if_t<is_tag_invocable_v<Tag, Args&&...>>>
@@ -271,6 +273,7 @@ namespace pika::functional::detail {
             }
 
             // is not tag-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable =
                     std::enable_if_t<!is_tag_invocable_v<Tag, Args&&...>>>
@@ -292,6 +295,7 @@ namespace pika::functional::detail {
         {
         private:
             // is nothrow tag-fallback dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args>
             PIKA_HOST_DEVICE constexpr auto tag_fallback_invoke_impl(
                 std::false_type, Args&&... /*args*/) const noexcept
@@ -300,6 +304,7 @@ namespace pika::functional::detail {
                 return not_tag_fallback_noexcept_dispatchable<Tag, Args...>{};
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
             tag_fallback_invoke_impl(
@@ -312,6 +317,7 @@ namespace pika::functional::detail {
 
         public:
             // is nothrow tag-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable = std::enable_if_t<
                     is_nothrow_tag_invocable_v<Tag, Args&&...>>>
@@ -324,6 +330,7 @@ namespace pika::functional::detail {
             }
 
             // is not nothrow tag-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename IsFallbackDispatchable =
                     is_nothrow_tag_fallback_invocable<Tag, Args&&...>,

@@ -123,6 +123,7 @@ namespace pika::functional::detail {
 
         struct tag_override_invoke_t
         {
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename Tag, typename... Ts>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
                 Tag tag, Ts&&... ts) const
@@ -240,6 +241,7 @@ namespace pika::functional::detail {
         struct tag_priority
         {
             // Is tag-override-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable = std::enable_if_t<
                     is_tag_override_invocable_v<Tag, Args&&...>>>
@@ -253,6 +255,7 @@ namespace pika::functional::detail {
             }
 
             // Is not tag-override-dispatchable, but tag-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable = std::enable_if_t<
                     !is_tag_override_invocable_v<Tag, Args&&...> &&
@@ -268,6 +271,7 @@ namespace pika::functional::detail {
 
             // Is not tag-override-dispatchable, not tag-dispatchable, but
             // tag-fallback-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable = std::enable_if_t<
                     !is_tag_override_invocable_v<Tag, Args&&...> &&
@@ -292,6 +296,7 @@ namespace pika::functional::detail {
         struct tag_priority_noexcept
         {
             // Is nothrow tag-override-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable = std::enable_if_t<
                     is_nothrow_tag_override_invocable_v<Tag, Args&&...>>>
@@ -305,6 +310,7 @@ namespace pika::functional::detail {
 
             // Is not nothrow tag-override-dispatchable, but nothrow
             // tag-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable = std::enable_if_t<
                     !is_nothrow_tag_override_invocable_v<Tag, Args&&...> &&
@@ -319,6 +325,7 @@ namespace pika::functional::detail {
 
             // Is not nothrow tag-override-dispatchable, not nothrow
             // tag-dispatchable, but nothrow tag-fallback-dispatchable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable = std::enable_if_t<
                     !is_nothrow_tag_override_invocable_v<Tag, Args&&...> &&

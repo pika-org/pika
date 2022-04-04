@@ -117,6 +117,7 @@ namespace pika { namespace functional {
 
         struct tag_invoke_t
         {
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename Tag, typename... Ts>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
                 Tag tag, Ts&&... ts) const
@@ -219,6 +220,7 @@ namespace pika { namespace functional {
         template <typename Tag>
         struct tag
         {
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
                 Args&&... args) const
@@ -233,6 +235,7 @@ namespace pika { namespace functional {
         template <typename Tag>
         struct tag_noexcept
         {
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Args,
                 typename Enable =
                     std::enable_if_t<is_nothrow_tag_invocable_v<Tag, Args...>>>

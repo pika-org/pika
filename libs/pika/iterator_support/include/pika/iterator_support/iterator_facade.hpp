@@ -29,6 +29,7 @@ namespace pika { namespace util {
     class iterator_core_access
     {
     public:
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator1, typename Iterator2>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static bool equal(
             Iterator1 const& lhs, Iterator2 const& rhs)
@@ -36,18 +37,21 @@ namespace pika { namespace util {
             return lhs.equal(rhs);
         }
 
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void increment(Iterator& it)
         {
             it.increment();
         }
 
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void decrement(Iterator& it)
         {
             it.decrement();
         }
 
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Reference, typename Iterator>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static Reference dereference(
             Iterator const& it)
@@ -55,6 +59,7 @@ namespace pika { namespace util {
             return it.dereference();
         }
 
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator, typename Distance>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void advance(
             Iterator& it, Distance n)
@@ -62,6 +67,7 @@ namespace pika { namespace util {
             it.advance(n);
         }
 
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator1, typename Iterator2>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static
             typename std::iterator_traits<Iterator1>::difference_type
@@ -78,6 +84,7 @@ namespace pika { namespace util {
         {
             struct proxy
             {
+                PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
                 PIKA_HOST_DEVICE
                 explicit proxy(Reference const& x)
                   : ref_(x)
@@ -182,6 +189,7 @@ namespace pika { namespace util {
 
             PIKA_HOST_DEVICE iterator_facade_base() = default;
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE Derived& operator--()
             {
                 Derived& this_ = this->derived();
@@ -189,6 +197,7 @@ namespace pika { namespace util {
                 return this_;
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE Derived operator--(int)
             {
                 Derived result(this->derived());
@@ -212,12 +221,14 @@ namespace pika { namespace util {
             using value_type = typename Iterator::value_type;
 
         public:
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE explicit operator_brackets_proxy(
                 Iterator const& iter) noexcept
               : iter_(iter)
             {
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE operator reference() const
             {
                 return *iter_;
@@ -252,6 +263,7 @@ namespace pika { namespace util {
                     operator_brackets_proxy<Iterator>, Value>;
         };
 
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator>
         PIKA_HOST_DEVICE operator_brackets_proxy<Iterator>
         make_operator_brackets_result(Iterator const& iter, std::true_type)
@@ -259,6 +271,7 @@ namespace pika { namespace util {
             return operator_brackets_proxy<Iterator>(iter);
         }
 
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator>
         PIKA_HOST_DEVICE typename Iterator::value_type
         make_operator_brackets_result(Iterator const& iter, std::false_type)
@@ -286,6 +299,7 @@ namespace pika { namespace util {
 
             PIKA_HOST_DEVICE iterator_facade_base() = default;
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE
             typename operator_brackets_result<Derived, T>::type operator[](
                 difference_type n) const
@@ -296,6 +310,7 @@ namespace pika { namespace util {
                     this->derived() + n, use_proxy{});
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE Derived& operator+=(difference_type n)
             {
                 Derived& this_ = this->derived();
@@ -303,12 +318,14 @@ namespace pika { namespace util {
                 return this_;
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE Derived operator+(difference_type n) const
             {
                 Derived result(this->derived());
                 return result += n;
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE Derived& operator-=(difference_type n)
             {
                 Derived& this_ = this->derived();
@@ -316,6 +333,7 @@ namespace pika { namespace util {
                 return this_;
             }
 
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE Derived operator-(difference_type n) const
             {
                 Derived result(this->derived());
@@ -364,6 +382,7 @@ namespace pika { namespace util {
                 typename std::iterator_traits<Iterator>::value_type;
 
         public:
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE explicit postfix_increment_proxy(Iterator const& x)
               : stored_value(*x)
             {
@@ -392,6 +411,7 @@ namespace pika { namespace util {
                 typename std::iterator_traits<Iterator>::value_type;
 
         public:
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE
             explicit writable_postfix_increment_proxy(Iterator const& x)
               : stored_value(*x)
@@ -402,6 +422,7 @@ namespace pika { namespace util {
             // Dereferencing must return a proxy so that both *r++ = o and
             // value_type(*r++) can work.  In this case, *r is the same as *r++,
             // and the conversion operator below is used to ensure readability.
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE
             writable_postfix_increment_proxy const& operator*() const
             {
@@ -415,6 +436,7 @@ namespace pika { namespace util {
             }
 
             // Provides writability of *r++
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename T>
             PIKA_HOST_DEVICE T const& operator=(T const& x) const
             {
@@ -423,6 +445,7 @@ namespace pika { namespace util {
             }
 
             // This overload just in case only non-const objects are writable
+            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename T>
             PIKA_HOST_DEVICE T& operator=(T& x) const
             {
@@ -496,6 +519,7 @@ namespace pika { namespace util {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
+    PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
     template <typename Derived, typename T, typename Category,
         typename Reference, typename Distance, typename Pointer>
     PIKA_HOST_DEVICE inline util::detail::postfix_increment_result_t<Derived,
@@ -628,6 +652,7 @@ namespace pika { namespace util {
 #undef PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD_EX
 #undef PIKA_UTIL_ITERATOR_FACADE_INTEROP_HEAD
 
+    PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
     template <typename Derived, typename T, typename Category,
         typename Reference, typename Distance, typename Pointer>
     PIKA_HOST_DEVICE inline std::enable_if_t<
@@ -642,6 +667,7 @@ namespace pika { namespace util {
         return tmp += n;
     }
 
+    PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
     template <typename Derived, typename T, typename Category,
         typename Reference, typename Distance, typename Pointer>
     PIKA_HOST_DEVICE inline std::enable_if_t<
