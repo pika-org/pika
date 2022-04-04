@@ -4,6 +4,28 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.3.0 (2022-04-06)
+
+### New features
+
+- Using `pika::mpi::experimental::transform_mpi` in debug mode now checks that polling has been enabled. ([#142](https://github.com/pika-org/pika/pull/142))
+- `pika_main` no longer requires non-const `argc` and `argv`. ([#146](https://github.com/pika-org/pika/pull/146))
+
+### Breaking changes
+
+- `pika::execution::experimental::ensure_started` no longer sends const references to receivers, like `pika::execution::experimental::split`. It now sends values by rvalue reference. ([#143](https://github.com/pika-org/pika/pull/143))
+- All serialization support has been removed. ([#145](https://github.com/pika-org/pika/pull/145), [#150](https://github.com/pika-org/pika/pull/150))
+- `pika::bind_front` no longer unwraps `std::reference_wrapper`s to match the behaviour of `std::bind_front`. ([#140](https://github.com/pika-org/pika/pull/140))
+- Cleaned up various modules and moved minor functionality into `detail` namespaces. ([#152](https://github.com/pika-org/pika/pull/152), [#153](https://github.com/pika-org/pika/pull/153), [#155](https://github.com/pika-org/pika/pull/155), [#158](https://github.com/pika-org/pika/pull/158), [#160](https://github.com/pika-org/pika/pull/160))
+- Move `pika::execution::experimental::sync_wait` to `pika::this_thread::experimental::sync_wait` to match the namespace of `sync_wait` in P2300. ([#159](https://github.com/pika-org/pika/pull/159))
+
+### Bugfixes
+
+- `pika::execution::experimental::make_future` releases its operation state as soon as the wrapped sender has signaled completion. ([#139](https://github.com/pika-org/pika/pull/139))
+- `pika::cuda::experimental::then_with_stream` now correctly checks for invocability of the given callable with lvalue references. ([#144](https://github.com/pika-org/pika/pull/144))
+- `pika::mpi::experimental::transform_mpi` now stores the values sent from the predecessor in the operation state to ensure stable references. ([#156](https://github.com/pika-org/pika/pull/156))
+- `pika::cuda::experimental::then_with_stream` now stores the values sent from the predecessor in the operation state to ensure stable references. ([#162](https://github.com/pika-org/pika/pull/162))
+
 ## 0.2.0 (2022-03-08)
 
 ### New features
