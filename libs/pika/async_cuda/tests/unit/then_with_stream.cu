@@ -381,6 +381,32 @@ int pika_main()
 
     // Chaining multiple stream transforms without intermediate synchronization
     {
+        cudaStream_t first_stream{};
+        cudaStream_t second_stream{};
+        ex::schedule(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream(
+                [&](cudaStream_t stream) { first_stream = stream; }) |
+            cu::then_with_stream([&](cudaStream_t stream) {
+                PIKA_TEST_EQ(stream, first_stream);
+            }) |
+            cu::then_with_stream([&](cudaStream_t stream) {
+                PIKA_TEST_EQ(stream, first_stream);
+            }) |
+            ex::transfer(cu::cuda_scheduler{pool}) |
+            cu::then_with_stream([&](cudaStream_t stream) {
+                PIKA_TEST_NEQ(stream, first_stream);
+                second_stream = stream;
+            }) |
+            cu::then_with_stream([&](cudaStream_t stream) {
+                PIKA_TEST_EQ(stream, second_stream);
+            }) |
+            cu::then_with_stream([&](cudaStream_t stream) {
+                PIKA_TEST_EQ(stream, second_stream);
+            }) |
+            tt::sync_wait();
+    }
+
+    {
         using type = int;
         type p_h = 0;
 
