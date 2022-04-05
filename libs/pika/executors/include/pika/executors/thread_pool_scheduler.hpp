@@ -10,6 +10,7 @@
 #include <pika/assert.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
+#include <pika/execution/algorithms/execute.hpp>
 #include <pika/execution/executors/execution_parameters.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -141,6 +142,13 @@ namespace pika { namespace execution { namespace experimental {
                 threads::make_thread_function_nullary(PIKA_FORWARD(F, f)), desc,
                 priority_, schedulehint_, stacksize_);
             threads::register_work(data, pool_);
+        }
+
+        template <typename F>
+        friend void tag_invoke(
+            execute_t, thread_pool_scheduler const& sched, F&& f)
+        {
+            sched.execute(PIKA_FORWARD(F, f));
         }
 
         template <typename Scheduler, typename Receiver>
