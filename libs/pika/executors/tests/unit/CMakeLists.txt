@@ -21,7 +21,7 @@ set(tests
     thread_pool_scheduler
 )
 
-if(PIKA_WITH_CXX17_STD_EXECUTION_POLICES)
+if(PIKA_WITH_CXX17_STD_EXECUTION_POLICIES)
   set(tests ${tests} std_execution_policies)
 endif()
 

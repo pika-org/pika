@@ -151,7 +151,7 @@ set(tests
     unique_copy
 )
 
-if(PIKA_WITH_CXX17_STD_EXECUTION_POLICES)
+if(PIKA_WITH_CXX17_STD_EXECUTION_POLICIES)
   set(tests ${tests} foreach_std_policies)
 endif()
 
