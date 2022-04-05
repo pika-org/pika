@@ -25,6 +25,7 @@
 - `pika::cuda::experimental::then_with_stream` now correctly checks for invocability of the given callable with lvalue references. ([#144](https://github.com/pika-org/pika/pull/144))
 - `pika::mpi::experimental::transform_mpi` now stores the values sent from the predecessor in the operation state to ensure stable references. ([#156](https://github.com/pika-org/pika/pull/156))
 - `pika::cuda::experimental::then_with_stream` now stores the values sent from the predecessor in the operation state to ensure stable references. ([#162](https://github.com/pika-org/pika/pull/162))
+- Tasks scheduled with `pika::execution::experimental::thread_pool_scheduler` now use the annotation of the spawning task as a fallback if no explicit annotation has been given. ([#173](https://github.com/pika-org/pika/pull/173))
 
 ## 0.2.0 (2022-03-08)
 

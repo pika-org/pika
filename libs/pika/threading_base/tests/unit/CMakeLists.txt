@@ -28,7 +28,15 @@ foreach(test ${tests})
 endforeach()
 
 if(PIKA_WITH_APEX)
-  set(REGEX_MATCH_S_ "0-execute.*0-schedule.*0-schedule-then.*0-transfer")
+  string(
+    CONCAT REGEX_MATCH_S_
+           "0-execute.*"
+           "0-execute-annotated-function.*"
+           "0-execute-parent-annotation.*"
+           "0-schedule.*"
+           "0-schedule-then.*"
+           "0-transfer"
+  )
 
   set(launch_types_
       ""

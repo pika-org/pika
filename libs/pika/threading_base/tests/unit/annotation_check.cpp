@@ -61,6 +61,18 @@ auto test_senders()
 {
     ex::execute(
         ex::with_annotation(ex::thread_pool_scheduler{}, "0-execute"), [] {});
+
+    {
+        pika::scoped_annotation ann{"0-execute-parent-annotation"};
+        ex::execute(ex::thread_pool_scheduler{}, [] {});
+        ex::execute(ex::with_annotation(ex::thread_pool_scheduler{},
+                        "0-execute-with-annotation-override"),
+            [] {});
+        ex::execute(ex::with_annotation(ex::thread_pool_scheduler{},
+                        "0-this-should-not-become-an-annotation"),
+            pika::annotated_function([] {}, "0-execute-annotated-function"));
+    }
+
     auto s1 = ex::schedule(
         ex::with_annotation(ex::thread_pool_scheduler{}, "0-schedule"));
     auto s2 = ex::schedule(ex::thread_pool_scheduler{}) |

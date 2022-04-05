@@ -10,11 +10,13 @@
 #include <pika/assert.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
+#include <pika/execution/algorithms/execute.hpp>
 #include <pika/execution/executors/execution_parameters.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/register_thread.hpp>
+#include <pika/threading_base/thread_description.hpp>
 
 #include <cstddef>
 #include <exception>
@@ -135,14 +137,18 @@ namespace pika { namespace execution { namespace experimental {
         template <typename F>
         void execute(F&& f) const
         {
-            char const* annotation = annotation_ == nullptr ?
-                traits::get_function_annotation<std::decay_t<F>>::call(f) :
-                annotation_;
-
+            pika::util::thread_description desc(f, annotation_);
             threads::thread_init_data data(
-                threads::make_thread_function_nullary(PIKA_FORWARD(F, f)),
-                annotation, priority_, schedulehint_, stacksize_);
+                threads::make_thread_function_nullary(PIKA_FORWARD(F, f)), desc,
+                priority_, schedulehint_, stacksize_);
             threads::register_work(data, pool_);
+        }
+
+        template <typename F>
+        friend void tag_invoke(
+            execute_t, thread_pool_scheduler const& sched, F&& f)
+        {
+            sched.execute(PIKA_FORWARD(F, f));
         }
 
         template <typename Scheduler, typename Receiver>
