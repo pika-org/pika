@@ -20,8 +20,8 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace cuda { namespace experimental {
-    namespace detail {
+namespace pika::cuda::experimental {
+    namespace then_on_host_detail {
         template <typename Receiver, typename F>
         struct then_on_host_receiver
         {
@@ -187,7 +187,7 @@ namespace pika { namespace cuda { namespace experimental {
         {
             receiver.set_value(PIKA_FORWARD(Ts, ts)...);
         }
-    }    // namespace detail
+    }    // namespace then_on_host_detail
 
     // NOTE: This is not a customization of pika::execution::experimental::then.
     // It retains the cuda_scheduler execution context from the predecessor
@@ -215,8 +215,9 @@ namespace pika { namespace cuda { namespace experimental {
                 "then_on_host can only be used with senders whose "
                 "completion scheduler is cuda_scheduler");
 
-            return detail::then_on_host_sender<S, F>{PIKA_FORWARD(S, s),
-                PIKA_FORWARD(F, f), std::move(completion_sched)};
+            return then_on_host_detail::then_on_host_sender<S, F>{
+                PIKA_FORWARD(S, s), PIKA_FORWARD(F, f),
+                std::move(completion_sched)};
         }
 
         template <typename F>
@@ -227,4 +228,4 @@ namespace pika { namespace cuda { namespace experimental {
                 then_on_host_t, F>{PIKA_FORWARD(F, f)};
         }
     } then_on_host{};
-}}}    // namespace pika::cuda::experimental
+}    // namespace pika::cuda::experimental

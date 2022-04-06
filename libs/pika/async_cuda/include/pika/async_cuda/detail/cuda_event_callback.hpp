@@ -21,7 +21,7 @@
 
 #include <string>
 
-namespace pika { namespace cuda { namespace experimental { namespace detail {
+namespace pika::cuda::experimental::detail {
     using event_callback_function_type =
         pika::util::unique_function<void(cudaError_t)>;
 
@@ -30,4 +30,4 @@ namespace pika { namespace cuda { namespace experimental { namespace detail {
 
     PIKA_EXPORT void register_polling(pika::threads::thread_pool_base& pool);
     PIKA_EXPORT void unregister_polling(pika::threads::thread_pool_base& pool);
-}}}}    // namespace pika::cuda::experimental::detail
+}    // namespace pika::cuda::experimental::detail

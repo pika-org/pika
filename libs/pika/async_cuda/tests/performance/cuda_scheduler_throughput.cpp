@@ -7,23 +7,19 @@
 // For compliance with the NVIDIA EULA:
 // "This software contains source code provided by NVIDIA Corporation."
 
-// This is a conversion of the NVIDIA cublas example matrixMulCUBLAS to use
-// pika style data structures, executors and futures and demonstrate a simple use
-// of computing a number of iteration of a matrix multiply on a stream and returning
-// a future when it completes. This can be used to chain/schedule other task
-// in a manner consistent with the future based API of pika.
+// This is a conversion of the NVIDIA cublas example matrixMulCUBLAS to use pika
+// style data structures, schedulers and senders and demonstrate a simple use of
+// computing a number of iteration of a matrix multiply on a stream and
+// returning a sender. This can be used to chain/schedule other task in a manner
+// consistent with the sender based API of pika.
 //
-// Example usage: bin/cublas_matmul --sizemult=10 --iterations=25 --pika:threads=8
-// NB. The pika::threads param only controls how many parallel tasks to use for the CPU
-// comparison/checks and makes no difference to the GPU execution.
+// Example usage:
 //
-// Note: The pika::cuda::experimental::allocator makes use of device code and if used
-// this example must be compiled with nvcc instead of c++ which requires the following
-// cmake setting
-// set_source_files_properties(cublas_matmul.cpp
-//     PROPERTIES CUDA_SOURCE_PROPERTY_FORMAT OBJ)
-// Currently, nvcc does not handle lambda functions properly and it is simpler to use
-// cudaMalloc/cudaMemcpy etc, so we do not #define PIKA_CUBLAS_DEMO_WITH_ALLOCATOR
+// bin/cublas_matmul --sizemult=10 --iterations=25 --pika:threads=8 NB.
+//
+// The pika::threads param only controls how many parallel
+// tasks to use for the CPU comparison/checks and makes no difference to the GPU
+// execution.
 
 #include <pika/algorithm.hpp>
 #include <pika/cuda.hpp>
@@ -47,11 +43,19 @@
 //
 std::mt19937 gen;
 
+namespace cu = pika::cuda::experimental;
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
+
 // -------------------------------------------------------------------------
 // Optional Command-line multiplier for matrix sizes
 struct sMatrixSize
 {
     unsigned int uiWA, uiHA, uiWB, uiHB, uiWC, uiHC;
+};
+
+constexpr auto cuda_memcpy_async = [](auto&&... ts) {
+    cu::check_cuda_error(cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...));
 };
 
 // -------------------------------------------------------------------------
@@ -78,53 +82,53 @@ void matrixMultiply(
     pika::for_each(par, h_A.begin(), h_A.end(), zerofunc);
     pika::for_each(par, h_B.begin(), h_B.end(), zerofunc);
 
-    // create a cublas executor we'll use to futurize cuda events
-    pika::cuda::experimental::cublas_executor cublas(device,
-        CUBLAS_POINTER_MODE_HOST, pika::cuda::experimental::callback_mode{});
-    using cublas_future =
-        typename pika::cuda::experimental::cublas_executor::future_type;
+    // create a cuda executor we'll use to schedule cuda work
+    cu::cuda_pool cuda_pool(device);
+    cu::cuda_scheduler cuda_sched(std::move(cuda_pool));
+
+    // install cuda future polling handler for this scope
+    cu::enable_user_polling poll("default");
 
     T *d_A, *d_B, *d_C;
-    pika::cuda::experimental::check_cuda_error(
-        cudaMalloc((void**) &d_A, size_A * sizeof(T)));
-    pika::cuda::experimental::check_cuda_error(
-        cudaMalloc((void**) &d_B, size_B * sizeof(T)));
-    pika::cuda::experimental::check_cuda_error(
-        cudaMalloc((void**) &d_C, size_C * sizeof(T)));
+    cu::check_cuda_error(cudaMalloc((void**) &d_A, size_A * sizeof(T)));
+    cu::check_cuda_error(cudaMalloc((void**) &d_B, size_B * sizeof(T)));
+    cu::check_cuda_error(cudaMalloc((void**) &d_C, size_C * sizeof(T)));
 
-    // copy A to device, no future
-    pika::apply(cublas, cudaMemcpyAsync, d_A, h_A.data(), size_A * sizeof(T),
-        cudaMemcpyHostToDevice);
+    // copy A and B to device
+    auto copies_done =
+        ex::when_all(ex::transfer_just(cuda_sched, d_A, h_A.data(),
+                         size_A * sizeof(T), cudaMemcpyHostToDevice) |
+                cu::then_with_stream(cuda_memcpy_async),
+            ex::transfer_just(cuda_sched, d_B, h_B.data(), size_B * sizeof(T),
+                cudaMemcpyHostToDevice) |
+                cu::then_with_stream(cuda_memcpy_async));
 
-    // copy B to device on same stream as A, get a future back
-    auto copy_future = pika::async(cublas, cudaMemcpyAsync, d_B, h_B.data(),
-        size_B * sizeof(T), cudaMemcpyHostToDevice);
-
-    // print out somethine when copy completes and wait for it
-    copy_future
-        .then([](cublas_future&&) {
-            std::cout << "Async host->device copy operation completed"
-                      << std::endl
-                      << std::endl;
-        })
-        .get();
+    // print something when copies complete
+    tt::sync_wait(std::move(copies_done) | ex::then([] {
+        std::cout << "Async host->device copy operation completed" << std::endl
+                  << std::endl;
+    }));
 
     std::cout << "Small matrix multiply tests using CUBLAS...\n\n";
     const T alpha = 1.0f;
     const T beta = 0.0f;
 
-    auto test_function = [&](pika::cuda::experimental::cublas_executor& exec,
+    auto test_function = [&](cu::cuda_scheduler& cuda_sched,
                              const std::string& msg, std::size_t n_iters) {
         // time many cuda kernels spawned one after each other when they complete
-        pika::future<void> f;
         pika::chrono::high_resolution_timer t1;
         for (std::size_t j = 0; j < n_iters; j++)
         {
-            f = pika::async(exec, cublasSgemm, CUBLAS_OP_N, CUBLAS_OP_N,
-                matrix_size.uiWB, matrix_size.uiHA, matrix_size.uiWA, &alpha,
-                d_B, matrix_size.uiWB, d_A, matrix_size.uiWA, &beta, d_C,
-                matrix_size.uiWA);
-            f.get();
+            tt::sync_wait(ex::schedule(cuda_sched) |
+                cu::then_with_cublas(
+                    [&](cublasHandle_t handle) {
+                        cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N,
+                            CUBLAS_OP_N, matrix_size.uiWB, matrix_size.uiHA,
+                            matrix_size.uiWA, &alpha, d_B, matrix_size.uiWB,
+                            d_A, matrix_size.uiWA, &beta, d_C,
+                            matrix_size.uiWA));
+                    },
+                    CUBLAS_POINTER_MODE_HOST));
         }
         double us1 = t1.elapsed_microseconds();
         std::cout << "us per iteration " << us1 / n_iters << " : " << msg
@@ -132,26 +136,11 @@ void matrixMultiply(
                   << std::endl;
     };
 
-    // call our test function using a callback style executor
-    pika::cuda::experimental::cublas_executor exec_callback(
-        0, CUBLAS_POINTER_MODE_HOST, pika::cuda::experimental::callback_mode{});
-    test_function(exec_callback, "Warmup", 100);
-    test_function(exec_callback, "Callback based executor", iterations);
+    test_function(cuda_sched, "Event polling based scheduler", iterations);
 
-    // call test function with an event based one, remember to install
-    // the polling handler as well
-    {
-        // install cuda future polling handler for this scope block
-        pika::cuda::experimental::enable_user_polling poll("default");
-
-        pika::cuda::experimental::cublas_executor exec_event(0,
-            CUBLAS_POINTER_MODE_HOST, pika::cuda::experimental::event_mode{});
-        test_function(exec_event, "Event polling based executor", iterations);
-    }
-
-    pika::cuda::experimental::check_cuda_error(cudaFree(d_A));
-    pika::cuda::experimental::check_cuda_error(cudaFree(d_B));
-    pika::cuda::experimental::check_cuda_error(cudaFree(d_C));
+    cu::check_cuda_error(cudaFree(d_A));
+    cu::check_cuda_error(cudaFree(d_B));
+    cu::check_cuda_error(cudaFree(d_C));
 }
 
 // -------------------------------------------------------------------------
@@ -161,12 +150,6 @@ int pika_main(pika::program_options::variables_map& vm)
     std::size_t iterations = vm["iterations"].as<std::size_t>();
     //
     int sizeMult = 1;
-
-    pika::cuda::experimental::target target(device);
-    std::cout << "GPU Device " << target.native_handle().get_device() << ": \""
-              << target.native_handle().processor_name() << "\" "
-              << "with compute capability "
-              << target.native_handle().processor_family() << "\n";
 
     int block_size = 4;
     sMatrixSize matrix_size;
@@ -188,7 +171,7 @@ int pika_main(pika::program_options::variables_map& vm)
 // -------------------------------------------------------------------------
 int main(int argc, char** argv)
 {
-    printf("[pika CUBLAS executor benchmark] - Starting...\n");
+    printf("[pika CUDA scheduler executor benchmark] - Starting...\n");
 
     using namespace pika::program_options;
     options_description cmdline("usage: " PIKA_APPLICATION_STRING " [options]");

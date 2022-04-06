@@ -26,7 +26,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace cuda { namespace experimental { namespace detail {
+namespace pika::cuda::experimental::detail {
     // this code runs on a std::thread, but we will use a spinlock
     // as we never suspend - only ever try_lock, or exit
     using mutex_type = pika::lcos::local::spinlock;
@@ -160,8 +160,7 @@ namespace pika { namespace cuda { namespace experimental { namespace detail {
         }
 
         // Grab the handle to the event pool so we can return completed events
-        cuda_event_pool& pool =
-            pika::cuda::experimental::cuda_event_pool::get_event_pool();
+        cuda_event_pool& pool = cuda_event_pool::get_event_pool();
 
         // Iterate over our list of events and see if any have completed
         event_callback_vector.erase(
@@ -258,4 +257,4 @@ namespace pika { namespace cuda { namespace experimental { namespace detail {
         auto* sched = pool.get_scheduler();
         sched->clear_cuda_polling_function();
     }
-}}}}    // namespace pika::cuda::experimental::detail
+}    // namespace pika::cuda::experimental::detail

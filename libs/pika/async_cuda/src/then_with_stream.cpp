@@ -13,7 +13,7 @@
 #include <pika/async_cuda/custom_blas_api.hpp>
 #include <pika/async_cuda/then_with_stream.hpp>
 
-namespace pika::cuda::experimental::detail {
+namespace pika::cuda::experimental::then_with_stream_detail {
     pika::cuda::experimental::cublas_handle const&
     get_thread_local_cublas_handle(
         cuda_stream const& stream, cublasPointerMode_t pointer_mode)
@@ -39,4 +39,4 @@ namespace pika::cuda::experimental::detail {
         return handle;
     }
 #endif
-}    // namespace pika::cuda::experimental::detail
+}    // namespace pika::cuda::experimental::then_with_stream_detail

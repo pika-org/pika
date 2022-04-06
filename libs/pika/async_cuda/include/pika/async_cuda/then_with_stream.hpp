@@ -32,7 +32,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::cuda::experimental::detail {
+namespace pika::cuda::experimental::then_with_stream_detail {
     PIKA_EXPORT pika::cuda::experimental::cublas_handle const&
     get_thread_local_cublas_handle(
         cuda_stream const& stream, cublasPointerMode_t pointer_mode);
@@ -523,8 +523,8 @@ namespace pika::cuda::experimental::detail {
     /// This is a helper that calls f with the values sent by sender and a
     /// cuda_stream as the last argument.
     template <typename Sender, typename F>
-    auto then_with_cuda_stream(Sender&& sender, F&& f)
-        -> decltype(detail::then_with_cuda_stream_sender<Sender, F>{
+    auto then_with_cuda_stream(Sender&& sender, F&& f) -> decltype(
+        then_with_stream_detail::then_with_cuda_stream_sender<Sender, F>{
             PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f),
             pika::execution::experimental::get_completion_scheduler<
                 pika::execution::experimental::set_value_t>(sender)})
@@ -537,7 +537,7 @@ namespace pika::cuda::experimental::detail {
             "then_with_cuda_stream can only be used with senders whose "
             "completion scheduler is cuda_scheduler");
 
-        return detail::then_with_cuda_stream_sender<Sender, F>{
+        return then_with_stream_detail::then_with_cuda_stream_sender<Sender, F>{
             PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f),
             std::move(completion_sched)};
     }
@@ -609,7 +609,7 @@ namespace pika::cuda::experimental::detail {
         }
     };
 #endif
-}    // namespace pika::cuda::experimental::detail
+}    // namespace pika::cuda::experimental::then_with_stream_detail
 
 namespace pika::cuda::experimental {
     // NOTE: None of the below are customizations of then. They have different
@@ -633,12 +633,15 @@ namespace pika::cuda::experimental {
     {
         template <typename Sender, typename F>
         constexpr PIKA_FORCEINLINE auto operator()(Sender&& sender, F&& f) const
-            -> decltype(
-                detail::then_with_cuda_stream(PIKA_FORWARD(Sender, sender),
-                    detail::cuda_stream_callable<F>{PIKA_FORWARD(F, f)}))
+            -> decltype(then_with_stream_detail::then_with_cuda_stream(
+                PIKA_FORWARD(Sender, sender),
+                then_with_stream_detail::cuda_stream_callable<F>{
+                    PIKA_FORWARD(F, f)}))
         {
-            return detail::then_with_cuda_stream(PIKA_FORWARD(Sender, sender),
-                detail::cuda_stream_callable<F>{PIKA_FORWARD(F, f)});
+            return then_with_stream_detail::then_with_cuda_stream(
+                PIKA_FORWARD(Sender, sender),
+                then_with_stream_detail::cuda_stream_callable<F>{
+                    PIKA_FORWARD(F, f)});
         }
 
         template <typename F>
@@ -664,13 +667,14 @@ namespace pika::cuda::experimental {
         template <typename Sender, typename F>
         constexpr PIKA_FORCEINLINE auto operator()(
             Sender&& sender, F&& f, cublasPointerMode_t pointer_mode) const
-            -> decltype(
-                detail::then_with_cuda_stream(PIKA_FORWARD(Sender, sender),
-                    detail::cublas_handle_callable<F>{
-                        PIKA_FORWARD(F, f), pointer_mode}))
+            -> decltype(then_with_stream_detail::then_with_cuda_stream(
+                PIKA_FORWARD(Sender, sender),
+                then_with_stream_detail::cublas_handle_callable<F>{
+                    PIKA_FORWARD(F, f), pointer_mode}))
         {
-            return detail::then_with_cuda_stream(PIKA_FORWARD(Sender, sender),
-                detail::cublas_handle_callable<F>{
+            return then_with_stream_detail::then_with_cuda_stream(
+                PIKA_FORWARD(Sender, sender),
+                then_with_stream_detail::cublas_handle_callable<F>{
                     PIKA_FORWARD(F, f), pointer_mode});
         }
 
@@ -701,12 +705,15 @@ namespace pika::cuda::experimental {
     {
         template <typename Sender, typename F>
         constexpr PIKA_FORCEINLINE auto operator()(Sender&& sender, F&& f) const
-            -> decltype(
-                detail::then_with_cuda_stream(PIKA_FORWARD(Sender, sender),
-                    detail::cusolver_handle_callable<F>{PIKA_FORWARD(F, f)}))
+            -> decltype(then_with_stream_detail::then_with_cuda_stream(
+                PIKA_FORWARD(Sender, sender),
+                then_with_stream_detail::cusolver_handle_callable<F>{
+                    PIKA_FORWARD(F, f)}))
         {
-            return detail::then_with_cuda_stream(PIKA_FORWARD(Sender, sender),
-                detail::cusolver_handle_callable<F>{PIKA_FORWARD(F, f)});
+            return then_with_stream_detail::then_with_cuda_stream(
+                PIKA_FORWARD(Sender, sender),
+                then_with_stream_detail::cusolver_handle_callable<F>{
+                    PIKA_FORWARD(F, f)});
         }
 
         template <typename F>

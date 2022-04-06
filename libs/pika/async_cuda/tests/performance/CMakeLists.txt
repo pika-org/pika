@@ -4,10 +4,10 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(benchmarks cuda_executor_throughput synchronize)
+set(benchmarks cuda_scheduler_throughput synchronize)
 
 set(synchronize_CUDA ON)
-set(cuda_executor_throughput_PARAMETERS THREADS 1)
+set(cuda_scheduler_throughput_PARAMETERS THREADS 1)
 
 foreach(benchmark ${benchmarks})
 
