@@ -36,7 +36,7 @@ function(pika_perform_cxx_feature_tests)
   )
 
   pika_check_for_cxx17_std_execution_policies(
-    DEFINITIONS PIKA_HAVE_CXX17_STD_EXECUTION_POLICES
+    DEFINITIONS PIKA_HAVE_CXX17_STD_EXECUTION_POLICIES
   )
 
   pika_check_for_cxx17_hardware_destructive_interference_size(
@@ -91,7 +91,7 @@ function(pika_perform_cxx_feature_tests)
   pika_check_for_cxx20_std_endian(DEFINITIONS PIKA_HAVE_CXX20_STD_ENDIAN)
 
   pika_check_for_cxx20_std_execution_policies(
-    DEFINITIONS PIKA_HAVE_CXX20_STD_EXECUTION_POLICES
+    DEFINITIONS PIKA_HAVE_CXX20_STD_EXECUTION_POLICIES
   )
 
   pika_check_for_cxx20_std_ranges_iter_swap(
