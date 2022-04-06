@@ -12,7 +12,7 @@
 
 #include <boost/lockfree/stack.hpp>
 
-namespace pika { namespace cuda { namespace experimental {
+namespace pika::cuda::experimental::detail {
 
     // a pool of cudaEvent_t objects.
     // Since allocation of a cuda event passes into the cuda runtime
@@ -83,4 +83,4 @@ namespace pika { namespace cuda { namespace experimental {
         boost::lockfree::stack<cudaEvent_t, boost::lockfree::fixed_sized<false>>
             free_list_;
     };
-}}}    // namespace pika::cuda::experimental
+}    // namespace pika::cuda::experimental::detail

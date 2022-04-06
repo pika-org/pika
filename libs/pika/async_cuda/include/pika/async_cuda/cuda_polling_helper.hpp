@@ -16,7 +16,7 @@
 
 #include <string>
 
-namespace pika { namespace cuda { namespace experimental {
+namespace pika::cuda::experimental {
     // -----------------------------------------------------------------
     // This RAII helper class enables polling for a scoped block
     struct PIKA_NODISCARD enable_user_polling
@@ -53,4 +53,4 @@ namespace pika { namespace cuda { namespace experimental {
         std::string pool_name_;
     };
 
-}}}    // namespace pika::cuda::experimental
+}    // namespace pika::cuda::experimental

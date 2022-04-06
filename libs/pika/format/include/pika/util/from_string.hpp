@@ -42,11 +42,15 @@ namespace pika { namespace util {
 #if defined(PIKA_INTEL_VERSION)
 #pragma warning(push)
 #pragma warning(disable : 186)
+#elif defined(PIKA_CUDA_VERSION)
+#pragma diag_suppress 186
 #endif
             if (value < min || value > max)
                 throw std::out_of_range("from_string: out of range");
 #if defined(PIKA_INTEL_VERSION)
 #pragma warning(pop)
+#elif defined(PIKA_CUDA_VERSION)
+#pragma diag_default 186
 #endif
             return static_cast<T>(value);
         }
