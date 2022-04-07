@@ -1585,7 +1585,7 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     struct hw_concurrency
     {
-        hw_concurrency()
+        hw_concurrency() noexcept
 #if defined(__ANDROID__) && defined(ANDROID)
           : num_of_cores_(::android_getCpuCount())
 #else
@@ -1599,7 +1599,7 @@ namespace pika::threads::detail {
         std::size_t num_of_cores_;
     };
 
-    unsigned int hardware_concurrency()
+    unsigned int hardware_concurrency() noexcept
     {
         static detail::hw_concurrency hwc;
         return static_cast<unsigned int>(hwc.num_of_cores_);

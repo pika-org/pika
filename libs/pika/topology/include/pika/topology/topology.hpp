@@ -58,12 +58,12 @@ namespace pika::threads::detail {
             bmp_ = bmp;
         }
 
-        explicit operator bool() const
+        explicit operator bool() const noexcept
         {
             return bmp_ != nullptr;
         }
 
-        hwloc_bitmap_t get_bmp() const
+        hwloc_bitmap_t get_bmp() const noexcept
         {
             return bmp_;
         }
@@ -412,7 +412,7 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT topology& create_topology();
 
-    PIKA_NODISCARD PIKA_EXPORT unsigned int hardware_concurrency();
+    PIKA_NODISCARD PIKA_EXPORT unsigned int hardware_concurrency() noexcept;
 
     ///////////////////////////////////////////////////////////////////////////
     // abstract away memory page size, calls to system functions are
