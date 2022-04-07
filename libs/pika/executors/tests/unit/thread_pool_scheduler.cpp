@@ -1012,6 +1012,11 @@ void test_ensure_started()
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
+
+    // It's allowed to discard the sender from ensure_started
+    {
+        ex::schedule(ex::thread_pool_scheduler{}) | ex::ensure_started();
+    }
 }
 
 void test_ensure_started_when_all()
