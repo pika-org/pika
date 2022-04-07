@@ -61,7 +61,7 @@ namespace pika { namespace resource { namespace detail {
         scheduling_policy scheduling_policy_;
 
         // PUs this pool is allowed to run on
-        std::vector<threads::mask_type> assigned_pus_;    // mask
+        std::vector<threads::detail::mask_type> assigned_pus_;    // mask
 
         // pu index/exclusive/assigned
         std::vector<pika::tuple<std::size_t, bool, bool>> assigned_pu_nums_;
@@ -136,7 +136,7 @@ namespace pika { namespace resource { namespace detail {
 
         ////////////////////////////////////////////////////////////////////////
         scheduling_policy which_scheduler(std::string const& pool_name);
-        threads::topology& get_topology() const;
+        threads::detail::topology& get_topology() const;
 
         std::size_t get_num_pools() const;
 
@@ -151,7 +151,7 @@ namespace pika { namespace resource { namespace detail {
         std::size_t get_pool_index(std::string const& pool_name) const;
 
         std::size_t get_pu_num(std::size_t global_thread_num);
-        threads::mask_cref_type get_pu_mask(
+        threads::detail::mask_cref_type get_pu_mask(
             std::size_t global_thread_num) const;
 
         void init(resource::partitioner_mode rpmode, pika::util::section cfg,
@@ -238,7 +238,7 @@ namespace pika { namespace resource { namespace detail {
         resource::partitioner_mode mode_;
 
         // topology information
-        threads::topology& topo_;
+        threads::detail::topology& topo_;
 
         threads::policies::scheduler_mode default_scheduler_mode_;
     };

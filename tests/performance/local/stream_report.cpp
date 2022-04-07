@@ -57,9 +57,10 @@ std::string get_executor_name(std::size_t executor)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-pika::threads::topology& retrieve_topology()
+pika::threads::detail::topology& retrieve_topology()
 {
-    static pika::threads::topology& topo = pika::threads::create_topology();
+    static pika::threads::detail::topology& topo =
+        pika::threads::detail::create_topology();
     return topo;
 }
 

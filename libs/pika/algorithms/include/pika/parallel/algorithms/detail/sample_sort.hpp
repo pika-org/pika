@@ -439,7 +439,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         using compare = std::less<value_type>;
 
         return sample_sort(PIKA_FORWARD(Exec, exec), first, last, compare{},
-            (std::uint32_t) pika::threads::hardware_concurrency(),
+            (std::uint32_t) pika::threads::detail::hardware_concurrency(),
             (value_type*) nullptr, std::size_t(0),
             std::size_t(sample_sort_limit_per_task));
     }

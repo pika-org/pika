@@ -26,7 +26,7 @@ void test_scheduler(
 
     init_args.cfg = {"pika.os_threads=" +
         std::to_string(((std::min)(std::size_t(4),
-            std::size_t(pika::threads::hardware_concurrency()))))};
+            std::size_t(pika::threads::detail::hardware_concurrency()))))};
     init_args.rp_callback = [scheduler](auto& rp,
                                 pika::program_options::variables_map const&) {
         rp.create_thread_pool("default", scheduler);

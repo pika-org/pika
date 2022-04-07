@@ -89,7 +89,7 @@ namespace pika { namespace threads {
         return get_thread_manager().get_idle_core_count();
     }
 
-    mask_type get_idle_core_mask()
+    detail::mask_type get_idle_core_mask()
     {
         return get_thread_manager().get_idle_core_mask();
     }

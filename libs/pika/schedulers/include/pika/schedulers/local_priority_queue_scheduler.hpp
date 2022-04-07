@@ -1246,11 +1246,13 @@ namespace pika { namespace threads { namespace policies {
             queues_[num_thread].data_->on_start_thread(num_thread);
 
             std::size_t num_threads = num_queues_;
-            auto const& topo = create_topology();
+            auto const& topo = ::pika::threads::detail::create_topology();
 
             // get NUMA domain masks of all queues...
-            std::vector<mask_type> numa_masks(num_threads);
-            std::vector<mask_type> core_masks(num_threads);
+            std::vector<::pika::threads::detail::mask_type> numa_masks(
+                num_threads);
+            std::vector<::pika::threads::detail::mask_type> core_masks(
+                num_threads);
             for (std::size_t i = 0; i != num_threads; ++i)
             {
                 std::size_t num_pu = affinity_data_.get_pu_num(i);
@@ -1265,17 +1267,22 @@ namespace pika { namespace threads { namespace policies {
             victim_threads_[num_thread].data_.reserve(num_threads);
 
             std::size_t num_pu = affinity_data_.get_pu_num(num_thread);
-            mask_cref_type pu_mask = topo.get_thread_affinity_mask(num_pu);
-            mask_cref_type numa_mask = numa_masks[num_thread];
-            mask_cref_type core_mask = core_masks[num_thread];
+            ::pika::threads::detail::mask_cref_type pu_mask =
+                topo.get_thread_affinity_mask(num_pu);
+            ::pika::threads::detail::mask_cref_type numa_mask =
+                numa_masks[num_thread];
+            ::pika::threads::detail::mask_cref_type core_mask =
+                core_masks[num_thread];
 
             // we allow the thread on the boundary of the NUMA domain to steal
-            mask_type first_mask = mask_type();
-            resize(first_mask, mask_size(pu_mask));
+            ::pika::threads::detail::mask_type first_mask =
+                ::pika::threads::detail::mask_type();
+            ::pika::threads::detail::resize(
+                first_mask, ::pika::threads::detail::mask_size(pu_mask));
 
-            std::size_t first = find_first(numa_mask);
+            std::size_t first = ::pika::threads::detail::find_first(numa_mask);
             if (first != std::size_t(-1))
-                set(first_mask, first);
+                ::pika::threads::detail::set(first_mask, first);
             else
                 first_mask = pu_mask;
 
@@ -1315,21 +1322,25 @@ namespace pika { namespace threads { namespace policies {
 
             // check for threads which share the same core...
             iterate([&](std::size_t other_num_thread) {
-                return any(core_mask & core_masks[other_num_thread]);
+                return ::pika::threads::detail::any(
+                    core_mask & core_masks[other_num_thread]);
             });
 
             // check for threads which share the same NUMA domain...
             iterate([&](std::size_t other_num_thread) {
-                return !any(core_mask & core_masks[other_num_thread]) &&
-                    any(numa_mask & numa_masks[other_num_thread]);
+                return !::pika::threads::detail::any(
+                           core_mask & core_masks[other_num_thread]) &&
+                    ::pika::threads::detail::any(
+                        numa_mask & numa_masks[other_num_thread]);
             });
 
             // check for the rest and if we are NUMA aware
             if (has_scheduler_mode(policies::enable_stealing_numa) &&
-                any(first_mask & pu_mask))
+                ::pika::threads::detail::any(first_mask & pu_mask))
             {
                 iterate([&](std::size_t other_num_thread) {
-                    return !any(numa_mask & numa_masks[other_num_thread]);
+                    return !::pika::threads::detail::any(
+                        numa_mask & numa_masks[other_num_thread]);
                 });
             }
         }

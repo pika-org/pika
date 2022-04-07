@@ -27,11 +27,11 @@
 #endif
 // clang-format on
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     std::string to_string(mask_cref_type val)
     {
         std::ostringstream ostr;
         ostr << std::hex << PIKA_CPU_MASK_PREFIX << val;
         return ostr.str();
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

@@ -158,10 +158,10 @@ namespace pika { namespace threads { namespace policies {
           : scheduler_base(init.num_worker_threads_, init.description_,
                 init.thread_queue_init_)
 #if !defined(PIKA_HAVE_MAX_CPU_COUNT)
-          , d_lookup_(pika::threads::hardware_concurrency())
-          , q_lookup_(pika::threads::hardware_concurrency())
+          , d_lookup_(pika::threads::detail::hardware_concurrency())
+          , q_lookup_(pika::threads::detail::hardware_concurrency())
 #ifdef SHARED_PRIORITY_SCHEDULER_LINUX
-          , schedcpu_(pika::threads::hardware_concurrency())
+          , schedcpu_(pika::threads::detail::hardware_concurrency())
 #endif
 #endif
           , cores_per_queue_(init.cores_per_queue_)
@@ -953,7 +953,7 @@ namespace pika { namespace threads { namespace policies {
             spq_deb.debug(
                 debug::str<>("start_thread"), "local_thread", local_thread);
 
-            auto const& topo = create_topology();
+            auto const& topo = ::pika::threads::detail::create_topology();
             // the main initialization can be done by any one thread
             std::unique_lock<Mutex> lock(init_mutex);
             if (!initialized_)

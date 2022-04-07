@@ -22,7 +22,7 @@
 #include <vector>
 
 std::size_t const max_threads = (std::min)(
-    std::size_t(4), std::size_t(pika::threads::hardware_concurrency()));
+    std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
 
 // dummy function we will call using async
 void dummy_task(std::size_t n, std::string const& text)

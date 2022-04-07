@@ -85,13 +85,14 @@ namespace pika { namespace resource { namespace detail {
     void init_pool_data::add_resource(
         std::size_t pu_index, bool exclusive, std::size_t num_threads)
     {
-        if (pu_index >= pika::threads::hardware_concurrency())
+        if (pu_index >= pika::threads::detail::hardware_concurrency())
         {
             throw_invalid_argument("init_pool_data::add_resource",
                 "init_pool_data::add_resource: processing unit index "
                 "out of bounds. The total available number of "
                 "processing units on this machine is " +
-                    std::to_string(pika::threads::hardware_concurrency()));
+                    std::to_string(
+                        pika::threads::detail::hardware_concurrency()));
         }
 
         // Increment thread_num count (for pool-count and global count)
@@ -99,9 +100,10 @@ namespace pika { namespace resource { namespace detail {
         num_threads_overall += num_threads;
 
         // Add pu mask to internal data structure
-        threads::mask_type pu_mask = threads::mask_type();
-        threads::resize(pu_mask, threads::hardware_concurrency());
-        threads::set(pu_mask, pu_index);
+        threads::detail::mask_type pu_mask = threads::detail::mask_type();
+        threads::detail::resize(
+            pu_mask, threads::detail::hardware_concurrency());
+        threads::detail::set(pu_mask, pu_index);
 
         // Add one mask for each OS-thread
         for (std::size_t i = 0; i != num_threads; i++)
@@ -153,9 +155,9 @@ namespace pika { namespace resource { namespace detail {
 
         os << "\"" << sched << "\" is running on PUs : \n";
 
-        for (threads::mask_cref_type assigned_pu : assigned_pus_)
+        for (threads::detail::mask_cref_type assigned_pu : assigned_pus_)
         {
-            os << pika::threads::to_string(assigned_pu) << '\n';
+            os << pika::threads::detail::to_string(assigned_pu) << '\n';
         }
     }
 
@@ -197,10 +199,11 @@ namespace pika { namespace resource { namespace detail {
         for (std::size_t i = 0; i != num_threads_; ++i)
         {
             std::size_t& pu_num = pika::get<0>(assigned_pu_nums_[i]);
-            pu_num = (pu_num + first_core) % threads::hardware_concurrency();
+            pu_num =
+                (pu_num + first_core) % threads::detail::hardware_concurrency();
 
-            threads::reset(assigned_pus_[i]);
-            threads::set(assigned_pus_[i], pu_num);
+            threads::detail::reset(assigned_pus_[i]);
+            threads::detail::set(assigned_pus_[i], pu_num);
         }
     }
 
@@ -209,7 +212,7 @@ namespace pika { namespace resource { namespace detail {
       : rtcfg_()
       , first_core_(std::size_t(-1))
       , mode_(mode_default)
-      , topo_(threads::create_topology())
+      , topo_(threads::detail::create_topology())
       , default_scheduler_mode_(threads::policies::scheduler_mode::default_mode)
     {
         // allow only one partitioner instance
@@ -261,19 +264,20 @@ namespace pika { namespace resource { namespace detail {
 
     bool partitioner::pu_exposed(std::size_t pu_num)
     {
-        threads::mask_type pu_mask = threads::mask_type();
-        threads::resize(pu_mask, threads::hardware_concurrency());
-        threads::set(pu_mask, pu_num);
-        threads::topology& topo = get_topology();
+        threads::detail::mask_type pu_mask = threads::detail::mask_type();
+        threads::detail::resize(
+            pu_mask, threads::detail::hardware_concurrency());
+        threads::detail::set(pu_mask, pu_num);
+        threads::detail::topology& topo = get_topology();
 
-        threads::mask_type comp =
+        threads::detail::mask_type comp =
             affinity_data_.get_used_pus_mask(topo, pu_num);
-        return threads::any(comp & pu_mask);
+        return threads::detail::any(comp & pu_mask);
     }
 
     void partitioner::fill_topology_vectors()
     {
-        threads::topology& topo = get_topology();
+        threads::detail::topology& topo = get_topology();
 
         std::size_t pid = 0;
         std::size_t num_numa_nodes = topo.get_number_of_numa_nodes();
@@ -516,7 +520,7 @@ namespace pika { namespace resource { namespace detail {
     void partitioner::reconfigure_affinities_locked()
     {
         std::vector<std::size_t> new_pu_nums;
-        std::vector<threads::mask_type> new_affinity_masks;
+        std::vector<threads::detail::mask_type> new_affinity_masks;
 
         new_pu_nums.reserve(initial_thread_pools_.size());
         new_affinity_masks.reserve(initial_thread_pools_.size());
@@ -554,7 +558,7 @@ namespace pika { namespace resource { namespace detail {
             }
             for (auto assigned_pus : initial_thread_pools_[i].assigned_pus_)
             {
-                if (!threads::any(assigned_pus))
+                if (!threads::detail::any(assigned_pus))
                 {
                     return true;
                 }
@@ -778,7 +782,7 @@ namespace pika { namespace resource { namespace detail {
         return sched_type;
     }
 
-    threads::topology& partitioner::get_topology() const
+    threads::detail::topology& partitioner::get_topology() const
     {
         return topo_;
     }
@@ -864,7 +868,7 @@ namespace pika { namespace resource { namespace detail {
         return affinity_data_.get_pu_num(global_thread_num);
     }
 
-    threads::mask_cref_type partitioner::get_pu_mask(
+    threads::detail::mask_cref_type partitioner::get_pu_mask(
         std::size_t global_thread_num) const
     {
         return affinity_data_.get_pu_mask(topo_, global_thread_num);

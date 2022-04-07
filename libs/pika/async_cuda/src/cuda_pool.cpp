@@ -21,7 +21,7 @@ namespace pika::cuda::experimental {
         std::size_t num_streams_per_thread,
         pika::threads::thread_priority priority)
       : num_streams_per_thread(num_streams_per_thread)
-      , concurrency(pika::threads::hardware_concurrency())
+      , concurrency(pika::threads::detail::hardware_concurrency())
       , streams(
             num_streams_per_thread * concurrency, cuda_stream{device, priority})
       , active_stream_indices(concurrency, {0})

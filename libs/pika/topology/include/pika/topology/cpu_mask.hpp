@@ -30,7 +30,7 @@
 #endif
 // clang-format on
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     /// \cond NOINTERNAL
 #if !defined(PIKA_HAVE_MORE_THAN_64_THREADS) ||                                \
     (defined(PIKA_HAVE_MAX_CPU_COUNT) && PIKA_HAVE_MAX_CPU_COUNT <= 64)
@@ -233,6 +233,6 @@ namespace pika { namespace threads {
 
 #endif
 
-        PIKA_EXPORT std::string to_string(mask_cref_type);
-        /// \endcond
-}}    // namespace pika::threads
+    PIKA_EXPORT std::string to_string(mask_cref_type);
+    /// \endcond
+}    // namespace pika::threads::detail

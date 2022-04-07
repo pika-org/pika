@@ -164,8 +164,8 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             std::less<typename std::iterator_traits<Iter>::value_type>;
 
         return parallel_stable_sort(PIKA_FORWARD(Exec, exec), first, last,
-            pika::threads::hardware_concurrency(), stable_sort_limit_per_task,
-            compare{});
+            pika::threads::detail::hardware_concurrency(),
+            stable_sort_limit_per_task, compare{});
     }
 
 }}}}    // namespace pika::parallel::v1::detail

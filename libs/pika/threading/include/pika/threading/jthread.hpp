@@ -254,7 +254,7 @@ namespace pika {
         // Returns: thread::hardware_concurrency().
         PIKA_NODISCARD static unsigned int hardware_concurrency()
         {
-            return pika::threads::hardware_concurrency();
+            return pika::threads::detail::hardware_concurrency();
         }
 
     private:

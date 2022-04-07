@@ -170,7 +170,7 @@ namespace pika { namespace threads {
 
         std::int64_t get_idle_core_count();
 
-        mask_type get_idle_core_mask();
+        detail::mask_type get_idle_core_mask();
 
         std::int64_t get_background_thread_count();
 
@@ -232,11 +232,12 @@ namespace pika { namespace threads {
     public:
         /// Returns the mask identifying all processing units used by this
         /// thread manager.
-        mask_type get_used_processing_units() const
+        detail::mask_type get_used_processing_units() const
         {
-            mask_type total_used_processing_punits = mask_type();
-            threads::resize(
-                total_used_processing_punits, hardware_concurrency());
+            detail::mask_type total_used_processing_punits =
+                detail::mask_type();
+            threads::detail::resize(
+                total_used_processing_punits, detail::hardware_concurrency());
 
             for (auto& pool_iter : pools_)
             {
@@ -247,7 +248,7 @@ namespace pika { namespace threads {
             return total_used_processing_punits;
         }
 
-        hwloc_bitmap_ptr get_pool_numa_bitmap(
+        detail::hwloc_bitmap_ptr get_pool_numa_bitmap(
             const std::string& pool_name) const
         {
             return get_pool(pool_name).get_numa_domain_bitmap();
