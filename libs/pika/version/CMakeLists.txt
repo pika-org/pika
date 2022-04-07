@@ -10,11 +10,6 @@ set(version_headers pika/version.hpp)
 
 set(version_sources version.cpp)
 
-if(PIKA_WITH_MPI)
-  include(pika_setup_mpi)
-  set(mpi_dependencies Mpi::mpi)
-endif()
-
 include(pika_add_module)
 pika_add_module(
   pika version
@@ -22,7 +17,7 @@ pika_add_module(
   SOURCES ${version_sources}
   HEADERS ${version_headers}
   MODULE_DEPENDENCIES pika_config pika_format pika_prefix
-  DEPENDENCIES Hwloc::hwloc ${mpi_dependencies}
+  CMAKE_SUBDIRS tests
 )
 
 target_include_directories(
