@@ -19,7 +19,7 @@
 #include <pika/parallel/util/detail/scoped_executor_parameters.hpp>
 #include <pika/parallel/util/result_types.hpp>
 
-#if defined(PIKA_HAVE_CXX17_STD_EXECUTION_POLICES)
+#if defined(PIKA_HAVE_CXX17_STD_EXECUTION_POLICIES)
 #include <execution>
 #endif
 #include <string>
@@ -180,7 +180,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
                 PIKA_FORWARD(Args, args)...);
         }
 
-#if defined(PIKA_HAVE_CXX17_STD_EXECUTION_POLICES)
+#if defined(PIKA_HAVE_CXX17_STD_EXECUTION_POLICIES)
         // main dispatch entry points for std execution policies
         template <typename... Args>
         PIKA_FORCEINLINE constexpr pika::parallel::util::detail::
@@ -213,7 +213,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
                 PIKA_FORWARD(Args, args)...);
         }
 
-#if defined(PIKA_HAVE_CXX20_STD_EXECUTION_POLICES)
+#if defined(PIKA_HAVE_CXX20_STD_EXECUTION_POLICIES)
         template <typename... Args>
         PIKA_FORCEINLINE constexpr pika::parallel::util::detail::
             algorithm_result_t<pika::execution::unsequenced_policy,

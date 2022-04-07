@@ -10,7 +10,7 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_CXX17_STD_EXECUTION_POLICES)
+#if defined(PIKA_HAVE_CXX17_STD_EXECUTION_POLICIES)
 #include <pika/execution/traits/is_execution_policy.hpp>
 
 #include <execution>
@@ -57,7 +57,7 @@ namespace pika { namespace detail {
     {
     };
 
-#if defined(PIKA_HAVE_CXX20_STD_EXECUTION_POLICES)
+#if defined(PIKA_HAVE_CXX20_STD_EXECUTION_POLICIES)
     template <>
     struct is_execution_policy<std::execution::unsequenced_policy>
       : std::true_type

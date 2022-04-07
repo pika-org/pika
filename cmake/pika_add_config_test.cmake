@@ -359,7 +359,7 @@ endfunction()
 
 function(pika_check_for_cxx17_std_execution_policies)
   pika_add_config_test(
-    PIKA_WITH_CXX17_STD_EXECUTION_POLICES
+    PIKA_WITH_CXX17_STD_EXECUTION_POLICIES
     SOURCE cmake/tests/cxx17_std_execution_policies.cpp
     FILE ${ARGN}
   )
@@ -513,7 +513,7 @@ endfunction()
 # ##############################################################################
 function(pika_check_for_cxx20_std_execution_policies)
   pika_add_config_test(
-    PIKA_WITH_CXX20_STD_EXECUTION_POLICES
+    PIKA_WITH_CXX20_STD_EXECUTION_POLICIES
     SOURCE cmake/tests/cxx20_std_execution_policies.cpp
     FILE ${ARGN} CHECK_CXXSTD 20
   )

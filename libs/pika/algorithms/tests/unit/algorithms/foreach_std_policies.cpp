@@ -20,7 +20,7 @@ void test_for_each()
     test_for_each(std::execution::seq, IteratorTag());
     test_for_each(std::execution::par, IteratorTag());
     test_for_each(std::execution::par_unseq, IteratorTag());
-#if defined(PIKA_HAVE_CXX20_STD_EXECUTION_POLICES)
+#if defined(PIKA_HAVE_CXX20_STD_EXECUTION_POLICIES)
     test_for_each(std::execution::unseq, IteratorTag());
 #endif
 }
