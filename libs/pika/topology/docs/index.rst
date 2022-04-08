@@ -11,7 +11,7 @@
 topology
 ========
 
-This module provides the class :cpp:class:`pika::threads::topology` which
+This module provides the class :cpp:class:`pika::threads::detail::topology` which
 represents the hardware resources available on a node. The class is a light
 wrapper around the |hwloc|_ library. The :cpp:class:`pika::threads::cpu_mask` is
 a small companion class that represents a set of resources on a node.

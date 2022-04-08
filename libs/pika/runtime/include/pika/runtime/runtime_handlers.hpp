@@ -28,6 +28,6 @@ namespace pika { namespace detail {
     PIKA_EXPORT bool register_locks_predicate();
 #endif
     PIKA_EXPORT threads::thread_pool_base* get_default_pool();
-    PIKA_EXPORT threads::mask_cref_type get_pu_mask(
-        threads::topology& topo, std::size_t thread_num);
+    PIKA_EXPORT threads::detail::mask_cref_type get_pu_mask(
+        threads::detail::topology& topo, std::size_t thread_num);
 }}    // namespace pika::detail

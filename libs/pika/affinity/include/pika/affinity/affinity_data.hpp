@@ -39,12 +39,12 @@ namespace pika::detail {
         }
 
         void set_affinity_masks(
-            std::vector<threads::mask_type> const& affinity_masks)
+            std::vector<threads::detail::mask_type> const& affinity_masks)
         {
             affinity_masks_ = affinity_masks;
         }
         void set_affinity_masks(
-            std::vector<threads::mask_type>&& affinity_masks)
+            std::vector<threads::detail::mask_type>&& affinity_masks)
         {
             affinity_masks_ = PIKA_MOVE(affinity_masks);
         }
@@ -54,13 +54,14 @@ namespace pika::detail {
             return num_threads_;
         }
 
-        threads::mask_cref_type get_pu_mask(
-            threads::topology const& topo, std::size_t num_thread) const;
+        threads::detail::mask_cref_type get_pu_mask(
+            threads::detail::topology const& topo,
+            std::size_t num_thread) const;
 
-        threads::mask_type get_used_pus_mask(
-            threads::topology const& topo, std::size_t pu_num) const;
+        threads::detail::mask_type get_used_pus_mask(
+            threads::detail::topology const& topo, std::size_t pu_num) const;
         std::size_t get_thread_occupancy(
-            threads::topology const& topo, std::size_t pu_num) const;
+            threads::detail::topology const& topo, std::size_t pu_num) const;
 
         std::size_t get_pu_num(std::size_t num_thread) const
         {
@@ -95,9 +96,9 @@ namespace pika::detail {
         std::size_t pu_step_;    ///< step between used processing units
         std::size_t used_cores_;
         std::string affinity_domain_;
-        std::vector<threads::mask_type> affinity_masks_;
+        std::vector<threads::detail::mask_type> affinity_masks_;
         std::vector<std::size_t> pu_nums_;
-        threads::mask_type
+        threads::detail::mask_type
             no_affinity_;    ///< mask of processing units which have no affinity
         bool
             use_process_mask_;    ///< use the process CPU mask to limit available PUs

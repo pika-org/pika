@@ -52,10 +52,10 @@
 #include <unistd.h>
 #endif
 
-namespace pika { namespace threads { namespace detail {
+namespace pika::threads::detail {
     std::size_t hwloc_hardware_concurrency()
     {
-        threads::topology& top = threads::create_topology();
+        threads::detail::topology& top = threads::detail::create_topology();
         return top.get_number_of_pus();
     }
 
@@ -66,8 +66,8 @@ namespace pika { namespace threads { namespace detail {
 
     void write_to_log_mask(char const* valuename, mask_cref_type value)
     {
-        LTM_(debug).format(
-            "topology: {}: {}", valuename, pika::threads::to_string(value));
+        LTM_(debug).format("topology: {}: {}", valuename,
+            pika::threads::detail::to_string(value));
     }
 
     void write_to_log(
@@ -91,7 +91,7 @@ namespace pika { namespace threads { namespace detail {
         for (mask_cref_type value : values)
         {
             LTM_(debug).format("topology: {}({}): {}", valuename, i++,
-                pika::threads::to_string(value));
+                pika::threads::detail::to_string(value));
         }
     }
 
@@ -133,12 +133,8 @@ namespace pika { namespace threads { namespace detail {
 #endif
     }
 
-}}}    // namespace pika::threads::detail
+    std::size_t topology::memory_page_size_ = get_memory_page_size_impl();
 
-std::size_t pika::threads::topology::memory_page_size_ =
-    pika::threads::detail::get_memory_page_size_impl();
-
-namespace pika { namespace threads {
     ///////////////////////////////////////////////////////////////////////////
     std::ostream& operator<<(
         std::ostream& os, pika_hwloc_bitmap_wrapper const* bmp)
@@ -414,7 +410,7 @@ namespace pika { namespace threads {
         }
 
         PIKA_THROWS_IF(ec, bad_parameter,
-            "pika::threads::topology::get_socket_affinity_mask",
+            "pika::threads::detail::topology::get_socket_affinity_mask",
             "thread number {1} is out of range", num_thread);
         return empty_mask;
     }    // }}}
@@ -433,7 +429,7 @@ namespace pika { namespace threads {
         }
 
         PIKA_THROWS_IF(ec, bad_parameter,
-            "pika::threads::topology::get_numa_node_affinity_mask",
+            "pika::threads::detail::topology::get_numa_node_affinity_mask",
             "thread number {1} is out of range", num_thread);
         return empty_mask;
     }    // }}}
@@ -452,7 +448,7 @@ namespace pika { namespace threads {
         }
 
         PIKA_THROWS_IF(ec, bad_parameter,
-            "pika::threads::topology::get_core_affinity_mask",
+            "pika::threads::detail::topology::get_core_affinity_mask",
             "thread number {1} is out of range", num_thread);
         return empty_mask;
     }
@@ -471,7 +467,7 @@ namespace pika { namespace threads {
         }
 
         PIKA_THROWS_IF(ec, bad_parameter,
-            "pika::threads::topology::get_thread_affinity_mask",
+            "pika::threads::detail::topology::get_thread_affinity_mask",
             "thread number {1} is out of range", num_thread);
         return empty_mask;
     }    // }}}
@@ -513,9 +509,10 @@ namespace pika { namespace threads {
                     hwloc_bitmap_free(cpuset);
 
                     PIKA_THROWS_IF(ec, kernel_error,
-                        "pika::threads::topology::set_thread_affinity_mask",
+                        "pika::threads::detail::topology::set_thread_affinity_"
+                        "mask",
                         "failed to set thread affinity mask ({}) for cpuset {}",
-                        pika::threads::to_string(mask), buffer.get());
+                        pika::threads::detail::to_string(mask), buffer.get());
                     return;
                 }
             }
@@ -743,7 +740,7 @@ namespace pika { namespace threads {
         if (0 > nobjs)
         {
             PIKA_THROW_EXCEPTION(kernel_error,
-                "pika::threads::topology::get_number_of_sockets",
+                "pika::threads::detail::topology::get_number_of_sockets",
                 "hwloc_get_nbobjs_by_type failed");
             return std::size_t(nobjs);
         }
@@ -756,7 +753,7 @@ namespace pika { namespace threads {
         if (0 > nobjs)
         {
             PIKA_THROW_EXCEPTION(kernel_error,
-                "pika::threads::topology::get_number_of_numa_nodes",
+                "pika::threads::detail::topology::get_number_of_numa_nodes",
                 "hwloc_get_nbobjs_by_type failed");
             return std::size_t(nobjs);
         }
@@ -771,7 +768,7 @@ namespace pika { namespace threads {
         if (0 > nobjs)
         {
             PIKA_THROW_EXCEPTION(kernel_error,
-                "pika::threads::topology::get_number_of_cores",
+                "pika::threads::detail::topology::get_number_of_cores",
                 "hwloc_get_nbobjs_by_type(HWLOC_OBJ_CORE) failed");
             return std::size_t(nobjs);
         }
@@ -783,7 +780,7 @@ namespace pika { namespace threads {
             if (0 > nobjs)
             {
                 PIKA_THROW_EXCEPTION(kernel_error,
-                    "pika::threads::topology::get_number_of_cores",
+                    "pika::threads::detail::topology::get_number_of_cores",
                     "hwloc_get_nbobjs_by_type(HWLOC_OBJ_PU) failed");
                 return std::size_t(nobjs);
             }
@@ -794,7 +791,7 @@ namespace pika { namespace threads {
         if (0 == nobjs)
         {
             PIKA_THROW_EXCEPTION(kernel_error,
-                "pika::threads::topology::get_number_of_cores",
+                "pika::threads::detail::topology::get_number_of_cores",
                 "hwloc_get_nbobjs_by_type reports zero cores/pus");
             return std::size_t(nobjs);
         }
@@ -918,49 +915,47 @@ namespace pika { namespace threads {
         hwloc_cpuset_to_nodeset_strict(topo, cpuset, nodeset);
 #endif
         hwloc_bitmap_free(cpuset);
-        return std::make_shared<pika::threads::pika_hwloc_bitmap_wrapper>(
-            nodeset);
+        return std::make_shared<
+            pika::threads::detail::pika_hwloc_bitmap_wrapper>(nodeset);
     }
 
-    namespace detail {
-        void print_info(
-            std::ostream& os, hwloc_obj_t obj, char const* name, bool comma)
+    void print_info(
+        std::ostream& os, hwloc_obj_t obj, char const* name, bool comma)
+    {
+        if (comma)
+            os << ", ";
+        os << name;
+
+        if (obj->logical_index != ~0x0u)
+            os << "L#" << obj->logical_index;
+        if (obj->os_index != ~0x0u)
+            os << "(P#" << obj->os_index << ")";
+    }
+
+    void print_info(std::ostream& os, hwloc_obj_t obj, bool comma = false)
+    {
+        switch (obj->type)
         {
-            if (comma)
-                os << ", ";
-            os << name;
+        case HWLOC_OBJ_PU:
+            print_info(os, obj, "PU ", comma);
+            break;
 
-            if (obj->logical_index != ~0x0u)
-                os << "L#" << obj->logical_index;
-            if (obj->os_index != ~0x0u)
-                os << "(P#" << obj->os_index << ")";
+        case HWLOC_OBJ_CORE:
+            print_info(os, obj, "Core ", comma);
+            break;
+
+        case HWLOC_OBJ_SOCKET:
+            print_info(os, obj, "Socket ", comma);
+            break;
+
+        case HWLOC_OBJ_NODE:
+            print_info(os, obj, "NUMANode ", comma);
+            break;
+
+        default:
+            break;
         }
-
-        void print_info(std::ostream& os, hwloc_obj_t obj, bool comma = false)
-        {
-            switch (obj->type)
-            {
-            case HWLOC_OBJ_PU:
-                print_info(os, obj, "PU ", comma);
-                break;
-
-            case HWLOC_OBJ_CORE:
-                print_info(os, obj, "Core ", comma);
-                break;
-
-            case HWLOC_OBJ_SOCKET:
-                print_info(os, obj, "Socket ", comma);
-                break;
-
-            case HWLOC_OBJ_NODE:
-                print_info(os, obj, "NUMANode ", comma);
-                break;
-
-            default:
-                break;
-            }
-        }
-    }    // namespace detail
+    }
 
     void topology::print_affinity_mask(std::ostream& os, std::size_t num_thread,
         mask_cref_type m, const std::string& pool_name) const
@@ -975,7 +970,7 @@ namespace pika { namespace threads {
             if (!obj)
             {
                 PIKA_THROW_EXCEPTION(kernel_error,
-                    "pika::threads::topology::print_affinity_mask",
+                    "pika::threads::detail::topology::print_affinity_mask",
                     "object not found");
                 return;
             }
@@ -1024,7 +1019,7 @@ namespace pika { namespace threads {
         }
 
         PIKA_THROW_EXCEPTION(kernel_error,
-            "pika::threads::topology::init_machine_affinity_mask",
+            "pika::threads::detail::topology::init_machine_affinity_mask",
             "failed to initialize machine affinity mask");
         return empty_mask;
     }    // }}}
@@ -1169,7 +1164,8 @@ namespace pika { namespace threads {
             if (num_cores <= 0)
             {
                 PIKA_THROW_EXCEPTION(kernel_error,
-                    "pika::threads::topology::init_thread_affinity_mask",
+                    "pika::threads::detail::topology::init_thread_affinity_"
+                    "mask",
                     "hwloc_get_nbobjs_by_type failed");
                 return empty_mask;
             }
@@ -1245,7 +1241,7 @@ namespace pika { namespace threads {
             {
                 hwloc_bitmap_free(cpuset);
                 PIKA_THROWS_IF(ec, kernel_error,
-                    "pika::threads::topology::get_cpubind_mask",
+                    "pika::threads::detail::topology::get_cpubind_mask",
                     "hwloc_get_cpubind failed");
                 return empty_mask;
             }
@@ -1292,7 +1288,7 @@ namespace pika { namespace threads {
             {
                 hwloc_bitmap_free(cpuset);
                 PIKA_THROWS_IF(ec, kernel_error,
-                    "pika::threads::topology::get_cpubind_mask",
+                    "pika::threads::detail::topology::get_cpubind_mask",
                     "hwloc_get_cpubind failed");
                 return empty_mask;
             }
@@ -1365,7 +1361,7 @@ namespace pika { namespace threads {
             if (errno == EXDEV)
                 msg = "the binding cannot be enforced";
             PIKA_THROW_EXCEPTION(kernel_error,
-                "pika::threads::topology::set_area_membind_nodeset",
+                "pika::threads::detail::topology::set_area_membind_nodeset",
                 "hwloc_set_area_membind_nodeset failed : {}", msg);
             return false;
         }
@@ -1387,7 +1383,7 @@ namespace pika { namespace threads {
         }
     }    // namespace
 
-    threads::mask_type topology::get_area_membind_nodeset(
+    threads::detail::mask_type topology::get_area_membind_nodeset(
         const void* addr, std::size_t len) const
     {
         pika_hwloc_bitmap_wrapper& nodeset = bitmap_storage();
@@ -1411,7 +1407,7 @@ namespace pika { namespace threads {
             == -1)
         {
             PIKA_THROW_EXCEPTION(kernel_error,
-                "pika::threads::topology::get_area_membind_nodeset",
+                "pika::threads::detail::topology::get_area_membind_nodeset",
                 "hwloc_get_area_membind_nodeset failed");
             return bitmap_to_mask(ns, HWLOC_OBJ_MACHINE);
         }
@@ -1442,14 +1438,15 @@ namespace pika { namespace threads {
 #else
             std::string msg(strerror(errno));
             PIKA_THROW_EXCEPTION(kernel_error,
-                "pika::threads::topology::get_numa_domain",
+                "pika::threads::detail::topology::get_numa_domain",
                 "hwloc_get_area_memlocation failed {}", msg);
             return -1;
 #endif
         }
 
-        threads::mask_type mask = bitmap_to_mask(ns, HWLOC_OBJ_NUMANODE);
-        return static_cast<int>(threads::find_first(mask));
+        threads::detail::mask_type mask =
+            bitmap_to_mask(ns, HWLOC_OBJ_NUMANODE);
+        return static_cast<int>(threads::detail::find_first(mask));
 #else
         PIKA_UNUSED(addr);
         return 0;
@@ -1518,7 +1515,7 @@ namespace pika { namespace threads {
 
         for (std::size_t i = 0; i != s; i++)
         {
-            os << pika::threads::to_string(v[i]) << "\n";
+            os << pika::threads::detail::to_string(v[i]) << "\n";
         }
         os << "\n";
     }
@@ -1550,12 +1547,12 @@ namespace pika { namespace threads {
            << "number of cores       : " << get_number_of_cores() << "\n"
            << "number of PUs         : " << get_number_of_pus() << "\n"
            << "hardware concurrency  : "
-           << pika::threads::hardware_concurrency() << "\n"
+           << pika::threads::detail::hardware_concurrency() << "\n"
            << std::endl;
         //! -------------------------------------- topology (affinity masks)
         os << "[HWLOC topology info] affinity masks :\n"
            << "machine               : \n"
-           << pika::threads::to_string(machine_affinity_mask_) << "\n";
+           << pika::threads::detail::to_string(machine_affinity_mask_) << "\n";
 
         os << "socket                : \n";
         print_mask_vector(os, socket_affinity_masks_);
@@ -1586,27 +1583,25 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        struct hw_concurrency
-        {
-            hw_concurrency()
+    struct hw_concurrency
+    {
+        hw_concurrency() noexcept
 #if defined(__ANDROID__) && defined(ANDROID)
-              : num_of_cores_(::android_getCpuCount())
+          : num_of_cores_(::android_getCpuCount())
 #else
-              : num_of_cores_(hwloc_hardware_concurrency())
+          : num_of_cores_(hwloc_hardware_concurrency())
 #endif
-            {
-                if (num_of_cores_ == 0)
-                    num_of_cores_ = 1;
-            }
+        {
+            if (num_of_cores_ == 0)
+                num_of_cores_ = 1;
+        }
 
-            std::size_t num_of_cores_;
-        };
-    }    // namespace detail
+        std::size_t num_of_cores_;
+    };
 
-    unsigned int hardware_concurrency()
+    unsigned int hardware_concurrency() noexcept
     {
         static detail::hw_concurrency hwc;
         return static_cast<unsigned int>(hwc.num_of_cores_);
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

@@ -35,8 +35,8 @@ namespace pika::detail {
         mappings_type& mappings, error_code& ec = throws);
 
     PIKA_EXPORT void parse_affinity_options(std::string const& spec,
-        std::vector<threads::mask_type>& affinities, std::size_t used_cores,
-        std::size_t max_cores, std::size_t num_threads,
+        std::vector<threads::detail::mask_type>& affinities,
+        std::size_t used_cores, std::size_t max_cores, std::size_t num_threads,
         std::vector<std::size_t>& num_pus, bool use_process_mask,
         error_code& ec = throws);
 }    // namespace pika::detail

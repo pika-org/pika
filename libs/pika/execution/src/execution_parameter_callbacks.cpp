@@ -57,8 +57,8 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         get_get_pu_mask() = f;
     }
 
-    threads::mask_cref_type get_pu_mask(
-        threads::topology& topo, std::size_t thread_num)
+    threads::detail::mask_cref_type get_pu_mask(
+        threads::detail::topology& topo, std::size_t thread_num)
     {
         if (get_get_pu_mask())
         {
@@ -75,7 +75,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
                 "handler with "
                 "pika::parallel::execution::detail::set_get_pu_mask.");
 
-            static threads::mask_type mask{};
+            static threads::detail::mask_type mask{};
             return mask;
         }
     }

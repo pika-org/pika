@@ -202,7 +202,7 @@ namespace pika { namespace resource {
         return partitioner_.numa_domains();
     }
 
-    pika::threads::topology const& partitioner::get_topology() const
+    pika::threads::detail::topology const& partitioner::get_topology() const
     {
         return partitioner_.get_topology();
     }

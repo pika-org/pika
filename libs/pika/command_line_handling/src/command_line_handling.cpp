@@ -204,31 +204,31 @@ namespace pika::detail {
     {
         if (use_process_mask)
         {
-            threads::topology& top = threads::create_topology();
-            return threads::count(top.get_cpubind_mask());
+            threads::detail::topology& top = threads::detail::create_topology();
+            return threads::detail::count(top.get_cpubind_mask());
         }
         else
         {
-            return threads::hardware_concurrency();
+            return threads::detail::hardware_concurrency();
         }
     }
 
     std::size_t get_number_of_default_cores(bool use_process_mask)
     {
-        threads::topology& top = threads::create_topology();
+        threads::detail::topology& top = threads::detail::create_topology();
 
         std::size_t num_cores = top.get_number_of_cores();
 
         if (use_process_mask)
         {
-            threads::mask_type proc_mask = top.get_cpubind_mask();
+            threads::detail::mask_type proc_mask = top.get_cpubind_mask();
             std::size_t num_cores_proc_mask = 0;
 
             for (std::size_t num_core = 0; num_core < num_cores; ++num_core)
             {
-                threads::mask_type core_mask =
+                threads::detail::mask_type core_mask =
                     top.init_core_affinity_mask_from_core(num_core);
-                if (threads::bit_and(core_mask, proc_mask))
+                if (threads::detail::bit_and(core_mask, proc_mask))
                 {
                     ++num_cores_proc_mask;
                 }
@@ -411,7 +411,7 @@ namespace pika::detail {
     void command_line_handling::check_pu_offset() const
     {
         if (pu_offset_ != std::size_t(-1) &&
-            pu_offset_ >= pika::threads::hardware_concurrency())
+            pu_offset_ >= pika::threads::detail::hardware_concurrency())
         {
             throw pika::detail::command_line_error(
                 "Invalid command line option "
@@ -422,9 +422,9 @@ namespace pika::detail {
 
     void command_line_handling::check_pu_step() const
     {
-        if (pika::threads::hardware_concurrency() > 1 &&
+        if (pika::threads::detail::hardware_concurrency() > 1 &&
             (pu_step_ == 0 ||
-                pu_step_ >= pika::threads::hardware_concurrency()))
+                pu_step_ >= pika::threads::detail::hardware_concurrency()))
         {
             throw pika::detail::command_line_error(
                 "Invalid command line option "

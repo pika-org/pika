@@ -643,10 +643,10 @@ namespace pika { namespace threads {
         return total_count;
     }
 
-    mask_type threadmanager::get_idle_core_mask()
+    detail::mask_type threadmanager::get_idle_core_mask()
     {
-        mask_type mask = mask_type();
-        resize(mask, hardware_concurrency());
+        detail::mask_type mask = detail::mask_type();
+        detail::resize(mask, detail::hardware_concurrency());
 
         std::lock_guard<mutex_type> lk(mtx_);
 

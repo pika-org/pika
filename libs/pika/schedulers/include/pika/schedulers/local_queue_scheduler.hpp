@@ -106,16 +106,19 @@ namespace pika { namespace threads { namespace policies {
           steals_in_numa_domain_()
           , steals_outside_numa_domain_()
 #endif
-          , numa_domain_masks_(
-                init.num_queues_, create_topology().get_machine_affinity_mask())
-          , outside_numa_domain_masks_(
-                init.num_queues_, create_topology().get_machine_affinity_mask())
+          , numa_domain_masks_(init.num_queues_,
+                ::pika::threads::detail::create_topology()
+                    .get_machine_affinity_mask())
+          , outside_numa_domain_masks_(init.num_queues_,
+                ::pika::threads::detail::create_topology()
+                    .get_machine_affinity_mask())
         {
 #if !defined(                                                                  \
     PIKA_NATIVE_MIC)    // we know that the MIC has one NUMA domain only
-            resize(steals_in_numa_domain_, threads::hardware_concurrency());
-            resize(
-                steals_outside_numa_domain_, threads::hardware_concurrency());
+            ::pika::threads::detail::resize(steals_in_numa_domain_,
+                threads::detail::hardware_concurrency());
+            ::pika::threads::detail::resize(steals_outside_numa_domain_,
+                threads::detail::hardware_concurrency());
 #endif
             if (!deferred_initialization)
             {
@@ -369,11 +372,11 @@ namespace pika { namespace threads { namespace policies {
 
 #if !defined(                                                                  \
     PIKA_NATIVE_MIC)    // we know that the MIC has one NUMA domain only
-                if (test(steals_in_numa_domain_,
+                if (::pika::threads::detail::test(steals_in_numa_domain_,
                         pu_number))    //-V600 //-V111
 #endif
                 {
-                    mask_cref_type this_numa_domain =
+                    ::pika::threads::detail::mask_cref_type this_numa_domain =
                         numa_domain_masks_[num_thread];
 
                     // steal thread from other queue
@@ -385,7 +388,7 @@ namespace pika { namespace threads { namespace policies {
                         PIKA_ASSERT(idx != num_thread);
 
                         std::size_t pu_num = affinity_data_.get_pu_num(idx);
-                        if (!test(this_numa_domain,
+                        if (!::pika::threads::detail::test(this_numa_domain,
                                 pu_num))    //-V560 //-V600 //-V111
                             continue;
 
@@ -403,10 +406,10 @@ namespace pika { namespace threads { namespace policies {
 #if !defined(                                                                  \
     PIKA_NATIVE_MIC)    // we know that the MIC has one NUMA domain only)
                 // if nothing found, ask everybody else
-                if (test(steals_outside_numa_domain_,
+                if (::pika::threads::detail::test(steals_outside_numa_domain_,
                         pu_number))    //-V600 //-V111
                 {
-                    mask_cref_type numa_domain =
+                    ::pika::threads::detail::mask_cref_type numa_domain =
                         outside_numa_domain_masks_[num_thread];
 
                     // steal thread from other queue
@@ -418,7 +421,7 @@ namespace pika { namespace threads { namespace policies {
                         PIKA_ASSERT(idx != num_thread);
 
                         std::size_t pu_num = affinity_data_.get_pu_num(idx);
-                        if (!test(numa_domain,
+                        if (!::pika::threads::detail::test(numa_domain,
                                 pu_num))    //-V560 //-V600 //-V111
                             continue;
 
@@ -738,11 +741,11 @@ namespace pika { namespace threads { namespace policies {
 
 #if !defined(                                                                  \
     PIKA_NATIVE_MIC)    // we know that the MIC has one NUMA domain only
-                if (test(steals_in_numa_domain_,
+                if (::pika::threads::detail::test(steals_in_numa_domain_,
                         pu_number))    //-V600 //-V111
 #endif
                 {
-                    mask_cref_type numa_domain_mask =
+                    ::pika::threads::detail::mask_cref_type numa_domain_mask =
                         numa_domain_masks_[num_thread];
                     for (std::size_t i = 1; i != queues_size; ++i)
                     {
@@ -751,7 +754,7 @@ namespace pika { namespace threads { namespace policies {
 
                         PIKA_ASSERT(idx != num_thread);
 
-                        if (!test(numa_domain_mask,
+                        if (!::pika::threads::detail::test(numa_domain_mask,
                                 affinity_data_.get_pu_num(idx)))    //-V600
                         {
                             continue;
@@ -773,10 +776,10 @@ namespace pika { namespace threads { namespace policies {
 #if !defined(                                                                  \
     PIKA_NATIVE_MIC)    // we know that the MIC has one NUMA domain only)
                 // if nothing found, ask everybody else
-                if (test(steals_outside_numa_domain_,
+                if (::pika::threads::detail::test(steals_outside_numa_domain_,
                         pu_number))    //-V600 //-V111
                 {
-                    mask_cref_type numa_domain_mask =
+                    ::pika::threads::detail::mask_cref_type numa_domain_mask =
                         outside_numa_domain_masks_[num_thread];
                     for (std::size_t i = 1; i != queues_size; ++i)
                     {
@@ -785,7 +788,7 @@ namespace pika { namespace threads { namespace policies {
 
                         PIKA_ASSERT(idx != num_thread);
 
-                        if (!test(numa_domain_mask,
+                        if (!::pika::threads::detail::test(numa_domain_mask,
                                 affinity_data_.get_pu_num(idx)))    //-V600
                         {
                             continue;
@@ -884,43 +887,51 @@ namespace pika { namespace threads { namespace policies {
 
             queues_[num_thread]->on_start_thread(num_thread);
 
-            auto const& topo = create_topology();
+            auto const& topo = ::pika::threads::detail::create_topology();
 
             // pre-calculate certain constants for the given thread number
             std::size_t num_pu = affinity_data_.get_pu_num(num_thread);
-            mask_cref_type machine_mask = topo.get_machine_affinity_mask();
-            mask_cref_type core_mask = topo.get_thread_affinity_mask(num_pu);
-            mask_cref_type node_mask = topo.get_numa_node_affinity_mask(num_pu);
+            ::pika::threads::detail::mask_cref_type machine_mask =
+                topo.get_machine_affinity_mask();
+            ::pika::threads::detail::mask_cref_type core_mask =
+                topo.get_thread_affinity_mask(num_pu);
+            ::pika::threads::detail::mask_cref_type node_mask =
+                topo.get_numa_node_affinity_mask(num_pu);
 
-            if (any(core_mask) && any(node_mask))
+            if (::pika::threads::detail::any(core_mask) &&
+                ::pika::threads::detail::any(node_mask))
             {
 #if !defined(                                                                  \
     PIKA_NATIVE_MIC)    // we know that the MIC has one NUMA domain only
-                set(steals_in_numa_domain_, num_pu);
+                ::pika::threads::detail::set(steals_in_numa_domain_, num_pu);
 #endif
                 numa_domain_masks_[num_thread] = node_mask;
             }
 
             // we allow the thread on the boundary of the NUMA domain to steal
-            mask_type first_mask = mask_type();
-            resize(first_mask, mask_size(core_mask));
+            ::pika::threads::detail::mask_type first_mask =
+                ::pika::threads::detail::mask_type();
+            ::pika::threads::detail::resize(
+                first_mask, ::pika::threads::detail::mask_size(core_mask));
 
-            std::size_t first = find_first(node_mask);
+            std::size_t first = ::pika::threads::detail::find_first(node_mask);
             if (first != std::size_t(-1))
-                set(first_mask, first);
+                ::pika::threads::detail::set(first_mask, first);
             else
                 first_mask = core_mask;
 
             bool numa_stealing =
                 has_scheduler_mode(policies::enable_stealing_numa);
-            if (numa_stealing && any(first_mask & core_mask))
+            if (numa_stealing &&
+                ::pika::threads::detail::any(first_mask & core_mask))
             {
 #if !defined(                                                                  \
     PIKA_NATIVE_MIC)    // we know that the MIC has one NUMA domain only
-                set(steals_outside_numa_domain_, num_pu);
+                ::pika::threads::detail::set(
+                    steals_outside_numa_domain_, num_pu);
 #endif
                 outside_numa_domain_masks_[num_thread] =
-                    not_(node_mask) & machine_mask;
+                    ::pika::threads::detail::not_(node_mask) & machine_mask;
             }
         }
 
@@ -943,11 +954,12 @@ namespace pika { namespace threads { namespace policies {
 
 #if !defined(                                                                  \
     PIKA_NATIVE_MIC)    // we know that the MIC has one NUMA domain only
-        mask_type steals_in_numa_domain_;
-        mask_type steals_outside_numa_domain_;
+        ::pika::threads::detail::mask_type steals_in_numa_domain_;
+        ::pika::threads::detail::mask_type steals_outside_numa_domain_;
 #endif
-        std::vector<mask_type> numa_domain_masks_;
-        std::vector<mask_type> outside_numa_domain_masks_;
+        std::vector<::pika::threads::detail::mask_type> numa_domain_masks_;
+        std::vector<::pika::threads::detail::mask_type>
+            outside_numa_domain_masks_;
     };
 }}}    // namespace pika::threads::policies
 

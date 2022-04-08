@@ -158,7 +158,7 @@ namespace pika {
 
     unsigned int thread::hardware_concurrency() noexcept
     {
-        return pika::threads::hardware_concurrency();
+        return pika::threads::detail::hardware_concurrency();
     }
 
     void thread::start_thread(

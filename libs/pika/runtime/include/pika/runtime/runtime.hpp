@@ -115,7 +115,7 @@ namespace pika {
         /// \brief Return a reference to the internal PAPI thread manager
         util::thread_mapper& get_thread_mapper();
 
-        threads::topology const& get_topology() const;
+        threads::detail::topology const& get_topology() const;
 
         /// \brief Run the pika runtime system, use the given function for the
         ///        main \a thread and block waiting for all threads to
@@ -402,7 +402,7 @@ namespace pika {
         std::unique_ptr<util::thread_mapper> thread_support_;
 
         // topology and affinity data
-        threads::topology& topology_;
+        threads::detail::topology& topology_;
 
         std::atomic<state> state_;
 

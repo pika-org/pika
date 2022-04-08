@@ -132,7 +132,7 @@ namespace pika { namespace threads { namespace detail {
            << "] with scheduler " << sched_->Scheduler::get_scheduler_name()
            << "\n"
            << "is running on PUs : \n";
-        os << pika::threads::to_string(get_used_processing_units())
+        os << pika::threads::detail::to_string(get_used_processing_units())
 #ifdef PIKA_HAVE_MAX_CPU_COUNT
            << " "
            << std::bitset<PIKA_HAVE_MAX_CPU_COUNT>(get_used_processing_units())
@@ -275,7 +275,7 @@ namespace pika { namespace threads { namespace detail {
         PIKA_ASSERT(l.owns_lock());
 
         LTM_(info).format("run: {} number of processing units available: {}",
-            id_.name(), threads::hardware_concurrency());
+            id_.name(), threads::detail::hardware_concurrency());
         LTM_(info).format(
             "run: {} creating {} OS thread(s)", id_.name(), pool_threads);
 
@@ -303,13 +303,13 @@ namespace pika { namespace threads { namespace detail {
             std::make_shared<util::barrier>(pool_threads + 1);
         try
         {
-            topology const& topo = create_topology();
+            topology const& topo = detail::create_topology();
 
             for (/**/; thread_num != pool_threads; ++thread_num)
             {
                 std::size_t global_thread_num =
                     this->thread_offset_ + thread_num;
-                threads::mask_cref_type mask =
+                threads::detail::mask_cref_type mask =
                     affinity_data_.get_pu_mask(topo, global_thread_num);
 
                 // thread_num ordering: 1. threads of default pool
@@ -322,7 +322,7 @@ namespace pika { namespace threads { namespace detail {
                     "run: {} create OS thread {}: will run on processing units "
                     "within this mask: {}",
                     id_.name(), global_thread_num,
-                    pika::threads::to_string(mask));
+                    pika::threads::detail::to_string(mask));
 
                 // create a new thread
                 add_processing_unit_internal(
@@ -425,10 +425,10 @@ namespace pika { namespace threads { namespace detail {
         std::size_t thread_num, std::size_t global_thread_num,
         std::shared_ptr<util::barrier> startup)
     {
-        topology const& topo = create_topology();
+        topology const& topo = detail::create_topology();
 
         // Set the affinity for the current thread.
-        threads::mask_cref_type mask =
+        threads::detail::mask_cref_type mask =
             affinity_data_.get_pu_mask(topo, global_thread_num);
 
         if (LPIKA_ENABLED(debug))
@@ -1810,7 +1810,7 @@ namespace pika { namespace threads { namespace detail {
 
     template <typename Scheduler>
     void scheduled_thread_pool<Scheduler>::get_idle_core_mask(
-        mask_type& mask) const
+        detail::mask_type& mask) const
     {
         std::size_t i = 0;
         for (auto const& data : counter_data_)

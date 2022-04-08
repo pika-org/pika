@@ -18,7 +18,7 @@
 #include <vector>
 
 std::size_t const max_threads = (std::min)(
-    std::size_t(4), std::size_t(pika::threads::hardware_concurrency()));
+    std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
 
 int pika_main()
 {
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = {"pika.os_threads=" +
         std::to_string(((std::min)(std::size_t(4),
-            std::size_t(pika::threads::hardware_concurrency()))))};
+            std::size_t(pika::threads::detail::hardware_concurrency()))))};
 
     // now run the test
     PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);

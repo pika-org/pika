@@ -263,8 +263,8 @@ namespace pika { namespace threads {
             return nullptr;
         }
 
-        mask_type get_used_processing_units() const;
-        hwloc_bitmap_ptr get_numa_domain_bitmap() const;
+        detail::mask_type get_used_processing_units() const;
+        detail::hwloc_bitmap_ptr get_numa_domain_bitmap() const;
 
         // performance counters
 #if defined(PIKA_HAVE_THREAD_CUMULATIVE_COUNTS)
@@ -442,7 +442,7 @@ namespace pika { namespace threads {
             return 0;
         }
 
-        virtual void get_idle_core_mask(mask_type&) const {}
+        virtual void get_idle_core_mask(detail::mask_type&) const {}
 
         virtual std::int64_t get_background_thread_count()
         {

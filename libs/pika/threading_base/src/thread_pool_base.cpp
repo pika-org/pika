@@ -36,13 +36,14 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    mask_type thread_pool_base::get_used_processing_units() const
+    detail::mask_type thread_pool_base::get_used_processing_units() const
     {
-        auto const& topo = create_topology();
+        auto const& topo = detail::create_topology();
         auto const sched = get_scheduler();
 
-        mask_type used_processing_units = mask_type();
-        threads::resize(used_processing_units, hardware_concurrency());
+        detail::mask_type used_processing_units = detail::mask_type();
+        threads::detail::resize(
+            used_processing_units, detail::hardware_concurrency());
 
         for (std::size_t thread_num = 0; thread_num < get_os_thread_count();
              ++thread_num)
@@ -57,10 +58,10 @@ namespace pika { namespace threads {
         return used_processing_units;
     }
 
-    hwloc_bitmap_ptr thread_pool_base::get_numa_domain_bitmap() const
+    detail::hwloc_bitmap_ptr thread_pool_base::get_numa_domain_bitmap() const
     {
-        auto const& topo = create_topology();
-        mask_type used_processing_units = get_used_processing_units();
+        auto const& topo = detail::create_topology();
+        detail::mask_type used_processing_units = get_used_processing_units();
         return topo.cpuset_to_nodeset(used_processing_units);
     }
 

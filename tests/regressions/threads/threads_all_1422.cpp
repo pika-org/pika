@@ -34,7 +34,7 @@ int pika_main()
 int main(int argc, char** argv)
 {
     // Get number of cores from OS
-    num_cores = pika::threads::hardware_concurrency();
+    num_cores = pika::threads::detail::hardware_concurrency();
 
     // By default this test should run on all available cores
     std::vector<std::string> const cfg = {"pika.os_threads=all"};

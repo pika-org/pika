@@ -175,7 +175,7 @@ namespace pika {
             threads::policies::scheduler_mode to_remove);
 
         /// Get the global topology instance
-        PIKA_EXPORT topology const& get_topology();
+        PIKA_EXPORT detail::topology const& get_topology();
         /// \endcond
     }    // namespace threads
 

@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 
     init_args.cfg = {"pika.os_threads=" +
         std::to_string(((std::min)(std::size_t(4),
-            std::size_t(pika::threads::hardware_concurrency()))))};
+            std::size_t(pika::threads::detail::hardware_concurrency()))))};
     init_args.rp_callback = [](auto& rp,
                                 pika::program_options::variables_map const&) {
         // Explicitly disable elasticity if it is in defaults

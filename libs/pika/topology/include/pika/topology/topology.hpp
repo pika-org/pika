@@ -29,7 +29,7 @@
 #error On Intel Xeon/Phi coprocessors pika cannot be use with a HWLOC version earlier than V1.6.
 #endif
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
 
     struct pika_hwloc_bitmap_wrapper
     {
@@ -58,12 +58,12 @@ namespace pika { namespace threads {
             bmp_ = bmp;
         }
 
-        explicit operator bool() const
+        explicit operator bool() const noexcept
         {
             return bmp_ != nullptr;
         }
 
-        hwloc_bitmap_t get_bmp() const
+        hwloc_bitmap_t get_bmp() const noexcept
         {
             return bmp_;
         }
@@ -284,7 +284,7 @@ namespace pika { namespace threads {
         void* allocate_membind(std::size_t len, hwloc_bitmap_ptr bitmap,
             pika_hwloc_membind_policy policy, int flags) const;
 
-        threads::mask_type get_area_membind_nodeset(
+        threads::detail::mask_type get_area_membind_nodeset(
             const void* addr, std::size_t len) const;
 
         bool set_area_membind_nodeset(
@@ -412,13 +412,13 @@ namespace pika { namespace threads {
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT topology& create_topology();
 
-    PIKA_NODISCARD PIKA_EXPORT unsigned int hardware_concurrency();
+    PIKA_NODISCARD PIKA_EXPORT unsigned int hardware_concurrency() noexcept;
 
     ///////////////////////////////////////////////////////////////////////////
     // abstract away memory page size, calls to system functions are
     // expensive, so return a value initialized at startup
     inline std::size_t get_memory_page_size()
     {
-        return pika::threads::topology::memory_page_size_;
+        return pika::threads::detail::topology::memory_page_size_;
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

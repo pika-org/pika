@@ -140,8 +140,8 @@ namespace pika { namespace detail {
         return &rt->get_thread_manager().default_pool();
     }
 
-    threads::mask_cref_type get_pu_mask(
-        threads::topology& /* topo */, std::size_t thread_num)
+    threads::detail::mask_cref_type get_pu_mask(
+        threads::detail::topology& /* topo */, std::size_t thread_num)
     {
         auto& rp = pika::resource::get_partitioner();
         return rp.get_pu_mask(thread_num);

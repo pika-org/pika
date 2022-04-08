@@ -22,7 +22,7 @@ void print_system_characteristics()
 
     pika::runtime* rt = pika::get_runtime_ptr();
     pika::util::runtime_configuration cfg = rt->get_config();
-    const pika::threads::topology& topo = rt->get_topology();
+    const pika::threads::detail::topology& topo = rt->get_topology();
 
     // -------------------------------------- //
     //      print runtime characteristics     //

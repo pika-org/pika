@@ -19,10 +19,11 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     PIKA_EXPORT void set_get_os_thread_count(get_os_thread_count_type f);
     PIKA_EXPORT std::size_t get_os_thread_count();
 
-    using get_pu_mask_type = pika::util::function<threads::mask_cref_type(
-        threads::topology&, std::size_t)>;
+    using get_pu_mask_type =
+        pika::util::function<threads::detail::mask_cref_type(
+            threads::detail::topology&, std::size_t)>;
     PIKA_EXPORT void set_get_pu_mask(get_pu_mask_type f);
-    PIKA_EXPORT threads::mask_cref_type get_pu_mask(
-        threads::topology&, std::size_t);
+    PIKA_EXPORT threads::detail::mask_cref_type get_pu_mask(
+        threads::detail::topology&, std::size_t);
     /// \endcond
 }}}}    // namespace pika::parallel::execution::detail

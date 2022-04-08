@@ -193,7 +193,7 @@ namespace pika { namespace resource {
         PIKA_EXPORT std::size_t get_number_requested_threads();
 
         // return the topology object managed by the internal partitioner
-        PIKA_EXPORT pika::threads::topology const& get_topology() const;
+        PIKA_EXPORT pika::threads::detail::topology const& get_topology() const;
 
         // Does initialization of all resources and internal data of the
         // resource partitioner called in pika_init

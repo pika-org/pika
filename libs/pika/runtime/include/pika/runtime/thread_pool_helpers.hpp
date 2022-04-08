@@ -90,7 +90,7 @@ namespace pika { namespace threads {
 
     /// The function \a get_idle_core_mask returns a bit-mask representing the
     /// currently idling threads (cores).
-    PIKA_EXPORT mask_type get_idle_core_mask();
+    PIKA_EXPORT detail::mask_type get_idle_core_mask();
 
     /// The function \a enumerate_threads will invoke the given function \a f
     /// for each thread with a matching thread state.

@@ -27,7 +27,7 @@
 #include <vector>
 
 std::size_t const max_threads = (std::min)(
-    std::size_t(4), std::size_t(pika::threads::hardware_concurrency()));
+    std::size_t(4), std::size_t(pika::threads::detail::hardware_concurrency()));
 
 int pika_main(int argc, char* argv[])
 {

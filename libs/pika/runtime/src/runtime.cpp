@@ -443,7 +443,7 @@ namespace pika {
         return state_.load();
     }
 
-    threads::topology const& runtime::get_topology() const
+    threads::detail::topology const& runtime::get_topology() const
     {
         return topology_;
     }
@@ -994,7 +994,7 @@ namespace pika { namespace threads {
         get_runtime().get_thread_manager().remove_scheduler_mode(m);
     }
 
-    topology const& get_topology()
+    detail::topology const& get_topology()
     {
         pika::runtime* rt = pika::get_runtime_ptr();
         if (rt == nullptr)
@@ -1151,7 +1151,7 @@ namespace pika {
     namespace detail {
         void handle_print_bind(std::size_t num_threads)
         {
-            threads::topology& top = threads::create_topology();
+            threads::detail::topology& top = threads::detail::create_topology();
             auto const& rp = pika::resource::get_partitioner();
             auto const& tm = get_runtime().get_thread_manager();
 
@@ -1164,9 +1164,9 @@ namespace pika {
                 for (std::size_t i = 0; i != num_threads; ++i)
                 {
                     // print the mask for the current PU
-                    threads::mask_cref_type pu_mask = rp.get_pu_mask(i);
+                    threads::detail::mask_cref_type pu_mask = rp.get_pu_mask(i);
 
-                    if (!threads::any(pu_mask))
+                    if (!threads::detail::any(pu_mask))
                     {
                         strm << std::setw(4) << i    //-V112
                              << ": thread binding disabled" << std::endl;
@@ -1182,16 +1182,18 @@ namespace pika {
                     // report HWLOC bindings).
                     error_code ec(lightweight);
                     std::thread& blob = tm.get_os_thread_handle(i);
-                    threads::mask_type boundcpu =
+                    threads::detail::mask_type boundcpu =
                         top.get_cpubind_mask(blob, ec);
 
                     // The masks reported by pika must be the same as the ones
                     // reported from HWLOC.
-                    if (!ec && threads::any(boundcpu) &&
-                        !threads::equal(boundcpu, pu_mask, num_threads))
+                    if (!ec && threads::detail::any(boundcpu) &&
+                        !threads::detail::equal(boundcpu, pu_mask, num_threads))
                     {
-                        std::string boundcpu_str = threads::to_string(boundcpu);
-                        std::string pu_mask_str = threads::to_string(pu_mask);
+                        std::string boundcpu_str =
+                            threads::detail::to_string(boundcpu);
+                        std::string pu_mask_str =
+                            threads::detail::to_string(pu_mask);
                         PIKA_THROW_EXCEPTION(invalid_status,
                             "handle_print_bind",
                             pika::util::format(
@@ -1726,11 +1728,11 @@ namespace pika {
             // FIXME: We don't set the affinity of the service threads on BG/Q,
             // as this is causing a hang (needs to be investigated)
 #if !defined(__bgq__)
-            threads::mask_cref_type used_processing_units =
+            threads::detail::mask_cref_type used_processing_units =
                 thread_manager_->get_used_processing_units();
 
             // --pika:bind=none  should disable all affinity definitions
-            if (threads::any(used_processing_units))
+            if (threads::detail::any(used_processing_units))
             {
                 this->topology_.set_thread_affinity_mask(
                     this->topology_.get_service_affinity_mask(
@@ -1743,7 +1745,7 @@ namespace pika {
                 //    PIKA_THROW_EXCEPTION(kernel_error, "runtime::init_tss_ex",
                 //        "failed to set thread affinity mask ({}) for service "
                 //        "thread: {}",
-                //        pika::threads::to_string(used_processing_units),
+                //        pika::threads::detail::to_string(used_processing_units),
                 //        detail::thread_name());
                 //}
             }
