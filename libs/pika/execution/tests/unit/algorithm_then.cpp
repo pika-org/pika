@@ -66,6 +66,17 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
+        auto s = ex::then(
+            ex::just(42), [](auto i) { return i + 1; });    // generic lambda
+        auto f = [](int x) { PIKA_TEST_EQ(x, 43); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
+    {
+        std::atomic<bool> set_value_called{false};
         auto s = ex::then(ex::just(custom_type_non_default_constructible{0}),
             [](custom_type_non_default_constructible x) {
                 ++(x.x);

@@ -91,8 +91,7 @@ namespace pika { namespace execution { namespace experimental {
                     });
             }
 
-            template <typename... Ts,
-                typename = std::enable_if_t<pika::is_invocable_v<F, Ts...>>>
+            template <typename... Ts>
             friend void tag_invoke(
                 set_value_t, then_receiver_type&& r, Ts&&... ts) noexcept
             {
