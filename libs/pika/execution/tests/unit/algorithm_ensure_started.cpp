@@ -171,5 +171,10 @@ int main()
         PIKA_TEST(receiver_set_value_called);
     }
 
+    // It's allowed to discard the sender from ensure_started
+    {
+        ex::just() | ex::ensure_started();
+    }
+
     return pika::util::report_errors();
 }

@@ -152,21 +152,21 @@ namespace pika { namespace execution { namespace experimental {
 
                 struct ensure_started_receiver
                 {
-                    shared_state& state;
+                    pika::intrusive_ptr<shared_state> state;
 
                     template <typename Error>
                     friend void tag_invoke(set_error_t,
                         ensure_started_receiver&& r, Error&& error) noexcept
                     {
-                        r.state.v.template emplace<error_type>(
+                        r.state->v.template emplace<error_type>(
                             error_type(PIKA_FORWARD(Error, error)));
-                        r.state.set_predecessor_done();
+                        r.state->set_predecessor_done();
                     }
 
                     friend void tag_invoke(
                         set_done_t, ensure_started_receiver&& r) noexcept
                     {
-                        r.state.set_predecessor_done();
+                        r.state->set_predecessor_done();
                     };
 
                     // This typedef is duplicated from the parent struct. The
@@ -188,10 +188,9 @@ namespace pika { namespace execution { namespace experimental {
                                         PIKA_FORWARD(Ts, ts)...)),
                             void())
                     {
-                        r.state.v.template emplace<value_type>(
+                        r.state->v.template emplace<value_type>(
                             pika::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
-
-                        r.state.set_predecessor_done();
+                        r.state->set_predecessor_done();
                     }
                 };
 
@@ -204,7 +203,7 @@ namespace pika { namespace execution { namespace experimental {
                     os.emplace(pika::util::detail::with_result_of([&]() {
                         return pika::execution::experimental::connect(
                             PIKA_FORWARD(Sender_, sender),
-                            ensure_started_receiver{*this});
+                            ensure_started_receiver{this});
                     }));
                 }
 
