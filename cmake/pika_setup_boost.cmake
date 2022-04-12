@@ -41,7 +41,6 @@ if(NOT TARGET pika_dependencies_boost)
 
   set(__boost_libraries "")
   if(PIKA_WITH_GENERIC_CONTEXT_COROUTINES)
-    # if context is needed, we should still link with boost thread and chrono
     set(__boost_libraries ${__boost_libraries} context)
   endif()
 

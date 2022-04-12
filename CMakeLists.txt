@@ -1882,7 +1882,7 @@ pika_export_internal_targets(pika_base_libraries)
 include(pika_forward_cache_variables)
 
 # ##############################################################################
-# External build system support (Findpika.cmake and pkg-config).
+# External build system support.
 include(pika_generate_package)
 
 message("")
