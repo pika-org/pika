@@ -136,7 +136,7 @@ namespace pika { namespace execution { namespace experimental {
                     typename Receiver_>
                 operation_state(Sender_&& predecessor_sender,
                     Scheduler_&& scheduler, Receiver_&& receiver)
-                  : scheduler(PIKA_FORWARD(Scheduler, scheduler))
+                  : scheduler(PIKA_FORWARD(Scheduler_, scheduler))
                   , receiver(PIKA_FORWARD(Receiver_, receiver))
                   , sender_os(pika::execution::experimental::connect(
                         PIKA_FORWARD(Sender_, predecessor_sender),
