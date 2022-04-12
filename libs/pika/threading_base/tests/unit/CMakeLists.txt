@@ -9,7 +9,7 @@ set(tests resume_suspended_same_thread)
 set(resume_suspended_same_thread_PARAMETERS THREADS 2)
 
 if(PIKA_WITH_APEX)
-  list(APPEND tests annotation_check)
+  list(APPEND tests annotation_check_futures annotation_check_senders)
 endif()
 
 foreach(test ${tests})
@@ -69,9 +69,34 @@ if(PIKA_WITH_APEX)
   endforeach()
 
   set_tests_properties(
-    tests.unit.modules.threading_base.annotation_check
-    PROPERTIES
-      PASS_REGULAR_EXPRESSION
-      "${REGEX_MATCH_S_}${REGEX_MATCH_D_}${REGEX_MATCH_C_}${REGEX_MATCH_ANN_}"
+    tests.unit.modules.threading_base.annotation_check_futures
+    PROPERTIES PASS_REGULAR_EXPRESSION
+               "${REGEX_MATCH_D_}${REGEX_MATCH_C_}${REGEX_MATCH_ANN_}"
+  )
+
+  string(
+    CONCAT REGEX_MATCH_S_
+           "0-execute-no-parent-A :[ ]+1[ ]+.*"
+           "0-execute-no-parent-C :[ ]+1[ ]+.*"
+           "1-execute-parent :[ ]+2[ ]+.*"
+           "1-execute-parent-A :[ ]+1[ ]+.*"
+           "1-execute-parent-C :[ ]+1[ ]+.*"
+           "2-schedule-no-parent-A :[ ]+1[ ]+.*"
+           "2-schedule-no-parent-B :[ ]+1[ ]+.*"
+           "2-schedule-no-parent-C :[ ]+1[ ]+.*"
+           "2-schedule-no-parent-D :[ ]+1[ ]+.*"
+           "3-schedule-parent :[ ]+7[ ]+.*"
+           "3-schedule-parent-A :[ ]+1[ ]+.*"
+           "3-schedule-parent-B :[ ]+1[ ]+.*"
+           "3-schedule-parent-C :[ ]+1[ ]+.*"
+           "3-schedule-parent-D :[ ]+1[ ]+.*"
+           "3-schedule-parent-E :[ ]+1[ ]+.*"
+           "3-schedule-parent-F :[ ]+1[ ]+.*"
+           "<unknown> :[ ]+8[ ]+.*"
+  )
+
+  set_tests_properties(
+    tests.unit.modules.threading_base.annotation_check_senders
+    PROPERTIES PASS_REGULAR_EXPRESSION "${REGEX_MATCH_S_}"
   )
 endif()

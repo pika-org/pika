@@ -137,6 +137,12 @@ namespace pika {
                 threads::get_thread_id_data(self->get_thread_id())
                     ->set_description(desc_);
             }
+
+#if defined(PIKA_HAVE_APEX)
+            threads::set_self_timer_data(
+                pika::detail::external_timer::update_task(
+                    threads::get_self_timer_data(), desc_));
+#endif
         }
 
         pika::util::thread_description desc_;
