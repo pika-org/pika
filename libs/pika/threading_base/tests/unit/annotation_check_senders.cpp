@@ -86,8 +86,23 @@ auto test_senders_schedule_no_parent_annotation()
         // 2-schedule-no-parent-F and <unknown>
         ex::schedule(ex::thread_pool_scheduler{}) |
             ex::transfer(ex::with_annotation(
-                ex::thread_pool_scheduler{}, "2-schedule-no-parent-F"))
-        //
+                ex::thread_pool_scheduler{}, "2-schedule-no-parent-F")),
+
+        // 2 x <unknown>
+        ex::schedule(ex::thread_pool_scheduler{}) | ex::bulk(2, [](int) {}),
+
+        // 2 x 2-schedule-no-parent-G
+        ex::schedule(ex::with_annotation(
+            ex::thread_pool_scheduler{}, "2-schedule-no-parent-G")) |
+            ex::bulk(2, [](int) {}),
+
+        // 2 x <unknown>, 1 x 3-schedule-no-parent-H, plus one yielded
+        // 3-schedule-no-parent-H which does not show up in the call count (but
+        // does show up in OTF2 files)
+        ex::schedule(ex::thread_pool_scheduler{}) |
+            ex::bulk(2,
+                pika::annotated_function([](int) {}, "2-schedule-no-parent-H"))
+
     );
 }
 
@@ -130,7 +145,24 @@ auto test_senders_schedule_parent_annotation()
                 // 3-schedule-parent-F and 3-schedule-parent
                 ex::schedule(ex::thread_pool_scheduler{}) |
                     ex::transfer(ex::with_annotation(
-                        ex::thread_pool_scheduler{}, "3-schedule-parent-F"))
+                        ex::thread_pool_scheduler{}, "3-schedule-parent-F")),
+
+                // 2 x 3-schedule-parent
+                ex::schedule(ex::thread_pool_scheduler{}) |
+                    ex::bulk(2, [](int) {}),
+
+                // 2 x 3-schedule-parent-G
+                ex::schedule(ex::with_annotation(
+                    ex::thread_pool_scheduler{}, "3-schedule-parent-G")) |
+                    ex::bulk(2, [](int) {}),
+
+                // 2 x 3-schedule-parent, 1 x 3-schedule-parent-H, plus one
+                // yielded 3-schedule-parent-H which does not show up in the
+                // call count (but does show up in OTF2 files)
+                ex::schedule(ex::thread_pool_scheduler{}) |
+                    ex::bulk(2,
+                        pika::annotated_function(
+                            [](int) {}, "3-schedule-parent-H"))
                 //
             );
         });
