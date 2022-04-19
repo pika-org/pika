@@ -9,9 +9,12 @@ name: Linux CI - Using Address and Undefined behavior sanitizer
 on:
   push:
     branches:
-      - staging
+      # Development and release branches
+      - main
+      - release**
+      # Bors branches
       - trying
-  pull_request:
+      - staging
 
 jobs:
   build:

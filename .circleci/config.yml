@@ -5,6 +5,17 @@
 #  Distributed under the Boost Software License, Version 1.0. (See accompanying
 #  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+branch_filter: &branch_filter
+    filters:
+      branches:
+        only:
+          # Development and release branches
+          - main
+          - /release.*/
+          # Bors branches
+          - trying
+          - staging
+
 working_dir_default: &working_dir_default
     working_directory: /pika/build
 
@@ -539,23 +550,32 @@ workflows:
             - core
             - configure
       - core:
+          <<: *branch_filter
           requires:
             - configure
       - tests.examples:
+          <<: *branch_filter
           <<: *core_dependency
       - tests.unit.algorithms:
+          <<: *branch_filter
           <<: *core_dependency
       - tests.unit.container_algorithms:
+          <<: *branch_filter
           <<: *core_dependency
       - tests.unit:
+          <<: *branch_filter
           <<: *core_dependency
       - tests.regressions:
+          <<: *branch_filter
           <<: *core_dependency
       - tests.performance:
+          <<: *branch_filter
           <<: *core_dependency
       - tests.headers:
+          <<: *branch_filter
           <<: *core_dependency
       - install:
+          <<: *branch_filter
           requires:
             - core
             - tests.examples

@@ -9,8 +9,12 @@ name: Linux CI (Debug)
 on:
   push:
     branches:
-      - staging
+      # Development and release branches
+      - main
+      - release**
+      # Bors branches
       - trying
+      - staging
   pull_request:
 
 jobs:
