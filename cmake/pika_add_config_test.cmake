@@ -412,15 +412,6 @@ function(pika_check_for_cxx17_std_scan)
 endfunction()
 
 # ##############################################################################
-function(pika_check_for_cxx17_shared_ptr_array)
-  pika_add_config_test(
-    PIKA_WITH_CXX17_SHARED_PTR_ARRAY
-    SOURCE cmake/tests/cxx17_shared_ptr_array.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
 function(pika_check_for_cxx17_copy_elision)
   pika_add_config_test(
     PIKA_WITH_CXX17_COPY_ELISION

@@ -45,10 +45,6 @@ function(pika_perform_cxx_feature_tests)
 
   pika_check_for_cxx17_aligned_new(DEFINITIONS PIKA_HAVE_CXX17_ALIGNED_NEW)
 
-  pika_check_for_cxx17_shared_ptr_array(
-    DEFINITIONS PIKA_HAVE_CXX17_SHARED_PTR_ARRAY
-  )
-
   pika_check_for_cxx17_std_transform_scan(
     DEFINITIONS PIKA_HAVE_CXX17_STD_TRANSFORM_SCAN_ALGORITHMS
   )

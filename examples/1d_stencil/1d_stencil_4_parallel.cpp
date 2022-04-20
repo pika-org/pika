@@ -20,15 +20,10 @@
 #include <pika/init.hpp>
 #include <pika/modules/iterator_support.hpp>
 
-#if !defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
-#include <boost/shared_array.hpp>
-#else
-#include <memory>
-#endif
-
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "print_time_results.hpp"
@@ -78,11 +73,7 @@ struct partition_data
     }
 
 private:
-#if defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
     std::shared_ptr<double[]> data_;
-#else
-    boost::shared_array<double> data_;
-#endif
     std::size_t size_;
 };
 

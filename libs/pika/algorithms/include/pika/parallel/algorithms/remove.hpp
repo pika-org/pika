@@ -231,10 +231,6 @@ namespace pika {
 #include <pika/parallel/util/transfer.hpp>
 #include <pika/parallel/util/zip_iterator.hpp>
 
-#if !defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
-#include <boost/shared_array.hpp>
-#endif
-
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
@@ -299,11 +295,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 if (count == 0)
                     return algorithm_result::get(PIKA_MOVE(first));
 
-#if defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
                 std::shared_ptr<bool[]> flags(new bool[count]);
-#else
-                boost::shared_array<bool> flags(new bool[count]);
-#endif
                 std::size_t init = 0u;
 
                 using pika::get;
