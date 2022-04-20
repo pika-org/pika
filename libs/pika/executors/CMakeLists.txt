@@ -29,6 +29,7 @@ set(executors_headers
     pika/executors/scheduler_executor.hpp
     pika/executors/sequenced_executor.hpp
     pika/executors/std_execution_policy.hpp
+    pika/executors/std_thread_scheduler.hpp
     pika/executors/sync.hpp
     pika/executors/thread_pool_executor.hpp
     pika/executors/thread_pool_scheduler.hpp
