@@ -10,6 +10,7 @@ set(resume_suspended_same_thread_PARAMETERS THREADS 2)
 
 if(PIKA_WITH_APEX)
   list(APPEND tests annotation_check_futures annotation_check_senders)
+  set(annotation_check_senders_PARAMETERS THREADS 2)
 endif()
 
 foreach(test ${tests})
@@ -85,14 +86,20 @@ if(PIKA_WITH_APEX)
            "2-schedule-no-parent-B :[ ]+1[ ]+.*"
            "2-schedule-no-parent-C :[ ]+1[ ]+.*"
            "2-schedule-no-parent-D :[ ]+1[ ]+.*"
-           "3-schedule-parent :[ ]+7[ ]+.*"
+           "2-schedule-no-parent-E :[ ]+1[ ]+.*"
+           "2-schedule-no-parent-F :[ ]+1[ ]+.*"
+           "2-schedule-no-parent-G :[ ]+2[ ]+.*"
+           "2-schedule-no-parent-H :[ ]+1[ ]+.*"
+           "3-schedule-parent :[ ]+11[ ]+.*"
            "3-schedule-parent-A :[ ]+1[ ]+.*"
            "3-schedule-parent-B :[ ]+1[ ]+.*"
            "3-schedule-parent-C :[ ]+1[ ]+.*"
            "3-schedule-parent-D :[ ]+1[ ]+.*"
            "3-schedule-parent-E :[ ]+1[ ]+.*"
            "3-schedule-parent-F :[ ]+1[ ]+.*"
-           "<unknown> :[ ]+8[ ]+.*"
+           "3-schedule-parent-G :[ ]+2[ ]+.*"
+           "3-schedule-parent-H :[ ]+1[ ]+.*"
+           "<unknown> :[ ]+12[ ]+.*"
   )
 
   set_tests_properties(

@@ -25,6 +25,7 @@
 #include <pika/iterator_support/traits/is_range.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/register_thread.hpp>
+#include <pika/threading_base/thread_description.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -311,6 +312,12 @@ namespace pika { namespace execution { namespace experimental {
                         {
                             try
                             {
+                                // If f has a different annotation than the
+                                // current annotation it will be used for the
+                                // duration of the work and reset once done.
+                                // Otherwise the current annotation will be
+                                // used.
+                                pika::scoped_annotation ann(op_state->f);
                                 do_work();
                             }
                             catch (...)
@@ -379,19 +386,20 @@ namespace pika { namespace execution { namespace experimental {
                                 worker_thread);
                         }
 
-                        // Spawn the task.
-                        char const* scheduler_annotation =
-                            get_annotation(op_state->scheduler);
-                        char const* annotation =
-                            scheduler_annotation == nullptr ?
-                            traits::get_function_annotation<
-                                std::decay_t<F>>::call(op_state->f) :
-                            scheduler_annotation;
+                        // Get the current thread description and apply it to
+                        // the spawned task. Since this is a customization of
+                        // bulk for thread_pool_scheduler we must currently be
+                        // running on a pika thread.
+                        PIKA_ASSERT(pika::threads::get_self_id());
+                        pika::util::thread_description desc =
+                            pika::threads::get_thread_description(
+                                pika::threads::get_self_id());
 
+                        // Spawn the task.
                         threads::thread_init_data data(
                             threads::make_thread_function_nullary(
                                 PIKA_MOVE(task_f)),
-                            annotation, get_priority(op_state->scheduler), hint,
+                            desc, get_priority(op_state->scheduler), hint,
                             get_stacksize(op_state->scheduler));
                         threads::register_work(
                             data, op_state->scheduler.get_thread_pool());
@@ -404,11 +412,6 @@ namespace pika { namespace execution { namespace experimental {
                     void do_work_local(size_type n, std::uint32_t chunk_size,
                         std::uint32_t worker_thread) const
                     {
-                        char const* scheduler_annotation =
-                            get_annotation(op_state->scheduler);
-                        auto af = scheduler_annotation ?
-                            pika::scoped_annotation(scheduler_annotation) :
-                            pika::scoped_annotation(op_state->f);
                         task_function{
                             this->op_state, n, chunk_size, worker_thread}();
                     }

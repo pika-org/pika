@@ -115,17 +115,20 @@ namespace pika {
                 std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
         explicit scoped_annotation(F&& f)
         {
+            pika::util::thread_description desc(f);
+
             auto* self = pika::threads::get_self_ptr();
             if (self != nullptr)
             {
-                desc_ =
-                    threads::get_thread_id_data(self->get_thread_id())
-                        ->set_description(pika::util::thread_description(f));
+                desc_ = threads::get_thread_id_data(self->get_thread_id())
+                            ->set_description(desc);
             }
 
 #if defined(PIKA_HAVE_APEX)
-            /* no need to update the task description in APEX, because
-             * this same description was used when the task was created. */
+            /* update the task wrapper in APEX to use the specified name */
+            threads::set_self_timer_data(
+                pika::detail::external_timer::update_task(
+                    threads::get_self_timer_data(), desc));
 #endif
         }
 
