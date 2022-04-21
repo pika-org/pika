@@ -1826,7 +1826,6 @@ void test_completion_scheduler()
     {
         auto sender =
             ex::then(ex::schedule(ex::thread_pool_scheduler{}), []() {});
-        using pika::functional::tag_invoke;
         auto completion_scheduler =
             ex::get_completion_scheduler<ex::set_value_t>(sender);
         static_assert(
