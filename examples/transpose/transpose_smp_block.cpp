@@ -6,9 +6,8 @@
 
 #include <pika/algorithm.hpp>
 #include <pika/init.hpp>
+#include <pika/modules/iterator_support.hpp>
 #include <pika/numeric.hpp>
-
-#include <boost/range/irange.hpp>
 
 #include <algorithm>
 #include <cstdint>
@@ -66,7 +65,7 @@ int pika_main(pika::program_options::variables_map& vm)
     const std::uint64_t start = 0;
 
     // Fill the original matrix, set transpose to known garbage value.
-    auto range = boost::irange(start, num_blocks);
+    auto range = pika::detail::irange(start, num_blocks);
     for_each(par, range, [&](std::uint64_t b) {
         for (std::uint64_t i = 0; i < order; ++i)
         {
@@ -92,7 +91,7 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         pika::chrono::high_resolution_timer t;
 
-        auto range = boost::irange(start, num_blocks);
+        auto range = pika::detail::irange(start, num_blocks);
 
         std::vector<pika::shared_future<void>> transpose_futures;
         transpose_futures.resize(num_blocks);
@@ -224,7 +223,7 @@ double test_results(std::uint64_t order, std::uint64_t block_order,
     const std::uint64_t end = trans.size();
 
     // Fill the original matrix, set transpose to known garbage value.
-    auto range = boost::irange(start, end);
+    auto range = pika::detail::irange(start, end);
     double errsq = transform_reduce(
         par, std::begin(range), std::end(range), 0.0,
         [](double lhs, double rhs) { return lhs + rhs; },

@@ -21,8 +21,7 @@
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/synchronization.hpp>
-
-#include <boost/range/irange.hpp>
+#include <pika/modules/thread_support.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -159,7 +158,7 @@ struct stepper
 
         // Initial conditions: f(0, i) = i
         std::size_t b = 0;
-        auto range = boost::irange(b, np);
+        auto range = pika::detail::irange(b, np);
         using pika::execution::par;
         pika::ranges::for_each(par, range, [&U, nx](std::size_t i) {
             U[0][i] = pika::make_ready_future(partition_data(nx, double(i)));

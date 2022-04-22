@@ -6,9 +6,8 @@
 
 #include <pika/algorithm.hpp>
 #include <pika/init.hpp>
+#include <pika/modules/iterator_support.hpp>
 #include <pika/numeric.hpp>
-
-#include <boost/range/irange.hpp>
 
 #include <algorithm>
 #include <cstdint>
@@ -55,7 +54,7 @@ int pika_main(pika::program_options::variables_map& vm)
     const std::uint64_t start = 0;
 
     // Fill the original matrix, set transpose to known garbage value.
-    auto range = boost::irange(start, order);
+    auto range = pika::detail::irange(start, order);
     // parallel for
     for_each(par, range, [&](std::uint64_t i) {
         for (std::uint64_t j = 0; j < order; ++j)
@@ -77,7 +76,8 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::chrono::high_resolution_timer t;
         if (tile_size < order)
         {
-            auto range = boost::irange(start, order + tile_size, tile_size);
+            auto range = pika::detail::strided_irange(
+                start, order + tile_size, tile_size);
             // parallel for
             for_each(par, range, [&](std::uint64_t i) {
                 for (std::uint64_t j = 0; j < order; j += tile_size)
@@ -97,7 +97,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
         else
         {
-            auto range = boost::irange(start, order);
+            auto range = pika::detail::irange(start, order);
             // parallel for
             for_each(par, range, [&](std::uint64_t i) {
                 for (std::uint64_t j = 0; j < order; ++j)
@@ -178,7 +178,7 @@ double test_results(std::uint64_t order, std::vector<double> const& trans)
 
     const std::uint64_t start = 0;
 
-    auto range = boost::irange(start, order);
+    auto range = pika::detail::irange(start, order);
     // parallel reduce
     double errsq = transform_reduce(
         par, std::begin(range), std::end(range), 0.0,
