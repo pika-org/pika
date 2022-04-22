@@ -4,8 +4,14 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests annotated_minmax_2593 bulk_then_execute_3182 chunk_size_4118
-          future_then_async_executor is_executor_1691 parallel_executor_1781
+set(tests
+    annotated_minmax_2593
+    bulk_then_execute_3182
+    chunk_size_4118
+    future_then_async_executor
+    is_executor_1691
+    parallel_executor_1781
+    split_continuation_clear
 )
 
 if(PIKA_WITH_DATAPAR)
