@@ -65,7 +65,7 @@ namespace pika { namespace mpi { namespace experimental {
         // have completed
         void add_to_request_callback_queue(request_callback&& req_callback)
         {
-            get_request_callback_queue().enqueue(std::move(req_callback));
+            get_request_callback_queue().enqueue(PIKA_MOVE(req_callback));
             ++(get_mpi_info().requests_queue_size_);
 
             if constexpr (mpi_debug.is_enabled())
@@ -81,7 +81,7 @@ namespace pika { namespace mpi { namespace experimental {
         void add_to_request_callback_vector(request_callback&& req_callback)
         {
             get_requests_vector().push_back(req_callback.request);
-            get_request_callback_vector().push_back(std::move(req_callback));
+            get_request_callback_vector().push_back(PIKA_MOVE(req_callback));
             ++(get_mpi_info().active_requests_vector_size_);
 
             if constexpr (mpi_debug.is_enabled())
@@ -112,8 +112,18 @@ namespace pika { namespace mpi { namespace experimental {
                 "that MPI event polling is enabled on at least one thread "
                 "pool.");
 
+            // Eagerly check if request already completed. If it did, call the
+            // callback immediately.
+            int flag = 0;
+            int result = MPI_Test(&request, &flag, MPI_STATUS_IGNORE);
+            if (flag)
+            {
+                PIKA_INVOKE(PIKA_MOVE(callback), result);
+                return;
+            }
+
             detail::add_to_request_callback_queue(
-                request_callback{request, std::move(callback)});
+                request_callback{request, PIKA_MOVE(callback)});
         }
 
         // mutex needed to protect mpi request vector, note that the
