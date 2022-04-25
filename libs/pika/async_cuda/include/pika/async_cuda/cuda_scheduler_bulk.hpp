@@ -20,43 +20,54 @@
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 
+#include <type_traits>
+
 namespace pika::cuda::experimental {
     namespace detail {
+        // This silences a bogus warning from nvcc about no return from a
+        // non-void function.
+        template <typename Shape>
+        auto shape_size_impl(std::true_type, Shape&& shape)
+        {
+            return shape;
+        }
+
+        template <typename Shape>
+        auto shape_size_impl(std::false_type, Shape&& shape)
+        {
+            return pika::util::size(PIKA_FORWARD(Shape, shape));
+        }
+
         template <typename Shape>
         auto shape_size(Shape&& shape)
         {
-            if constexpr (std::is_integral_v<std::decay_t<Shape>>)
-            {
-                return shape;
-            }
-            else
-            {
-                return pika::util::size(PIKA_FORWARD(Shape, shape));
-            }
-            // This silences a bogus warning from nvcc about no return from a
-            // non-void function.
-#if defined(__NVCC__)
-            __builtin_unreachable();
-#endif
+            return shape_size_impl(std::is_integral<std::decay_t<Shape>>{},
+                PIKA_FORWARD(Shape, shape));
         }
 
 #if defined(PIKA_COMPUTE_CODE)
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+        template <typename Shape>
+        PIKA_DEVICE auto shape_dereference_impl(
+            std::true_type, Shape&& shape, int i)
+        {
+            return static_cast<std::decay_t<Shape>>(i);
+        }
+
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+        template <typename Shape>
+        PIKA_DEVICE auto shape_dereference_impl(
+            std::false_type, Shape&& shape, int i)
+        {
+            return pika::util::begin(shape)[i];
+        }
+
         template <typename Shape>
         PIKA_DEVICE auto shape_dereference(Shape&& shape, int i)
         {
-            if constexpr (std::is_integral_v<std::decay_t<Shape>>)
-            {
-                return static_cast<std::decay_t<Shape>>(i);
-            }
-            else
-            {
-                return pika::util::begin(shape)[i];
-            }
-            // This silences a bogus warning from nvcc about no return from a
-            // non-void function.
-#if defined(__NVCC__)
-            __builtin_unreachable();
-#endif
+            return shape_dereference_impl(
+                std::is_integral<std::decay_t<Shape>>{},
+                PIKA_FORWARD(Shape, shape), i);
         }
 
         template <typename F, typename Shape, typename Size, typename... Ts>
