@@ -21,7 +21,7 @@ jobs:
   build:
     name: github/linux/debug/fast
     runs-on: ubuntu-latest
-    container: stellargroup/build_env:10
+    container: pikaorg/pika-ci-base:1
 
     steps:
     - uses: actions/checkout@v2

@@ -21,7 +21,7 @@ working_dir_default: &working_dir_default
 
 docker_default: &docker_default
     docker:
-      - image: stellargroup/build_env:10
+      - image: pikaorg/pika-ci-base:1
 
 defaults: &defaults
     <<: *working_dir_default
@@ -193,7 +193,6 @@ jobs:
                 -DPIKA_WITH_EXAMPLES=On \
                 -DPIKA_WITH_TESTS=On \
                 -DPIKA_WITH_TESTS_HEADERS=On \
-                -DPIKA_WITH_DATAPAR_VC=On \
                 -DPIKA_WITH_COMPILER_WARNINGS=On \
                 -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=On \
                 -DPIKA_WITH_DEPRECATION_WARNINGS=On \
@@ -338,8 +337,7 @@ jobs:
           command: |
               ninja -j3 -k 0 \
                 tests.unit.modules.algorithms.algorithms \
-                tests.unit.modules.algorithms.block \
-                tests.unit.modules.algorithms.datapar_algorithms
+                tests.unit.modules.algorithms.block
       - run:
           name: Running Unit Tests
           when: always
@@ -352,8 +350,7 @@ jobs:
                 --output-on-failure \
                 --tests-regex \
               "tests.unit.modules.algorithms.algorithms|\
-              tests.unit.modules.algorithms.block|\
-              tests.unit.modules.algorithms.datapar_algorithms"
+              tests.unit.modules.algorithms.block"
       - run:
           <<: *convert_xml
       - run:
@@ -497,11 +494,6 @@ jobs:
           name: Installing
           command: |
               ./bin/hello_world --pika:bind=none
-              # Disable Vc here as the target machine of the container image may
-              # not support the same vector intrinsics as this machine. The
-              # "Test Docker Image" below fails with "Illegal instruction" if VC
-              # is enabled, and other machines may fail similarly.
-              cmake -DPIKA_WITH_DATAPAR_VC=Off .
               ninja -j3 install
           working_directory: /pika/build
           when: always
