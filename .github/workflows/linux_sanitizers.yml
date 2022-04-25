@@ -38,6 +38,8 @@ jobs:
               -DPIKA_WITH_TESTS=ON \
               -DPIKA_WITH_TESTS_EXAMPLES=ON \
               -DPIKA_WITH_TESTS_MAX_THREADS=2 \
+              -DPIKA_WITH_COMPILER_WARNINGS=ON \
+              -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
               -DPIKA_WITH_SANITIZERS=On \
               -DCMAKE_CXX_FLAGS="-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer" \
               -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
