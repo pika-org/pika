@@ -7,7 +7,7 @@
 #include <pika/algorithm.hpp>
 #include <pika/cuda.hpp>
 #include <pika/execution.hpp>
-#include <pika/future.hpp>
+#include <pika/functional.hpp>
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
@@ -19,22 +19,50 @@
 #include <utility>
 #include <vector>
 
-// -------------------------------------------------------------------------
-// This example uses the normal C++ compiler to compile all the pika stuff
-// but the cuda functions go in their own .cu file and are compiled with
-// nvcc, we don't mix them.
-// Declare functions we are importing - note that template instantiations
-// must be present in the .cu file and compiled so that we can link to them
-template <typename T>
-extern void cuda_trivial_kernel(T, cudaStream_t stream);
+namespace cu = pika::cuda::experimental;
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
-// Need to move the call to the saxpy device kernel in .cu, as the symbol change
-// from saxpy to __device_stub__saxpy when moving from Clang 10 to Clang 11
-extern void launch_saxpy_kernel(
-    pika::cuda::experimental::cuda_executor& cudaexec, unsigned int& blocks,
-    unsigned int& threads, void** args);
-// -------------------------------------------------------------------------
-int test_saxpy(pika::cuda::experimental::cuda_executor& cudaexec)
+constexpr auto cuda_launch_kernel = [](auto&&... ts) {
+    cu::check_cuda_error(cudaLaunchKernel(std::forward<decltype(ts)>(ts)...));
+};
+
+constexpr auto cuda_memcpy_async = [](auto&&... ts) {
+    cu::check_cuda_error(cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...));
+};
+
+__global__ void saxpy(int n, float a, float* x, float* y)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n)
+        y[i] = a * x[i] + y[i];
+}
+
+template <typename Sender>
+auto launch_saxpy_kernel(pika::cuda::experimental::cuda_scheduler& cuda_sched,
+    Sender&& predecessor, unsigned int& blocks, unsigned int& threads,
+    void** args)
+{
+    return ex::when_all(std::forward<Sender>(predecessor),
+               ex::just(reinterpret_cast<const void*>(&saxpy), dim3(blocks),
+                   dim3(threads), args, std::size_t(0))) |
+        ex::transfer(cuda_sched) | cu::then_with_stream(cuda_launch_kernel);
+}
+
+template <typename T>
+__global__ void trivial_kernel(T val)
+{
+    // TODO: Fingers crossed that printf now works with HIP?
+    printf("hello from gpu with value %f\n", static_cast<double>(val));
+}
+
+template <typename T>
+void cuda_trivial_kernel(T t, cudaStream_t stream)
+{
+    trivial_kernel<<<1, 1, 0, stream>>>(t);
+}
+
+void test_saxpy(pika::cuda::experimental::cuda_scheduler& cuda_sched)
 {
     int N = 1 << 20;
 
@@ -62,10 +90,12 @@ int test_saxpy(pika::cuda::experimental::cuda_executor& cudaexec)
 
     // copy both arrays from cpu to gpu, putting both copies onto the stream
     // no need to get a future back yet
-    pika::apply(cudaexec, cudaMemcpyAsync, d_A, h_A, N * sizeof(float),
-        cudaMemcpyHostToDevice);
-    pika::apply(cudaexec, cudaMemcpyAsync, d_B, h_B, N * sizeof(float),
-        cudaMemcpyHostToDevice);
+    auto copy_A = ex::transfer_just(cuda_sched, d_A, h_A, N * sizeof(float),
+                      cudaMemcpyHostToDevice) |
+        cu::then_with_stream(cuda_memcpy_async);
+    auto copy_B = ex::transfer_just(cuda_sched, d_B, h_B, N * sizeof(float),
+                      cudaMemcpyHostToDevice) |
+        cu::then_with_stream(cuda_memcpy_async);
 
     unsigned int threads = 256;
     unsigned int blocks = (N + 255) / threads;
@@ -73,17 +103,16 @@ int test_saxpy(pika::cuda::experimental::cuda_executor& cudaexec)
 
     // now launch a kernel on the stream
     void* args[] = {&N, &ratio, &d_A, &d_B};
-    launch_saxpy_kernel(cudaexec, blocks, threads, args);
-
-    // finally, perform a copy from the gpu back to the cpu all on the same stream
-    // grab a future to when this completes
-    auto cuda_future = pika::async(cudaexec, cudaMemcpyAsync, h_B, d_B,
-        N * sizeof(float), cudaMemcpyDeviceToHost);
-
-    // we can add a continuation to the memcpy future, so that when the
-    // memory copy completes, we can do new things ...
-    cuda_future
-        .then([&](pika::future<void>&&) {
+    auto s = launch_saxpy_kernel(cuda_sched,
+                 ex::when_all(std::move(copy_A), std::move(copy_B)), blocks,
+                 threads, args) |
+        // finally, perform a copy from the gpu back to the cpu all on the same stream
+        // grab a future to when this completes
+        cu::then_with_stream(pika::bind_front(cuda_memcpy_async, h_B, d_B,
+            N * sizeof(float), cudaMemcpyDeviceToHost)) |
+        // we can add a continuation to the memcpy sender, so that when the
+        // memory copy completes, we can do new things ...
+        ex::transfer(ex::thread_pool_scheduler{}) | ex::then([&]() {
             std::cout
                 << "saxpy completed on GPU, checking results in continuation"
                 << std::endl;
@@ -93,14 +122,11 @@ int test_saxpy(pika::cuda::experimental::cuda_executor& cudaexec)
                 max_error = (std::max)(max_error, abs(h_B[jdx] - 4.0f));
             }
             std::cout << "Max Error: " << max_error << std::endl;
-        })
-        .get();
+        });
 
-    // the .get() is important in the line above because without it, this function
-    // returns and the task above goes out of scope and the refs it holds
-    // are invalidated.
-
-    return 1;
+    // the sync_wait() is important because without it, this function returns
+    // and the tasks are never spawned.
+    tt::sync_wait(std::move(s));
 }
 
 // -------------------------------------------------------------------------
@@ -118,58 +144,43 @@ int pika_main(pika::program_options::variables_map& vm)
     std::cout << "using seed: " << seed << std::endl;
     std::srand(seed);
 
-    // create a cuda target using device number 0,1,2...
-    pika::cuda::experimental::target target(device);
-
-    // for debug purposes, print out available targets
-    pika::cuda::experimental::print_local_targets();
-
-    // create a stream helper object
-    pika::cuda::experimental::cuda_executor cudaexec(
-        device, pika::cuda::experimental::event_mode{});
+    pika::cuda::experimental::cuda_pool cuda_pool(device);
+    pika::cuda::experimental::cuda_scheduler cuda_sched(std::move(cuda_pool));
 
     // --------------------
-    // test kernel launch<float> using apply and async
+    // test kernel launch<float> using then_with_stream
     float testf = 1.2345;
-    std::cout << "apply : cuda kernel <float>  : " << testf << std::endl;
-    pika::apply(cudaexec, cuda_trivial_kernel<float>, testf);
-
-    std::cout << "async : cuda kernel <float>  : " << testf + 1 << std::endl;
-    auto f1 = pika::async(cudaexec, cuda_trivial_kernel<float>, testf + 1);
-    f1.get();
+    std::cout << "schedule : cuda kernel <float>  : " << testf << std::endl;
+    tt::sync_wait(ex::transfer_just(cuda_sched, testf) |
+        cu::then_with_stream(&cuda_trivial_kernel<float>));
 
     // --------------------
     // test kernel launch<double> using apply and async
-    double testd = 2.3456;
-    std::cout << "apply : cuda kernel <double> : " << testd << std::endl;
-    pika::apply(cudaexec, cuda_trivial_kernel<double>, testd);
-
-    std::cout << "async : cuda kernel <double> : " << testd + 1 << std::endl;
-    auto f2 = pika::async(cudaexec, cuda_trivial_kernel<double>, testd + 1);
-    f2.get();
+    float testd = 1.2345;
+    std::cout << "schedule : cuda kernel <double>  : " << testf << std::endl;
+    tt::sync_wait(ex::transfer_just(cuda_sched, testd) |
+        cu::then_with_stream(&cuda_trivial_kernel<double>));
 
     // --------------------
     // test adding a continuation to a cuda call
     double testd2 = 3.1415;
-    std::cout << "future/continuation : " << testd2 << std::endl;
-    auto f3 = pika::async(cudaexec, cuda_trivial_kernel<double>, testd2);
-    f3.then([](pika::future<void>&&) {
-          std::cout << "continuation triggered\n";
-      }).get();
+    std::cout << "then_with_stream/continuation : " << testd2 << std::endl;
+    tt::sync_wait(ex::transfer_just(cuda_sched, testd2) |
+        cu::then_with_stream(&cuda_trivial_kernel<double>) |
+        cu::then_on_host([] { std::cout << "continuation triggered\n"; }));
 
     // --------------------
     // test using a copy of a cuda executor
     // and adding a continuation with a copy of a copy
     std::cout << "Copying executor : " << testd2 + 1 << std::endl;
-    auto exec_copy = cudaexec;
-    auto f4 = pika::async(exec_copy, cuda_trivial_kernel<double>, testd2 + 1);
-    f4.then([exec_copy](pika::future<void>&&) {
-          std::cout << "copy continuation triggered\n";
-      }).get();
+    auto cuda_sched_copy = cuda_sched;
+    tt::sync_wait(ex::transfer_just(cuda_sched, testd2 + 1) |
+        cu::then_with_stream(&cuda_trivial_kernel<double>) |
+        cu::then_on_host([] { std::cout << "copy continuation triggered\n"; }));
 
     // --------------------
     // test a full kernel example
-    PIKA_TEST(test_saxpy(cudaexec));
+    test_saxpy(cuda_sched);
 
     return pika::finalize();
 }

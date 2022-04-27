@@ -30,7 +30,7 @@
 #include <pika/chrono.hpp>
 #include <pika/cuda.hpp>
 #include <pika/execution.hpp>
-#include <pika/future.hpp>
+#include <pika/functional.hpp>
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
@@ -42,8 +42,12 @@
 #include <sstream>
 #include <utility>
 #include <vector>
-//
+
 std::mt19937 gen;
+
+namespace cu = pika::cuda::experimental;
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
 
 // -------------------------------------------------------------------------
 // Optional Command-line multiplier for matrix sizes
@@ -108,11 +112,15 @@ inline bool compare_L2_err(const float* reference, const float* data,
     return result;
 }
 
+constexpr auto cuda_memcpy_async = [](auto&&... ts) {
+    cu::check_cuda_error(cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...));
+};
+
 // -------------------------------------------------------------------------
 // Run a simple test matrix multiply using CUBLAS
 // -------------------------------------------------------------------------
 template <typename T>
-void matrixMultiply(pika::cuda::experimental::cublas_executor& cublas,
+void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     sMatrixSize& matrix_size, std::size_t /* device */, std::size_t iterations)
 {
     using pika::execution::par;
@@ -132,10 +140,6 @@ void matrixMultiply(pika::cuda::experimental::cublas_executor& cublas,
     pika::for_each(par, h_A.begin(), h_A.end(), randfunc);
     pika::for_each(par, h_B.begin(), h_B.end(), randfunc);
 
-    // create a cublas executor we'll use to futurize cuda events
-    using namespace pika::cuda::experimental;
-    using cublas_future = typename cuda_executor::future_type;
-
     T *d_A, *d_B, *d_C;
     pika::cuda::experimental::check_cuda_error(
         cudaMalloc((void**) &d_A, size_A * sizeof(T)));
@@ -146,21 +150,18 @@ void matrixMultiply(pika::cuda::experimental::cublas_executor& cublas,
     pika::cuda::experimental::check_cuda_error(
         cudaMalloc((void**) &d_C, size_C * sizeof(T)));
 
-    // adding async copy operations into the stream before cublas calls puts
-    // the copies in the queue before the matrix operations.
-    pika::apply(cublas, cudaMemcpyAsync, d_A, h_A.data(), size_A * sizeof(T),
-        cudaMemcpyHostToDevice);
-
-    auto copy_future = pika::async(cublas, cudaMemcpyAsync, d_B, h_B.data(),
-        size_B * sizeof(T), cudaMemcpyHostToDevice);
-
-    // we can call get_future multiple times on the cublas helper.
-    // Each one returns a new future that will be set ready when the stream event
-    // for this point is triggered
-    copy_future.then([](cublas_future&&) {
-        std::cout << "The async host->device copy operation completed"
-                  << std::endl;
-    });
+    auto copy_A = ex::schedule(cuda_sched) |
+        cu::then_with_stream(pika::bind_front(cuda_memcpy_async, d_A,
+            h_A.data(), size_A * sizeof(T), cudaMemcpyHostToDevice));
+    auto copy_B = ex::schedule(cuda_sched) |
+        cu::then_with_stream(pika::bind_front(cuda_memcpy_async, d_B,
+            h_B.data(), size_B * sizeof(T), cudaMemcpyHostToDevice));
+    auto copy_AB =
+        ex::when_all(std::move(copy_A), std::move(copy_B)) | ex::then([]() {
+            std::cout << "The async host->device copy operations completed"
+                      << std::endl;
+        });
+    tt::sync_wait(std::move(copy_AB));
 
     std::cout << "Computing result using CUBLAS...\n";
     const T alpha = 1.0f;
@@ -171,37 +172,48 @@ void matrixMultiply(pika::cuda::experimental::cublas_executor& cublas,
     pika::chrono::high_resolution_timer t1;
     //
     std::cout << "calling CUBLAS...\n";
-    auto fut = pika::async(cublas, cublasSgemm, CUBLAS_OP_N, CUBLAS_OP_N,
-        matrix_size.uiWB, matrix_size.uiHA, matrix_size.uiWA, &alpha, d_B,
-        matrix_size.uiWB, d_A, matrix_size.uiWA, &beta, d_C, matrix_size.uiWA);
+    auto gemm = ex::transfer_just(cuda_sched) |
+        cu::then_with_cublas(
+            [&](cublasHandle_t handle) {
+                cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N,
+                    CUBLAS_OP_N, matrix_size.uiWB, matrix_size.uiHA,
+                    matrix_size.uiWA, &alpha, d_B, matrix_size.uiWB, d_A,
+                    matrix_size.uiWA, &beta, d_C, matrix_size.uiWA));
+            },
+            CUBLAS_POINTER_MODE_HOST);
 
     // wait until the operation completes
-    fut.get();
+    tt::sync_wait(std::move(gemm));
 
     double us1 = t1.elapsed_microseconds();
     std::cout << "warmup: elapsed_microseconds " << us1 << std::endl;
 
-    // once the future has been retrieved, the next call to
-    // get_future will create a new event attached to a new future
-    // so we can reuse the same cublas executor stream if we want
+    // once the sender has been synchronized, the next call to
+    // schedule/then_with_x will create a new event attached to a new sender so
+    // we can reuse the same cuda scheduler stream if we want
 
     pika::chrono::high_resolution_timer t2;
+
+    // This loop is currently inefficient. Because of the type-erasure with
+    // unique_any_sender the cuBLAS calls are not scheduled on the same stream
+    // without synchronization.
+    ex::unique_any_sender<> gemms_finished = ex::just();
     for (std::size_t j = 0; j < iterations; j++)
     {
-        pika::apply(cublas, cublasSgemm, CUBLAS_OP_N, CUBLAS_OP_N,
-            matrix_size.uiWB, matrix_size.uiHA, matrix_size.uiWA, &alpha, d_B,
-            matrix_size.uiWB, d_A, matrix_size.uiWA, &beta, d_C,
-            matrix_size.uiWA);
+        gemms_finished = std::move(gemms_finished) | ex::transfer(cuda_sched) |
+            cu::then_with_cublas(
+                [&](cublasHandle_t handle) {
+                    cu::check_cublas_error(cublasSgemm(handle, CUBLAS_OP_N,
+                        CUBLAS_OP_N, matrix_size.uiWB, matrix_size.uiHA,
+                        matrix_size.uiWA, &alpha, d_B, matrix_size.uiWB, d_A,
+                        matrix_size.uiWA, &beta, d_C, matrix_size.uiWA));
+                },
+                CUBLAS_POINTER_MODE_HOST);
     }
-    // get a future for when the stream reaches this point (matrix operations complete)
-    auto matrix_finished = cublas.get_future();
 
-    // when the matrix operations complete, copy the result to the host
-    auto copy_finished = pika::async(cublas, cudaMemcpyAsync, h_CUBLAS.data(),
-        d_C, size_C * sizeof(T), cudaMemcpyDeviceToHost);
+    auto gemms_finished_split = ex::split(std::move(gemms_finished));
 
-    // attach a continuation to the cublas future
-    auto new_future = matrix_finished.then([&](cublas_future&&) {
+    auto matrix_print_finished = ex::then(gemms_finished_split, [&]() {
         double us2 = t2.elapsed_microseconds();
         std::cout << "actual: elapsed_microseconds " << us2 << " iterations "
                   << iterations << std::endl;
@@ -212,43 +224,48 @@ void matrixMultiply(pika::cuda::experimental::cublas_executor& cublas,
             (double) matrix_size.uiHA * (double) matrix_size.uiWB;
         double gigaFlops =
             (flopsPerMatrixMul * 1.0e-9) / (usecPerMatrixMul / 1e6);
-        printf("Performance = %.2f GFlop/s, Time = %.3f msec/iter, Size = %.0f "
+        printf("Performance = %.2f GFlop/s, Time = %.3f msec/iter, "
+               "Size = %.0f "
                "Ops\n",
             gigaFlops, 1e-3 * usecPerMatrixMul, flopsPerMatrixMul);
     });
 
-    // wait for the timing to complete, and then do a CPU comparison
-    auto finished = new_future.then([&](cublas_future&&) {
-        // compute reference solution on the CPU
-        std::cout << "\nComputing result using host CPU...\n";
-        // just wait for the device->host copy to complete if it hasn't already
-        copy_finished.get();
+    // when the matrix operations complete, copy the result to the host
+    auto copy_finished = ex::then(std::move(gemms_finished_split),
+        pika::bind_front(cuda_memcpy_async, h_CUBLAS.data(), d_C,
+            size_C * sizeof(T), cudaMemcpyDeviceToHost));
 
-        // compute reference solution on the CPU
-        // allocate storage for the CPU result
-        std::vector<T> reference(size_C);
+    auto all_done = ex::when_all(std::move(matrix_print_finished),
+                        std::move(copy_finished)) |
+        ex::then([&]() {
+            // compute reference solution on the CPU
+            std::cout << "\nComputing result using host CPU...\n";
 
-        pika::chrono::high_resolution_timer t3;
-        matrixMulCPU<T>(reference.data(), h_A.data(), h_B.data(),
-            matrix_size.uiHA, matrix_size.uiWA, matrix_size.uiWB);
-        double us3 = t3.elapsed_microseconds();
-        std::cout << "CPU elapsed_microseconds (1 iteration) " << us3
-                  << std::endl;
+            // compute reference solution on the CPU
+            // allocate storage for the CPU result
+            std::vector<T> reference(size_C);
 
-        // check result (CUBLAS)
-        bool resCUBLAS =
-            compare_L2_err(reference.data(), h_CUBLAS.data(), size_C, 1e-6);
-        PIKA_TEST_MSG(resCUBLAS, "matrix CPU/GPU comparison error");
+            pika::chrono::high_resolution_timer t3;
+            matrixMulCPU<T>(reference.data(), h_A.data(), h_B.data(),
+                matrix_size.uiHA, matrix_size.uiWA, matrix_size.uiWB);
+            double us3 = t3.elapsed_microseconds();
+            std::cout << "CPU elapsed_microseconds (1 iteration) " << us3
+                      << std::endl;
 
-        // if the result was incorrect, we throw an exception, so here it's ok
-        if (resCUBLAS)
-        {
-            std::cout
-                << "\nComparing CUBLAS Matrix Multiply with CPU results: OK \n";
-        }
-    });
+            // check result (CUBLAS)
+            bool resCUBLAS =
+                compare_L2_err(reference.data(), h_CUBLAS.data(), size_C, 1e-6);
+            PIKA_TEST_MSG(resCUBLAS, "matrix CPU/GPU comparison error");
 
-    finished.get();
+            // if the result was incorrect, we throw an exception, so here it's ok
+            if (resCUBLAS)
+            {
+                std::cout << "\nComparing CUBLAS Matrix Multiply with CPU "
+                             "results: OK \n";
+            }
+        });
+
+    tt::sync_wait(std::move(all_done));
     ::pika::cuda::experimental::check_cuda_error(cudaFree(d_A));
     ::pika::cuda::experimental::check_cuda_error(cudaFree(d_B));
     ::pika::cuda::experimental::check_cuda_error(cudaFree(d_C));
@@ -275,15 +292,7 @@ int pika_main(pika::program_options::variables_map& vm)
     sizeMult = (std::min)(sizeMult, std::size_t(100));
     sizeMult = (std::max)(sizeMult, std::size_t(1));
     //
-    // use a larger block size for Fermi and above, query default cuda target properties
-    pika::cuda::experimental::target target(device);
-
-    std::cout << "GPU Device " << target.native_handle().get_device() << ": \""
-              << target.native_handle().processor_name() << "\" "
-              << "with compute capability "
-              << target.native_handle().processor_family() << "\n";
-
-    int block_size = (target.native_handle().processor_family() < 2) ? 16 : 32;
+    int block_size = 32;
 
     sMatrixSize matrix_size;
     matrix_size.uiWA = 2 * block_size * sizeMult;
@@ -297,25 +306,26 @@ int pika_main(pika::program_options::variables_map& vm)
         matrix_size.uiWA, matrix_size.uiHA, matrix_size.uiWB, matrix_size.uiHB,
         matrix_size.uiWC, matrix_size.uiHC);
 
-    // --------------------------------
-    // test matrix multiply using cublas executor
-    pika::cuda::experimental::cublas_executor cublas(device,
-        CUBLAS_POINTER_MODE_HOST, pika::cuda::experimental::event_mode{});
-    matrixMultiply<float>(cublas, matrix_size, device, iterations);
+    pika::cuda::experimental::cuda_pool cuda_pool(device);
 
     // --------------------------------
-    // sanity check : test again using a copy of the cublas executor
-    std::cout << "\n\n\n------------" << std::endl;
-    std::cout << "Checking copy semantics of cublas executor" << std::endl;
-    pika::cuda::experimental::cublas_executor cublas2 = cublas;
-    matrixMultiply<float>(cublas2, matrix_size, device, 1);
+    // test matrix multiply using cuda scheduler
+    pika::cuda::experimental::cuda_scheduler cuda_sched(std::move(cuda_pool));
+    matrixMultiply<float>(cuda_sched, matrix_size, device, iterations);
 
     // --------------------------------
-    // sanity check : test again using a moved copy of the cublas executor
+    // sanity check : test again using a copy of the cuda scheduler
     std::cout << "\n\n\n------------" << std::endl;
-    std::cout << "Checking move semantics of cublas executor" << std::endl;
-    pika::cuda::experimental::cublas_executor cublas3(std::move(cublas));
-    matrixMultiply<float>(cublas3, matrix_size, device, 1);
+    std::cout << "Checking copy semantics of cuda scheduler" << std::endl;
+    pika::cuda::experimental::cuda_scheduler cuda_sched2 = cuda_sched;
+    matrixMultiply<float>(cuda_sched2, matrix_size, device, 1);
+
+    // --------------------------------
+    // sanity check : test again using a moved copy of the cuda scheduler
+    std::cout << "\n\n\n------------" << std::endl;
+    std::cout << "Checking move semantics of cuda scheduler" << std::endl;
+    pika::cuda::experimental::cuda_scheduler cuda_sched3(std::move(cuda_sched));
+    matrixMultiply<float>(cuda_sched3, matrix_size, device, 1);
 
     return pika::finalize();
 }

@@ -8,9 +8,9 @@ set(tests
     cublas_handle
     cublas_matmul
     cuda_bulk
-    cuda_future
     cuda_pool
     cuda_scheduler
+    cuda_sender
     cuda_stream
     then_with_stream
 )
@@ -19,15 +19,15 @@ if(PIKA_WITH_CUDA)
 endif()
 
 set(cublas_matmul_PARAMETERS THREADS 4)
-set(cuda_future_PARAMETERS THREADS 4)
+set(cuda_sender_PARAMETERS THREADS 4)
 set(then_with_stream_PARAMETERS THREADS 4)
 set(then_with_stream_DEPENDENCIES pika_execution_test_utilities)
 
 set(cublas_handle_CUDA ON)
 set(cuda_bulk_CUDA ON)
-set(cuda_future_CUDA_SOURCE saxpy trivial_demo)
 set(cuda_pool_CUDA ON)
 set(cuda_scheduler_CUDA ON)
+set(cuda_sender_CUDA ON)
 set(cuda_stream_CUDA ON)
 set(cusolver_handle_CUDA ON)
 set(then_with_stream_CUDA ON)
