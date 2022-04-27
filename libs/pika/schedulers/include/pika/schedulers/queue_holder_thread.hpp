@@ -147,6 +147,7 @@ namespace pika { namespace threads { namespace policies {
             terminated_items_count_;
 
         thread_queue_init_parameters parameters_;
+        std::thread::id owner_id_;
 
         // ------------------------------------------------------------
         struct queue_mc_print
@@ -196,7 +197,7 @@ namespace pika { namespace threads { namespace policies {
         queue_holder_thread(QueueType* bp_queue, QueueType* hp_queue,
             QueueType* np_queue, QueueType* lp_queue, std::size_t domain,
             std::size_t queue, std::size_t thread_num, std::size_t owner,
-            const thread_queue_init_parameters& init)
+            const thread_queue_init_parameters& init, std::thread::id owner_id)
           : bp_queue_(bp_queue)
           , hp_queue_(hp_queue)
           , np_queue_(np_queue)
@@ -207,6 +208,7 @@ namespace pika { namespace threads { namespace policies {
           , owner_mask_(owner)
           , terminated_items_(max_thread_count)
           , parameters_(init)
+          , owner_id_(owner_id)
         {
             rollover_counters_.data_ =
                 std::make_tuple(queue_index_, round_robin_rollover);
