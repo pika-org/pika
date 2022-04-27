@@ -224,6 +224,7 @@ jobs:
                 -DPIKA_WITH_PRECOMPILED_HEADERS=On \
                 -DPIKA_WITH_TOOLS=On \
                 -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_EXAMPLES=On \
                 -DPIKA_WITH_TESTS=On \
                 -DPIKA_WITH_TESTS_HEADERS=On \
@@ -453,6 +454,12 @@ jobs:
           name: Running Unit Tests
           when: always
           command: |
+              # We are certain that we want to run mpiexec as root despite
+              # warnings as that is the only user available in the container.
+              # Mistakes will only affect the current step.
+              export OMPI_ALLOW_RUN_AS_ROOT=1
+              export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
               ulimit -c unlimited
               ctest \
                 -j2 \
