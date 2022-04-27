@@ -65,22 +65,20 @@ pika::threads::detail::topology& retrieve_topology()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-double mysecond()
-{
-    return pika::chrono::high_resolution_clock::now() * 1e-9;
-}
-
 int checktick()
 {
     static const std::size_t M = 20;
-    double timesfound[M];
+    using namespace std::chrono;
+    time_point<high_resolution_clock> timesfound[M];
 
     // Collect a sequence of M unique time values from the system.
     for (std::size_t i = 0; i < M; i++)
     {
-        double const t1 = mysecond();
-        double t2;
-        while (((t2 = mysecond()) - t1) < 1.0E-6)
+        auto const t1 = high_resolution_clock::now();
+        time_point<high_resolution_clock> t2;
+        while (
+            duration<double>((t2 = high_resolution_clock::now()) - t1).count() <
+            1.0E-6)
             ;
         timesfound[i] = t2;
     }
@@ -91,7 +89,9 @@ int checktick()
     int minDelta = 1000000;
     for (std::size_t i = 1; i < M; i++)
     {
-        int Delta = (int) (1.0E6 * (timesfound[i] - timesfound[i - 1]));
+        int Delta =
+            duration_cast<microseconds>(timesfound[i] - timesfound[i - 1])
+                .count();
         minDelta = (std::min)(minDelta, (std::max)(Delta, 0));
     }
 

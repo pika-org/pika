@@ -48,16 +48,17 @@ template <typename InIter, typename OutIter>
 double run_unique_copy_benchmark_std(
     int test_count, InIter first, InIter last, OutIter dest)
 {
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
         std::unique_copy(first, last, dest);
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -65,16 +66,17 @@ template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
 double run_unique_copy_benchmark_pika(int test_count, ExPolicy policy,
     FwdIter1 first, FwdIter1 last, FwdIter2 dest)
 {
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
         pika::unique_copy(policy, first, last, dest);
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -134,7 +134,7 @@ double perform_2n_iterations()
         (*coroutines[indices[i]])(wait_signaled);
     }
 
-    pika::chrono::high_resolution_timer t;
+    pika::chrono::detail::high_resolution_timer t;
 
     for (std::uint64_t i = 0; i < iterations; ++i)
     {

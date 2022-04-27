@@ -365,14 +365,14 @@ void test_cancellation_single_thread_performance()
 
     constexpr int iteration_count = 100'000;
 
-    auto start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     for (int i = 0; i < iteration_count; ++i)
     {
         pika::stop_callback<decltype(callback)> r(s.get_token(), callback);
     }
 
-    auto end = pika::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
 
     auto time1 = end - start;
 
@@ -383,7 +383,7 @@ void test_cancellation_single_thread_performance()
         callback_batch<decltype(callback)> b{s.get_token(), callback};
     }
 
-    end = pika::chrono::high_resolution_clock::now();
+    end = std::chrono::high_resolution_clock::now();
 
     auto time2 = end - start;
 
@@ -398,7 +398,7 @@ void test_cancellation_single_thread_performance()
         callback_batch<decltype(callback)> b4{s.get_token(), callback};
     }
 
-    end = pika::chrono::high_resolution_clock::now();
+    end = std::chrono::high_resolution_clock::now();
 
     auto time3 = end - start;
 

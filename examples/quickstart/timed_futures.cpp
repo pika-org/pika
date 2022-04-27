@@ -20,7 +20,7 @@ void wake_up_after_2_seconds()
 {
     std::cout << "waiting for 2 seconds\n";
 
-    pika::chrono::high_resolution_timer t;
+    pika::chrono::detail::high_resolution_timer t;
 
     // Schedule a wakeup after 2 seconds.
     using std::chrono::seconds;
@@ -31,14 +31,15 @@ void wake_up_after_2_seconds()
     // wait until the new future gets ready
     f.wait();
 
-    std::cout << "woke up after " << t.elapsed() << " seconds\n" << std::flush;
+    std::cout << "woke up after " << t.elapsed<seconds>() << " seconds\n"
+              << std::flush;
 }
 
 int return_int_at_time()
 {
     std::cout << "generating an 'int' value 2 seconds from now\n";
 
-    pika::chrono::high_resolution_timer t;
+    pika::chrono::detail::high_resolution_timer t;
 
     // Schedule a wakeup 2 seconds from now.
     using namespace std::chrono;
@@ -50,7 +51,7 @@ int return_int_at_time()
     // wait until the new future gets ready (should return 42)
     int retval = f.get();
 
-    std::cout << "woke up after " << t.elapsed()
+    std::cout << "woke up after " << t.elapsed<seconds>()
               << " seconds, returned: " << retval << "\n"
               << std::flush;
 

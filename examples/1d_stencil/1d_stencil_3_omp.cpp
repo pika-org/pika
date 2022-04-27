@@ -33,12 +33,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Timer with nanosecond resolution
-inline std::uint64_t now()
-{
-    std::chrono::nanoseconds ns =
-        std::chrono::steady_clock::now().time_since_epoch();
-    return static_cast<std::uint64_t>(ns.count());
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 bool header = true;    // print csv heading
@@ -179,13 +173,14 @@ int pika_main(pika::program_options::variables_map& vm)
     // Create the stepper object
     stepper step;
 
+    using namespace std::chrono;
     // Measure execution time.
-    std::uint64_t t = now();
+    auto t = steady_clock::now();
 
     // Execute nt time steps on nx grid points and print the final solution.
     stepper::space solution = step.do_work(np, nx, nt);
 
-    std::uint64_t elapsed = now() - t;
+    double elapsed = duration<double>(steady_clock::now() - t).count();
 
     // Print the final solution
     if (vm.count("results"))

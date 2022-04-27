@@ -7,10 +7,8 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Default location is $PIKA_ROOT/libs/timing/include
-set(timing_headers
-    pika/timing/high_resolution_clock.hpp pika/timing/high_resolution_timer.hpp
-    pika/timing/scoped_timer.hpp pika/timing/steady_clock.hpp
-    pika/timing/tick_counter.hpp
+set(timing_headers pika/timing/high_resolution_timer.hpp
+                   pika/timing/steady_clock.hpp pika/timing/tick_counter.hpp
 )
 
 # cmake will not create a separate VS project without any source files, thus

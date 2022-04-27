@@ -66,7 +66,7 @@ int pika_main(pika::program_options::variables_map& vm)
                                   // one leap year should be enough
     for (std::uint64_t iter = 0; iter < iterations; ++iter)
     {
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
 
         if (tile_size < order)
         {
@@ -97,7 +97,7 @@ int pika_main(pika::program_options::variables_map& vm)
             }
         }
 
-        double elapsed = t.elapsed();
+        double elapsed = t.elapsed<std::chrono::seconds>();
 
         if (iter > 0 || iterations == 1)    // Skip the first iteration
         {

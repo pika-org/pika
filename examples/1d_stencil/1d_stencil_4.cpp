@@ -218,8 +218,9 @@ int pika_main(pika::program_options::variables_map& vm)
     // Create the stepper object
     stepper step;
 
+    using namespace std::chrono;
     // Measure execution time.
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    auto t = high_resolution_clock::now();
 
     // Execute nt time steps on nx grid points and print the final solution.
     pika::future<stepper::space> result = step.do_work(np, nx, nt, nd);
@@ -227,7 +228,7 @@ int pika_main(pika::program_options::variables_map& vm)
     stepper::space solution = result.get();
     pika::wait_all(solution);
 
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    double elapsed = duration<double>(high_resolution_clock::now() - t).count();
 
     // Print the final solution
     if (vm.count("results"))

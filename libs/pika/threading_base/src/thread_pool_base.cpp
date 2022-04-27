@@ -13,9 +13,9 @@
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
-#include <pika/timing/high_resolution_clock.hpp>
 #include <pika/topology/topology.hpp>
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -87,14 +87,23 @@ namespace pika { namespace threads {
     {
         // scale timestamps to nanoseconds
         std::uint64_t base_timestamp = util::hardware::timestamp();
-        std::uint64_t base_time = pika::chrono::high_resolution_clock::now();
+        std::uint64_t base_time =
+            static_cast<std::uint64_t>(std::chrono::high_resolution_clock::now()
+                                           .time_since_epoch()
+                                           .count());
         std::uint64_t curr_timestamp = util::hardware::timestamp();
-        std::uint64_t curr_time = pika::chrono::high_resolution_clock::now();
+        std::uint64_t curr_time =
+            static_cast<std::uint64_t>(std::chrono::high_resolution_clock::now()
+                                           .time_since_epoch()
+                                           .count());
 
         while ((curr_time - base_time) <= 100000)
         {
             curr_timestamp = util::hardware::timestamp();
-            curr_time = pika::chrono::high_resolution_clock::now();
+            curr_time = static_cast<std::uint64_t>(
+                std::chrono::high_resolution_clock::now()
+                    .time_since_epoch()
+                    .count());
         }
 
         if (curr_timestamp - base_timestamp != 0)

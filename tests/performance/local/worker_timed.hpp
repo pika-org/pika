@@ -18,12 +18,14 @@ PIKA_FORCEINLINE void worker_timed(std::uint64_t delay_ns) noexcept
     if (delay_ns == 0)
         return;
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
+    std::chrono::duration<uint64_t, std::nano> dur;
     while (true)
     {
         // Check if we've reached the specified delay.
-        if ((pika::chrono::high_resolution_clock::now() - start) >= delay_ns)
+        dur = std::chrono::high_resolution_clock::now() - start;
+        if (dur.count() >= delay_ns)
             break;
     }
 }

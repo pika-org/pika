@@ -22,7 +22,7 @@ using pika::threads::detail::get_self;
 using pika::threads::detail::get_self_id;
 using pika::threads::detail::set_thread_state;
 
-using pika::chrono::high_resolution_timer;
+using pika::chrono::detail::high_resolution_timer;
 
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
@@ -40,7 +40,7 @@ int pika_main()
         pika::this_thread::suspend(
             pika::threads::detail::thread_schedule_state::suspended);
 
-        std::cout << "woke up after " << t.elapsed() << " seconds\n";
+        std::cout << "woke up after " << t.elapsed<seconds>() << " seconds\n";
     }
 
     pika::finalize();

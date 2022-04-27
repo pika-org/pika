@@ -26,7 +26,7 @@ namespace jacobi_smp {
         std::shared_ptr<vector> grid_new(new vector(n * n, 1));
         std::shared_ptr<vector> grid_old(new vector(n * n, 1));
 
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         for (std::size_t i = 0; i < iterations; ++i)
         {
             // MSVC is unhappy if the OMP loop variable is unsigned
@@ -40,7 +40,7 @@ namespace jacobi_smp {
             std::swap(grid_new, grid_old);
         }
 
-        report_timing(n, iterations, t.elapsed());
+        report_timing(n, iterations, t.elapsed<std::chrono::seconds>());
         output_grid(output_filename, *grid_old, n);
     }
 }    // namespace jacobi_smp

@@ -27,7 +27,7 @@ using pika::apply;
 using pika::async;
 using pika::future;
 
-using pika::chrono::high_resolution_timer;
+using pika::chrono::detail::high_resolution_timer;
 
 // global vars we stick here to make printouts easy for plotting
 static std::string queuing = "default";

@@ -11,6 +11,7 @@
 
 #include <pika/modules/timing.hpp>
 
+#include <chrono>
 #include <cstdint>
 
 PIKA_FORCEINLINE void worker_timed(std::uint64_t delay_ns)
@@ -18,12 +19,13 @@ PIKA_FORCEINLINE void worker_timed(std::uint64_t delay_ns)
     if (delay_ns == 0)
         return;
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
-
+    auto start = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<std::uint64_t, std::nano> duration;
     while (true)
     {
         // Check if we've reached the specified delay.
-        if ((pika::chrono::high_resolution_clock::now() - start) >= delay_ns)
+        duration = std::chrono::high_resolution_clock::now() - start;
+        if (duration.count() >= delay_ns)
             break;
     }
 }

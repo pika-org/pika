@@ -30,15 +30,6 @@
 #include "print_time_results.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
-// Timer with nanosecond resolution
-inline std::uint64_t now()
-{
-    std::chrono::nanoseconds ns =
-        std::chrono::steady_clock::now().time_since_epoch();
-    return static_cast<std::uint64_t>(ns.count());
-}
-
-///////////////////////////////////////////////////////////////////////////////
 bool header = true;    // print csv heading
 double k = 0.5;        // heat transfer coefficient
 double dt = 1.;        // time step
@@ -105,8 +96,9 @@ int pika_main(pika::program_options::variables_map& vm)
     // Create the stepper object
     stepper step;
 
+    using namespace std::chrono;
     // Measure execution time.
-    std::uint64_t t = now();
+    auto t = steady_clock::now();
 
     // Execute nt time steps on nx grid points.
     stepper::space solution = step.do_work(nx, nt);
@@ -118,7 +110,7 @@ int pika_main(pika::program_options::variables_map& vm)
             std::cout << "U[" << i << "] = " << solution[i] << std::endl;
     }
 
-    std::uint64_t elapsed = now() - t;
+    double elapsed = duration<double>(steady_clock::now() - t).count();
 
     std::uint64_t const os_thread_count = omp_get_num_threads();
     print_time_results(os_thread_count, elapsed, nx, nt, header);

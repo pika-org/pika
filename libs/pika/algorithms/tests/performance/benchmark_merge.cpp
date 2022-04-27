@@ -51,16 +51,17 @@ template <typename InIter1, typename InIter2, typename OutIter>
 double run_merge_benchmark_std(int test_count, InIter1 first1, InIter1 last1,
     InIter2 first2, InIter2 last2, OutIter dest)
 {
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
         std::merge(first1, last1, first2, last2, dest);
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,16 +71,17 @@ double run_merge_benchmark_pika(int test_count, ExPolicy policy,
     FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, FwdIter2 last2,
     FwdIter3 dest)
 {
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
         pika::merge(policy, first1, last1, first2, last2, dest);
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

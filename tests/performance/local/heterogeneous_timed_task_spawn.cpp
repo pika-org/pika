@@ -38,7 +38,7 @@ using pika::threads::detail::thread_init_data;
 using pika::this_thread::suspend;
 using pika::threads::get_thread_count;
 
-using pika::chrono::high_resolution_timer;
+using pika::chrono::detail::high_resolution_timer;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Command-line variables.

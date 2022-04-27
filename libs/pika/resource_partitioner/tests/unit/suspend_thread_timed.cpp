@@ -55,7 +55,7 @@ int pika_main(int argc, char* argv[])
         std::mt19937 gen(rd());
         std::uniform_int_distribution<int> dist(1, 100);
 
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
 
         while (t.elapsed() < 1)
         {

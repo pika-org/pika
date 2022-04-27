@@ -63,7 +63,7 @@ double wait_tasks(std::size_t num_samples, std::size_t num_tasks,
         chunk_results.reserve(num_chunks);
 
         // wait of tasks in chunks
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         if (num_chunks == 1)
         {
             pika::wait_all(chunks[0]);

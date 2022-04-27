@@ -187,10 +187,11 @@ int pika_main(pika::program_options::variables_map& vm)
     bool executed_one = false;
     std::uint64_t r = 0;
 
+    using namespace std::chrono;
     if (test == "all" || test == "0")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = pika::chrono::high_resolution_clock::now();
+        auto start = high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -198,8 +199,9 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci_serial(n);
         }
 
-        // double d = double(pika::chrono::high_resolution_clock::now() - start) / 1.e9;
-        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d =
+            duration_cast<seconds>(high_resolution_clock::now() - start)
+                .count();
         char const* fmt = "fibonacci_serial({1}) == {2},"
                           "elapsed time:,{3},[s]\n";
         pika::util::format_to(std::cout, fmt, n, r, d / max_runs);
@@ -210,7 +212,7 @@ int pika_main(pika::program_options::variables_map& vm)
     if (test == "all" || test == "1")
     {
         // Keep track of the time required to execute.
-        std::uint64_t start = pika::chrono::high_resolution_clock::now();
+        auto start = high_resolution_clock::now();
 
         for (std::size_t i = 0; i != max_runs; ++i)
         {
@@ -219,8 +221,9 @@ int pika_main(pika::program_options::variables_map& vm)
             r = fibonacci(n).get();
         }
 
-        // double d = double(pika::chrono::high_resolution_clock::now() - start) / 1.e9;
-        std::uint64_t d = pika::chrono::high_resolution_clock::now() - start;
+        std::uint64_t d =
+            duration_cast<seconds>(high_resolution_clock::now() - start)
+                .count();
         char const* fmt = "fibonacci_await({1}) == {2},"
                           "elapsed time:,{3},[s]\n";
         pika::util::format_to(std::cout, fmt, n, r, d / max_runs);

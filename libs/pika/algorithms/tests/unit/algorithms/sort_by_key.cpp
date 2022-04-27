@@ -102,10 +102,11 @@ void sort_by_key_benchmark()
         o_keys = keys;
         o_values = values;
 
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         pika::parallel::sort_by_key(
             pika::execution::par, keys.begin(), keys.end(), values.begin());
-        auto elapsed = static_cast<std::uint64_t>(t.elapsed_nanoseconds());
+        auto elapsed =
+            static_cast<std::uint64_t>(t.elapsed<std::chrono::nanoseconds>());
 
         // after sorting by key, the values should be equal to the original keys
         bool is_equal = std::equal(keys.begin(), keys.end(), o_values.begin());
@@ -238,7 +239,7 @@ void test_sort_by_key1()
     //
     const int seconds = 1;
     //
-    pika::chrono::high_resolution_timer t;
+    pika::chrono::detail::high_resolution_timer t;
     do
     {
         //
@@ -276,7 +277,7 @@ void test_sort_by_key1()
             [](double a) { return std::floor(a); });
     } while (t.elapsed() < seconds);
     //
-    pika::chrono::high_resolution_timer t2;
+    pika::chrono::detail::high_resolution_timer t2;
     do
     {
         test_sort_by_key_async(seq(task), int(), int(), std::equal_to<int>(),

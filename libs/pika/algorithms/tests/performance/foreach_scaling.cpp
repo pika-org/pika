@@ -29,13 +29,14 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-std::uint64_t averageout_plain_for(std::size_t vector_size)
+double averageout_plain_for(std::size_t vector_size)
 {
     std::vector<std::size_t> data_representation(vector_size);
     std::iota(
         std::begin(data_representation), std::end(data_representation), gen());
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
 
     // average out 100 executions to avoid varying results
     for (auto i = 0; i < test_count; i++)
@@ -43,16 +44,18 @@ std::uint64_t averageout_plain_for(std::size_t vector_size)
         measure_plain_for(data_representation);
     }
 
-    return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+    return duration<double>((high_resolution_clock::now() - start) / test_count)
+        .count();
 }
 
-std::uint64_t averageout_plain_for_iter(std::size_t vector_size)
+double averageout_plain_for_iter(std::size_t vector_size)
 {
     std::vector<std::size_t> data_representation(vector_size);
     std::iota(
         std::begin(data_representation), std::end(data_representation), gen());
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
 
     // average out 100 executions to avoid varying results
     for (auto i = 0; i < test_count; i++)
@@ -60,29 +63,31 @@ std::uint64_t averageout_plain_for_iter(std::size_t vector_size)
         measure_plain_for_iter(data_representation);
     }
 
-    return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+    return duration<double>((high_resolution_clock::now() - start) / test_count)
+        .count();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename Executor>
-std::uint64_t averageout_parallel_foreach(
-    std::size_t vector_size, Executor&& exec)
+double averageout_parallel_foreach(std::size_t vector_size, Executor&& exec)
 {
     std::vector<std::size_t> data_representation(vector_size);
     std::iota(
         std::begin(data_representation), std::end(data_representation), gen());
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
 
     // average out 100 executions to avoid varying results
     for (auto i = 0; i < test_count; i++)
         measure_parallel_foreach(data_representation, exec);
 
-    return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+    return duration<double>((high_resolution_clock::now() - start) / test_count)
+        .count();
 }
 
 template <typename Executor>
-std::uint64_t averageout_task_foreach(std::size_t vector_size, Executor&& exec)
+double averageout_task_foreach(std::size_t vector_size, Executor&& exec)
 {
     std::shared_ptr<std::vector<std::size_t>> data_representation(
         std::make_shared<std::vector<std::size_t>>(vector_size));
@@ -92,19 +97,22 @@ std::uint64_t averageout_task_foreach(std::size_t vector_size, Executor&& exec)
 
     if (num_overlapping_loops <= 0)
     {
-        std::uint64_t start = pika::chrono::high_resolution_clock::now();
+        using namespace std::chrono;
+        auto start = high_resolution_clock::now();
 
         for (auto i = 0; i < test_count; i++)
             measure_task_foreach(data_representation, exec).wait();
 
-        return (pika::chrono::high_resolution_clock::now() - start) /
-            test_count;
+        return duration<double>(
+            (high_resolution_clock::now() - start) / test_count)
+            .count();
     }
 
     std::vector<pika::shared_future<void>> tests;
     tests.resize(num_overlapping_loops);
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
 
     for (auto i = 0; i < test_count; i++)
     {
@@ -116,44 +124,48 @@ std::uint64_t averageout_task_foreach(std::size_t vector_size, Executor&& exec)
     }
 
     pika::wait_all(tests);
-    return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+    return duration<double>((high_resolution_clock::now() - start) / test_count)
+        .count();
 }
 
-std::uint64_t averageout_sequential_foreach(std::size_t vector_size)
+double averageout_sequential_foreach(std::size_t vector_size)
 {
     std::vector<std::size_t> data_representation(vector_size);
     std::iota(
         std::begin(data_representation), std::end(data_representation), gen());
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
 
     // average out 100 executions to avoid varying results
     for (auto i = 0; i < test_count; i++)
         measure_sequential_foreach(data_representation);
 
-    return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+    return duration<double>((high_resolution_clock::now() - start) / test_count)
+        .count();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename Executor>
-std::uint64_t averageout_parallel_forloop(
-    std::size_t vector_size, Executor&& exec)
+double averageout_parallel_forloop(std::size_t vector_size, Executor&& exec)
 {
     std::vector<std::size_t> data_representation(vector_size);
     std::iota(
         std::begin(data_representation), std::end(data_representation), gen());
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
 
     // average out 100 executions to avoid varying results
     for (auto i = 0; i < test_count; i++)
         measure_parallel_forloop(data_representation, exec);
 
-    return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+    return duration<double>((high_resolution_clock::now() - start) / test_count)
+        .count();
 }
 
 template <typename Executor>
-std::uint64_t averageout_task_forloop(std::size_t vector_size, Executor&& exec)
+double averageout_task_forloop(std::size_t vector_size, Executor&& exec)
 {
     std::shared_ptr<std::vector<std::size_t>> data_representation(
         std::make_shared<std::vector<std::size_t>>(vector_size));
@@ -161,21 +173,23 @@ std::uint64_t averageout_task_forloop(std::size_t vector_size, Executor&& exec)
     std::iota(std::begin(*data_representation), std::end(*data_representation),
         gen());
 
+    using namespace std::chrono;
     if (num_overlapping_loops <= 0)
     {
-        std::uint64_t start = pika::chrono::high_resolution_clock::now();
+        auto start = high_resolution_clock::now();
 
         for (auto i = 0; i < test_count; i++)
             measure_task_forloop(data_representation, exec).wait();
 
-        return (pika::chrono::high_resolution_clock::now() - start) /
-            test_count;
+        return duration<double>(
+            (high_resolution_clock::now() - start) / test_count)
+            .count();
     }
 
     std::vector<pika::shared_future<void>> tests;
     tests.resize(num_overlapping_loops);
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = high_resolution_clock::now();
 
     for (auto i = 0; i < test_count; i++)
     {
@@ -187,22 +201,25 @@ std::uint64_t averageout_task_forloop(std::size_t vector_size, Executor&& exec)
     }
 
     pika::wait_all(tests);
-    return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+    return duration<double>((high_resolution_clock::now() - start) / test_count)
+        .count();
 }
 
-std::uint64_t averageout_sequential_forloop(std::size_t vector_size)
+double averageout_sequential_forloop(std::size_t vector_size)
 {
     std::vector<std::size_t> data_representation(vector_size);
     std::iota(
         std::begin(data_representation), std::end(data_representation), gen());
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
 
     // average out 100 executions to avoid varying results
     for (auto i = 0; i < test_count; i++)
         measure_sequential_forloop(data_representation);
 
-    return (pika::chrono::high_resolution_clock::now() - start) / test_count;
+    return duration<double>((high_resolution_clock::now() - start) / test_count)
+        .count();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -253,17 +270,16 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         // results
-        std::uint64_t par_time_foreach = 0;
-        std::uint64_t task_time_foreach = 0;
-        std::uint64_t seq_time_foreach = 0;
+        double par_time_foreach = 0;
+        double task_time_foreach = 0;
+        double seq_time_foreach = 0;
 
-        std::uint64_t par_time_forloop = 0;
-        std::uint64_t task_time_forloop = 0;
-        std::uint64_t seq_time_forloop = 0;
+        double par_time_forloop = 0;
+        double task_time_forloop = 0;
+        double seq_time_forloop = 0;
 
-        std::uint64_t plain_time_for = averageout_plain_for(vector_size);
-        std::uint64_t plain_time_for_iter =
-            averageout_plain_for_iter(vector_size);
+        double plain_time_for = averageout_plain_for(vector_size);
+        double plain_time_for_iter = averageout_plain_for_iter(vector_size);
 
         if (vm["executor"].as<std::string>() == "aggregated")
         {
@@ -416,9 +432,8 @@ int pika_main(pika::program_options::variables_map& vm)
 
         if (csvoutput)
         {
-            std::cout << "," << seq_time_foreach / 1e9 << ","
-                      << par_time_foreach / 1e9 << ","
-                      << task_time_foreach / 1e9 << "\n"
+            std::cout << "," << seq_time_foreach << "," << par_time_foreach
+                      << "," << task_time_foreach << "\n"
                       << std::flush;
         }
         else
@@ -444,21 +459,21 @@ int pika_main(pika::program_options::variables_map& vm)
             std::cout << "-------------Average-(for)---------------------\n"
                       << std::left
                       << "Average execution time (unrolled) : " << std::right
-                      << std::setw(8) << plain_time_for / 1e9 << "\n"
+                      << std::setw(8) << plain_time_for << "\n"
                       << std::left
                       << "Average execution time (iter)     : " << std::right
-                      << std::setw(8) << plain_time_for_iter / 1e9 << "\n";
+                      << std::setw(8) << plain_time_for_iter << "\n";
 
             std::cout << "-------------Average-(for_each)----------------\n"
                       << std::left
                       << "Average parallel execution time   : " << std::right
-                      << std::setw(8) << par_time_foreach / 1e9 << "\n"
+                      << std::setw(8) << par_time_foreach << "\n"
                       << std::left
                       << "Average task execution time       : " << std::right
-                      << std::setw(8) << task_time_foreach / 1e9 << "\n"
+                      << std::setw(8) << task_time_foreach << "\n"
                       << std::left
                       << "Average sequential execution time : " << std::right
-                      << std::setw(8) << seq_time_foreach / 1e9 << "\n"
+                      << std::setw(8) << seq_time_foreach << "\n"
                       << std::flush;
 
             std::cout << "-----Execution Time Difference-(for_each)------\n"
@@ -475,13 +490,13 @@ int pika_main(pika::program_options::variables_map& vm)
             std::cout << "-------------Average-(for_loop)----------------\n"
                       << std::left
                       << "Average parallel execution time   : " << std::right
-                      << std::setw(8) << par_time_forloop / 1e9 << "\n"
+                      << std::setw(8) << par_time_forloop << "\n"
                       << std::left
                       << "Average task execution time       : " << std::right
-                      << std::setw(8) << task_time_forloop / 1e9 << "\n"
+                      << std::setw(8) << task_time_forloop << "\n"
                       << std::left
                       << "Average sequential execution time : " << std::right
-                      << std::setw(8) << seq_time_forloop / 1e9 << "\n"
+                      << std::setw(8) << seq_time_forloop << "\n"
                       << std::flush;
 
             std::cout << "-----Execution Time Difference-(for_loop)------\n"

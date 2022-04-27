@@ -21,7 +21,6 @@
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
-#include <pika/timing/high_resolution_clock.hpp>
 #include <pika/topology/topology.hpp>
 #include <pika/util/get_and_reset_value.hpp>
 
@@ -30,6 +29,7 @@
 #endif
 
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <exception>

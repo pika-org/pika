@@ -51,19 +51,20 @@ double run_is_heap_until_benchmark_std(
 {
     std::cout << "--- run_is_heap_until_benchmark_std ---" << std::endl;
     decltype(std::begin(v)) result;
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
         result = std::is_heap_until(std::begin(v), std::end(v));
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
     auto heap_range = std::distance(std::begin(v), result);
     std::cout << "Heap Range : " << heap_range << std::endl;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,7 +73,8 @@ double run_is_heap_until_benchmark_seq(
 {
     std::cout << "--- run_is_heap_until_benchmark_seq ---" << std::endl;
     decltype(std::begin(v)) result;
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
@@ -80,12 +82,12 @@ double run_is_heap_until_benchmark_seq(
         result = pika::is_heap_until(seq, std::begin(v), std::end(v));
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
     auto heap_range = std::distance(std::begin(v), result);
     std::cout << "Heap Range : " << heap_range << std::endl;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -94,7 +96,8 @@ double run_is_heap_until_benchmark_par(
 {
     std::cout << "--- run_is_heap_until_benchmark_par ---" << std::endl;
     decltype(std::begin(v)) result;
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
@@ -102,12 +105,12 @@ double run_is_heap_until_benchmark_par(
         result = pika::is_heap_until(par, std::begin(v), std::end(v));
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
     auto heap_range = std::distance(std::begin(v), result);
     std::cout << "Heap Range : " << heap_range << std::endl;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -116,7 +119,8 @@ double run_is_heap_until_benchmark_par_unseq(
 {
     std::cout << "--- run_is_heap_until_benchmark_par_unseq ---" << std::endl;
     decltype(std::begin(v)) result;
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
@@ -124,12 +128,12 @@ double run_is_heap_until_benchmark_par_unseq(
         result = pika::is_heap_until(par_unseq, std::begin(v), std::end(v));
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
     auto heap_range = std::distance(std::begin(v), result);
     std::cout << "Heap Range : " << heap_range << std::endl;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

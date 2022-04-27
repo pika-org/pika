@@ -7,11 +7,11 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/timing/high_resolution_clock.hpp>
 
+#include <chrono>
 #include <cstdint>
 
-namespace pika { namespace chrono {
+namespace pika::chrono::detail {
     ///////////////////////////////////////////////////////////////////////////
     //
     //  high_resolution_timer
@@ -26,56 +26,47 @@ namespace pika { namespace chrono {
         {
         }
 
-        constexpr high_resolution_timer(double t) noexcept
-          : start_time_(static_cast<std::uint64_t>(t * 1e9))
-        {
-        }
-
-        static double now() noexcept
-        {
-            return static_cast<double>(take_time_stamp()) * 1e-9;
-        }
-
         void restart() noexcept
         {
             start_time_ = take_time_stamp();
         }
 
-        // return elapsed time in seconds
-        double elapsed() const noexcept
+        // return elapsed time in seconds (double different from
+        // std::chrono::seconds which returns an unsigned long)
+        template <typename Unit = std::chrono::duration<double>>
+        auto elapsed() const noexcept
         {
-            return double(take_time_stamp() - start_time_) * 1e-9;
-        }
-
-        std::int64_t elapsed_microseconds() const noexcept
-        {
-            return std::int64_t(double(take_time_stamp() - start_time_) * 1e-3);
-        }
-
-        std::int64_t elapsed_nanoseconds() const noexcept
-        {
-            return std::int64_t(take_time_stamp() - start_time_);
+            return std::chrono::duration_cast<Unit>(
+                take_time_stamp() - start_time_)
+                .count();
         }
 
         // return estimated maximum value for elapsed()
         static constexpr double elapsed_max() noexcept
         {
-            return (pika::chrono::high_resolution_clock::max)() * 1e-9;
+            return (std::chrono::duration_values<
+                       std::chrono::nanoseconds>::max)()
+                       .count() *
+                1e-9;
         }
 
         // return minimum value for elapsed()
         static constexpr double elapsed_min() noexcept
         {
-            return (pika::chrono::high_resolution_clock::min)() * 1e-9;
+            return (std::chrono::duration_values<
+                       std::chrono::nanoseconds>::min)()
+                       .count() *
+                1e-9;
         }
 
     protected:
-        static std::uint64_t take_time_stamp() noexcept
+        static std::chrono::time_point<std::chrono::high_resolution_clock>
+        take_time_stamp() noexcept
         {
-            return pika::chrono::high_resolution_clock::now();
+            return std::chrono::high_resolution_clock::now();
         }
 
     private:
-        std::uint64_t start_time_;
+        std::chrono::time_point<std::chrono::high_resolution_clock> start_time_;
     };
-}}    // namespace pika::chrono
+}    // namespace pika::chrono::detail

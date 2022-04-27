@@ -27,7 +27,7 @@ namespace jacobi_smp {
         std::shared_ptr<vector_type> dst(new vector_type(b));
         std::shared_ptr<vector_type> src(new vector_type(b));
 
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         for (std::size_t i = 0; i < iterations; ++i)
         {
             // MSVC is unhappy if the OMP loop variable is unsigned
@@ -39,7 +39,7 @@ namespace jacobi_smp {
             std::swap(dst, src);
         }
 
-        double time_elapsed = t.elapsed();
+        double time_elapsed = t.elapsed<seconds>();
         std::cout << dst->size() << " "
                   << ((double(dst->size() * iterations) / 1e6) / time_elapsed)
                   << " MLUPS/s\n"

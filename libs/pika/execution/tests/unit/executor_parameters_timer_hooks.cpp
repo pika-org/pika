@@ -69,7 +69,7 @@ struct timer_hooks_parameters
     void mark_begin_execution(Executor&&)
     {
         ++count_;
-        time_ = pika::chrono::high_resolution_clock::now();
+        start_ = std::chrono::high_resolution_clock::now();
     }
 
     template <typename Executor>
@@ -80,11 +80,14 @@ struct timer_hooks_parameters
     template <typename Executor>
     void mark_end_execution(Executor&&)
     {
-        time_ = pika::chrono::high_resolution_clock::now() - time_;
+        time_ = std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::high_resolution_clock::now() - start_)
+                    .count();
         ++count_;
     }
 
     std::string name_;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_;
     std::uint64_t time_;
     std::atomic<std::size_t> count_;
 };

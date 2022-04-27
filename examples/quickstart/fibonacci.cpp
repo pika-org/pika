@@ -47,12 +47,13 @@ int pika_main(pika::program_options::variables_map& vm)
 
     {
         // Keep track of the time required to execute.
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
 
         std::uint64_t r = fibonacci(n);
 
         char const* fmt = "fibonacci({1}) == {2}\nelapsed time: {3} [s]\n";
-        pika::util::format_to(std::cout, fmt, n, r, t.elapsed());
+        pika::util::format_to(
+            std::cout, fmt, n, r, t.elapsed<std::chrono::seconds>());
     }
 
     return pika::finalize();    // Handles pika shutdown

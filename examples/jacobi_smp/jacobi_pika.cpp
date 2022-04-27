@@ -48,7 +48,7 @@ namespace jacobi_smp {
         std::shared_ptr<deps_vector> deps_old(
             new deps_vector(n_block, pika::make_ready_future()));
 
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         for (std::size_t i = 0; i < iterations; ++i)
         {
             for (std::size_t y = 1, j = 0; y < n - 1; y += block_size, ++j)
@@ -92,7 +92,7 @@ namespace jacobi_smp {
         pika::wait_all(*deps_new);
         pika::wait_all(*deps_old);
 
-        report_timing(n, iterations, t.elapsed());
+        report_timing(n, iterations, t.elapsed<std::chrono::seconds>());
         output_grid(output_filename, *grid_old, n);
     }
 }    // namespace jacobi_smp

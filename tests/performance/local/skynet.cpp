@@ -84,27 +84,31 @@ pika::future<std::int64_t> skynet_f(
 int pika_main()
 {
     {
-        std::uint64_t t = pika::chrono::high_resolution_clock::now();
+        using namespace std::chrono;
+        auto start = high_resolution_clock::now();
 
         pika::future<std::int64_t> result = pika::async(skynet, 0, 1000000, 10);
         result.wait();
 
-        t = pika::chrono::high_resolution_clock::now() - t;
+        auto dur =
+            duration_cast<milliseconds>(high_resolution_clock::now() - start);
 
-        std::cout << "Result 1: " << result.get() << " in " << (t / 1e6)
+        std::cout << "Result 1: " << result.get() << " in " << dur.count()
                   << " ms.\n";
     }
 
     {
-        std::uint64_t t = pika::chrono::high_resolution_clock::now();
+        using namespace std::chrono;
+        auto start = high_resolution_clock::now();
 
         pika::future<std::int64_t> result =
             pika::async(skynet_f, 0, 1000000, 10);
         result.wait();
 
-        t = pika::chrono::high_resolution_clock::now() - t;
+        auto dur =
+            duration_cast<milliseconds>(high_resolution_clock::now() - start);
 
-        std::cout << "Result 2: " << result.get() << " in " << (t / 1e6)
+        std::cout << "Result 2: " << result.get() << " in " << dur.count()
                   << " ms.\n";
     }
     return 0;

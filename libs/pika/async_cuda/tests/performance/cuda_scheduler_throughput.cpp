@@ -118,7 +118,7 @@ void matrixMultiply(
     auto test_function = [&](cu::cuda_scheduler& cuda_sched,
                              const std::string& msg, std::size_t n_iters) {
         // time many cuda kernels spawned one after each other when they complete
-        pika::chrono::high_resolution_timer t1;
+        pika::chrono::detail::high_resolution_timer t1;
         for (std::size_t j = 0; j < n_iters; j++)
         {
             tt::sync_wait(ex::schedule(cuda_sched) |
@@ -132,7 +132,7 @@ void matrixMultiply(
                     },
                     CUBLAS_POINTER_MODE_HOST));
         }
-        double us1 = t1.elapsed_microseconds();
+        double us1 = t1.elapsed<std::chrono::microseconds>();
         std::cout << "us per iteration " << us1 / n_iters << " : " << msg
                   << std::endl
                   << std::endl;

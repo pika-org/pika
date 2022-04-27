@@ -108,7 +108,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
         std::vector<int> tokens(iterations, -1);
 
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
 
         const std::uint64_t inner_iterations = 100;
         const std::uint64_t outer_iterations = iterations / inner_iterations;

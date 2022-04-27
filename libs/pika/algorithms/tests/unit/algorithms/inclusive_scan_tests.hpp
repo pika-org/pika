@@ -36,7 +36,7 @@ void inclusive_scan_benchmark()
         double const val(0);
         auto op = [](double v1, double v2) { return v1 + v2; };
 
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         pika::inclusive_scan(pika::execution::par, std::begin(c), std::end(c),
             std::begin(d), op, val);
         double elapsed = t.elapsed();

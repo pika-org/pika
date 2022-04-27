@@ -48,15 +48,15 @@ float measure_inner_product(ExPolicy&& policy, std::vector<float> const& data1,
 }
 
 template <typename ExPolicy>
-std::int64_t measure_inner_product(int count, ExPolicy&& policy,
+auto measure_inner_product(int count, ExPolicy&& policy,
     std::vector<float> const& data1, std::vector<float> const& data2)
 {
-    std::int64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     for (int i = 0; i != count; ++i)
         measure_inner_product(policy, data1, data2);
 
-    return (pika::chrono::high_resolution_clock::now() - start) / count;
+    return (std::chrono::high_resolution_clock::now() - start) / count;
 }
 
 int pika_main(pika::program_options::variables_map& vm)
@@ -88,23 +88,27 @@ int pika_main(pika::program_options::variables_map& vm)
         measure_inner_product(pika::execution::par, data1, data2);
 
         // do measurements
-        std::uint64_t tr_time_datapar = measure_inner_product(
-            test_count, pika::execution::par_simd, data1, data2);
-        std::uint64_t tr_time_par = measure_inner_product(
-            test_count, pika::execution::par, data1, data2);
+        using namespace std::chrono;
+        auto tr_time_datapar =
+            duration_cast<seconds>(measure_inner_product(test_count,
+                                       pika::execution::par_simd, data1, data2))
+                .count();
+        auto tr_time_par =
+            duration_cast<seconds>(measure_inner_product(test_count,
+                                       pika::execution::par, data1, data2))
+                .count();
 
         if (csvoutput)
         {
-            std::cout << "," << tr_time_par / 1e9 << ","
-                      << tr_time_datapar / 1e9 << "\n"
+            std::cout << "," << tr_time_par << "," << tr_time_datapar << "\n"
                       << std::flush;
         }
         else
         {
             std::cout << "transform_reduce(execution::par): " << std::right
-                      << std::setw(15) << tr_time_par / 1e9 << "\n"
+                      << std::setw(15) << tr_time_par << "\n"
                       << "transform_reduce(datapar): " << std::right
-                      << std::setw(15) << tr_time_datapar / 1e9 << "\n"
+                      << std::setw(15) << tr_time_datapar << "\n"
                       << std::flush;
         }
     }
