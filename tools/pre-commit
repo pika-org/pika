@@ -20,6 +20,8 @@
 
 # @todo : add support for the pika inspect tool to be run as well
 
+CLANG_FORMAT_VERSION=clang-format-11
+
 red=$(tput setaf 1)
 green=$(tput setaf 2)
 yellow=$(tput setaf 3)
@@ -28,7 +30,7 @@ normal=$(tput sgr0)
 
 cxxfiles=()
 for file in `git diff --cached --name-only --diff-filter=ACMRT | grep -E "\.(cpp|hpp)$"`; do
-    if ! cmp -s <(git show :${file}) <(git show :${file}|clang-format -style=file); then
+    if ! cmp -s <(git show :${file}) <(git show :${file}|$CLANG_FORMAT_VERSION -style=file); then
         cxxfiles+=("${file}")
     fi
 done
@@ -51,7 +53,7 @@ if [ -n "${cxxfiles}" ]; then
     printf "# ${blue}clang-format ${red}error pre-commit${normal} : To fix run the following (use git commit ${yellow}--no-verify${normal} to bypass)\n"
     for f in "${cxxfiles[@]}" ; do
         rel=$(realpath --relative-to "./$GIT_PREFIX" $f)
-        printf "clang-format -i %s\n" "$rel"
+        printf "$CLANG_FORMAT_VERSION -i %s\n" "$rel"
         full_list="${rel} ${full_list}"
     done
     returncode=1
