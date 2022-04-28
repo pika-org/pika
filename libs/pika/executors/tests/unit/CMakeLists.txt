@@ -18,6 +18,7 @@ set(tests
     sequenced_executor
     shared_parallel_executor
     standalone_thread_pool_executor
+    std_thread_scheduler
     thread_pool_scheduler
 )
 
