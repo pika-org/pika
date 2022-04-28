@@ -214,7 +214,7 @@ namespace pika { namespace threads { namespace policies {
         /// node. It should not be used without care as the thread numbering
         /// internal to the scheduler is not a simple linear indexing.
         /// returns -1 to indicate that the calling thread is not part
-        /// of the thread pool the scheduler is runnning on
+        /// of the thread pool the scheduler is running on
         inline std::size_t local_thread_number() const
         {
             using namespace pika::threads::detail;
@@ -704,7 +704,7 @@ namespace pika { namespace threads { namespace policies {
 
         /// Schedule the passed thread
         void schedule_work(threads::thread_id_ref_type thrd,
-            threads::thread_schedule_hint schedulehint, bool allow_fallback,
+            threads::thread_schedule_hint schedulehint, bool /*allow_fallback*/,
             bool other_end, thread_priority priority = thread_priority::normal)
         {
             PIKA_ASSERT(get_thread_id_data(thrd)->get_scheduler_base() == this);
@@ -857,7 +857,7 @@ namespace pika { namespace threads { namespace policies {
             auto state_val = state.state();
             if (state_val != thread_schedule_state::terminated)
             {
-                std::cout << "State not terminated " << std::endl;
+                // std::cout << "State not terminated " << std::endl;
             }
 
             auto d1 = thrd->get_queue<queue_holder_thread<thread_queue_type>>()
