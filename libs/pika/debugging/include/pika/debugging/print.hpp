@@ -70,19 +70,11 @@ extern char** environ;
 // Used to wrap function call parameters to prevent evaluation
 // when debugging is disabled
 #define PIKA_DP_LAZY(printer, Expr) printer.eval([&] { return Expr; })
-#if (__cplusplus >= 201703L)
 #define PIKA_DP_ONLY(printer, Expr)                                            \
     if constexpr (printer.is_enabled())                                        \
     {                                                                          \
         printer.Expr;                                                          \
     };
-#else
-#define PIKA_DP_ONLY(printer, Expr)                                            \
-    if (printer.is_enabled())                                                  \
-    {                                                                          \
-        printer.Expr;                                                          \
-    };
-#endif
 
 #define NS_DEBUG pika::debug
 

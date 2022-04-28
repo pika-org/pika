@@ -471,8 +471,6 @@ int pika_main(variables_map& vm)
             pika::execution::experimental::thread_pool_scheduler>
             sched_exec_tps;
 
-        std::cout << "===================================\n";
-
         for (int i = 0; i < repetitions; i++)
         {
             function_futures_create_thread_hierarchical_placement(count, csv);

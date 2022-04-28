@@ -105,7 +105,6 @@ namespace pika { namespace threads { namespace policies {
     {
     public:
         using has_periodic_maintenance = std::false_type;
-        using bypass_scheduling_loop_checks = std::true_type;
 
         // lock free moody camel fifo queue
         using thread_queue_type = thread_queue_mc;
@@ -645,7 +644,8 @@ namespace pika { namespace threads { namespace policies {
             return false;
         }
 
-        // just a dummy function to keep the scheduling loop happy
+        // the scheduling loop expects a 'wait_or_add_new' function
+        // but we only handle 'add_new' work from queues
         virtual bool wait_or_add_new(std::size_t /* thread_num */,
             bool /* running */, std::int64_t& /* idle_loop_count */,
             bool /*enable_stealing*/, std::size_t& added) override
@@ -852,13 +852,6 @@ namespace pika { namespace threads { namespace policies {
         void destroy_thread(threads::thread_data* thrd) override
         {
             PIKA_ASSERT(thrd->get_scheduler_base() == this);
-
-            thread_state state = thrd->get_state();
-            auto state_val = state.state();
-            if (state_val != thread_schedule_state::terminated)
-            {
-                // std::cout << "State not terminated " << std::endl;
-            }
 
             auto d1 = thrd->get_queue<queue_holder_thread<thread_queue_type>>()
                           .domain_index_;

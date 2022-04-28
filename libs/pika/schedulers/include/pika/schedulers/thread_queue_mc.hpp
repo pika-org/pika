@@ -80,7 +80,7 @@ namespace pika { namespace threads { namespace policies {
         std::size_t add_new(
             std::int64_t add_count, thread_queue_type* addfrom, bool stealing)
         {
-            PIKA_MAYBE_UNUSED auto scp = tqmc_deb.scope(debug::ptr(this),
+            [[maybe_unused]] auto scp = tqmc_deb.scope(debug::ptr(this),
                 __func__, "from", debug::ptr(addfrom), "std::thread::id",
                 debug::hex<6>(holder_->owner_id_), stealing);
             PIKA_ASSERT(holder_->owner_id_ == std::this_thread::get_id());
@@ -251,7 +251,7 @@ namespace pika { namespace threads { namespace policies {
         bool get_next_thread(threads::thread_id_ref_type& thrd, bool other_end,
             bool check_new = false) PIKA_HOT
         {
-            PIKA_MAYBE_UNUSED auto scp =
+            [[maybe_unused]] auto scp =
                 tqmc_deb.scope(debug::ptr(this), __func__);
             std::int64_t work_items_count_count =
                 work_items_count_.data_.load(std::memory_order_relaxed);
