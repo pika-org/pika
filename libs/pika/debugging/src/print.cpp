@@ -329,7 +329,8 @@ namespace pika { namespace debug {
         }
 
         template PIKA_EXPORT void print_array(
-            std::string const&, std::uint64_t const*, std::size_t);
+            std::string const&, std::size_t const*, std::size_t);
+
     }    // namespace detail
 }}       // namespace pika::debug
 /// \endcond
