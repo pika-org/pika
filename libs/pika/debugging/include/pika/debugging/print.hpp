@@ -19,20 +19,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-//
-#if defined(__linux) || defined(linux) || defined(__linux__)
-#include <sys/mman.h>
-#include <unistd.h>
-#elif defined(__APPLE__)
-#include <crt_externs.h>
-#include <unistd.h>
-#define environ (*_NSGetEnviron())
-#elif defined(PIKA_WINDOWS)
-#include <winsock.h>
-#define environ _environ
-#else
-extern char** environ;
-#endif
 
 // ------------------------------------------------------------
 // This file provides a simple to use printf style debugging
