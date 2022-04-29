@@ -55,7 +55,7 @@ void print_stats(const char* title, const char* wait, const char* exec,
     if (csv)
     {
         pika::util::format_to(temp,
-            "{1}, {:27}, {:15}, {:18}, {:8}, {:8}, {:20}, {:4}, {:4}, "
+            "{1}, {:27}, {:15}, {:45}, {:8}, {:8}, {:20}, {:4}, {:4}, "
             "{:20}",
             count, title, wait, exec, duration, us, queuing, numa_sensitive,
             num_threads, info_string);
@@ -63,7 +63,7 @@ void print_stats(const char* title, const char* wait, const char* exec,
     else
     {
         pika::util::format_to(temp,
-            "invoked {:1}, futures {:27} {:15} {:18} in {:8} seconds : {:8} "
+            "invoked {:1}, futures {:27} {:15} {:45} in {:8} seconds : {:8} "
             "us/future, queue {:20}, numa {:4}, threads {:4}, info {:20}",
             count, title, wait, exec, duration, us, queuing, numa_sensitive,
             num_threads, info_string);
@@ -124,8 +124,7 @@ struct scratcher
 
 // Time async execution using wait each on futures vector
 template <typename Executor>
-void measure_function_futures_wait_each(
-    std::uint64_t count, bool csv, Executor& exec)
+void function_futures_wait_each(std::uint64_t count, bool csv, Executor& exec)
 {
     std::vector<future<double>> futures;
     futures.reserve(count);
@@ -142,8 +141,7 @@ void measure_function_futures_wait_each(
 }
 
 template <typename Executor>
-void measure_function_futures_wait_all(
-    std::uint64_t count, bool csv, Executor& exec)
+void function_futures_wait_all(std::uint64_t count, bool csv, Executor& exec)
 {
     std::vector<future<double>> futures;
     futures.reserve(count);
@@ -159,7 +157,7 @@ void measure_function_futures_wait_all(
 }
 
 template <typename Executor>
-void measure_function_futures_limiting_executor(
+void function_futures_limiting_executor(
     std::uint64_t count, bool csv, Executor exec)
 {
     std::uint64_t const num_threads = pika::get_num_worker_threads();
@@ -174,11 +172,11 @@ void measure_function_futures_limiting_executor(
             // add these flags
             pika::threads::policies::scheduler_mode(
                 pika::threads::policies::enable_stealing |
+                pika::threads::policies::enable_stealing_numa |
                 pika::threads::policies::assign_work_round_robin |
                 pika::threads::policies::steal_after_local),
             // remove these flags
             pika::threads::policies::scheduler_mode(
-                pika::threads::policies::enable_stealing_numa |
                 pika::threads::policies::assign_work_thread_parent |
                 pika::threads::policies::steal_high_priority_first));
     }
@@ -214,7 +212,7 @@ void measure_function_futures_limiting_executor(
 }
 
 template <typename Executor>
-void measure_function_futures_sliding_semaphore(
+void function_futures_sliding_semaphore(
     std::uint64_t count, bool csv, Executor& exec)
 {
     // start the clock
@@ -254,8 +252,8 @@ namespace pika { namespace parallel { namespace execution {
 }}}    // namespace pika::parallel::execution
 
 template <typename Executor>
-void measure_function_futures_for_loop(std::uint64_t count, bool csv,
-    Executor& exec, char const* executor_name = nullptr)
+void function_futures_for_loop(std::uint64_t count, bool csv, Executor& exec,
+    char const* executor_name = nullptr)
 {
     // start the clock
     high_resolution_timer walltime;
@@ -270,7 +268,7 @@ void measure_function_futures_for_loop(std::uint64_t count, bool csv,
         executor_name ? executor_name : exec_name(exec), count, duration, csv);
 }
 
-void measure_function_futures_register_work(std::uint64_t count, bool csv)
+void function_futures_register_work(std::uint64_t count, bool csv)
 {
     pika::lcos::local::latch l(count);
 
@@ -293,7 +291,7 @@ void measure_function_futures_register_work(std::uint64_t count, bool csv)
     print_stats("register_work", "latch", "none", count, duration, csv);
 }
 
-void measure_function_futures_create_thread(std::uint64_t count, bool csv)
+void function_futures_create_thread(std::uint64_t count, bool csv)
 {
     pika::lcos::local::latch l(count);
 
@@ -327,7 +325,7 @@ void measure_function_futures_create_thread(std::uint64_t count, bool csv)
     print_stats("create_thread", "latch", "none", count, duration, csv);
 }
 
-void measure_function_futures_create_thread_hierarchical_placement(
+void function_futures_create_thread_hierarchical_placement(
     std::uint64_t count, bool csv)
 {
     pika::lcos::local::latch l(count);
@@ -398,7 +396,7 @@ void measure_function_futures_create_thread_hierarchical_placement(
         "create_thread_hierarchical", "latch", "none", count, duration, csv);
 }
 
-void measure_function_futures_apply_hierarchical_placement(
+void function_futures_apply_hierarchical_placement(
     std::uint64_t count, bool csv)
 {
     pika::lcos::local::latch l(count);
@@ -475,23 +473,21 @@ int pika_main(variables_map& vm)
 
         for (int i = 0; i < repetitions; i++)
         {
-            measure_function_futures_create_thread_hierarchical_placement(
-                count, csv);
+            function_futures_create_thread_hierarchical_placement(count, csv);
             if (test_all)
             {
-                measure_function_futures_limiting_executor(count, csv, par);
-                measure_function_futures_wait_each(count, csv, par);
-                measure_function_futures_wait_all(count, csv, par);
-                measure_function_futures_sliding_semaphore(count, csv, par);
-                measure_function_futures_for_loop(count, csv, par);
-                measure_function_futures_for_loop(count, csv, par_agg);
-                measure_function_futures_for_loop(count, csv, sched_exec_tps);
-                measure_function_futures_for_loop(
+                function_futures_limiting_executor(count, csv, par);
+                function_futures_wait_each(count, csv, par);
+                function_futures_wait_all(count, csv, par);
+                function_futures_sliding_semaphore(count, csv, par);
+                function_futures_for_loop(count, csv, par);
+                function_futures_for_loop(count, csv, par_agg);
+                function_futures_for_loop(count, csv, sched_exec_tps);
+                function_futures_for_loop(
                     count, csv, par_nostack, "parallel_executor_nostack");
-                measure_function_futures_register_work(count, csv);
-                measure_function_futures_create_thread(count, csv);
-                measure_function_futures_apply_hierarchical_placement(
-                    count, csv);
+                function_futures_register_work(count, csv);
+                function_futures_create_thread(count, csv);
+                function_futures_apply_hierarchical_placement(count, csv);
             }
         }
     }

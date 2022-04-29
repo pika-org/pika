@@ -92,7 +92,7 @@ namespace pika { namespace threads { namespace policies {
         // a mask that hold a bit per queue to indicate ownership of the queue
         const std::size_t owner_mask_;
 
-        // we must use OS mutexes here because we cannot suspend an pika
+        // we must use OS mutexes here because we cannot suspend a pika
         // thread whilst processing the Queues for that thread, this code
         // is running at the OS level in effect.
         using mutex_type = std::mutex;
@@ -147,6 +147,7 @@ namespace pika { namespace threads { namespace policies {
             terminated_items_count_;
 
         thread_queue_init_parameters parameters_;
+        std::thread::id owner_id_;
 
         // ------------------------------------------------------------
         struct queue_mc_print
@@ -196,7 +197,7 @@ namespace pika { namespace threads { namespace policies {
         queue_holder_thread(QueueType* bp_queue, QueueType* hp_queue,
             QueueType* np_queue, QueueType* lp_queue, std::size_t domain,
             std::size_t queue, std::size_t thread_num, std::size_t owner,
-            const thread_queue_init_parameters& init)
+            const thread_queue_init_parameters& init, std::thread::id owner_id)
           : bp_queue_(bp_queue)
           , hp_queue_(hp_queue)
           , np_queue_(np_queue)
@@ -207,6 +208,7 @@ namespace pika { namespace threads { namespace policies {
           , owner_mask_(owner)
           , terminated_items_(max_thread_count)
           , parameters_(init)
+          , owner_id_(owner_id)
         {
             rollover_counters_.data_ =
                 std::make_tuple(queue_index_, round_robin_rollover);
@@ -405,7 +407,9 @@ namespace pika { namespace threads { namespace policies {
         void create_thread(thread_init_data& data, thread_id_ref_type* tid,
             std::size_t thread_num, error_code& ec)
         {
-            if (thread_num != thread_num_)
+            PIKA_ASSERT(
+                (!data.run_now || (data.run_now && thread_num == thread_num_)));
+            if (data.run_now && thread_num != thread_num_)
             {
                 data.run_now = false;
             }
@@ -464,7 +468,7 @@ namespace pika { namespace threads { namespace policies {
             threads::thread_id_ref_type& tid, threads::thread_init_data& data)
         {
             PIKA_ASSERT(data.stacksize >= thread_stacksize::minimal);
-            PIKA_ASSERT(data.stacksize <= thread_stacksize::maximal);
+            PIKA_ASSERT(data.stacksize <= thread_stacksize::nostack);
 
             std::ptrdiff_t const stacksize =
                 data.scheduler_base->get_stack_size(data.stacksize);

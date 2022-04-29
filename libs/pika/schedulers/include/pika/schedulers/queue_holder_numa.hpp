@@ -56,7 +56,6 @@ namespace pika { namespace threads { namespace policies {
     {
         // ----------------------------------------------------------------
         using ThreadQueue = queue_holder_thread<QueueType>;
-        using mutex_type = typename QueueType::mutex_type;
 
         // ----------------------------------------------------------------
         queue_holder_numa()

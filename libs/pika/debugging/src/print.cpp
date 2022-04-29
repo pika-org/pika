@@ -8,6 +8,8 @@
 #include <pika/debugging/environ.hpp>
 #include <pika/debugging/print.hpp>
 
+#include <boost/crc.hpp>
+
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -48,10 +50,15 @@ namespace pika { namespace debug {
                << std::noshowbase << std::dec << v;
         }
 
+        template PIKA_EXPORT void print_dec(std::ostream&, bool const&, int);
         template PIKA_EXPORT void print_dec(
             std::ostream&, std::int16_t const&, int);
         template PIKA_EXPORT void print_dec(
+            std::ostream&, std::uint16_t const&, int);
+        template PIKA_EXPORT void print_dec(
             std::ostream&, std::int32_t const&, int);
+        template PIKA_EXPORT void print_dec(
+            std::ostream&, std::uint32_t const&, int);
         template PIKA_EXPORT void print_dec(
             std::ostream&, std::int64_t const&, int);
         template PIKA_EXPORT void print_dec(
@@ -78,7 +85,8 @@ namespace pika { namespace debug {
 
     std::ostream& operator<<(std::ostream& os, ptr const& d)
     {
-        os << d.data_;
+        os << std::internal << std::hex << std::setw(10) << std::setfill('0')
+           << d.data_;
         return os;
     }
 
@@ -97,13 +105,21 @@ namespace pika { namespace debug {
         template PIKA_EXPORT void print_hex(
             std::ostream&, std::thread::id, int);
         template PIKA_EXPORT void print_hex(std::ostream&, unsigned long, int);
+        template PIKA_EXPORT void print_hex(std::ostream&, long, int);
         template PIKA_EXPORT void print_hex(std::ostream&, int, int);
+        template PIKA_EXPORT void print_hex(std::ostream&, unsigned int, int);
+        template PIKA_EXPORT void print_hex(std::ostream&, void*, int);
 
-        void print_ptr(std::ostream& os, void* v, int N)
+        template <typename Int>
+        void print_ptr(std::ostream& os, Int v, int N)
         {
             os << std::right << std::setw(N) << std::noshowbase << std::hex
                << v;
         }
+
+        template PIKA_EXPORT void print_ptr(std::ostream&, void*, int);
+        template PIKA_EXPORT void print_ptr(std::ostream&, int, int);
+        template PIKA_EXPORT void print_ptr(std::ostream&, long, int);
 
     }    // namespace detail
 
@@ -125,6 +141,8 @@ namespace pika { namespace debug {
             }
         }
 
+        template PIKA_EXPORT void print_bin(std::ostream&, unsigned char, int);
+        template PIKA_EXPORT void print_bin(std::ostream&, std::uint32_t, int);
         template PIKA_EXPORT void print_bin(std::ostream&, std::uint64_t, int);
 
 #if defined(__APPLE__)
@@ -211,10 +229,19 @@ namespace pika { namespace debug {
     // useful for debugging corruptions in buffers during
     // rma or other transfers
     // ------------------------------------------------------------------
-    mem_crc32::mem_crc32(void const* a, std::size_t len, char const* txt)
+    namespace detail {
+        std::uint32_t crc32(void const* ptr, std::size_t size)
+        {
+            boost::crc_32_type result;
+            result.process_bytes(ptr, size);
+            return result.checksum();
+            return 0;
+        }
+    }    // namespace detail
+
+    mem_crc32::mem_crc32(void const* a, std::size_t len)
       : addr_(reinterpret_cast<const uint64_t*>(a))
       , len_(len)
-      , txt_(txt)
     {
     }
 
@@ -225,7 +252,8 @@ namespace pika { namespace debug {
         os << "Memory:";
         os << " address " << pika::debug::ptr(p.addr_) << " length "
            << pika::debug::hex<6>(p.len_)
-           << " CRC32:" << pika::debug::hex<8>(crc32(p.addr_, p.len_)) << "\n";
+           << " CRC32:" << pika::debug::hex<8>(detail::crc32(p.addr_, p.len_))
+           << "\n";
 
         for (std::size_t i = 0;
              i < (std::min)(size_t(std::ceil(p.len_ / 8.0)), std::size_t(128));
@@ -233,7 +261,6 @@ namespace pika { namespace debug {
         {
             os << pika::debug::hex<16>(*uintBuf++) << " ";
         }
-        os << " : " << p.txt_;
         return os;
     }
 
@@ -302,7 +329,8 @@ namespace pika { namespace debug {
         }
 
         template PIKA_EXPORT void print_array(
-            std::string const&, std::uint64_t const*, std::size_t);
+            std::string const&, std::size_t const*, std::size_t);
+
     }    // namespace detail
 }}       // namespace pika::debug
 /// \endcond

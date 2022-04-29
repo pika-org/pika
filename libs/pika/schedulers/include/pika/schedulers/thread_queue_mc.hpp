@@ -1,5 +1,4 @@
-//  Copyright (c) 2007-2019 Hartmut Kaiser
-//  Copyright (c) 2011      Bryce Lelbach
+//  Copyright (c) 2022 ETH Zurich
 //
 //  SPDX-License-Identifier: BSL-1.0
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -44,33 +43,17 @@
 #include <utility>
 #include <vector>
 
-#if !defined(THREAD_QUEUE_MC_DEBUG)
-#if defined(PIKA_DEBUG)
-#define THREAD_QUEUE_MC_DEBUG false
-#else
-#define THREAD_QUEUE_MC_DEBUG false
-#endif
-#endif
-
-//#define DEBUG_QUEUE_EXTRA 1
-
 namespace pika {
-    static pika::debug::enable_print<THREAD_QUEUE_MC_DEBUG> tqmc_deb("_TQ_MC_");
+    static pika::debug::enable_print<false> tqmc_deb("_TQ_MC_");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads { namespace policies {
 
-    template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
-        typename TerminatedQueuing>
     class thread_queue_mc
     {
     public:
-        // we use a simple mutex to protect the data members for now
-        using mutex_type = Mutex;
-
-        using thread_queue_type = thread_queue_mc<Mutex, PendingQueuing,
-            StagedQueuing, TerminatedQueuing>;
+        using thread_queue_type = thread_queue_mc;
 
         using thread_heap_type = std::list<thread_id_type,
             pika::detail::internal_allocator<thread_id_type>>;
@@ -78,12 +61,11 @@ namespace pika { namespace threads { namespace policies {
         using task_description = thread_init_data;
         using thread_description = thread_data;
 
-        typedef
-            typename PendingQueuing::template apply<thread_id_ref_type>::type
-                work_items_type;
+        using work_items_type =
+            concurrentqueue_fifo::apply<thread_id_ref_type>::type;
 
-        typedef concurrentqueue_fifo::apply<task_description>::type
-            task_items_type;
+        using task_items_type =
+            concurrentqueue_fifo::apply<task_description>::type;
 
     public:
         // ----------------------------------------------------------------
@@ -98,12 +80,16 @@ namespace pika { namespace threads { namespace policies {
         std::size_t add_new(
             std::int64_t add_count, thread_queue_type* addfrom, bool stealing)
         {
+            [[maybe_unused]] auto scp = tqmc_deb.scope(debug::ptr(this),
+                __func__, "from", debug::ptr(addfrom), "std::thread::id",
+                debug::hex<6>(holder_->owner_id_), stealing);
+            PIKA_ASSERT(holder_->owner_id_ == std::this_thread::get_id());
+
             if (addfrom->new_tasks_count_.data_.load(
                     std::memory_order_relaxed) == 0)
             {
                 return 0;
             }
-            //
 
             std::size_t added = 0;
             task_description task;
@@ -260,14 +246,17 @@ namespace pika { namespace threads { namespace policies {
         }
 
         // ----------------------------------------------------------------
-        /// Return the next thread to be executed, return false if none is
-        /// available
+        /// Return the next thread to be executed,
+        /// return false if none is available
         bool get_next_thread(threads::thread_id_ref_type& thrd, bool other_end,
             bool check_new = false) PIKA_HOT
         {
+            [[maybe_unused]] auto scp =
+                tqmc_deb.scope(debug::ptr(this), __func__);
             std::int64_t work_items_count_count =
                 work_items_count_.data_.load(std::memory_order_relaxed);
 
+            // If there is an available thread on the work queue
             if (0 != work_items_count_count && work_items_.pop(thrd, other_end))
             {
                 --work_items_count_.data_;
@@ -279,9 +268,13 @@ namespace pika { namespace threads { namespace policies {
                     debug::threadinfo<threads::thread_id_ref_type*>(&thrd));
                 return true;
             }
-            if (check_new && add_new(32, this, false) > 0)
+
+            // if there is not any work ready, convert ready tasks into threads
+            // not that if other_end is true = stealing, so do not convert
+            // for thread safety reasons
+            if (!other_end && check_new && add_new(32, this, false) > 0)
             {
-                // use check_now false to prevent infinite recursion
+                // use check_new false to prevent infinite recursion
                 return get_next_thread(thrd, other_end, false);
             }
             return false;

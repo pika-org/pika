@@ -55,7 +55,14 @@
 
 // Used to wrap function call parameters to prevent evaluation
 // when debugging is disabled
-#define PIKA_DP_LAZY(Expr, printer) printer.eval([&] { return Expr; })
+#define PIKA_DP_LAZY(printer, Expr) printer.eval([&] { return Expr; })
+#define PIKA_DP_ONLY(printer, Expr)                                            \
+    if constexpr (printer.is_enabled())                                        \
+    {                                                                          \
+        printer.Expr;                                                          \
+    };
+
+#define NS_DEBUG pika::debug
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
@@ -65,6 +72,11 @@ namespace pika { namespace debug {
     // format as zero padded int
     // ------------------------------------------------------------------
     namespace detail {
+
+        template <int Level, int Threshold>
+        struct check_level : std::integral_constant<bool, Level <= Threshold>
+        {
+        };
 
         template <typename Int>
         PIKA_EXPORT void print_dec(std::ostream& os, Int const& v, int n);
@@ -89,7 +101,7 @@ namespace pika { namespace debug {
     }    // namespace detail
 
     template <int N = 2, typename T>
-    constexpr detail::dec<N, T> dec(T const& v)
+    detail::dec<N, T> dec(T const& v)
     {
         return detail::dec<N, T>(v);
     }
@@ -138,7 +150,8 @@ namespace pika { namespace debug {
             }
         };
 
-        PIKA_EXPORT void print_ptr(std::ostream& os, void* v, int n);
+        template <typename Int>
+        PIKA_EXPORT void print_ptr(std::ostream& os, Int v, int n);
 
         template <int N, typename T>
         struct hex<N, T,
@@ -154,7 +167,7 @@ namespace pika { namespace debug {
             friend std::ostream& operator<<(
                 std::ostream& os, hex<N, T> const& d)
             {
-                detail::print_ptr(os, d.data_, N);
+                detail::print_ptr(os, static_cast<void*>(d.data_), N);
                 return os;
             }
         };
@@ -253,10 +266,7 @@ namespace pika { namespace debug {
     // ------------------------------------------------------------------
     // helper function for printing CRC32
     // ------------------------------------------------------------------
-    constexpr inline std::uint32_t crc32(void const*, std::size_t)
-    {
-        return 0;
-    }
+    std::uint32_t crc32(void const* ptr, std::size_t size);
 
     // ------------------------------------------------------------------
     // helper function for printing short memory dump and crc32
@@ -265,11 +275,10 @@ namespace pika { namespace debug {
     // ------------------------------------------------------------------
     struct mem_crc32
     {
-        PIKA_EXPORT mem_crc32(void const* a, std::size_t len, char const* txt);
+        PIKA_EXPORT mem_crc32(void const* a, std::size_t len);
 
         std::uint64_t const* addr_;
         std::size_t const len_;
-        char const* txt_;
 
         PIKA_EXPORT friend std::ostream& operator<<(
             std::ostream& os, mem_crc32 const& p);
@@ -319,8 +328,8 @@ namespace pika { namespace debug {
             tempstream << prefix;
             generate_prefix(tempstream);
             ((tempstream << args << " "), ...);
-            tempstream << std::endl;
-            std::cout << tempstream.str();
+            tempstream << "\n";
+            std::cout << tempstream.str() << std::flush;
         }
 
         template <typename... Args>
@@ -604,8 +613,8 @@ namespace pika { namespace debug {
             return T(args...);
         }
 
-        template <typename T, typename V>
-        void set(T& var, V const& val)
+        template <typename T>
+        void set(T& var, T const& val)
         {
             var = val;
         }
@@ -622,6 +631,16 @@ namespace pika { namespace debug {
         {
             return e();
         }
+    };
+
+    template <int Level, int Threshold>
+    struct print_threshold
+      : enable_print<detail::check_level<Level, Threshold>::value>
+    {
+        using base_type =
+            enable_print<detail::check_level<Level, Threshold>::value>;
+        // inherit constructor
+        using base_type::base_type;
     };
 
 }}    // namespace pika::debug
