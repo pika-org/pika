@@ -4,6 +4,28 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.4.0 (2022-05-04)
+
+### New features
+
+- Annotations are now inherited from the scheduling task instead of the spawning task for `transfer`. ([#188](https://github.com/pika-org/pika/pull/188))
+- Annotations for bulk regions are now lifted up around the work loop on each worker thread using a scoped annotation. ([#197](https://github.com/pika-org/pika/pull/197))
+- It is now allowed to pass a lambda with `auto` parameters to `then`. ([#182](https://github.com/pika-org/pika/pull/182))
+- A scheduler that spawns `std::thread`s is now available. ([#200](https://github.com/pika-org/pika/pull/200))
+
+### Breaking changes
+
+- Cleaned up various modules and moved minor functionality into `detail` namespaces. ([#179](https://github.com/pika-org/pika/pull/179), [#196](https://github.com/pika-org/pika/pull/196))
+
+### Bugfixes
+
+- The sender returned by `ensure_started` can now be discarded without being connected to its corresponding receiver. ([#180](https://github.com/pika-org/pika/pull/180))
+- The lifetime issue in the `split` sender adaptor is now fixed. ([#203](https://github.com/pika-org/pika/pull/203))
+- The scheduler forwarding in `schedule_from` is now properly handled. ([#186](https://github.com/pika-org/pika/pull/186))
+- Missing includes to `transform_mpi.hpp` have now been added. ([#176](https://github.com/pika-org/pika/pull/176))
+- Remove unnecessary Boost dependencies when `PIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON`. ([#185](https://github.com/pika-org/pika/pull/185))
+- The segmentation fault in the shared priority queue scheduler has now been fixed. ([#210](https://github.com/pika-org/pika/pull/210))
+
 ## 0.3.0 (2022-04-06)
 
 ### New features
