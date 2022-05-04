@@ -47,6 +47,8 @@ pika follows `Semantic Versioning <https://semver.org>`_.
 
 #. Create a release on GitHub using the script ``tools/roll_release.sh``. This
    script automatically tags the release with the corresponding release number.
+   You'll need to set ``GITHUB_TOKEN`` or both ``GITHUB_USER`` and
+   ``GITHUB_PASSWORD`` for the hub release command.
 
 #. Merge release branch into ``main``.
 
