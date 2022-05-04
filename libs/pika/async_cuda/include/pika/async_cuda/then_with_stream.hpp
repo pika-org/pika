@@ -48,7 +48,6 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             PIKA_FORWARD(Ts, ts)...);
     }
 
-#if defined(PIKA_HAVE_CUDA)
     PIKA_EXPORT pika::cuda::experimental::cusolver_handle const&
     get_thread_local_cusolver_handle(cuda_stream const& stream);
 
@@ -61,7 +60,6 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             get_thread_local_cusolver_handle(stream).get(),
             PIKA_FORWARD(Ts, ts)...);
     }
-#endif
 
     template <typename R, typename... Ts>
     void set_value_event_callback_helper(cudaError_t status, R&& r, Ts&&... ts)
@@ -588,7 +586,6 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         }
     };
 
-#if defined(PIKA_HAVE_CUDA)
     // This is a wrapper for functions that expect a cusolverHandle_t in the
     // first position (as is convention for cuBLAS functions taking handles).
     template <typename F>
@@ -610,7 +607,6 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 stream, f, PIKA_FORWARD(Ts, ts)...);
         }
     };
-#endif
 }    // namespace pika::cuda::experimental::then_with_stream_detail
 
 namespace pika::cuda::experimental {
@@ -694,7 +690,6 @@ namespace pika::cuda::experimental {
         }
     } then_with_cublas{};
 
-#if defined(PIKA_HAVE_CUDA)
     /// Attach a continuation to run f with an additional cuSOLVER handle.
     ///
     /// Attaches a continuation to the given sender which will call f with the
@@ -727,7 +722,6 @@ namespace pika::cuda::experimental {
                 then_with_cusolver_t, F>{PIKA_FORWARD(F, f)};
         }
     } then_with_cusolver{};
-#endif
 
     /// Attach a continuation to run f with a CUDA stream, cuBLAS handle, or
     /// cuSOLVER handle.
@@ -755,14 +749,12 @@ namespace pika::cuda::experimental {
                 return then_with_cublas(PIKA_FORWARD(Sender, sender),
                     PIKA_FORWARD(F, f), pointer_mode);
             }
-#if defined(PIKA_HAVE_CUDA)
             else if constexpr (std::is_invocable_v<then_with_cusolver_t, Sender,
                                    F>)
             {
                 return then_with_cusolver(
                     PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f));
             }
-#endif
             else
             {
                 static_assert(sizeof(Sender) == 0,

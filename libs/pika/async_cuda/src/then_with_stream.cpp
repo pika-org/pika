@@ -27,7 +27,6 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         return handle;
     }
 
-#if defined(PIKA_HAVE_CUDA)
     pika::cuda::experimental::cusolver_handle const&
     get_thread_local_cusolver_handle(cuda_stream const& stream)
     {
@@ -38,5 +37,4 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
         return handle;
     }
-#endif
 }    // namespace pika::cuda::experimental::then_with_stream_detail
