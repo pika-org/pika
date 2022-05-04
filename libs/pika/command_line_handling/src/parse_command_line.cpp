@@ -297,9 +297,7 @@ namespace pika::detail {
             options_description cmdline_options(
                 "pika options (allowed on command line only)");
             cmdline_options.add_options()
-                ("pika:help", value<std::string>()->implicit_value("minimal"),
-                    "print out program usage (default: this message), possible "
-                    "values: 'full' (additionally prints options from components)")
+                ("pika:help", "print out program usage (this message)")
                 ("pika:version", "print out pika version and copyright information")
                 ("pika:info", "print out pika configuration information")
                 ("pika:options-file", value<std::vector<std::string> >()->composing(),

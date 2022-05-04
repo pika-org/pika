@@ -731,32 +731,8 @@ namespace pika::detail {
     {
         if (vm_.count("pika:help"))
         {
-            std::string help_option(vm_["pika:help"].as<std::string>());
-            if (0 == std::string("minimal").find(help_option))
-            {
-                // print static help only
-                std::cout << help << std::endl;
-                return true;
-            }
-            else if (0 == std::string("full").find(help_option))
-            {
-                // defer printing help until after dynamic part has been
-                // acquired
-                std::ostringstream strm;
-                strm << help << std::endl;
-                ini_config_.emplace_back(
-                    "pika.cmd_line_help!=" + detail::encode_string(strm.str()));
-                ini_config_.emplace_back(
-                    "pika.cmd_line_help_option!=" + help_option);
-            }
-            else
-            {
-                throw pika::detail::command_line_error(pika::util::format(
-                    "Invalid argument for option --pika:help: "
-                    "'{1}', allowed values: "
-                    "'minimal' (default) and 'full'",
-                    help_option));
-            }
+            std::cout << help << std::endl;
+            return true;
         }
         return false;
     }
