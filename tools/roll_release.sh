@@ -105,6 +105,6 @@ echo ""
 echo "Creating release."
 hub release create \
     ${PRERELEASE_FLAG} \
-    --message "${VERSION_TITLE}" \
-    --message "${VERSION_DESCRIPTION}" \
+    --message="${VERSION_TITLE}" \
+    --message="${VERSION_DESCRIPTION}" \
     "${VERSION_FULL_TAG}"
