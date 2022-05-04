@@ -20,5 +20,6 @@ configure_extra_options+=" -DPIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON"
 configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"
 configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+configure_extra_options+=" -DPIKA_WITH_CXX17_STD_EXECUTION_POLICIES=OFF"
 
 build_extra_options+=" -j10"
