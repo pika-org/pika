@@ -812,7 +812,7 @@ namespace pika {
         }
     }
 
-    namespace util {
+    namespace detail {
         ///////////////////////////////////////////////////////////////////////////
         // retrieve the command line arguments for the current locality
         bool retrieve_commandline_arguments(
@@ -831,8 +831,8 @@ namespace pika {
             if (cfg.has_entry("pika.cmd_line"))
                 cmdline = cfg.get_entry("pika.cmd_line");
 
-            return pika::detail::parse_commandline(
-                cfg, app_options, cmdline, vm, allow_unregistered);
+            return parse_commandline(cfg, app_options, cmdline, vm,
+                commandline_error_mode::allow_unregistered);
         }
 
         ///////////////////////////////////////////////////////////////////////////
@@ -847,7 +847,7 @@ namespace pika {
 
             return retrieve_commandline_arguments(desc_commandline, vm);
         }
-    }    // namespace util
+    }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
     std::size_t get_os_thread_count()

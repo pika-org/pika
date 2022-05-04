@@ -8,16 +8,18 @@
 #include <pika/assert.hpp>
 #include <pika/command_line_handling/command_line_handling.hpp>
 #include <pika/command_line_handling/parse_command_line.hpp>
+#include <pika/debugging/attach_debugger.hpp>
 #include <pika/functional/detail/reset_function.hpp>
-#include <pika/modules/debugging.hpp>
 #include <pika/modules/format.hpp>
-#include <pika/modules/program_options.hpp>
-#include <pika/modules/runtime_configuration.hpp>
-#include <pika/modules/topology.hpp>
-#include <pika/modules/util.hpp>
 #include <pika/preprocessor/stringize.hpp>
+#include <pika/program_options/options_description.hpp>
+#include <pika/program_options/variables_map.hpp>
+#include <pika/runtime_configuration/runtime_configuration.hpp>
+#include <pika/topology/cpu_mask.hpp>
+#include <pika/topology/topology.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/util/from_string.hpp>
+#include <pika/util/manage_config.hpp>
 #include <pika/version.hpp>
 
 #include <boost/tokenizer.hpp>
@@ -90,7 +92,7 @@ namespace pika::detail {
     inline std::string encode_and_enquote(std::string str)
     {
         encode(str, '\"', "\\\"", 2);
-        return util::detail::enquote(PIKA_MOVE(str));
+        return enquote(PIKA_MOVE(str));
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -862,10 +864,11 @@ namespace pika::detail {
             rtcfg_.parse("<user supplied config>", e, true, false);
 
         // support re-throwing command line exceptions for testing purposes
-        int error_mode = util::allow_unregistered;
+        commandline_error_mode error_mode =
+            commandline_error_mode::allow_unregistered;
         if (cfgmap.get_value("pika.commandline.rethrow_errors", 0) != 0)
         {
-            error_mode |= util::rethrow_on_error;
+            error_mode |= commandline_error_mode::rethrow_on_error;
         }
 
         // The cfg registry may hold command line options to prepend to the
@@ -936,8 +939,8 @@ namespace pika::detail {
         std::vector<std::string> unregistered_options;
 
         if (!parse_commandline(rtcfg_, desc_cmdline, argv[0], args, vm_,
-                error_mode | util::report_missing_config_file, &help,
-                &unregistered_options))
+                error_mode | commandline_error_mode::report_missing_config_file,
+                &help, &unregistered_options))
         {
             return -1;
         }

@@ -7,9 +7,9 @@
 
 .. _modules_command_line_handling:
 
-===========================
+=====================
 command_line_handling
-===========================
+=====================
 
 TODO: High-level description of the module.
 

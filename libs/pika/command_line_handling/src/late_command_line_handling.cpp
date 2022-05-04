@@ -7,8 +7,9 @@
 #include <pika/assert.hpp>
 #include <pika/command_line_handling/late_command_line_handling.hpp>
 #include <pika/command_line_handling/parse_command_line.hpp>
-#include <pika/modules/program_options.hpp>
-#include <pika/modules/runtime_configuration.hpp>
+#include <pika/program_options/options_description.hpp>
+#include <pika/program_options/variables_map.hpp>
+#include <pika/runtime_configuration/runtime_configuration.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/util/from_string.hpp>
 
@@ -48,11 +49,12 @@ namespace pika::detail {
                     ini.get_entry("pika.runtime_mode", ""));
                 pika::program_options::variables_map vm;
 
-                util::commandline_error_mode mode = util::rethrow_on_error;
+                commandline_error_mode mode =
+                    commandline_error_mode::rethrow_on_error;
                 std::string allow_unknown(
                     ini.get_entry("pika.commandline.allow_unknown", "0"));
                 if (allow_unknown != "0")
-                    mode = util::allow_unregistered;
+                    mode = commandline_error_mode::allow_unregistered;
 
                 std::vector<std::string> still_unregistered_options;
                 parse_commandline(ini, options, unknown_cmd_line, vm, mode,
@@ -67,7 +69,7 @@ namespace pika::detail {
                         still_unknown_commandline += " ";
                     }
                     still_unknown_commandline +=
-                        util::detail::enquote(still_unregistered_options[i]);
+                        enquote(still_unregistered_options[i]);
                 }
 
                 if (!still_unknown_commandline.empty())
@@ -112,8 +114,8 @@ namespace pika::detail {
                 pika::program_options::variables_map vm;
 
                 parse_commandline(ini, options, cmd_line, vm,
-                    util::allow_unregistered |
-                        util::report_missing_config_file);
+                    commandline_error_mode::allow_unregistered |
+                        commandline_error_mode::report_missing_config_file);
 
                 if (vm.count("pika:print-bind"))
                 {

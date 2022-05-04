@@ -43,6 +43,7 @@
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/util/from_string.hpp>
+#include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
 
 #if defined(PIKA_NATIVE_MIC) || defined(__bgq__)

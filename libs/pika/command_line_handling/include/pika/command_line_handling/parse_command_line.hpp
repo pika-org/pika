@@ -8,52 +8,53 @@
 
 #include <pika/config.hpp>
 #include <pika/ini/ini.hpp>
-
-#include <pika/modules/program_options.hpp>
+#include <pika/program_options/options_description.hpp>
+#include <pika/program_options/variables_map.hpp>
 
 #include <cstddef>
 #include <string>
 #include <vector>
 
-namespace pika {
-    namespace util {
-        enum commandline_error_mode
-        {
-            return_on_error,
-            rethrow_on_error,
-            allow_unregistered,
-            ignore_aliases = 0x40,
-            report_missing_config_file = 0x80
-        };
+namespace pika::detail {
+    enum class commandline_error_mode
+    {
+        return_on_error,
+        rethrow_on_error,
+        allow_unregistered,
+        ignore_aliases = 0x40,
+        report_missing_config_file = 0x80
+    };
 
-        namespace detail {
-            inline std::string enquote(std::string const& arg)
-            {
-                if (arg.find_first_of(" \t\"") != std::string::npos)
-                    return std::string("\"") + arg + "\"";
-                return arg;
-            }
-        }    // namespace detail
-    }        // namespace util
+    commandline_error_mode operator&(commandline_error_mode const lhs,
+        commandline_error_mode const rhs) noexcept;
+    commandline_error_mode& operator&=(
+        commandline_error_mode& lhs, commandline_error_mode rhs) noexcept;
+    commandline_error_mode operator|(
+        commandline_error_mode const lhs, commandline_error_mode rhs) noexcept;
+    commandline_error_mode& operator|=(
+        commandline_error_mode& lhs, commandline_error_mode rhs) noexcept;
+    commandline_error_mode operator~(commandline_error_mode m) noexcept;
+    bool contains_error_mode(commandline_error_mode const m,
+        commandline_error_mode const b) noexcept;
+    std::string enquote(std::string const& arg);
 
-    namespace detail {
-        PIKA_EXPORT bool parse_commandline(pika::util::section const& rtcfg,
-            pika::program_options::options_description const& app_options,
-            std::string const& cmdline,
-            pika::program_options::variables_map& vm,
-            int error_mode = util::return_on_error,
-            pika::program_options::options_description* visible = nullptr,
-            std::vector<std::string>* unregistered_options = nullptr);
+    bool parse_commandline(pika::util::section const& rtcfg,
+        pika::program_options::options_description const& app_options,
+        std::string const& cmdline, pika::program_options::variables_map& vm,
+        commandline_error_mode error_mode =
+            commandline_error_mode::return_on_error,
+        pika::program_options::options_description* visible = nullptr,
+        std::vector<std::string>* unregistered_options = nullptr);
 
-        PIKA_EXPORT bool parse_commandline(pika::util::section const& rtcfg,
-            pika::program_options::options_description const& app_options,
-            std::string const& arg0, std::vector<std::string> const& args,
-            pika::program_options::variables_map& vm,
-            int error_mode = util::return_on_error,
-            pika::program_options::options_description* visible = nullptr,
-            std::vector<std::string>* unregistered_options = nullptr);
+    bool parse_commandline(pika::util::section const& rtcfg,
+        pika::program_options::options_description const& app_options,
+        std::string const& arg0, std::vector<std::string> const& args,
+        pika::program_options::variables_map& vm,
+        commandline_error_mode error_mode =
+            commandline_error_mode::return_on_error,
+        pika::program_options::options_description* visible = nullptr,
+        std::vector<std::string>* unregistered_options = nullptr);
 
-        PIKA_EXPORT std::string reconstruct_command_line(
-            pika::program_options::variables_map const& vm);
-    }    // namespace detail
-}    // namespace pika
+    std::string reconstruct_command_line(
+        pika::program_options::variables_map const& vm);
+}    // namespace pika::detail
