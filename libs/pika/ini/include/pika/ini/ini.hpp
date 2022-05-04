@@ -44,7 +44,7 @@ namespace pika { namespace util {
             return this;
         }
 
-        using mutex_type = util::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
 
         section* root_;
         entry_map entries_;

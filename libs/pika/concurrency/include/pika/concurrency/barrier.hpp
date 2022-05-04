@@ -17,7 +17,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace util {
+namespace pika::concurrency::detail {
     class PIKA_EXPORT barrier
     {
     private:
@@ -39,6 +39,6 @@ namespace pika { namespace util {
         mutable mutex_type mtx_;
         std::condition_variable cond_;
     };
-}}    // namespace pika::util
+}    // namespace pika::concurrency::detail
 
 #include <pika/config/warnings_suffix.hpp>

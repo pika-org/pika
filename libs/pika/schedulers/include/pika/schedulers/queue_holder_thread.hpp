@@ -99,7 +99,8 @@ namespace pika { namespace threads { namespace policies {
         using scoped_lock = std::unique_lock<mutex_type>;
 
         // mutex protecting the thread map
-        mutable util::cache_line_data<mutex_type> thread_map_mtx_;
+        mutable pika::concurrency::detail::cache_line_data<mutex_type>
+            thread_map_mtx_;
 
         // every thread maintains lists of free thread data objects
         // sorted by their stack sizes
@@ -115,7 +116,8 @@ namespace pika { namespace threads { namespace policies {
         // these ought to be atomic, but if we get a race and assign a thread
         // to queue N instead of N+1 it doesn't really matter
 
-        mutable util::cache_line_data<std::tuple<std::size_t, std::size_t>>
+        mutable pika::concurrency::detail::cache_line_data<
+            std::tuple<std::size_t, std::size_t>>
             rollover_counters_;
 
         // ----------------------------------------------------------------
@@ -135,7 +137,8 @@ namespace pika { namespace threads { namespace policies {
             pika::detail::internal_allocator<thread_id_type>>;
         thread_map_type thread_map_;
 
-        mutable util::cache_line_data<std::atomic<std::int32_t>>
+        mutable pika::concurrency::detail::cache_line_data<
+            std::atomic<std::int32_t>>
             thread_map_count_;
 
         // -------------------------------------
@@ -143,7 +146,8 @@ namespace pika { namespace threads { namespace policies {
         // completed tasks that can be reused (stack space etc)
         using terminated_items_type = lockfree_fifo::apply<thread_data*>::type;
         terminated_items_type terminated_items_;
-        mutable util::cache_line_data<std::atomic<std::int32_t>>
+        mutable pika::concurrency::detail::cache_line_data<
+            std::atomic<std::int32_t>>
             terminated_items_count_;
 
         thread_queue_init_parameters parameters_;

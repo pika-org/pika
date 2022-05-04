@@ -347,8 +347,10 @@ namespace pika { namespace threads { namespace policies {
         task_items_type new_task_items_;
         work_items_type work_items_;
 
-        util::cache_line_data<std::atomic<std::int32_t>> new_tasks_count_;
-        util::cache_line_data<std::atomic<std::int32_t>> work_items_count_;
+        pika::concurrency::detail::cache_line_data<std::atomic<std::int32_t>>
+            new_tasks_count_;
+        pika::concurrency::detail::cache_line_data<std::atomic<std::int32_t>>
+            work_items_count_;
 
 #ifdef DEBUG_QUEUE_EXTRA
         std::mutex debug_mtx_;

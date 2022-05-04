@@ -1220,10 +1220,12 @@ namespace pika { namespace threads { namespace policies {
 #endif
         // count of new tasks to run, separate to new cache line to avoid false
         // sharing
-        util::cache_line_data<std::atomic<std::int64_t>> new_tasks_count_;
+        pika::concurrency::detail::cache_line_data<std::atomic<std::int64_t>>
+            new_tasks_count_;
 
         // count of active work items
-        util::cache_line_data<std::atomic<std::int64_t>> work_items_count_;
+        pika::concurrency::detail::cache_line_data<std::atomic<std::int64_t>>
+            work_items_count_;
     };
 
     ///////////////////////////////////////////////////////////////////////////

@@ -38,7 +38,9 @@ namespace pika { namespace lcos { namespace local {
     class spinlock_pool
     {
     private:
-        static util::cache_aligned_data<lcos::local::spinlock> pool_[N];
+        static pika::concurrency::detail::cache_aligned_data<
+            lcos::local::spinlock>
+            pool_[N];
 #if PIKA_HAVE_ITTNOTIFY != 0
         static detail::itt_spinlock_init<Tag, N> init_;
 #endif
@@ -86,7 +88,7 @@ namespace pika { namespace lcos { namespace local {
     };
 
     template <typename Tag, std::size_t N>
-    util::cache_aligned_data<lcos::local::spinlock>
+    pika::concurrency::detail::cache_aligned_data<lcos::local::spinlock>
         spinlock_pool<Tag, N>::pool_[N];
 
 #if PIKA_HAVE_ITTNOTIFY != 0

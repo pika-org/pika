@@ -301,8 +301,9 @@ namespace pika { namespace threads { namespace detail {
 
         // run threads and wait for initialization to complete
         std::size_t thread_num = 0;
-        std::shared_ptr<util::barrier> startup =
-            std::make_shared<util::barrier>(pool_threads + 1);
+        std::shared_ptr<pika::concurrency::detail::barrier> startup =
+            std::make_shared<pika::concurrency::detail::barrier>(
+                pool_threads + 1);
         try
         {
             topology const& topo = detail::create_topology();
@@ -425,7 +426,7 @@ namespace pika { namespace threads { namespace detail {
     template <typename Scheduler>
     void pika::threads::detail::scheduled_thread_pool<Scheduler>::thread_func(
         std::size_t thread_num, std::size_t global_thread_num,
-        std::shared_ptr<util::barrier> startup)
+        std::shared_ptr<pika::concurrency::detail::barrier> startup)
     {
         topology const& topo = detail::create_topology();
 
@@ -1837,7 +1838,8 @@ namespace pika { namespace threads { namespace detail {
     template <typename Scheduler>
     void scheduled_thread_pool<Scheduler>::add_processing_unit_internal(
         std::size_t virt_core, std::size_t thread_num,
-        std::shared_ptr<util::barrier> startup, error_code& ec)
+        std::shared_ptr<pika::concurrency::detail::barrier> startup,
+        error_code& ec)
     {
         std::unique_lock<typename Scheduler::pu_mutex_type> l(
             sched_->Scheduler::get_pu_mutex(virt_core));

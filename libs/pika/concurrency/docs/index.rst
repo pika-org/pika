@@ -12,13 +12,7 @@ concurrency
 ===========
 
 This module provides concurrency primitives useful for multi-threaded
-programming such as:
-
-* :cpp:class:`pika::util::barrier`
-* :cpp:class:`pika::util::cache_line_data` and
-  :cpp:class:`pika::util::cache_aligned_data`: wrappers for aligning and padding
-  data to cache lines.
-* various lockfree queue data structures
+programming.
 
 See the :ref:`API reference <modules_concurrency_api>` of the module for more
 details.

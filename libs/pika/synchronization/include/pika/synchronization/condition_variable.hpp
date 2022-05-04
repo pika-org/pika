@@ -175,7 +175,7 @@ namespace pika { namespace lcos { namespace local {
         }
 
     private:
-        pika::util::cache_aligned_data_derived<data_type> data_;
+        pika::concurrency::detail::cache_aligned_data_derived<data_type> data_;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -431,6 +431,6 @@ namespace pika { namespace lcos { namespace local {
         }
 
     private:
-        pika::util::cache_aligned_data_derived<data_type> data_;
+        pika::concurrency::detail::cache_aligned_data_derived<data_type> data_;
     };
 }}}    // namespace pika::lcos::local

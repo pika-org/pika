@@ -173,8 +173,10 @@ namespace pika { namespace lcos { namespace local {
         }
 
     protected:
-        mutable util::cache_line_data<mutex_type> mtx_;
-        mutable util::cache_line_data<local::detail::condition_variable> cond_;
+        mutable pika::concurrency::detail::cache_line_data<mutex_type> mtx_;
+        mutable pika::concurrency::detail::cache_line_data<
+            local::detail::condition_variable>
+            cond_;
         std::atomic<std::ptrdiff_t> counter_;
         bool notified_;
     };

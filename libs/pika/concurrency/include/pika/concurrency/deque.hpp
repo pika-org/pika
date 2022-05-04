@@ -31,7 +31,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace boost { namespace lockfree {
+namespace pika::concurrency::detail {
 
     // The "left" and "right" terminology is used instead of top and bottom to stay
     // consistent with the paper that this code is based on..
@@ -45,7 +45,7 @@ namespace boost { namespace lockfree {
     template <typename T>
     struct deque_node    //-V690
     {
-        using pointer = detail::tagged_ptr<deque_node>;
+        using pointer = boost::lockfree::detail::tagged_ptr<deque_node>;
         using atomic_pointer = std::atomic<pointer>;
 
         using tag_t = typename pointer::tag_t;
@@ -642,5 +642,4 @@ namespace boost { namespace lockfree {
             return pop_right(*r);
         }
     };
-
-}}    // namespace boost::lockfree
+}    // namespace pika::concurrency::detail

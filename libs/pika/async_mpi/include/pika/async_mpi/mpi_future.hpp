@@ -152,7 +152,8 @@ namespace pika { namespace mpi { namespace experimental {
         // this is done only to avoid taking a lock every time a request is
         // returned from MPI. Instead the requests are placed into a queue
         // and the polling code pops them prior to calling Testany
-        using queue_type = concurrency::ConcurrentQueue<future_data_ptr>;
+        using queue_type =
+            concurrency::detail::ConcurrentQueue<future_data_ptr>;
 
         // -----------------------------------------------------------------
         // used internally to query how many requests are 'in flight'

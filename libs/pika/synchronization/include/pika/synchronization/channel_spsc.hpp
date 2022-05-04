@@ -182,8 +182,11 @@ namespace pika { namespace lcos { namespace local {
     private:
         // keep the mutex, the head, and the tail pointer in separate cache
         // lines
-        mutable pika::util::cache_aligned_data<std::atomic<std::size_t>> head_;
-        pika::util::cache_aligned_data<std::atomic<std::size_t>> tail_;
+        mutable pika::concurrency::detail::cache_aligned_data<
+            std::atomic<std::size_t>>
+            head_;
+        pika::concurrency::detail::cache_aligned_data<std::atomic<std::size_t>>
+            tail_;
 
         // a channel of size n can buffer n-1 items
         std::size_t size_;

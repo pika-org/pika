@@ -153,7 +153,7 @@ namespace pika { namespace threads { namespace detail {
         }
 
         void thread_func(std::size_t thread_num, std::size_t global_thread_num,
-            std::shared_ptr<util::barrier> startup);
+            std::shared_ptr<pika::concurrency::detail::barrier> startup);
 
         std::size_t get_os_thread_count() const override
         {
@@ -287,7 +287,8 @@ namespace pika { namespace threads { namespace detail {
         void remove_processing_unit_internal(
             std::size_t virt_core, error_code& = pika::throws);
         void add_processing_unit_internal(std::size_t virt_core,
-            std::size_t thread_num, std::shared_ptr<util::barrier> startup,
+            std::size_t thread_num,
+            std::shared_ptr<pika::concurrency::detail::barrier> startup,
             error_code& ec = pika::throws);
 
     private:

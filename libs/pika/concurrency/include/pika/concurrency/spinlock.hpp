@@ -13,9 +13,11 @@
 #include <pika/modules/itt_notify.hpp>
 #include <pika/thread_support/spinlock.hpp>
 
-namespace pika { namespace util {
-
-    /// Lockable spinlock class
+namespace pika::concurrency::detail {
+    // Lockable spinlock class
+    //
+    // This is equivalent to pika::util::detail::spinlock with the addition of
+    // lock registration.
     struct spinlock
     {
     public:
@@ -27,7 +29,8 @@ namespace pika { namespace util {
     public:
         spinlock(char const* /*desc*/ = nullptr)
         {
-            PIKA_ITT_SYNC_CREATE(this, "util::spinlock", "");
+            PIKA_ITT_SYNC_CREATE(
+                this, "pika::concurrency::detail::spinlock", "");
         }
 
         ~spinlock()
@@ -64,5 +67,4 @@ namespace pika { namespace util {
             util::unregister_lock(this);
         }
     };
-
-}}    // namespace pika::util
+}    // namespace pika::concurrency::detail
