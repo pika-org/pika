@@ -90,6 +90,11 @@ select yn in "Yes" "No"; do
     esac
 done
 
+if [[ -z "${GITHUB_USER}"  ||  -z "${GITHUB_PASSWORD}" ]] && [[ -z "${GITHUB_TOKEN}" ]]; then
+    echo "Need GITHUB_USER and GITHUB_PASSWORD or only GITHUB_TOKEN to be set to use hub release."
+    exit 1
+fi
+
 if [ -z "${VERSION_TAG}" ]; then
     PRERELEASE_FLAG=""
 else
@@ -105,6 +110,6 @@ echo ""
 echo "Creating release."
 hub release create \
     ${PRERELEASE_FLAG} \
-    --message "${VERSION_TITLE}" \
-    --message "${VERSION_DESCRIPTION}" \
+    --message="${VERSION_TITLE}" \
+    --message="${VERSION_DESCRIPTION}" \
     "${VERSION_FULL_TAG}"
