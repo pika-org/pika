@@ -26,7 +26,6 @@ namespace pika { namespace parallel { namespace traits {
 
 #if !defined(__CUDACC__)
 #include <pika/execution/traits/detail/simd/vector_pack_load_store.hpp>
-#include <pika/execution/traits/detail/vc/vector_pack_load_store.hpp>
 #endif
 
 #endif

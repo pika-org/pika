@@ -6,7 +6,7 @@
 
 set(tests)
 
-if(PIKA_WITH_DATAPAR_VC OR PIKA_WITH_CXX20_EXPERIMENTAL_SIMD)
+if(PIKA_WITH_CXX20_EXPERIMENTAL_SIMD)
   set(tests
       ${tests}
       adjacentdifference_datapar

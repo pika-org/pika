@@ -411,37 +411,6 @@ else()
 endif()
 
 # ##############################################################################
-# datapar configuration
-# ##############################################################################
-pika_option(
-  PIKA_WITH_DATAPAR_VC
-  BOOL
-  "Enable data parallel algorithm support using the external Vc library (default: OFF)"
-  OFF
-  ADVANCED
-)
-if(PIKA_WITH_DATAPAR_VC)
-  pika_option(
-    PIKA_WITH_DATAPAR_VC_NO_LIBRARY BOOL
-    "Don't link with the Vc static library (default: OFF)" OFF ADVANCED
-  )
-endif()
-
-if(PIKA_WITH_DATAPAR_VC)
-  pika_warn(
-    "Vc support is deprecated. This option will be removed in a future release. It will be replaced with SIMD support from the C++ standard library"
-  )
-endif()
-if(NOT PIKA_WITH_DATAPAR_VC)
-  pika_info("No vectorization library configured")
-else()
-  pika_option(
-    PIKA_WITH_DATAPAR BOOL
-    "Enable data parallel algorithm support (default: ON)" ON ADVANCED
-  )
-endif()
-
-# ##############################################################################
 # Threadlevel Nice option
 # ##############################################################################
 pika_option(
@@ -1209,10 +1178,6 @@ if(WIN32)
       -Gw PUBLIC CONFIGURATIONS Release RelWithDebInfo MinSizeRel
     )
     pika_add_target_compile_option(-Zo PUBLIC CONFIGURATIONS RelWithDebInfo)
-    if(PIKA_WITH_DATAPAR_VC)
-      pika_add_target_compile_option(-std:c++latest PUBLIC)
-      pika_add_config_cond_define(_HAS_AUTO_PTR_ETC 1)
-    endif()
 
     # Exceptions
     pika_add_target_compile_option(-EHsc)
@@ -1320,18 +1285,6 @@ if(PIKA_WITH_COMPILER_WARNINGS)
     # is illegal in the current source character set
     pika_add_compile_flag(-wd4828)
 
-    if(PIKA_WITH_DATAPAR_VC)
-      # unary minus operator applied to unsigned type, result still unsigned
-      pika_add_compile_flag(-wd4146)
-
-      # '<=': signed/unsigned mismatch
-      pika_add_compile_flag(-wd4018)
-
-      # 'return': conversion from 'short' to 'Vc_1::schar', possible loss of
-      # data
-      pika_add_compile_flag(-wd4244)
-    endif()
-
   else() # Trial and error approach for any other compiler ...
     pika_add_compile_flag_if_available(-Wall)
     pika_add_compile_flag_if_available(-Wextra)
@@ -1363,12 +1316,6 @@ if(PIKA_WITH_COMPILER_WARNINGS)
       pika_add_compile_flag_if_available(-Wcast-align)
     endif()
 
-    # False positive when build with Vc and Clang
-    if(NOT (PIKA_WITH_DATAPAR_VC AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
-           )
-    )
-      pika_add_compile_flag_if_available(-Werror=trampolines)
-    endif()
     pika_add_compile_flag_if_available(-Werror=parentheses)
     pika_add_compile_flag_if_available(-Werror=reorder)
     pika_add_compile_flag_if_available(-Werror=return-type)
@@ -1420,11 +1367,8 @@ else()
     pika_add_compile_flag_if_available(-Wno-maybe-uninitialized)
   endif()
 
-  # False positive when building with Vc and Clang
-  if(NOT (PIKA_WITH_DATAPAR_VC AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
-    # Silence warning about __sync_fetch_and_nand changing semantics
-    pika_add_compile_flag_if_available(-Wno-sync-nand)
-  endif()
+  # Silence warning about __sync_fetch_and_nand changing semantics
+  pika_add_compile_flag_if_available(-Wno-sync-nand)
 
   # Silence warnings about deleting polymorphic objects with non-virtual dtors.
   # These come from within Boost.
@@ -1561,7 +1505,6 @@ include(pika_setup_hwloc)
 include(pika_setup_mpi)
 include(pika_setup_hip)
 include(pika_setup_apex)
-include(pika_setup_vc)
 include(pika_setup_valgrind)
 
 if(PIKA_WITH_SANITIZERS)

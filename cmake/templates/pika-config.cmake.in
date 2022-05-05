@@ -98,11 +98,6 @@ include(pika_setup_apex)
 
 set(PIKA_WITH_MALLOC_DEFAULT @PIKA_WITH_MALLOC@)
 
-if(PIKA_WITH_DATAPAR_VC AND NOT Vc_DIR)
-  set(Vc_DIR "@Vc_DIR@")
-endif()
-include(pika_setup_vc)
-
 if(NOT PIKA_CMAKE_LOGLEVEL)
   set(PIKA_CMAKE_LOGLEVEL "WARN")
 endif()

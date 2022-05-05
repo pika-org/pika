@@ -35,7 +35,7 @@ if(PIKA_WITH_LIBCDS)
   list(APPEND benchmarks libcds_hazard_pointer_overhead)
 endif()
 
-if(PIKA_WITH_CXX20_EXPERIMENTAL_SIMD OR PIKA_WITH_DATAPAR_VC)
+if(PIKA_WITH_CXX20_EXPERIMENTAL_SIMD)
   list(APPEND benchmarks transform_reduce_binary_scaling)
 endif()
 
