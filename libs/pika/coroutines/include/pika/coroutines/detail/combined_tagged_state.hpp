@@ -41,12 +41,14 @@ namespace pika { namespace threads { namespace detail {
 
         static thread_state_type extract_state(tagged_state_type const& i)
         {
-            return (i >> state_shift) & state_mask;
+            return static_cast<thread_state_type>(
+                (i >> state_shift) & state_mask);
         }
 
         static thread_state_ex_type extract_state_ex(tagged_state_type const& i)
         {
-            return (i >> state_ex_shift) & state_ex_mask;
+            return static_cast<thread_state_ex_type>(
+                (i >> state_ex_shift) & state_ex_mask);
         }
 
         static tagged_state_type pack_state(

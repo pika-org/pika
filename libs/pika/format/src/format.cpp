@@ -104,11 +104,12 @@ namespace pika { namespace util { namespace detail {
             }
             else
             {
-                std::size_t const next = format_str.find_first_of("{}");
-                std::size_t const count =
+                auto const next = format_str.find_first_of("{}");
+                auto const count =
                     next != format_str.npos ? next : format_str.size();
 
-                os.write(format_str.data(), count);
+                os.write(
+                    format_str.data(), static_cast<std::streamsize>(count));
                 format_str.remove_prefix(count);
             }
         }

@@ -40,8 +40,8 @@ namespace jacobi_smp {
 
         using deps_vector = std::vector<pika::shared_future<void>>;
 
-        std::size_t n_block =
-            static_cast<std::size_t>(std::ceil(double(n) / block_size));
+        std::size_t n_block = static_cast<std::size_t>(std::ceil(
+            static_cast<double>(n) / static_cast<double>(block_size)));
 
         std::shared_ptr<deps_vector> deps_new(
             new deps_vector(n_block, pika::make_ready_future()));

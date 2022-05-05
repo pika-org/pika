@@ -206,8 +206,8 @@ namespace pika { namespace threads { namespace coroutines {
     private:
         struct reset_on_exit
         {
-            reset_on_exit(stackless_coroutine& this__)
-              : this_(this__)
+            reset_on_exit(stackless_coroutine& self)
+              : this_(self)
             {
                 this_.state_ = stackless_coroutine::ctx_running;
             }

@@ -218,9 +218,11 @@ namespace pika { namespace program_options {
         set_substitute("value", bad_value);
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     error_with_option_name::error_with_option_name(const std::string& template_,
         const std::string& option_name, const std::string& original_token,
         int option_style)
+      // NOLINTEND(bugprone-easily-swappable-parameters)
       : error(template_)
       , m_option_style(option_style)
       , m_error_template(template_)

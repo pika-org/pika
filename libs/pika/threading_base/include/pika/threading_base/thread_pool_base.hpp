@@ -129,6 +129,7 @@ namespace pika { namespace threads {
         std::size_t max_busy_loop_count_;
         std::size_t shutdown_check_count_;
 
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         thread_pool_init_parameters(std::string const& name, std::size_t index,
             policies::scheduler_mode mode, std::size_t num_threads,
             std::size_t thread_offset,
@@ -141,6 +142,7 @@ namespace pika { namespace threads {
             std::size_t max_idle_loop_count = PIKA_IDLE_LOOP_COUNT_MAX,
             std::size_t max_busy_loop_count = PIKA_BUSY_LOOP_COUNT_MAX,
             std::size_t shutdown_check_count = 10)
+          // NOLINTEND(bugprone-easily-swappable-parameters)
           : name_(name)
           , index_(index)
           , mode_(mode)

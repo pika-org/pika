@@ -15,8 +15,10 @@
 #include <system_error>
 
 namespace pika { namespace detail {
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     PIKA_NORETURN void throw_exception(error errcode, std::string const& msg,
         std::string const& func, std::string const& file, long line)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         std::filesystem::path p(file);
         pika::detail::throw_exception(

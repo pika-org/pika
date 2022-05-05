@@ -116,8 +116,10 @@ You could have an output like this:
             compute_write_steps();
         }
 
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         void configure(
             std::string const& name, std::string const& configure_str)
+        // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             auto iter = find_named(formatters, name);
             if (iter != formatters.end())
@@ -241,8 +243,10 @@ In the above example, I know that the available destinations are @c out_file,
             compute_write_steps();
         }
 
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         void configure(
             std::string const& name, std::string const& configure_str)
+        // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             auto iter = find_named(destinations, name);
             if (iter != destinations.end())
@@ -386,8 +390,10 @@ This will just configure "file" twice, ending up with writing only to "two.txt" 
 
         /** @brief Specifies the formats and destinations in one step
     */
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         void write(
             std::string const& format_str, std::string const& destination_str)
+        // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             format(format_str);
             destination(destination_str);

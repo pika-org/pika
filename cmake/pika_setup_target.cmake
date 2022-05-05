@@ -138,6 +138,14 @@ function(pika_setup_target target)
 
   if(target_UNITY_BUILD)
     set_target_properties(${target} PROPERTIES UNITY_BUILD ON)
+    set_target_properties(
+      ${target} PROPERTIES UNITY_BUILD_CODE_BEFORE_INCLUDE
+                           "// NOLINTBEGIN(bugprone-suspicious-include)"
+    )
+    set_target_properties(
+      ${target} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
+                           "// NOLINTEND(bugprone-suspicious-include)"
+    )
   endif()
 
   get_target_property(target_EXCLUDE_FROM_ALL ${target} EXCLUDE_FROM_ALL)

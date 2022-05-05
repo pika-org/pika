@@ -27,6 +27,7 @@ namespace pika::detail {
                 pika_main_f)
           : rtcfg_(rtcfg)
           , ini_config_(ini_config)
+          // NOLINTNEXTLINE(bugprone-throw-keyword-missing)
           , pika_main_f_(pika_main_f)
           , num_threads_(1)
           , num_cores_(1)

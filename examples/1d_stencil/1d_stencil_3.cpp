@@ -56,7 +56,7 @@ struct partition_data
     partition_data(std::size_t size, double initial_value)
       : data_(size)
     {
-        double base_value = double(initial_value * size);
+        double base_value = initial_value * static_cast<double>(size);
         for (std::size_t i = 0; i != size; ++i)
             data_[i] = base_value + double(i);
     }

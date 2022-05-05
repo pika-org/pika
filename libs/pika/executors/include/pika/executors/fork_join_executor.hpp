@@ -317,8 +317,9 @@ namespace pika { namespace execution { namespace experimental {
               , priority_(priority)
               , stacksize_(stacksize)
               , schedule_(schedule)
-              , yield_delay_(std::uint64_t(
-                    yield_delay.count() / pool_->timestamp_scale()))
+              , yield_delay_(
+                    std::uint64_t(static_cast<double>(yield_delay.count()) /
+                        pool_->timestamp_scale()))
               , num_threads_(pool_->get_os_thread_count())
               , exception_mutex_()
               , exception_()

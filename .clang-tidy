@@ -8,10 +8,11 @@ Checks: >
     -*,
     bugprone-*,
     -bugprone-assert-side-effect,
+    -bugprone-easily-swappable-parameters,
     -bugprone-exception-escape,
     -bugprone-forward-declaration-namespace,
     -bugprone-macro-parentheses,
-    modernize-use-nullptr,
+    -bugprone-narrowing-conversions,
     misc-assert-side-effect
     misc-dangling-handle
     misc-forwarding-reference-overload
@@ -21,6 +22,7 @@ Checks: >
     misc-non-copyable-objects
     misc-use-after-move
     misc-virtual-near-miss
+    modernize-use-nullptr,
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*pika.*'
 CheckOptions:

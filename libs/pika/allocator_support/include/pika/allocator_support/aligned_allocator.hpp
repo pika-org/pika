@@ -22,12 +22,14 @@
 // used for its APIs
 #include <jemalloc/jemalloc.h>
 
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
     return PIKA_PP_CAT(PIKA_HAVE_JEMALLOC_PREFIX, aligned_alloc)(
         alignment, size);
 }
 
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void __aligned_free(void* p) noexcept
 {
     return PIKA_PP_CAT(PIKA_HAVE_JEMALLOC_PREFIX, free)(p);
@@ -37,11 +39,13 @@ inline void __aligned_free(void* p) noexcept
 
 #include <cstdlib>
 
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
     return std::aligned_alloc(alignment, size);
 }
 
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void __aligned_free(void* p) noexcept
 {
     std::free(p);
@@ -51,11 +55,13 @@ inline void __aligned_free(void* p) noexcept
 
 #include <stdlib.h>
 
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
     return aligned_alloc(alignment, size);
 }
 
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void __aligned_free(void* p) noexcept
 {
     free(p);
@@ -66,6 +72,7 @@ inline void __aligned_free(void* p) noexcept
 #include <cstdlib>
 
 // provide our own (simple) implementation of aligned_alloc
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
     if (alignment < alignof(void*))
@@ -89,6 +96,7 @@ inline void* __aligned_alloc(std::size_t alignment, std::size_t size) noexcept
     return aligned_mem;
 }
 
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 inline void __aligned_free(void* p) noexcept
 {
     if (nullptr != p)

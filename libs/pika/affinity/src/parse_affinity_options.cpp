@@ -147,11 +147,13 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void decode_compact_distribution(threads::detail::topology& t,
         std::vector<threads::detail::mask_type>& affinities,
         std::size_t used_cores, std::size_t max_cores,
         std::vector<std::size_t>& num_pus, bool use_process_mask,
         error_code& ec)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         std::size_t num_threads = affinities.size();
 
@@ -201,11 +203,13 @@ namespace pika::detail {
         }
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void decode_scatter_distribution(threads::detail::topology& t,
         std::vector<threads::detail::mask_type>& affinities,
         std::size_t used_cores, std::size_t max_cores,
         std::vector<std::size_t>& num_pus, bool use_process_mask,
         error_code& ec)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         std::size_t num_threads = affinities.size();
 
@@ -271,11 +275,13 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void decode_balanced_distribution(threads::detail::topology& t,
         std::vector<threads::detail::mask_type>& affinities,
         std::size_t used_cores, std::size_t max_cores,
         std::vector<std::size_t>& num_pus, bool use_process_mask,
         error_code& ec)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         std::size_t num_threads = affinities.size();
 
@@ -360,11 +366,13 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void decode_numabalanced_distribution(threads::detail::topology& t,
         std::vector<threads::detail::mask_type>& affinities,
         std::size_t used_cores, std::size_t max_cores,
         std::vector<std::size_t>& num_pus, bool use_process_mask,
         error_code& ec)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         PIKA_UNUSED(max_cores);
         std::size_t num_threads = affinities.size();
@@ -510,11 +518,13 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void decode_distribution(distribution_type d, threads::detail::topology& t,
         std::vector<threads::detail::mask_type>& affinities,
         std::size_t used_cores, std::size_t max_cores, std::size_t num_threads,
         std::vector<std::size_t>& num_pus, bool use_process_mask,
         error_code& ec)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         affinities.resize(num_threads);
         switch (d)

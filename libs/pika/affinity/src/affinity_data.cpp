@@ -52,10 +52,12 @@ namespace pika::detail {
         --instance_number_counter_;
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void affinity_data::init(std::size_t num_threads, std::size_t max_cores,
         std::size_t pu_offset, std::size_t pu_step, std::size_t used_cores,
         std::string affinity_domain,    // -V813
         std::string const& affinity_description, bool use_process_mask)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
 #if defined(__APPLE__)
         use_process_mask = false;
@@ -285,8 +287,10 @@ namespace pika::detail {
         }
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     std::size_t affinity_data::get_pu_num(
         std::size_t num_thread, std::size_t hardware_concurrency) const
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         // The offset shouldn't be larger than the number of available
         // processing units.

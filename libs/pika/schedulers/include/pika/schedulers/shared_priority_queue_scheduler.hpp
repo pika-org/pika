@@ -77,8 +77,10 @@ namespace pika { namespace threads { namespace policies {
     /// Holds core/queue ratios used by schedulers.
     struct core_ratios
     {
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         core_ratios(std::size_t high_priority, std::size_t normal_priority,
             std::size_t low_priority)
+          // NOLINTEND(bugprone-easily-swappable-parameters)
           : high_priority(high_priority)
           , normal_priority(normal_priority)
           , low_priority(low_priority)
@@ -432,6 +434,7 @@ namespace pika { namespace threads { namespace policies {
         /// since high priority tasks on other queues take precedence to
         /// local tasks of lower priority
         template <typename T>
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         bool steal_by_function(std::size_t domain, std::size_t q_index,
             bool steal_numa, bool steal_core, thread_holder_type* origin,
             T& var, const char* prefix,
@@ -441,6 +444,7 @@ namespace pika { namespace threads { namespace policies {
             util::function<bool(
                 std::size_t, std::size_t, thread_holder_type*, T&, bool, bool)>
                 operation)
+        // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             bool result;
 

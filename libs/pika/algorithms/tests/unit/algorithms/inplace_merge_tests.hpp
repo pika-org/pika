@@ -24,11 +24,11 @@
 #include "test_utils.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
-std::mt19937 _gen(0);
+std::mt19937 rng(0);
 
 inline void inplace_merge_seed(unsigned int seed)
 {
-    _gen.seed(seed);
+    rng.seed(seed);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ struct user_defined_type
       : val(rand_no)
     {
         std::uniform_int_distribution<> dist(0, name_list.size() - 1);
-        name = name_list[dist(_gen)];
+        name = name_list[dist(rng)];
     }
 
     bool operator<(user_defined_type const& t) const
@@ -105,7 +105,7 @@ struct random_fill
 {
     random_fill() = default;
     random_fill(int rand_base, int range)
-      : gen(_gen())
+      : gen(rng())
       , dist(rand_base - range / 2, rand_base + range / 2)
     {
     }
@@ -558,7 +558,7 @@ void test_inplace_merge()
 {
     using namespace pika::execution;
 
-    int rand_base = _gen();
+    int rand_base = rng();
 
     ////////// Test cases for 'int' type.
     test_inplace_merge(

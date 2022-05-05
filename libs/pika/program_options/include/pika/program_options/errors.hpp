@@ -148,8 +148,10 @@ namespace pika { namespace program_options {
         }
 
         /** Add context to an exception */
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         void add_context(const std::string& option_name,
             const std::string& original_token, int option_style)
+        // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             set_option_name(option_name);
             set_original_token(original_token);

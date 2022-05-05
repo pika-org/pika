@@ -177,8 +177,10 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
     ////////////////////////////////////////////////////////////////////////////
     struct reset_self_on_exit
     {
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         reset_self_on_exit(
             coroutine_self* val, coroutine_self* old_val = nullptr)
+          // NOLINTEND(bugprone-easily-swappable-parameters)
           : old_self(old_val)
         {
             coroutine_self::set_self(val);

@@ -16,6 +16,7 @@
 namespace pika { namespace threads { namespace policies {
     struct thread_queue_init_parameters
     {
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         thread_queue_init_parameters(
             std::int64_t max_thread_count = std::int64_t(
                 PIKA_THREAD_QUEUE_MAX_THREAD_COUNT),
@@ -40,6 +41,7 @@ namespace pika { namespace threads { namespace policies {
             std::ptrdiff_t medium_stacksize = PIKA_MEDIUM_STACK_SIZE,
             std::ptrdiff_t large_stacksize = PIKA_LARGE_STACK_SIZE,
             std::ptrdiff_t huge_stacksize = PIKA_HUGE_STACK_SIZE)
+          // NOLINTEND(bugprone-easily-swappable-parameters)
           : max_thread_count_(max_thread_count)
           , min_tasks_to_steal_pending_(min_tasks_to_steal_pending)
           , min_tasks_to_steal_staged_(min_tasks_to_steal_staged)

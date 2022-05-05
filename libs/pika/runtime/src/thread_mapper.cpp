@@ -47,7 +47,7 @@ namespace pika { namespace util {
           , id_(std::this_thread::get_id())
           , tid_(get_system_thread_id())
 #if defined(__linux__) && !defined(__ANDROID) && !defined(ANDROID)
-          , linux_tid_(syscall(SYS_gettid))
+          , linux_tid_(static_cast<pid_t>(syscall(SYS_gettid)))
 #endif
           , cleanup_()
           , type_(type)

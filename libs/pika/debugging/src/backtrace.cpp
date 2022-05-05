@@ -133,7 +133,7 @@ namespace pika { namespace util { namespace stack_trace {
 
     std::size_t trace(void** array, std::size_t n)
     {
-        return ::backtrace(array, n);
+        return ::backtrace(array, static_cast<int>(n));
     }
 
 #elif defined(PIKA_MSVC)

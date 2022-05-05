@@ -314,6 +314,15 @@ function(pika_add_module libname modulename)
 
   if(PIKA_WITH_UNITY_BUILD AND NOT module_is_interface_library)
     set_target_properties(pika_${modulename} PROPERTIES UNITY_BUILD ON)
+    set_target_properties(
+      pika_${modulename}
+      PROPERTIES UNITY_BUILD_CODE_BEFORE_INCLUDE
+                 "// NOLINTBEGIN(bugprone-suspicious-include)"
+    )
+    set_target_properties(
+      pika_${modulename} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
+                                    "// NOLINTEND(bugprone-suspicious-include)"
+    )
   endif()
 
   if(MSVC)
