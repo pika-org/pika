@@ -18,7 +18,7 @@ VERSION_MINOR=$(sed -n 's/set(PIKA_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
 VERSION_PATCH=$(sed -n 's/set(PIKA_VERSION_PATCH \(.*\))/\1/p' CMakeLists.txt)
 VERSION_FULL_NOTAG=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 
-if ! which hub > /dev/null 2>&1; then
+if ! which hub >/dev/null 2>&1; then
     echo "Hub not installed on this system. Exiting.."
     exit 1
 fi
@@ -27,7 +27,7 @@ fi
 # using the hub api command instead (based on
 # https://github.com/github/hub/issues/2063#issuecomment-472181266)
 github_milestones() {
-  hub api --cache 3600 graphql -f query='
+    hub api --cache 3600 graphql -f query='
     {
       repository(owner: "{owner}", name: "{repo}") {
         milestones(first: 100, states: OPEN, orderBy: {field:CREATED_AT, direction:DESC}) {
@@ -70,8 +70,8 @@ echo ""
 # from every PR instead.
 if [[ "$1" = "--limit" ]]; then
     hub pr list --limit 50 --state=closed --format="[%Mn]* :pika-pr:\`%I\` - %t%n" |
-    sed -n "s/^\[${VERSION_MILESTONE_ID}\]\(.*\)/\1/p"
+        sed -n "s/^\[${VERSION_MILESTONE_ID}\]\(.*\)/\1/p"
 else
-    hub pr list  --state=closed --format="[%Mn]* :pika-pr:\`%I\` - %t%n" |
-    sed -n "s/^\[${VERSION_MILESTONE_ID}\]\(.*\)/\1/p"
+    hub pr list --state=closed --format="[%Mn]* :pika-pr:\`%I\` - %t%n" |
+        sed -n "s/^\[${VERSION_MILESTONE_ID}\]\(.*\)/\1/p"
 fi

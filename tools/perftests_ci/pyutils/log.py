@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Copyright (c) 2020 ETH Zurich
 
 SPDX-License-Identifier: BSL-1.0
 Distributed under the Boost Software License, Version 1.0. (See accompanying
 file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-'''
+"""
 
 import contextlib
 import logging
@@ -13,11 +13,12 @@ import sys
 import textwrap
 
 
-_logger = logging.getLogger('pyutils')
+_logger = logging.getLogger("pyutils")
 _logger.setLevel(logging.DEBUG)
 
-_formatter = logging.Formatter('%(levelname)s %(asctime)s: %(message)s',
-                               '%Y-%m-%d %H:%M:%S')
+_formatter = logging.Formatter(
+    "%(levelname)s %(asctime)s: %(message)s", "%Y-%m-%d %H:%M:%S"
+)
 
 
 _streamhandler = logging.StreamHandler()
@@ -31,7 +32,7 @@ def log_to_file(logfile):
     filehandler.setFormatter(_formatter)
     filehandler.setLevel(logging.DEBUG)
     _logger.addHandler(filehandler)
-    info('Logging to file', logfile)
+    info("Logging to file", logfile)
 
 
 def set_verbosity(level):
@@ -57,12 +58,12 @@ def _format_message(message, details):
     if details is None:
         return message
     details = str(details)
-    if details.count('\n') == 0:
-        if details.strip() == '':
-            details = '[EMPTY]'
-        return message + ': ' + details
+    if details.count("\n") == 0:
+        if details.strip() == "":
+            details = "[EMPTY]"
+        return message + ": " + details
     else:
-        return message + ':\n' + textwrap.indent(details, '    ')
+        return message + ":\n" + textwrap.indent(details, "    ")
 
 
 def debug(message, details=None):

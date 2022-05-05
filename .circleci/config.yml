@@ -169,6 +169,40 @@ jobs:
           path: /tmp/modified_cmake_format_files.txt
           destination: /pika/artifacts/modified_cmake_format_files.txt
 
+  # Ensure that Python files stay formatted with black
+  python_format:
+    <<: *docker_default
+    steps:
+      - attach_workspace:
+          at: /pika
+      - run:
+          name: Check that Python files are correctly formatted with black
+          command: |
+              cd /pika/source && shopt -s globstar # to activate the ** globbing
+              black --version
+              black **/*.py
+              git diff --exit-code > /tmp/modified_black_files.txt
+      - store_artifacts:
+          path: /tmp/modified_black_files.txt
+          destination: /pika/artifacts/modified_black_files.txt
+
+  # Ensure that shell scripts stay formatted with shfmt
+  shell_format:
+    <<: *docker_default
+    steps:
+      - attach_workspace:
+          at: /pika
+      - run:
+          name: Check that shell scripts are correctly formatted with shfmt
+          command: |
+              cd /pika/source && shopt -s globstar # to activate the ** globbing
+              shfmt --version
+              shfmt -w **/*.sh
+              git diff --exit-code > /tmp/modified_black_files.txt
+      - store_artifacts:
+          path: /tmp/modified_black_files.txt
+          destination: /pika/artifacts/modified_black_files.txt
+
   configure:
     <<: *defaults
     steps:
@@ -545,6 +579,12 @@ workflows:
           requires:
             - checkout_code
       - cmake_format:
+          requires:
+            - checkout_code
+      - python_format:
+          requires:
+            - checkout_code
+      - shell_format:
           requires:
             - checkout_code
       - configure:

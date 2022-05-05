@@ -7,7 +7,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 # Script to introduce the deprecated include after factorazing in modules
-# This file is globbing through the include_compatibility folder, so basic 
+# This file is globbing through the include_compatibility folder, so basic
 # files should already be here
 
 # There is a possibility to specify the files manually
@@ -34,49 +34,49 @@ function parse_arguments() {
     # store arguments list
     POSITIONAL=()
 
-    while [[ $# -gt 0 ]]
-    do
+    while [[ $# -gt 0 ]]; do
         local key="$1"
         case $key in
-            -f|--files)
-                all_files=0
-                files=$2
-                echo "manually specified files => no globbing"
-                shift # pass option
-                shift # pass value
-                ;;
-            -m|--module)
-                module=$2
-                echo "module : ${module}"
-                shift # pass option
-                shift # pass value
-                ;;
-            -n|--new_path)
-                new_path_set=true
-                new_path=$2
-                echo "new_path : ${new_path}"
-                shift # pass option
-                shift # pass value
-                ;;
-            -o|--old_path)
-                old_path_set=true
-                old_path=$2
-                echo "old_path : ${old_path}"
-                shift # pass option
-                shift # pass value
-                ;;
-            -p|--project_path)
-                project_path=$2
-                shift # pass option
-                shift # pass value
-                ;;
-            --help|*)
-                echo $"Usage: $0 [-m, --module <value>] [-o, --old_path <value>]"
-                echo "[-n, --new_path <value>] [-p, --project_path <value>]"
-                echo "[-f, --files \"<value1> <value2>\"]"
-                echo "Example: "$0" -m cache -o pika/util/cache -n pika/cache"
-                extra_usage_message
-                exit
+        -f | --files)
+            all_files=0
+            files=$2
+            echo "manually specified files => no globbing"
+            shift # pass option
+            shift # pass value
+            ;;
+        -m | --module)
+            module=$2
+            echo "module : ${module}"
+            shift # pass option
+            shift # pass value
+            ;;
+        -n | --new_path)
+            new_path_set=true
+            new_path=$2
+            echo "new_path : ${new_path}"
+            shift # pass option
+            shift # pass value
+            ;;
+        -o | --old_path)
+            old_path_set=true
+            old_path=$2
+            echo "old_path : ${old_path}"
+            shift # pass option
+            shift # pass value
+            ;;
+        -p | --project_path)
+            project_path=$2
+            shift # pass option
+            shift # pass value
+            ;;
+        --help | *)
+            echo $"Usage: $0 [-m, --module <value>] [-o, --old_path <value>]"
+            echo "[-n, --new_path <value>] [-p, --project_path <value>]"
+            echo "[-f, --files \"<value1> <value2>\"]"
+            echo "Example: "$0" -m cache -o pika/util/cache -n pika/cache"
+            extra_usage_message
+            exit
+            ;;
         esac
     done
 
@@ -119,7 +119,7 @@ if [[ -z $PIKA_ROOT && -z $project_path ]]; then
     exit
 fi
 
-pushd $module_path/include_compatibility > /dev/null
+pushd $module_path/include_compatibility >/dev/null
 if [[ $? -eq 1 ]]; then
     echo -e "\e[31mPlease specify a correct project_path"
     exit
@@ -130,7 +130,7 @@ shopt -s globstar
 # Globbing step to get all the include_compatibility files, the files have to
 # already be there, we are just rewriting them
 if [[ all_files -eq 0 ]]; then
-    files=($files)  # Make the string become an array
+    files=($files) # Make the string become an array
     files=(${files[@]/%/.hpp})
     files=(${files[@]/#/$old_path/})
 else
@@ -145,8 +145,8 @@ for full_file in "${files[@]}"; do
     f=${full_file#"$old_path/"}
     echo $full_file
 
-# No indentation otherwise it appears in the cat
-cat >${full_file} <<EOL
+    # No indentation otherwise it appears in the cat
+    cat >${full_file} <<EOL
 //  Copyright (c) 2019 Ste||ar Group
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -172,4 +172,4 @@ EOL
 
 done
 
-popd > /dev/null
+popd >/dev/null
