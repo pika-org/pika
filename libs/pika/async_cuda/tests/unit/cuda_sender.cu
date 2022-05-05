@@ -156,7 +156,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
     // --------------------
     // test kernel launch<double> using apply and async
-    float testd = 1.2345;
+    double testd = 1.2345;
     std::cout << "schedule : cuda kernel <double>  : " << testf << std::endl;
     tt::sync_wait(ex::transfer_just(cuda_sched, testd) |
         cu::then_with_stream(&cuda_trivial_kernel<double>));
