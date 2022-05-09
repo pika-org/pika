@@ -209,7 +209,7 @@ namespace pika { namespace parallel { namespace util {
         struct prefetcher_context
         {
         private:
-            typedef pika::tuple<std::reference_wrapper<Ts>...> ranges_type;
+            using ranges_type = pika::tuple<std::reference_wrapper<Ts>...>;
 
             Itr it_begin_;
             Itr it_end_;
@@ -464,10 +464,10 @@ namespace pika { namespace parallel { namespace util {
         template <typename Itr, typename... Ts>
         struct loop<prefetching::prefetching_iterator<Itr, Ts...>>
         {
-            typedef prefetching::prefetching_iterator<Itr, Ts...> iterator_type;
+            using iterator_type = prefetching::prefetching_iterator<Itr, Ts...>;
             using type = typename iterator_type::base_iterator;
-            typedef typename pika::util::make_index_pack<sizeof...(Ts)>::type
-                index_pack_type;
+            using index_pack_type =
+                typename pika::util::make_index_pack<sizeof...(Ts)>::type;
 
             template <typename End, typename F>
             static iterator_type call(iterator_type it, End end, F&& f)
@@ -524,10 +524,10 @@ namespace pika { namespace parallel { namespace util {
         template <typename Itr, typename... Ts>
         struct loop_ind<prefetching::prefetching_iterator<Itr, Ts...>>
         {
-            typedef prefetching::prefetching_iterator<Itr, Ts...> iterator_type;
+            using iterator_type = prefetching::prefetching_iterator<Itr, Ts...>;
             using type = typename iterator_type::base_iterator;
-            typedef typename pika::util::make_index_pack<sizeof...(Ts)>::type
-                index_pack_type;
+            using index_pack_type =
+                typename pika::util::make_index_pack<sizeof...(Ts)>::type;
 
             template <typename End, typename F>
             static iterator_type call(iterator_type it, End end, F&& f)

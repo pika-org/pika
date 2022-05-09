@@ -22,7 +22,7 @@
 bool verbose = false;
 
 using block = std::vector<double>;
-typedef double* sub_block;
+using sub_block = double*;
 
 void transpose(sub_block A, sub_block B, std::uint64_t block_order,
     std::uint64_t tile_size);

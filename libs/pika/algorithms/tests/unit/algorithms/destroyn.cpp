@@ -47,7 +47,7 @@ std::size_t const data_size = 10007;
 template <typename IteratorTag>
 void test_destroy_n(IteratorTag)
 {
-    typedef destructable* base_iterator;
+    using base_iterator = destructable*;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     destructable* p =
@@ -73,7 +73,7 @@ void test_destroy_n(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef destructable* base_iterator;
+    using base_iterator = destructable*;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     destructable* p =
@@ -96,7 +96,7 @@ void test_destroy_n(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_destroy_n_async(ExPolicy&& policy, IteratorTag)
 {
-    typedef destructable* base_iterator;
+    using base_iterator = destructable*;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     destructable* p =
@@ -144,9 +144,9 @@ template <typename IteratorTag>
 void test_destroy_n_exception(IteratorTag)
 {
     using data_type = test::count_instances_v<destructable>;
-    typedef data_type* base_iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using base_iterator = data_type*;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     data_type* p = (data_type*) std::malloc(data_size * sizeof(data_type));
 
@@ -200,9 +200,9 @@ void test_destroy_n_exception(ExPolicy&& policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using data_type = test::count_instances_v<destructable>;
-    typedef data_type* base_iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using base_iterator = data_type*;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     data_type* p = (data_type*) std::malloc(data_size * sizeof(data_type));
 
@@ -253,9 +253,9 @@ template <typename ExPolicy, typename IteratorTag>
 void test_destroy_n_exception_async(ExPolicy&& policy, IteratorTag)
 {
     using data_type = test::count_instances_v<destructable>;
-    typedef data_type* base_iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using base_iterator = data_type*;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     data_type* p = (data_type*) std::malloc(data_size * sizeof(data_type));
 
@@ -339,9 +339,9 @@ void test_destroy_n_bad_alloc(ExPolicy&& policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using data_type = test::count_instances_v<destructable>;
-    typedef data_type* base_iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using base_iterator = data_type*;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     data_type* p = (data_type*) std::malloc(data_size * sizeof(data_type));
 
@@ -392,9 +392,9 @@ template <typename ExPolicy, typename IteratorTag>
 void test_destroy_n_bad_alloc_async(ExPolicy&& policy, IteratorTag)
 {
     using data_type = test::count_instances_v<destructable>;
-    typedef data_type* base_iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using base_iterator = data_type*;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     data_type* p = (data_type*) std::malloc(data_size * sizeof(data_type));
 

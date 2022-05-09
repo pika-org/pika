@@ -130,8 +130,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(
                 ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest)
             {
-                typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
-                    zip_iterator;
+                using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
 
                 return util::detail::get_in_out_result(
                     util::foreach_partitioner<ExPolicy>::call(

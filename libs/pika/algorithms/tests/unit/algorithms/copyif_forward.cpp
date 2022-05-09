@@ -26,8 +26,8 @@ std::uniform_int_distribution<> dis(0, (std::numeric_limits<int>::max)());
 void test_copy_if_seq()
 {
     using base_iterator = std::vector<int>::iterator;
-    typedef test::test_iterator<base_iterator, std::forward_iterator_tag>
-        iterator;
+    using iterator =
+        test::test_iterator<base_iterator, std::forward_iterator_tag>;
 
     std::vector<int> c(10007);
     std::vector<int> d(c.size());
@@ -63,8 +63,8 @@ void test_copy_if(ExPolicy&& policy)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<int>::iterator;
-    typedef test::test_iterator<base_iterator, std::forward_iterator_tag>
-        iterator;
+    using iterator =
+        test::test_iterator<base_iterator, std::forward_iterator_tag>;
 
     std::vector<int> c(10007);
     std::vector<int> d(c.size());
@@ -97,8 +97,8 @@ template <typename ExPolicy>
 void test_copy_if_async(ExPolicy&& p)
 {
     using base_iterator = std::vector<int>::iterator;
-    typedef test::test_iterator<base_iterator, std::forward_iterator_tag>
-        iterator;
+    using iterator =
+        test::test_iterator<base_iterator, std::forward_iterator_tag>;
 
     std::vector<int> c(10007);
     std::vector<int> d(c.size());

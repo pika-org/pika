@@ -71,8 +71,9 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         };
 
         using value_type = typename std::iterator_traits<FwdIter>::value_type;
-        typedef typename std::conditional<std::is_scalar<value_type>::value,
-            value_type, rewritable_ref<value_type>>::type type;
+        using type =
+            typename std::conditional<std::is_scalar<value_type>::value,
+                value_type, rewritable_ref<value_type>>::type;
     };
 
     struct set_chunk_data

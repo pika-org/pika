@@ -431,8 +431,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using result = util::detail::algorithm_result<ExPolicy, Iter>;
                 using type = typename std::iterator_traits<Iter>::value_type;
-                typedef typename std::iterator_traits<Iter>::difference_type
-                    difference_type;
+                using difference_type =
+                    typename std::iterator_traits<Iter>::difference_type;
 
                 difference_type count = detail::distance(first, last);
                 if (count <= 0)
@@ -513,8 +513,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using result = util::detail::algorithm_result<ExPolicy, Iter>;
                 using type = typename std::iterator_traits<Iter>::value_type;
-                typedef typename std::iterator_traits<Iter>::difference_type
-                    difference_type;
+                using difference_type =
+                    typename std::iterator_traits<Iter>::difference_type;
 
                 difference_type count = detail::distance(first, last);
                 if (count <= 0)
@@ -598,8 +598,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using result = util::detail::algorithm_result<ExPolicy, Iter>;
                 using type = typename std::iterator_traits<Iter>::value_type;
-                typedef typename std::iterator_traits<Iter>::difference_type
-                    difference_type;
+                using difference_type =
+                    typename std::iterator_traits<Iter>::difference_type;
 
                 difference_type count = detail::distance(first, last);
                 if (count <= 0)
@@ -875,14 +875,14 @@ namespace pika { namespace parallel { inline namespace v1 {
                     FwdIter2 s_first, FwdIter2 s_last, Pred&& op, Proj1&& proj1,
                     Proj2&& proj2)
             {
-                typedef util::detail::algorithm_result<ExPolicy, FwdIter>
-                    result;
-                typedef
-                    typename std::iterator_traits<FwdIter>::reference reference;
-                typedef typename std::iterator_traits<FwdIter>::difference_type
-                    difference_type;
-                typedef typename std::iterator_traits<FwdIter2>::difference_type
-                    s_difference_type;
+                using result =
+                    util::detail::algorithm_result<ExPolicy, FwdIter>;
+                using reference =
+                    typename std::iterator_traits<FwdIter>::reference;
+                using difference_type =
+                    typename std::iterator_traits<FwdIter>::difference_type;
+                using s_difference_type =
+                    typename std::iterator_traits<FwdIter2>::difference_type;
 
                 s_difference_type diff = std::distance(s_first, s_last);
                 if (diff <= 0)

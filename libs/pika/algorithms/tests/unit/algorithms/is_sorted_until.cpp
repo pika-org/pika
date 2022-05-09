@@ -334,8 +334,8 @@ void test_sorted_until_exception(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     //fill first half of array with even numbers and second half
@@ -368,8 +368,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_sorted_until_async_exception(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), 0);
@@ -403,8 +403,8 @@ template <typename IteratorTag>
 void test_sorted_until_seq_exception(IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     //fill first half of array with even numbers and second half
@@ -463,8 +463,8 @@ void test_sorted_until_bad_alloc(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     //fill first half of array with even numbers and second half
@@ -496,8 +496,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_sorted_until_async_bad_alloc(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     //fill first half of array with even numbers and second half
@@ -531,8 +531,8 @@ template <typename IteratorTag>
 void test_sorted_until_seq_bad_alloc(IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     //fill first half of array with even numbers and second half

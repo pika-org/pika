@@ -15,8 +15,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 struct cout_continuation
 {
-    typedef pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>>
-        data_type;
+    using data_type =
+        pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>>;
 
     void operator()(pika::future<data_type> data) const
     {

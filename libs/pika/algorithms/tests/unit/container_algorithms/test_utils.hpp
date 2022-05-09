@@ -70,10 +70,9 @@ namespace test {
             BaseIterator, void, IteratorTag>
     {
     private:
-        typedef pika::util::iterator_adaptor<
+        using base_type = pika::util::iterator_adaptor<
             test_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
-            IteratorTag>
-            base_type;
+            IteratorTag>;
 
     public:
         test_iterator()
@@ -105,11 +104,10 @@ namespace test {
             return *this;
         }
 
-        typedef test_iterator<typename BaseContainer::iterator, IteratorTag>
-            iterator;
-        typedef test_iterator<typename BaseContainer::const_iterator,
-            IteratorTag>
-            const_iterator;
+        using iterator =
+            test_iterator<typename BaseContainer::iterator, IteratorTag>;
+        using const_iterator =
+            test_iterator<typename BaseContainer::const_iterator, IteratorTag>;
 
         iterator begin()
         {
@@ -146,10 +144,9 @@ namespace test {
             IteratorTag>
     {
     private:
-        typedef pika::util::iterator_adaptor<
+        using base_type = pika::util::iterator_adaptor<
             decorated_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
-            IteratorTag>
-            base_type;
+            IteratorTag>;
 
     public:
         decorated_iterator() {}

@@ -244,10 +244,10 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
                 Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
             {
-                typedef typename std::iterator_traits<Iter1>::difference_type
-                    difference_type1;
-                typedef typename std::iterator_traits<Iter2>::difference_type
-                    difference_type2;
+                using difference_type1 =
+                    typename std::iterator_traits<Iter1>::difference_type;
+                using difference_type2 =
+                    typename std::iterator_traits<Iter2>::difference_type;
 
                 if (first1 == last1)
                 {
@@ -347,12 +347,12 @@ namespace pika { namespace parallel { inline namespace v1 {
                         true);
                 }
 
-                typedef typename std::iterator_traits<FwdIter1>::difference_type
-                    difference_type;
+                using difference_type =
+                    typename std::iterator_traits<FwdIter1>::difference_type;
                 difference_type count = std::distance(first1, last1);
 
-                typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
-                    zip_iterator;
+                using zip_iterator =
+                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
                 using reference = typename zip_iterator::reference;
 
                 util::cancellation_token<> tok;

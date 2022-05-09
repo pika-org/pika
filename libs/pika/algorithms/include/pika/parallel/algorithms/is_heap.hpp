@@ -169,8 +169,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename Iter, typename Sent, typename Comp, typename Proj>
         bool sequential_is_heap(Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
-            typedef typename std::iterator_traits<Iter>::difference_type
-                difference_type;
+            using difference_type =
+                typename std::iterator_traits<Iter>::difference_type;
 
             difference_type count = detail::distance(first, last);
 
@@ -193,8 +193,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using result = util::detail::algorithm_result<ExPolicy, bool>;
                 using type = typename std::iterator_traits<Iter>::value_type;
-                typedef typename std::iterator_traits<Iter>::difference_type
-                    difference_type;
+                using difference_type =
+                    typename std::iterator_traits<Iter>::difference_type;
 
                 difference_type count = detail::distance(first, last);
                 if (count <= 1)
@@ -281,8 +281,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         Iter sequential_is_heap_until(
             Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
-            typedef typename std::iterator_traits<Iter>::difference_type
-                difference_type;
+            using difference_type =
+                typename std::iterator_traits<Iter>::difference_type;
 
             difference_type count = detail::distance(first, last);
 
@@ -305,8 +305,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using result = util::detail::algorithm_result<ExPolicy, Iter>;
                 using type = typename std::iterator_traits<Iter>::value_type;
-                typedef typename std::iterator_traits<Iter>::difference_type
-                    difference_type;
+                using difference_type =
+                    typename std::iterator_traits<Iter>::difference_type;
 
                 difference_type count = detail::distance(first, last);
                 if (count <= 1)

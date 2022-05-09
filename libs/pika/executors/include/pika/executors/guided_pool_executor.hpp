@@ -119,8 +119,9 @@ namespace pika { namespace parallel { namespace execution {
                     debug::str<>("async_schedule"), "domain ", domain);
 
                 // now we must forward the task+hint on to the correct dispatch function
-                typedef typename pika::util::detail::invoke_deferred_result<F,
-                    Ts...>::type result_type;
+                using result_type =
+                    typename pika::util::detail::invoke_deferred_result<F,
+                        Ts...>::type;
 
                 lcos::local::futures_factory<result_type()> p(
                     pika::util::deferred_call(
@@ -181,8 +182,9 @@ namespace pika { namespace parallel { namespace execution {
                 gpx_deb.debug(debug::str<>("then_schedule"), "domain ", domain);
 
                 // now we must forward the task+hint on to the correct dispatch function
-                typedef typename pika::util::detail::invoke_deferred_result<F,
-                    Future, Ts...>::type result_type;
+                using result_type =
+                    typename pika::util::detail::invoke_deferred_result<F,
+                        Future, Ts...>::type;
 
                 lcos::local::futures_factory<result_type()> p(
                     pika::util::deferred_call(PIKA_FORWARD(F, f),
@@ -292,8 +294,9 @@ namespace pika { namespace parallel { namespace execution {
             typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
         async_execute(F&& f, Ts&&... ts)
         {
-            typedef typename pika::util::detail::invoke_deferred_result<F,
-                Ts...>::type result_type;
+            using result_type =
+                typename pika::util::detail::invoke_deferred_result<F,
+                    Ts...>::type;
 
             gpx_deb.debug(debug::str<>("async execute"), "\n\t",
                 "Function    : ", pika::util::debug::print_type<F>(), "\n\t",
@@ -324,8 +327,9 @@ namespace pika { namespace parallel { namespace execution {
             -> future<typename pika::util::detail::invoke_deferred_result<F,
                 Future, Ts...>::type>
         {
-            typedef typename pika::util::detail::invoke_deferred_result<F,
-                Future, Ts...>::type result_type;
+            using result_type =
+                typename pika::util::detail::invoke_deferred_result<F, Future,
+                    Ts...>::type;
 
             gpx_deb.debug(debug::str<>("then execute"), "\n\t",
                 "Function    : ", pika::util::debug::print_type<F>(), "\n\t",
@@ -388,9 +392,9 @@ namespace pika { namespace parallel { namespace execution {
             auto unwrapped_futures_tuple = pika::util::map_pack(
                 detail::future_extract_value{}, predecessor_value);
 
-            typedef typename pika::util::detail::invoke_deferred_result<F,
-                OuterFuture<pika::tuple<InnerFutures...>>, Ts...>::type
-                result_type;
+            using result_type =
+                typename pika::util::detail::invoke_deferred_result<F,
+                    OuterFuture<pika::tuple<InnerFutures...>>, Ts...>::type;
 
             // clang-format off
             gpx_deb.debug(debug::str<>("when_all(fut) : Predecessor")
@@ -440,8 +444,9 @@ namespace pika { namespace parallel { namespace execution {
             -> future<typename pika::util::detail::invoke_deferred_result<F,
                 pika::tuple<InnerFutures...>>::type>
         {
-            typedef typename pika::util::detail::invoke_deferred_result<F,
-                pika::tuple<InnerFutures...>>::type result_type;
+            using result_type =
+                typename pika::util::detail::invoke_deferred_result<F,
+                    pika::tuple<InnerFutures...>>::type;
 
             // invoke the hint function with the unwrapped tuple futures
 #ifdef GUIDED_POOL_EXECUTOR_FAKE_NOOP
@@ -550,8 +555,9 @@ namespace pika { namespace parallel { namespace execution {
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
             else
             {
-                typedef typename pika::util::detail::invoke_deferred_result<F,
-                    Ts...>::type result_type;
+                using result_type =
+                    typename pika::util::detail::invoke_deferred_result<F,
+                        Ts...>::type;
 
                 lcos::local::futures_factory<result_type()> p(
                     pika::util::deferred_call(
@@ -578,8 +584,9 @@ namespace pika { namespace parallel { namespace execution {
                     PIKA_FORWARD(Future, predecessor), PIKA_FORWARD(Ts, ts)...);
             else
             {
-                typedef typename pika::util::detail::invoke_deferred_result<F,
-                    Future, Ts...>::type result_type;
+                using result_type =
+                    typename pika::util::detail::invoke_deferred_result<F,
+                        Future, Ts...>::type;
 
                 auto func = pika::util::one_shot(pika::util::bind_back(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));

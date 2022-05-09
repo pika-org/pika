@@ -115,7 +115,7 @@ namespace pika { namespace threads { namespace coroutines {
 #else
         struct stack_allocator
         {
-            typedef void* segments_context[PIKA_COROUTINES_SEGMENTS];
+            using segments_context void* [PIKA_COROUTINES_SEGMENTS];
 
             static std::size_t maximum_stacksize()
             {

@@ -558,9 +558,8 @@ namespace pika { namespace util {
             return PIKA_FORWARD(F1, f1);
 
         // otherwise create a combined callback
-        typedef compose_callback_impl<typename std::decay<F1>::type,
-            typename std::decay<F2>::type>
-            result_type;
+        using result_type = compose_callback_impl<typename std::decay<F1>::type,
+            typename std::decay<F2>::type>;
         return result_type(PIKA_FORWARD(F1, f1), PIKA_FORWARD(F2, f2));
     }
 

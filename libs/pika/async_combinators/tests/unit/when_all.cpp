@@ -125,8 +125,8 @@ void test_wait_for_all_three_futures()
     pika::future<int> f3 = pt3.get_future();
     pt3.apply();
 
-    typedef pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>>
-        result_type;
+    using result_type =
+        pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3);
 
     result_type result = r.get();
@@ -155,9 +155,8 @@ void test_wait_for_all_four_futures()
     pika::future<int> f4 = pt4.get_future();
     pt4.apply();
 
-    typedef pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>,
-        pika::future<int>>
-        result_type;
+    using result_type = pika::tuple<pika::future<int>, pika::future<int>,
+        pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3, f4);
 
     result_type result = r.get();
@@ -191,9 +190,8 @@ void test_wait_for_all_five_futures()
     pika::future<int> f5 = pt5.get_future();
     pt5.apply();
 
-    typedef pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>,
-        pika::future<int>, pika::future<int>>
-        result_type;
+    using result_type = pika::tuple<pika::future<int>, pika::future<int>,
+        pika::future<int>, pika::future<int>, pika::future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3, f4, f5);
 
     result_type result = r.get();

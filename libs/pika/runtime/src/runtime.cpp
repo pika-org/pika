@@ -1654,8 +1654,8 @@ namespace pika {
     threads::policies::callback_notifier runtime::get_notification_policy(
         char const* prefix, os_thread_type type)
     {
-        typedef bool (runtime::*report_error_t)(
-            std::size_t, std::exception_ptr const&, bool);
+        using report_error_t =
+            bool (runtime::*)(std::size_t, std::exception_ptr const&, bool);
 
         using util::placeholders::_1;
         using util::placeholders::_2;

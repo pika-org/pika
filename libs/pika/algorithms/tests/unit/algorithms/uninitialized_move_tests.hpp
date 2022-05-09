@@ -101,8 +101,8 @@ void test_uninitialized_move_exception(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<test::count_instances>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<test::count_instances> c(10007);
     std::vector<test::count_instances> d(c.size());
@@ -141,8 +141,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_move_exception_async(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<test::count_instances>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<test::count_instances> c(10007);
     std::vector<test::count_instances> d(c.size());
@@ -191,8 +191,8 @@ void test_uninitialized_move_bad_alloc(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<test::count_instances>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<test::count_instances> c(10007);
     std::vector<test::count_instances> d(c.size());
@@ -231,8 +231,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_move_bad_alloc_async(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<test::count_instances>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<test::count_instances> c(10007);
     std::vector<test::count_instances> d(c.size());

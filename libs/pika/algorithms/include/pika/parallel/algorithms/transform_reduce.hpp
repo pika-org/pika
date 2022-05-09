@@ -507,8 +507,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using result = util::detail::algorithm_result<ExPolicy, T>;
                 using zip_iterator = pika::util::zip_iterator<Iter, Iter2>;
-                typedef typename std::iterator_traits<Iter>::difference_type
-                    difference_type;
+                using difference_type =
+                    typename std::iterator_traits<Iter>::difference_type;
 
                 if (first1 == last1)
                 {

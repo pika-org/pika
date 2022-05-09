@@ -289,10 +289,10 @@ namespace pika { namespace parallel { inline namespace v1 {
                 Proj&& proj)
             {
                 using zip_iterator = pika::util::zip_iterator<Iter, bool*>;
-                typedef util::detail::algorithm_result<ExPolicy, Iter>
-                    algorithm_result;
-                typedef typename std::iterator_traits<Iter>::difference_type
-                    difference_type;
+                using algorithm_result =
+                    util::detail::algorithm_result<ExPolicy, Iter>;
+                using difference_type =
+                    typename std::iterator_traits<Iter>::difference_type;
 
                 difference_type count = detail::distance(first, last);
 
@@ -308,9 +308,9 @@ namespace pika { namespace parallel { inline namespace v1 {
 
                 using pika::get;
                 using pika::util::make_zip_iterator;
-                typedef util::scan_partitioner<ExPolicy, Iter, std::size_t,
-                    void, util::scan_partitioner_sequential_f3_tag>
-                    scan_partitioner_type;
+                using scan_partitioner_type =
+                    util::scan_partitioner<ExPolicy, Iter, std::size_t, void,
+                        util::scan_partitioner_sequential_f3_tag>;
 
                 // Note: replacing the invoke() with PIKA_INVOKE()
                 // below makes gcc generate errors

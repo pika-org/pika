@@ -117,8 +117,8 @@ std::atomic<std::size_t> count_bulk_async(0);
 template <typename Executor>
 void test_executor(std::array<std::size_t, 5> expected)
 {
-    typedef typename pika::traits::executor_execution_category<Executor>::type
-        execution_category;
+    using execution_category =
+        typename pika::traits::executor_execution_category<Executor>::type;
 
     PIKA_TEST((std::is_same<pika::execution::parallel_execution_tag,
         execution_category>::value));

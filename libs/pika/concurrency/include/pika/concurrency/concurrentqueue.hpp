@@ -133,7 +133,7 @@ namespace pika { namespace concurrency { namespace details {
     template<> struct thread_id_size<8> { using numeric_t = std::uint64_t; };
 
     template<> struct thread_id_converter<thread_id_t> {
-        typedef thread_id_size<sizeof(thread_id_t)>::numeric_t thread_id_numeric_size_t;
+        using thread_id_numeric_size_t = thread_id_size<sizeof(thread_id_t)>::numeric_t;
 #if !defined(__APPLE__)
         using thread_id_hash_t = std::size_t;
 #else
@@ -267,11 +267,11 @@ namespace details {
 
     // Some platforms have incorrectly set max_align_t to a type with <8 bytes alignment even while supporting
     // 8-byte aligned scalar values (*cough* 32-bit iOS). Work around this with our own union. See issue #64.
-    typedef union {
+    using max_align_t = union {
         std_max_align_t x;
         long long y;
         void* z;
-    } max_align_t;
+    };
 }
 
 // Default traits for the ConcurrentQueue. To change some of the
@@ -514,7 +514,7 @@ namespace details
 #else
     struct ThreadExitListener
     {
-        typedef void (*callback_t)(void*);
+        using callback_t = void (*)(void*);
         callback_t callback;
         void* userData;
 
@@ -1613,11 +1613,19 @@ private:
         // otherwise the appropriate padding will not be added at the end of Block in order to make
         // arrays of Blocks all be properly aligned (not just the first one). We use a union to force
         // this.
+#if defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsubobject-linkage"
+#endif
         union {
             // NOLINTNEXTLINE(bugprone-sizeof-expression)
             char elements[sizeof(T) * BLOCK_SIZE];
             details::max_align_t dummy;
         };
+#if defined(PIKA_GCC_VERSION) && !defined(PIKA_CLANG_VERSION)
+#pragma GCC diagnostic pop
+#endif
+
     public:
         Block* next;
         std::atomic<size_t> elementsCompletelyDequeued;

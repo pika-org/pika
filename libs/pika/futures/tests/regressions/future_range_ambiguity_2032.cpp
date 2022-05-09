@@ -11,9 +11,8 @@
 
 #include <vector>
 
-typedef pika::util::iterator_range<
-    std::vector<pika::shared_future<void>>::iterator>
-    future_range;
+using future_range = pika::util::iterator_range<
+    std::vector<pika::shared_future<void>>::iterator>;
 
 using error1 = pika::traits::is_future_range<future_range>::type;
 

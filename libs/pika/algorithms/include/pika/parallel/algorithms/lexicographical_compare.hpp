@@ -220,8 +220,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 FwdIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
                 Proj2&& proj2)
             {
-                typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
-                    zip_iterator;
+                using zip_iterator =
+                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
                 using reference = typename zip_iterator::reference;
 
                 std::size_t count1 = detail::distance(first1, last1);

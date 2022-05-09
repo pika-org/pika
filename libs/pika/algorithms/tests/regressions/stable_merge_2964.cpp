@@ -49,7 +49,7 @@ void test_merge_stable(ExPolicy policy, DataType, int rand_base)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::pair<DataType, int> ElemType;
+    using ElemType = typename std::pair<DataType, int>;
 
     using pika::get;
 

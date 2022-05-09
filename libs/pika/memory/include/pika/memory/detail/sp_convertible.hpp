@@ -18,8 +18,8 @@ namespace pika { namespace memory { namespace detail {
     template <typename Y, typename T>
     struct sp_convertible
     {
-        typedef char (&yes)[1];
-        typedef char (&no)[2];
+        using yes = char (&)[1];
+        using no = char (&)[2];
 
         static yes f(T*);
         static no f(...);

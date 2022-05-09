@@ -100,8 +100,9 @@ namespace pika { namespace parallel { namespace util {
                     std::size_t count_ = count;
 
                     // estimate a chunk size based on number of cores used
-                    typedef typename execution::extract_has_variable_chunk_size<
-                        parameters_type>::type has_variable_chunk_size;
+                    using has_variable_chunk_size =
+                        typename execution::extract_has_variable_chunk_size<
+                            parameters_type>::type;
 
                     auto shape = detail::get_bulk_iteration_shape(
                         has_variable_chunk_size(), policy, workitems, f1, first,
@@ -219,8 +220,9 @@ namespace pika { namespace parallel { namespace util {
                     bool tested = false;
 
                     // estimate a chunk size based on number of cores used
-                    typedef typename execution::extract_has_variable_chunk_size<
-                        parameters_type>::type has_variable_chunk_size;
+                    using has_variable_chunk_size =
+                        typename execution::extract_has_variable_chunk_size<
+                            parameters_type>::type;
 
                     auto shape = detail::get_bulk_iteration_shape(
                         has_variable_chunk_size(), policy, workitems, f1, first,

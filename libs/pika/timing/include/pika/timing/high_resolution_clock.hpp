@@ -36,8 +36,8 @@ namespace pika { namespace chrono {
         // returned by this clock.
         static constexpr std::uint64_t(min)() noexcept
         {
-            typedef std::chrono::duration_values<std::chrono::nanoseconds>
-                duration_values;
+            using duration_values =
+                std::chrono::duration_values<std::chrono::nanoseconds>;
             return (duration_values::min)().count();
         }
 
@@ -45,8 +45,8 @@ namespace pika { namespace chrono {
         // returned by this clock.
         static constexpr std::uint64_t(max)() noexcept
         {
-            typedef std::chrono::duration_values<std::chrono::nanoseconds>
-                duration_values;
+            using duration_values =
+                std::chrono::duration_values<std::chrono::nanoseconds>;
             return (duration_values::max)().count();
         }
     };

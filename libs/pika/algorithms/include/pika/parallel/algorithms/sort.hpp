@@ -441,8 +441,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 Comp&& comp, Proj&& proj)
             {
                 auto last = detail::advance_to_sentinel(first, last_s);
-                typedef util::detail::algorithm_result<ExPolicy, RandomIt>
-                    algorithm_result;
+                using algorithm_result =
+                    util::detail::algorithm_result<ExPolicy, RandomIt>;
 
                 try
                 {

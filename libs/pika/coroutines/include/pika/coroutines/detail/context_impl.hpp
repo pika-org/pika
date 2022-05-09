@@ -61,7 +61,7 @@
 
    - ContextImpl must expose the following typedef:
 
-     typedef unspecified-type context_impl_base;
+     using context_impl_base = unspecified-type;
 
      ContextImpl must be convertible to context_impl_base.
      context_impl_base must have conform to the ContextImplBase concept:

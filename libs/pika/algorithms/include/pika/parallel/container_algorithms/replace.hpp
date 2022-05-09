@@ -1266,9 +1266,8 @@ namespace pika { namespace ranges {
                     typename pika::traits::range_iterator<Rng>::type>::value),
                 "Required at least input iterator.");
 
-            typedef typename std::iterator_traits<
-                typename pika::traits::range_iterator<Rng>::type>::value_type
-                Type;
+            using Type = typename std::iterator_traits<
+                typename pika::traits::range_iterator<Rng>::type>::value_type;
 
             return pika::ranges::replace_if(
                 PIKA_FORWARD(Rng, rng),
@@ -1329,9 +1328,8 @@ namespace pika { namespace ranges {
                     typename pika::traits::range_iterator<Rng>::type>::value),
                 "Required at least forward iterator.");
 
-            typedef typename std::iterator_traits<
-                typename pika::traits::range_iterator<Rng>::type>::value_type
-                Type;
+            using Type = typename std::iterator_traits<
+                typename pika::traits::range_iterator<Rng>::type>::value_type;
 
             return pika::ranges::replace_if(
                 PIKA_FORWARD(ExPolicy, policy), PIKA_FORWARD(Rng, rng),
@@ -1549,9 +1547,8 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_output_iterator<OutIter>::value),
                 "Required at least output iterator.");
 
-            typedef typename std::iterator_traits<
-                typename pika::traits::range_iterator<Rng>::type>::value_type
-                Type;
+            using Type = typename std::iterator_traits<
+                typename pika::traits::range_iterator<Rng>::type>::value_type;
 
             return pika::ranges::replace_copy_if(
                 pika::execution::seq, pika::util::begin(rng),
@@ -1622,9 +1619,8 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            typedef typename std::iterator_traits<
-                typename pika::traits::range_iterator<Rng>::type>::value_type
-                Type;
+            using Type = typename std::iterator_traits<
+                typename pika::traits::range_iterator<Rng>::type>::value_type;
 
             return pika::ranges::replace_copy_if(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),

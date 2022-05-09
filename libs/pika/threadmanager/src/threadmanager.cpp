@@ -472,9 +472,8 @@ namespace pika { namespace threads {
             case resource::shared_priority:
             {
                 // instantiate the scheduler
-                typedef pika::threads::policies::
-                    shared_priority_queue_scheduler<>
-                        local_sched_type;
+                using local_sched_type =
+                    pika::threads::policies::shared_priority_queue_scheduler<>;
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_, {1, 1, 1},
                     thread_pool_init.affinity_data_, thread_queue_init,

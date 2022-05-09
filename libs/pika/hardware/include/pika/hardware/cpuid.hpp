@@ -28,7 +28,7 @@
 
 namespace pika { namespace util { namespace hardware {
 
-    typedef std::uint32_t cpu_info [4];
+    using cpu_info = std::uint32_t [4];
 
     struct cpu_feature
     {

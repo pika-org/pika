@@ -365,8 +365,8 @@ void test_search_exception(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), std::rand() + 1);
     c[c.size() / 2] = 1;
@@ -404,8 +404,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_search_async_exception(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), std::rand() + 1);
@@ -468,8 +468,8 @@ void test_search_bad_alloc(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(100007);
     std::iota(std::begin(c), std::end(c), std::rand() + 1);
@@ -502,8 +502,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_search_async_bad_alloc(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), std::rand() + 1);

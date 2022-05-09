@@ -70,8 +70,8 @@ void test_replace_copy_sent(ExPolicy policy)
 template <typename IteratorTag>
 void test_replace_copy(IteratorTag)
 {
-    typedef test::test_container<std::vector<std::size_t>, IteratorTag>
-        test_vector;
+    using test_vector =
+        test::test_container<std::vector<std::size_t>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<std::size_t> d1(c.size());
@@ -102,8 +102,8 @@ void test_replace_copy(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef test::test_container<std::vector<std::size_t>, IteratorTag>
-        test_vector;
+    using test_vector =
+        test::test_container<std::vector<std::size_t>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<std::size_t> d1(c.size());
@@ -131,8 +131,8 @@ void test_replace_copy(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_replace_copy_async(ExPolicy p, IteratorTag)
 {
-    typedef test::test_container<std::vector<std::size_t>, IteratorTag>
-        test_vector;
+    using test_vector =
+        test::test_container<std::vector<std::size_t>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<std::size_t> d1(c.size());
@@ -188,8 +188,8 @@ template <typename IteratorTag>
 void test_replace_copy_exception(IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::vector<std::size_t> d(c.size());
@@ -227,8 +227,8 @@ void test_replace_copy_exception(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::vector<std::size_t> d(c.size());
@@ -262,8 +262,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_replace_copy_exception_async(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::vector<std::size_t> d(c.size());
@@ -325,8 +325,8 @@ template <typename IteratorTag>
 void test_replace_copy_bad_alloc(IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::vector<std::size_t> d(c.size());
@@ -361,8 +361,8 @@ void test_replace_copy_bad_alloc(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::vector<std::size_t> d(c.size());
@@ -395,8 +395,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_replace_copy_bad_alloc_async(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::vector<std::size_t> d(c.size());

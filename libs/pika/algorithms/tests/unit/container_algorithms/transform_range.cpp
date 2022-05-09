@@ -78,8 +78,8 @@ void test_transform(ExPolicy policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_transform_async(ExPolicy p, IteratorTag)
 {
-    typedef test::test_container<std::vector<std::size_t>, IteratorTag>
-        test_vector;
+    using test_vector =
+        test::test_container<std::vector<std::size_t>, IteratorTag>;
 
     test_vector c(10007);
     std::vector<std::size_t> d(c.size());

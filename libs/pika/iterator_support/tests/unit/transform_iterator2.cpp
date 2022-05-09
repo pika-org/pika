@@ -129,8 +129,8 @@ int main()
         for (int k2 = 0; k2 < N; ++k2)
             x[k2] = x[k2] * 2;
 
-        typedef pika::util::transform_iterator<int*, adaptable_mult_functor>
-            iter_t;
+        using iter_t =
+            pika::util::transform_iterator<int*, adaptable_mult_functor>;
         iter_t i(y, adaptable_mult_functor(2));
 
         tests::input_iterator_test(i, x[0], x[1]);
@@ -150,7 +150,7 @@ int main()
         for (int k2 = 0; k2 < N; ++k2)
             x[k2] = x[k2] * 2;
 
-        typedef pika::util::transform_iterator<int*, mult_functor, int> iter_t;
+        using iter_t = pika::util::transform_iterator<int*, mult_functor, int>;
         iter_t i(y, mult_functor(2));
         tests::input_iterator_test(i, x[0], x[1]);
         tests::input_iterator_test(iter_t(&y[0], mult_functor(2)), x[0], x[1]);
@@ -159,27 +159,24 @@ int main()
     }
 
     // Test transform_iterator default argument handling
-    {{typedef pika::util::transform_iterator<int*, adaptable_mult_functor,
-        float>
-            iter_t;
+    {{using iter_t =
+            pika::util::transform_iterator<int*, adaptable_mult_functor, float>;
 
     PIKA_TEST((std::is_same<iter_t::reference, float>::value));
     PIKA_TEST((std::is_same<iter_t::value_type, float>::value));
 }
 
 {
-    typedef pika::util::transform_iterator<int*, adaptable_mult_functor, int&,
-        float>
-        iter_t;
+    using iter_t = pika::util::transform_iterator<int*, adaptable_mult_functor,
+        int&, float>;
 
     PIKA_TEST((std::is_same<iter_t::reference, int&>::value));
     PIKA_TEST((std::is_same<iter_t::value_type, float>::value));
 }
 
 {
-    typedef pika::util::transform_iterator<int*, adaptable_mult_functor, float,
-        double>
-        iter_t;
+    using iter_t = pika::util::transform_iterator<int*, adaptable_mult_functor,
+        float, double>;
 
     PIKA_TEST((std::is_same<iter_t::reference, float>::value));
     PIKA_TEST((std::is_same<iter_t::value_type, double>::value));

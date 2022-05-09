@@ -661,9 +661,8 @@ namespace pika { namespace ranges {
                     typename pika::traits::range_iterator<Rng>::type>::value),
                 "Required at least input iterator.");
 
-            typedef typename std::iterator_traits<
-                typename pika::traits::range_iterator<Rng>::type>::value_type
-                Type;
+            using Type = typename std::iterator_traits<
+                typename pika::traits::range_iterator<Rng>::type>::value_type;
 
             return pika::ranges::remove_if(
                 PIKA_FORWARD(Rng, rng),
@@ -720,9 +719,8 @@ namespace pika { namespace ranges {
                     typename pika::traits::range_iterator<Rng>::type>::value),
                 "Required at least forward iterator.");
 
-            typedef typename std::iterator_traits<
-                typename pika::traits::range_iterator<Rng>::type>::value_type
-                Type;
+            using Type = typename std::iterator_traits<
+                typename pika::traits::range_iterator<Rng>::type>::value_type;
 
             return pika::ranges::remove_if(
                 PIKA_FORWARD(ExPolicy, policy), PIKA_FORWARD(Rng, rng),

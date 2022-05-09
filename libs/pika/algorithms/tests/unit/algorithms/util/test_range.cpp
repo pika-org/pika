@@ -517,7 +517,7 @@ void test7()
 void test8()
 {
     using compare = std::less<std::uint64_t>;
-    typedef range<std::uint64_t*> rng;
+    using rng = range<std::uint64_t*>;
 
     std::vector<std::uint64_t> A, B;
     compare comp;

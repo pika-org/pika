@@ -112,7 +112,8 @@ void test2()
     }
 
     std::vector<rng> Vin, Vout;
-    for (std::uint32_t i = 0; i < 9; ++i)
+    using difference_type = decltype(VA)::difference_type;
+    for (difference_type i = 0; i < 9; ++i)
     {
         Vin.emplace_back(VA.begin() + (i * 10), VA.begin() + ((i + 1) * 10));
     }
@@ -187,7 +188,8 @@ void test4()
 
     std::vector<rng> Vin;
     std::vector<range<xk*>> Vout;
-    for (std::uint32_t i = 0; i < 9; ++i)
+    using difference_type = decltype(VA)::difference_type;
+    for (difference_type i = 0; i < 9; ++i)
     {
         Vin.emplace_back(VA.begin() + (i * 10), VA.begin() + ((i + 1) * 10));
     }
@@ -222,7 +224,8 @@ void test5()
     rng Rout(Y.begin(), Y.end());
 
     std::vector<rng> Vin, Vout;
-    for (std::uint32_t i = 0; i < 10; ++i)
+    using difference_type = decltype(X)::difference_type;
+    for (difference_type i = 0; i < 10; ++i)
     {
         Vin.emplace_back(X.begin() + (i * 10), X.begin() + ((i + 1) * 10));
     }
@@ -255,7 +258,8 @@ void test6()
         VA.emplace_back(2 * k, i / 10);
     }
     std::vector<rng> Vin, Vout;
-    for (std::uint32_t i = 0; i < 16; ++i)
+    using difference_type = decltype(VA)::difference_type;
+    for (difference_type i = 0; i < 16; ++i)
     {
         Vin.emplace_back(VA.begin() + (i * 10), VA.begin() + ((i + 1) * 10));
     }

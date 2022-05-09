@@ -40,7 +40,7 @@ namespace pika { namespace threads {
             auto cond = std::make_shared<std::condition_variable_any>();
             bool stopping = false;
 
-            typedef typename util::invoke_result<F, Ts...>::type result_type;
+            using result_type = typename util::invoke_result<F, Ts...>::type;
 
             // Using the optional for storing the returned result value
             // allows to support non-default-constructible and move-only
@@ -141,8 +141,8 @@ namespace pika { namespace threads {
         // This shouldn't be used on a pika-thread
         PIKA_ASSERT(pika::threads::get_self_ptr() == nullptr);
 
-        typedef typename std::is_void<
-            typename util::invoke_result<F, Ts...>::type>::type result_is_void;
+        using result_is_void = typename std::is_void<
+            typename util::invoke_result<F, Ts...>::type>::type;
 
         return detail::run_as_pika_thread(
             result_is_void(), f, PIKA_FORWARD(Ts, vs)...);

@@ -44,7 +44,7 @@ void test_uninitialized_default_construct(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef default_constructable* base_iterator;
+    using base_iterator = default_constructable*;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     default_constructable* p = (default_constructable*) std::malloc(
@@ -68,7 +68,7 @@ void test_uninitialized_default_construct(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_default_construct_async(ExPolicy&& policy, IteratorTag)
 {
-    typedef default_constructable* base_iterator;
+    using base_iterator = default_constructable*;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     default_constructable* p = (default_constructable*) std::malloc(
@@ -96,7 +96,7 @@ void test_uninitialized_default_construct2(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef value_constructable* base_iterator;
+    using base_iterator = value_constructable*;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     value_constructable* p = (value_constructable*) std::malloc(
@@ -120,7 +120,7 @@ void test_uninitialized_default_construct2(ExPolicy&& policy, IteratorTag)
 template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_default_construct_async2(ExPolicy&& policy, IteratorTag)
 {
-    typedef value_constructable* base_iterator;
+    using base_iterator = value_constructable*;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
     value_constructable* p = (value_constructable*) std::malloc(
@@ -151,9 +151,9 @@ void test_uninitialized_default_construct_exception(
         "pika::is_execution_policy<ExPolicy>::value");
 
     using data_type = test::count_instances_v<default_constructable>;
-    typedef data_type* base_iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using base_iterator = data_type*;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     data_type* p = (data_type*) std::malloc(data_size * sizeof(data_type));
     std::memset(static_cast<void*>(p), 0xcd, data_size * sizeof(data_type));
@@ -198,9 +198,9 @@ void test_uninitialized_default_construct_exception_async(
     ExPolicy policy, IteratorTag)
 {
     using data_type = test::count_instances_v<default_constructable>;
-    typedef data_type* base_iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using base_iterator = data_type*;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     data_type* p = (data_type*) std::malloc(data_size * sizeof(data_type));
     std::memset(static_cast<void*>(p), 0xcd, data_size * sizeof(data_type));
@@ -255,9 +255,9 @@ void test_uninitialized_default_construct_bad_alloc(
         "pika::is_execution_policy<ExPolicy>::value");
 
     using data_type = test::count_instances_v<default_constructable>;
-    typedef data_type* base_iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using base_iterator = data_type*;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     data_type* p = (data_type*) std::malloc(data_size * sizeof(data_type));
     std::memset(static_cast<void*>(p), 0xcd, data_size * sizeof(data_type));
@@ -302,9 +302,9 @@ void test_uninitialized_default_construct_bad_alloc_async(
     ExPolicy policy, IteratorTag)
 {
     using data_type = test::count_instances_v<default_constructable>;
-    typedef data_type* base_iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using base_iterator = data_type*;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     data_type* p = (data_type*) std::malloc(data_size * sizeof(data_type));
     std::memset(static_cast<void*>(p), 0xcd, data_size * sizeof(data_type));

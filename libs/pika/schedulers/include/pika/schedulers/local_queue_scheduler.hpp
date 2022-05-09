@@ -59,9 +59,8 @@ namespace pika { namespace threads { namespace policies {
     public:
         using has_periodic_maintenance = std::false_type;
 
-        typedef thread_queue<Mutex, PendingQueuing, StagedQueuing,
-            TerminatedQueuing>
-            thread_queue_type;
+        using thread_queue_type = thread_queue<Mutex, PendingQueuing,
+            StagedQueuing, TerminatedQueuing>;
 
         struct init_parameter
         {

@@ -213,8 +213,9 @@ namespace pika { namespace execution {
 
         /// The category of the execution agents created by this execution
         /// policy.
-        typedef typename pika::traits::executor_execution_category<
-            executor_type>::type execution_category;
+        using execution_category =
+            typename pika::traits::executor_execution_category<
+                executor_type>::type;
 
         /// Rebind the type of executor used by this execution policy. The
         /// execution category of Executor shall not be weaker than that of

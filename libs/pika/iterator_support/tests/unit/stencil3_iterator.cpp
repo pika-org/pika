@@ -37,10 +37,10 @@ namespace test {
             template <typename Iterator>
             struct result
             {
-                typedef typename std::iterator_traits<Iterator>::reference
-                    element_type;
-                typedef pika::tuple<element_type, element_type, element_type>
-                    type;
+                using element_type =
+                    typename std::iterator_traits<Iterator>::reference;
+                using type =
+                    pika::tuple<element_type, element_type, element_type>;
             };
 
             // it will dereference tuple(it-1, it, it+1)
@@ -118,7 +118,7 @@ void test_stencil3_iterator()
 
     auto r = test::make_stencil3_range(values.begin() + 1, values.end() - 1);
 
-    typedef std::iterator_traits<decltype(r.first)>::reference reference;
+    using reference = std::iterator_traits<decltype(r.first)>::reference;
 
     std::ostringstream str;
 
@@ -138,10 +138,10 @@ namespace test {
         template <typename Iterator>
         struct result
         {
-            typedef
-                typename std::iterator_traits<Iterator>::reference element_type;
-            typedef typename pika::util::invoke_result<F, element_type>::type
-                value_type;
+            using element_type =
+                typename std::iterator_traits<Iterator>::reference;
+            using value_type =
+                typename pika::util::invoke_result<F, element_type>::type;
 
             using type = pika::tuple<value_type, element_type, value_type>;
         };
@@ -166,8 +166,8 @@ namespace test {
     inline custom_stencil_transformer<typename std::decay<F>::type>
     make_custom_stencil_transformer(F&& f)
     {
-        typedef custom_stencil_transformer<typename std::decay<F>::type>
-            transformer_type;
+        using transformer_type =
+            custom_stencil_transformer<typename std::decay<F>::type>;
         return transformer_type(std::forward<F>(f));
     }
 }    // namespace test
@@ -181,7 +181,7 @@ void test_stencil3_iterator_custom()
         [](int i) -> int { return 2 * i; });
     auto r = test::make_stencil3_range(values.begin() + 1, values.end() - 1, t);
 
-    typedef std::iterator_traits<decltype(r.first)>::reference reference;
+    using reference = std::iterator_traits<decltype(r.first)>::reference;
 
     std::ostringstream str;
 

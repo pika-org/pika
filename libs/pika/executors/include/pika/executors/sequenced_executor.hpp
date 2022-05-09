@@ -88,9 +88,9 @@ namespace pika { namespace execution {
                 bulk_function_result<F, S, Ts...>::type>>
         bulk_async_execute(F&& f, S const& shape, Ts&&... ts)
         {
-            typedef
+            using result_type =
                 typename parallel::execution::detail::bulk_function_result<F, S,
-                    Ts...>::type result_type;
+                    Ts...>::type;
             std::vector<pika::future<result_type>> results;
 
             try

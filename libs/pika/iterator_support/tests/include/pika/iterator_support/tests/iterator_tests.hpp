@@ -494,7 +494,7 @@ namespace tests {
             }
         };
 
-        typedef const T* pointer;
+        using pointer = const T*;
         using difference_type = std::ptrdiff_t;
 
         input_output_iterator_archetype() {}
@@ -533,8 +533,8 @@ namespace tests {
     public:
         using iterator_category = std::input_iterator_tag;
         using value_type = T;
-        typedef const T& reference;
-        typedef const T* pointer;
+        using reference = const T&;
+        using pointer = const T*;
         using difference_type = std::ptrdiff_t;
         input_iterator_archetype_no_proxy() {}
         input_iterator_archetype_no_proxy(
@@ -576,8 +576,8 @@ namespace tests {
     public:
         using iterator_category = std::forward_iterator_tag;
         using value_type = T;
-        typedef const T& reference;
-        typedef T const* pointer;
+        using reference = const T&;
+        using pointer = T const*;
         using difference_type = std::ptrdiff_t;
         forward_iterator_archetype() {}
         forward_iterator_archetype(forward_iterator_archetype const&) {}

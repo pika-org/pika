@@ -26,10 +26,9 @@ namespace test {
             BaseIterator, void, IteratorTag>
     {
     private:
-        typedef pika::util::iterator_adaptor<
+        using base_type = pika::util::iterator_adaptor<
             test_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
-            IteratorTag>
-            base_type;
+            IteratorTag>;
 
     public:
         test_iterator()
@@ -50,10 +49,9 @@ namespace test {
             IteratorTag>
     {
     private:
-        typedef pika::util::iterator_adaptor<
+        using base_type = pika::util::iterator_adaptor<
             decorated_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
-            IteratorTag>
-            base_type;
+            IteratorTag>;
 
     public:
         decorated_iterator() {}

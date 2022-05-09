@@ -110,7 +110,7 @@ struct add_to_obj
 
 static void test_zero_args()
 {
-    typedef pika::util::function_ref<void()> func_void_type;
+    using func_void_type = pika::util::function_ref<void()>;
 
     write_five_obj five;
     write_three_obj three;
@@ -417,7 +417,7 @@ static void test_zero_args()
     PIKA_TEST_EQ(global_int, 2);
 
     // Test return values
-    typedef pika::util::function_ref<int()> func_int_type;
+    using func_int_type = pika::util::function_ref<int()>;
     generate_five_obj gen_five;
     generate_three_obj gen_three;
 
@@ -432,7 +432,7 @@ static void test_zero_args()
     PIKA_TEST_EQ(i0(), 3);
 
     // Test return values with compatible types
-    typedef pika::util::function_ref<long()> func_long_type;
+    using func_long_type = pika::util::function_ref<long()>;
     func_long_type i1(gen_five);
 
     PIKA_TEST_EQ(i1(), 5);
@@ -511,8 +511,8 @@ static void test_ref()
 
 static void test_ptr_ref()
 {
-    typedef pika::util::function_ref<void()> func_void_type;
-    typedef pika::util::function_ref<int()> func_int_type;
+    using func_void_type = pika::util::function_ref<void()>;
+    using func_int_type = pika::util::function_ref<int()>;
 
     // Invocation of a function
     void (*void_ptr)() = &write_five;
@@ -575,7 +575,7 @@ struct big_aggregating_structure
 
 static void test_copy_semantics()
 {
-    typedef pika::util::function_ref<void()> f1_type;
+    using f1_type = pika::util::function_ref<void()>;
 
     big_aggregating_structure obj;
 

@@ -69,8 +69,8 @@ void test_generate_sent(ExPolicy policy)
 template <typename IteratorTag>
 void test_generate(IteratorTag)
 {
-    typedef test::test_container<std::vector<std::size_t>, IteratorTag>
-        test_vector;
+    using test_vector =
+        test::test_container<std::vector<std::size_t>, IteratorTag>;
 
     test_vector c(10007);
 
@@ -94,8 +94,8 @@ void test_generate(ExPolicy&& policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef test::test_container<std::vector<std::size_t>, IteratorTag>
-        test_vector;
+    using test_vector =
+        test::test_container<std::vector<std::size_t>, IteratorTag>;
 
     test_vector c(10007);
 
@@ -119,8 +119,8 @@ void test_generate_async(ExPolicy&& p, IteratorTag)
     using base_iterator = std::vector<std::size_t>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
-    typedef test::test_container<std::vector<std::size_t>, IteratorTag>
-        test_vector;
+    using test_vector =
+        test::test_container<std::vector<std::size_t>, IteratorTag>;
 
     test_vector c(10007);
 
@@ -169,8 +169,8 @@ template <typename IteratorTag>
 void test_generate_exception(IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
     std::vector<std::size_t> c(10007);
 
     auto gen = []() { return std::size_t(10); };
@@ -207,8 +207,8 @@ void test_generate_exception(ExPolicy&& policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
     std::vector<std::size_t> c(10007);
 
     auto gen = []() { return std::size_t(10); };
@@ -241,8 +241,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_generate_exception_async(ExPolicy&& p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
 
@@ -308,8 +308,8 @@ void test_generate_bad_alloc(ExPolicy&& policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(100007);
 
@@ -342,8 +342,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_generate_bad_alloc_async(ExPolicy&& p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
 

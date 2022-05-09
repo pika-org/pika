@@ -103,8 +103,8 @@ namespace pika { namespace util {
     constexpr detail::one_shot_wrapper<typename std::decay<F>::type> one_shot(
         F&& f)
     {
-        typedef detail::one_shot_wrapper<typename std::decay<F>::type>
-            result_type;
+        using result_type =
+            detail::one_shot_wrapper<typename std::decay<F>::type>;
 
         return result_type(PIKA_FORWARD(F, f));
     }

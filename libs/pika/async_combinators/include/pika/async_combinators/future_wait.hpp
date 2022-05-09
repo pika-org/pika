@@ -158,9 +158,8 @@ namespace pika::detail {
             auto ctx = pika::execution_base::this_thread::agent();
             for (std::size_t i = 0; i != size; ++i)
             {
-                typedef
-                    typename traits::detail::shared_state_ptr_for<Future>::type
-                        shared_state_ptr;
+                using shared_state_ptr =
+                    typename traits::detail::shared_state_ptr_for<Future>::type;
                 shared_state_ptr current =
                     traits::detail::get_shared_state(lazy_values_[i]);
 

@@ -145,9 +145,8 @@ namespace pika { namespace util {
 
     protected:
         // for convenience in derived classes
-        typedef iterator_adaptor<Derived, Base, Value, Category, Reference,
-            Difference, Pointer>
-            iterator_adaptor_;
+        using iterator_adaptor_ = iterator_adaptor<Derived, Base, Value,
+            Category, Reference, Difference, Pointer>;
 
         // lvalue access to the Base object for Derived
         PIKA_HOST_DEVICE PIKA_FORCEINLINE Base const& base_reference() const

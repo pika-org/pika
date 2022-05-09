@@ -20,11 +20,10 @@ namespace pika { namespace threads { namespace policies {
     class PIKA_EXPORT callback_notifier
     {
     public:
-        typedef util::function<void(
-            std::size_t, std::size_t, char const*, char const*)>
-            on_startstop_type;
-        typedef util::function<bool(std::size_t, std::exception_ptr const&)>
-            on_error_type;
+        using on_startstop_type = util::function<void(
+            std::size_t, std::size_t, char const*, char const*)>;
+        using on_error_type =
+            util::function<bool(std::size_t, std::exception_ptr const&)>;
 
         callback_notifier()
           : on_start_thread_callbacks_()

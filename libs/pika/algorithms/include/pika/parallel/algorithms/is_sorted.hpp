@@ -275,10 +275,10 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
                 Proj&& proj)
             {
-                typedef typename std::iterator_traits<FwdIter>::difference_type
-                    difference_type;
-                typedef typename util::detail::algorithm_result<ExPolicy, bool>
-                    result;
+                using difference_type =
+                    typename std::iterator_traits<FwdIter>::difference_type;
+                using result =
+                    typename util::detail::algorithm_result<ExPolicy, bool>;
 
                 difference_type count = std::distance(first, last);
                 if (count <= 1)
@@ -361,13 +361,12 @@ namespace pika { namespace parallel { inline namespace v1 {
                 parallel(ExPolicy&& policy, FwdIter first, Sent last,
                     Pred&& pred, Proj&& proj)
             {
-                typedef
-                    typename std::iterator_traits<FwdIter>::reference reference;
-                typedef typename std::iterator_traits<FwdIter>::difference_type
-                    difference_type;
-                typedef
-                    typename util::detail::algorithm_result<ExPolicy, FwdIter>
-                        result;
+                using reference =
+                    typename std::iterator_traits<FwdIter>::reference;
+                using difference_type =
+                    typename std::iterator_traits<FwdIter>::difference_type;
+                using result =
+                    typename util::detail::algorithm_result<ExPolicy, FwdIter>;
 
                 difference_type count = std::distance(first, last);
                 if (count <= 1)

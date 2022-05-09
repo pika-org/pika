@@ -70,8 +70,8 @@ namespace pika { namespace util {
             Value, Category, Difference>::type
     {
     private:
-        typedef typename detail::transform_iterator_base<Iterator, Transformer,
-            Reference, Value, Category, Difference>::type base_type;
+        using base_type = typename detail::transform_iterator_base<Iterator,
+            Transformer, Reference, Value, Category, Difference>::type;
 
     public:
         transform_iterator() {}

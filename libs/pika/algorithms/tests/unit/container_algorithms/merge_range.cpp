@@ -291,7 +291,7 @@ void test_merge_etc(ExPolicy&& policy, IteratorTag, DataType, int rand_base)
 template <typename IteratorTag, typename DataType>
 void test_merge_stable(IteratorTag, DataType, int rand_base)
 {
-    typedef typename std::pair<DataType, int> ElemType;
+    using ElemType = typename std::pair<DataType, int>;
     using base_iterator = typename std::vector<ElemType>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
@@ -350,7 +350,7 @@ void test_merge_stable(ExPolicy&& policy, IteratorTag, DataType, int rand_base)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::pair<DataType, int> ElemType;
+    using ElemType = typename std::pair<DataType, int>;
     using base_iterator = typename std::vector<ElemType>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 

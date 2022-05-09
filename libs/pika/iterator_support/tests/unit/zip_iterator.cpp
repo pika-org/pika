@@ -67,9 +67,8 @@ int main(void)
     intset.insert(54);
     //
 
-    typedef pika::util::zip_iterator<std::set<int>::iterator,
-        std::vector<double>::iterator>
-        zit_mixed;
+    using zit_mixed = pika::util::zip_iterator<std::set<int>::iterator,
+        std::vector<double>::iterator>;
 
     zit_mixed zip_it_mixed =
         zit_mixed(pika::make_tuple(intset.begin(), vect1.begin()));
@@ -125,27 +124,26 @@ int main(void)
     ve4.push_back(12);
 
     // typedefs for cons lists of iterators.
-    typedef tuple_cat_result_of_t<pika::tuple<std::set<int>::iterator>,
-        pika::tuple<std::vector<int>::iterator, std::list<int>::iterator,
-            std::set<int>::iterator, std::vector<int>::iterator,
-            std::list<int>::iterator, std::set<int>::iterator,
-            std::vector<int>::iterator, std::list<int>::iterator,
-            std::set<int>::iterator, std::vector<int>::const_iterator>>
-        cons_11_its_type;
+    using cons_11_its_type =
+        tuple_cat_result_of_t<pika::tuple<std::set<int>::iterator>,
+            pika::tuple<std::vector<int>::iterator, std::list<int>::iterator,
+                std::set<int>::iterator, std::vector<int>::iterator,
+                std::list<int>::iterator, std::set<int>::iterator,
+                std::vector<int>::iterator, std::list<int>::iterator,
+                std::set<int>::iterator, std::vector<int>::const_iterator>>;
     //
-    typedef tuple_cat_result_of_t<pika::tuple<std::list<int>::const_iterator>,
-        cons_11_its_type>
-        cons_12_its_type;
+    using cons_12_its_type =
+        tuple_cat_result_of_t<pika::tuple<std::list<int>::const_iterator>,
+            cons_11_its_type>;
 
     // typedefs for cons lists for dereferencing the zip iterator
     // made from the cons list above.
-    typedef tuple_cat_result_of_t<pika::tuple<const int&>,
+    using cons_11_refs_type = tuple_cat_result_of_t<pika::tuple<const int&>,
         pika::tuple<int&, int&, const int&, int&, int&, const int&, int&, int&,
-            const int&, const int&>>
-        cons_11_refs_type;
+            const int&, const int&>>;
     //
-    typedef tuple_cat_result_of_t<pika::tuple<const int&>, cons_11_refs_type>
-        cons_12_refs_type;
+    using cons_12_refs_type =
+        tuple_cat_result_of_t<pika::tuple<const int&>, cons_11_refs_type>;
 
     // typedef for zip iterator with 12 elements
     using zip_it_12_type = pika::util::zip_iterator<cons_12_its_type>;
@@ -416,10 +414,9 @@ int main(void)
     // A combining iterator with all vector iterators must have random access
     // traversal.
     //
-    typedef pika::util::zip_iterator<
+    using all_vects_type = pika::util::zip_iterator<
         pika::tuple<std::vector<double>::const_iterator,
-            std::vector<double>::const_iterator>>
-        all_vects_type;
+            std::vector<double>::const_iterator>>;
 
     bool bAllVectsIsRandomAccessIterator = std::is_convertible<
         pika::util::zip_iterator_category<all_vects_type>::type,

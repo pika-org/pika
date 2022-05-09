@@ -42,8 +42,8 @@ namespace pika { namespace util {
     public:
         using value_type = T;
 
-        typedef T& reference;
-        typedef T const& const_reference;
+        using reference = T&;
+        using const_reference = T const&;
 
         static_()
         {
@@ -119,8 +119,8 @@ namespace pika { namespace util {
         };
 
     public:
-        typedef T& reference;
-        typedef T const& const_reference;
+        using reference = T&;
+        using const_reference = T const&;
 
         static_()
         {

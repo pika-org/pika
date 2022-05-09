@@ -177,10 +177,10 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(ExPolicy&& policy, Iter first, Sent last, Pred&& pred,
                 Proj&& proj)
             {
-                typedef typename std::iterator_traits<Iter>::difference_type
-                    difference_type;
-                typedef typename util::detail::algorithm_result<ExPolicy, bool>
-                    result;
+                using difference_type =
+                    typename std::iterator_traits<Iter>::difference_type;
+                using result =
+                    typename util::detail::algorithm_result<ExPolicy, bool>;
 
                 difference_type count = std::distance(first, last);
                 if (count <= 1)

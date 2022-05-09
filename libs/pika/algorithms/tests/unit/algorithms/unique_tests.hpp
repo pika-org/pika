@@ -382,8 +382,8 @@ void test_unique_etc(ExPolicy policy, IteratorTag, DataType, int rand_base)
 
     // Test sequential_unique with input_iterator_tag.
     {
-        typedef test::test_iterator<base_iterator, std::input_iterator_tag>
-            iterator;
+        using iterator =
+            test::test_iterator<base_iterator, std::input_iterator_tag>;
 
         c = d = org;
 

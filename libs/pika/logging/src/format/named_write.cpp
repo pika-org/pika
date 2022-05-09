@@ -173,6 +173,7 @@ namespace pika { namespace util { namespace logging { namespace detail {
                         m_manipulator = '%';
                 }
                 else if (m_manipulator.empty())
+                // NOLINTNEXTLINE(bugprone-branch-clone)
                 {
                     ;    // ignore this char - not from a manipulator
                 }

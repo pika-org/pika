@@ -34,11 +34,11 @@ public:
     using size_type = std::size_t;
     using difference_type = std::int64_t;
     using value_type = T;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
     using reference = typename std::add_lvalue_reference<value_type>::type;
-    typedef typename std::add_lvalue_reference<value_type const>::type
-        const_reference;
+    using const_reference =
+        typename std::add_lvalue_reference<const value_type>::type;
 
     template <typename U>
     struct rebind
@@ -133,8 +133,8 @@ public:
     using size_type = std::size_t;
     using difference_type = std::int64_t;
     using value_type = void;
-    typedef value_type* pointer;
-    typedef value_type const* const_pointer;
+    using pointer = value_type*;
+    using const_pointer = value_type const*;
 
     template <typename U>
     struct rebind

@@ -91,7 +91,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename... Vector, typename ValueType>
     struct vector_pack_load<pika::tuple<Vector...>, ValueType>
     {
-        typedef pika::tuple<Vector...> value_type;
+        using value_type = pika::tuple<Vector...>;
 
         template <typename... Iter>
         static value_type aligned(pika::util::zip_iterator<Iter...> const& iter)

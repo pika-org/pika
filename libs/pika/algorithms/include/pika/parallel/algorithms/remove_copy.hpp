@@ -374,8 +374,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(ExPolicy&& policy, FwdIter1 first, Sent last,
                 FwdIter2 dest, F&& f, Proj&& proj)
             {
-                typedef typename std::iterator_traits<FwdIter1>::value_type
-                    value_type;
+                using value_type =
+                    typename std::iterator_traits<FwdIter1>::value_type;
 
                 return copy_if<IterPair>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest,

@@ -43,7 +43,7 @@ namespace pika { namespace traits {
         template <typename Future, typename F, typename Enable = void>
         struct future_then_result
         {
-            typedef typename continuation_not_callable<Future, F>::type type;
+            using type = typename continuation_not_callable<Future, F>::type;
         };
 
         template <typename Future, typename F>

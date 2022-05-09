@@ -68,8 +68,8 @@ void test_adjacent_difference_exception(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
     std::vector<int> c(10007);
     std::vector<int> d(10007);
 
@@ -101,8 +101,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_adjacent_difference_exception_async(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::vector<int> d(10007);
@@ -147,8 +147,8 @@ void test_adjacent_difference_bad_alloc(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::vector<int> d(10007);
@@ -179,8 +179,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_adjacent_difference_bad_alloc_async(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::vector<int> d(10007);

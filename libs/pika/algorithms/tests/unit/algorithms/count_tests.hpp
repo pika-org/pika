@@ -98,8 +98,8 @@ template <typename IteratorTag>
 void test_count_exception(IteratorTag)
 {
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
 
@@ -132,8 +132,8 @@ void test_count_exception(ExPolicy&& policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
 
@@ -164,8 +164,8 @@ void test_count_exception_async(ExPolicy&& p, IteratorTag)
 {
     using base_iterator = std::vector<int>::iterator;
     using diff_type = std::vector<int>::difference_type;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::fill(std::begin(c), std::end(c), 10);
@@ -205,8 +205,8 @@ void test_count_bad_alloc(ExPolicy&& policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
@@ -236,8 +236,8 @@ void test_count_bad_alloc_async(ExPolicy&& p, IteratorTag)
 {
     using base_iterator = std::vector<int>::iterator;
     using diff_type = std::vector<int>::difference_type;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), gen());
