@@ -193,6 +193,7 @@ jobs:
                 -DPIKA_WITH_EXAMPLES=On \
                 -DPIKA_WITH_TESTS=On \
                 -DPIKA_WITH_TESTS_HEADERS=On \
+                -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=On \
                 -DPIKA_WITH_COMPILER_WARNINGS=On \
                 -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=On \
                 -DPIKA_WITH_DEPRECATION_WARNINGS=On \
@@ -310,8 +311,13 @@ jobs:
           when: always
           command: |
               ulimit -c unlimited
-              ctest --timeout 60 -T test --no-compress-output --output-on-failure \
-                  -R tests.examples
+              ctest \
+                -j2 \
+                --timeout 60 \
+                -T test \
+                --no-compress-output \
+                --output-on-failure \
+                -R tests.examples
       - run:
           <<: *convert_xml
       - run:
@@ -344,6 +350,7 @@ jobs:
           command: |
               ulimit -c unlimited
               ctest \
+                -j2 \
                 --timeout 120 \
                 -T test \
                 --no-compress-output \
@@ -378,6 +385,7 @@ jobs:
           command: |
               ulimit -c unlimited
               ctest \
+                -j2 \
                 --timeout 120 \
                 -T test \
                 --no-compress-output \
@@ -413,6 +421,7 @@ jobs:
           command: |
               ulimit -c unlimited
               ctest \
+                -j2 \
                 --timeout 120 \
                 -T test \
                 --no-compress-output \
@@ -445,7 +454,13 @@ jobs:
           name: Running Regressions Tests
           when: always
           command: |
-              ctest --timeout 60 -T test --no-compress-output --output-on-failure -R tests.regressions
+              ctest \
+                -j2 \
+                --timeout 60 \
+                -T test \
+                --no-compress-output \
+                --output-on-failure \
+                -R tests.regressions
       - run:
           <<: *convert_xml
       - run:
@@ -465,7 +480,12 @@ jobs:
       - run:
           name: Building Header Tests
           command: |
-              ctest --timeout 60 -j4 -T test --no-compress-output --output-on-failure \
+              ctest \
+                -j4 \
+                --timeout 60 \
+                -T test \
+                --no-compress-output \
+                --output-on-failure \
                 -R tests.headers
       - run:
           <<: *convert_xml
