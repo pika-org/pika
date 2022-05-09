@@ -12,7 +12,6 @@
 
 #if !defined(__CUDACC__)
 #include <pika/execution/traits/detail/simd/vector_pack_all_any_none.hpp>
-#include <pika/execution/traits/detail/vc/vector_pack_all_any_none.hpp>
 #endif
 
 #endif

@@ -22,7 +22,7 @@ set(tests
     ranges_facilities
 )
 
-if(PIKA_WITH_DATAPAR_VC OR PIKA_WITH_CXX20_EXPERIMENTAL_SIMD)
+if(PIKA_WITH_CXX20_EXPERIMENTAL_SIMD)
   list(APPEND tests for_each_datapar)
 endif()
 

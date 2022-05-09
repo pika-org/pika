@@ -105,10 +105,6 @@ if(MSVC AND PIKA_COROUTINES_WITH_SWAP_CONTEXT_EMULATION)
   target_link_options(pika PRIVATE "/EXPORT:switch_to_fiber")
 endif()
 
-if(PIKA_WITH_DATAPAR_VC)
-  target_link_libraries(pika PUBLIC Vc::vc)
-endif()
-
 if(PIKA_WITH_ITTNOTIFY)
   target_link_libraries(pika PUBLIC Amplifier::amplifier)
 endif()
