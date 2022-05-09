@@ -489,7 +489,6 @@ jobs:
     steps:
       - attach_workspace:
           at: /pika
-      - setup_remote_docker
       - run:
           name: Installing
           command: |
