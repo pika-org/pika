@@ -96,7 +96,7 @@ int pika_main()
     // randomly create tasks that run on a random pool
     // attach continuations to them that run on different
     // random pools
-    int const loops = 1000;
+    int const loops = 500;
     //
     std::cout << "1: Starting HP " << loops << std::endl;
     std::atomic<int> counter(loops);
