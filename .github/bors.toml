@@ -18,6 +18,8 @@ status = [
   "ci/circleci: clang_format",
   "ci/circleci: cmake_format",
   "ci/circleci: inspect",
+  "ci/circleci: python_format",
+  "ci/circleci: shell_format",
 
   # CircleCI build and test
   "ci/circleci: configure_test_combinations",
