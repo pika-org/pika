@@ -43,6 +43,7 @@ jobs:
               -DPIKA_WITH_EXAMPLES=ON \
               -DPIKA_WITH_TESTS=ON \
               -DPIKA_WITH_TESTS_HEADERS=OFF \
+              -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON \
               -DPIKA_WITH_TESTS_MAX_THREADS=3 \
               -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON \
               -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=On
@@ -55,7 +56,9 @@ jobs:
       shell: bash
       run: |
           cd build
-          ctest --output-on-failure \
+          ctest \
+            -j3 \
+            --output-on-failure \
             --timeout 120 \
             --exclude-regex \
           "tests.unit.modules.algorithms.default_construct|\
