@@ -193,6 +193,7 @@ jobs:
                 -DPIKA_WITH_EXAMPLES=On \
                 -DPIKA_WITH_TESTS=On \
                 -DPIKA_WITH_TESTS_HEADERS=On \
+                -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=On \
                 -DPIKA_WITH_COMPILER_WARNINGS=On \
                 -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=On \
                 -DPIKA_WITH_DEPRECATION_WARNINGS=On \
@@ -242,7 +243,7 @@ jobs:
       - run:
           name: Building Inspect Tool
           command: |
-              ninja -j3 tools.inspect
+              ninja -j4 tools.inspect
       - run:
           name: Running Inspect Tool
           command: |
@@ -290,7 +291,7 @@ jobs:
       - run:
           name: Building Core
           command: |
-              ninja -j3 -k 0 pika
+              ninja -j4 -k 0 pika
       - persist_to_workspace:
           root: /pika
           paths:
@@ -304,14 +305,19 @@ jobs:
       - run:
           name: Building Examples
           command: |
-              ninja -j3 -k 0 examples
+              ninja -j4 -k 0 examples
       - run:
           name: Running Example Tests
           when: always
           command: |
               ulimit -c unlimited
-              ctest --timeout 60 -T test --no-compress-output --output-on-failure \
-                  -R tests.examples
+              ctest \
+                -j2 \
+                --timeout 60 \
+                -T test \
+                --no-compress-output \
+                --output-on-failure \
+                -R tests.examples
       - run:
           <<: *convert_xml
       - run:
@@ -335,7 +341,7 @@ jobs:
       - run:
           name: Building Unit Tests (Algorithms)
           command: |
-              ninja -j3 -k 0 \
+              ninja -j4 -k 0 \
                 tests.unit.modules.algorithms.algorithms \
                 tests.unit.modules.algorithms.block
       - run:
@@ -344,6 +350,7 @@ jobs:
           command: |
               ulimit -c unlimited
               ctest \
+                -j2 \
                 --timeout 120 \
                 -T test \
                 --no-compress-output \
@@ -370,7 +377,7 @@ jobs:
       - run:
           name: Building Unit Tests (Container algorithms)
           command: |
-              ninja -j3 -k 0 \
+              ninja -j4 -k 0 \
                 tests.unit.modules.algorithms.container_algorithms
       - run:
           name: Running Unit Tests
@@ -378,6 +385,7 @@ jobs:
           command: |
               ulimit -c unlimited
               ctest \
+                -j2 \
                 --timeout 120 \
                 -T test \
                 --no-compress-output \
@@ -405,7 +413,7 @@ jobs:
           command: |
               # Include all unit tests except algorithms by filtering the output
               # from the help target
-              ninja -j3 -k 0 \
+              ninja -j4 -k 0 \
                 $(ninja help | grep '^tests.unit.modules\.' | grep -v '^tests.unit.modules.algorithms' | awk -F':' '{ print $1 }')
       - run:
           name: Running Unit Tests
@@ -413,6 +421,7 @@ jobs:
           command: |
               ulimit -c unlimited
               ctest \
+                -j2 \
                 --timeout 120 \
                 -T test \
                 --no-compress-output \
@@ -440,12 +449,18 @@ jobs:
       - run:
           name: Building Regressions Tests
           command: |
-              ninja -j3 -k 0 tests.regressions
+              ninja -j4 -k 0 tests.regressions
       - run:
           name: Running Regressions Tests
           when: always
           command: |
-              ctest --timeout 60 -T test --no-compress-output --output-on-failure -R tests.regressions
+              ctest \
+                -j2 \
+                --timeout 60 \
+                -T test \
+                --no-compress-output \
+                --output-on-failure \
+                -R tests.regressions
       - run:
           <<: *convert_xml
       - run:
@@ -465,7 +480,12 @@ jobs:
       - run:
           name: Building Header Tests
           command: |
-              ctest --timeout 60 -j3 -T test --no-compress-output --output-on-failure \
+              ctest \
+                -j4 \
+                --timeout 60 \
+                -T test \
+                --no-compress-output \
+                --output-on-failure \
                 -R tests.headers
       - run:
           <<: *convert_xml
@@ -482,26 +502,25 @@ jobs:
       - run:
           name: Building Performance Tests
           command: |
-              ninja -j3 -k 0 tests.performance
+              ninja -j4 -k 0 tests.performance
 
   install:
     <<: *docker_default
     steps:
       - attach_workspace:
           at: /pika
-      - setup_remote_docker
       - run:
           name: Installing
           command: |
               ./bin/hello_world --pika:bind=none
-              ninja -j3 install
+              ninja -j4 install
           working_directory: /pika/build
           when: always
           no_output_timeout: 30m
       - run:
           name: Testing build unit tests
           command: |
-              ninja -j3 tests.unit.build
+              ninja -j4 tests.unit.build
           working_directory: /pika/build
           when: always
       - run:
