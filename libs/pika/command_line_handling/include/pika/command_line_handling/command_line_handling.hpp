@@ -8,9 +8,10 @@
 
 #include <pika/config.hpp>
 #include <pika/functional/function.hpp>
-#include <pika/modules/program_options.hpp>
-#include <pika/modules/runtime_configuration.hpp>
-#include <pika/modules/util.hpp>
+#include <pika/program_options/options_description.hpp>
+#include <pika/program_options/variables_map.hpp>
+#include <pika/runtime_configuration/runtime_configuration.hpp>
+#include <pika/util/manage_config.hpp>
 
 #include <cstddef>
 #include <memory>

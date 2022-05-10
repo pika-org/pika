@@ -8,7 +8,9 @@
 #include <pika/datastructures/any.hpp>
 #include <pika/detail/filesystem.hpp>
 #include <pika/ini/ini.hpp>
-#include <pika/modules/errors.hpp>
+#include <pika/program_options/options_description.hpp>
+#include <pika/program_options/parsers.hpp>
+#include <pika/program_options/variables_map.hpp>
 #include <pika/util/from_string.hpp>
 
 #include <cctype>
@@ -23,7 +25,61 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {
-    inline std::string trim_whitespace(std::string const& s)
+    commandline_error_mode operator&(commandline_error_mode const lhs,
+        commandline_error_mode const rhs) noexcept
+    {
+        return static_cast<commandline_error_mode>(
+            static_cast<std::underlying_type_t<commandline_error_mode>>(lhs) &
+            static_cast<std::underlying_type_t<commandline_error_mode>>(rhs));
+    }
+
+    commandline_error_mode& operator&=(
+        commandline_error_mode& lhs, commandline_error_mode rhs) noexcept
+    {
+        lhs = static_cast<commandline_error_mode>(
+            static_cast<std::underlying_type_t<commandline_error_mode>>(lhs) &
+            static_cast<std::underlying_type_t<commandline_error_mode>>(rhs));
+        return lhs;
+    }
+
+    commandline_error_mode operator|(
+        commandline_error_mode const lhs, commandline_error_mode rhs) noexcept
+    {
+        return static_cast<commandline_error_mode>(
+            static_cast<std::underlying_type_t<commandline_error_mode>>(lhs) |
+            static_cast<std::underlying_type_t<commandline_error_mode>>(rhs));
+    }
+
+    commandline_error_mode& operator|=(
+        commandline_error_mode& lhs, commandline_error_mode rhs) noexcept
+    {
+        lhs = static_cast<commandline_error_mode>(
+            static_cast<std::underlying_type_t<commandline_error_mode>>(lhs) |
+            static_cast<std::underlying_type_t<commandline_error_mode>>(rhs));
+        return lhs;
+    }
+
+    commandline_error_mode operator~(commandline_error_mode m) noexcept
+    {
+        return static_cast<commandline_error_mode>(
+            ~static_cast<std::underlying_type_t<commandline_error_mode>>(m));
+    }
+
+    bool contains_error_mode(
+        commandline_error_mode const m, commandline_error_mode const b) noexcept
+    {
+        return static_cast<std::underlying_type_t<commandline_error_mode>>(m) &
+            static_cast<std::underlying_type_t<commandline_error_mode>>(b);
+    }
+
+    std::string enquote(std::string const& arg)
+    {
+        if (arg.find_first_of(" \t\"") != std::string::npos)
+            return std::string("\"") + arg + "\"";
+        return arg;
+    }
+
+    static std::string trim_whitespace(std::string const& s)
     {
         using size_type = std::string::size_type;
 
@@ -144,10 +200,11 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////
     pika::program_options::basic_command_line_parser<char>&
     get_commandline_parser(
-        pika::program_options::basic_command_line_parser<char>& p, int mode)
+        pika::program_options::basic_command_line_parser<char>& p,
+        commandline_error_mode mode)
     {
-        if ((mode & ~util::report_missing_config_file) ==
-            util::allow_unregistered)
+        if ((mode & ~commandline_error_mode::report_missing_config_file) ==
+            commandline_error_mode::allow_unregistered)
             return p.allow_unregistered();
         return p;
     }
@@ -158,12 +215,13 @@ namespace pika::detail {
     bool read_config_file_options(std::string const& filename,
         pika::program_options::options_description const& desc,
         pika::program_options::variables_map& vm, util::section const& rtcfg,
-        int error_mode)
+        commandline_error_mode error_mode)
     {
         std::ifstream ifs(filename.c_str());
         if (!ifs.is_open())
         {
-            if (error_mode & util::report_missing_config_file)
+            if (contains_error_mode(error_mode,
+                    commandline_error_mode::report_missing_config_file))
             {
                 std::cerr << "pika::init: command line warning: command line "
                              "options file not found ("
@@ -211,9 +269,10 @@ namespace pika::detail {
                       command_line_parser(options)
                           .options(desc)
                           .style(unix_style)
-                          .extra_parser(detail::option_parser(
-                              rtcfg, error_mode & util::ignore_aliases)),
-                      error_mode & ~util::ignore_aliases)
+                          .extra_parser(detail::option_parser(rtcfg,
+                              contains_error_mode(error_mode,
+                                  commandline_error_mode::ignore_aliases))),
+                      error_mode & ~commandline_error_mode::ignore_aliases)
                       .run(),
                 vm);
             notify(vm);
@@ -227,7 +286,7 @@ namespace pika::detail {
     void handle_generic_config_options(std::string appname,
         pika::program_options::variables_map& vm,
         pika::program_options::options_description const& desc_cfgfile,
-        util::section const& ini, int error_mode)
+        util::section const& ini, commandline_error_mode error_mode)
     {
         if (appname.empty())
             return;
@@ -240,9 +299,10 @@ namespace pika::detail {
         while (!dir.empty())
         {
             std::filesystem::path filename = dir / (appname + ".cfg");
-            bool result =
-                read_config_file_options(filename.string(), desc_cfgfile, vm,
-                    ini, error_mode & ~util::report_missing_config_file);
+            bool result = read_config_file_options(filename.string(),
+                desc_cfgfile, vm, ini,
+                error_mode &
+                    ~commandline_error_mode::report_missing_config_file);
             if (result)
                 break;    // break on the first options file found
 
@@ -256,7 +316,7 @@ namespace pika::detail {
     // handle all --options-config found on the command line
     void handle_config_options(pika::program_options::variables_map& vm,
         pika::program_options::options_description const& desc_cfgfile,
-        util::section const& ini, int error_mode)
+        util::section const& ini, commandline_error_mode error_mode)
     {
         using pika::program_options::options_description;
         if (vm.count("pika:options-file"))
@@ -278,7 +338,8 @@ namespace pika::detail {
     bool parse_commandline(util::section const& rtcfg,
         pika::program_options::options_description const& app_options,
         std::string const& arg0, std::vector<std::string> const& args,
-        pika::program_options::variables_map& vm, int error_mode,
+        pika::program_options::variables_map& vm,
+        commandline_error_mode error_mode,
         pika::program_options::options_description* visible,
         std::vector<std::string>* unregistered_options)
     {
@@ -443,15 +504,15 @@ namespace pika::detail {
 
                 // parse command line, allow for unregistered options this point
                 parsed_options opts(detail::get_commandline_parser(
-                        command_line_parser(args)
-                            .options(desc_cmdline)
-                            .positional(pd)
-                            .style(unix_style)
-                            .extra_parser(detail::option_parser(rtcfg,
-                                error_mode & util::ignore_aliases)),
-                         error_mode & ~util::ignore_aliases
-                    ).run()
-                );
+                    command_line_parser(args)
+                        .options(desc_cmdline)
+                        .positional(pd)
+                        .style(unix_style)
+                        .extra_parser(detail::option_parser(rtcfg,
+                            contains_error_mode(error_mode,
+                                commandline_error_mode::ignore_aliases))),
+                    error_mode & ~commandline_error_mode::ignore_aliases)
+                                        .run());
 
                 // collect unregistered options, if needed
                 if (unregistered_options) {
@@ -467,14 +528,14 @@ namespace pika::detail {
             {
                 // parse command line, allow for unregistered options this point
                 parsed_options opts(detail::get_commandline_parser(
-                        command_line_parser(args)
-                            .options(desc_cmdline)
-                            .style(unix_style)
-                            .extra_parser(detail::option_parser(rtcfg,
-                                error_mode & util::ignore_aliases)),
-                        error_mode & ~util::ignore_aliases
-                    ).run()
-                );
+                    command_line_parser(args)
+                        .options(desc_cmdline)
+                        .style(unix_style)
+                        .extra_parser(detail::option_parser(rtcfg,
+                            contains_error_mode(error_mode,
+                                commandline_error_mode::ignore_aliases))),
+                    error_mode & ~commandline_error_mode::ignore_aliases)
+                                        .run());
 
                 // collect unregistered options, if needed
                 if (unregistered_options) {
@@ -508,7 +569,7 @@ namespace pika::detail {
                 vm, desc_cfgfile, rtcfg, error_mode);
         }
         catch (std::exception const& e) {
-            if (error_mode & util::rethrow_on_error)
+            if (contains_error_mode(error_mode, commandline_error_mode::rethrow_on_error))
                 throw;
 
             std::cerr << "pika::init: exception caught: "
@@ -536,7 +597,7 @@ namespace pika::detail {
         util::section const& rtcfg,
         pika::program_options::options_description const& app_options,
         std::string const& cmdline, pika::program_options::variables_map& vm,
-        int error_mode,
+        commandline_error_mode error_mode,
         pika::program_options::options_description* visible,
         std::vector<std::string>* unregistered_options)
     {

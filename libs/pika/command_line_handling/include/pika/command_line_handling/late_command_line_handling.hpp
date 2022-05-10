@@ -7,14 +7,13 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/modules/program_options.hpp>
-#include <pika/modules/runtime_configuration.hpp>
+#include <pika/program_options/options_description.hpp>
+#include <pika/runtime_configuration/runtime_configuration.hpp>
 
 #include <cstddef>
 
 namespace pika::detail {
-    PIKA_EXPORT int handle_late_commandline_options(
-        util::runtime_configuration& ini,
+    int handle_late_commandline_options(util::runtime_configuration& ini,
         pika::program_options::options_description const& options,
         void (*handle_print_bind)(std::size_t));
 }    // namespace pika::detail
