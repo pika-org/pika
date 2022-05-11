@@ -22,8 +22,8 @@ namespace pika { namespace util {
 
         template <typename F, typename... Ts>
         struct invoke_result_impl<F(Ts...),
-            std::void_t<decltype(
-                PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...))>>
+            std::void_t<decltype(PIKA_INVOKE(
+                std::declval<F>(), std::declval<Ts>()...))>>
         {
             using type =
                 decltype(PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...));

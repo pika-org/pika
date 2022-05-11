@@ -20,7 +20,7 @@
 
 # @todo : add support for the pika inspect tool to be run as well
 
-CLANG_FORMAT_VERSION=clang-format-11
+CLANG_FORMAT_VERSION=clang-format-14
 
 red=$(tput setaf 1)
 green=$(tput setaf 2)

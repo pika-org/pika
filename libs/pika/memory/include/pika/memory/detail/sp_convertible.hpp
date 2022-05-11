@@ -25,7 +25,7 @@ namespace pika { namespace memory { namespace detail {
         static no f(...);
 
         static constexpr bool value =
-            sizeof((f)(static_cast<Y*>(nullptr))) == sizeof(yes);
+            sizeof((f) (static_cast<Y*>(nullptr))) == sizeof(yes);
     };
 
     template <typename Y, typename T>

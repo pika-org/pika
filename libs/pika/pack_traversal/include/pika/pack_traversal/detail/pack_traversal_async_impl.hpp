@@ -441,8 +441,8 @@ namespace pika {
             /// tuple like type. This function is SFINAEd out if the element
             /// isn't accepted by the visitor.
             template <typename Current,
-                typename = std::void_t<decltype(
-                    std::declval<Frame>()->traverse(*std::declval<Current>()))>>
+                typename = std::void_t<decltype(std::declval<Frame>()->traverse(
+                    *std::declval<Current>()))>>
             void async_traverse_one_impl(
                 container_category_tag<false, false>, Current&& current)
             /// SFINAE this out if the visitor doesn't accept

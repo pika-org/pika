@@ -284,8 +284,10 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 struct check_type;
 
                 template <typename... Ts>
-                auto set_value(Ts&&... ts) noexcept -> decltype(
-                    PIKA_INVOKE(PIKA_MOVE(f), stream.value(), ts...), void())
+                auto set_value(Ts&&... ts) noexcept
+                    -> decltype(PIKA_INVOKE(
+                                    PIKA_MOVE(f), stream.value(), ts...),
+                        void())
                 {
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
@@ -556,8 +558,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             noexcept(
                 noexcept(PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)..., stream.get())))
 #endif
-                -> decltype(
-                    PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)..., stream.get()))
+                -> decltype(PIKA_INVOKE(
+                    f, PIKA_FORWARD(Ts, ts)..., stream.get()))
         {
             return PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)..., stream.get());
         }

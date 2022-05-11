@@ -1334,11 +1334,11 @@ namespace pika::threads::detail {
         return
 #if HWLOC_API_VERSION >= 0x00010b06
             hwloc_alloc_membind(topo, len, bitmap->get_bmp(),
-                (hwloc_membind_policy_t)(policy),
+                (hwloc_membind_policy_t) (policy),
                 flags | HWLOC_MEMBIND_BYNODESET);
 #else
             hwloc_alloc_membind_nodeset(topo, len, bitmap->get_bmp(),
-                (hwloc_membind_policy_t)(policy), flags);
+                (hwloc_membind_policy_t) (policy), flags);
 #endif
     }
 

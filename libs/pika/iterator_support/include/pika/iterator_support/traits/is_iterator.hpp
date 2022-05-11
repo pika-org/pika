@@ -510,8 +510,8 @@ namespace pika { namespace traits {
           : std::integral_constant<bool,
                 std::is_same<decltype(std::declval<std::vector<T>&>().begin()),
                     Iter>::value ||
-                    std::is_same<decltype(
-                                     std::declval<std::vector<T>&>().cbegin()),
+                    std::is_same<
+                        decltype(std::declval<std::vector<T>&>().cbegin()),
                         Iter>::value>
         {
         };

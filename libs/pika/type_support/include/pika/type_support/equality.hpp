@@ -23,8 +23,8 @@ namespace pika { namespace traits {
 
         template <typename T, typename U>
         struct equality_result<T, U,
-            std::void_t<decltype(
-                std::declval<const T&>() == std::declval<const U&>())>>
+            std::void_t<decltype(std::declval<const T&>() ==
+                std::declval<const U&>())>>
         {
             using type =
                 decltype(std::declval<const T&>() == std::declval<const U&>());
@@ -38,8 +38,8 @@ namespace pika { namespace traits {
 
         template <typename T, typename U>
         struct inequality_result<T, U,
-            std::void_t<decltype(
-                std::declval<const T&>() != std::declval<const U&>())>>
+            std::void_t<decltype(std::declval<const T&>() !=
+                std::declval<const U&>())>>
         {
             using type =
                 decltype(std::declval<const T&>() != std::declval<const U&>());

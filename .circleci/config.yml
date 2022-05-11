@@ -145,8 +145,8 @@ jobs:
               # ignore globs that have no matches (e.g. no cu.in files exist
               # currently)
               shopt -s nullglob
-              clang-format-11 --version
-              clang-format-11 -i **/*.{cpp,hpp,cu}{,.in}
+              clang-format --version
+              clang-format -i **/*.{cpp,hpp,cu}{,.in}
               git diff --exit-code > /tmp/modified_clang_format_files.txt
       - store_artifacts:
           path: /tmp/modified_clang_format_files.txt

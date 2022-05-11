@@ -40,8 +40,8 @@ namespace pika {
 
         template <typename F, typename... Ts, typename R>
         struct is_invocable_r_impl<F(Ts...), R,
-            std::void_t<decltype(
-                PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...))>>
+            std::void_t<decltype(PIKA_INVOKE(
+                std::declval<F>(), std::declval<Ts>()...))>>
           : std::integral_constant<bool,
                 std::is_void<R>::value ||
                     std::is_convertible<decltype(PIKA_INVOKE(std::declval<F>(),
