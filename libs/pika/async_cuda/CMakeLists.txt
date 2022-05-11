@@ -47,15 +47,11 @@ set(async_cuda_sources
     then_with_stream.cpp
 )
 
-if(PIKA_WITH_HIP
-   AND TARGET roc::hipblas
-   AND TARGET roc::rocblas
-   AND TARGET roc::rocsolver
-)
+if(PIKA_WITH_HIP)
   set(async_cuda_extra_deps ${async_cuda_extra_deps} roc::hipblas roc::rocblas
                             roc::rocsolver
   )
-elseif(PIKA_WITH_CUDA AND TARGET Cuda::cuda)
+elseif(PIKA_WITH_CUDA)
   set(async_cuda_extra_deps ${async_cuda_extra_deps} Cuda::cuda
                             ${CUDA_CUBLAS_LIBRARIES} ${CUDA_CUSOLVER_LIBRARIES}
   )

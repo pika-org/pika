@@ -8,22 +8,17 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_GPU_SUPPORT)
+#if defined(PIKA_HAVE_HIP)
 
-#include <hipblas.h>
 #include <rocblas.h>
 #include <rocsolver.h>
 
 // Use of rocblas when the corresponding rocsolver functions are deprecated
-#define cusolverDnChegst rocsolver_chegst
 #define cusolverDnCreate rocblas_create_handle
 #define cusolverDnDestroy rocblas_destroy_handle
-#define cusolverDnDsygst rocsolver_dsygst
 #define cusolverDnGetStream rocblas_get_stream
 #define cusolverDnHandle_t rocblas_handle
 #define cusolverDnSetStream rocblas_set_stream
-#define cusolverDnSsygst rocsolver_ssygst
-#define cusolverDnZhegst rocsolver_zhegst
 #define cusolverStatus_t rocblas_status
 
 // In ascendent order of error codes value

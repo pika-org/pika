@@ -18,14 +18,8 @@
 #define cublasPointerMode_t hipblasPointerMode_t
 #define cublasSetPointerMode hipblasSetPointerMode
 #define cublasSetStream hipblasSetStream
-#define cublasSgemm hipblasSgemm
 #define cublasStatus_t hipblasStatus_t
 
-// Note that this is currently not even attempting to be a complete
-// translation layer from cuBLAS to hipblas.
-#define cublasSasum hipblasSasum
-
-#define CUBLAS_OP_N HIPBLAS_OP_N
 #define CUBLAS_POINTER_MODE_HOST HIPBLAS_POINTER_MODE_HOST
 #define CUBLAS_STATUS_SUCCESS HIPBLAS_STATUS_SUCCESS
 #define CUBLAS_STATUS_NOT_INITIALIZED HIPBLAS_STATUS_NOT_INITIALIZED

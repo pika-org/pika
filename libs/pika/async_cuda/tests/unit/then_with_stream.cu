@@ -184,12 +184,12 @@ struct cuda_memcpy_async
 };
 
 auto non_default_constructible_params(
-    custom_type_non_default_constructible& x, cudaStream_t stream)
+    custom_type_non_default_constructible& x, cudaStream_t)
 {
     return std::move(x);
 }
 auto non_default_constructible_non_copyable_params(
-    custom_type_non_default_constructible_non_copyable& x, cudaStream_t stream)
+    custom_type_non_default_constructible_non_copyable& x, cudaStream_t)
 {
     return std::move(x);
 }
