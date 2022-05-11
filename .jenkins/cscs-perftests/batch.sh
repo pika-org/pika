@@ -11,13 +11,13 @@ set -eux
 # Computes the status of the job and store the artifacts
 status_computation_and_artifacts_storage() {
     ctest_exit_code=$?
-    ctest_status=$(( ctest_exit_code + configure_build_errors + test_errors + plot_errors ))
+    ctest_status=$((ctest_exit_code + configure_build_errors + test_errors + plot_errors))
 
     # Copy the testing directory for saving as an artifact
     cp -r "${build_dir}/Testing" "${orig_src_dir}/${configuration_name}-Testing"
     cp -r "${build_dir}/reports" "${orig_src_dir}/${configuration_name}-reports"
 
-    echo "${ctest_status}" > "jenkins-pika-${configuration_name}-ctest-status.txt"
+    echo "${ctest_status}" >"jenkins-pika-${configuration_name}-ctest-status.txt"
     exit $ctest_status
 }
 
@@ -35,7 +35,6 @@ cp -r "${orig_src_dir}" "${src_dir}" && \
 
 # Variables
 perftests_dir=${build_dir}/tools/perftests_ci
-envfile=${src_dir}/.jenkins/cscs-perftests/env-${configuration_name}.sh
 mkdir -p ${build_dir}/reports
 logfile=${build_dir}/reports/jenkins-pika-${configuration_name}.log
 
@@ -50,7 +49,18 @@ plot_errors=0
 # Synchronize after the asynchronous copy from the source dir
 wait
 
-# Build and Run the perftests
+export build_type=Release
+source "${src_dir}/.jenkins/cscs/env-common.sh"
+source "${src_dir}/.jenkins/cscs-perftests/env-${configuration_name}.sh"
+
+# Build and Run the perftests. We source the environment to keep the context for
+# variables like configure_build_errors in launch_perftests.sh. Modifications
+# written to variables in a sub-shell created with spack build-env would not be
+# visible here.
+set +e
+spack build-env --dump env.txt "${spack_spec}"
+source env.txt
+set -e
 source "${src_dir}/.jenkins/cscs-perftests/launch_perftests.sh"
 
 # Dummy ctest to upload the html report of the perftest

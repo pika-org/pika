@@ -248,14 +248,20 @@ namespace pika {
         // Returns: true if lhs and rhs have ownership of the same stop state or
         //      if both lhs and rhs do not have ownership of a stop state;
         //      otherwise false.
-        PIKA_NODISCARD friend bool operator==(
+#if !defined(__NVCC__)
+        PIKA_NODISCARD
+#endif
+        friend bool operator==(
             stop_token const& lhs, stop_token const& rhs) noexcept
         {
             return lhs.state_ == rhs.state_;
         }
 
         // Returns: !(lhs==rhs).
-        PIKA_NODISCARD friend bool operator!=(
+#if !defined(__NVCC__)
+        PIKA_NODISCARD
+#endif
+        friend bool operator!=(
             stop_token const& lhs, stop_token const& rhs) noexcept
         {
             return !(lhs == rhs);
@@ -396,13 +402,19 @@ namespace pika {
         // Returns: true if lhs and rhs have ownership of the same stop state or
         //      if both lhs and rhs do not have ownership of a stop state;
         //      otherwise false.
-        PIKA_NODISCARD friend bool operator==(
+#if !defined(__NVCC__)
+        PIKA_NODISCARD
+#endif
+        friend bool operator==(
             stop_source const& lhs, stop_source const& rhs) noexcept
         {
             return lhs.state_ == rhs.state_;
         }
 
-        PIKA_NODISCARD friend bool operator!=(
+#if !defined(__NVCC__)
+        PIKA_NODISCARD
+#endif
+        friend bool operator!=(
             stop_source const& lhs, stop_source const& rhs) noexcept
         {
             return !(lhs == rhs);

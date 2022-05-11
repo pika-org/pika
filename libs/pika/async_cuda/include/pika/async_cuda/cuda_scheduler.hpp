@@ -38,6 +38,7 @@ namespace pika::cuda::experimental {
         cuda_scheduler(cuda_scheduler const&) = default;
         cuda_scheduler& operator=(cuda_scheduler&&) = default;
         cuda_scheduler& operator=(cuda_scheduler const&) = default;
+        ~cuda_scheduler(){};
 
         PIKA_EXPORT cuda_pool const& get_pool() const noexcept;
         PIKA_EXPORT cuda_stream const& get_next_stream();

@@ -38,8 +38,12 @@ namespace pika { namespace execution { namespace experimental {
                 pika::intrusive_ptr<operation_state_holder> op_state;
 
                 template <typename Error>
-                PIKA_NORETURN friend void tag_invoke(set_error_t,
-                    start_detached_receiver&&, Error&& error) noexcept
+#if !defined(__NVCC__)
+                PIKA_NORETURN
+#endif
+                    friend void
+                    tag_invoke(set_error_t, start_detached_receiver&&,
+                        Error&& error) noexcept
                 {
                     if constexpr (std::is_same_v<std::decay_t<Error>,
                                       std::exception_ptr>)

@@ -33,9 +33,10 @@ status = [
   "ci/circleci: tests.unit.container_algorithms",
 
   # Jenkins
-  "jenkins/cscs/clang-13-debug",
+  "jenkins/cscs/cce-cuda-debug",
+  "jenkins/cscs/clang-10-debug",
+  "jenkins/cscs/clang-11-debug",
   "jenkins/cscs/clang-9-debug",
-  "jenkins/cscs/clang-cuda-debug",
   "jenkins/cscs/gcc-11-debug",
   # This regularly fails
   # "jenkins/cscs/gcc-10-apex-spack-debug",

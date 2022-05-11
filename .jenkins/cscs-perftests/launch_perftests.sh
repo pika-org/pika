@@ -25,7 +25,7 @@ pika_test_options=(
 
 # Build binaries for performance tests
 ${perftests_dir}/driver.py -v -l $logfile build -b release -o build \
-    --source-dir ${src_dir} --build-dir "${build_dir}" -e $envfile \
+    --source-dir ${src_dir} --build-dir "${build_dir}" \
     -t "${pika_targets[@]}" ||
     {
         echo 'Build failed'
