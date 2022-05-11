@@ -85,12 +85,12 @@ echo "${VERSION_DESCRIPTION}"
 echo "Do you want to continue?"
 select yn in "Yes" "No"; do
     case $yn in
-        Yes) break ;;
-        No) exit ;;
+    Yes) break ;;
+    No) exit ;;
     esac
 done
 
-if [[ -z "${GITHUB_USER}"  ||  -z "${GITHUB_PASSWORD}" ]] && [[ -z "${GITHUB_TOKEN}" ]]; then
+if [[ -z "${GITHUB_USER}" || -z "${GITHUB_PASSWORD}" ]] && [[ -z "${GITHUB_TOKEN}" ]]; then
     echo "Need GITHUB_USER and GITHUB_PASSWORD or only GITHUB_TOKEN to be set to use hub release."
     exit 1
 fi

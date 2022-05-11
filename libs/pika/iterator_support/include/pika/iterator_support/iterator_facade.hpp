@@ -454,7 +454,7 @@ namespace pika { namespace util {
             }
 
             // Provides X(r++)
-            PIKA_HOST_DEVICE operator Iterator const &() const
+            PIKA_HOST_DEVICE operator Iterator const&() const
             {
                 return stored_iterator;
             }

@@ -329,9 +329,9 @@ namespace pika { namespace ranges {
 
 #include <pika/algorithms/traits/projected_range.hpp>
 #include <pika/parallel/algorithms/partial_sort_copy.hpp>
+#include <pika/parallel/util/detail/sender_util.hpp>
 #include <pika/parallel/util/projection_identity.hpp>
 #include <pika/parallel/util/result_types.hpp>
-#include <pika/parallel/util/detail/sender_util.hpp>
 
 #include <type_traits>
 #include <utility>

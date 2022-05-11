@@ -61,8 +61,8 @@ namespace pika {
     ///          See pika::future::get() for details.
     ///
     template <typename... Args>
-    auto unwrap(Args&&... args) -> decltype(
-        util::detail::unwrap_depth_impl<1U>(PIKA_FORWARD(Args, args)...))
+    auto unwrap(Args&&... args) -> decltype(util::detail::unwrap_depth_impl<1U>(
+        PIKA_FORWARD(Args, args)...))
     {
         return util::detail::unwrap_depth_impl<1U>(PIKA_FORWARD(Args, args)...);
     }
@@ -93,8 +93,9 @@ namespace pika {
     /// See unwrap for a detailed description.
     ///
     template <std::size_t Depth, typename... Args>
-    auto unwrap_n(Args&&... args) -> decltype(
-        util::detail::unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...))
+    auto unwrap_n(Args&&... args)
+        -> decltype(util::detail::unwrap_depth_impl<Depth>(
+            PIKA_FORWARD(Args, args)...))
     {
         static_assert(Depth > 0U, "The unwrapping depth must be >= 1!");
         return util::detail::unwrap_depth_impl<Depth>(
@@ -126,8 +127,9 @@ namespace pika {
     /// See pika::unwrap() for a detailed description.
     ///
     template <typename... Args>
-    auto unwrap_all(Args&&... args) -> decltype(
-        util::detail::unwrap_depth_impl<0U>(PIKA_FORWARD(Args, args)...))
+    auto unwrap_all(Args&&... args)
+        -> decltype(util::detail::unwrap_depth_impl<0U>(
+            PIKA_FORWARD(Args, args)...))
     {
         return util::detail::unwrap_depth_impl<0U>(PIKA_FORWARD(Args, args)...);
     }

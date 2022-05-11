@@ -201,10 +201,10 @@ void test_multiple_accesses(
     std::atomic<std::size_t> count{0};
 
     // Read-only and read-write access return senders of different types
-    using r_sender_type = std::decay_t<decltype(
-        rwm.read() | transfer(exec) | then(checker{true, 0, count, 0}))>;
-    using rw_sender_type = std::decay_t<decltype(
-        rwm.readwrite() | transfer(exec) | then(checker{false, 0, count, 0}))>;
+    using r_sender_type = std::decay_t<decltype(rwm.read() | transfer(exec) |
+        then(checker{true, 0, count, 0}))>;
+    using rw_sender_type = std::decay_t<decltype(rwm.readwrite() |
+        transfer(exec) | then(checker{false, 0, count, 0}))>;
     std::vector<r_sender_type> r_senders;
     std::vector<rw_sender_type> rw_senders;
 

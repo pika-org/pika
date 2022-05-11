@@ -46,10 +46,9 @@ namespace pika { namespace detail {
         template <typename Policy_, typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call(
             Policy_&& launch_policy, F&& f, Ts&&... ts)
-            -> decltype(
-                async_dispatch_launch_policy_helper<std::decay_t<F>>::call(
-                    PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f),
-                    PIKA_FORWARD(Ts, ts)...))
+            -> decltype(async_dispatch_launch_policy_helper<
+                std::decay_t<F>>::call(PIKA_FORWARD(Policy_, launch_policy),
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
             return async_dispatch_launch_policy_helper<std::decay_t<F>>::call(
                 PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f),

@@ -804,8 +804,8 @@ namespace pika {
             // "error: cannot use an entity undefined in device code" without
             // specifying what entity it refers to.
             PIKA_ASSERT(false);
-            using future_type = decltype(
-                base_type::then(PIKA_MOVE(*this), PIKA_FORWARD(F, f), ec));
+            using future_type = decltype(base_type::then(
+                PIKA_MOVE(*this), PIKA_FORWARD(F, f), ec));
             return future_type{};
 #else
             invalidate on_exit(*this);
@@ -1095,8 +1095,8 @@ namespace pika {
         {
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
             PIKA_ASSERT(false);
-            using future_type = decltype(
-                base_type::then(shared_future(*this), PIKA_FORWARD(F, f), ec));
+            using future_type = decltype(base_type::then(
+                shared_future(*this), PIKA_FORWARD(F, f), ec));
             return future_type{};
 #else
             return base_type::then(

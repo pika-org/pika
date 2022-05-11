@@ -1359,8 +1359,8 @@ namespace pika { namespace execution {
 
     template <typename Executor, typename Parameters>
     constexpr decltype(auto)
-        sequenced_task_policy_shim<Executor, Parameters>::operator()(
-            non_task_policy_tag /*tag*/) const
+    sequenced_task_policy_shim<Executor, Parameters>::operator()(
+        non_task_policy_tag /*tag*/) const
     {
         return sequenced_policy_shim<Executor, Parameters>{}
             .on(executor())
@@ -1369,8 +1369,8 @@ namespace pika { namespace execution {
 
     template <typename Executor, typename Parameters>
     constexpr decltype(auto)
-        parallel_task_policy_shim<Executor, Parameters>::operator()(
-            non_task_policy_tag /*tag*/) const
+    parallel_task_policy_shim<Executor, Parameters>::operator()(
+        non_task_policy_tag /*tag*/) const
     {
         return parallel_policy_shim<Executor, Parameters>{}
             .on(executor())

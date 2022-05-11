@@ -135,12 +135,12 @@ namespace pika { namespace util { namespace detail {
         template <typename T,
             typename std::enable_if<is_non_void_future<
                 typename std::decay<T>::type>::value>::type* = nullptr>
-        auto operator()(T&& future) const -> decltype(
-            map_pack(std::declval<future_unwrap_until_depth const&>(),
+        auto operator()(T&& future) const -> decltype(map_pack(
+            std::declval<future_unwrap_until_depth const&>(),
 #if defined(PIKA_CUDA_VERSION)
-                std::forward<T>(future).get()))
+            std::forward<T>(future).get()))
 #else
-                PIKA_FORWARD(T, future).get()))
+            PIKA_FORWARD(T, future).get()))
 #endif
         {
 #if defined(PIKA_CUDA_VERSION)
@@ -224,9 +224,9 @@ namespace pika { namespace util { namespace detail {
     struct invoke_wrapped_decorate_select
     {
         template <typename C, typename... Args>
-        static auto apply(C&& callable, Args&&... args) -> decltype(
-            dispatch_wrapped_invocation_select<(sizeof...(args) > 1)>(
-                PIKA_FORWARD(C, callable),
+        static auto apply(C&& callable, Args&&... args)
+            -> decltype(dispatch_wrapped_invocation_select<(
+                    sizeof...(args) > 1)>(PIKA_FORWARD(C, callable),
                 unwrap_depth_impl<Depth>(PIKA_FORWARD(Args, args)...)))
         {
             return dispatch_wrapped_invocation_select<(sizeof...(args) > 1)>(

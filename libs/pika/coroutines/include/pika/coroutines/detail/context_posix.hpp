@@ -146,7 +146,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
             typedef void (*ctx_main)();
             //makecontext can't fail.
-            ::makecontext(ctx, (ctx_main)(startfunc), 1, startarg);
+            ::makecontext(ctx, (ctx_main) (startfunc), 1, startarg);
             return 0;
         }
 }}}}}}    // namespace pika::threads::coroutines::detail::posix::ucontext

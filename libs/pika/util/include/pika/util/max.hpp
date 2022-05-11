@@ -10,7 +10,7 @@
 
 namespace pika::detail {
     template <typename T>
-    PIKA_HOST_DEVICE constexpr inline T const&(max)(T const& a, T const& b)
+    PIKA_HOST_DEVICE constexpr inline T const&(max) (T const& a, T const& b)
     {
         return a < b ? b : a;
     }

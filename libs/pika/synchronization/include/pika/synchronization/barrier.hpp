@@ -123,7 +123,7 @@ namespace pika { namespace lcos { namespace local {
           , completion_(PIKA_MOVE(completion))
           , phase_(false)
         {
-            PIKA_ASSERT(expected >= 0 && expected <= (max)());
+            PIKA_ASSERT(expected >= 0 && expected <= (max) ());
         }
 
     private:

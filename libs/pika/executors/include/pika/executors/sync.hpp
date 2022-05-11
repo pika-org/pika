@@ -44,10 +44,9 @@ namespace pika { namespace detail {
         template <typename Policy_, typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call(
             Policy_&& launch_policy, F&& f, Ts&&... ts)
-            -> decltype(
-                sync_dispatch_launch_policy_helper<std::decay_t<F>>::call(
-                    PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f),
-                    PIKA_FORWARD(Ts, ts)...))
+            -> decltype(sync_dispatch_launch_policy_helper<
+                std::decay_t<F>>::call(PIKA_FORWARD(Policy_, launch_policy),
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
             return sync_dispatch_launch_policy_helper<std::decay_t<F>>::call(
                 PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f),
@@ -61,9 +60,10 @@ namespace pika { namespace detail {
     struct sync_dispatch
     {
         template <typename F, typename... Ts>
-        PIKA_FORCEINLINE static auto call(F&& f, Ts&&... ts) -> decltype(
-            parallel::execution::sync_execute(execution::parallel_executor(),
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
+        PIKA_FORCEINLINE static auto call(F&& f, Ts&&... ts)
+            -> decltype(parallel::execution::sync_execute(
+                execution::parallel_executor(), PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Ts, ts)...))
         {
             execution::parallel_executor exec;
             return parallel::execution::sync_execute(
@@ -83,9 +83,9 @@ namespace pika { namespace detail {
     {
         template <typename Executor_, typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call(Executor_&& exec, F&& f, Ts&&... ts)
-            -> decltype(
-                parallel::execution::sync_execute(PIKA_FORWARD(Executor_, exec),
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
+            -> decltype(parallel::execution::sync_execute(
+                PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Ts, ts)...))
         {
             return parallel::execution::sync_execute(
                 PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f),

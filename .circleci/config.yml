@@ -21,7 +21,7 @@ working_dir_default: &working_dir_default
 
 docker_default: &docker_default
     docker:
-      - image: pikaorg/pika-ci-base:3
+      - image: pikaorg/pika-ci-base:7
 
 defaults: &defaults
     <<: *working_dir_default
@@ -145,8 +145,8 @@ jobs:
               # ignore globs that have no matches (e.g. no cu.in files exist
               # currently)
               shopt -s nullglob
-              clang-format-11 --version
-              clang-format-11 -i **/*.{cpp,hpp,cu}{,.in}
+              clang-format --version
+              clang-format -i **/*.{cpp,hpp,cu}{,.in}
               git diff --exit-code > /tmp/modified_clang_format_files.txt
       - store_artifacts:
           path: /tmp/modified_clang_format_files.txt
@@ -168,6 +168,40 @@ jobs:
       - store_artifacts:
           path: /tmp/modified_cmake_format_files.txt
           destination: /pika/artifacts/modified_cmake_format_files.txt
+
+  # Ensure that Python files stay formatted with black
+  python_format:
+    <<: *docker_default
+    steps:
+      - attach_workspace:
+          at: /pika
+      - run:
+          name: Check that Python files are correctly formatted with black
+          command: |
+              cd /pika/source && shopt -s globstar # to activate the ** globbing
+              black --version
+              black **/*.py
+              git diff --exit-code > /tmp/modified_black_files.txt
+      - store_artifacts:
+          path: /tmp/modified_black_files.txt
+          destination: /pika/artifacts/modified_black_files.txt
+
+  # Ensure that shell scripts stay formatted with shfmt
+  shell_format:
+    <<: *docker_default
+    steps:
+      - attach_workspace:
+          at: /pika
+      - run:
+          name: Check that shell scripts are correctly formatted with shfmt
+          command: |
+              cd /pika/source && shopt -s globstar # to activate the ** globbing
+              shfmt --version
+              shfmt -w **/*.sh
+              git diff --exit-code > /tmp/modified_black_files.txt
+      - store_artifacts:
+          path: /tmp/modified_black_files.txt
+          destination: /pika/artifacts/modified_black_files.txt
 
   configure:
     <<: *defaults
@@ -545,6 +579,12 @@ workflows:
           requires:
             - checkout_code
       - cmake_format:
+          requires:
+            - checkout_code
+      - python_format:
+          requires:
+            - checkout_code
+      - shell_format:
           requires:
             - checkout_code
       - configure:
