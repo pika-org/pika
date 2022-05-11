@@ -18,8 +18,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace lcos { namespace local { namespace detail {
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     sliding_semaphore::sliding_semaphore(
         std::int64_t max_difference, std::int64_t lower_limit)
+      // NOLINTEND(bugprone-easily-swappable-parameters)
       : max_difference_(max_difference)
       , lower_limit_(lower_limit)
       , cond_()
@@ -28,8 +30,10 @@ namespace pika { namespace lcos { namespace local { namespace detail {
 
     sliding_semaphore::~sliding_semaphore() = default;
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void sliding_semaphore::set_max_difference(std::unique_lock<mutex_type>& l,
         std::int64_t max_difference, std::int64_t lower_limit)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         PIKA_ASSERT_OWNS_LOCK(l);
 

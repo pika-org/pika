@@ -84,7 +84,7 @@ namespace pika { namespace util {
                     conv_spec);
 
                 T const& value = *static_cast<T const*>(ptr);
-                std::size_t length = std::snprintf(nullptr, 0, format, value);
+                auto length = std::snprintf(nullptr, 0, format, value);
                 std::vector<char> buffer(length + 1);
                 length =
                     std::snprintf(buffer.data(), length + 1, format, value);
@@ -140,8 +140,7 @@ namespace pika { namespace util {
                     std::sprintf(
                         format, "%%%.*ss", (int) spec.size(), spec.data());
 
-                    std::size_t length =
-                        std::snprintf(nullptr, 0, format, value);
+                    auto length = std::snprintf(nullptr, 0, format, value);
                     std::vector<char> buffer(length + 1);
                     length =
                         std::snprintf(buffer.data(), length + 1, format, value);
@@ -162,7 +161,8 @@ namespace pika { namespace util {
                     *static_cast<std::string const*>(ptr);
 
                 if (spec.empty() || spec == "s")
-                    os.write(value.data(), value.size());
+                    os.write(value.data(),
+                        static_cast<std::streamsize>(value.size()));
                 else
                     formatter<char const*>::call(os, spec, value.c_str());
             }
@@ -194,7 +194,7 @@ namespace pika { namespace util {
                         buffer.resize(buffer.capacity() * 2);
                 } while (length == 0);
 
-                os.write(buffer.data(), length);
+                os.write(buffer.data(), static_cast<std::streamsize>(length));
             }
         };
 

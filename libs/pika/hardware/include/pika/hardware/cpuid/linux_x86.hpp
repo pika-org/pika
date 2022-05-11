@@ -36,8 +36,10 @@ namespace pika { namespace util { namespace hardware {
                              :);
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     inline void cpuidex(
         std::uint32_t (&cpuinfo)[4], std::uint32_t eax, std::uint32_t ecx)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         __asm__ __volatile__("cpuid ;\n"
                              : "=a"(cpuinfo[cpuid_register::eax]),

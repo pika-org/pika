@@ -48,13 +48,13 @@ PIKA_NOINLINE std::uint64_t fibonacci_serial(std::uint64_t n)
 
 pika::future<std::uint64_t> fibonacci(std::uint64_t n);
 
-struct _fibonacci_frame
+struct fibonacci_frame
 {
     int state_;
     pika::future<std::uint64_t> result_;
     pika::lcos::local::promise<std::uint64_t> result_promise_;
 
-    _fibonacci_frame(std::uint64_t n)
+    fibonacci_frame(std::uint64_t n)
       : state_(0)
       , n_(n)
       , lhs_result_(0)
@@ -70,9 +70,9 @@ struct _fibonacci_frame
     std::uint64_t rhs_result_;
 };
 
-void _fibonacci(std::shared_ptr<_fibonacci_frame> const& frame_)
+void fibonacci_impl(std::shared_ptr<fibonacci_frame> const& frame_)
 {
-    _fibonacci_frame* frame = frame_.get();
+    fibonacci_frame* frame = frame_.get();
     int state = frame->state_;
 
     switch (state)
@@ -117,7 +117,7 @@ void _fibonacci(std::shared_ptr<_fibonacci_frame> const& frame_)
         frame->state_ = 1;
         if (!frame->result_.valid())
             frame->result_ = frame->result_promise_.get_future();
-        frame->lhs_.then(pika::util::bind(&_fibonacci, frame_));
+        frame->lhs_.then(pika::util::bind(&fibonacci_impl, frame_));
         return;
     }
 
@@ -129,7 +129,7 @@ L1:
         frame->state_ = 2;
         if (!frame->result_.valid())
             frame->result_ = frame->result_promise_.get_future();
-        frame->rhs_.then(pika::util::bind(&_fibonacci, frame_));
+        frame->rhs_.then(pika::util::bind(&fibonacci_impl, frame_));
         return;
     }
 
@@ -148,10 +148,10 @@ L2:
 
 pika::future<std::uint64_t> fibonacci(std::uint64_t n)
 {
-    std::shared_ptr<_fibonacci_frame> frame =
-        std::make_shared<_fibonacci_frame>(n);
+    std::shared_ptr<fibonacci_frame> frame =
+        std::make_shared<fibonacci_frame>(n);
 
-    _fibonacci(frame);
+    fibonacci_impl(frame);
 
     return std::move(frame->result_);
 }

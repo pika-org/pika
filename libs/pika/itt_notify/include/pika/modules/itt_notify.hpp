@@ -12,12 +12,14 @@
 #include <cstdint>
 #include <cstring>
 
+// NOLINTBEGIN(bugprone-reserved-identifier)
 struct ___itt_caller;
 struct ___itt_string_handle;
 struct ___itt_domain;
 struct ___itt_id;
 using __itt_heap_function = void*;
 struct ___itt_counter;
+// NOLINTEND(bugprone-reserved-identifier)
 
 ///////////////////////////////////////////////////////////////////////////////
 #define PIKA_ITT_SYNC_CREATE(obj, type, name) itt_sync_create(obj, type, name)

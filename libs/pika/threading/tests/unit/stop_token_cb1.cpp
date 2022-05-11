@@ -410,9 +410,9 @@ void test_cancellation_single_thread_performance()
                   << std::endl;
     };
 
-    report("Individual", time1, iteration_count);
-    report("Batch10", time2, 10 * iteration_count);
-    report("Batch50", time3, 50 * iteration_count);
+    report("Individual", time1, static_cast<std::uint64_t>(iteration_count));
+    report("Batch10", time2, 10 * static_cast<std::uint64_t>(iteration_count));
+    report("Batch50", time3, 50 * static_cast<std::uint64_t>(iteration_count));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

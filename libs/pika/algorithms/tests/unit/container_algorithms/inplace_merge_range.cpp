@@ -22,7 +22,7 @@
 
 ////////////////////////////////////////////////////////////////////////////
 int seed = std::random_device{}();
-std::mt19937 _gen(seed);
+std::mt19937 rng(seed);
 
 ////////////////////////////////////////////////////////////////////////////
 struct user_defined_type
@@ -30,7 +30,7 @@ struct user_defined_type
     user_defined_type() = default;
     user_defined_type(int rand_no)
       : val(rand_no)
-      , name(name_list[_gen() % name_list.size()])
+      , name(name_list[rng() % name_list.size()])
     {
     }
 
@@ -78,7 +78,7 @@ const std::vector<std::string> user_defined_type::name_list{
 struct random_fill
 {
     random_fill(int rand_base, int range)
-      : gen(_gen())
+      : gen(rng())
       , dist(rand_base - range / 2, rand_base + range / 2)
     {
     }
@@ -244,7 +244,7 @@ void test_inplace_merge_stable()
     ////////// Test cases for checking whether the algorithm is stable.
     using namespace pika::execution;
 
-    int rand_base = _gen();
+    int rand_base = rng();
 
     ////////// Test cases for checking whether the algorithm is stable.
     test_inplace_merge_stable(seq, IteratorTag(), int(), rand_base);
@@ -364,7 +364,7 @@ void test_inplace_merge_etc()
 {
     using namespace pika::execution;
 
-    int rand_base = _gen();
+    int rand_base = rng();
 
     ////////// Another test cases for justifying the implementation.
     test_inplace_merge_etc(IteratorTag(), DataType(), rand_base);
@@ -385,7 +385,7 @@ int pika_main(pika::program_options::variables_map& vm)
     if (vm.count("seed"))
     {
         seed = vm["seed"].as<unsigned int>();
-        _gen.seed(seed);
+        rng.seed(seed);
     }
     std::cout << "using seed: " << seed << std::endl;
 

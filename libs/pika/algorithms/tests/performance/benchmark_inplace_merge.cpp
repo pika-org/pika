@@ -28,13 +28,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 unsigned int seed = (unsigned int) std::random_device{}();
-std::mt19937 _rand(seed);
+std::mt19937 rng(seed);
 ///////////////////////////////////////////////////////////////////////////////
 
 struct random_fill
 {
     random_fill(std::size_t random_range)
-      : gen(_rand())
+      : gen(rng())
       , dist(0, random_range - 1)
     {
     }
@@ -162,7 +162,7 @@ int pika_main(pika::program_options::variables_map& vm)
     if (vm.count("seed"))
     {
         seed = vm["seed"].as<unsigned int>();
-        _rand.seed(seed);
+        rng.seed(seed);
     }
 
     // pull values from cmd

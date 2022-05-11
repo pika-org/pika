@@ -22,7 +22,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 int seed = std::random_device{}();
-std::mt19937 _gen(seed);
+std::mt19937 rng(seed);
 
 struct throw_always
 {
@@ -49,7 +49,7 @@ struct user_defined_type
       : val(rand_no)
     {
         std::uniform_int_distribution<> dis(0, name_list.size() - 1);
-        name = name_list[dis(_gen)];
+        name = name_list[dis(rng)];
     }
 
     bool operator<(int rand_base) const
@@ -81,7 +81,7 @@ const std::vector<std::string> user_defined_type::name_list{
 struct random_fill
 {
     random_fill(int rand_base, int range)
-      : gen(_gen())
+      : gen(rng())
       , dist(rand_base - range / 2, rand_base + range / 2)
     {
     }
@@ -206,7 +206,7 @@ void test_partition_copy_exception(ExPolicy policy, IteratorTag)
 
     std::size_t const size = 10007;
     std::vector<int> c(size), d_true(size), d_false(size);
-    std::iota(std::begin(c), std::end(c), _gen());
+    std::iota(std::begin(c), std::end(c), rng());
 
     bool caught_exception = false;
     try
@@ -239,7 +239,7 @@ void test_partition_copy_exception_async(ExPolicy policy, IteratorTag)
 
     std::size_t const size = 10007;
     std::vector<int> c(size), d_true(size), d_false(size);
-    std::iota(std::begin(c), std::end(c), _gen());
+    std::iota(std::begin(c), std::end(c), rng());
 
     bool caught_exception = false;
     bool returned_from_algorithm = false;
@@ -279,7 +279,7 @@ void test_partition_copy_bad_alloc(ExPolicy policy, IteratorTag)
 
     std::size_t const size = 10007;
     std::vector<int> c(size), d_true(size), d_false(size);
-    std::iota(std::begin(c), std::end(c), _gen());
+    std::iota(std::begin(c), std::end(c), rng());
 
     bool caught_bad_alloc = false;
     try
@@ -311,7 +311,7 @@ void test_partition_copy_bad_alloc_async(ExPolicy policy, IteratorTag)
 
     std::size_t const size = 10007;
     std::vector<int> c(size), d_true(size), d_false(size);
-    std::iota(std::begin(c), std::end(c), _gen());
+    std::iota(std::begin(c), std::end(c), rng());
 
     bool caught_bad_alloc = false;
     bool returned_from_algorithm = false;
@@ -344,7 +344,7 @@ void test_partition_copy()
 {
     using namespace pika::execution;
 
-    int rand_base = _gen();
+    int rand_base = rng();
 
     ////////// Test cases for 'int' type.
     test_partition_copy(

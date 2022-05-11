@@ -221,6 +221,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
             int int_[2];
             T* ptr;
 
+            // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
             splitter(int first_, int second_)
             {
                 int_[0] = first_;

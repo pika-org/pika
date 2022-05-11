@@ -632,6 +632,7 @@ namespace pika { namespace this_thread {
     // returns whether the remaining stack-space is at least as large as
     // requested
     PIKA_EXPORT bool has_sufficient_stack_space(
-        std::size_t space_needed = 8 * PIKA_THREADS_STACK_OVERHEAD);
+        std::size_t space_needed = static_cast<std::size_t>(8) *
+            PIKA_THREADS_STACK_OVERHEAD);
     /// \endcond
 }}    // namespace pika::this_thread

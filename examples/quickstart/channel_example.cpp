@@ -27,8 +27,15 @@ void calculate_sum()
     std::vector<int> s = {7, 2, 8, -9, 4, 0};
     pika::lcos::local::channel<int> c;
 
-    pika::apply(&sum, std::vector<int>(s.begin(), s.begin() + s.size() / 2), c);
-    pika::apply(&sum, std::vector<int>(s.begin() + s.size() / 2, s.end()), c);
+    using difference_type = std::vector<int>::iterator::difference_type;
+    pika::apply(&sum,
+        std::vector<int>(
+            s.begin(), s.begin() + static_cast<difference_type>(s.size()) / 2),
+        c);
+    pika::apply(&sum,
+        std::vector<int>(
+            s.begin() + static_cast<difference_type>(s.size()) / 2, s.end()),
+        c);
 
     int x = c.get(pika::launch::sync);    // receive from c
     int y = c.get(pika::launch::sync);

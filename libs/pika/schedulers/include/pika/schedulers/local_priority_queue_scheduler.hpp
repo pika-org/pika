@@ -1296,7 +1296,7 @@ namespace pika { namespace threads { namespace policies {
                         (static_cast<std::ptrdiff_t>(num_thread) - i) %
                         static_cast<std::ptrdiff_t>(num_threads);
                     if (left < 0)
-                        left = num_threads + left;
+                        left = static_cast<std::ptrdiff_t>(num_threads) + left;
 
                     if (f(std::size_t(left)))
                     {

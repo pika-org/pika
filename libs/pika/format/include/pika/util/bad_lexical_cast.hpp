@@ -27,8 +27,10 @@ namespace pika { namespace util {
 
         virtual ~bad_lexical_cast() noexcept;
 
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         bad_lexical_cast(std::type_info const& source_type_arg,
             std::type_info const& target_type_arg) noexcept
+          // NOLINTEND(bugprone-easily-swappable-parameters)
           : source(&source_type_arg)
           , target(&target_type_arg)
         {

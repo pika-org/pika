@@ -4,9 +4,21 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+// This test triggers a warning about promotion from float to double. This
+// implicit conversion is intentional so we silence the warning. The warning is
+// triggered in the invoke.hpp header, not at the site of the is_invocable use.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdouble-promotion"
+#endif
+
 #include <pika/config.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
 #include <pika/testing.hpp>
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 struct X
 {

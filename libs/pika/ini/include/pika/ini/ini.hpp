@@ -104,9 +104,11 @@ namespace pika { namespace util {
             std::vector<std::string> const& lines, bool verify_existing = true,
             bool weed_out_comments = true, bool replace_existing = true);
 
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         void parse(std::string const& sourcename, std::string const& line,
             bool verify_existing = true, bool weed_out_comments = true,
             bool replace_existing = true)
+        // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             std::vector<std::string> lines;
             lines.push_back(line);

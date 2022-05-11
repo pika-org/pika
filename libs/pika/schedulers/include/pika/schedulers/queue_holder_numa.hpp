@@ -73,6 +73,7 @@ namespace pika { namespace threads { namespace policies {
         }
 
         // ----------------------------------------------------------------
+        // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
         void init(std::size_t domain, std::size_t queues)
         {
             num_queues_ = queues;
@@ -232,7 +233,7 @@ namespace pika { namespace threads { namespace policies {
             std::size_t len = 0;
             for (auto& q : queues_)
                 len += q->get_thread_count(state, priority);
-            return len;
+            return static_cast<std::int64_t>(len);
         }
 
         // ----------------------------------------------------------------

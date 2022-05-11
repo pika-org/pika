@@ -115,6 +115,7 @@ namespace pika { namespace execution { namespace experimental {
 
         template <typename Sender>
         constexpr bool specialized(
+            // NOLINTNEXTLINE(bugprone-reserved-identifier)
             typename sender_traits<Sender>::__unspecialized*)
         {
             return false;
@@ -348,6 +349,7 @@ namespace pika { namespace execution { namespace experimental {
         template <typename Sender>
         struct sender_traits_base<false /* HasSenderTraits */, Sender>
         {
+            // NOLINTNEXTLINE(bugprone-reserved-identifier)
             using __unspecialized = void;
         };
 
@@ -373,6 +375,7 @@ namespace pika { namespace execution { namespace experimental {
     template <>
     struct sender_traits<void>
     {
+        // NOLINTNEXTLINE(bugprone-reserved-identifier)
         using __unspecialized = void;
     };
 

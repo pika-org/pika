@@ -19,6 +19,7 @@
 #include <vector>
 
 namespace pika::detail {
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     void decode(std::string& str, char const* s, char const* r)
     {
         std::string::size_type pos = 0;

@@ -344,8 +344,10 @@ namespace pika::threads::detail {
             hwloc_topology_destroy(topo);
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     std::size_t topology::get_pu_number(
         std::size_t num_core, std::size_t num_pu, error_code& ec) const
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {    // {{{
         std::unique_lock<mutex_type> lk(topo_mtx);
 
@@ -1148,8 +1150,10 @@ namespace pika::threads::detail {
         return mask;
     }    // }}}
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     mask_type topology::init_thread_affinity_mask(
         std::size_t num_core, std::size_t num_pu) const
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {    // {{{
         hwloc_obj_t obj = nullptr;
 

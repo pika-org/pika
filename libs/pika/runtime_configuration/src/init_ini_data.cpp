@@ -47,8 +47,10 @@ namespace pika { namespace util {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     bool handle_ini_file_env(
         section& ini, char const* env_var, char const* file_suffix)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         char const* env = getenv(env_var);
         if (nullptr != env)

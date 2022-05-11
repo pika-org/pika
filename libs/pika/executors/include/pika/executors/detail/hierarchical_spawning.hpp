@@ -39,11 +39,13 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     template <typename Launch, typename F, typename S, typename... Ts>
     std::vector<
         pika::future<typename detail::bulk_function_result<F, S, Ts...>::type>>
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     hierarchical_bulk_async_execute_helper(
         pika::util::thread_description const& desc,
         threads::thread_pool_base* pool, std::size_t first_thread,
         std::size_t num_threads, std::size_t hierarchical_threshold,
         Launch policy, F&& f, S const& shape, Ts&&... ts)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         PIKA_ASSERT(pool);
 

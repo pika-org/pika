@@ -658,8 +658,10 @@ namespace pika { namespace util {
         return "";
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     std::string section::get_entry(std::unique_lock<mutex_type>& l,
         std::string const& key, std::string const& default_val) const
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         using string_vector = std::vector<std::string>;
 

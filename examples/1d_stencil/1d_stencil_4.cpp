@@ -67,7 +67,8 @@ public:
       : data_(new double[size])
       , size_(size)
     {
-        double base_value = double(initial_value * size);
+        double base_value =
+            static_cast<double>(initial_value) * static_cast<double>(size);
         for (std::size_t i = 0; i != size; ++i)
             data_[i] = base_value + double(i);
     }
@@ -165,7 +166,7 @@ struct stepper
         });
 
         // limit depth of dependency tree
-        pika::lcos::local::sliding_semaphore sem(nd);
+        pika::lcos::local::sliding_semaphore sem(static_cast<std::int64_t>(nd));
 
         auto Op = unwrapping(&stepper::heat_part);
 
@@ -188,13 +189,13 @@ struct stepper
             {
                 next[0].then([&sem, t](partition&&) {
                     // inform semaphore about new lower limit
-                    sem.signal(t);
+                    sem.signal(static_cast<std::int64_t>(t));
                 });
             }
 
             // suspend if the tree has become too deep, the continuation above
             // will resume this thread once the computation has caught up
-            sem.wait(t);
+            sem.wait(static_cast<std::int64_t>(t));
         }
 
         // Return the solution at time-step 'nt'.

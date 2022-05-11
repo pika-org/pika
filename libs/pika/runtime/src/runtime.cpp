@@ -486,8 +486,9 @@ namespace pika {
 
     std::uint64_t runtime::get_system_uptime()
     {
-        std::int64_t diff =
-            pika::chrono::high_resolution_clock::now() - runtime_uptime();
+        std::int64_t diff = static_cast<std::int64_t>(
+                                pika::chrono::high_resolution_clock::now()) -
+            static_cast<std::int64_t>(runtime_uptime());
         return diff < 0LL ? 0ULL : static_cast<std::uint64_t>(diff);
     }
 
@@ -1684,10 +1685,12 @@ namespace pika {
             pool_name, postfix, service_thread, ec);
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void runtime::init_tss_ex(char const* context, os_thread_type type,
         std::size_t local_thread_num, std::size_t global_thread_num,
         char const* pool_name, char const* postfix, bool service_thread,
         error_code& ec)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         // set the thread's name, if it's not already set
         PIKA_ASSERT(detail::thread_name().empty());

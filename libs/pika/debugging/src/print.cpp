@@ -255,8 +255,9 @@ namespace pika { namespace debug {
            << " CRC32:" << pika::debug::hex<8>(detail::crc32(p.addr_, p.len_))
            << "\n";
 
-        for (std::size_t i = 0;
-             i < (std::min)(size_t(std::ceil(p.len_ / 8.0)), std::size_t(128));
+        for (std::size_t i = 0; i <
+             (std::min)(size_t(std::ceil(static_cast<double>(p.len_) / 8.0)),
+                 std::size_t(128));
              i++)
         {
             os << pika::debug::hex<16>(*uintBuf++) << " ";

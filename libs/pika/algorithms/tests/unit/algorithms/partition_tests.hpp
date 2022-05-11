@@ -22,7 +22,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 int seed = std::random_device{}();
-std::mt19937 _gen(seed);
+std::mt19937 rng(seed);
 
 struct throw_always
 {
@@ -49,7 +49,7 @@ struct user_defined_type
       : val(rand_no)
     {
         std::uniform_int_distribution<> dis(0, name_list.size() - 1);
-        name = name_list[dis(_gen)];
+        name = name_list[dis(rng)];
     }
 
     bool operator<(int rand_base) const
@@ -87,7 +87,7 @@ const std::vector<std::string> user_defined_type::name_list{
 struct random_fill
 {
     random_fill(int rand_base, int half_range /* >= 0 */)
-      : gen(_gen())
+      : gen(rng())
       , dist(rand_base - half_range, rand_base + half_range)
     {
     }
@@ -216,7 +216,7 @@ void test_partition_exception(ExPolicy policy, IteratorTag)
 
     std::size_t const size = 30007;
     std::vector<int> c(size);
-    std::iota(std::begin(c), std::end(c), _gen());
+    std::iota(std::begin(c), std::end(c), rng());
 
     bool caught_exception = false;
     try
@@ -248,7 +248,7 @@ void test_partition_exception_async(ExPolicy policy, IteratorTag)
 
     std::size_t const size = 30007;
     std::vector<int> c(size);
-    std::iota(std::begin(c), std::end(c), _gen());
+    std::iota(std::begin(c), std::end(c), rng());
 
     bool caught_exception = false;
     bool returned_from_algorithm = false;
@@ -287,7 +287,7 @@ void test_partition_bad_alloc(ExPolicy policy, IteratorTag)
 
     std::size_t const size = 30007;
     std::vector<int> c(size);
-    std::iota(std::begin(c), std::end(c), _gen());
+    std::iota(std::begin(c), std::end(c), rng());
 
     bool caught_bad_alloc = false;
     try
@@ -318,7 +318,7 @@ void test_partition_bad_alloc_async(ExPolicy policy, IteratorTag)
 
     std::size_t const size = 30007;
     std::vector<int> c(size);
-    std::iota(std::begin(c), std::end(c), _gen());
+    std::iota(std::begin(c), std::end(c), rng());
 
     bool caught_bad_alloc = false;
     bool returned_from_algorithm = false;
@@ -388,8 +388,8 @@ void test_partition_heavy(
         16, 24, 32, 48, 64,                   /* intent the number of core */
         123, 4567, 65432, 123456,             /* various size */
         961230, 170228, 3456789,              /* big size */
-        dis(_gen),                            /* random size */
-        dis(_gen)};
+        dis(rng),                             /* random size */
+        dis(rng)};
 
     for (auto size : size_list)
     {
@@ -410,7 +410,7 @@ void test_partition()
 {
     using namespace pika::execution;
 
-    int rand_base = _gen();
+    int rand_base = rng();
 
     ////////// Test cases for 'int' type.
     test_partition(

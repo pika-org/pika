@@ -795,8 +795,10 @@ namespace pika { namespace util {
         }
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     void enable_logging(logging_destination dest, std::string const& level,
         std::string logdest, std::string logformat)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         auto lvl = pika::util::logging::level::enable_all;
         if (!level.empty())

@@ -33,7 +33,7 @@ namespace pika { namespace chrono {
 
         static double now() noexcept
         {
-            return take_time_stamp() * 1e-9;
+            return static_cast<double>(take_time_stamp()) * 1e-9;
         }
 
         void restart() noexcept

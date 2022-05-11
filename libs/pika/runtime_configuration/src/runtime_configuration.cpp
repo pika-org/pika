@@ -82,6 +82,7 @@ namespace pika { namespace util {
             // create default installation location and logging settings
             "[pika]",
             "master_ini_path = $[system.executable_prefix]/",
+            // NOLINTNEXTLINE(bugprone-suspicious-missing-comma)
             "master_ini_path_suffixes = /share/pika" PIKA_INI_PATH_DELIMITER
                 "/../share/pika",
 #ifdef PIKA_HAVE_ITTNOTIFY

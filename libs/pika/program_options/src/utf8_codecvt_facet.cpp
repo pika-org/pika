@@ -175,8 +175,10 @@ namespace pika { namespace program_options { namespace detail {
 
     // How many char objects can I process to get <= max_limit
     // wchar_t objects?
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     int utf8_codecvt_facet::do_length(std::mbstate_t&, const char* from,
         const char* from_end, std::size_t max_limit) const noexcept
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         // RG - this code is confusing!  I need a better way to express it.
         // and test cases.

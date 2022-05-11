@@ -337,6 +337,7 @@ namespace pika { namespace threads { namespace detail {
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
     struct scheduling_counters
     {
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         scheduling_counters(std::int64_t& executed_threads,
             std::int64_t& executed_thread_phases, std::int64_t& tfunc_time,
             std::int64_t& exec_time, std::int64_t& idle_loop_count,
@@ -344,6 +345,7 @@ namespace pika { namespace threads { namespace detail {
             std::int64_t& background_work_duration,
             std::int64_t& background_send_duration,
             std::int64_t& background_receive_duration)
+          // NOLINTEND(bugprone-easily-swappable-parameters)
           : executed_threads_(executed_threads)
           , executed_thread_phases_(executed_thread_phases)
           , tfunc_time_(tfunc_time)
@@ -371,10 +373,12 @@ namespace pika { namespace threads { namespace detail {
 #else
     struct scheduling_counters
     {
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         scheduling_counters(std::int64_t& executed_threads,
             std::int64_t& executed_thread_phases, std::int64_t& tfunc_time,
             std::int64_t& exec_time, std::int64_t& idle_loop_count,
             std::int64_t& busy_loop_count, bool& is_active)
+          // NOLINTEND(bugprone-easily-swappable-parameters)
           : executed_threads_(executed_threads)
           , executed_thread_phases_(executed_thread_phases)
           , tfunc_time_(tfunc_time)
@@ -401,13 +405,15 @@ namespace pika { namespace threads { namespace detail {
         using callback_type = util::unique_function<void()>;
         using background_callback_type = util::unique_function<bool()>;
 
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         explicit scheduling_callbacks(callback_type&& outer,
             callback_type&& inner = callback_type(),
             background_callback_type&& background = background_callback_type(),
             std::size_t max_background_threads =
                 (std::numeric_limits<std::size_t>::max)(),
-            std::size_t max_idle_loop_count = PIKA_IDLE_LOOP_COUNT_MAX,
-            std::size_t max_busy_loop_count = PIKA_BUSY_LOOP_COUNT_MAX)
+            std::int64_t max_idle_loop_count = PIKA_IDLE_LOOP_COUNT_MAX,
+            std::int64_t max_busy_loop_count = PIKA_BUSY_LOOP_COUNT_MAX)
+          // NOLINTEND(bugprone-easily-swappable-parameters)
           : outer_(PIKA_MOVE(outer))
           , inner_(PIKA_MOVE(inner))
           , background_(PIKA_MOVE(background))
@@ -478,6 +484,7 @@ namespace pika { namespace threads { namespace detail {
     template <typename SchedulingPolicy>
 #if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     bool call_background_thread(thread_id_ref_type& background_thread,
         thread_id_ref_type& next_thrd, SchedulingPolicy& scheduler,
         std::size_t num_thread, bool /* running */,
@@ -490,6 +497,7 @@ namespace pika { namespace threads { namespace detail {
         std::size_t num_thread, bool /* running */,
         pika::execution_base::this_thread::detail::agent_storage*
             context_storage)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
 #endif
     {
         if (PIKA_UNLIKELY(background_thread))

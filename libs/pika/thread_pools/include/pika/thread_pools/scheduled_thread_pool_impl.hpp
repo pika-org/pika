@@ -69,8 +69,10 @@ namespace pika { namespace threads { namespace detail {
     template <typename Scheduler>
     struct init_tss_helper
     {
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         init_tss_helper(scheduled_thread_pool<Scheduler>& pool,
             std::size_t local_thread_num, std::size_t global_thread_num)
+          // NOLINTEND(bugprone-easily-swappable-parameters)
           : pool_(pool)
           , local_thread_num_(local_thread_num)
           , global_thread_num_(global_thread_num)

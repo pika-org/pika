@@ -112,11 +112,13 @@ namespace pika { namespace threads {
         ///                 thread's status word. To change the thread's
         ///                 scheduling status \a threadmanager#set_state should
         ///                 be used.
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         thread_state set_state(thread_schedule_state state,
             thread_restart_state state_ex = thread_restart_state::unknown,
             std::memory_order load_order = std::memory_order_acquire,
             std::memory_order exchange_order =
                 std::memory_order_seq_cst) noexcept
+        // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             thread_state prev_state = current_state_.load(load_order);
 
@@ -176,10 +178,12 @@ namespace pika { namespace threads {
         ///
         /// \returns This function returns \a true if the state has been
         ///          changed successfully
+        // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         bool restore_state(thread_state new_state, thread_state old_state,
             std::memory_order load_order = std::memory_order_relaxed,
             std::memory_order load_exchange =
                 std::memory_order_seq_cst) noexcept
+        // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             // ignore the state_ex while compare-exchanging
             thread_state current_state = current_state_.load(load_order);

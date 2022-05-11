@@ -284,17 +284,21 @@ namespace pika { namespace program_options {
 
     const unsigned options_description::m_default_line_length = 80;
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     options_description::options_description(
         unsigned line_length, unsigned min_description_length)
       : m_line_length(line_length)
       , m_min_description_length(min_description_length)
+    // NOLINTEND(bugprone-easily-swappable-parameters)
     {
         // we require a space between the option and description parts, so add 1.
         PIKA_ASSERT(m_min_description_length < m_line_length - 1);
     }
 
+    // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     options_description::options_description(const std::string& caption,
         unsigned line_length, unsigned min_description_length)
+      // NOLINTEND(bugprone-easily-swappable-parameters)
       : m_caption(caption)
       , m_line_length(line_length)
       , m_min_description_length(min_description_length)
@@ -487,7 +491,9 @@ namespace pika { namespace program_options {
                     unsigned remaining = static_cast<unsigned>(
                         std::distance(line_begin, par_end));
                     string::const_iterator line_end = line_begin +
-                        ((remaining < line_length) ? remaining : line_length);
+                        static_cast<string::const_iterator::difference_type>(
+                            (remaining < line_length) ? remaining :
+                                                        line_length);
 
                     // prevent chopped words
                     // Is line_end between two non-space characters?

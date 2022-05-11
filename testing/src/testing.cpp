@@ -96,7 +96,7 @@ namespace pika { namespace util {
 
     void print_cdash_timing(const char* name, std::uint64_t time)
     {
-        print_cdash_timing(name, time / 1e9);
+        print_cdash_timing(name, static_cast<double>(time) / 1e9);
     }
 
 }}    // namespace pika::util

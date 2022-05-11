@@ -66,7 +66,8 @@ int pika_main(pika::program_options::variables_map& vm)
     std::size_t upper = vm["u"].as<std::size_t>();
 
     // Matrices have random values in the range [lower, upper]
-    std::uniform_int_distribution<element_type> dis(lower, upper);
+    std::uniform_int_distribution<element_type> dis(
+        static_cast<element_type>(lower), static_cast<element_type>(upper));
     auto generator = std::bind(dis, gen);
     pika::ranges::generate(A, generator);
     pika::ranges::generate(B, generator);
