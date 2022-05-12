@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Mikael Simberg
+# Copyright (c) 2020-2022 ETH Zurich
 #
 # SPDX-License-Identifier: BSL-1.0
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -16,21 +16,37 @@ on:
       - trying
       - staging
 
+# Note that this file contains a lot of duplication between the workflow steps.
+# That is because GitHub actions doesn't support YAML anchors:
+# https://github.community/t/support-for-yaml-anchors/16128. If GitHub ever
+# supports that in the future this file should absolutely be updated to make use
+# of them. In the meantime the duplication stays as GitHub's other options for
+# reusing steps seem overkill in this situation.
+
+# This defines in initial job for configuring pika and building the core
+# library. Following that are parallel steps for building and running tests. The
+# tests have been split to roughly have equal running time.
+#
+# Note that dependencies are reinstalled on every step as this seems to be
+# faster than trying to package the dependencies from the first step and reusing
+# them in later steps. This does open the door for occasional failures with
+# later steps installing different versions of packages.
+
 jobs:
-  build:
-    name: github/macos/debug
+  build_core:
+    name: github/macos/debug/core
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
     - name: Install dependencies
       run: |
         # Workaround for https://github.com/actions/virtual-environments/issues/2322
         rm -rf /usr/local/bin/2to3
+        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
-        brew update && \
-            brew install boost hwloc gperftools ninja && \
-            brew upgrade cmake
+        brew update
+        brew install boost cmake hwloc ninja
+    - uses: actions/checkout@v2
     - name: Configure
       shell: bash
       run: |
@@ -45,13 +61,53 @@ jobs:
               -DPIKA_WITH_TESTS_HEADERS=OFF \
               -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON \
               -DPIKA_WITH_TESTS_MAX_THREADS=3 \
+              -DPIKA_WITH_MALLOC=system \
               -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON \
               -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=On
-    - name: Build
+    - name: Build pika
       shell: bash
       run: |
-          cmake --build build --target all
-          cmake --build build --target tests
+          cmake --build build --target pika
+    # Packaging the build artifacts from the first step into an archive is
+    # faster than letting upload-artifact upload the directory directory.
+    - name: Package artifacts into a single file
+      shell: bash
+      run: |
+          tar --create --file artifact.tar.gz .
+    - name: Store results for test stage
+      uses: actions/upload-artifact@v3
+      with:
+        path: artifact.tar.gz
+        if-no-files-found: error
+        retention-days: 7
+
+  build_and_run_tests_examples_regressions:
+    name: github/macos/debug/tests/examples_regressions
+    needs: build_core
+    runs-on: macos-latest
+
+    steps:
+    - name: Install dependencies
+      run: |
+        # Workaround for https://github.com/actions/virtual-environments/issues/2322
+        rm -rf /usr/local/bin/2to3
+        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+        brew upgrade
+        brew update
+        brew install boost cmake hwloc ninja
+    - name: Load build artifacts from core stage
+      uses: actions/download-artifact@v3
+      with:
+        name: artifact
+    - name: Unpack artifacts
+      shell: bash
+      run: |
+          tar --extract --file artifact.tar.gz
+    - name: Build tests
+      shell: bash
+      run: |
+          cmake --build build --target examples
+          cmake --build build --target tests.regressions
     - name: Test
       shell: bash
       run: |
@@ -60,11 +116,178 @@ jobs:
             -j3 \
             --output-on-failure \
             --timeout 120 \
+            --tests-regex tests.examples \
+            --tests-regex tests.regressions
+    - name: Install
+      shell: bash
+      run: |
+          cmake --build build --target install
+    - name: Hello
+      shell: bash
+      run: |
+          hello_world
+
+  build_and_run_tests_performance:
+    name: github/macos/debug/tests/performance
+    needs: build_core
+    runs-on: macos-latest
+
+    steps:
+    - name: Install dependencies
+      run: |
+        # Workaround for https://github.com/actions/virtual-environments/issues/2322
+        rm -rf /usr/local/bin/2to3
+        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+        brew upgrade
+        brew update
+        brew install boost cmake hwloc ninja
+    - name: Load build artifacts from core stage
+      uses: actions/download-artifact@v3
+      with:
+        name: artifact
+    - name: Unpack artifacts
+      shell: bash
+      run: |
+          tar --extract --file artifact.tar.gz
+    - name: Build tests
+      shell: bash
+      run: |
+          cmake --build build --target tests.performance
+    - name: Test
+      shell: bash
+      run: |
+          cd build
+          ctest \
+            -j3 \
+            --output-on-failure \
+            --timeout 120 \
+            --tests-regex tests.performance
+
+  # All unit tests except algorithms and container_algorithms
+  build_and_run_tests_unit:
+    name: github/macos/debug/tests/unit
+    needs: build_core
+    runs-on: macos-latest
+
+    steps:
+    - name: Install dependencies
+      run: |
+        # Workaround for https://github.com/actions/virtual-environments/issues/2322
+        rm -rf /usr/local/bin/2to3
+        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+        brew upgrade
+        brew update
+        brew install boost cmake hwloc ninja
+    - name: Load build artifacts from core stage
+      uses: actions/download-artifact@v3
+      with:
+        name: artifact
+    - name: Unpack artifacts
+      shell: bash
+      run: |
+          tar --extract --file artifact.tar.gz
+    - name: Build tests
+      shell: bash
+      run: |
+          cd build
+          targets=$(ninja help | \
+            grep '^tests.unit.modules\.' | \
+            grep -v '^tests.unit.modules.algorithms' | \
+            awk -F':' '{ print $1 }')
+          ninja ${targets}
+    - name: Test
+      shell: bash
+      run: |
+          cd build
+          ctest \
+            -j3 \
+            --output-on-failure \
+            --timeout 120 \
+            --tests-regex tests.unit \
             --exclude-regex \
-          "tests.unit.modules.algorithms.default_construct|\
+          "tests.unit.modules.algorithms|\
+          tests.unit.modules.execution.standalone_thread_pool_executor|\
+          tests.unit.modules.resource_partitioner.used_pus"
+
+  # algorithms unit tests
+  build_and_run_tests_unit_algorithms:
+    name: github/macos/debug/tests/unit/algorithms
+    needs: build_core
+    runs-on: macos-latest
+
+    steps:
+    - name: Install dependencies
+      run: |
+        # Workaround for https://github.com/actions/virtual-environments/issues/2322
+        rm -rf /usr/local/bin/2to3
+        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+        brew upgrade
+        brew update
+        brew install boost cmake hwloc ninja
+    - name: Load build artifacts from core stage
+      uses: actions/download-artifact@v3
+      with:
+        name: artifact
+    - name: Unpack artifacts
+      shell: bash
+      run: |
+          tar --extract --file artifact.tar.gz
+    - name: Build tests
+      shell: bash
+      run: |
+          cd build
+          ninja tests.unit.modules.algorithms.{algorithms,block}
+    - name: Test
+      shell: bash
+      run: |
+          cd build
+          ctest \
+            -j3 \
+            --output-on-failure \
+            --timeout 120 \
+            --tests-regex tests.unit.modules.algorithms \
+            --exclude-regex \
+          "tests.unit.modules.algorithms.container_algorithms|\
+          tests.unit.modules.algorithms.default_construct|\
           tests.unit.modules.algorithms.destroy|\
           tests.unit.modules.algorithms.foreach_executors|\
           tests.unit.modules.algorithms.max_element|\
-          tests.unit.modules.algorithms.replace_copy_if|\
-          tests.unit.modules.execution.standalone_thread_pool_executor|\
-          tests.unit.modules.resource_partitioner.used_pus"
+          tests.unit.modules.algorithms.replace_copy_if"
+
+  # container_algorithms unit tests
+  build_and_run_tests_unit_container_algorithms:
+    name: github/macos/debug/tests/unit/container_algorithms
+    needs: build_core
+    runs-on: macos-latest
+
+    steps:
+    - name: Install dependencies
+      run: |
+        # Workaround for https://github.com/actions/virtual-environments/issues/2322
+        rm -rf /usr/local/bin/2to3
+        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+        brew upgrade
+        brew update
+        brew install boost cmake hwloc ninja
+    - name: Load build artifacts from core stage
+      uses: actions/download-artifact@v3
+      with:
+        name: artifact
+    - name: Unpack artifacts
+      shell: bash
+      run: |
+          tar --extract --file artifact.tar.gz
+    - name: Build tests
+      shell: bash
+      run: |
+          cmake --build build --target tests.unit.modules.algorithms.container_algorithms
+    - name: Test
+      shell: bash
+      run: |
+          cd build
+          ctest \
+            -j3 \
+            --output-on-failure \
+            --timeout 120 \
+            --tests-regex tests.unit.modules.algorithms.container_algorithms \
+            --exclude-regex tests.unit.modules.algorithms.container_algorithms.inplace_merge_range

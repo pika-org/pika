@@ -8,10 +8,11 @@
 set(subdirs detail util)
 
 foreach(subdir ${subdirs})
-  pika_add_pseudo_target(tests.unit.modules.algorithms.${subdir})
+  pika_add_pseudo_target(tests.unit.modules.algorithms.algorithms.${subdir})
   add_subdirectory(${subdir})
   pika_add_pseudo_dependencies(
-    tests.unit.modules.algorithms tests.unit.modules.algorithms.${subdir}
+    tests.unit.modules.algorithms.algorithms
+    tests.unit.modules.algorithms.algorithms.${subdir}
   )
 endforeach()
 
