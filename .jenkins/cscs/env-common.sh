@@ -11,8 +11,6 @@ export SPACK_USER_CACHE_PATH="/scratch/snx3000/simbergm/spack-user-cache-jenkins
 source "${SPACK_ROOT}/share/spack/setup-env.sh"
 
 spack load ccache@4.5.1 %gcc@10.3.0
-spack load cmake@3.18.6 %gcc@10.3.0
-spack load ninja@1.10.0 %gcc@10.3.0
 
 export CMAKE_CXX_COMPILER_LAUNCHER=ccache
 export CMAKE_GENERATOR=Ninja
