@@ -37,7 +37,12 @@
 #include <string>
 #include <utility>
 #include <vector>
-//
+
+#if defined(PIKA_HAVE_HIP)
+#define CUBLAS_OP_N HIPBLAS_OP_N
+#define cublasSgemm hipblasSgemm
+#endif
+
 std::mt19937 gen;
 
 namespace cu = pika::cuda::experimental;

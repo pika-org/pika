@@ -9,6 +9,10 @@
 
 #include <utility>
 
+#if defined(PIKA_HAVE_HIP)
+#define cublasSasum hipblasSasum
+#endif
+
 namespace cu = pika::cuda::experimental;
 
 __global__ void kernel(float* p)

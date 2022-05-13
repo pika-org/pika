@@ -48,8 +48,7 @@ namespace pika::cuda::experimental {
 #if defined(PIKA_COMPUTE_CODE)
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Shape>
-        PIKA_DEVICE auto shape_dereference_impl(
-            std::true_type, Shape&& shape, int i)
+        PIKA_DEVICE auto shape_dereference_impl(std::true_type, Shape&&, int i)
         {
             return static_cast<std::decay_t<Shape>>(i);
         }

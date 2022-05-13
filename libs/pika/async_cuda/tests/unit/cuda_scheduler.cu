@@ -54,13 +54,11 @@ int main()
         CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
 
-#if defined(PIKA_WITH_CUDA)
     {
         auto s = ex::schedule(sched) |
             cu::then_with_cusolver([](cusolverDnHandle_t) {});
         CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
-#endif
 
     {
         auto s = ex::schedule(sched) |
