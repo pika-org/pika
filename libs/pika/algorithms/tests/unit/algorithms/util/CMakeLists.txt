@@ -23,5 +23,7 @@ foreach(test ${tests})
     FOLDER ${folder_name}
   )
 
-  pika_add_unit_test("modules.algorithms.util" ${test} ${${test}_PARAMETERS})
+  pika_add_unit_test(
+    "modules.algorithms.algorithms.util" ${test} ${${test}_PARAMETERS}
+  )
 endforeach()

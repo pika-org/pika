@@ -10,7 +10,12 @@ status = [
   "github/linux/fetchcontent/fast",
   "github/linux/hip/fast",
   "github/linux/sanitizers/fast",
-  "github/macos/debug",
+  "github/macos/debug/core",
+  "github/macos/debug/tests/examples_regressions",
+  "github/macos/debug/tests/performance",
+  "github/macos/debug/tests/unit",
+  "github/macos/debug/tests/unit/algorithms",
+  "github/macos/debug/tests/unit/container_algorithms",
 
   # CircleCI static checks
   "ci/circleci: check_circular_deps",
