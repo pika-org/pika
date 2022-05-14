@@ -116,7 +116,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
     class tss_storage
     {
     private:
-        typedef std::map<void const*, tss_data_node> tss_node_data_map;
+        using tss_node_data_map = std::map<void const*, tss_data_node>;
 
         tss_data_node const* find_entry(void const* key) const
         {

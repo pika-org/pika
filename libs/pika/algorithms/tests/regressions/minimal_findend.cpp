@@ -22,10 +22,9 @@ namespace test {
             IteratorTag>
     {
     private:
-        typedef pika::util::iterator_adaptor<
+        using base_type = pika::util::iterator_adaptor<
             decorated_iterator<BaseIterator, IteratorTag>, BaseIterator, void,
-            IteratorTag>
-            base_type;
+            IteratorTag>;
 
     public:
         decorated_iterator() {}
@@ -59,9 +58,8 @@ namespace test {
 void find_end_failing_test()
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator,
-        std::random_access_iterator_tag>
-        decorated_iterator;
+    using decorated_iterator = test::decorated_iterator<base_iterator,
+        std::random_access_iterator_tag>;
 
     std::vector<std::size_t> c(10007, 0);
     std::size_t h[] = {1, 2};

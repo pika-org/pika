@@ -253,8 +253,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             InIter1 first, std::size_t count, InIter2 dest,
             util::cancellation_token<util::detail::no_data>& tok)
         {
-            typedef
-                typename std::iterator_traits<InIter2>::value_type value_type;
+            using value_type =
+                typename std::iterator_traits<InIter2>::value_type;
 
             return {std::next(first, count),
                 util::loop_with_cleanup_n_with_token(
@@ -281,8 +281,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             using zip_iterator = pika::util::zip_iterator<Iter, FwdIter2>;
             using partition_result_type = std::pair<FwdIter2, FwdIter2>;
-            typedef
-                typename std::iterator_traits<FwdIter2>::value_type value_type;
+            using value_type =
+                typename std::iterator_traits<FwdIter2>::value_type;
 
             util::cancellation_token<util::detail::no_data> tok;
 

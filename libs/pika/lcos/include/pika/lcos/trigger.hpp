@@ -31,7 +31,7 @@ namespace pika { namespace lcos { namespace local {
         using mutex_type = Mutex;
 
     private:
-        typedef std::list<conditional_trigger*> condition_list_type;
+        using condition_list_type = std::list<conditional_trigger*>;
 
     public:
         base_trigger()

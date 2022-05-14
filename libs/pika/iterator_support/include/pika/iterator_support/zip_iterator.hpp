@@ -262,12 +262,11 @@ namespace pika { namespace util {
                 typename zip_iterator_category<IteratorTuple>::type,
                 typename zip_iterator_reference<IteratorTuple>::type>
         {
-            typedef pika::util::iterator_facade<
+            using base_type = pika::util::iterator_facade<
                 zip_iterator_base<IteratorTuple, Derived>,
                 typename zip_iterator_value<IteratorTuple>::type,
                 typename zip_iterator_category<IteratorTuple>::type,
-                typename zip_iterator_reference<IteratorTuple>::type>
-                base_type;
+                typename zip_iterator_reference<IteratorTuple>::type>;
 
         public:
             PIKA_HOST_DEVICE zip_iterator_base() {}
@@ -358,9 +357,8 @@ namespace pika { namespace util {
         static_assert(
             sizeof...(Ts) != 0, "zip_iterator must wrap at least one iterator");
 
-        typedef detail::zip_iterator_base<pika::tuple<Ts...>,
-            zip_iterator<Ts...>>
-            base_type;
+        using base_type =
+            detail::zip_iterator_base<pika::tuple<Ts...>, zip_iterator<Ts...>>;
 
     public:
         PIKA_HOST_DEVICE zip_iterator()
@@ -498,7 +496,7 @@ namespace pika { namespace util {
     PIKA_HOST_DEVICE zip_iterator<typename std::decay<Ts>::type...>
     make_zip_iterator(Ts&&... vs)
     {
-        typedef zip_iterator<typename std::decay<Ts>::type...> result_type;
+        using result_type = zip_iterator<typename std::decay<Ts>::type...>;
 
         return result_type(PIKA_FORWARD(Ts, vs)...);
     }
@@ -527,11 +525,10 @@ namespace pika { namespace traits {
         template <typename F, typename... Ts>
         struct lift_zipped_iterators<F, util::zip_iterator<Ts...>>
         {
-            typedef typename util::zip_iterator<Ts...>::iterator_tuple_type
-                tuple_type;
-            typedef pika::tuple<typename element_result_of<
-                typename F::template apply<Ts>, Ts>::type...>
-                result_type;
+            using tuple_type =
+                typename util::zip_iterator<Ts...>::iterator_tuple_type;
+            using result_type = pika::tuple<typename element_result_of<
+                typename F::template apply<Ts>, Ts>::type...>;
 
             template <std::size_t... Is, typename... Ts_>
             static result_type call(

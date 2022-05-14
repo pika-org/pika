@@ -45,17 +45,17 @@ namespace pika { namespace lcos { namespace local {
               , future_retrieved_(false)
               , shared_future_retrieved_(false)
             {
-                typedef
+                using allocator_shared_state_type =
                     typename traits::detail::shared_state_allocator<SharedState,
-                        Allocator>::type allocator_shared_state_type;
+                        Allocator>::type;
 
-                typedef typename std::allocator_traits<Allocator>::
-                    template rebind_alloc<allocator_shared_state_type>
-                        other_allocator;
+                using other_allocator =
+                    typename std::allocator_traits<Allocator>::
+                        template rebind_alloc<allocator_shared_state_type>;
                 using traits = std::allocator_traits<other_allocator>;
-                typedef std::unique_ptr<allocator_shared_state_type,
-                    pika::detail::allocator_deleter<other_allocator>>
-                    unique_pointer;
+                using unique_pointer =
+                    std::unique_ptr<allocator_shared_state_type,
+                        pika::detail::allocator_deleter<other_allocator>>;
 
                 other_allocator alloc(a);
                 unique_pointer p(traits::allocate(alloc, 1),

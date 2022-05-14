@@ -39,9 +39,8 @@ std::uint64_t add(
 ///////////////////////////////////////////////////////////////////////////////
 struct when_all_wrapper
 {
-    typedef pika::tuple<pika::future<std::uint64_t>,
-        pika::future<std::uint64_t>>
-        data_type;
+    using data_type =
+        pika::tuple<pika::future<std::uint64_t>, pika::future<std::uint64_t>>;
 
     std::uint64_t operator()(pika::future<data_type> data) const
     {

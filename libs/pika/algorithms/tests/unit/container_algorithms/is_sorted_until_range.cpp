@@ -791,8 +791,8 @@ void test_sorted_until_exception(ExPolicy policy, IteratorTag)
 
     using base_iterator = std::vector<int>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     //fill first half of array with even numbers and second half
@@ -864,8 +864,8 @@ void test_sorted_until_async_exception(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<int>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), 0);
@@ -944,8 +944,8 @@ void test_sorted_until_seq_exception(IteratorTag)
 {
     using base_iterator = std::vector<int>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     //fill first half of array with even numbers and second half
@@ -1199,8 +1199,8 @@ void test_sorted_until_bad_alloc(ExPolicy policy, IteratorTag)
 
     using base_iterator = std::vector<int>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     //fill first half of array with even numbers and second half
@@ -1269,8 +1269,8 @@ void test_sorted_until_async_bad_alloc(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<int>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     std::iota(std::begin(c), std::end(c), 0);
@@ -1346,8 +1346,8 @@ void test_sorted_until_seq_bad_alloc(IteratorTag)
 {
     using base_iterator = std::vector<int>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<int> c(10007);
     //fill first half of array with even numbers and second half

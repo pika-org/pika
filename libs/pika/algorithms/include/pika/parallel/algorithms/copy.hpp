@@ -312,8 +312,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     nullptr;
                 return PIKA_MOVE(*dummy);
 #else
-                typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
-                    zip_iterator;
+                using zip_iterator =
+                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
 
                 return util::detail::get_in_out_result(
                     util::foreach_partitioner<ExPolicy>::call(
@@ -375,8 +375,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(ExPolicy&& policy, FwdIter1 first, std::size_t count,
                 FwdIter2 dest)
             {
-                typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
-                    zip_iterator;
+                using zip_iterator =
+                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
 
                 return util::detail::get_in_out_result(
                     util::foreach_partitioner<ExPolicy>::call(
@@ -449,11 +449,10 @@ namespace pika { namespace parallel { inline namespace v1 {
                 FwdIter3 dest, Pred&& pred, Proj&& proj /* = Proj()*/)
             {
                 using zip_iterator = pika::util::zip_iterator<FwdIter1, bool*>;
-                typedef util::detail::algorithm_result<ExPolicy,
-                    util::in_out_result<FwdIter1, FwdIter3>>
-                    result;
-                typedef typename std::iterator_traits<FwdIter1>::difference_type
-                    difference_type;
+                using result = util::detail::algorithm_result<ExPolicy,
+                    util::in_out_result<FwdIter1, FwdIter3>>;
+                using difference_type =
+                    typename std::iterator_traits<FwdIter1>::difference_type;
 
                 if (first == last)
                 {
@@ -472,9 +471,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
                 using pika::get;
                 using pika::util::make_zip_iterator;
-                typedef util::scan_partitioner<ExPolicy,
-                    util::in_out_result<FwdIter1, FwdIter3>, std::size_t>
-                    scan_partitioner_type;
+                using scan_partitioner_type = util::scan_partitioner<ExPolicy,
+                    util::in_out_result<FwdIter1, FwdIter3>, std::size_t>;
 
                 auto f1 = [pred = PIKA_FORWARD(Pred, pred),
                               proj = PIKA_FORWARD(decltype(proj), proj)](

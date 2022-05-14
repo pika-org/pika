@@ -124,11 +124,11 @@ namespace pika { namespace lcos { namespace local {
 
         struct guard_task;
 
-        typedef std::atomic<guard_task*> guard_atomic;
+        using guard_atomic = std::atomic<guard_task*>;
 
         PIKA_EXPORT void free(guard_task* task);
 
-        typedef util::unique_function<void()> guard_function;
+        using guard_function = util::unique_function<void()>;
     }    // namespace detail
 
     class guard : public detail::debug_object

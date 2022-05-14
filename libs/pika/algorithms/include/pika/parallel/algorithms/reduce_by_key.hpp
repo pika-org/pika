@@ -55,10 +55,10 @@ namespace pika { namespace parallel { inline namespace v1 {
             template <typename This, typename Iterator>
             struct result<This(Iterator)>
             {
-                typedef typename std::iterator_traits<Iterator>::reference
-                    element_type;
-                typedef pika::tuple<element_type, element_type, element_type>
-                    type;
+                using element_type =
+                    typename std::iterator_traits<Iterator>::reference;
+                using type =
+                    pika::tuple<element_type, element_type, element_type>;
             };
 
             // call operator for stencil transform
@@ -67,9 +67,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             typename result<reduce_stencil_transformer(Iterator)>::type
             operator()(Iterator const& it) const
             {
-                typedef
-                    typename result<reduce_stencil_transformer(Iterator)>::type
-                        type;
+                using type =
+                    typename result<reduce_stencil_transformer(Iterator)>::type;
                 return type(*std::prev(it), *it, *std::next(it));
             }
         };
@@ -83,8 +82,8 @@ namespace pika { namespace parallel { inline namespace v1 {
           : public pika::util::transform_iterator<Iterator, Transformer>
         {
         private:
-            typedef pika::util::transform_iterator<Iterator, Transformer>
-                base_type;
+            using base_type =
+                pika::util::transform_iterator<Iterator, Transformer>;
 
         public:
             reduce_stencil_iterator() {}
@@ -128,12 +127,14 @@ namespace pika { namespace parallel { inline namespace v1 {
             typename KeyStateIterType, typename Compare>
         struct reduce_stencil_generate
         {
-            typedef typename Transformer::template result<Transformer(
-                StencilIterType)>::element_type element_type;
-            typedef typename Transformer::template result<Transformer(
-                StencilIterType)>::type tuple_type;
-            typedef typename std::iterator_traits<KeyStateIterType>::reference
-                KeyStateType;
+            using element_type =
+                typename Transformer::template result<Transformer(
+                    StencilIterType)>::element_type;
+            using tuple_type =
+                typename Transformer::template result<Transformer(
+                    StencilIterType)>::type;
+            using KeyStateType =
+                typename std::iterator_traits<KeyStateIterType>::reference;
 
             reduce_stencil_generate() {}
 
@@ -525,9 +526,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         RanIter2 values_first, FwdIter1 keys_output, FwdIter2 values_output,
         Compare&& comp = Compare(), Func&& func = Func())
     {
-        typedef util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<FwdIter1, FwdIter2>>
-            result;
+        using result = util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<FwdIter1, FwdIter2>>;
 
         static_assert(
             (pika::traits::is_random_access_iterator<RanIter>::value) &&

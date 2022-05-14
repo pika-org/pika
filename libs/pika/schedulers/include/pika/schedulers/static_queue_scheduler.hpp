@@ -52,9 +52,8 @@ namespace pika { namespace threads { namespace policies {
             TerminatedQueuing>
     {
     public:
-        typedef local_queue_scheduler<Mutex, PendingQueuing, StagedQueuing,
-            TerminatedQueuing>
-            base_type;
+        using base_type = local_queue_scheduler<Mutex, PendingQueuing,
+            StagedQueuing, TerminatedQueuing>;
 
         static_queue_scheduler(
             typename base_type::init_parameter_type const& init,

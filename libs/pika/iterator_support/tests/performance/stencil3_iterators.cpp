@@ -153,20 +153,19 @@ namespace pika { namespace experimental {
             typename IterValueBegin, typename IterEnd, typename IterValueEnd>
         struct stencil3_iterator_base
         {
-            typedef previous_transformer<IterBegin, IterValueBegin>
-                left_transformer;
+            using left_transformer =
+                previous_transformer<IterBegin, IterValueBegin>;
             using right_transformer = next_transformer<IterEnd, IterValueEnd>;
 
-            typedef util::transform_iterator<Iterator, left_transformer>
-                left_iterator;
-            typedef util::transform_iterator<Iterator, right_transformer>
-                right_iterator;
+            using left_iterator =
+                util::transform_iterator<Iterator, left_transformer>;
+            using right_iterator =
+                util::transform_iterator<Iterator, right_transformer>;
 
-            typedef util::detail::zip_iterator_base<
+            using type = util::detail::zip_iterator_base<
                 pika::tuple<left_iterator, Iterator, right_iterator>,
                 stencil3_iterator_full<Iterator, IterBegin, IterValueBegin,
-                    IterEnd, IterValueEnd>>
-                type;
+                    IterEnd, IterValueEnd>>;
 
             static type create(Iterator const& it, IterBegin const& begin,
                 IterValueBegin const& begin_val, IterEnd const& end,
@@ -197,9 +196,8 @@ namespace pika { namespace experimental {
             IterValueBegin, IterEnd, IterValueEnd>::type
     {
     private:
-        typedef detail::stencil3_iterator_base<Iterator, IterBegin,
-            IterValueBegin, IterEnd, IterValueEnd>
-            base_maker;
+        using base_maker = detail::stencil3_iterator_base<Iterator, IterBegin,
+            IterValueBegin, IterEnd, IterValueEnd>;
         using base_type = typename base_maker::type;
 
     public:
@@ -235,9 +233,8 @@ namespace pika { namespace experimental {
         IterValueBegin const& begin_val, IterEnd const& end,
         IterValueEnd const& end_val)
     {
-        typedef stencil3_iterator_full<Iterator, IterBegin, IterValueBegin,
-            IterEnd, IterValueEnd>
-            result_type;
+        using result_type = stencil3_iterator_full<Iterator, IterBegin,
+            IterValueBegin, IterEnd, IterValueEnd>;
         return result_type(it, begin, begin_val, end, end_val);
     }
 
@@ -271,7 +268,7 @@ std::uint64_t bench_stencil3_iterator_full()
     auto r = pika::experimental::make_stencil3_full_range(
         values.begin(), values.end(), &values.back(), &values.front());
 
-    typedef std::iterator_traits<decltype(r.first)>::reference reference;
+    using reference = std::iterator_traits<decltype(r.first)>::reference;
 
     int result = 0;
 
@@ -293,10 +290,9 @@ namespace pika { namespace experimental {
             stencil3_iterator_v1<Iterator>>
     {
     private:
-        typedef util::detail::zip_iterator_base<
+        using base_type = util::detail::zip_iterator_base<
             pika::tuple<Iterator, Iterator, Iterator>,
-            stencil3_iterator_v1<Iterator>>
-            base_type;
+            stencil3_iterator_v1<Iterator>>;
 
     public:
         stencil3_iterator_v1() {}
@@ -344,7 +340,7 @@ std::uint64_t bench_stencil3_iterator_v1()
     auto r = pika::experimental::make_stencil3_range_v1(
         values.begin() + 1, values.end() - 1);
 
-    typedef std::iterator_traits<decltype(r.first)>::reference reference;
+    using reference = std::iterator_traits<decltype(r.first)>::reference;
 
     // handle boundary elements explicitly
     int result = values.back() + values.front() + values[1];
@@ -369,10 +365,10 @@ namespace pika { namespace experimental {
             template <typename Iterator>
             struct result
             {
-                typedef typename std::iterator_traits<Iterator>::reference
-                    element_type;
-                typedef pika::tuple<element_type, element_type, element_type>
-                    type;
+                using element_type =
+                    typename std::iterator_traits<Iterator>::reference;
+                using type =
+                    pika::tuple<element_type, element_type, element_type>;
             };
 
             // it will dereference tuple(it-1, it, it+1)
@@ -453,7 +449,7 @@ std::uint64_t bench_stencil3_iterator_v2()
     auto r = pika::experimental::make_stencil3_range_v2(
         values.begin() + 1, values.end() - 1);
 
-    typedef std::iterator_traits<decltype(r.first)>::reference reference;
+    using reference = std::iterator_traits<decltype(r.first)>::reference;
 
     // handle boundary elements explicitly
     int result = values.back() + values.front() + values[1];

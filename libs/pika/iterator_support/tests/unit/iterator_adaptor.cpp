@@ -65,7 +65,7 @@ struct one_or_four
 };
 
 using storage = std::deque<int>;
-typedef std::deque<int*> pointer_deque;
+using pointer_deque = std::deque<int*>;
 using iterator_set = std::set<storage::iterator>;
 
 template <class T>
@@ -96,9 +96,8 @@ struct ptr_iterator
         std::random_access_iterator_tag>
 {
 private:
-    typedef pika::util::iterator_adaptor<ptr_iterator<V>, V*, V,
-        std::random_access_iterator_tag>
-        base_adaptor_type;
+    using base_adaptor_type = pika::util::iterator_adaptor<ptr_iterator<V>, V*,
+        V, std::random_access_iterator_tag>;
 
 public:
     ptr_iterator() {}
@@ -131,9 +130,8 @@ struct fwd_iterator
         tests::forward_iterator_archetype<T>>
 {
 private:
-    typedef pika::util::iterator_adaptor<fwd_iterator<T>,
-        tests::forward_iterator_archetype<T>>
-        base_adaptor_type;
+    using base_adaptor_type = pika::util::iterator_adaptor<fwd_iterator<T>,
+        tests::forward_iterator_archetype<T>>;
 
 public:
     fwd_iterator() {}
@@ -150,9 +148,8 @@ struct in_iterator
         tests::input_iterator_archetype_no_proxy<T>>
 {
 private:
-    typedef pika::util::iterator_adaptor<in_iterator<T>,
-        tests::input_iterator_archetype_no_proxy<T>>
-        base_adaptor_type;
+    using base_adaptor_type = pika::util::iterator_adaptor<in_iterator<T>,
+        tests::input_iterator_archetype_no_proxy<T>>;
 
 public:
     in_iterator() {}
@@ -167,9 +164,9 @@ struct constant_iterator
   : pika::util::iterator_adaptor<constant_iterator<Iter>, Iter,
         typename std::iterator_traits<Iter>::value_type const>
 {
-    typedef pika::util::iterator_adaptor<constant_iterator<Iter>, Iter,
-        typename std::iterator_traits<Iter>::value_type const>
-        base_adaptor_type;
+    using base_adaptor_type =
+        pika::util::iterator_adaptor<constant_iterator<Iter>, Iter,
+            const typename std::iterator_traits<Iter>::value_type>;
 
     constant_iterator() {}
     constant_iterator(Iter it)
@@ -216,7 +213,7 @@ int main()
 
     {
         // Test computation of default when the Value is const
-        typedef ptr_iterator<int const> Iter1;
+        using Iter1 = ptr_iterator<const int>;
         PIKA_TEST((std::is_same<Iter1::value_type, int>::value));
         PIKA_TEST((std::is_same<Iter1::reference, const int&>::value));
 
@@ -240,8 +237,8 @@ int main()
         //PIKA_TEST(boost::is_non_const_lvalue_iterator<BaseIter>::value);
         //PIKA_TEST(boost::is_lvalue_iterator<Iter>::value);
 
-        typedef modify_traversal<BaseIter, std::input_iterator_tag>
-            IncrementableIter;
+        using IncrementableIter =
+            modify_traversal<BaseIter, std::input_iterator_tag>;
 
         PIKA_TEST((std::is_same<BaseIter::iterator_category,
             std::random_access_iterator_tag>::value));
@@ -294,8 +291,8 @@ int main()
         PIKA_TEST((std::is_same<constant_iterator<BaseIter>::base_type,
             BaseIter>::value));
 
-        typedef modify_traversal<BaseIter, std::forward_iterator_tag>
-            IncrementableIter;
+        using IncrementableIter =
+            modify_traversal<BaseIter, std::forward_iterator_tag>;
 
         PIKA_TEST(
             (std::is_same<IncrementableIter::base_type, BaseIter>::value));

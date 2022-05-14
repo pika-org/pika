@@ -265,8 +265,8 @@ template <typename IteratorTag>
 void test_remove_exception(IteratorTag, bool test_for_remove_if = false)
 {
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<int> c(size);
@@ -310,8 +310,8 @@ void test_remove_exception(
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<int> c(size);
@@ -353,8 +353,8 @@ void test_remove_exception_async(
     ExPolicy policy, IteratorTag, bool test_for_remove_if = false)
 {
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<int> c(size);
@@ -403,8 +403,8 @@ template <typename IteratorTag>
 void test_remove_bad_alloc(IteratorTag, bool test_for_remove_if = false)
 {
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<int> c(size);
@@ -447,8 +447,8 @@ void test_remove_bad_alloc(
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<int> c(size);
@@ -489,8 +489,8 @@ void test_remove_bad_alloc_async(
     ExPolicy policy, IteratorTag, bool test_for_remove_if = false)
 {
     using base_iterator = std::vector<int>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::size_t const size = 10007;
     std::vector<int> c(size);

@@ -27,8 +27,8 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     template <int N, typename R, typename ZipIter>
     R get_iter(pika::future<ZipIter>&& zipiter)
     {
-        typedef typename pika::tuple_element<N,
-            typename ZipIter::iterator_tuple_type>::type result_type;
+        using result_type = typename pika::tuple_element<N,
+            typename ZipIter::iterator_tuple_type>::type;
 
         return pika::make_future<result_type>(
             PIKA_MOVE(zipiter), [](ZipIter zipiter) {
@@ -75,10 +75,9 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     {
         using iterator_tuple_type = typename ZipIter::iterator_tuple_type;
 
-        typedef std::pair<
+        using result_type = std::pair<
             typename pika::tuple_element<0, iterator_tuple_type>::type,
-            typename pika::tuple_element<1, iterator_tuple_type>::type>
-            result_type;
+            typename pika::tuple_element<1, iterator_tuple_type>::type>;
 
         return pika::make_future<result_type>(PIKA_MOVE(zipiter),
             [](ZipIter zipiter) { return get_iter_pair(PIKA_MOVE(zipiter)); });

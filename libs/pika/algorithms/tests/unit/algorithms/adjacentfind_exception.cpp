@@ -29,8 +29,8 @@ void test_adjacent_find_exception(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), gen() + 1);
 
@@ -60,8 +60,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_adjacent_find_exception_async(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), gen() + 1);

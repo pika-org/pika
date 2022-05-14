@@ -70,8 +70,8 @@ namespace pika { namespace lcos { namespace local {
             bool value_set_;
         };
 
-        typedef std::map<std::size_t, std::shared_ptr<entry_data>>
-            buffer_map_type;
+        using buffer_map_type =
+            std::map<std::size_t, std::shared_ptr<entry_data>>;
         using iterator = typename buffer_map_type::iterator;
 
         struct erase_on_exit
@@ -294,8 +294,8 @@ namespace pika { namespace lcos { namespace local {
             bool value_set_;
         };
 
-        typedef std::map<std::size_t, std::shared_ptr<entry_data>>
-            buffer_map_type;
+        using buffer_map_type =
+            std::map<std::size_t, std::shared_ptr<entry_data>>;
         using iterator = typename buffer_map_type::iterator;
 
         struct erase_on_exit

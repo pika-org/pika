@@ -150,10 +150,9 @@ namespace pika { namespace util {
         typename util::decay_unwrap<Ts>::type...>
     bind_back(F&& f, Ts&&... vs)
     {
-        typedef detail::bound_back<typename std::decay<F>::type,
+        using result_type = detail::bound_back<typename std::decay<F>::type,
             typename util::make_index_pack<sizeof...(Ts)>::type,
-            typename util::decay_unwrap<Ts>::type...>
-            result_type;
+            typename util::decay_unwrap<Ts>::type...>;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }

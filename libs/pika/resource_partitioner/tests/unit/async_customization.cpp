@@ -72,9 +72,8 @@ struct test_async_executor
         template <typename T, template <typename> class Future>
         const T& operator()(const Future<T>& el) const
         {
-            typedef
-                typename traits::detail::shared_state_ptr_for<Future<T>>::type
-                    shared_state_ptr;
+            using shared_state_ptr =
+                typename traits::detail::shared_state_ptr_for<Future<T>>::type;
             shared_state_ptr const& state =
                 traits::detail::get_shared_state(el);
             return *state->get_result();
@@ -89,8 +88,8 @@ struct test_async_executor
     future<typename util::invoke_result<F, Ts...>::type> async_execute(
         F&& f, Ts&&... ts)
     {
-        typedef typename util::detail::invoke_deferred_result<F, Ts...>::type
-            result_type;
+        using result_type =
+            typename util::detail::invoke_deferred_result<F, Ts...>::type;
 
         using namespace pika::util::debug;
         std::cout << "async_execute : Function    : " << print_type<F>()
@@ -116,8 +115,8 @@ struct test_async_executor
     auto then_execute(F&& f, Future&& predecessor, Ts&&... ts) -> future<
         typename util::detail::invoke_deferred_result<F, Future, Ts...>::type>
     {
-        typedef typename util::detail::invoke_deferred_result<F, Future,
-            Ts...>::type result_type;
+        using result_type = typename util::detail::invoke_deferred_result<F,
+            Future, Ts...>::type;
 
         using namespace pika::util::debug;
         std::cout << "then_execute : Function     : " << print_type<F>()
@@ -153,8 +152,8 @@ struct test_async_executor
         -> future<typename util::detail::invoke_deferred_result<F,
             OuterFuture<pika::tuple<InnerFutures...>>, Ts...>::type>
     {
-        typedef typename util::detail::invoke_deferred_result<F,
-            OuterFuture<pika::tuple<InnerFutures...>>, Ts...>::type result_type;
+        using result_type = typename util::detail::invoke_deferred_result<F,
+            OuterFuture<pika::tuple<InnerFutures...>>, Ts...>::type;
 
         // get the tuple of futures from the predecessor future <tuple of futures>
         const auto& predecessor_value =
@@ -205,8 +204,8 @@ struct test_async_executor
         -> future<typename util::detail::invoke_deferred_result<F,
             pika::tuple<InnerFutures...>>::type>
     {
-        typedef typename util::detail::invoke_deferred_result<F,
-            pika::tuple<InnerFutures...>>::type result_type;
+        using result_type = typename util::detail::invoke_deferred_result<F,
+            pika::tuple<InnerFutures...>>::type;
 
         auto unwrapped_futures_tuple =
             util::map_pack(future_extract_value{}, predecessor);

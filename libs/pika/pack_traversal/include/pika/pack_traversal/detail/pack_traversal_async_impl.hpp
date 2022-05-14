@@ -195,10 +195,9 @@ namespace pika {
         class async_traversal_frame_allocator
           : public async_traversal_frame<Visitor, Args...>
         {
-            typedef async_traversal_frame<Visitor, Args...> base_type;
-            typedef typename std::allocator_traits<Allocator>::
-                template rebind_alloc<async_traversal_frame_allocator>
-                    other_allocator;
+            using base_type = async_traversal_frame<Visitor, Args...>;
+            using other_allocator = typename std::allocator_traits<Allocator>::
+                template rebind_alloc<async_traversal_frame_allocator>;
 
         public:
             explicit async_traversal_frame_allocator(
@@ -238,9 +237,9 @@ namespace pika {
         struct shared_state_allocator<
             util::detail::async_traversal_frame<Visitor, Args...>, Allocator>
         {
-            typedef util::detail::async_traversal_frame_allocator<Allocator,
-                Visitor, Args...>
-                type;
+            using type =
+                util::detail::async_traversal_frame_allocator<Allocator,
+                    Visitor, Args...>;
         };
     }}    // namespace traits::detail
 

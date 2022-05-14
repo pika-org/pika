@@ -537,8 +537,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         parallel(ExPolicy&& policy, Iter first, Iter middle, Sent last,
             Comp&& comp, Proj&& proj)
         {
-            typedef util::detail::algorithm_result<ExPolicy, Iter>
-                algorithm_result;
+            using algorithm_result =
+                util::detail::algorithm_result<ExPolicy, Iter>;
 
             try
             {

@@ -32,10 +32,10 @@ int main()
     using pika::is_invocable_v;
     using pika::util::invoke;
 
-    typedef int (s::*mem_fun_ptr)();
+    using mem_fun_ptr = int (s::*)();
     PIKA_TEST_MSG((is_invocable_v<mem_fun_ptr, p> == false), "mem-fun-ptr");
 
-    typedef int (s::*const_mem_fun_ptr)() const;
+    using const_mem_fun_ptr = int (s::*)() const;
     PIKA_TEST_MSG(
         (is_invocable_v<const_mem_fun_ptr, p> == true), "const-mem-fun-ptr");
 

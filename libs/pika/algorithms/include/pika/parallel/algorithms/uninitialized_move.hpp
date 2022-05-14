@@ -289,8 +289,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             using zip_iterator = pika::util::zip_iterator<Iter, FwdIter2>;
             using partition_result_type = std::pair<FwdIter2, FwdIter2>;
-            typedef
-                typename std::iterator_traits<FwdIter2>::value_type value_type;
+            using value_type =
+                typename std::iterator_traits<FwdIter2>::value_type;
 
             util::cancellation_token<util::detail::no_data> tok;
             return util::partitioner_with_cleanup<ExPolicy,

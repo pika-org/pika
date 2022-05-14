@@ -36,8 +36,8 @@ void define_task_block_test1(Executor& exec)
     bool task21_flag = false;
     bool task3_flag = false;
 
-    typedef task_block<parallel_policy_shim<Executor, static_chunk_size>>
-        task_block_type;
+    using task_block_type =
+        task_block<parallel_policy_shim<Executor, static_chunk_size>>;
 
     define_task_block(par.on(exec), [&](task_block_type& trh) {
         parent_flag = true;
@@ -87,10 +87,10 @@ void define_task_block_test2(Executor& exec)
     bool task21_flag = false;
     bool task3_flag = false;
 
-    typedef task_block<parallel_policy_shim<Executor, static_chunk_size>>
-        task_block_type1;
-    typedef task_block<parallel_task_policy_shim<Executor, static_chunk_size>>
-        task_block_type2;
+    using task_block_type1 =
+        task_block<parallel_policy_shim<Executor, static_chunk_size>>;
+    using task_block_type2 =
+        task_block<parallel_task_policy_shim<Executor, static_chunk_size>>;
 
     pika::future<void> f =
         define_task_block(par(task).on(exec), [&](task_block_type2& trh) {
@@ -144,8 +144,8 @@ void define_task_block_test3(Executor& exec)
     bool task21_flag = false;
     bool task3_flag = false;
 
-    typedef task_block<parallel_policy_shim<Executor, static_chunk_size>>
-        task_block_type;
+    using task_block_type =
+        task_block<parallel_policy_shim<Executor, static_chunk_size>>;
 
     define_task_block(par.on(exec), [&](task_block_type& trh) {
         parent_flag = true;
@@ -195,10 +195,10 @@ void define_task_block_test4(Executor& exec)
     bool task21_flag = false;
     bool task3_flag = false;
 
-    typedef task_block<parallel_policy_shim<Executor, static_chunk_size>>
-        task_block_type1;
-    typedef task_block<parallel_task_policy_shim<Executor, static_chunk_size>>
-        task_block_type2;
+    using task_block_type1 =
+        task_block<parallel_policy_shim<Executor, static_chunk_size>>;
+    using task_block_type2 =
+        task_block<parallel_task_policy_shim<Executor, static_chunk_size>>;
 
     pika::future<void> f =
         define_task_block(par(task).on(exec), [&](task_block_type2& trh) {
@@ -244,8 +244,8 @@ void define_task_block_test4(Executor& exec)
 template <typename Executor>
 void define_task_block_exceptions_test1(Executor& exec)
 {
-    typedef task_block<parallel_policy_shim<Executor, static_chunk_size>>
-        task_block_type;
+    using task_block_type =
+        task_block<parallel_policy_shim<Executor, static_chunk_size>>;
 
     try
     {
@@ -279,8 +279,8 @@ void define_task_block_exceptions_test1(Executor& exec)
 template <typename Executor>
 void define_task_block_exceptions_test2(Executor& exec)
 {
-    typedef task_block<parallel_task_policy_shim<Executor, static_chunk_size>>
-        task_block_type;
+    using task_block_type =
+        task_block<parallel_task_policy_shim<Executor, static_chunk_size>>;
 
     pika::future<void> f =
         define_task_block(par(task).on(exec), [](task_block_type& trh) {
@@ -316,8 +316,8 @@ void define_task_block_exceptions_test2(Executor& exec)
 template <typename Executor>
 void define_task_block_exceptions_test3(Executor& exec)
 {
-    typedef task_block<parallel_policy_shim<Executor, static_chunk_size>>
-        task_block_type;
+    using task_block_type =
+        task_block<parallel_policy_shim<Executor, static_chunk_size>>;
 
     try
     {
@@ -351,8 +351,8 @@ void define_task_block_exceptions_test3(Executor& exec)
 template <typename Executor>
 void define_task_block_exceptions_test4(Executor& exec)
 {
-    typedef task_block<parallel_task_policy_shim<Executor, static_chunk_size>>
-        task_block_type;
+    using task_block_type =
+        task_block<parallel_task_policy_shim<Executor, static_chunk_size>>;
 
     pika::future<void> f =
         define_task_block(par(task).on(exec), [&](task_block_type& trh) {

@@ -122,14 +122,13 @@ public:
 // ----------------------------------------------------------------------------
 
 using t1 = pika::tuple<int>;
-typedef pika::tuple<double&, const double&, const double, double*,
-    const double*>
-    t2;
-typedef pika::tuple<A, int (*)(char, int), C> t3;
+using t2 =
+    pika::tuple<double&, const double&, const double, double*, const double*>;
+using t3 = pika::tuple<A, int (*)(char, int), C>;
 using t4 = pika::tuple<std::string, std::pair<A, B>>;
-typedef pika::tuple<A*, pika::tuple<const A*, const B&, C>, bool, void*> t5;
-typedef pika::tuple<volatile int, const volatile char&, int (&)(float)> t6;
-typedef pika::tuple<B (A::*)(C&), A&> t7;
+using t5 = pika::tuple<A*, pika::tuple<const A*, const B&, C>, bool, void*>;
+using t6 = pika::tuple<volatile int, const volatile char&, int (&)(float)>;
+using t7 = pika::tuple<B (A::*)(C&), A&>;
 
 // -----------------------------------------------------------------------
 // -tuple construction tests ---------------------------------------------

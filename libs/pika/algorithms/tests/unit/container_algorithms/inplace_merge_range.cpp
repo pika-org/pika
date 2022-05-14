@@ -169,7 +169,7 @@ void test_inplace_merge_stable(
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    typedef typename std::pair<DataType, int> ElemType;
+    using ElemType = typename std::pair<DataType, int>;
     using base_iterator = typename std::vector<ElemType>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 

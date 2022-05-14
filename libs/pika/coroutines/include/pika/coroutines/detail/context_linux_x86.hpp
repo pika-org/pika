@@ -239,7 +239,7 @@ namespace pika { namespace threads { namespace coroutines {
                 posix::watermark_stack(
                     m_stack, static_cast<std::size_t>(m_stack_size));
 
-                typedef void fun(void*);
+                using fun = void(void*);
                 fun* funp = trampoline<CoroutineImpl>;
 
                 m_sp = (static_cast<void**>(m_stack) +
@@ -375,7 +375,7 @@ namespace pika { namespace threads { namespace coroutines {
                                            sizeof(void*)) -
                                 context_size;
 
-                            typedef void fun(void*);
+                            using fun = void(void*);
                             fun* funp = trampoline<CoroutineImpl>;
                             m_sp[cb_idx] = this;
                             m_sp[funp_idx] = reinterpret_cast<void*>(funp);

@@ -665,8 +665,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 FwdIter2 dest, T const& old_value, T const& new_value,
                 Proj&& proj)
             {
-                typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
-                    zip_iterator;
+                using zip_iterator =
+                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
                 using reference = typename zip_iterator::reference;
 
                 return util::detail::get_in_out_result(
@@ -740,8 +740,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             parallel(ExPolicy&& policy, FwdIter1 first, Sent sent,
                 FwdIter2 dest, F&& f, T const& new_value, Proj&& proj)
             {
-                typedef pika::util::zip_iterator<FwdIter1, FwdIter2>
-                    zip_iterator;
+                using zip_iterator =
+                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
                 using reference = typename zip_iterator::reference;
 
                 return util::detail::get_in_out_result(

@@ -103,8 +103,8 @@ namespace pika {
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        typedef
-                            typename traits::future_traits<T>::type result_type;
+                        using result_type =
+                            typename traits::future_traits<T>::type;
                         result_type* result = state->get_result();
                         this->base_type::set_value(
                             PIKA_MOVE(pika::get<I>(*result)));
@@ -118,9 +118,8 @@ namespace pika {
             template <std::size_t I, typename Future>
             void attach(Future& future)
             {
-                typedef
-                    typename traits::detail::shared_state_ptr_for<Future>::type
-                        shared_state_ptr;
+                using shared_state_ptr =
+                    typename traits::detail::shared_state_ptr_for<Future>::type;
 
                 // Bind an on_completed handler to this future which will wait
                 // for the future and will transfer its result to the new
@@ -158,7 +157,7 @@ namespace pika {
             pika::future<typename pika::tuple_element<I, Tuple>::type>
             extract_nth_future(pika::future<Tuple>& future)
         {
-            typedef typename pika::tuple_element<I, Tuple>::type result_type;
+            using result_type = typename pika::tuple_element<I, Tuple>::type;
 
             return pika::traits::future_access<pika::future<result_type>>::
                 create(extract_nth_continuation<result_type, Tuple, I>(future));
@@ -169,7 +168,7 @@ namespace pika {
             pika::future<typename pika::tuple_element<I, Tuple>::type>
             extract_nth_future(pika::shared_future<Tuple>& future)
         {
-            typedef typename pika::tuple_element<I, Tuple>::type result_type;
+            using result_type = typename pika::tuple_element<I, Tuple>::type;
 
             return pika::traits::future_access<pika::future<result_type>>::
                 create(extract_nth_continuation<result_type, Tuple, I>(future));
@@ -240,8 +239,8 @@ namespace pika {
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        typedef
-                            typename traits::future_traits<T>::type result_type;
+                        using result_type =
+                            typename traits::future_traits<T>::type;
                         result_type* result = state->get_result();
                         if (i >= result->size())
                         {
@@ -260,9 +259,8 @@ namespace pika {
             template <typename Future>
             void attach(std::size_t i, Future& future)
             {
-                typedef
-                    typename traits::detail::shared_state_ptr_for<Future>::type
-                        shared_state_ptr;
+                using shared_state_ptr =
+                    typename traits::detail::shared_state_ptr_for<Future>::type;
 
                 // Bind an on_completed handler to this future which will wait
                 // for the future and will transfer its result to the new

@@ -443,8 +443,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 Proj2&& proj2)
             {
                 using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
-                typedef util::detail::algorithm_result<ExPolicy, result_type>
-                    algorithm_result;
+                using algorithm_result =
+                    util::detail::algorithm_result<ExPolicy, result_type>;
 
                 try
                 {

@@ -1298,8 +1298,8 @@ void test_wait_for_all_two_futures()
     pika::shared_future<int> f2 = pt2.get_future();
     pt2.apply();
 
-    typedef pika::tuple<pika::shared_future<int>, pika::shared_future<int>>
-        result_type;
+    using result_type =
+        pika::tuple<pika::shared_future<int>, pika::shared_future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2);
 
     result_type result = r.get();
@@ -1322,9 +1322,8 @@ void test_wait_for_all_three_futures()
     pika::shared_future<int> f3 = pt3.get_future();
     pt3.apply();
 
-    typedef pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
-        pika::shared_future<int>>
-        result_type;
+    using result_type = pika::tuple<pika::shared_future<int>,
+        pika::shared_future<int>, pika::shared_future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3);
 
     result_type result = r.get();
@@ -1352,9 +1351,9 @@ void test_wait_for_all_four_futures()
     pika::shared_future<int> f4 = pt4.get_future();
     pt4.apply();
 
-    typedef pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
-        pika::shared_future<int>, pika::shared_future<int>>
-        result_type;
+    using result_type =
+        pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+            pika::shared_future<int>, pika::shared_future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3, f4);
 
     result_type result = r.get();
@@ -1387,10 +1386,9 @@ void test_wait_for_all_five_futures()
     pika::shared_future<int> f5 = pt5.get_future();
     pt5.apply();
 
-    typedef pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    using result_type = pika::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
-        pika::shared_future<int>>
-        result_type;
+        pika::shared_future<int>, pika::shared_future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3, f4, f5);
 
     result_type result = r.get();
@@ -1424,10 +1422,10 @@ void test_wait_for_two_out_of_five_futures()
     pika::lcos::local::packaged_task<int()> pt5(make_int_slowly);
     pika::shared_future<int> f5 = pt5.get_future();
 
-    typedef pika::when_some_result<pika::tuple<pika::shared_future<int>,
-        pika::shared_future<int>, pika::shared_future<int>,
-        pika::shared_future<int>, pika::shared_future<int>>>
-        result_type;
+    using result_type =
+        pika::when_some_result<pika::tuple<pika::shared_future<int>,
+            pika::shared_future<int>, pika::shared_future<int>,
+            pika::shared_future<int>, pika::shared_future<int>>>;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
     result_type result = r.get();
@@ -1464,10 +1462,10 @@ void test_wait_for_three_out_of_five_futures()
     pika::shared_future<int> f5 = pt5.get_future();
     pt5();
 
-    typedef pika::when_some_result<pika::tuple<pika::shared_future<int>,
-        pika::shared_future<int>, pika::shared_future<int>,
-        pika::shared_future<int>, pika::shared_future<int>>>
-        result_type;
+    using result_type =
+        pika::when_some_result<pika::tuple<pika::shared_future<int>,
+            pika::shared_future<int>, pika::shared_future<int>,
+            pika::shared_future<int>, pika::shared_future<int>>>;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
     result_type result = r.get();

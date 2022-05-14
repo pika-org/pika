@@ -136,10 +136,10 @@ namespace pika::threads::detail {
 #else
 #  if defined(PIKA_HAVE_MAX_CPU_COUNT)
     using mask_type = std::bitset<PIKA_HAVE_MAX_CPU_COUNT>;
-    typedef std::bitset<PIKA_HAVE_MAX_CPU_COUNT> const& mask_cref_type;
+    using mask_cref_type = std::bitset<PIKA_HAVE_MAX_CPU_COUNT> const&;
 #  else
     using mask_type = boost::dynamic_bitset<std::uint64_t>;
-    typedef boost::dynamic_bitset<std::uint64_t> const& mask_cref_type;
+    using mask_cref_type = boost::dynamic_bitset<std::uint64_t> const&;
 #  endif
     // clang-format on
 

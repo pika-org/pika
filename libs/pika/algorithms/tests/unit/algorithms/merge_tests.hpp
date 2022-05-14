@@ -484,10 +484,10 @@ void test_merge_etc(IteratorTag, DataType, int rand_base)
 
     // Test sequential_merge with input_iterator_tag.
     {
-        typedef test::test_iterator<base_iterator, std::input_iterator_tag>
-            input_iterator;
-        typedef test::test_iterator<base_iterator, std::output_iterator_tag>
-            output_iterator;
+        using input_iterator =
+            test::test_iterator<base_iterator, std::input_iterator_tag>;
+        using output_iterator =
+            test::test_iterator<base_iterator, std::output_iterator_tag>;
 
         auto result = pika::parallel::v1::detail::sequential_merge(
             input_iterator(std::begin(src1)), input_iterator(std::end(src1)),
@@ -541,10 +541,10 @@ void test_merge_etc(ExPolicy&& policy, IteratorTag, DataType, int rand_base)
 
     // Test sequential_merge with input_iterator_tag.
     {
-        typedef test::test_iterator<base_iterator, std::input_iterator_tag>
-            input_iterator;
-        typedef test::test_iterator<base_iterator, std::output_iterator_tag>
-            output_iterator;
+        using input_iterator =
+            test::test_iterator<base_iterator, std::input_iterator_tag>;
+        using output_iterator =
+            test::test_iterator<base_iterator, std::output_iterator_tag>;
 
         auto result = pika::parallel::v1::detail::sequential_merge(
             input_iterator(std::begin(src1)), input_iterator(std::end(src1)),

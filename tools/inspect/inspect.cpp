@@ -159,7 +159,7 @@ namespace {
 
     //  visit_predicate (determines which directories are visited)  --------------//
 
-    typedef bool (*pred_type)(const std::filesystem::path&);
+    using pred_type = bool (*)(const std::filesystem::path&);
 
     bool visit_predicate(const std::filesystem::path& pth)
     {
@@ -914,7 +914,10 @@ void print_output(std::ostream& out, inspector_list const& inspectors)
             << "\n"
                "Commit: "
             << "<a href = \"https://github.com/pika-org/pika/commit/"
-            << PIKA_HAVE_GIT_COMMIT << "\">"
+            << PIKA_HAVE_GIT_COMMIT
+            << "\">"
+            // The commit hash is intentionally truncated
+            // NOLINTNEXTLINE(bugprone-string-constructor)
             << std::string(PIKA_HAVE_GIT_COMMIT, 10)
             << "</a>\n"
                "\n";
@@ -953,7 +956,10 @@ void print_output(std::ostream& out, inspector_list const& inspectors)
             << "<br>\n"
                "<b>Commit:</b> "
             << "<a href = \"https://github.com/pika-org/pika/commit/"
-            << PIKA_HAVE_GIT_COMMIT << "\">"
+            << PIKA_HAVE_GIT_COMMIT
+            << "\">"
+            // The commit hash is intentionally truncated
+            // NOLINTNEXTLINE(bugprone-string-constructor)
             << std::string(PIKA_HAVE_GIT_COMMIT, 10)
             << "</a>\n"
                "</td>\n"

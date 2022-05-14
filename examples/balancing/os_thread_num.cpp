@@ -57,8 +57,8 @@ void get_os_thread_num(barrier& barr, queue<std::size_t>& os_threads)
 ///////////////////////////////////////////////////////////////////////////////
 using result_map = std::map<std::size_t, std::size_t>;
 
-typedef std::multimap<std::size_t, std::size_t, std::greater<std::size_t>>
-    sorter;
+using sorter =
+    std::multimap<std::size_t, std::size_t, std::greater<std::size_t>>;
 
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(variables_map& vm)

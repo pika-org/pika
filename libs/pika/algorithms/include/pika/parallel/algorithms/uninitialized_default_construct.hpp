@@ -250,8 +250,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
 
             using partition_result_type = std::pair<FwdIter, FwdIter>;
-            typedef
-                typename std::iterator_traits<FwdIter>::value_type value_type;
+            using value_type =
+                typename std::iterator_traits<FwdIter>::value_type;
 
             util::cancellation_token<util::detail::no_data> tok;
             return util::partitioner_with_cleanup<ExPolicy, FwdIter,
@@ -327,8 +327,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         InIter std_uninitialized_default_construct_n(
             InIter first, std::size_t count)
         {
-            typedef
-                typename std::iterator_traits<InIter>::value_type value_type;
+            using value_type =
+                typename std::iterator_traits<InIter>::value_type;
 
             InIter s_first = first;
             try

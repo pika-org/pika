@@ -174,7 +174,9 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         std::size_t nelem = static_cast<std::size_t>(last - first);
 
         // Adjust when there are many threads and only a few elements
-        while (nelem > chunk_size && (nthreads * nthreads) > (nelem >> 3))
+        while (nelem > chunk_size &&
+            (static_cast<std::uint64_t>(nthreads) *
+                static_cast<std::uint64_t>(nthreads)) > (nelem >> 3))
         {
             nthreads /= 2;
         }

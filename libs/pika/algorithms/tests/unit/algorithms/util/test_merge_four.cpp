@@ -80,7 +80,7 @@ void test1()
 
     // 1 range filled && 3 empty
     X.resize(10, 0);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i);
     RD = range_t(D.begin(), D.end());
     RX = range_t(X.begin(), X.end());
@@ -96,9 +96,9 @@ void test1()
 
     // Two ranges
     D.clear();
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i * 2 + 1);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i * 2);
     X.resize(20, 0);
     RA = range_t(A.begin(), A.end());
@@ -118,11 +118,11 @@ void test1()
     // Three ranges
     A.clear();
     D.clear();
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i * 3 + 2);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         B.push_back(i * 3 + 1);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i * 3);
     X.resize(30, 0);
     RA = range_t(A.begin(), A.end());
@@ -145,13 +145,13 @@ void test1()
     C.clear();
     D.clear();
     X.clear();
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i * 4 + 3);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         B.push_back(i * 4 + 2);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         C.push_back(i * 4 + 1);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i * 4);
 
     X.resize(40, 0);
@@ -175,13 +175,13 @@ void test1()
     C.clear();
     D.clear();
     X.clear();
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         B.push_back(i + 10);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         C.push_back(i + 20);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i + 30);
 
     X.resize(40, 0);
@@ -205,13 +205,13 @@ void test1()
     C.clear();
     D.clear();
     X.clear();
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i + 30);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         B.push_back(i + 20);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         C.push_back(i + 10);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i);
 
     X.resize(40, 0);
@@ -240,7 +240,7 @@ void test2()
     range_t R[4];
     compare comp;
 
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
     {
         A.emplace_back(i, 0);
         B.emplace_back(i, 1);
@@ -299,7 +299,7 @@ void test3()
 
     // 1 range filled && 3 empty
     //X.resize ( 10, 0 );
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i);
     RD = range_t(D.begin(), D.end());
     RX = range<std::uint64_t*>(&X[0], &X[9]);
@@ -315,9 +315,9 @@ void test3()
 
     // Two ranges
     D.clear();
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i * 2 + 1);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i * 2);
     //X.resize ( 20, 0);
     RA = range_t(A.begin(), A.end());
@@ -337,11 +337,11 @@ void test3()
     // Three ranges
     A.clear();
     D.clear();
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i * 3 + 2);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         B.push_back(i * 3 + 1);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i * 3);
     //X.resize ( 30 , 0);
     RA = range_t(A.begin(), A.end());
@@ -364,13 +364,13 @@ void test3()
     C.clear();
     D.clear();
     //X.clear() ;
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i * 4 + 3);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         B.push_back(i * 4 + 2);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         C.push_back(i * 4 + 1);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i * 4);
 
     //X.resize ( 40 , 0);
@@ -394,13 +394,13 @@ void test3()
     C.clear();
     D.clear();
     //X.clear() ;
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         B.push_back(i + 10);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         C.push_back(i + 20);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i + 30);
 
     //X.resize ( 40 , 0);
@@ -424,13 +424,13 @@ void test3()
     C.clear();
     D.clear();
     //X.clear() ;
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         A.push_back(i + 30);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         B.push_back(i + 20);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         C.push_back(i + 10);
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
         D.push_back(i);
 
     //X.resize ( 40 , 0);
@@ -460,7 +460,7 @@ void test4()
     range_t R[4];
     compare comp;
 
-    for (std::uint32_t i = 0; i < 10; ++i)
+    for (std::uint64_t i = 0; i < 10; ++i)
     {
         A.emplace_back(i, 0);
         B.emplace_back(i, 1);

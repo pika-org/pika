@@ -228,9 +228,8 @@ void test_stable_sort_exception(ExPolicy&& policy, T)
         try
         {
             using base_iterator = typename std::vector<T>::iterator;
-            typedef test::decorated_iterator<base_iterator,
-                std::random_access_iterator_tag>
-                decorated_iterator;
+            using decorated_iterator = test::decorated_iterator<base_iterator,
+                std::random_access_iterator_tag>;
 
             pika::stable_sort(std::forward<ExPolicy>(policy),
                 decorated_iterator(
@@ -261,9 +260,8 @@ void test_stable_sort_exception(ExPolicy&& policy, T)
         try
         {
             using base_iterator = typename std::vector<T>::iterator;
-            typedef test::decorated_iterator<base_iterator,
-                std::random_access_iterator_tag>
-                decorated_iterator;
+            using decorated_iterator = test::decorated_iterator<base_iterator,
+                std::random_access_iterator_tag>;
 
             pika::stable_sort(std::forward<ExPolicy>(policy),
                 decorated_iterator(c.begin(), []() { throw std::bad_alloc(); }),
@@ -307,9 +305,8 @@ void test_stable_sort_exception(ExPolicy&& policy, T, Compare comp)
         try
         {
             using base_iterator = typename std::vector<T>::iterator;
-            typedef test::decorated_iterator<base_iterator,
-                std::random_access_iterator_tag>
-                decorated_iterator;
+            using decorated_iterator = test::decorated_iterator<base_iterator,
+                std::random_access_iterator_tag>;
 
             pika::stable_sort(std::forward<ExPolicy>(policy),
                 decorated_iterator(
@@ -340,9 +337,8 @@ void test_stable_sort_exception(ExPolicy&& policy, T, Compare comp)
         try
         {
             using base_iterator = typename std::vector<T>::iterator;
-            typedef test::decorated_iterator<base_iterator,
-                std::random_access_iterator_tag>
-                decorated_iterator;
+            using decorated_iterator = test::decorated_iterator<base_iterator,
+                std::random_access_iterator_tag>;
 
             pika::stable_sort(std::forward<ExPolicy>(policy),
                 decorated_iterator(c.begin(), []() { throw std::bad_alloc(); }),
@@ -387,9 +383,8 @@ void test_stable_sort_exception_async(ExPolicy&& policy, T)
         try
         {
             using base_iterator = typename std::vector<T>::iterator;
-            typedef test::decorated_iterator<base_iterator,
-                std::random_access_iterator_tag>
-                decorated_iterator;
+            using decorated_iterator = test::decorated_iterator<base_iterator,
+                std::random_access_iterator_tag>;
 
             pika::future<void> f =
                 pika::stable_sort(std::forward<ExPolicy>(policy),
@@ -426,9 +421,8 @@ void test_stable_sort_exception_async(ExPolicy&& policy, T)
         try
         {
             using base_iterator = typename std::vector<T>::iterator;
-            typedef test::decorated_iterator<base_iterator,
-                std::random_access_iterator_tag>
-                decorated_iterator;
+            using decorated_iterator = test::decorated_iterator<base_iterator,
+                std::random_access_iterator_tag>;
 
             pika::future<void> f = pika::stable_sort(
                 std::forward<ExPolicy>(policy),
@@ -478,9 +472,8 @@ void test_stable_sort_exception_async(ExPolicy&& policy, T, Compare comp)
         try
         {
             using base_iterator = typename std::vector<T>::iterator;
-            typedef test::decorated_iterator<base_iterator,
-                std::random_access_iterator_tag>
-                decorated_iterator;
+            using decorated_iterator = test::decorated_iterator<base_iterator,
+                std::random_access_iterator_tag>;
 
             pika::future<void> f =
                 pika::stable_sort(std::forward<ExPolicy>(policy),
@@ -517,9 +510,8 @@ void test_stable_sort_exception_async(ExPolicy&& policy, T, Compare comp)
         try
         {
             using base_iterator = typename std::vector<T>::iterator;
-            typedef test::decorated_iterator<base_iterator,
-                std::random_access_iterator_tag>
-                decorated_iterator;
+            using decorated_iterator = test::decorated_iterator<base_iterator,
+                std::random_access_iterator_tag>;
 
             pika::future<void> f = pika::stable_sort(
                 std::forward<ExPolicy>(policy),

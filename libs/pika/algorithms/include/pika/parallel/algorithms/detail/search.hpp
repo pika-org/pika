@@ -187,10 +187,10 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             Proj2&& proj2)
         {
             using reference = typename std::iterator_traits<FwdIter>::reference;
-            typedef typename std::iterator_traits<FwdIter>::difference_type
-                difference_type;
-            typedef typename std::iterator_traits<FwdIter2>::difference_type
-                s_difference_type;
+            using difference_type =
+                typename std::iterator_traits<FwdIter>::difference_type;
+            using s_difference_type =
+                typename std::iterator_traits<FwdIter2>::difference_type;
             using result = util::detail::algorithm_result<ExPolicy, FwdIter>;
 
             s_difference_type diff = std::distance(s_first, s_last);

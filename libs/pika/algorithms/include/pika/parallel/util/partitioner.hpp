@@ -122,9 +122,9 @@ namespace pika { namespace parallel { namespace util {
             typename std::vector<std::size_t>::const_iterator chunk_size_it =
                 pika::util::begin(chunk_sizes);
 
-            typedef typename pika::tuple<typename data_type::value_type,
-                FwdIter, std::size_t>
-                tuple_type;
+            using tuple_type =
+                typename pika::tuple<typename data_type::value_type, FwdIter,
+                    std::size_t>;
 
             // schedule every chunk on a separate thread
             std::vector<tuple_type> shape;

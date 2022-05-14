@@ -217,8 +217,8 @@ std::atomic<std::size_t> count_bulk_sync(0);
 template <typename Executor>
 void test_executor(std::array<std::size_t, 2> expected)
 {
-    typedef typename pika::traits::executor_execution_category<Executor>::type
-        execution_category;
+    using execution_category =
+        typename pika::traits::executor_execution_category<Executor>::type;
 
     PIKA_TEST((std::is_same<pika::execution::sequenced_execution_tag,
         execution_category>::value));
@@ -270,9 +270,9 @@ struct test_sync_executor2 : test_sync_executor1
         Shape, Ts...>::type
     call(std::false_type, F&& f, Shape const& shape, Ts&&... ts)
     {
-        typedef
+        using result_type =
             typename pika::parallel::execution::detail::bulk_function_result<F,
-                Shape, Ts...>::type result_type;
+                Shape, Ts...>::type;
 
         std::vector<result_type> results;
         for (auto const& elem : shape)
@@ -298,9 +298,9 @@ struct test_sync_executor2 : test_sync_executor1
     {
         ++count_bulk_sync;
 
-        typedef
+        using is_void =
             typename std::is_void<typename pika::parallel::execution::detail::
-                    bulk_function_result<F, Shape, Ts...>::type>::type is_void;
+                    bulk_function_result<F, Shape, Ts...>::type>::type;
 
         return call(
             is_void(), std::forward<F>(f), shape, std::forward<Ts>(ts)...);

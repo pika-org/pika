@@ -130,8 +130,8 @@ template <typename IteratorTag>
 void test_find_first_of_exception(IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), gen() + 1);
     c[c.size() / 2] = 1;
@@ -168,8 +168,8 @@ void test_find_first_of_exception(ExPolicy&& policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), gen() + 1);
     c[c.size() / 2] = 1;
@@ -202,8 +202,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_find_first_of_exception_async(ExPolicy&& p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), gen() + 1);
@@ -269,8 +269,8 @@ void test_find_first_of_bad_alloc(ExPolicy&& policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(100007);
     std::iota(std::begin(c), std::end(c), gen() + 1);
@@ -302,8 +302,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_find_first_of_bad_alloc_async(ExPolicy&& p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), gen() + 1);

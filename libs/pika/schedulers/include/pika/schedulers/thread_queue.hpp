@@ -53,11 +53,11 @@ namespace pika { namespace threads { namespace policies {
     // template <typename T>
     // struct queue_backend
     // {
-    //     typedef ... container_type;
-    //     typedef ... value_type;
-    //     typedef ... reference;
-    //     typedef ... const_reference;
-    //     typedef ... size_type;
+    //     using container_type = ...;
+    //     using value_type = ...;
+    //     using reference = ...;
+    //     using const_reference = ...;
+    //     using size_type = ...;
     //
     //     queue_backend(
     //         size_type initial_size = ...
@@ -76,7 +76,7 @@ namespace pika { namespace threads { namespace policies {
     //     template <typename T>
     //     struct apply
     //     {
-    //         typedef ... type;
+    //         using type = ...;
     //     };
     // };
     template <typename Mutex, typename PendingQueuing, typename StagedQueuing,

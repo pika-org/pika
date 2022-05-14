@@ -287,8 +287,8 @@ void test_lexicographical_compare_exception(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::iota(std::begin(c), std::end(c), 0);
@@ -324,8 +324,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_lexicographical_compare_async_exception(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), gen() + 1);
@@ -390,8 +390,8 @@ void test_lexicographical_compare_bad_alloc(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), gen() + 1);
@@ -424,8 +424,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_lexicographical_compare_async_bad_alloc(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<std::size_t>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), gen() + 1);

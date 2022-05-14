@@ -24,7 +24,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename... T, std::size_t N, typename Abi>
     struct vector_pack_type<pika::tuple<T...>, N, Abi>
     {
-        typedef pika::tuple<typename vector_pack_type<T, N, Abi>::type...> type;
+        using type = pika::tuple<typename vector_pack_type<T, N, Abi>::type...>;
     };
 
     ///////////////////////////////////////////////////////////////////////////

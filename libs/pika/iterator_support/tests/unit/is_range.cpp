@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 void array_range()
 {
-    typedef int range[3];
+    using range = int[3];
 
     PIKA_TEST_MSG((pika::traits::is_range<range>::value == true), "array");
     PIKA_TEST_MSG(

@@ -49,9 +49,8 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     {
         PIKA_ASSERT(pool);
 
-        typedef std::vector<pika::future<
-            typename detail::bulk_function_result<F, S, Ts...>::type>>
-            result_type;
+        using result_type = std::vector<pika::future<
+            typename detail::bulk_function_result<F, S, Ts...>::type>>;
 
         result_type results;
         std::size_t const size = pika::util::size(shape);

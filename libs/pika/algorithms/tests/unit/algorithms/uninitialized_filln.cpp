@@ -110,8 +110,8 @@ void test_uninitialized_fill_n_exception(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<test::count_instances>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<test::count_instances> c(10007);
     std::iota(std::begin(c), std::end(c), std::rand());
@@ -150,8 +150,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_fill_n_exception_async(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<test::count_instances>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<test::count_instances> c(10007);
     std::iota(std::begin(c), std::end(c), std::rand());
@@ -220,8 +220,8 @@ void test_uninitialized_fill_n_bad_alloc(ExPolicy policy, IteratorTag)
         "pika::is_execution_policy<ExPolicy>::value");
 
     using base_iterator = std::vector<test::count_instances>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<test::count_instances> c(10007);
     std::iota(std::begin(c), std::end(c), std::rand());
@@ -259,8 +259,8 @@ template <typename ExPolicy, typename IteratorTag>
 void test_uninitialized_fill_n_bad_alloc_async(ExPolicy p, IteratorTag)
 {
     using base_iterator = std::vector<test::count_instances>::iterator;
-    typedef test::decorated_iterator<base_iterator, IteratorTag>
-        decorated_iterator;
+    using decorated_iterator =
+        test::decorated_iterator<base_iterator, IteratorTag>;
 
     std::vector<test::count_instances> c(10007);
     std::iota(std::begin(c), std::end(c), std::rand());

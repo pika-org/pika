@@ -144,7 +144,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
             ctx->uc_stack.ss_size = size;
             ctx->uc_link = exitto;
 
-            typedef void (*ctx_main)();
+            using = void (*ctx_main)();
             //makecontext can't fail.
             ::makecontext(ctx, (ctx_main) (startfunc), 1, startarg);
             return 0;
