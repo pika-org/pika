@@ -5,6 +5,13 @@
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+|bors_enabled|
+|circleci_status|
+|github_actions_linux_debug_status|
+|github_actions_linux_hip_status|
+|github_actions_linux_sanitizers_status|
+|github_actions_macos_debug_status|
+
 ====
 pika
 ====
@@ -106,3 +113,27 @@ Pick your favourite meaning from the following:
 * `pika- as a prefix for fast in Finnish
   <https://en.wiktionary.org/wiki/pika->`_
 * `pika in various other languages <https://en.wiktionary.org/wiki/pika>`_
+
+.. |bors_enabled| image:: https://bors.tech/images/badge_small.svg
+     :target: https://app.bors.tech/repositories/41470
+     :alt: Bors enabled
+
+.. |circleci_status| image:: https://circleci.com/gh/pika-org/pika/tree/main.svg?style=svg
+     :target: https://circleci.com/gh/pika-org/pika/tree/main
+     :alt: CircleCI
+
+.. |github_actions_linux_debug_status| image:: https://github.com/pika-org/pika/actions/workflows/linux_debug.yml/badge.svg
+     :target: https://github.com/pika-org/pika/actions/workflows/linux_debug.yml
+     :alt: Linux CI (Debug)
+
+.. |github_actions_linux_hip_status| image:: https://github.com/pika-org/pika/actions/workflows/linux_hip.yml/badge.svg
+     :target: https://github.com/pika-org/pika/actions/workflows/linux_hip.yml
+     :alt: Linux CI (HIP, Debug)
+
+.. |github_actions_linux_sanitizers_status| image:: https://github.com/pika-org/pika/actions/workflows/linux_sanitizers.yml/badge.svg
+     :target: https://github.com/pika-org/pika/actions/workflows/linux_sanitizers.yml
+     :alt: Linux CI (asan/ubsan)
+
+.. |github_actions_macos_debug_status| image:: https://github.com/pika-org/pika/actions/workflows/macos_debug.yml/badge.svg
+     :target: https://github.com/pika-org/pika/actions/workflows/macos_debug.yml
+     :alt: macOS CI (Debug)
