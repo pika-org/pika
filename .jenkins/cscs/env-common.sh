@@ -17,8 +17,11 @@ export CMAKE_GENERATOR=Ninja
 export CCACHE_DIR=/scratch/snx3000/simbergm/ccache-jenkins-pika
 export CCACHE_MAXSIZE=100G
 export CCACHE_MAXFILES=50000
+export CCACHE_COMPILERCHECK="%compiler% -v"
 
 configure_extra_options+=" -DCMAKE_BUILD_TYPE=${build_type}"
+configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"
+configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
 configure_extra_options+=" -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON"
 configure_extra_options+=" -DPIKA_WITH_EXAMPLES=ON"
 configure_extra_options+=" -DPIKA_WITH_TESTS=ON"
@@ -27,3 +30,4 @@ configure_extra_options+=" -DPIKA_WITH_TESTS_REGRESSIONS=ON"
 configure_extra_options+=" -DPIKA_WITH_TESTS_BENCHMARKS=ON"
 configure_extra_options+=" -DPIKA_WITH_TESTS_EXTERNAL_BUILD=ON"
 configure_extra_options+=" -DPIKA_WITH_TESTS_EXAMPLES=ON"
+configure_extra_options+=" -DPIKA_WITH_TESTS_HEADERS=ON"
