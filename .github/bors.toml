@@ -46,8 +46,7 @@ status = [
   "jenkins/cscs/clang-13-debug",
   "jenkins/cscs/clang-14-debug",
   "jenkins/cscs/gcc-9-debug",
-  # This regularly fails
-  # "jenkins/cscs/gcc-10-apex-spack-debug",
+  "jenkins/cscs/gcc-10-apex-debug",
   "jenkins/cscs/gcc-11-debug",
   "jenkins/cscs/gcc-cuda-debug",
 ]
