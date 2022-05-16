@@ -16,9 +16,6 @@ spack_spec="pika@main arch=${spack_arch} %${spack_compiler} +apex malloc=system 
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_APEX=ON"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
-configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS=ON"
-configure_extra_options+=" -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
-configure_extra_options+=" -DPIKA_WITH_TESTS_HEADERS=ON"
 
 build_extra_options+=" -j10"

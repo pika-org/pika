@@ -41,13 +41,14 @@ status = [
 
   # Jenkins
   "jenkins/cscs/cce-cuda-debug",
-  "jenkins/cscs/clang-10-debug",
   "jenkins/cscs/clang-11-debug",
-  "jenkins/cscs/clang-9-debug",
-  "jenkins/cscs/gcc-11-debug",
+  "jenkins/cscs/clang-12-debug",
+  "jenkins/cscs/clang-13-debug",
+  "jenkins/cscs/clang-14-debug",
+  "jenkins/cscs/gcc-9-debug",
   # This regularly fails
   # "jenkins/cscs/gcc-10-apex-spack-debug",
-  "jenkins/cscs/gcc-9-debug",
+  "jenkins/cscs/gcc-11-debug",
   "jenkins/cscs/gcc-cuda-debug",
 ]
 required_approvals = 0
