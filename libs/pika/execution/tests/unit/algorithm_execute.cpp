@@ -14,6 +14,7 @@
 static std::size_t friend_tag_invoke_schedule_calls = 0;
 static std::size_t tag_invoke_execute_calls = 0;
 
+template <typename Scheduler>
 struct sender
 {
     template <template <class...> class Tuple,
@@ -24,6 +25,10 @@ struct sender
     using error_types = Variant<std::exception_ptr>;
 
     static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t()>;
 
     struct operation_state
     {
@@ -37,11 +42,19 @@ struct sender
     {
         return {};
     }
+
+    friend Scheduler tag_invoke(
+        pika::execution::experimental::get_completion_scheduler_t<
+            pika::execution::experimental::set_value_t>,
+        sender const&) noexcept
+    {
+        return {};
+    }
 };
 
 struct scheduler_1
 {
-    friend sender tag_invoke(
+    friend sender<scheduler_1> tag_invoke(
         pika::execution::experimental::schedule_t, scheduler_1)
     {
         ++friend_tag_invoke_schedule_calls;
@@ -61,12 +74,19 @@ struct scheduler_1
 
 struct scheduler_2
 {
-    bool operator==(scheduler_1 const&) const noexcept
+    friend sender<scheduler_2> tag_invoke(
+        pika::execution::experimental::schedule_t, scheduler_2)
+    {
+        PIKA_TEST(false);
+        return {};
+    }
+
+    bool operator==(scheduler_2 const&) const noexcept
     {
         return true;
     }
 
-    bool operator!=(scheduler_1 const&) const noexcept
+    bool operator!=(scheduler_2 const&) const noexcept
     {
         return false;
     }
@@ -80,12 +100,12 @@ void tag_invoke(pika::execution::experimental::execute_t, scheduler_2, F&&)
 
 struct f_struct_1
 {
-    void operator()(){};
+    void operator()() noexcept {};
 };
 
 struct f_struct_2
 {
-    void operator()(int){};
+    void operator()(int) noexcept {};
 };
 
 struct f_struct_3

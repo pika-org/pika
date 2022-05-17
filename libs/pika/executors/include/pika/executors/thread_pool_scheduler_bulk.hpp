@@ -7,6 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#endif
+
 #include <pika/assert.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
 #include <pika/coroutines/thread_enums.hpp>
@@ -81,6 +85,29 @@ namespace pika { namespace execution { namespace experimental {
             thread_pool_bulk_sender& operator=(
                 thread_pool_bulk_sender const&) = default;
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            template <template <typename...> class Tuple,
+                template <typename...> class Variant>
+            using value_types =
+                pika::execution::experimental::value_types_of_t<Sender,
+                    pika::execution::experimental::detail::empty_env, Tuple,
+                    Variant>;
+
+            template <template <typename...> class Variant>
+            using error_types =
+                pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                    pika::execution::experimental::error_types_of_t<Sender,
+                        pika::execution::experimental::detail::empty_env,
+                        Variant>,
+                    std::exception_ptr>>;
+
+            using completion_signatures =
+                pika::execution::experimental::make_completion_signatures<
+                    Sender, pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::completion_signatures<
+                        pika::execution::experimental::set_error_t(
+                            std::exception_ptr)>>;
+#else
             template <template <typename...> class Tuple,
                 template <typename...> class Variant>
             using value_types =
@@ -95,6 +122,7 @@ namespace pika { namespace execution { namespace experimental {
                     std::exception_ptr>>;
 
             static constexpr bool sends_done = false;
+#endif
 
             template <typename CPO,
                 // clang-format off
@@ -105,13 +133,13 @@ namespace pika { namespace execution { namespace experimental {
                                 pika::execution::experimental::set_error_t,
                                 std::decay_t<Sender>> ||
                         pika::execution::experimental::detail::has_completion_scheduler_v<
-                                pika::execution::experimental::set_done_t,
+                                pika::execution::experimental::set_stopped_t,
                                 std::decay_t<Sender>>))
                 // clang-format on
                 >
             friend constexpr auto tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                thread_pool_bulk_sender const& s)
+                thread_pool_bulk_sender const& s) noexcept
             {
                 if constexpr (std::is_same_v<std::decay_t<CPO>,
                                   pika::execution::experimental::set_value_t>)
@@ -143,9 +171,9 @@ namespace pika { namespace execution { namespace experimental {
                     }
 
                     friend void tag_invoke(
-                        set_done_t, bulk_receiver&& r) noexcept
+                        set_stopped_t, bulk_receiver&& r) noexcept
                     {
-                        pika::execution::experimental::set_done(
+                        pika::execution::experimental::set_stopped(
                             PIKA_MOVE(r.op_state->receiver));
                     };
 
@@ -419,10 +447,7 @@ namespace pika { namespace execution { namespace experimental {
                     using range_value_type = pika::traits::iter_value_t<
                         pika::traits::range_iterator_t<Shape>>;
 
-                    template <typename... Ts,
-                        typename = std::enable_if_t<
-                            pika::is_invocable_v<F, range_value_type,
-                                std::add_lvalue_reference_t<Ts>...>>>
+                    template <typename... Ts>
                     friend void tag_invoke(
                         set_value_t, bulk_receiver&& r, Ts&&... ts) noexcept
                     {
@@ -475,6 +500,14 @@ namespace pika { namespace execution { namespace experimental {
 
                         // Handle the queue for the local thread.
                         r.do_work_local(n, chunk_size, local_worker_thread);
+                    }
+
+                    friend constexpr pika::execution::experimental::detail::
+                        empty_env
+                        tag_invoke(pika::execution::experimental::get_env_t,
+                            bulk_receiver const&) noexcept
+                    {
+                        return {};
                     }
                 };
 

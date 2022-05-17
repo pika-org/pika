@@ -72,6 +72,11 @@ namespace pika { namespace execution { namespace experimental {
             using error_types = Variant<std::exception_ptr>;
 
             static constexpr bool sends_done = false;
+
+            using completion_signatures =
+                pika::execution::experimental::completion_signatures<
+                    set_value_t(std::decay_t<Future>),
+                    set_error_t(std::exception_ptr)>;
         };
 
         template <typename Future>

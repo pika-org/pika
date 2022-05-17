@@ -26,6 +26,7 @@
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/functional/invoke_fused.hpp>
+#include <pika/futures/promise.hpp>
 
 #include <exception>
 #include <string>
@@ -37,25 +38,53 @@ namespace pika { namespace execution { namespace experimental {
 
     namespace detail {
 #if defined(PIKA_HAVE_CXX20_PERFECT_PACK_CAPTURE)
-        template <typename F, typename... Ts>
-        auto captured_args_then(F&& f, Ts&&... ts)
+        template <typename F, typename Rng, typename... Ts>
+        auto captured_args_then_void(F&& f, Rng&& rng, Ts&&... ts)
         {
-            return [f = PIKA_FORWARD(F, f), ... ts = PIKA_FORWARD(Ts, ts)](
+            return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
+                       ... ts = PIKA_FORWARD(Ts, ts)](
+                       auto i, auto&&... predecessor) mutable {
+                PIKA_INVOKE(PIKA_FORWARD(F, f), std::begin(rng)[i],
+                    PIKA_FORWARD(decltype(predecessor), predecessor)...,
+                    PIKA_FORWARD(Ts, ts)...);
+            };
+        }
+
+        template <typename F, typename Rng, typename... Ts>
+        auto captured_args_then(F&& f, Rng&& rng, Ts&&... ts)
+        {
+            return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
+                       ... ts = PIKA_FORWARD(Ts, ts)](
                        auto i, auto&& predecessor, auto& v) mutable {
-                v[i] = PIKA_INVOKE(PIKA_FORWARD(F, f), i,
+                v[i] = PIKA_INVOKE(PIKA_FORWARD(F, f), std::begin(rng)[i],
                     PIKA_FORWARD(decltype(predecessor), predecessor),
                     PIKA_FORWARD(Ts, ts)...);
             };
         }
 #else
-        template <typename F, typename... Ts>
-        auto captured_args_then(F&& f, Ts&&... ts)
+        template <typename F, typename Rng, typename... Ts>
+        auto captured_args_then_void(F&& f, Rng&& rng, Ts&&... ts)
         {
-            return [f = PIKA_FORWARD(F, f),
+            return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
+                       t = pika::make_tuple(PIKA_FORWARD(Ts, ts)...)](
+                       auto i, auto&&... predecessor) mutable {
+                pika::util::invoke_fused(
+                    pika::util::bind_front(PIKA_FORWARD(F, f),
+                        std::begin(rng)[i],
+                        PIKA_FORWARD(decltype(predecessor), predecessor)...),
+                    PIKA_MOVE(t));
+            };
+        }
+
+        template <typename F, typename Rng, typename... Ts>
+        auto captured_args_then(F&& f, Rng&& rng, Ts&&... ts)
+        {
+            return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
                        t = pika::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&& predecessor, auto& v) mutable {
                 v[i] = pika::util::invoke_fused(
-                    pika::util::bind_front(PIKA_FORWARD(F, f), i,
+                    pika::util::bind_front(PIKA_FORWARD(F, f),
+                        std::begin(rng)[i],
                         PIKA_FORWARD(decltype(predecessor), predecessor)),
                     PIKA_MOVE(t));
             };
@@ -76,8 +105,8 @@ namespace pika { namespace execution { namespace experimental {
         constexpr scheduler_executor() = default;
 
         template <typename Scheduler,
-            typename Enable = std::enable_if_t<
-                pika::execution::experimental::is_scheduler_v<Scheduler>>>
+            typename Enable = std::enable_if_t<pika::execution::experimental::
+                    is_scheduler_v<std::decay_t<Scheduler>>>>
         constexpr explicit scheduler_executor(Scheduler&& sched)
           : sched_(PIKA_FORWARD(Scheduler, sched))
         {
@@ -253,11 +282,24 @@ namespace pika { namespace execution { namespace experimental {
 
             if constexpr (std::is_void_v<result_type>)
             {
+                using size_type = decltype(pika::util::size(shape));
+                size_type const n = pika::util::size(shape);
+
+                auto f_helper = [](size_type const i, F& f, S const& shape,
+                                    Ts&... ts) {
+                    auto it = pika::util::begin(shape);
+                    std::advance(it, i);
+                    PIKA_INVOKE(f, *it, ts...);
+                };
+                auto discard_args = [](auto&&...) {};
+
                 std::vector<pika::future<void>> results;
                 results.reserve(1);
-                results.emplace_back(make_future(bulk(schedule(sched_), shape,
-                    pika::util::bind_back(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))));
+                results.emplace_back(make_future(
+                    then(bulk(transfer_just(sched_, PIKA_FORWARD(F, f), shape,
+                                  PIKA_FORWARD(Ts, ts)...),
+                             n, f_helper),
+                        discard_args)));
                 return results;
             }
             else
@@ -306,9 +348,9 @@ namespace pika { namespace execution { namespace experimental {
         void bulk_sync_execute(F&& f, S const& shape, Ts&&... ts)
         {
             pika::this_thread::experimental::sync_wait(
-                bulk(schedule(sched_), shape,
-                    pika::util::bind_back(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
+                bulk(schedule(sched_), pika::util::size(shape),
+                    detail::captured_args_then_void(
+                        PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...)));
         }
 
         template <typename F, typename S, typename Future, typename... Ts>
@@ -322,12 +364,12 @@ namespace pika { namespace execution { namespace experimental {
             if constexpr (std::is_void<result_type>::value)
             {
                 // the overall return value is future<void>
-                auto prereq =
-                    when_all(keep_future(PIKA_FORWARD(Future, predecessor)));
+                auto prereq = keep_future(PIKA_FORWARD(Future, predecessor));
 
-                auto loop = bulk(transfer(PIKA_MOVE(prereq), sched_), shape,
-                    pika::util::bind_back(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                auto loop = bulk(transfer(PIKA_MOVE(prereq), sched_),
+                    pika::util::size(shape),
+                    detail::captured_args_then_void(
+                        PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...));
 
                 return make_future(PIKA_MOVE(loop));
             }
@@ -338,9 +380,10 @@ namespace pika { namespace execution { namespace experimental {
                     keep_future(PIKA_FORWARD(Future, predecessor)),
                     just(std::vector<result_type>(pika::util::size(shape))));
 
-                auto loop = bulk(transfer(PIKA_MOVE(prereq), sched_), shape,
+                auto loop = bulk(transfer(PIKA_MOVE(prereq), sched_),
+                    pika::util::size(shape),
                     detail::captured_args_then(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                        PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...));
 
                 return make_future(then(
                     PIKA_MOVE(loop), [](auto&&, std::vector<result_type>&& v) {

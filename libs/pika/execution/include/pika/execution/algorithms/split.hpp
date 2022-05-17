@@ -7,6 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#else
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/allocator_support/traits/is_allocator.hpp>
@@ -166,7 +170,7 @@ namespace pika { namespace execution { namespace experimental {
                     }
 
                     friend void tag_invoke(
-                        set_done_t, split_receiver&& r) noexcept
+                        set_stopped_t, split_receiver&& r) noexcept
                     {
                         r.state.set_predecessor_done();
                     };
@@ -229,7 +233,7 @@ namespace pika { namespace execution { namespace experimental {
 
                     void operator()(done_type)
                     {
-                        pika::execution::experimental::set_done(
+                        pika::execution::experimental::set_stopped(
                             PIKA_MOVE(receiver));
                     }
 
@@ -318,7 +322,7 @@ namespace pika { namespace execution { namespace experimental {
                     if (predecessor_done)
                     {
                         // If we read predecessor_done here it means that one of
-                        // set_error/set_done/set_value has been called and
+                        // set_error/set_stopped/set_value has been called and
                         // values/errors have been stored into the shared state.
                         // We can trigger the continuation directly.
                         // TODO: Should this preserve the scheduler? It does not
@@ -355,7 +359,7 @@ namespace pika { namespace execution { namespace experimental {
                             // other threads may also try to add continuations
                             // to the vector and the vector is not threadsafe in
                             // itself. The continuation will be called later
-                            // when set_error/set_done/set_value is called.
+                            // when set_error/set_stopped/set_value is called.
                             continuations.emplace_back(
                                 [this,
                                     receiver = PIKA_FORWARD(
@@ -543,3 +547,4 @@ namespace pika { namespace execution { namespace experimental {
         }
     } split{};
 }}}    // namespace pika::execution::experimental
+#endif

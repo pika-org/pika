@@ -7,6 +7,39 @@
 #pragma once
 
 #include <pika/config.hpp>
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#include <pika/execution_base/sender.hpp>
+#include <pika/functional/tag_invoke.hpp>
+
+namespace pika::execution::experimental::detail {
+    template <bool TagInvocable, typename CPO, typename Sender>
+    struct has_completion_scheduler_impl : std::false_type
+    {
+    };
+
+    template <typename CPO, typename Sender>
+    struct has_completion_scheduler_impl<true, CPO, Sender>
+      : pika::execution::experimental::is_scheduler<
+            pika::functional::tag_invoke_result_t<
+                get_completion_scheduler_t<CPO>, std::decay_t<Sender> const&>>
+    {
+    };
+
+    template <typename CPO, typename Sender>
+    struct has_completion_scheduler
+      : has_completion_scheduler_impl<
+            pika::functional::is_tag_invocable_v<
+                get_completion_scheduler_t<CPO>, std::decay_t<Sender> const&>,
+            CPO, Sender>
+    {
+    };
+
+    template <typename CPO, typename Sender>
+    inline constexpr bool has_completion_scheduler_v =
+        has_completion_scheduler<CPO, Sender>::value;
+}    // namespace pika::execution::experimental::detail
+#else
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/tag_invoke.hpp>
 
@@ -89,3 +122,4 @@ namespace pika::execution::experimental {
 
     }    // namespace detail
 }    // namespace pika::execution::experimental
+#endif

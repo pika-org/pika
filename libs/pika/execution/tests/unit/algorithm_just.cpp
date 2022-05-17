@@ -4,7 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/modules/execution.hpp>
+#include <pika/execution/algorithms/just.hpp>
 #include <pika/testing.hpp>
 
 #include "algorithm_test_utils.hpp"
@@ -120,7 +120,10 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+    // TODO: The reference implementation does not ADL-isolate the just-sender.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     test_adl_isolation(ex::just(my_namespace::my_type{}));
+#endif
 
     return pika::util::report_errors();
 }

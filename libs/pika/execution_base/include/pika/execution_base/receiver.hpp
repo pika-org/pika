@@ -7,6 +7,36 @@
 
 #pragma once
 
+#include <pika/config.hpp>
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+
+namespace pika::execution::experimental {
+    template <typename Receiver>
+    inline constexpr bool is_receiver_v = receiver<Receiver>;
+
+    template <typename Receiver>
+    struct is_receiver
+    {
+        static constexpr bool value = is_receiver_v<Receiver>;
+    };
+
+    template <typename Receiver, typename Completions>
+    inline constexpr bool is_receiver_of_v = receiver_of<Receiver, Completions>;
+
+    template <typename Receiver, typename Completions>
+    struct is_receiver_of
+    {
+        static constexpr bool value = is_receiver_of_v<Receiver, Completions>;
+    };
+
+    namespace detail {
+        struct empty_env
+        {
+        };
+    }    // namespace detail
+}    // namespace pika::execution::experimental
+#else
 #include <pika/config/constexpr.hpp>
 #include <pika/functional/tag_invoke.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
@@ -32,23 +62,23 @@ namespace pika { namespace execution { namespace experimental {
     template <typename R, typename... As>
     void set_value(R&& r, As&&... as);
 
-    /// set_done is a customization point object. The expression
-    /// `pika::execution::set_done(r)` is equivalent to:
-    ///     * `r.set_done()`, if that expression is valid. If the function selected
+    /// set_stopped is a customization point object. The expression
+    /// `pika::execution::set_stopped(r)` is equivalent to:
+    ///     * `r.set_stopped()`, if that expression is valid. If the function selected
     ///       does not signal the Receiver `r`'s done channel,
     ///       the program is ill-formed (no diagnostic required).
-    ///     * Otherwise, `set_done(r), if that expression is valid, with
+    ///     * Otherwise, `set_stopped(r), if that expression is valid, with
     ///       overload resolution performed in a context that include the declaration
-    ///       `void set_done();`
+    ///       `void set_stopped();`
     ///     * Otherwise, the expression is ill-formed.
     ///
     /// The customization is implemented in terms of `pika::functional::tag_invoke`.
     template <typename R>
-    void set_done(R&& r);
+    void set_stopped(R&& r);
 
     /// set_error is a customization point object. The expression
     /// `pika::execution::set_error(r, e)` is equivalent to:
-    ///     * `r.set_done(e)`, if that expression is valid. If the function selected
+    ///     * `r.set_stopped(e)`, if that expression is valid. If the function selected
     ///       does not send the error `e` the Receiver `r`'s error channel,
     ///       the program is ill-formed (no diagnostic required).
     ///     * Otherwise, `set_error(r, e), if that expression is valid, with
@@ -66,7 +96,7 @@ namespace pika { namespace execution { namespace experimental {
     /// being canceled. As such, the Receiver concept is defined by having the
     /// following two customization points defined, which form the completion-signal
     /// operations:
-    ///     * `pika::execution::experimental::set_done`
+    ///     * `pika::execution::experimental::set_stopped`
     ///     * `pika::execution::experimental::set_error`
     ///
     /// Those two functions denote the completion-signal operations. The Receiver
@@ -95,7 +125,7 @@ namespace pika { namespace execution { namespace experimental {
     /// contract:
     ///     * If `pika::execution::set_value` exits with an exception, it
     ///       is still valid to call `pika::execution::set_error` or
-    ///       `pika::execution::set_done`
+    ///       `pika::execution::set_stopped`
     ///
     /// \see pika::execution::traits::is_receiver
     template <typename T, typename... As>
@@ -112,9 +142,9 @@ namespace pika { namespace execution { namespace experimental {
     } set_error{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_done_t : pika::functional::tag_noexcept<set_done_t>
+    struct set_stopped_t : pika::functional::tag_noexcept<set_stopped_t>
     {
-    } set_done{};
+    } set_stopped{};
 
     ///////////////////////////////////////////////////////////////////////
     namespace detail {
@@ -129,7 +159,7 @@ namespace pika { namespace execution { namespace experimental {
         template <typename T, typename E>
         struct is_receiver_impl<true, T, E>
           : std::integral_constant<bool,
-                pika::is_invocable_v<set_done_t, std::decay_t<T>&&> &&
+                pika::is_invocable_v<set_stopped_t, std::decay_t<T>&&> &&
                     pika::is_invocable_v<set_error_t, std::decay_t<T>&&, E>>
         {
         };
@@ -174,57 +204,39 @@ namespace pika { namespace execution { namespace experimental {
     template <typename T, typename... As>
     inline constexpr bool is_receiver_of_v = is_receiver_of<T, As...>::value;
 
-    ///////////////////////////////////////////////////////////////////////
     namespace detail {
-        template <bool IsReceiverOf, typename T, typename... As>
-        struct is_nothrow_receiver_of_impl;
-
-        template <typename T, typename... As>
-        struct is_nothrow_receiver_of_impl<false, T, As...> : std::false_type
-        {
-        };
-
-        template <typename T, typename... As>
-        struct is_nothrow_receiver_of_impl<true, T, As...>
-          : std::integral_constant<bool,
-                noexcept(set_value(std::declval<T>(), std::declval<As>()...))>
+        struct empty_env
         {
         };
     }    // namespace detail
 
-    template <typename T, typename... As>
-    struct is_nothrow_receiver_of
-      : detail::is_nothrow_receiver_of_impl<
-            is_receiver_v<T> && is_receiver_of_v<T, As...>, T, As...>
+    inline constexpr struct get_env_t
+    {
+    } get_env{};
+}}}    // namespace pika::execution::experimental
+#endif
+
+namespace pika::execution::experimental::detail {
+    template <typename CPO>
+    struct is_receiver_cpo : std::false_type
     {
     };
 
-    template <typename T, typename... As>
-    inline constexpr bool is_nothrow_receiver_of_v =
-        is_nothrow_receiver_of<T, As...>::value;
+    template <>
+    struct is_receiver_cpo<set_value_t> : std::true_type
+    {
+    };
 
-    namespace detail {
-        template <typename CPO>
-        struct is_receiver_cpo : std::false_type
-        {
-        };
+    template <>
+    struct is_receiver_cpo<set_error_t> : std::true_type
+    {
+    };
 
-        template <>
-        struct is_receiver_cpo<set_value_t> : std::true_type
-        {
-        };
+    template <>
+    struct is_receiver_cpo<set_stopped_t> : std::true_type
+    {
+    };
 
-        template <>
-        struct is_receiver_cpo<set_error_t> : std::true_type
-        {
-        };
-
-        template <>
-        struct is_receiver_cpo<set_done_t> : std::true_type
-        {
-        };
-
-        template <typename CPO>
-        inline constexpr bool is_receiver_cpo_v = is_receiver_cpo<CPO>::value;
-    }    // namespace detail
-}}}      // namespace pika::execution::experimental
+    template <typename CPO>
+    inline constexpr bool is_receiver_cpo_v = is_receiver_cpo<CPO>::value;
+}    // namespace pika::execution::experimental::detail

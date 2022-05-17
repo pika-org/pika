@@ -212,7 +212,9 @@ int main()
         PIKA_TEST(custom_transformer_call_operator_called);
     }
 
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     test_adl_isolation(ex::then(ex::just(), my_namespace::my_type{}));
+#endif
 
     return pika::util::report_errors();
 }

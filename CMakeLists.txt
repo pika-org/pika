@@ -979,6 +979,15 @@ if(PIKA_WITH_THREAD_DEBUG_INFO)
   endif()
 endif()
 
+pika_option(
+  PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION BOOL
+  "Use the P2300 reference implementation for sender/receiver functionality."
+  OFF CATEGORY "Advanced"
+)
+if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION)
+  pika_add_config_define(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+endif()
+
 # Developer tools
 pika_option(
   PIKA_WITH_VIM_YCM BOOL
@@ -1506,6 +1515,7 @@ include(pika_setup_mpi)
 include(pika_setup_hip)
 include(pika_setup_apex)
 include(pika_setup_valgrind)
+include(pika_setup_p2300)
 
 if(PIKA_WITH_SANITIZERS)
   pika_add_config_define(PIKA_HAVE_SANITIZERS)

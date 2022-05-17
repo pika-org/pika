@@ -6,6 +6,12 @@
 
 #pragma once
 
+#include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#endif
+
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/allocator_support/traits/is_allocator.hpp>
@@ -70,7 +76,8 @@ namespace pika { namespace execution { namespace experimental {
                 r_local.data.reset();
             }
 
-            friend void tag_invoke(set_done_t, make_future_receiver&&) noexcept
+            friend void tag_invoke(
+                set_stopped_t, make_future_receiver&&) noexcept
             {
                 std::terminate();
             }
@@ -91,6 +98,13 @@ namespace pika { namespace execution { namespace experimental {
                     });
                 r_local.data->reset_operation_state();
                 r_local.data.reset();
+            }
+
+            friend constexpr pika::execution::experimental::detail::empty_env
+            tag_invoke(pika::execution::experimental::get_env_t,
+                make_future_receiver const&) noexcept
+            {
+                return {};
             }
         };
 
@@ -114,7 +128,8 @@ namespace pika { namespace execution { namespace experimental {
                 r_local.data.reset();
             }
 
-            friend void tag_invoke(set_done_t, make_future_receiver&&) noexcept
+            friend void tag_invoke(
+                set_stopped_t, make_future_receiver&&) noexcept
             {
                 std::terminate();
             }
@@ -134,6 +149,13 @@ namespace pika { namespace execution { namespace experimental {
                     });
                 r_local.data->reset_operation_state();
                 r_local.data.reset();
+            }
+
+            friend constexpr pika::execution::experimental::detail::empty_env
+            tag_invoke(pika::execution::experimental::get_env_t,
+                make_future_receiver const&) noexcept
+            {
+                return {};
             }
         };
 
@@ -180,9 +202,17 @@ namespace pika { namespace execution { namespace experimental {
         {
             using allocator_type = Allocator;
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            using value_types =
+                typename pika::execution::experimental::value_types_of_t<
+                    std::decay_t<Sender>,
+                    pika::execution::experimental::detail::empty_env,
+                    pika::util::pack, pika::util::pack>;
+#else
             using value_types = typename pika::execution::experimental::
                 sender_traits<std::decay_t<Sender>>::template value_types<
                     pika::util::pack, pika::util::pack>;
+#endif
             using result_type =
                 std::decay_t<detail::single_result_t<value_types>>;
             using operation_state_type = pika::util::invoke_result_t<

@@ -213,6 +213,12 @@ namespace pika { namespace execution { namespace experimental {
 
             static constexpr bool sends_done = false;
 
+            using completion_signatures =
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_value_t(),
+                    pika::execution::experimental::set_error_t(
+                        std::exception_ptr)>;
+
             template <typename Receiver>
             friend operation_state<Scheduler, Receiver> tag_invoke(
                 connect_t, sender&& s, Receiver&& receiver)
@@ -234,7 +240,7 @@ namespace pika { namespace execution { namespace experimental {
                     pika::execution::experimental::set_value_t>)>
             friend constexpr auto tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                sender const& s)
+                sender const& s) noexcept
             {
                 return s.scheduler;
             }
@@ -267,7 +273,10 @@ namespace pika { namespace execution { namespace experimental {
         // annotation. Once the scheduler annotation has been updated we
         // construct a sender from the default schedule_from implementation.
         //
-        // TODO: Can we simply dispatch to the default implementation?
+        // TODO: Can we simply dispatch to the default implementation? This is
+        // disabled with the P2300 reference implementation because we don't
+        // want to use implementation details of it.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
         friend auto tag_invoke(schedule_from_t,
             thread_pool_scheduler&& scheduler, Sender&& predecessor_sender)
@@ -287,6 +296,7 @@ namespace pika { namespace execution { namespace experimental {
                 with_annotation(
                     scheduler, scheduler.get_fallback_annotation())};
         }
+#endif
         /// \endcond
 
     private:

@@ -6,6 +6,39 @@
 
 #pragma once
 
+#include <pika/config.hpp>
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+
+namespace pika::execution::experimental {
+    template <typename Scheduler>
+    inline constexpr bool is_scheduler_v = scheduler<Scheduler>;
+
+    template <typename Scheduler>
+    struct is_scheduler
+    {
+        static constexpr bool value = is_scheduler_v<Scheduler>;
+    };
+
+    template <typename Sender>
+    inline constexpr bool is_sender_v = sender<Sender>;
+
+    template <typename Sender>
+    struct is_sender
+    {
+        static constexpr bool value = is_sender_v<Sender>;
+    };
+
+    template <typename Sender, typename Receiver>
+    inline constexpr bool is_sender_to_v = sender_to<Sender, Receiver>;
+
+    template <typename Sender, typename Receiver>
+    struct is_sender_to
+    {
+        static constexpr bool value = is_sender_to_v<Sender, Receiver>;
+    };
+}    // namespace pika::execution::experimental
+#else
 #include <pika/config/constexpr.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
@@ -63,6 +96,14 @@ namespace pika { namespace execution { namespace experimental {
     /// `pika::functional::tag_invoke`.
 
 #endif
+    // We define an empty dummy type for compatibility. Senders can define both
+    // value/error_types for our non-conformant implementation, and
+    // completion_signatures for the conformant implementation. Senders do not
+    // have to conditionally use completion_signatures.
+    template <typename... Ts>
+    struct completion_signatures
+    {
+    };
 
     /// A sender is a type that is describing an asynchronous operation. The
     /// operation itself might not have started yet. In order to get the result
@@ -218,7 +259,7 @@ namespace pika { namespace execution { namespace experimental {
                 std::terminate();
             }
 
-            void set_done() noexcept {}
+            void set_stopped() noexcept {}
         };
     }    // namespace detail
 
@@ -275,6 +316,10 @@ namespace pika { namespace execution { namespace experimental {
             is_sender_v<Sender> && is_receiver_v<Receiver>, Sender, Receiver>
     {
     };
+
+    template <typename Sender, typename Receiver>
+    inline constexpr bool is_sender_to_v =
+        is_sender_to<Sender, Receiver>::value;
 
     namespace detail {
         template <typename... As>
@@ -427,3 +472,4 @@ namespace pika { namespace execution { namespace experimental {
     using connect_result_t =
         typename pika::util::invoke_result<connect_t, S, R>::type;
 }}}    // namespace pika::execution::experimental
+#endif

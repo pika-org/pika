@@ -63,19 +63,27 @@ struct check_context_receiver
         PIKA_TEST(false);
     }
 
-    friend void tag_invoke(ex::set_done_t, check_context_receiver&&) noexcept
+    friend void tag_invoke(ex::set_stopped_t, check_context_receiver&&) noexcept
     {
         PIKA_TEST(false);
     }
 
     template <typename... Ts>
-    friend void tag_invoke(ex::set_value_t, check_context_receiver&& r, Ts&&...)
+    friend void tag_invoke(
+        ex::set_value_t, check_context_receiver&& r, Ts&&...) noexcept
     {
         PIKA_TEST_NEQ(r.parent_id, std::this_thread::get_id());
         PIKA_TEST_NEQ(std::thread::id(), std::this_thread::get_id());
         std::lock_guard l{r.mtx};
         r.executed = true;
         r.cond.notify_one();
+    }
+
+    friend constexpr pika::execution::experimental::detail::empty_env
+    tag_invoke(pika::execution::experimental::get_env_t,
+        check_context_receiver const&) noexcept
+    {
+        return {};
     }
 };
 
@@ -226,7 +234,7 @@ struct callback_receiver
         PIKA_TEST(false);
     }
 
-    friend void tag_invoke(ex::set_done_t, callback_receiver&&) noexcept
+    friend void tag_invoke(ex::set_stopped_t, callback_receiver&&) noexcept
     {
         PIKA_TEST(false);
     }
@@ -239,6 +247,13 @@ struct callback_receiver
         std::lock_guard l{r.mtx};
         r.executed = true;
         r.cond.notify_one();
+    }
+
+    friend constexpr pika::execution::experimental::detail::empty_env
+    tag_invoke(pika::execution::experimental::get_env_t,
+        callback_receiver const&) noexcept
+    {
+        return {};
     }
 };
 
@@ -253,7 +268,7 @@ void test_transfer_basic()
         current_id = std::this_thread::get_id();
         PIKA_TEST_NEQ(current_id, parent_id);
     });
-    auto work2 = ex::then(work1, [=, &current_id]() {
+    auto work2 = ex::then(std::move(work1), [=, &current_id]() {
         PIKA_TEST_EQ(current_id, std::this_thread::get_id());
     });
     auto transfer1 = ex::transfer(work2, sched);
@@ -274,7 +289,7 @@ void test_transfer_basic()
         PIKA_TEST_NEQ(current_id, parent_id);
     });
 
-    tt::sync_wait(work5);
+    tt::sync_wait(std::move(work5));
 }
 
 void test_transfer_arguments()
@@ -314,7 +329,7 @@ void test_transfer_arguments()
         return s + "!";
     });
 
-    auto result = tt::sync_wait(work5);
+    auto result = tt::sync_wait(std::move(work5));
     static_assert(std::is_same<std::string,
                       typename std::decay<decltype(result)>::type>::value,
         "result should be a std::string");
@@ -330,7 +345,7 @@ void test_just_void()
         auto work1 = ex::then(begin, [parent_id]() {
             PIKA_TEST_EQ(parent_id, std::this_thread::get_id());
         });
-        tt::sync_wait(work1);
+        tt::sync_wait(std::move(work1));
     }
 
     {
@@ -341,7 +356,7 @@ void test_just_void()
         auto work1 = ex::then(transfer1, [parent_id]() {
             PIKA_TEST_NEQ(parent_id, std::this_thread::get_id());
         });
-        tt::sync_wait(work1);
+        tt::sync_wait(std::move(work1));
     }
 }
 
@@ -355,7 +370,7 @@ void test_just_one_arg()
             PIKA_TEST_EQ(parent_id, std::this_thread::get_id());
             PIKA_TEST_EQ(x, 3);
         });
-        tt::sync_wait(work1);
+        tt::sync_wait(std::move(work1));
     }
 
     {
@@ -367,7 +382,7 @@ void test_just_one_arg()
             PIKA_TEST_NEQ(parent_id, std::this_thread::get_id());
             PIKA_TEST_EQ(x, 3);
         });
-        tt::sync_wait(work1);
+        tt::sync_wait(std::move(work1));
     }
 }
 
@@ -382,7 +397,7 @@ void test_just_two_args()
             PIKA_TEST_EQ(x, 3);
             PIKA_TEST_EQ(y, std::string("hello"));
         });
-        tt::sync_wait(work1);
+        tt::sync_wait(std::move(work1));
     }
 
     {
@@ -395,7 +410,7 @@ void test_just_two_args()
             PIKA_TEST_EQ(x, 3);
             PIKA_TEST_EQ(y, std::string("hello"));
         });
-        tt::sync_wait(work1);
+        tt::sync_wait(std::move(work1));
     }
 }
 
@@ -407,7 +422,7 @@ void test_transfer_just_void()
     auto work1 = ex::then(begin, [parent_id]() {
         PIKA_TEST_NEQ(parent_id, std::this_thread::get_id());
     });
-    tt::sync_wait(work1);
+    tt::sync_wait(std::move(work1));
 }
 
 void test_transfer_just_one_arg()
@@ -419,7 +434,7 @@ void test_transfer_just_one_arg()
         PIKA_TEST_NEQ(parent_id, std::this_thread::get_id());
         PIKA_TEST_EQ(x, 3);
     });
-    tt::sync_wait(work1);
+    tt::sync_wait(std::move(work1));
 }
 
 void test_transfer_just_two_args()
@@ -433,7 +448,7 @@ void test_transfer_just_two_args()
         PIKA_TEST_EQ(x, 3);
         PIKA_TEST_EQ(y, std::string("hello"));
     });
-    tt::sync_wait(work1);
+    tt::sync_wait(std::move(work1));
 }
 
 void test_when_all()
@@ -571,8 +586,14 @@ void test_when_all_vector()
 
         auto when1 = ex::when_all_vector(std::move(senders));
 
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         bool executed{false};
+#endif
         std::move(when1) |
+        // TODO: ADL issues? Uncommenting instantiates set_value with the
+        // sync_wait_receiver from when_all_vector_receiver, i.e. then is
+        // "skipped".
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
             ex::then([parent_id, &executed](std::vector<double> v) {
                 PIKA_TEST_NEQ(parent_id, std::this_thread::get_id());
                 PIKA_TEST_EQ(v.size(), std::size_t(3));
@@ -581,8 +602,11 @@ void test_when_all_vector()
                 PIKA_TEST_EQ(v[2], 3.14);
                 executed = true;
             }) |
+#endif
             tt::sync_wait();
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         PIKA_TEST(executed);
+#endif
     }
 
     {
@@ -609,7 +633,12 @@ void test_when_all_vector()
         try
         {
             ex::when_all_vector(std::move(senders)) |
+            // TODO: ADL issues? Uncommenting instantiates set_value with the
+            // sync_wait_receiver from when_all_vector_receiver, i.e. then is
+            // "skipped".
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
                 ex::then([](std::vector<int>) { PIKA_TEST(false); }) |
+#endif
                 tt::sync_wait();
             PIKA_TEST(false);
         }
@@ -646,7 +675,12 @@ void test_when_all_vector()
         try
         {
             ex::when_all_vector(std::move(senders)) |
+            // TODO: ADL issues? Uncommenting instantiates set_value with the
+            // sync_wait_receiver from when_all_vector_receiver, i.e. then is
+            // "skipped".
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
                 ex::then([](std::vector<int>) { PIKA_TEST(false); }) |
+#endif
                 tt::sync_wait();
             PIKA_TEST(false);
         }
@@ -662,6 +696,8 @@ void test_when_all_vector()
 
 void test_ensure_started()
 {
+    // TODO: No default implementation in P2300 reference implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     ex::std_thread_scheduler sched{};
 
     {
@@ -692,10 +728,13 @@ void test_ensure_started()
     {
         ex::schedule(ex::std_thread_scheduler{}) | ex::ensure_started();
     }
+#endif
 }
 
 void test_ensure_started_when_all()
 {
+    // TODO: No default implementation in P2300 reference implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     ex::std_thread_scheduler sched{};
 
     {
@@ -799,10 +838,13 @@ void test_ensure_started_when_all()
         PIKA_TEST_EQ(first_task_calls, std::size_t(1));
         PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
     }
+#endif
 }
 
 void test_split()
 {
+    // TODO: No default implementation in P2300 reference implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     ex::std_thread_scheduler sched{};
 
     {
@@ -827,10 +869,13 @@ void test_split()
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
+#endif
 }
 
 void test_split_when_all()
 {
+    // TODO: No default implementation in P2300 reference implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     ex::std_thread_scheduler sched{};
 
     {
@@ -899,6 +944,7 @@ void test_split_when_all()
         PIKA_TEST_EQ(first_task_calls, std::size_t(1));
         PIKA_TEST_EQ(successor_task_calls, std::size_t(2));
     }
+#endif
 }
 
 void test_let_value()
@@ -1125,11 +1171,12 @@ void test_detach()
         bool called = false;
         std::mutex mtx;
         std::condition_variable cond;
-        ex::schedule(sched) | ex::then([&]() {
+        auto s = ex::schedule(sched) | ex::then([&]() {
             std::unique_lock l{mtx};
             called = true;
             cond.notify_one();
-        }) | ex::start_detached();
+        });
+        ex::start_detached(std::move(s));
 
         {
             std::unique_lock l{mtx};
@@ -1144,12 +1191,13 @@ void test_detach()
         bool called = false;
         std::mutex mtx;
         std::condition_variable cond;
-        ex::schedule(sched) | ex::then([&]() {
+        auto s = ex::schedule(sched) | ex::then([&]() {
             std::lock_guard l{mtx};
             called = true;
             cond.notify_one();
             return 42;
-        }) | ex::start_detached();
+        });
+        ex::start_detached(std::move(s));
 
         {
             std::unique_lock l{mtx};
@@ -1162,6 +1210,8 @@ void test_detach()
 
 void test_bulk()
 {
+    // TODO: No default implementation in P2300 reference implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     std::vector<int> const ns = {0, 1, 10, 43};
 
     for (int n : ns)
@@ -1268,6 +1318,7 @@ void test_bulk()
             }
         }
     }
+#endif
 }
 
 void test_completion_scheduler()
@@ -1303,6 +1354,7 @@ void test_completion_scheduler()
             "the completion scheduler should be a std_thread_scheduler");
     }
 
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     {
         auto sender =
             ex::bulk(ex::schedule(ex::std_thread_scheduler{}), 10, [](int) {});
@@ -1339,6 +1391,7 @@ void test_completion_scheduler()
                 ex::std_thread_scheduler>,
             "the completion scheduler should be a std_thread_scheduler");
     }
+#endif
 }
 
 void test_scheduler_queries()

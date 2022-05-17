@@ -53,17 +53,20 @@ namespace mylib {
 
 int main()
 {
-    using pika::execution::experimental::is_operation_state;
-
-    static_assert(!is_operation_state<mylib::state_1>::value,
+    static_assert(
+        !pika::execution::experimental::is_operation_state_v<mylib::state_1>,
         "mylib::state_1 is not an operation state");
-    static_assert(!is_operation_state<mylib::state_2>::value,
+    static_assert(
+        !pika::execution::experimental::is_operation_state_v<mylib::state_2>,
         "mylib::state_2 is not an operation state");
-    static_assert(is_operation_state<mylib::state_3>::value,
+    static_assert(
+        pika::execution::experimental::is_operation_state_v<mylib::state_3>,
         "mylib::state_3 is an operation state");
-    static_assert(!is_operation_state<mylib::state_4>::value,
+    static_assert(
+        !pika::execution::experimental::is_operation_state_v<mylib::state_4>,
         "mylib::state_4 is not an operation state");
-    static_assert(is_operation_state<mylib::state_5>::value,
+    static_assert(
+        pika::execution::experimental::is_operation_state_v<mylib::state_5>,
         "mylib::state_5 is an operation state");
 
     {

@@ -7,6 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#else
 #include <pika/datastructures/member_pack.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution_base/receiver.hpp>
@@ -131,3 +135,4 @@ namespace pika { namespace execution { namespace experimental {
         }
     } just{};
 }}}    // namespace pika::execution::experimental
+#endif

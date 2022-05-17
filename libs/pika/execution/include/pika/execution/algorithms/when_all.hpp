@@ -7,6 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#else
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/variant.hpp>
@@ -56,7 +60,7 @@ namespace pika { namespace execution { namespace experimental {
             friend void tag_invoke(
                 set_error_t, when_all_receiver_type&& r, Error&& error) noexcept
             {
-                if (!r.op_state.set_done_error_called.exchange(true))
+                if (!r.op_state.set_stopped_error_called.exchange(true))
                 {
                     try
                     {
@@ -73,9 +77,9 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             friend void tag_invoke(
-                set_done_t, when_all_receiver_type&& r) noexcept
+                set_stopped_t, when_all_receiver_type&& r) noexcept
             {
-                r.op_state.set_done_error_called = true;
+                r.op_state.set_stopped_error_called = true;
                 r.op_state.finish();
             };
 
@@ -106,7 +110,7 @@ namespace pika { namespace execution { namespace experimental {
             {
                 if constexpr (OperationState::sender_pack_size > 0)
                 {
-                    if (!op_state.set_done_error_called)
+                    if (!op_state.set_stopped_error_called)
                     {
                         try
                         {
@@ -115,7 +119,8 @@ namespace pika { namespace execution { namespace experimental {
                         }
                         catch (...)
                         {
-                            if (!op_state.set_done_error_called.exchange(true))
+                            if (!op_state.set_stopped_error_called.exchange(
+                                    true))
                             {
                                 // NOLINTNEXTLINE(bugprone-throw-keyword-missing)
                                 op_state.error = std::current_exception();
@@ -261,7 +266,7 @@ namespace pika { namespace execution { namespace experimental {
                 value_types_storage_type ts;
 
                 pika::optional<error_types<pika::variant>> error;
-                std::atomic<bool> set_done_error_called{false};
+                std::atomic<bool> set_stopped_error_called{false};
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
                 using operation_state_type = std::decay_t<
@@ -308,7 +313,7 @@ namespace pika { namespace execution { namespace experimental {
                 {
                     if (--predecessors_remaining == 0)
                     {
-                        if (!set_done_error_called)
+                        if (!set_stopped_error_called)
                         {
                             set_value_helper(ts);
                         }
@@ -324,7 +329,7 @@ namespace pika { namespace execution { namespace experimental {
                         }
                         else
                         {
-                            pika::execution::experimental::set_done(
+                            pika::execution::experimental::set_stopped(
                                 PIKA_MOVE(receiver));
                         }
                     }
@@ -425,3 +430,4 @@ namespace pika { namespace execution { namespace experimental {
         }
     } when_all{};
 }}}    // namespace pika::execution::experimental
+#endif

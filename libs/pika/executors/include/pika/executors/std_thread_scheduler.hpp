@@ -7,6 +7,7 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/concepts/concepts.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/execute.hpp>
 #include <pika/execution_base/receiver.hpp>
@@ -84,6 +85,12 @@ namespace pika { namespace execution { namespace experimental {
 
             static constexpr bool sends_done = false;
 
+            using completion_signatures =
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_value_t(),
+                    pika::execution::experimental::set_error_t(
+                        std::exception_ptr)>;
+
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
                 connect_t, sender const&, Receiver&& receiver)
@@ -96,7 +103,7 @@ namespace pika { namespace execution { namespace experimental {
                     pika::execution::experimental::set_value_t>)>
             friend constexpr std_thread_scheduler tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<CPO>,
-                sender const&)
+                sender const&) noexcept
             {
                 return {};
             }

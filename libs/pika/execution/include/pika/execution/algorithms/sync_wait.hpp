@@ -7,11 +7,17 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+#endif
+
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
 #include <pika/execution_base/operation_state.hpp>
+#include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/synchronization/condition_variable.hpp>
@@ -25,7 +31,7 @@
 #include <utility>
 
 namespace pika::this_thread::experimental {
-    namespace detail {
+    namespace sync_wait_detail {
         struct sync_wait_error_visitor
         {
             void operator()(std::exception_ptr ep) const
@@ -41,8 +47,60 @@ namespace pika::this_thread::experimental {
         };
 
         template <typename Sender>
-        struct sync_wait_receiver
+        struct sync_wait_receiver_impl
         {
+            struct sync_wait_receiver_type;
+        };
+
+        template <typename Sender>
+        using sync_wait_receiver =
+            typename sync_wait_receiver_impl<Sender>::sync_wait_receiver_type;
+
+        template <typename Sender>
+        struct sync_wait_receiver_impl<Sender>::sync_wait_receiver_type
+        {
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            // value and error_types of the predecessor sender
+            template <template <typename...> class Tuple,
+                template <typename...> class Variant>
+            using predecessor_value_types =
+                pika::execution::experimental::value_types_of_t<Sender,
+                    pika::execution::experimental::detail::empty_env, Tuple,
+                    Variant>;
+
+            template <template <typename...> class Variant>
+            using predecessor_error_types =
+                pika::execution::experimental::error_types_of_t<Sender,
+                    pika::execution::experimental::detail::empty_env, Variant>;
+
+            // The type of the single void or non-void result that we store. If
+            // there are multiple variants or multiple values sync_wait will
+            // fail to compile.
+            using result_type = std::decay_t<pika::execution::experimental::
+                    detail::single_result_t<predecessor_value_types<
+                        pika::util::pack, pika::util::pack>>>;
+
+            // Constant to indicate if the type of the result from the
+            // predecessor sender is void or not
+            static constexpr bool is_void_result = std::is_void_v<result_type>;
+
+            // Dummy type to indicate that set_value with void has been called
+            struct void_value_type
+            {
+            };
+
+            // The type of the value to store in the variant, void_value_type if
+            // result_type is void, or result_type if it is not
+            using value_type = std::conditional_t<is_void_result,
+                void_value_type, result_type>;
+
+            // The type of errors to store in the variant. This in itself is a
+            // variant.
+            using error_type =
+                pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                    predecessor_error_types<pika::variant>,
+                    std::exception_ptr>>;
+#else
             // value and error_types of the predecessor sender
             template <template <typename...> class Tuple,
                 template <typename...> class Variant>
@@ -82,6 +140,7 @@ namespace pika::this_thread::experimental {
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
                     predecessor_error_types<pika::variant>,
                     std::exception_ptr>>;
+#endif
 
             // We use a spinlock here to allow taking the lock on non-pika threads.
             using mutex_type = pika::lcos::local::spinlock;
@@ -144,15 +203,15 @@ namespace pika::this_thread::experimental {
 
             template <typename Error>
             friend void tag_invoke(pika::execution::experimental::set_error_t,
-                sync_wait_receiver&& r, Error&& error) noexcept
+                sync_wait_receiver_type&& r, Error&& error) noexcept
             {
                 r.state.value.template emplace<error_type>(
                     PIKA_FORWARD(Error, error));
                 r.signal_set_called();
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_done_t,
-                sync_wait_receiver&& r) noexcept
+            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
+                sync_wait_receiver_type&& r) noexcept
             {
                 r.signal_set_called();
             }
@@ -162,14 +221,21 @@ namespace pika::this_thread::experimental {
                     std::enable_if_t<(is_void_result && sizeof...(Us) == 0) ||
                         (!is_void_result && sizeof...(Us) == 1)>>
             friend void tag_invoke(pika::execution::experimental::set_value_t,
-                sync_wait_receiver&& r, Us&&... us) noexcept
+                sync_wait_receiver_type&& r, Us&&... us) noexcept
             {
                 r.state.value.template emplace<value_type>(
                     PIKA_FORWARD(Us, us)...);
                 r.signal_set_called();
             }
+
+            friend constexpr pika::execution::experimental::detail::empty_env
+            tag_invoke(pika::execution::experimental::get_env_t,
+                sync_wait_receiver_type const&) noexcept
+            {
+                return {};
+            }
         };
-    }    // namespace detail
+    }    // namespace sync_wait_detail
 
     inline constexpr struct sync_wait_t final
       : pika::functional::detail::tag_fallback<sync_wait_t>
@@ -184,7 +250,7 @@ namespace pika::this_thread::experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             sync_wait_t, Sender&& sender)
         {
-            using receiver_type = detail::sync_wait_receiver<Sender>;
+            using receiver_type = sync_wait_detail::sync_wait_receiver<Sender>;
             using state_type = typename receiver_type::shared_state;
 
             state_type state{};

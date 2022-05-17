@@ -433,6 +433,12 @@ namespace pika { namespace experimental {
 
             static constexpr bool sends_done = false;
 
+            using completion_signatures =
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_value_t(access_type),
+                    pika::execution::experimental::set_error_t(
+                        std::exception_ptr)>;
+
             template <typename R>
             struct operation_state
             {
@@ -626,6 +632,12 @@ namespace pika { namespace experimental {
             using error_types = Variant<std::exception_ptr>;
 
             static constexpr bool sends_done = false;
+
+            using completion_signatures =
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_value_t(access_type),
+                    pika::execution::experimental::set_error_t(
+                        std::exception_ptr)>;
 
             template <typename R>
             struct operation_state

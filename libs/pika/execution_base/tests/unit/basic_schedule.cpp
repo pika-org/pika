@@ -4,6 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/execution_base/completion_scheduler.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/testing.hpp>
 #include <pika/type_support/unused.hpp>
@@ -12,9 +13,12 @@
 #include <exception>
 #include <type_traits>
 
+namespace ex = pika::execution::experimental;
+
 static std::size_t friend_tag_invoke_schedule_calls = 0;
 static std::size_t tag_invoke_schedule_calls = 0;
 
+template <typename Scheduler>
 struct sender
 {
     template <template <class...> class Tuple,
@@ -26,13 +30,26 @@ struct sender
 
     static constexpr bool sends_done = false;
 
+    using completion_signatures = ex::completion_signatures<ex::set_value_t(),
+        ex::set_error_t(std::exception_ptr)>;
+
     struct operation_state
     {
-        void start() & noexcept {};
+        friend operation_state tag_invoke(
+            ex::start_t, operation_state&) noexcept
+        {
+            return {};
+        }
     };
 
     template <typename R>
-    operation_state connect(R&&) && noexcept
+    friend operation_state tag_invoke(ex::connect_t, sender, R&&) noexcept
+    {
+        return {};
+    }
+
+    friend Scheduler tag_invoke(
+        ex::get_completion_scheduler_t<ex::set_value_t>, sender const&) noexcept
     {
         return {};
     }
@@ -49,8 +66,7 @@ struct non_scheduler_2
 
 struct non_scheduler_3
 {
-    friend sender tag_invoke(
-        pika::execution::experimental::schedule_t, non_scheduler_3)
+    friend sender<non_scheduler_3> tag_invoke(ex::schedule_t, non_scheduler_3)
     {
         return {};
     }
@@ -58,8 +74,7 @@ struct non_scheduler_3
 
 struct scheduler_1
 {
-    friend sender tag_invoke(
-        pika::execution::experimental::schedule_t, scheduler_1)
+    friend sender<scheduler_1> tag_invoke(ex::schedule_t const&, scheduler_1)
     {
         ++friend_tag_invoke_schedule_calls;
         return {};
@@ -89,7 +104,7 @@ struct scheduler_2
     }
 };
 
-sender tag_invoke(pika::execution::experimental::schedule_t, scheduler_2)
+sender<scheduler_2> tag_invoke(ex::schedule_t, scheduler_2)
 {
     ++tag_invoke_schedule_calls;
     return {};
@@ -97,27 +112,25 @@ sender tag_invoke(pika::execution::experimental::schedule_t, scheduler_2)
 
 int main()
 {
-    using pika::execution::experimental::is_scheduler;
-
-    static_assert(!is_scheduler<non_scheduler_1>::value,
+    static_assert(!ex::is_scheduler_v<non_scheduler_1>,
         "non_scheduler_1 is not a scheduler");
-    static_assert(!is_scheduler<non_scheduler_2>::value,
+    static_assert(!ex::is_scheduler_v<non_scheduler_2>,
         "non_scheduler_2 is not a scheduler");
-    static_assert(!is_scheduler<non_scheduler_3>::value,
+    static_assert(!ex::is_scheduler_v<non_scheduler_3>,
         "non_scheduler_3 is not a scheduler");
     static_assert(
-        is_scheduler<scheduler_1>::value, "scheduler_1 is a scheduler");
+        ex::is_scheduler_v<scheduler_1>, "scheduler_1 is a scheduler");
     static_assert(
-        is_scheduler<scheduler_2>::value, "scheduler_2 is a scheduler");
+        ex::is_scheduler_v<scheduler_2>, "scheduler_2 is a scheduler");
 
     scheduler_1 s1;
-    sender snd1 = pika::execution::experimental::schedule(s1);
+    auto snd1 = ex::schedule(s1);
     PIKA_UNUSED(snd1);
     PIKA_TEST_EQ(friend_tag_invoke_schedule_calls, std::size_t(1));
     PIKA_TEST_EQ(tag_invoke_schedule_calls, std::size_t(0));
 
     scheduler_2 s2;
-    sender snd2 = pika::execution::experimental::schedule(s2);
+    auto snd2 = ex::schedule(s2);
     PIKA_UNUSED(snd2);
     PIKA_TEST_EQ(friend_tag_invoke_schedule_calls, std::size_t(1));
     PIKA_TEST_EQ(tag_invoke_schedule_calls, std::size_t(1));

@@ -21,9 +21,11 @@ namespace ex = pika::execution::experimental;
 template <typename T>
 auto tag_invoke(ex::transfer_just_t, scheduler2 s, T&& t)
 {
-    s.tag_invoke_overload_called = true;
-    return ex::transfer_just(
-        std::move(static_cast<scheduler>(s)), std::forward<T>(t));
+    s.tag_invoke_overload_called.get() = true;
+
+    return ex::transfer_just(scheduler{s.schedule_called, s.execute_called,
+                                 s.tag_invoke_overload_called},
+        std::forward<T>(t));
 }
 
 int main()
@@ -216,8 +218,8 @@ int main()
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
         auto s = ex::transfer_just(
-            scheduler2{scheduler{scheduler_schedule_called,
-                scheduler_execute_called, tag_invoke_overload_called}},
+            scheduler2{scheduler_schedule_called, scheduler_execute_called,
+                tag_invoke_overload_called},
             3);
         auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -236,8 +238,8 @@ int main()
         std::atomic<bool> tag_invoke_overload_called{false};
         int x = 3;
         auto s = ex::transfer_just(
-            scheduler2{scheduler{scheduler_schedule_called,
-                scheduler_execute_called, tag_invoke_overload_called}},
+            scheduler2{scheduler_schedule_called, scheduler_execute_called,
+                tag_invoke_overload_called},
             x);
         auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};

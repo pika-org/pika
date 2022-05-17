@@ -75,6 +75,8 @@ int main()
         PIKA_TEST(!tag_invoke_overload_called);
     }
 
+    // Piping into start_detached is not allowed according to the specification.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     // operator| overload
     {
         std::atomic<bool> start_called{false};
@@ -87,6 +89,7 @@ int main()
         PIKA_TEST(connect_called);
         PIKA_TEST(!tag_invoke_overload_called);
     }
+#endif
 
     // tag_invoke overload
     {

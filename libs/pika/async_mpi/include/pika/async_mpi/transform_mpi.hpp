@@ -147,10 +147,10 @@ namespace pika { namespace mpi { namespace experimental {
                     }
 
                     friend constexpr void tag_invoke(
-                        pika::execution::experimental::set_done_t,
+                        pika::execution::experimental::set_stopped_t,
                         transform_mpi_receiver&& r) noexcept
                     {
-                        pika::execution::experimental::set_done(
+                        pika::execution::experimental::set_stopped(
                             PIKA_MOVE(r.op_state.receiver));
                     };
 

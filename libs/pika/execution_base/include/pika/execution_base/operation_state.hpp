@@ -6,6 +6,16 @@
 
 #pragma once
 
+#include <pika/config.hpp>
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+#include <pika/execution_base/p2300_forward.hpp>
+
+namespace pika::execution::experimental {
+    template <typename OperationState>
+    inline constexpr bool is_operation_state_v =
+        operation_state<OperationState>;
+}
+#else
 #include <pika/config/constexpr.hpp>
 #include <pika/functional/tag_invoke.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
@@ -78,3 +88,4 @@ namespace pika { namespace execution { namespace experimental {
     template <typename O>
     inline constexpr bool is_operation_state_v = is_operation_state<O>::value;
 }}}    // namespace pika::execution::experimental
+#endif
