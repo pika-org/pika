@@ -15,15 +15,10 @@
 #include <pika/execution/detail/execution_parameter_callbacks.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
 
-#if !defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
-#include <boost/shared_array.hpp>
-#else
-#include <memory>
-#endif
-
 #include <cstddef>
 #include <cstdlib>
 #include <functional>
+#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -71,11 +66,7 @@ namespace pika { namespace parallel { inline namespace v2 {
         private:
             T& var_;
             Op op_;
-#if defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
             std::shared_ptr<pika::util::cache_line_data<T>[]> data_;
-#else
-            boost::shared_array<pika::util::cache_line_data<T>> data_;
-#endif
         };
 
         /// \endcond

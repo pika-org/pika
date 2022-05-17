@@ -19,14 +19,9 @@
 #include <pika/parallel/util/partitioner.hpp>
 #include <pika/type_support/unused.hpp>
 
-#if !defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
-#include <boost/shared_array.hpp>
-#else
-#include <memory>
-#endif
-
 #include <algorithm>
 #include <cstddef>
+#include <memory>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -113,15 +108,9 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
 
         std::size_t step = (len1 + cores - 1) / cores;
 
-#if defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
         std::shared_ptr<buffer_type[]> buffer(
             new buffer_type[combiner(len1, len2)]);
         std::shared_ptr<set_chunk_data[]> chunks(new set_chunk_data[cores]);
-#else
-        boost::shared_array<buffer_type> buffer(
-            new buffer_type[combiner(len1, len2)]);
-        boost::shared_array<set_chunk_data> chunks(new set_chunk_data[cores]);
-#endif
 
         // first step, is applied to all partitions
         auto f1 = [=](set_chunk_data* curr_chunk,

@@ -476,18 +476,13 @@ namespace pika {
 #include <pika/parallel/util/transfer.hpp>
 #include <pika/parallel/util/zip_iterator.hpp>
 
-#if !defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
-#include <boost/shared_array.hpp>
-#else
-#include <memory>
-#endif
-
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <iterator>
 #include <list>
+#include <memory>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -1496,11 +1491,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 difference_type count =
                     detail::advance_and_get_distance(last_iter, last);
 
-#if defined(PIKA_HAVE_CXX17_SHARED_PTR_ARRAY)
                 std::shared_ptr<bool[]> flags(new bool[count]);
-#else
-                boost::shared_array<bool> flags(new bool[count]);
-#endif
                 output_iterator_offset init = {0, 0};
 
                 using pika::get;
