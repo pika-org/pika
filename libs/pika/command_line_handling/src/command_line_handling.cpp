@@ -451,24 +451,18 @@ namespace pika::detail {
             cfgmap.add(cfg);
         }
 
-        use_process_mask_ =
-            (cfgmap.get_value<int>("pika.use_process_mask", 0) > 0) ||
-            (vm.count("pika:use-process-mask") > 0);
-
+        ignore_process_mask_ =
 #if defined(__APPLE__)
-        if (use_process_mask_)
-        {
-            std::cerr << "Warning: enabled process mask for thread "
-                         "binding, but "
-                         "thread binding is not supported on macOS. "
-                         "Ignoring option."
-                      << std::endl;
-            use_process_mask_ = false;
-        }
+            true;
+#else
+            (cfgmap.get_value<int>("pika.ignore_process_mask", 0) > 0) ||
+            (vm.count("pika:ignore-process-mask") > 0);
 #endif
 
-        ini_config.emplace_back(
-            "pika.use_process_mask!=" + std::to_string(use_process_mask_));
+        ini_config.emplace_back("pika.ignore_process_mask!=" +
+            std::to_string(ignore_process_mask_));
+
+        bool use_process_mask = !ignore_process_mask_;
 
         // handle setting related to schedulers
         queuing_ = detail::handle_queuing(cfgmap, vm, "local-priority-fifo");
@@ -483,10 +477,14 @@ namespace pika::detail {
         if (!affinity_bind_.empty())
         {
 #if defined(__APPLE__)
-            std::cerr << "Warning: thread binding set to \"" << affinity_bind_
-                      << "\" but thread binding is not supported on macOS. "
-                         "Ignoring option."
-                      << std::endl;
+            if (affinity_bind_ != "none")
+            {
+                std::cerr << "Warning: thread binding set to \""
+                          << affinity_bind_
+                          << "\" but thread binding is not supported on macOS. "
+                             "Ignoring option."
+                          << std::endl;
+            }
             affinity_bind_ = "";
 #else
             ini_config.emplace_back("pika.bind!=" + affinity_bind_);
@@ -554,9 +552,9 @@ namespace pika::detail {
 
         // handle number of cores and threads
         num_threads_ =
-            detail::handle_num_threads(cfgmap, rtcfg_, vm, use_process_mask_);
+            detail::handle_num_threads(cfgmap, rtcfg_, vm, use_process_mask);
         num_cores_ = detail::handle_num_cores(
-            cfgmap, vm, num_threads_, use_process_mask_);
+            cfgmap, vm, num_threads_, use_process_mask);
 
         // Set number of cores and OS threads in configuration.
         ini_config.emplace_back(
@@ -965,6 +963,42 @@ namespace pika::detail {
             }
 
             return 1;
+        }
+
+        // Print a warning about process masks resulting in only one worker
+        // thread, but only do so if that would not be the default on the given
+        // system and it was not given explicitly to --pika:threads.
+        if (!ignore_process_mask_)
+        {
+            bool const command_line_arguments_given =
+                vm_.count("pika:threads") != 0 || vm_.count("pika:cores") != 0;
+            if (num_threads_ == 1 &&
+                get_number_of_default_threads(false) != 1 &&
+                !command_line_arguments_given)
+            {
+                std::cerr
+                    << "The pika runtime will be started with only one worker "
+                       "thread because the process mask has restricted the "
+                       "available resources to only one thread. If this is "
+                       "unintentional make sure the process mask contains the "
+                       "resources you need or use --pika:ignore-process-mask "
+                       "to use all resources. Use --pika:print-bind to print "
+                       "the thread bindings used by pika.\n";
+            }
+            else if (num_cores_ == 1 &&
+                get_number_of_default_cores(false) != 1 &&
+                !command_line_arguments_given)
+            {
+                pika::util::format_to(std::cerr,
+                    "The pika runtime will be started on only one core with {} "
+                    "worker threads because the process mask has restricted "
+                    "the available resources to only one core. If this is "
+                    "unintentional make sure the process mask contains the "
+                    "resources you need or use --pika:ignore-process-mask to "
+                    "use all resources. Use --pika:print-bind to print the "
+                    "thread bindings used by pika.\n",
+                    num_threads_);
+            }
         }
 
         // all is good
