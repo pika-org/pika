@@ -137,12 +137,12 @@ namespace pika::util::logging::destination {
         and @ref dealing_with_flags
     */
         PIKA_EXPORT static std::unique_ptr<file> make(
-            std::string const& file_name, file_settings set = {});
+            std::string_view file_name, file_settings set = {});
 
         PIKA_EXPORT ~file();
 
     protected:
-        file(std::string const& file_name, file_settings set)
+        file(std::string_view file_name, file_settings set)
           : name(file_name)
           , settings(set)
         {
