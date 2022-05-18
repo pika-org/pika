@@ -233,13 +233,14 @@ In the above example, I know that the available destinations are @c out_file,
             return *this;
         }
 
-        void add(std::string const& name, ptr_type p)
+        void add(std::string_view name, ptr_type p)
         {
             auto iter = find_named(destinations, name);
             if (iter != destinations.end())
                 iter->value = PIKA_MOVE(p);
             else
-                destinations.push_back(named<ptr_type>{name, PIKA_MOVE(p)});
+                destinations.push_back(
+                    named<ptr_type>{std::string(name), PIKA_MOVE(p)});
             compute_write_steps();
         }
 
@@ -441,7 +442,7 @@ This will just configure "file" twice, ending up with writing only to "two.txt" 
         }
 
         template <typename Destination, typename... Args>
-        void set_destination(std::string const& name, Args&&... args)
+        void set_destination(std::string_view name, Args&&... args)
         {
             m_destination.add(
                 name, Destination::make(PIKA_FORWARD(Args, args)...));

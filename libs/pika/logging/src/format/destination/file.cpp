@@ -44,7 +44,7 @@ namespace pika { namespace util { namespace logging { namespace destination {
     {
         using mutex_type = pika::util::detail::spinlock;
 
-        explicit file_impl(std::string const& file_name, file_settings set)
+        explicit file_impl(std::string_view file_name, file_settings set)
           : file(file_name, set)
         {
         }
@@ -86,7 +86,7 @@ namespace pika { namespace util { namespace logging { namespace destination {
     };
 
     std::unique_ptr<file> file::make(
-        std::string const& file_name, file_settings set)
+        std::string_view file_name, file_settings set)
     {
         return std::unique_ptr<file>(new file_impl(file_name, set));
     }
