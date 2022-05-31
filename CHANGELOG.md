@@ -4,6 +4,24 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.5.0 (2022-06-01)
+
+### New features
+
+- The `then_with_cublas` and `then_with_cusolver` sender adaptors can now also be used with hipBLAS and hipSOLVER. ([#220](https://github.com/pika-org/pika/pull/220))
+- There is now experimental support for using the [P2300 reference implementation](https://github.com/brycelelbach/wg21_p2300_std_execution) in place of pika's own implementation. This can be enabled with the `PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION` CMake option. ([#215](https://github.com/pika-org/pika/pull/215))
+
+### Breaking changes
+
+- The `--pika:help` command-line no longer takes any arguments. ([#219](https://github.com/pika-org/pika/pull/219))
+- Vc support has been removed. ([#223](https://github.com/pika-org/pika/pull/223))
+- Cleaned up the `command_line_handling` module and moved minor functionality into the `detail` namespace. ([#216](https://github.com/pika-org/pika/pull/216))
+- Removed the `then_with_any_cuda` sender adaptor. ([#243](https://github.com/pika-org/pika/pull/243))
+
+### Bugfixes
+
+- Scheduler properties can now be used with `prefer`. ([#214](https://github.com/pika-org/pika/pull/214))
+
 ## 0.4.0 (2022-05-04)
 
 ### New features
