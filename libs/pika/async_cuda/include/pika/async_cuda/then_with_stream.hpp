@@ -126,48 +126,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             op_state.stream.value().get().get());
     }
 
-    template <typename Sender, typename F, typename Enable>
-    struct then_with_cuda_stream_sender;
-
-    template <typename Sender>
-    struct is_then_with_cuda_stream_sender : std::false_type
-    {
-    };
-
-    template <typename Sender, typename F, typename Enable>
-    struct is_then_with_cuda_stream_sender<
-        then_with_cuda_stream_sender<Sender, F, Enable>> : std::true_type
-    {
-    };
-
     template <typename Sender, typename F>
-    struct is_cuda_stream_invocable_with_sender
-    {
-        template <typename Tuple>
-        struct is_invocable_helper;
-
-        template <template <typename...> class Tuple, typename... Ts>
-        struct is_invocable_helper<Tuple<Ts...>>
-        {
-            using type = pika::is_invocable<F, cuda_stream const&,
-                std::add_lvalue_reference_t<std::decay_t<Ts>>...>;
-        };
-
-        static constexpr bool value = pika::util::detail::change_pack_t<
-            pika::util::all_of,
-            pika::util::detail::transform_t<
-                typename pika::execution::experimental::sender_traits<Sender>::
-                    template value_types<pika::util::pack, pika::util::pack>,
-                is_invocable_helper>>::value;
-    };
-
-    template <typename Sender, typename F>
-    inline constexpr bool is_cuda_stream_invocable_with_sender_v =
-        is_cuda_stream_invocable_with_sender<Sender, F>::value;
-
-    template <typename Sender, typename F,
-        typename Enable =
-            std::enable_if_t<is_cuda_stream_invocable_with_sender_v<Sender, F>>>
     struct then_with_cuda_stream_sender
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
@@ -722,60 +681,4 @@ namespace pika::cuda::experimental {
                 then_with_cusolver_t, F>{PIKA_FORWARD(F, f)};
         }
     } then_with_cusolver{};
-
-    /// Attach a continuation to run f with a CUDA stream, cuBLAS handle, or
-    /// cuSOLVER handle.
-    ///
-    /// This is a generic version of then_with_stream, then_with_cublas, and
-    /// then_with_cusolver which will use one of the three depending on what f
-    /// is callable with. If f is callable with more than one of the mentioned
-    /// adaptors they will be prioritized in the given order.
-    inline constexpr struct then_with_any_cuda_t final
-    {
-        template <typename Sender, typename F,
-            PIKA_CONCEPT_REQUIRES_(
-                pika::execution::experimental::is_sender_v<Sender>)>
-        constexpr PIKA_FORCEINLINE auto operator()(Sender&& sender, F&& f,
-            cublasPointerMode_t pointer_mode = CUBLAS_POINTER_MODE_HOST) const
-        {
-            if constexpr (std::is_invocable_v<then_with_stream_t, Sender, F>)
-            {
-                return then_with_stream(
-                    PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f));
-            }
-            else if constexpr (std::is_invocable_v<then_with_cublas_t, Sender,
-                                   F, cublasPointerMode_t>)
-            {
-                return then_with_cublas(PIKA_FORWARD(Sender, sender),
-                    PIKA_FORWARD(F, f), pointer_mode);
-            }
-            else if constexpr (std::is_invocable_v<then_with_cusolver_t, Sender,
-                                   F>)
-            {
-                return then_with_cusolver(
-                    PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f));
-            }
-            else
-            {
-                static_assert(sizeof(Sender) == 0,
-                    "Attempting to use then_with_any_cuda, but f is not "
-                    "invocable with a CUDA stream as the last argument or "
-                    "cuBLAS/cuSOLVER handle as the first argument.");
-            }
-            // This silences a bogus warning from nvcc about no return from a
-            // non-void function.
-#if defined(__NVCC__)
-            __builtin_unreachable();
-#endif
-        }
-
-        template <typename F>
-        constexpr PIKA_FORCEINLINE auto operator()(F&& f,
-            cublasPointerMode_t pointer_mode = CUBLAS_POINTER_MODE_HOST) const
-        {
-            return pika::execution::experimental::detail::partial_algorithm<
-                then_with_any_cuda_t, F, cublasPointerMode_t>{
-                PIKA_FORWARD(F, f), pointer_mode};
-        }
-    } then_with_any_cuda{};
 }    // namespace pika::cuda::experimental
