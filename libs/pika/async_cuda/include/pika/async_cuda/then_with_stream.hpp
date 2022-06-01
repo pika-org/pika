@@ -127,6 +127,33 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     }
 
     template <typename Sender, typename F>
+    struct is_cuda_stream_invocable_with_sender
+    {
+        template <typename Tuple>
+        struct is_invocable_helper;
+
+        template <template <typename...> class Tuple, typename... Ts>
+        struct is_invocable_helper<Tuple<Ts...>>
+        {
+            using type = pika::is_invocable<F, cuda_stream const&,
+                std::add_lvalue_reference_t<std::decay_t<Ts>>...>;
+        };
+
+        static constexpr bool value = pika::util::detail::change_pack_t<
+            pika::util::all_of,
+            pika::util::detail::transform_t<
+                typename pika::execution::experimental::sender_traits<Sender>::
+                    template value_types<pika::util::pack, pika::util::pack>,
+                is_invocable_helper>>::value;
+    };
+
+    template <typename Sender, typename F>
+    inline constexpr bool is_cuda_stream_invocable_with_sender_v =
+        is_cuda_stream_invocable_with_sender<Sender, F>::value;
+
+    template <typename Sender, typename F,
+        typename Enable =
+            std::enable_if_t<is_cuda_stream_invocable_with_sender_v<Sender, F>>>
     struct then_with_cuda_stream_sender
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
