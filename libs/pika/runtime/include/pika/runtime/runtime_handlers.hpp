@@ -17,7 +17,7 @@
 #include <string>
 
 namespace pika { namespace detail {
-    PIKA_NORETURN PIKA_EXPORT void assertion_handler(
+    [[noreturn]] PIKA_EXPORT void assertion_handler(
         pika::detail::source_location const& loc, const char* expr,
         std::string const& msg);
 #if defined(PIKA_HAVE_APEX)

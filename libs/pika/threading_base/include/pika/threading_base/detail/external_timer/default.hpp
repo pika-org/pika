@@ -28,7 +28,7 @@ namespace pika::detail::external_timer {
         return nullptr;
     }
 
-    struct PIKA_NODISCARD scoped_timer
+    struct [[nodiscard]] scoped_timer
     {
         explicit scoped_timer(std::shared_ptr<task_wrapper>){};
         scoped_timer(scoped_timer&&) = delete;

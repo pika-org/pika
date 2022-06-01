@@ -254,7 +254,7 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             template <typename E_>
-            PIKA_NORETURN void set_error(E_&&) noexcept
+            [[noreturn]] void set_error(E_&&) noexcept
             {
                 std::terminate();
             }

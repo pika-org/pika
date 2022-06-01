@@ -80,7 +80,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     struct handle_remote_exceptions<
         pika::execution::parallel_unsequenced_policy>
     {
-        PIKA_NORETURN static void call(
+        [[noreturn]] static void call(
             std::exception_ptr const&, std::list<std::exception_ptr>&)
         {
             parallel_exception_termination_handler();
@@ -112,7 +112,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <>
     struct handle_remote_exceptions<pika::execution::unsequenced_policy>
     {
-        PIKA_NORETURN static void call(
+        [[noreturn]] static void call(
             std::exception_ptr const&, std::list<std::exception_ptr>&)
         {
             parallel_exception_termination_handler();

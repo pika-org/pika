@@ -181,7 +181,7 @@ namespace pika {
     }    // namespace detail
 
     template <typename E>
-    PIKA_NORETURN void throw_with_info(
+    [[noreturn]] void throw_with_info(
         E&& e, exception_info&& xi = exception_info())
     {
         using ED = typename std::decay<E>::type;
@@ -195,7 +195,7 @@ namespace pika {
     }
 
     template <typename E>
-    PIKA_NORETURN void throw_with_info(E&& e, exception_info const& xi)
+    [[noreturn]] void throw_with_info(E&& e, exception_info const& xi)
     {
         throw_with_info(PIKA_FORWARD(E, e), exception_info(xi));
     }

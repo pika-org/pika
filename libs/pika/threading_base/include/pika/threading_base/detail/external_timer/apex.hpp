@@ -39,7 +39,7 @@ namespace pika::detail::external_timer {
 
     // This is a scoped object around task scheduling to measure the time spent
     // executing pika threads
-    struct PIKA_NODISCARD scoped_timer
+    struct [[nodiscard]] scoped_timer
     {
         PIKA_EXPORT explicit scoped_timer(
             std::shared_ptr<task_wrapper> data_ptr);

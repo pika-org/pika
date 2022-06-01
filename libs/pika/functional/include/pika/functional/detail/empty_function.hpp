@@ -17,10 +17,10 @@ namespace pika { namespace util { namespace detail {
     {
     };    // must be trivial and empty
 
-    PIKA_NORETURN PIKA_EXPORT void throw_bad_function_call();
+    [[noreturn]] PIKA_EXPORT void throw_bad_function_call();
 
     template <typename R>
-    PIKA_NORETURN inline R throw_bad_function_call()
+    [[noreturn]] inline R throw_bad_function_call()
     {
         throw_bad_function_call();
     }

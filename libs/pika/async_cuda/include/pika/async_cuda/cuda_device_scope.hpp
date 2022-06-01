@@ -13,7 +13,7 @@ namespace pika::cuda::experimental {
     ///
     /// Stores the current device on construction, sets the given device, and
     /// resets the device on destruction.
-    class PIKA_NODISCARD cuda_device_scope
+    class [[nodiscard]] cuda_device_scope
     {
     private:
         int device;

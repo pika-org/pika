@@ -32,13 +32,13 @@
 
 namespace pika { namespace resource { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
-    PIKA_NORETURN void throw_runtime_error(
+    [[noreturn]] void throw_runtime_error(
         std::string const& func, std::string const& message)
     {
         PIKA_THROW_EXCEPTION(invalid_status, func, message);
     }
 
-    PIKA_NORETURN void throw_invalid_argument(
+    [[noreturn]] void throw_invalid_argument(
         std::string const& func, std::string const& message)
     {
         PIKA_THROW_EXCEPTION(bad_parameter, func, message);

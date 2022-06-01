@@ -30,7 +30,7 @@ namespace pika {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
-    struct PIKA_NODISCARD scoped_annotation
+    struct [[nodiscard]] scoped_annotation
     {
         PIKA_NON_COPYABLE(scoped_annotation);
 
@@ -45,7 +45,7 @@ namespace pika {
         PIKA_HOST_DEVICE ~scoped_annotation() {}
     };
 #elif PIKA_HAVE_ITTNOTIFY != 0
-    struct PIKA_NODISCARD scoped_annotation
+    struct [[nodiscard]] scoped_annotation
     {
         PIKA_NON_COPYABLE(scoped_annotation);
 
@@ -66,7 +66,7 @@ namespace pika {
         pika::util::itt::task task_;
     };
 #else
-    struct PIKA_NODISCARD scoped_annotation
+    struct [[nodiscard]] scoped_annotation
     {
         PIKA_NON_COPYABLE(scoped_annotation);
 
@@ -154,7 +154,7 @@ namespace pika {
 
 #else
     ///////////////////////////////////////////////////////////////////////////
-    struct PIKA_NODISCARD scoped_annotation
+    struct [[nodiscard]] scoped_annotation
     {
         PIKA_NON_COPYABLE(scoped_annotation);
 

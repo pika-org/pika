@@ -85,11 +85,11 @@ namespace pika {
 
         // Report an early or late exception and locally abort execution. There
         // isn't anything more we could do.
-        PIKA_NORETURN PIKA_EXPORT void report_exception_and_terminate(
+        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(
             std::exception const&);
-        PIKA_NORETURN PIKA_EXPORT void report_exception_and_terminate(
+        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(
             std::exception_ptr const&);
-        PIKA_NORETURN PIKA_EXPORT void report_exception_and_terminate(
+        [[noreturn]] PIKA_EXPORT void report_exception_and_terminate(
             pika::exception const&);
 
         // Report an early or late exception and locally exit execution. There

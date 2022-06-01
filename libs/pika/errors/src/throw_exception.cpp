@@ -16,7 +16,7 @@
 
 namespace pika { namespace detail {
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-    PIKA_NORETURN void throw_exception(error errcode, std::string const& msg,
+    [[noreturn]] void throw_exception(error errcode, std::string const& msg,
         std::string const& func, std::string const& file, long line)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
@@ -25,7 +25,7 @@ namespace pika { namespace detail {
             pika::exception(errcode, msg, pika::plain), func, p.string(), line);
     }
 
-    PIKA_NORETURN void rethrow_exception(
+    [[noreturn]] void rethrow_exception(
         exception const& e, std::string const& func)
     {
         pika::detail::throw_exception(
@@ -86,7 +86,7 @@ namespace pika { namespace detail {
         }
     }
 
-    PIKA_NORETURN void throw_thread_interrupted_exception()
+    [[noreturn]] void throw_thread_interrupted_exception()
     {
         throw pika::thread_interrupted();
     }

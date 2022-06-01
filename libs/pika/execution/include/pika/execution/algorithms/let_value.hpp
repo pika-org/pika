@@ -190,7 +190,7 @@ namespace pika { namespace execution { namespace experimental {
 
                     struct start_visitor
                     {
-                        PIKA_NORETURN void operator()(pika::monostate) const
+                        [[noreturn]] void operator()(pika::monostate) const
                         {
                             PIKA_UNREACHABLE;
                         }
@@ -211,7 +211,7 @@ namespace pika { namespace execution { namespace experimental {
                         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
                         operation_state& op_state;
 
-                        PIKA_NORETURN void operator()(pika::monostate) const
+                        [[noreturn]] void operator()(pika::monostate) const
                         {
                             PIKA_UNREACHABLE;
                         }

@@ -11,7 +11,7 @@
 #include <pika/modules/errors.hpp>
 
 namespace pika { namespace util { namespace detail {
-    PIKA_NORETURN void throw_bad_function_call()
+    [[noreturn]] void throw_bad_function_call()
     {
         pika::throw_exception(bad_function_call,
             "empty function object should not be used",

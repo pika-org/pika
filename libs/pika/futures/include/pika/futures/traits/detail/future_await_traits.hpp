@@ -40,7 +40,7 @@ namespace pika { namespace lcos { namespace detail {
         {
         }
 
-        PIKA_NODISCARD constexpr bool await_ready() const noexcept
+        [[nodiscard]] constexpr bool await_ready() const noexcept
         {
             return is_ready_;
         }
@@ -166,7 +166,7 @@ namespace pika { namespace lcos { namespace detail {
         }
 
         // allocator support for shared coroutine state
-        PIKA_NODISCARD static void* allocate(std::size_t size)
+        [[nodiscard]] static void* allocate(std::size_t size)
         {
             using char_allocator = typename std::allocator_traits<
                 allocator_type>::template rebind_alloc<char>;
@@ -221,7 +221,7 @@ namespace std {
                 this->base_type::set_exception(std::current_exception());
             }
 
-            PIKA_NODISCARD PIKA_FORCEINLINE static void* operator new(
+            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(
                 std::size_t size)
             {
                 return base_type::allocate(size);
@@ -259,7 +259,7 @@ namespace std {
                 this->base_type::set_exception(std::current_exception());
             }
 
-            PIKA_NODISCARD PIKA_FORCEINLINE static void* operator new(
+            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(
                 std::size_t size)
             {
                 return base_type::allocate(size);
@@ -300,7 +300,7 @@ namespace std {
                 this->base_type::set_exception(std::current_exception());
             }
 
-            PIKA_NODISCARD PIKA_FORCEINLINE static void* operator new(
+            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(
                 std::size_t size)
             {
                 return base_type::allocate(size);
@@ -338,7 +338,7 @@ namespace std {
                 this->base_type::set_exception(std::current_exception());
             }
 
-            PIKA_NODISCARD PIKA_FORCEINLINE static void* operator new(
+            [[nodiscard]] PIKA_FORCEINLINE static void* operator new(
                 std::size_t size)
             {
                 return base_type::allocate(size);

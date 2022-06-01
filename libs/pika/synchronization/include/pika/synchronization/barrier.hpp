@@ -127,8 +127,7 @@ namespace pika { namespace lcos { namespace local {
         }
 
     private:
-        PIKA_NODISCARD
-        arrival_token arrive_locked(
+        [[nodiscard]] arrival_token arrive_locked(
             std::unique_lock<mutex_type>& l, std::ptrdiff_t update = 1)
         {
             PIKA_ASSERT_OWNS_LOCK(l);
@@ -164,8 +163,7 @@ namespace pika { namespace lcos { namespace local {
         //                 types([thread.mutex.requirements.mutex]).
         // [Note: This call can cause the completion step for the current phase
         //        to start.- end note]
-        PIKA_NODISCARD
-        arrival_token arrive(std::ptrdiff_t update = 1)
+        [[nodiscard]] arrival_token arrive(std::ptrdiff_t update = 1)
         {
             std::unique_lock<mutex_type> l(mtx_);
             return arrive_locked(l, update);

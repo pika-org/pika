@@ -10,7 +10,7 @@
 #include <pika/init_runtime/init_runtime.hpp>
 
 namespace pika {
-    struct PIKA_NODISCARD scoped_finalize
+    struct [[nodiscard]] scoped_finalize
     {
         scoped_finalize() = default;
         PIKA_EXPORT ~scoped_finalize();

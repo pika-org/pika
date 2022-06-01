@@ -229,7 +229,7 @@ namespace pika {
 
         // Returns: true if *this has ownership of a stop state that has
         //      received a stop request; otherwise, false.
-        PIKA_NODISCARD bool stop_requested() const noexcept
+        [[nodiscard]] bool stop_requested() const noexcept
         {
             return !!state_ && state_->stop_requested();
         }
@@ -238,7 +238,7 @@ namespace pika {
         //      (2.1) *this does not have ownership of a stop state, or
         //      (2.2) a stop request was not made and there are no associated
         //            stop_source objects; otherwise, true.
-        PIKA_NODISCARD bool stop_possible() const noexcept
+        [[nodiscard]] bool stop_possible() const noexcept
         {
             return !!state_ && state_->stop_possible();
         }
@@ -249,20 +249,20 @@ namespace pika {
         //      if both lhs and rhs do not have ownership of a stop state;
         //      otherwise false.
 #if !defined(__NVCC__)
-        PIKA_NODISCARD
+        [[nodiscard]]
 #endif
-        friend bool operator==(
-            stop_token const& lhs, stop_token const& rhs) noexcept
+        friend bool
+        operator==(stop_token const& lhs, stop_token const& rhs) noexcept
         {
             return lhs.state_ == rhs.state_;
         }
 
         // Returns: !(lhs==rhs).
 #if !defined(__NVCC__)
-        PIKA_NODISCARD
+        [[nodiscard]]
 #endif
-        friend bool operator!=(
-            stop_token const& lhs, stop_token const& rhs) noexcept
+        friend bool
+        operator!=(stop_token const& lhs, stop_token const& rhs) noexcept
         {
             return !(lhs == rhs);
         }
@@ -354,7 +354,7 @@ namespace pika {
 
         // Returns: stop_token() if stop_possible() is false; otherwise a new
         //      associated stop_token object.
-        PIKA_NODISCARD stop_token get_token() const noexcept
+        [[nodiscard]] stop_token get_token() const noexcept
         {
             if (!stop_possible())
             {
@@ -364,14 +364,14 @@ namespace pika {
         }
 
         // Returns: true if *this has ownership of a stop state; otherwise, false.
-        PIKA_NODISCARD bool stop_possible() const noexcept
+        [[nodiscard]] bool stop_possible() const noexcept
         {
             return !!state_;
         }
 
         // Returns: true if *this has ownership of a stop state that has
         //      received a stop request; otherwise, false.
-        PIKA_NODISCARD bool stop_requested() const noexcept
+        [[nodiscard]] bool stop_requested() const noexcept
         {
             return !!state_ && state_->stop_requested();
         }
@@ -403,19 +403,19 @@ namespace pika {
         //      if both lhs and rhs do not have ownership of a stop state;
         //      otherwise false.
 #if !defined(__NVCC__)
-        PIKA_NODISCARD
+        [[nodiscard]]
 #endif
-        friend bool operator==(
-            stop_source const& lhs, stop_source const& rhs) noexcept
+        friend bool
+        operator==(stop_source const& lhs, stop_source const& rhs) noexcept
         {
             return lhs.state_ == rhs.state_;
         }
 
 #if !defined(__NVCC__)
-        PIKA_NODISCARD
+        [[nodiscard]]
 #endif
-        friend bool operator!=(
-            stop_source const& lhs, stop_source const& rhs) noexcept
+        friend bool
+        operator!=(stop_source const& lhs, stop_source const& rhs) noexcept
         {
             return !(lhs == rhs);
         }
@@ -429,7 +429,7 @@ namespace pika {
     // 32.3.5, class stop_callback
     //
     template <typename Callback>
-    class PIKA_NODISCARD stop_callback : private detail::stop_callback_base
+    class [[nodiscard]] stop_callback : private detail::stop_callback_base
     {
     public:
         using callback_type = Callback;

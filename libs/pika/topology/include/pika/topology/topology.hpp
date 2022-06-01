@@ -412,7 +412,7 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT topology& create_topology();
 
-    PIKA_NODISCARD PIKA_EXPORT unsigned int hardware_concurrency() noexcept;
+    [[nodiscard]] PIKA_EXPORT unsigned int hardware_concurrency() noexcept;
 
     ///////////////////////////////////////////////////////////////////////////
     // abstract away memory page size, calls to system functions are
