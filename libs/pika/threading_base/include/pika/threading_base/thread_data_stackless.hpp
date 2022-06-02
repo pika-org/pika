@@ -24,8 +24,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads {
-
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// A \a thread is the representation of a ParalleX thread. It's a first
     /// class object in ParalleX. In our implementation this is a user level
@@ -165,6 +164,6 @@ namespace pika { namespace threads {
         new (p) thread_data_stackless(data, queue, stacksize, addref);
         return p;
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>

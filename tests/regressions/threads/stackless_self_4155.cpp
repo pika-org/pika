@@ -10,18 +10,18 @@
 
 void stackless_thread()
 {
-    PIKA_TEST_NEQ(
-        pika::threads::get_self_id(), pika::threads::invalid_thread_id);
+    PIKA_TEST_NEQ(pika::threads::detail::get_self_id(),
+        pika::threads::detail::invalid_thread_id);
 }
 
 int pika_main()
 {
-    pika::threads::thread_init_data data(
-        pika::threads::make_thread_function_nullary(stackless_thread),
-        "stackless_thread", pika::threads::thread_priority::default_,
-        pika::threads::thread_schedule_hint(),
-        pika::threads::thread_stacksize::nostack);
-    pika::threads::register_work(data);
+    pika::threads::detail::thread_init_data data(
+        pika::threads::detail::make_thread_function_nullary(stackless_thread),
+        "stackless_thread", pika::execution::thread_priority::default_,
+        pika::execution::thread_schedule_hint(),
+        pika::execution::thread_stacksize::nostack);
+    pika::threads::detail::register_work(data);
     return pika::finalize();
 }
 

@@ -24,7 +24,7 @@ namespace pika::cuda::experimental {
     {
     private:
         int device;
-        pika::threads::thread_priority priority;
+        pika::execution::thread_priority priority;
         cudaStream_t stream = 0;
 
         struct priorities
@@ -35,12 +35,12 @@ namespace pika::cuda::experimental {
 
         static PIKA_EXPORT priorities get_available_priorities();
         static PIKA_EXPORT cudaStream_t create_stream(
-            int device, pika::threads::thread_priority priority);
+            int device, pika::execution::thread_priority priority);
 
     public:
         PIKA_EXPORT explicit cuda_stream(int device = 0,
-            pika::threads::thread_priority priority =
-                pika::threads::thread_priority::default_);
+            pika::execution::thread_priority priority =
+                pika::execution::thread_priority::default_);
         PIKA_EXPORT ~cuda_stream();
         PIKA_EXPORT cuda_stream(cuda_stream&&) noexcept;
         PIKA_EXPORT cuda_stream& operator=(cuda_stream&&) noexcept;
@@ -49,7 +49,7 @@ namespace pika::cuda::experimental {
 
         PIKA_EXPORT cudaStream_t get() const noexcept;
         PIKA_EXPORT int get_device() const noexcept;
-        PIKA_EXPORT pika::threads::thread_priority get_priority()
+        PIKA_EXPORT pika::execution::thread_priority get_priority()
             const noexcept;
 
         /// \cond NOINTERNAL

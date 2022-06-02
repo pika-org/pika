@@ -67,7 +67,8 @@ namespace pika { namespace threads {
     ///       of registered task descriptions (which have not been
     ///       converted into threads yet).
     PIKA_EXPORT std::int64_t get_thread_count(
-        thread_schedule_state state = thread_schedule_state::unknown);
+        detail::thread_schedule_state state =
+            detail::thread_schedule_state::unknown);
 
     /// The function \a get_thread_count returns the number of currently
     /// known threads.
@@ -81,8 +82,10 @@ namespace pika { namespace threads {
     ///       number of currently existing threads, but will add the number
     ///       of registered task descriptions (which have not been
     ///       converted into threads yet).
-    PIKA_EXPORT std::int64_t get_thread_count(thread_priority priority,
-        thread_schedule_state state = thread_schedule_state::unknown);
+    PIKA_EXPORT std::int64_t get_thread_count(
+        execution::thread_priority priority,
+        detail::thread_schedule_state state =
+            detail::thread_schedule_state::unknown);
 
     /// The function \a get_idle_core_count returns the number of currently
     /// idling threads (cores).
@@ -101,6 +104,7 @@ namespace pika { namespace threads {
     /// \param state    [in] This specifies the thread-state for which the
     ///                 threads should be enumerated.
     PIKA_EXPORT bool enumerate_threads(
-        util::function<bool(thread_id_type)> const& f,
-        thread_schedule_state state = thread_schedule_state::unknown);
+        util::function<bool(detail::thread_id_type)> const& f,
+        detail::thread_schedule_state state =
+            detail::thread_schedule_state::unknown);
 }}    // namespace pika::threads

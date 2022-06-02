@@ -32,21 +32,24 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     {
         template <typename F, typename... Ts>
         static void call(launch::fork_policy const& policy,
-            pika::util::thread_description const& desc,
+            pika::util::detail::thread_description const& desc,
             threads::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
-            threads::thread_init_data data(
-                threads::make_thread_function_nullary(pika::util::deferred_call(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
+            threads::detail::thread_init_data data(
+                threads::detail::make_thread_function_nullary(
+                    pika::util::deferred_call(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(),
-                threads::thread_schedule_hint(
+                pika::execution::thread_schedule_hint(
                     static_cast<std::int16_t>(get_worker_thread_num())),
                 policy.stacksize(),
-                threads::thread_schedule_state::pending_do_not_schedule, true);
+                threads::detail::thread_schedule_state::pending_do_not_schedule,
+                true);
 
-            threads::thread_id_ref_type tid =
-                threads::register_thread(data, pool);
-            threads::thread_id_type tid_self = threads::get_self_id();
+            threads::detail::thread_id_ref_type tid =
+                threads::detail::register_thread(data, pool);
+            threads::detail::thread_id_type tid_self =
+                threads::detail::get_self_id();
 
             // make sure this thread is executed last
             if (tid && tid_self &&
@@ -55,14 +58,15 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
             {
                 // yield_to(tid)
                 pika::this_thread::suspend(
-                    threads::thread_schedule_state::pending, tid.noref(),
-                    "post_policy_dispatch(suspend)");
+                    threads::detail::thread_schedule_state::pending,
+                    tid.noref(), "post_policy_dispatch(suspend)");
             }
         }
 
         template <typename F, typename... Ts>
         static void call(launch::fork_policy const& policy,
-            pika::util::thread_description const& desc, F&& f, Ts&&... ts)
+            pika::util::detail::thread_description const& desc, F&& f,
+            Ts&&... ts)
         {
             call(policy, desc, threads::detail::get_self_or_default_pool(),
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
@@ -74,7 +78,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     {
         template <typename F, typename... Ts>
         static void call(launch::sync_policy const&,
-            pika::util::thread_description const& /* desc */,
+            pika::util::detail::thread_description const& /* desc */,
             threads::thread_pool_base* /* pool */, F&& f, Ts&&... ts)
         {
             pika::detail::call_sync(
@@ -83,7 +87,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
 
         template <typename F, typename... Ts>
         static void call(launch::sync_policy const& /* policy */,
-            pika::util::thread_description const& /* desc */, F&& f,
+            pika::util::detail::thread_description const& /* desc */, F&& f,
             Ts&&... ts) noexcept
         {
             pika::detail::call_sync(
@@ -96,7 +100,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     {
         template <typename F, typename... Ts>
         static void call(Policy const& policy,
-            pika::util::thread_description const& desc,
+            pika::util::detail::thread_description const& desc,
             threads::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
             if (policy == launch::sync)
@@ -115,18 +119,20 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
                 return;
             }
 
-            threads::thread_init_data data(
-                threads::make_thread_function_nullary(pika::util::deferred_call(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
+            threads::detail::thread_init_data data(
+                threads::detail::make_thread_function_nullary(
+                    pika::util::deferred_call(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(), policy.hint(), policy.stacksize(),
-                threads::thread_schedule_state::pending);
+                threads::detail::thread_schedule_state::pending);
 
-            threads::register_work(data, pool);
+            threads::detail::register_work(data, pool);
         }
 
         template <typename F, typename... Ts>
         static void call(Policy const& policy,
-            pika::util::thread_description const& desc, F&& f, Ts&&... ts)
+            pika::util::detail::thread_description const& desc, F&& f,
+            Ts&&... ts)
         {
             if (policy == launch::sync)
             {
@@ -144,13 +150,14 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
                 return;
             }
 
-            threads::thread_init_data data(
-                threads::make_thread_function_nullary(pika::util::deferred_call(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
+            threads::detail::thread_init_data data(
+                threads::detail::make_thread_function_nullary(
+                    pika::util::deferred_call(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(), policy.hint(), policy.stacksize(),
-                threads::thread_schedule_state::pending);
+                threads::detail::thread_schedule_state::pending);
 
-            threads::register_work(data);
+            threads::detail::register_work(data);
         }
     };
 }}}}    // namespace pika::parallel::execution::detail

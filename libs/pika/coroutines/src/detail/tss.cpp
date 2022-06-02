@@ -22,7 +22,7 @@
 #include <map>
 #include <memory>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
+namespace pika::threads::coroutines::detail {
     ///////////////////////////////////////////////////////////////////////////
     void tss_data_node::cleanup(bool cleanup_existing)
     {
@@ -73,7 +73,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
             return 0;
         }
 
-        detail::tss_storage* tss_map = self->get_thread_tss_data();
+        tss_storage* tss_map = self->get_thread_tss_data();
         if (nullptr == tss_map)
             return 0;
 
@@ -102,7 +102,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
             return 0;
         }
 
-        detail::tss_storage* tss_map = self->get_or_create_thread_tss_data();
+        tss_storage* tss_map = self->get_or_create_thread_tss_data();
         if (nullptr == tss_map)
         {
             throw std::bad_alloc();
@@ -142,7 +142,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
             return nullptr;
         }
 
-        detail::tss_storage* tss_map = self->get_thread_tss_data();
+        tss_storage* tss_map = self->get_thread_tss_data();
         if (nullptr == tss_map)
             return nullptr;
 
@@ -180,7 +180,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
             return;
         }
 
-        detail::tss_storage* tss_map = self->get_or_create_thread_tss_data();
+        tss_storage* tss_map = self->get_or_create_thread_tss_data();
         if (nullptr == tss_map)
         {
             throw std::bad_alloc();
@@ -207,7 +207,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
             return;
         }
 
-        detail::tss_storage* tss_map = self->get_thread_tss_data();
+        tss_storage* tss_map = self->get_thread_tss_data();
         if (nullptr != tss_map)
             tss_map->erase(key, cleanup_existing);
 #else
@@ -239,5 +239,5 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         PIKA_UNUSED(cleanup_existing);
 #endif
     }
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail
 #endif

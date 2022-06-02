@@ -25,9 +25,9 @@ int pika_main()
     pika::ranges::for_each(pika::execution::par, c,
         pika::annotated_function(
             [](int) -> void {
-                pika::util::thread_description desc(
-                    pika::threads::get_thread_description(
-                        pika::threads::get_self_id()));
+                pika::util::detail::thread_description desc(
+                    pika::threads::detail::get_thread_description(
+                        pika::threads::detail::get_self_id()));
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
                 PIKA_TEST_EQ(
                     std::string(desc.get_description()), "annotated_function");

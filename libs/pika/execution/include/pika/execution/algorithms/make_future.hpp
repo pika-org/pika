@@ -24,7 +24,7 @@
 #include <pika/functional/invoke_result.hpp>
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/promise.hpp>
-#include <pika/modules/memory.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>

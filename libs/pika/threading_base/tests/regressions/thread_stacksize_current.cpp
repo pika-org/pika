@@ -21,38 +21,39 @@
 #include <string>
 #include <vector>
 
-void test(pika::threads::thread_stacksize stacksize)
+void test(pika::execution::thread_stacksize stacksize)
 {
     pika::execution::parallel_executor exec(stacksize);
     pika::execution::parallel_executor exec_current(
-        pika::threads::thread_stacksize::current);
+        pika::execution::thread_stacksize::current);
 
     pika::async(exec, [&exec_current, stacksize]() {
         // This thread should have the stack size stacksize; it has been
         // explicitly set in the executor.
-        pika::threads::thread_stacksize self_stacksize =
-            pika::threads::get_self_stacksize_enum();
+        pika::execution::thread_stacksize self_stacksize =
+            pika::threads::detail::get_self_stacksize_enum();
         PIKA_TEST_EQ(self_stacksize, stacksize);
-        PIKA_TEST_NEQ(self_stacksize, pika::threads::thread_stacksize::current);
+        PIKA_TEST_NEQ(
+            self_stacksize, pika::execution::thread_stacksize::current);
 
         pika::async(exec_current, [stacksize]() {
             // This thread should also have the stack size stacksize; it has
             // been inherited size from the parent thread.
-            pika::threads::thread_stacksize self_stacksize =
-                pika::threads::get_self_stacksize_enum();
+            pika::execution::thread_stacksize self_stacksize =
+                pika::threads::detail::get_self_stacksize_enum();
             PIKA_TEST_EQ(self_stacksize, stacksize);
             PIKA_TEST_NEQ(
-                self_stacksize, pika::threads::thread_stacksize::current);
+                self_stacksize, pika::execution::thread_stacksize::current);
         }).get();
     }).get();
 }
 
 int pika_main()
 {
-    for (pika::threads::thread_stacksize stacksize =
-             pika::threads::thread_stacksize::minimal;
-         stacksize < pika::threads::thread_stacksize::maximal;
-         stacksize = static_cast<pika::threads::thread_stacksize>(
+    for (pika::execution::thread_stacksize stacksize =
+             pika::execution::thread_stacksize::minimal;
+         stacksize < pika::execution::thread_stacksize::maximal;
+         stacksize = static_cast<pika::execution::thread_stacksize>(
              static_cast<std::size_t>(stacksize) + 1))
     {
         test(stacksize);

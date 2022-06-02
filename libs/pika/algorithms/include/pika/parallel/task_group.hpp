@@ -19,7 +19,7 @@
 #include <pika/executors/parallel_executor.hpp>
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/futures/detail/future_data.hpp>
-#include <pika/modules/memory.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/synchronization/latch.hpp>
 #include <pika/type_support/unused.hpp>
 

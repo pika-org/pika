@@ -92,43 +92,43 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         // Return false if no more threads are waiting (returns true if queue
         // is non-empty).
         PIKA_EXPORT bool notify_one(std::unique_lock<mutex_type> lock,
-            threads::thread_priority priority, error_code& ec = throws);
+            execution::thread_priority priority, error_code& ec = throws);
 
         PIKA_EXPORT void notify_all(std::unique_lock<mutex_type> lock,
-            threads::thread_priority priority, error_code& ec = throws);
+            execution::thread_priority priority, error_code& ec = throws);
 
         bool notify_one(
             std::unique_lock<mutex_type> lock, error_code& ec = throws)
         {
             return notify_one(
-                PIKA_MOVE(lock), threads::thread_priority::default_, ec);
+                PIKA_MOVE(lock), execution::thread_priority::default_, ec);
         }
 
         void notify_all(
             std::unique_lock<mutex_type> lock, error_code& ec = throws)
         {
             return notify_all(
-                PIKA_MOVE(lock), threads::thread_priority::default_, ec);
+                PIKA_MOVE(lock), execution::thread_priority::default_, ec);
         }
 
         PIKA_EXPORT void abort_all(std::unique_lock<mutex_type> lock);
 
-        PIKA_EXPORT threads::thread_restart_state wait(
+        PIKA_EXPORT threads::detail::thread_restart_state wait(
             std::unique_lock<mutex_type>& lock, char const* description,
             error_code& ec = throws);
 
-        threads::thread_restart_state wait(
+        threads::detail::thread_restart_state wait(
             std::unique_lock<mutex_type>& lock, error_code& ec = throws)
         {
             return wait(lock, "condition_variable::wait", ec);
         }
 
-        PIKA_EXPORT threads::thread_restart_state wait_until(
+        PIKA_EXPORT threads::detail::thread_restart_state wait_until(
             std::unique_lock<mutex_type>& lock,
             pika::chrono::steady_time_point const& abs_time,
             char const* description, error_code& ec = throws);
 
-        threads::thread_restart_state wait_until(
+        threads::detail::thread_restart_state wait_until(
             std::unique_lock<mutex_type>& lock,
             pika::chrono::steady_time_point const& abs_time,
             error_code& ec = throws)
@@ -137,7 +137,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
                 lock, abs_time, "condition_variable::wait_until", ec);
         }
 
-        threads::thread_restart_state wait_for(
+        threads::detail::thread_restart_state wait_for(
             std::unique_lock<mutex_type>& lock,
             pika::chrono::steady_duration const& rel_time,
             char const* description, error_code& ec = throws)
@@ -145,7 +145,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
             return wait_until(lock, rel_time.from_now(), description, ec);
         }
 
-        threads::thread_restart_state wait_for(
+        threads::detail::thread_restart_state wait_for(
             std::unique_lock<mutex_type>& lock,
             pika::chrono::steady_duration const& rel_time,
             error_code& ec = throws)

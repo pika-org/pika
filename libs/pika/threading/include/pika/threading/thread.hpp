@@ -44,7 +44,7 @@ namespace pika {
 
     public:
         class id;
-        using native_handle_type = threads::thread_id_type;
+        using native_handle_type = threads::detail::thread_id_type;
 
         thread() noexcept;
 
@@ -53,7 +53,7 @@ namespace pika {
                 typename std::decay<F>::type, thread>::value>::type>
         explicit thread(F&& f)
         {
-            auto thrd_data = threads::get_self_id_data();
+            auto thrd_data = threads::detail::get_self_id_data();
             PIKA_ASSERT(thrd_data);
             start_thread(thrd_data->get_scheduler_base()->get_parent_pool(),
                 util::deferred_call(PIKA_FORWARD(F, f)));
@@ -62,7 +62,7 @@ namespace pika {
         template <typename F, typename... Ts>
         explicit thread(F&& f, Ts&&... vs)
         {
-            auto thrd_data = threads::get_self_id_data();
+            auto thrd_data = threads::detail::get_self_id_data();
             PIKA_ASSERT(thrd_data);
             start_thread(thrd_data->get_scheduler_base()->get_parent_pool(),
                 util::deferred_call(
@@ -136,19 +136,19 @@ namespace pika {
     private:
         bool joinable_locked() const noexcept
         {
-            return threads::invalid_thread_id != id_;
+            return threads::detail::invalid_thread_id != id_;
         }
         void detach_locked()
         {
-            id_ = threads::invalid_thread_id;
+            id_ = threads::detail::invalid_thread_id;
         }
         void start_thread(threads::thread_pool_base* pool,
             util::unique_function<void()>&& func);
-        static threads::thread_result_type thread_function_nullary(
+        static threads::detail::thread_result_type thread_function_nullary(
             util::unique_function<void()> const& func);
 
         mutable mutex_type mtx_;
-        threads::thread_id_ref_type id_;
+        threads::detail::thread_id_ref_type id_;
     };
 
     inline void swap(thread& x, thread& y) noexcept
@@ -160,7 +160,7 @@ namespace pika {
     class thread::id
     {
     private:
-        threads::thread_id_type id_;
+        threads::detail::thread_id_type id_;
 
         friend bool operator==(
             thread::id const& x, thread::id const& y) noexcept;
@@ -184,25 +184,25 @@ namespace pika {
     public:
         id() noexcept = default;
 
-        explicit id(threads::thread_id_type const& i) noexcept
+        explicit id(threads::detail::thread_id_type const& i) noexcept
           : id_(i)
         {
         }
-        explicit id(threads::thread_id_type&& i) noexcept
+        explicit id(threads::detail::thread_id_type&& i) noexcept
           : id_(PIKA_MOVE(i))
         {
         }
 
-        explicit id(threads::thread_id_ref_type const& i) noexcept
+        explicit id(threads::detail::thread_id_ref_type const& i) noexcept
           : id_(i.get().get())
         {
         }
-        explicit id(threads::thread_id_ref_type&& i) noexcept
+        explicit id(threads::detail::thread_id_ref_type&& i) noexcept
           : id_(PIKA_MOVE(i).get().get())
         {
         }
 
-        threads::thread_id_type const& native_handle() const
+        threads::detail::thread_id_type const& native_handle() const
         {
             return id_;
         }
@@ -257,7 +257,7 @@ namespace pika {
         PIKA_EXPORT void yield_to(thread::id) noexcept;
 
         // extensions
-        PIKA_EXPORT threads::thread_priority get_priority();
+        PIKA_EXPORT execution::thread_priority get_priority();
         PIKA_EXPORT std::ptrdiff_t get_stack_size();
 
         PIKA_EXPORT void interruption_point();
@@ -324,7 +324,7 @@ namespace std {
     {
         std::size_t operator()(::pika::thread::id const& id) const
         {
-            std::hash<::pika::threads::thread_id_ref_type> hasher_;
+            std::hash<::pika::threads::detail::thread_id_ref_type> hasher_;
             return hasher_(id.native_handle());
         }
     };

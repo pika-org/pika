@@ -173,8 +173,8 @@ void static_check_executor()
 }
 
 template <typename... ExecutorArgs>
-void test_executor(pika::threads::thread_priority priority,
-    pika::threads::thread_stacksize stacksize,
+void test_executor(pika::execution::thread_priority priority,
+    pika::execution::thread_stacksize stacksize,
     fork_join_executor::loop_schedule schedule)
 {
     std::cerr << "testing fork_join_executor with priority = " << priority
@@ -195,14 +195,14 @@ int pika_main()
     // because it prevents other work from running when yielding. Using
     // thread_priority::low hangs for unknown reasons.
     for (auto const priority : {
-             // pika::threads::thread_priority::low,
-             pika::threads::thread_priority::normal,
-             pika::threads::thread_priority::high,
+             // pika::execution::thread_priority::low,
+             pika::execution::thread_priority::normal,
+             pika::execution::thread_priority::high,
          })
     {
         for (auto const stacksize : {
-                 // pika::threads::thread_stacksize::nostack,
-                 pika::threads::thread_stacksize::small_,
+                 // pika::execution::thread_stacksize::nostack,
+                 pika::execution::thread_stacksize::small_,
              })
         {
             for (auto const schedule : {

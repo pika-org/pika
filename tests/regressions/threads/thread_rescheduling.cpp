@@ -23,15 +23,15 @@ using pika::program_options::variables_map;
 
 using std::chrono::milliseconds;
 
-using pika::threads::register_thread;
+using pika::threads::detail::register_thread;
 
 using pika::async;
 using pika::future;
 
 using pika::this_thread::suspend;
-using pika::threads::set_thread_state;
-using pika::threads::thread_id_ref_type;
-using pika::threads::thread_id_type;
+using pika::threads::detail::set_thread_state;
+using pika::threads::detail::thread_id_ref_type;
+using pika::threads::detail::thread_id_type;
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace detail {
@@ -75,7 +75,8 @@ namespace detail {
 ///////////////////////////////////////////////////////////////////////////////
 void change_thread_state(thread_id_type thread)
 {
-    set_thread_state(thread, pika::threads::thread_schedule_state::suspended);
+    set_thread_state(
+        thread, pika::threads::detail::thread_schedule_state::suspended);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,10 +124,10 @@ void test_dummy_thread(std::uint64_t)
 {
     while (true)
     {
-        pika::threads::thread_restart_state statex =
-            suspend(pika::threads::thread_schedule_state::suspended);
+        pika::threads::detail::thread_restart_state statex =
+            suspend(pika::threads::detail::thread_schedule_state::suspended);
 
-        if (statex == pika::threads::thread_restart_state::terminate)
+        if (statex == pika::threads::detail::thread_restart_state::terminate)
         {
             woken = true;
             return;
@@ -141,12 +142,12 @@ int pika_main(variables_map& vm)
     std::uint64_t const grain_size = vm["grain-size"].as<std::uint64_t>();
 
     {
-        pika::threads::thread_init_data data(
-            pika::threads::make_thread_function_nullary(
+        pika::threads::detail::thread_init_data data(
+            pika::threads::detail::make_thread_function_nullary(
                 pika::util::deferred_call(&test_dummy_thread, futures)),
             "test_dummy_thread");
         thread_id_ref_type thread_id = register_thread(data);
-        PIKA_TEST_NEQ(thread_id, pika::threads::invalid_thread_id);
+        PIKA_TEST_NEQ(thread_id, pika::threads::detail::invalid_thread_id);
 
         // Flood the queues with suspension operations before the rescheduling
         // attempt.
@@ -154,8 +155,8 @@ int pika_main(variables_map& vm)
             async(&tree_boot, futures, grain_size, thread_id.noref());
 
         set_thread_state(thread_id.noref(),
-            pika::threads::thread_schedule_state::pending,
-            pika::threads::thread_restart_state::signaled);
+            pika::threads::detail::thread_schedule_state::pending,
+            pika::threads::detail::thread_restart_state::signaled);
 
         // Flood the queues with suspension operations after the rescheduling
         // attempt.
@@ -166,8 +167,8 @@ int pika_main(variables_map& vm)
         after.get();
 
         set_thread_state(thread_id.noref(),
-            pika::threads::thread_schedule_state::pending,
-            pika::threads::thread_restart_state::terminate);
+            pika::threads::detail::thread_schedule_state::pending,
+            pika::threads::detail::thread_restart_state::terminate);
     }
 
     pika::finalize();

@@ -139,13 +139,13 @@ namespace pika { namespace threads {
             rtcfg_, "pika.max_idle_backoff_time", PIKA_IDLE_BACKOFF_TIME_MAX);
 
         std::ptrdiff_t small_stacksize =
-            rtcfg_.get_stack_size(thread_stacksize::small_);
+            rtcfg_.get_stack_size(execution::thread_stacksize::small_);
         std::ptrdiff_t medium_stacksize =
-            rtcfg_.get_stack_size(thread_stacksize::medium);
+            rtcfg_.get_stack_size(execution::thread_stacksize::medium);
         std::ptrdiff_t large_stacksize =
-            rtcfg_.get_stack_size(thread_stacksize::large);
+            rtcfg_.get_stack_size(execution::thread_stacksize::large);
         std::ptrdiff_t huge_stacksize =
-            rtcfg_.get_stack_size(thread_stacksize::huge);
+            rtcfg_.get_stack_size(execution::thread_stacksize::huge);
 
         policies::thread_queue_init_parameters thread_queue_init(
             max_thread_count, min_tasks_to_steal_pending,
@@ -614,8 +614,9 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    std::int64_t threadmanager::get_thread_count(thread_schedule_state state,
-        thread_priority priority, std::size_t num_thread, bool reset)
+    std::int64_t threadmanager::get_thread_count(
+        detail::thread_schedule_state state,
+        execution::thread_priority priority, std::size_t num_thread, bool reset)
     {
         std::int64_t total_count = 0;
         std::lock_guard<mutex_type> lk(mtx_);
@@ -673,8 +674,8 @@ namespace pika { namespace threads {
     ///////////////////////////////////////////////////////////////////////////
     // Enumerate all matching threads
     bool threadmanager::enumerate_threads(
-        util::function<bool(thread_id_type)> const& f,
-        thread_schedule_state state) const
+        util::function<bool(detail::thread_id_type)> const& f,
+        detail::thread_schedule_state state) const
     {
         std::lock_guard<mutex_type> lk(mtx_);
         bool result = true;
@@ -719,11 +720,11 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void threadmanager::register_thread(
-        thread_init_data& data, thread_id_ref_type& id, error_code& ec)
+    void threadmanager::register_thread(detail::thread_init_data& data,
+        detail::thread_id_ref_type& id, error_code& ec)
     {
         thread_pool_base* pool = nullptr;
-        auto thrd_data = get_self_id_data();
+        auto thrd_data = detail::get_self_id_data();
         if (thrd_data)
         {
             pool = thrd_data->get_scheduler_base()->get_parent_pool();
@@ -736,11 +737,11 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    thread_id_ref_type threadmanager::register_work(
-        thread_init_data& data, error_code& ec)
+    detail::thread_id_ref_type threadmanager::register_work(
+        detail::thread_init_data& data, error_code& ec)
     {
         thread_pool_base* pool = nullptr;
-        auto thrd_data = get_self_id_data();
+        auto thrd_data = detail::get_self_id_data();
         if (thrd_data)
         {
             pool = thrd_data->get_scheduler_base()->get_parent_pool();
@@ -1075,7 +1076,7 @@ namespace pika { namespace threads {
     {
         wait();
 
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             std::vector<pika::future<void>> fs;
 
@@ -1097,7 +1098,7 @@ namespace pika { namespace threads {
 
     void threadmanager::resume()
     {
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             std::vector<pika::future<void>> fs;
 

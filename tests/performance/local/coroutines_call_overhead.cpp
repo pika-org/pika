@@ -88,13 +88,14 @@ void print_results(double w_M)
 ///////////////////////////////////////////////////////////////////////////////
 struct kernel
 {
-    pika::threads::thread_result_type operator()(thread_restart_state) const
+    pika::threads::detail::thread_result_type operator()(
+        thread_restart_state) const
     {
         worker_timed(payload * 1000);
 
-        return pika::threads::thread_result_type(
-            pika::threads::thread_schedule_state::pending,
-            pika::threads::invalid_thread_id);
+        return pika::threads::detail::thread_result_type(
+            pika::threads::detail::thread_schedule_state::pending,
+            pika::threads::detail::invalid_thread_id);
     }
 
     bool operator!() const
@@ -119,7 +120,7 @@ double perform_2n_iterations()
     for (std::uint64_t i = 0; i < contexts; ++i)
     {
         coroutine_type* c =
-            new coroutine_type(k, pika::threads::invalid_thread_id);
+            new coroutine_type(k, pika::threads::detail::invalid_thread_id);
         coroutines.push_back(c);
     }
 

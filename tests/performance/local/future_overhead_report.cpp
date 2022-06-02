@@ -70,7 +70,8 @@ struct scratcher
 void measure_function_futures_create_thread_hierarchical_placement(
     std::uint64_t count, const int repetitions)
 {
-    auto sched = pika::threads::get_self_id_data()->get_scheduler_base();
+    auto sched =
+        pika::threads::detail::get_self_id_data()->get_scheduler_base();
 
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
@@ -85,9 +86,9 @@ void measure_function_futures_create_thread_hierarchical_placement(
                 pika::threads::policies::steal_after_local |
                 pika::threads::policies::steal_high_priority_first));
     }
-    auto const desc = pika::util::thread_description();
-    auto prio = pika::threads::thread_priority::normal;
-    auto const stack_size = pika::threads::thread_stacksize::small_;
+    auto const desc = pika::util::detail::thread_description();
+    auto prio = pika::execution::thread_priority::normal;
+    auto const stack_size = pika::execution::thread_stacksize::small_;
     auto const num_threads = pika::get_num_worker_threads();
     pika::error_code ec;
 
@@ -105,7 +106,7 @@ void measure_function_futures_create_thread_hierarchical_placement(
                     func};
             for (std::size_t t = 0; t < num_threads; ++t)
             {
-                auto const hint = pika::threads::thread_schedule_hint(
+                auto const hint = pika::execution::thread_schedule_hint(
                     static_cast<std::int16_t>(t));
                 auto spawn_func = [&thread_func, sched, hint, t, count,
                                       num_threads, desc, prio]() {
@@ -115,10 +116,12 @@ void measure_function_futures_create_thread_hierarchical_placement(
                     pika::error_code ec;
                     for (std::uint64_t i = count_start; i < count_end; ++i)
                     {
-                        pika::threads::thread_init_data init(
-                            pika::threads::thread_function_type(thread_func),
+                        pika::threads::detail::thread_init_data init(
+                            pika::threads::detail::thread_function_type(
+                                thread_func),
                             desc, prio, hint, stack_size,
-                            pika::threads::thread_schedule_state::pending,
+                            pika::threads::detail::thread_schedule_state::
+                                pending,
                             false, sched);
                         sched->create_thread(init, nullptr, ec);
                     }
@@ -127,11 +130,12 @@ void measure_function_futures_create_thread_hierarchical_placement(
                     pika::threads::detail::thread_function_nullary<
                         decltype(spawn_func)>{spawn_func};
 
-                pika::threads::thread_init_data init(
-                    pika::threads::thread_function_type(thread_spawn_func),
+                pika::threads::detail::thread_init_data init(
+                    pika::threads::detail::thread_function_type(
+                        thread_spawn_func),
                     desc, prio, hint, stack_size,
-                    pika::threads::thread_schedule_state::pending, false,
-                    sched);
+                    pika::threads::detail::thread_schedule_state::pending,
+                    false, sched);
                 sched->create_thread(init, nullptr, ec);
             }
             l.wait();

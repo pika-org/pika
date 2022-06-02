@@ -281,8 +281,8 @@ namespace pika { namespace threads { namespace policies {
         /// if the task state is pending and run_now attribute is set,
         /// then the task can be added to the staged queue,
         /// In this scheduler threads only create pending tasks on their own queues
-        void create_thread(thread_init_data& data, thread_id_ref_type* thrd,
-            error_code& ec) override
+        void create_thread(threads::detail::thread_init_data& data,
+            threads::detail::thread_id_ref_type* thrd, error_code& ec) override
         {
             // safety check that task was created by this thread/scheduler
             PIKA_ASSERT(data.scheduler_base == this);
@@ -297,10 +297,10 @@ namespace pika { namespace threads { namespace policies {
 
             std::unique_lock<pu_mutex_type> l;
 
-            using threads::thread_schedule_hint_mode;
+            using execution::thread_schedule_hint_mode;
             switch (data.schedulehint.mode)
             {
-            case thread_schedule_hint_mode::none:
+            case execution::thread_schedule_hint_mode::none:
             {
                 DEBUG(spq_deb<7>, set(msg, (const char*) "HINT_NONE  "));
                 // Create thread on this worker thread if possible
@@ -358,7 +358,7 @@ namespace pika { namespace threads { namespace policies {
                 q_index = q_lookup_[thread_num];
                 break;
             }
-            case thread_schedule_hint_mode::thread:
+            case execution::thread_schedule_hint_mode::thread:
             {
                 DEBUG(spq_deb<7>, set(msg, (const char*) "HINT_THREAD"));
                 // @TODO. We should check that the thread num is valid
@@ -368,7 +368,7 @@ namespace pika { namespace threads { namespace policies {
                 q_index = q_lookup_[thread_num];
                 break;
             }
-            case thread_schedule_hint_mode::numa:
+            case execution::thread_schedule_hint_mode::numa:
             {
                 // Create thread on requested NUMA domain
                 DEBUG(spq_deb<7>, set(msg, (const char*) "HINT_NUMA  "));
@@ -419,7 +419,7 @@ namespace pika { namespace threads { namespace policies {
                 , "D", debug::dec<2>(d_lookup_[thread_num])
                 , "Q", debug::dec<3>(thread_num)
                 , "run_now ", data.run_now
-                , debug::threadinfo<thread_init_data>(data)));
+                , debug::threadinfo<threads::detail::thread_init_data>(data)));
             // clang-format on
             numa_holder_[domain_num]
                 .thread_queue(static_cast<std::size_t>(q_index))
@@ -595,7 +595,7 @@ namespace pika { namespace threads { namespace policies {
         /// Return the next thread to be executed,
         /// return false if none available
         virtual bool get_next_thread(std::size_t /*thread_num*/,
-            bool /*running*/, threads::thread_id_ref_type& thrd,
+            bool /*running*/, threads::detail::thread_id_ref_type& thrd,
             bool enable_stealing) override
         {
             std::size_t this_thread = local_thread_number();
@@ -610,7 +610,7 @@ namespace pika { namespace threads { namespace policies {
             auto get_next_thread_function_HP =
                 [&](std::size_t domain, std::size_t q_index,
                     thread_holder_type* /* receiver */,
-                    threads::thread_id_ref_type& thrd, bool stealing,
+                    threads::detail::thread_id_ref_type& thrd, bool stealing,
                     bool allow_stealing) {
                     return numa_holder_[domain].get_next_thread_HP(
                         q_index, thrd, stealing, allow_stealing);
@@ -619,7 +619,7 @@ namespace pika { namespace threads { namespace policies {
             auto get_next_thread_function =
                 [&](std::size_t domain, std::size_t q_index,
                     thread_holder_type* /* receiver */,
-                    threads::thread_id_ref_type& thrd, bool stealing,
+                    threads::detail::thread_id_ref_type& thrd, bool stealing,
                     bool allow_stealing) {
                     return numa_holder_[domain].get_next_thread(
                         q_index, thrd, stealing, allow_stealing);
@@ -631,10 +631,11 @@ namespace pika { namespace threads { namespace policies {
             // first try a high priority task, allow stealing
             // if stealing of HP tasks is 'on', this will be fine
             // but send a null function for normal tasks
-            bool result = steal_by_function<threads::thread_id_ref_type>(domain,
-                q_index, numa_stealing_, core_stealing_, nullptr, thrd,
-                "SBF-get_next_thread", get_next_thread_function_HP,
-                get_next_thread_function);
+            bool result =
+                steal_by_function<threads::detail::thread_id_ref_type>(domain,
+                    q_index, numa_stealing_, core_stealing_, nullptr, thrd,
+                    "SBF-get_next_thread", get_next_thread_function_HP,
+                    get_next_thread_function);
 
             if (result)
                 return result;
@@ -707,9 +708,11 @@ namespace pika { namespace threads { namespace policies {
         }
 
         /// Schedule the passed thread
-        void schedule_work(threads::thread_id_ref_type thrd,
-            threads::thread_schedule_hint schedulehint, bool /*allow_fallback*/,
-            bool other_end, thread_priority priority = thread_priority::normal)
+        void schedule_work(threads::detail::thread_id_ref_type thrd,
+            execution::thread_schedule_hint schedulehint,
+            bool /*allow_fallback*/, bool other_end,
+            execution::thread_priority priority =
+                execution::thread_priority::normal)
         {
             PIKA_ASSERT(get_thread_id_data(thrd)->get_scheduler_base() == this);
 
@@ -721,11 +724,11 @@ namespace pika { namespace threads { namespace policies {
             std::unique_lock<pu_mutex_type> l;
             const char* msg;
 
-            using threads::thread_schedule_hint_mode;
+            using execution::thread_schedule_hint_mode;
 
             switch (schedulehint.mode)
             {
-            case thread_schedule_hint_mode::none:
+            case execution::thread_schedule_hint_mode::none:
             {
                 // Create thread on this worker thread if possible
                 DEBUG(spq_deb<5>, set(msg, (const char*) "HINT_NONE  "));
@@ -747,7 +750,7 @@ namespace pika { namespace threads { namespace policies {
                         , "pool", get_thread_pool_num_tss()
                         , "parent offset", parent_pool_->get_thread_offset()
                         , parent_pool_->get_pool_name(),
-                        debug::threadinfo<threads::thread_id_ref_type*>(&thrd)));
+                        debug::threadinfo<threads::detail::thread_id_ref_type*>(&thrd)));
                     // clang-format on
                 }
                 else if (!round_robin_) /*assign_parent*/
@@ -758,8 +761,8 @@ namespace pika { namespace threads { namespace policies {
                         debug(debug::str<>("schedule_thread"),
                             "assign_work_thread_parent", "thread_num",
                             thread_num,
-                            debug::threadinfo<threads::thread_id_ref_type*>(
-                                &thrd)));
+                            debug::threadinfo<
+                                threads::detail::thread_id_ref_type*>(&thrd)));
                 }
                 else /*(round_robin_)*/
                 {
@@ -771,14 +774,14 @@ namespace pika { namespace threads { namespace policies {
                     DEBUG(spq_deb<5>,
                         debug(debug::str<>("schedule_thread"),
                             "assign_work_round_robin", "thread_num", thread_num,
-                            debug::threadinfo<threads::thread_id_ref_type*>(
-                                &thrd)));
+                            debug::threadinfo<
+                                threads::detail::thread_id_ref_type*>(&thrd)));
                 }
                 thread_num =
                     select_active_pu(l, thread_num, true /*allow_fallback*/);
                 break;
             }
-            case thread_schedule_hint_mode::thread:
+            case execution::thread_schedule_hint_mode::thread:
             {
                 // @TODO. We should check that the thread num is valid
                 // Create thread on requested worker thread
@@ -787,7 +790,7 @@ namespace pika { namespace threads { namespace policies {
                     debug(debug::str<>("schedule_thread"),
                         "received HINT_THREAD",
                         debug::dec<3>(schedulehint.hint),
-                        debug::threadinfo<threads::thread_id_ref_type*>(
+                        debug::threadinfo<threads::detail::thread_id_ref_type*>(
                             &thrd)));
                 thread_num = select_active_pu(
                     l, schedulehint.hint, true /*allow_fallback*/);
@@ -795,7 +798,7 @@ namespace pika { namespace threads { namespace policies {
                 q_index = q_lookup_[thread_num];
                 break;
             }
-            case thread_schedule_hint_mode::numa:
+            case execution::thread_schedule_hint_mode::numa:
             {
                 // Create thread on requested NUMA domain
                 DEBUG(spq_deb<5>, set(msg, (const char*) "HINT_NUMA  "));
@@ -831,29 +834,31 @@ namespace pika { namespace threads { namespace policies {
                 thrd, priority, other_end);
         }
 
-        void schedule_thread(threads::thread_id_ref_type thrd,
-            threads::thread_schedule_hint schedulehint, bool allow_fallback,
-            thread_priority priority = thread_priority::normal) override
+        void schedule_thread(threads::detail::thread_id_ref_type thrd,
+            execution::thread_schedule_hint schedulehint, bool allow_fallback,
+            execution::thread_priority priority =
+                execution::thread_priority::normal) override
         {
             schedule_work(thrd, schedulehint, allow_fallback, false,
-                priority = thread_priority::normal);
+                priority = execution::thread_priority::normal);
         }
 
         /// Put task on the back of the queue : not yet implemented
         /// just put it on the normal queue for now
-        void schedule_thread_last(threads::thread_id_ref_type thrd,
-            threads::thread_schedule_hint schedulehint, bool allow_fallback,
-            thread_priority priority = thread_priority::normal) override
+        void schedule_thread_last(threads::detail::thread_id_ref_type thrd,
+            execution::thread_schedule_hint schedulehint, bool allow_fallback,
+            execution::thread_priority priority =
+                execution::thread_priority::normal) override
         {
             DEBUG(spq_deb<5>, debug(debug::str<>("schedule_thread_last")));
             schedule_work(thrd, schedulehint, allow_fallback, true,
-                priority = thread_priority::normal);
+                priority = execution::thread_priority::normal);
         }
 
         //---------------------------------------------------------------------
         // Destroy the passed thread - as it has been terminated
         //---------------------------------------------------------------------
-        void destroy_thread(threads::thread_data* thrd) override
+        void destroy_thread(threads::detail::thread_data* thrd) override
         {
             PIKA_ASSERT(thrd->get_scheduler_base() == this);
 
@@ -878,7 +883,7 @@ namespace pika { namespace threads { namespace policies {
                     "task owned by", "D", debug::dec<2>(d1), "Q",
                     debug::dec<3>(q1), "this thread", "D", debug::dec<2>(d2),
                     "Q", debug::dec<3>(q2),
-                    debug::threadinfo<threads::thread_data*>(thrd)));
+                    debug::threadinfo<threads::detail::thread_data*>(thrd)));
             // the cleanup of a task should be done by the original owner
             // of the task, so return it to the queue it came from before it
             // was stolen
@@ -919,8 +924,10 @@ namespace pika { namespace threads { namespace policies {
         // Queries the current thread count of the queues.
         //---------------------------------------------------------------------
         std::int64_t get_thread_count(
-            thread_schedule_state state = thread_schedule_state::unknown,
-            thread_priority priority = thread_priority::default_,
+            threads::detail::thread_schedule_state state =
+                threads::detail::thread_schedule_state::unknown,
+            execution::thread_priority priority =
+                execution::thread_priority::default_,
             std::size_t thread_num = std::size_t(-1),
             bool /* reset */ = false) const override
         {
@@ -964,9 +971,10 @@ namespace pika { namespace threads { namespace policies {
 
         //---------------------------------------------------------------------
         // Enumerate matching threads from all queues
-        bool enumerate_threads(util::function<bool(thread_id_type)> const& f,
-            thread_schedule_state state =
-                thread_schedule_state::unknown) const override
+        bool enumerate_threads(
+            util::function<bool(threads::detail::thread_id_type)> const& f,
+            threads::detail::thread_schedule_state state =
+                threads::detail::thread_schedule_state::unknown) const override
         {
             bool result = true;
 

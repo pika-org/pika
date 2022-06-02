@@ -15,7 +15,7 @@
 #include <ostream>
 #include <string>
 
-namespace pika { namespace util {
+namespace pika::util::detail {
     std::ostream& operator<<(std::ostream& os, thread_description const& d)
     {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
@@ -38,7 +38,8 @@ namespace pika { namespace util {
     std::string as_string(thread_description const& desc)
     {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-        if (desc.kind() == util::thread_description::data_type_description)
+        if (desc.kind() ==
+            util::detail::thread_description::data_type_description)
             return desc ? desc.get_description() : "<unknown>";
 
         return pika::util::format("address: {:#x}", desc.get_address());
@@ -59,11 +60,13 @@ namespace pika { namespace util {
             data_.desc_ = altname;
             return;
         }
-        pika::threads::thread_id_type id = pika::threads::get_self_id();
+        pika::threads::detail::thread_id_type id =
+            pika::threads::detail::get_self_id();
         if (id)
         {
             // get the current task description
-            thread_description desc = pika::threads::get_thread_description(id);
+            thread_description desc =
+                pika::threads::detail::get_thread_description(id);
             type_ = desc.kind();
             // if the current task has a description, use it.
             if (type_ == data_type_description)
@@ -86,25 +89,26 @@ namespace pika { namespace util {
         PIKA_UNUSED(altname);
 #endif
     }
-}}    // namespace pika::util
+}    // namespace pika::util::detail
 
-namespace pika { namespace threads {
-    util::thread_description get_thread_description(
+namespace pika::threads::detail {
+    util::detail::thread_description get_thread_description(
         thread_id_type const& id, error_code& /* ec */)
     {
         return id ? get_thread_id_data(id)->get_description() :
-                    util::thread_description("<unknown>");
+                    util::detail::thread_description("<unknown>");
     }
 
-    util::thread_description set_thread_description(thread_id_type const& id,
-        util::thread_description const& desc, error_code& ec)
+    util::detail::thread_description set_thread_description(
+        thread_id_type const& id, util::detail::thread_description const& desc,
+        error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::set_thread_description",
+                "pika::threads::detail::set_thread_description",
                 "null thread id encountered");
-            return util::thread_description();
+            return util::detail::thread_description();
         }
         if (&ec != &throws)
             ec = make_success_code();
@@ -113,7 +117,7 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    util::thread_description get_thread_lco_description(
+    util::detail::thread_description get_thread_lco_description(
         thread_id_type const& id, error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
@@ -130,14 +134,14 @@ namespace pika { namespace threads {
         return get_thread_id_data(id)->get_lco_description();
     }
 
-    util::thread_description set_thread_lco_description(
-        thread_id_type const& id, util::thread_description const& desc,
+    util::detail::thread_description set_thread_lco_description(
+        thread_id_type const& id, util::detail::thread_description const& desc,
         error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::set_thread_lco_description",
+                "pika::threads::detail::set_thread_lco_description",
                 "null thread id encountered");
             return nullptr;
         }
@@ -147,4 +151,4 @@ namespace pika { namespace threads {
 
         return get_thread_id_data(id)->set_lco_description(desc);
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

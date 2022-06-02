@@ -126,10 +126,10 @@ namespace pika { namespace execution { namespace experimental {
             // Members that are used for all parallel regions executed through
             // this executor.
             threads::thread_pool_base* pool_ = nullptr;
-            threads::thread_priority priority_ =
-                threads::thread_priority::default_;
-            threads::thread_stacksize stacksize_ =
-                threads::thread_stacksize::small_;
+            execution::thread_priority priority_ =
+                execution::thread_priority::default_;
+            execution::thread_stacksize stacksize_ =
+                execution::thread_stacksize::small_;
             loop_schedule schedule_ = loop_schedule::static_;
             std::uint64_t yield_delay_;
 
@@ -273,7 +273,8 @@ namespace pika { namespace execution { namespace experimental {
                     queues_.resize(num_threads_);
                 }
 
-                pika::util::thread_description desc("fork_join_executor");
+                pika::util::detail::thread_description desc(
+                    "fork_join_executor");
                 for (std::size_t t = 0; t < num_threads_; ++t)
                 {
                     if (t == main_thread_)
@@ -286,7 +287,7 @@ namespace pika { namespace execution { namespace experimental {
                         thread_state::starting, std::memory_order_relaxed);
 
                     auto policy = launch::async_policy(priority_, stacksize_,
-                        threads::thread_schedule_hint{
+                        execution::thread_schedule_hint{
                             static_cast<std::int16_t>(t)});
 
                     pika::detail::async_launch_policy_dispatch<
@@ -311,8 +312,8 @@ namespace pika { namespace execution { namespace experimental {
             }
 
         public:
-            explicit shared_data(threads::thread_priority priority,
-                threads::thread_stacksize stacksize, loop_schedule schedule,
+            explicit shared_data(execution::thread_priority priority,
+                execution::thread_stacksize stacksize, loop_schedule schedule,
                 std::chrono::nanoseconds yield_delay)
               : pool_(this_thread::get_pool())
               , priority_(priority)
@@ -641,14 +642,14 @@ namespace pika { namespace execution { namespace experimental {
         /// \param yield_delay The time after which the executor yields to
         ///        other work if it hasn't received any new work for bulk
         ///        execution.
-        explicit fork_join_executor(
-            threads::thread_priority priority = threads::thread_priority::high,
-            threads::thread_stacksize stacksize =
-                threads::thread_stacksize::small_,
+        explicit fork_join_executor(execution::thread_priority priority =
+                                        execution::thread_priority::high,
+            execution::thread_stacksize stacksize =
+                execution::thread_stacksize::small_,
             loop_schedule schedule = loop_schedule::static_,
             std::chrono::nanoseconds yield_delay = std::chrono::milliseconds(1))
         {
-            if (stacksize == threads::thread_stacksize::nostack)
+            if (stacksize == execution::thread_stacksize::nostack)
             {
                 PIKA_THROW_EXCEPTION(bad_parameter,
                     "fork_join_executor::fork_join_executor",

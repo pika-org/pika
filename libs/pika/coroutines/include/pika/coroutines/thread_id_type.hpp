@@ -11,8 +11,8 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/format.hpp>
-#include <pika/modules/memory.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 
 #include <cstddef>
@@ -21,9 +21,7 @@
 #include <string_view>
 #include <utility>
 
-namespace pika { namespace threads {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::threads::detail {
     // same as below, just not holding a reference count
     struct thread_id
     {
@@ -162,46 +160,43 @@ namespace pika { namespace threads {
         no
     };
 
-    namespace detail {
+    struct thread_data_reference_counting;
 
-        struct thread_data_reference_counting;
+    void intrusive_ptr_add_ref(thread_data_reference_counting* p);
+    void intrusive_ptr_release(thread_data_reference_counting* p);
 
-        void intrusive_ptr_add_ref(thread_data_reference_counting* p);
-        void intrusive_ptr_release(thread_data_reference_counting* p);
-
-        struct thread_data_reference_counting
+    struct thread_data_reference_counting
+    {
+        // the initial reference count is one by default as each newly
+        // created thread will be held alive by the variable returned from
+        // the creation function;
+        explicit thread_data_reference_counting(
+            thread_id_addref addref = thread_id_addref::yes)
+          : count_(addref == thread_id_addref::yes)
         {
-            // the initial reference count is one by default as each newly
-            // created thread will be held alive by the variable returned from
-            // the creation function;
-            explicit thread_data_reference_counting(
-                thread_id_addref addref = thread_id_addref::yes)
-              : count_(addref == thread_id_addref::yes)
+        }
+
+        virtual ~thread_data_reference_counting() = default;
+        virtual void destroy_thread() = 0;
+
+        // reference counting
+        friend void intrusive_ptr_add_ref(thread_data_reference_counting* p)
+        {
+            ++p->count_;
+        }
+
+        friend void intrusive_ptr_release(thread_data_reference_counting* p)
+        {
+            PIKA_ASSERT(p->count_ != 0);
+            if (--p->count_ == 0)
             {
+                // give this object back to the system
+                p->destroy_thread();
             }
+        }
 
-            virtual ~thread_data_reference_counting() = default;
-            virtual void destroy_thread() = 0;
-
-            // reference counting
-            friend void intrusive_ptr_add_ref(thread_data_reference_counting* p)
-            {
-                ++p->count_;
-            }
-
-            friend void intrusive_ptr_release(thread_data_reference_counting* p)
-            {
-                PIKA_ASSERT(p->count_ != 0);
-                if (--p->count_ == 0)
-                {
-                    // give this object back to the system
-                    p->destroy_thread();
-                }
-            }
-
-            util::atomic_count count_;
-        };
-    }    // namespace detail
+        util::atomic_count count_;
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     struct thread_id_ref
@@ -401,15 +396,14 @@ namespace pika { namespace threads {
     };
 
     inline constexpr thread_id const invalid_thread_id;
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 namespace std {
-
     template <>
-    struct hash<::pika::threads::thread_id>
+    struct hash<::pika::threads::detail::thread_id>
     {
         std::size_t operator()(
-            ::pika::threads::thread_id const& v) const noexcept
+            ::pika::threads::detail::thread_id const& v) const noexcept
         {
             std::hash<std::size_t> hasher_;
             return hasher_(reinterpret_cast<std::size_t>(v.get()));
@@ -417,10 +411,10 @@ namespace std {
     };
 
     template <>
-    struct hash<::pika::threads::thread_id_ref>
+    struct hash<::pika::threads::detail::thread_id_ref>
     {
         std::size_t operator()(
-            ::pika::threads::thread_id_ref const& v) const noexcept
+            ::pika::threads::detail::thread_id_ref const& v) const noexcept
         {
             std::hash<std::size_t> hasher_;
             return hasher_(reinterpret_cast<std::size_t>(v.get().get()));

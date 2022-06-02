@@ -13,7 +13,7 @@
 #include <cstdint>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace detail {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename T1, typename T2>
     class combined_tagged_state
@@ -136,4 +136,4 @@ namespace pika { namespace threads { namespace detail {
     protected:
         tagged_state_type state_;
     };
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail

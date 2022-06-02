@@ -74,12 +74,14 @@ namespace pika { namespace util {
     {
         void operator()(std::ostream& to) const override
         {
-            threads::thread_self* self = threads::get_self_ptr();
+            threads::detail::thread_self* self =
+                threads::detail::get_self_ptr();
             if (nullptr != self)
             {
                 // called from inside a pika thread
-                threads::thread_id_type id = threads::get_self_id();
-                if (id != threads::invalid_thread_id)
+                threads::detail::thread_id_type id =
+                    threads::detail::get_self_id();
+                if (id != threads::detail::invalid_thread_id)
                 {
                     std::ptrdiff_t value =
                         reinterpret_cast<std::ptrdiff_t>(id.get());
@@ -99,7 +101,8 @@ namespace pika { namespace util {
     {
         void operator()(std::ostream& to) const override
         {
-            threads::thread_self* self = threads::get_self_ptr();
+            threads::detail::thread_self* self =
+                threads::detail::get_self_ptr();
             if (nullptr != self)
             {
                 // called from inside a pika thread
@@ -123,7 +126,7 @@ namespace pika { namespace util {
         void operator()(std::ostream& to) const override
         {
             std::uint32_t parent_locality_id =
-                threads::get_parent_locality_id();
+                threads::detail::get_parent_locality_id();
             if (~static_cast<std::uint32_t>(0) != parent_locality_id)
             {
                 // called from inside a pika thread
@@ -143,7 +146,8 @@ namespace pika { namespace util {
     {
         void operator()(std::ostream& to) const override
         {
-            threads::thread_id_type parent_id = threads::get_parent_id();
+            threads::detail::thread_id_type parent_id =
+                threads::detail::get_parent_id();
             if (nullptr != parent_id)
             {
                 // called from inside a pika thread
@@ -165,7 +169,7 @@ namespace pika { namespace util {
     {
         void operator()(std::ostream& to) const override
         {
-            std::size_t parent_phase = threads::get_parent_phase();
+            std::size_t parent_phase = threads::detail::get_parent_phase();
             if (0 != parent_phase)
             {
                 // called from inside a pika thread

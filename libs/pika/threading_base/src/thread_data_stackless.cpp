@@ -10,8 +10,7 @@
 #include <pika/threading_base/thread_data.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads {
-
+namespace pika::threads::detail {
     pika::detail::internal_allocator<thread_data_stackless>
         thread_data_stackless::thread_alloc_;
 
@@ -21,5 +20,4 @@ namespace pika { namespace threads {
             "~thread_data_stackless({}), description({}), phase({})", this,
             this->get_description(), this->get_thread_phase());
     }
-
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

@@ -22,8 +22,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace threads {
-
+namespace pika::threads::detail {
     struct PIKA_EXPORT execution_context : pika::execution_base::context_base
     {
         pika::execution_base::resource_base const& resource() const override
@@ -58,14 +57,13 @@ namespace pika { namespace threads {
     private:
         coroutines::detail::coroutine_stackful_self self_;
 
-        pika::threads::thread_restart_state do_yield(
-            char const* desc, threads::thread_schedule_state state);
+        thread_restart_state do_yield(
+            char const* desc, thread_schedule_state state);
 
-        void do_resume(
-            char const* desc, pika::threads::thread_restart_state statex);
+        void do_resume(char const* desc, thread_restart_state statex);
 
         execution_context context_;
     };
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>

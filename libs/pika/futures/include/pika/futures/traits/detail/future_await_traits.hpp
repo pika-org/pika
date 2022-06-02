@@ -12,8 +12,8 @@
 
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/traits/future_access.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/allocator_support.hpp>
-#include <pika/modules/memory.hpp>
 
 #include <coroutine>
 #include <cstddef>

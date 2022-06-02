@@ -29,7 +29,7 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/functional/unique_function.hpp>
-#include <pika/modules/memory.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 #include <pika/type_support/detail/with_result_of.hpp>

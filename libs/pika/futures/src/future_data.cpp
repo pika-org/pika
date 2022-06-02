@@ -41,7 +41,7 @@ namespace pika { namespace lcos { namespace detail {
     struct handle_continuation_recursion_count
     {
         handle_continuation_recursion_count() noexcept
-          : count_(threads::get_continuation_recursion_count())
+          : count_(threads::detail::get_continuation_recursion_count())
         {
             ++count_;
         }
@@ -59,18 +59,18 @@ namespace pika { namespace lcos { namespace detail {
     {
         lcos::local::futures_factory<void()> p(PIKA_FORWARD(Callback, f));
 
-        bool is_pika_thread = nullptr != pika::threads::get_self_ptr();
+        bool is_pika_thread = nullptr != pika::threads::detail::get_self_ptr();
         pika::launch policy = launch::fork;
         if (!is_pika_thread)
         {
             policy = launch::async;
         }
 
-        policy.set_priority(threads::thread_priority::boost);
-        policy.set_stacksize(threads::thread_stacksize::current);
+        policy.set_priority(execution::thread_priority::boost);
+        policy.set_stacksize(execution::thread_stacksize::current);
 
         // launch a new thread executing the given function
-        threads::thread_id_ref_type tid =
+        threads::detail::thread_id_ref_type tid =
             p.apply("run_on_completed_on_new_thread", policy);
 
         // wait for the task to run
@@ -78,7 +78,7 @@ namespace pika { namespace lcos { namespace detail {
         {
             // make sure this thread is executed last
             this_thread::suspend(
-                threads::thread_schedule_state::pending, tid.noref());
+                threads::detail::thread_schedule_state::pending, tid.noref());
             return p.get_future().get();
         }
 
@@ -202,7 +202,7 @@ namespace pika { namespace lcos { namespace detail {
         handle_continuation_recursion_count cnt;
         bool recurse_asynchronously =
             cnt.count_ > PIKA_CONTINUATION_MAX_RECURSION_DEPTH ||
-            (pika::threads::get_self_ptr() == nullptr);
+            (pika::threads::detail::get_self_ptr() == nullptr);
 #endif
         if (!recurse_asynchronously)
         {
@@ -315,14 +315,15 @@ namespace pika { namespace lcos { namespace detail {
             std::unique_lock l(mtx_);
             if (state_.load(std::memory_order_relaxed) == empty)
             {
-                threads::thread_restart_state const reason = cond_.wait_until(
-                    l, abs_time, "future_data_base::wait_until", ec);
+                threads::detail::thread_restart_state const reason =
+                    cond_.wait_until(
+                        l, abs_time, "future_data_base::wait_until", ec);
                 if (ec)
                 {
                     return pika::future_status::uninitialized;
                 }
 
-                if (reason == threads::thread_restart_state::timeout &&
+                if (reason == threads::detail::thread_restart_state::timeout &&
                     state_.load(std::memory_order_acquire) == empty)
                 {
                     return pika::future_status::timeout;

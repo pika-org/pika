@@ -133,7 +133,7 @@ namespace pika {
 #include <pika/futures/traits/is_future.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/modules/memory.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/type_support/decay.hpp>
 #include <pika/type_support/unwrap_ref.hpp>
 

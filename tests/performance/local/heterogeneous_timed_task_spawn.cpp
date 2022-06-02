@@ -31,9 +31,9 @@ using pika::program_options::variables_map;
 
 using pika::get_os_thread_count;
 
-using pika::threads::make_thread_function_nullary;
-using pika::threads::register_work;
-using pika::threads::thread_init_data;
+using pika::threads::detail::make_thread_function_nullary;
+using pika::threads::detail::register_work;
+using pika::threads::detail::thread_init_data;
 
 using pika::this_thread::suspend;
 using pika::threads::get_thread_count;
@@ -206,7 +206,8 @@ int pika_main(variables_map& vm)
             // should be resumed after most of the null pika-threads have been
             // executed. If we haven't, we just reschedule ourselves again.
             suspend();
-        } while (get_thread_count(pika::threads::thread_priority::normal) > 1);
+        } while (
+            get_thread_count(pika::execution::thread_priority::normal) > 1);
 
         ///////////////////////////////////////////////////////////////////////
         // Print the results.

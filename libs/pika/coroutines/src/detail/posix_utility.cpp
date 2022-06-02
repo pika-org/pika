@@ -10,11 +10,10 @@
     defined(__FreeBSD__) || defined(__APPLE__)
 #include <pika/coroutines/detail/posix_utility.hpp>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-    namespace posix {
-        ///////////////////////////////////////////////////////////////////////
-        // this global (urghhh) variable is used to control whether guard pages
-        // will be used or not
-        PIKA_EXPORT bool use_guard_pages = true;
-}}}}}    // namespace pika::threads::coroutines::detail::posix
+namespace pika::threads::coroutines::detail ::posix {
+    ///////////////////////////////////////////////////////////////////////
+    // this global (urghhh) variable is used to control whether guard pages
+    // will be used or not
+    PIKA_EXPORT bool use_guard_pages = true;
+}    // namespace pika::threads::coroutines::detail::posix
 #endif

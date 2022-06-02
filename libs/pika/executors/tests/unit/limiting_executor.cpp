@@ -63,7 +63,7 @@ void test_fn(atype& acnt, atype& atot, atype& amax)
 void test_limit()
 {
     auto exec1 = pika::execution::parallel_executor(
-        pika::threads::thread_stacksize::small_);
+        pika::execution::thread_stacksize::small_);
     //
     const bool block_on_exit = true;
     std::vector<pika::future<void>> futures;

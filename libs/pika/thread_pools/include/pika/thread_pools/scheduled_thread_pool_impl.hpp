@@ -161,7 +161,7 @@ namespace pika { namespace threads { namespace detail {
         // os executors
         if (thread_count_ != 0)
         {
-            std::size_t num_thread = detail::get_local_thread_num_tss();
+            std::size_t num_thread = get_local_thread_num_tss();
 
             // Local thread number may be valid, but the thread may not yet be
             // up.
@@ -186,9 +186,10 @@ namespace pika { namespace threads { namespace detail {
         // If we are currently on an pika thread, which runs on the current pool,
         // we ignore it for the purposes of checking if the pool is busy (i.e.
         // this returns true only if there is *other* work left on this pool).
-        std::int64_t pika_thread_offset =
-            (threads::get_self_ptr() && this_thread::get_pool() == this) ? 1 :
-                                                                           0;
+        std::int64_t pika_thread_offset = (threads::detail::get_self_ptr() &&
+                                              this_thread::get_pool() == this) ?
+            1 :
+            0;
         bool have_pika_threads =
             get_thread_count_unknown(std::size_t(-1), false) >
             sched_->Scheduler::get_background_thread_count() +
@@ -306,7 +307,7 @@ namespace pika { namespace threads { namespace detail {
                 pool_threads + 1);
         try
         {
-            topology const& topo = detail::create_topology();
+            topology const& topo = create_topology();
 
             for (/**/; thread_num != pool_threads; ++thread_num)
             {
@@ -412,7 +413,8 @@ namespace pika { namespace threads { namespace detail {
     template <typename Scheduler>
     void scheduled_thread_pool<Scheduler>::suspend_direct(error_code& ec)
     {
-        if (threads::get_self_ptr() && pika::this_thread::get_pool() == this)
+        if (threads::detail::get_self_ptr() &&
+            pika::this_thread::get_pool() == this)
         {
             PIKA_THROWS_IF(ec, bad_parameter,
                 "scheduled_thread_pool<Scheduler>::suspend_direct",
@@ -428,7 +430,7 @@ namespace pika { namespace threads { namespace detail {
         std::size_t thread_num, std::size_t global_thread_num,
         std::shared_ptr<pika::concurrency::detail::barrier> startup)
     {
-        topology const& topo = detail::create_topology();
+        topology const& topo = create_topology();
 
         // Set the affinity for the current thread.
         threads::detail::mask_cref_type mask =
@@ -497,15 +499,15 @@ namespace pika { namespace threads { namespace detail {
                 manage_active_thread_count count(thread_count_);
 
                 // run the work queue
-                pika::threads::coroutines::prepare_main_thread main_thread;
+                pika::threads::coroutines::detail::prepare_main_thread
+                    main_thread;
                 PIKA_UNUSED(main_thread);
 
                 // run main Scheduler loop until terminated
                 scheduling_counter_data& counter_data =
                     counter_data_[thread_num];
 
-                detail::scheduling_counters counters(
-                    counter_data.executed_threads_,
+                scheduling_counters counters(counter_data.executed_threads_,
                     counter_data.executed_thread_phases_,
                     counter_data.tfunc_times_, counter_data.exec_times_,
                     counter_data.idle_loop_counts_,
@@ -520,7 +522,7 @@ namespace pika { namespace threads { namespace detail {
                     counter_data.tasks_active_);
 #endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
 
-                detail::scheduling_callbacks callbacks(
+                scheduling_callbacks callbacks(
                     util::deferred_call(    //-V107
                         &policies::scheduler_base::idle_callback, sched_.get(),
                         thread_num),
@@ -543,15 +545,15 @@ namespace pika { namespace threads { namespace detail {
 #endif
                 }
 
-                detail::scheduling_loop(
-                    thread_num, *sched_, counters, callbacks);
+                scheduling_loop(thread_num, *sched_, counters, callbacks);
 
                 // the OS thread is allowed to exit only if no more pika
                 // threads exist or if some other thread has terminated
                 PIKA_ASSERT(
                     (sched_->Scheduler::get_thread_count(
                          thread_schedule_state::suspended,
-                         thread_priority::default_, thread_num) == 0 &&
+                         execution::thread_priority::default_,
+                         thread_num) == 0 &&
                         sched_->Scheduler::get_queue_length(thread_num) == 0) ||
                     sched_->Scheduler::get_state(thread_num) > state_stopping);
             }
@@ -612,7 +614,7 @@ namespace pika { namespace threads { namespace detail {
             return;
         }
 
-        detail::create_thread(sched_.get(), data, id, ec);    //-V601
+        threads::detail::create_thread(sched_.get(), data, id, ec);    //-V601
 
         // update statistics
         ++tasks_scheduled_;
@@ -633,7 +635,7 @@ namespace pika { namespace threads { namespace detail {
         }
 
         thread_id_ref_type id =
-            detail::create_work(sched_.get(), data, ec);    //-V601
+            threads::detail::create_work(sched_.get(), data, ec);    //-V601
 
         // update statistics
         ++tasks_scheduled_;
@@ -645,13 +647,13 @@ namespace pika { namespace threads { namespace detail {
     template <typename Scheduler>
     thread_state scheduled_thread_pool<Scheduler>::set_state(
         thread_id_type const& id, thread_schedule_state new_state,
-        thread_restart_state new_state_ex, thread_priority priority,
+        thread_restart_state new_state_ex, execution::thread_priority priority,
         error_code& ec)
     {
-        return detail::set_thread_state(id, new_state,    //-V107
+        return set_thread_state(id, new_state,    //-V107
             new_state_ex, priority,
-            thread_schedule_hint(
-                static_cast<std::int16_t>(detail::get_local_thread_num_tss())),
+            execution::thread_schedule_hint(
+                static_cast<std::int16_t>(get_local_thread_num_tss())),
             true, ec);
     }
 
@@ -1813,7 +1815,7 @@ namespace pika { namespace threads { namespace detail {
 
     template <typename Scheduler>
     void scheduled_thread_pool<Scheduler>::get_idle_core_mask(
-        detail::mask_type& mask) const
+        mask_type& mask) const
     {
         std::size_t i = 0;
         for (auto const& data : counter_data_)
@@ -1909,7 +1911,8 @@ namespace pika { namespace threads { namespace detail {
 
         l.unlock();
 
-        if (threads::get_self_ptr() && this == pika::this_thread::get_pool())
+        if (threads::detail::get_self_ptr() &&
+            this == pika::this_thread::get_pool())
         {
             std::size_t thread_num = thread_offset_ + virt_core;
 

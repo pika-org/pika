@@ -90,7 +90,7 @@ namespace pika { namespace util {
 
         // Will return the requested stack size to use for an pika-threads.
         std::ptrdiff_t get_stack_size(
-            threads::thread_stacksize stacksize) const;
+            execution::thread_stacksize stacksize) const;
 
         // Return the configured sizes of any of the know thread pools
         std::size_t get_thread_pool_size(char const* poolname) const;

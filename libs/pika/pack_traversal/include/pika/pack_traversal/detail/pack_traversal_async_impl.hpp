@@ -14,7 +14,7 @@
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/futures/traits/future_access.hpp>
-#include <pika/modules/memory.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/pack_traversal/detail/container_category.hpp>
 #include <pika/type_support/decay.hpp>
 #include <pika/type_support/pack.hpp>

@@ -22,8 +22,8 @@ using pika::program_options::variables_map;
 ///////////////////////////////////////////////////////////////////////////////
 inline void set_description(char const* test_name)
 {
-    pika::threads::set_thread_description(
-        pika::threads::get_self_id(), test_name);
+    pika::threads::detail::set_thread_description(
+        pika::threads::detail::get_self_id(), test_name);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

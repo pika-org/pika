@@ -15,11 +15,8 @@
 #include <cstdint>
 #include <ostream>
 
-namespace pika { namespace threads {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::threads::detail {
     // clang-format off
-
     /// \enum thread_schedule_state
     ///
     /// The \a thread_schedule_state enumerator encodes the current state of a
@@ -58,7 +55,6 @@ namespace pika { namespace threads {
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream& os, thread_schedule_state const t);
 
-    ///////////////////////////////////////////////////////////////////////////
     /// \brief Returns the name of the given state
     ///
     /// Get the readable string representing the name of the given
@@ -67,11 +63,43 @@ namespace pika { namespace threads {
     /// \param state this represents the thread state.
     PIKA_EXPORT char const* get_thread_state_name(thread_schedule_state state);
 
-    ///////////////////////////////////////////////////////////////////////////
-    // clang-format off
-
-    /// This enumeration lists all possible thread-priorities for pika threads.
+    /// \enum thread_restart_state
     ///
+    /// The \a thread_restart_state enumerator encodes the reason why a
+    /// thread is being restarted
+    enum class thread_restart_state : std::int8_t
+    {
+        unknown = 0,
+        signaled = 1,     ///< The thread has been signaled
+        timeout = 2,      ///< The thread has been reactivated after a
+                          ///< timeout
+        terminate = 3,    ///< The thread needs to be terminated
+        abort = 4         ///< The thread needs to be aborted
+    };
+
+    PIKA_EXPORT std::ostream& operator<<(
+        std::ostream& os, thread_restart_state const t);
+
+    /// Get the readable string representing the name of the given
+    /// thread_restart_state constant.
+    PIKA_EXPORT char const* get_thread_state_ex_name(
+        thread_restart_state state);
+
+    /// \cond NOINTERNAL
+    // special type storing both state in one tagged structure
+    using thread_state =
+        threads::detail::combined_tagged_state<thread_schedule_state,
+            thread_restart_state>;
+    /// \endcond
+
+    /// Get the readable string representing the name of the given
+    /// thread_state constant.
+    PIKA_EXPORT char const* get_thread_state_name(thread_state state);
+}    // namespace pika::threads::detail
+
+namespace pika::execution {
+    // clang-format off
+    /// This enumeration lists all possible thread-priorities for pika threads.
     enum class thread_priority : std::int8_t
     {
         unknown = -1,
@@ -111,48 +139,16 @@ namespace pika { namespace threads {
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream& os, thread_priority const t);
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// \brief Return the thread priority name.
-    ///
-    /// Get the readable string representing the name of the given thread_priority
-    /// constant.
-    ///
-    /// \param this represents the thread priority.
-    PIKA_EXPORT char const* get_thread_priority_name(thread_priority priority);
-
-    ///////////////////////////////////////////////////////////////////////////
-    /// \enum thread_restart_state
-    ///
-    /// The \a thread_restart_state enumerator encodes the reason why a
-    /// thread is being restarted
-    enum class thread_restart_state : std::int8_t
-    {
-        unknown = 0,
-        signaled = 1,     ///< The thread has been signaled
-        timeout = 2,      ///< The thread has been reactivated after a
-                          ///< timeout
-        terminate = 3,    ///< The thread needs to be terminated
-        abort = 4         ///< The thread needs to be aborted
-    };
-
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream& os, thread_restart_state const t);
-
-    /// Get the readable string representing the name of the given
-    /// thread_restart_state constant.
-    PIKA_EXPORT char const* get_thread_state_ex_name(
-        thread_restart_state state);
-
-    /// \cond NOINTERNAL
-    // special type storing both state in one tagged structure
-    using thread_state =
-        threads::detail::combined_tagged_state<thread_schedule_state,
-            thread_restart_state>;
-    /// \endcond
-
-    /// Get the readable string representing the name of the given
-    /// thread_state constant.
-    PIKA_EXPORT char const* get_thread_state_name(thread_state state);
+    namespace detail {
+        /// \brief Return the thread priority name.
+        ///
+        /// Get the readable string representing the name of the given thread_priority
+        /// constant.
+        ///
+        /// \param this represents the thread priority.
+        PIKA_EXPORT char const* get_thread_priority_name(
+            thread_priority priority);
+    }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
     /// \enum thread_stacksize
@@ -179,16 +175,16 @@ namespace pika { namespace threads {
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream& os, thread_stacksize const t);
 
-    ///////////////////////////////////////////////////////////////////////////
-    /// \brief Returns the stack size name.
-    ///
-    /// Get the readable string representing the given stack size
-    /// constant.
-    ///
-    /// \param size this represents the stack size
-    PIKA_EXPORT char const* get_stack_size_enum_name(thread_stacksize size);
+    namespace detail {
+        /// \brief Returns the stack size name.
+        ///
+        /// Get the readable string representing the given stack size
+        /// constant.
+        ///
+        /// \param size this represents the stack size
+        PIKA_EXPORT char const* get_stack_size_enum_name(thread_stacksize size);
+    }    // namespace detail
 
-    ///////////////////////////////////////////////////////////////////////////
     /// \enum thread_schedule_hint_mode
     ///
     /// The type of hint given when creating new tasks.
@@ -258,11 +254,11 @@ namespace pika { namespace threads {
         }
         /// \endcond
 
-        /// The hint associated with the mode. The interepretation of this hint
+        /// The hint associated with the mode. The interpretation of this hint
         /// depends on the given mode.
         std::int16_t hint;
 
         /// The mode of the scheduling hint.
         thread_schedule_hint_mode mode;
     };
-}}    // namespace pika::threads
+}    // namespace pika::execution

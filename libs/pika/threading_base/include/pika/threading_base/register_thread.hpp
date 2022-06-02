@@ -23,7 +23,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Create a new \a thread using the given function as the work to
     ///        be executed.
@@ -37,75 +37,69 @@ namespace pika { namespace threads {
     /// \note All other arguments are equivalent to those of the function
     ///       \a threads#register_thread_plain
     ///
-    namespace detail {
-        template <typename F>
-        struct thread_function
+    template <typename F>
+    struct thread_function
+    {
+        F f;
+
+        inline thread_result_type operator()(thread_arg_type)
         {
-            F f;
+            // execute the actual thread function
+            f(threads::detail::thread_restart_state::signaled);
 
-            inline threads::thread_result_type operator()(
-                threads::thread_arg_type)
-            {
-                // execute the actual thread function
-                f(threads::thread_restart_state::signaled);
+            // Verify that there are no more registered locks for this
+            // OS-thread. This will throw if there are still any locks
+            // held.
+            util::force_error_on_lock();
 
-                // Verify that there are no more registered locks for this
-                // OS-thread. This will throw if there are still any locks
-                // held.
-                util::force_error_on_lock();
+            // run and free all registered exit functions for this thread
+            auto* p = get_self_id_data();
 
-                // run and free all registered exit functions for this thread
-                auto* p = get_self_id_data();
+            p->run_thread_exit_callbacks();
+            p->free_thread_exit_callbacks();
 
-                p->run_thread_exit_callbacks();
-                p->free_thread_exit_callbacks();
+            return thread_result_type(
+                thread_schedule_state::terminated, invalid_thread_id);
+        }
+    };
 
-                return threads::thread_result_type(
-                    threads::thread_schedule_state::terminated,
-                    threads::invalid_thread_id);
-            }
-        };
+    template <typename F>
+    struct thread_function_nullary
+    {
+        F f;
 
-        template <typename F>
-        struct thread_function_nullary
+        inline thread_result_type operator()(thread_arg_type)
         {
-            F f;
+            // execute the actual thread function
+            f();
 
-            inline threads::thread_result_type operator()(
-                threads::thread_arg_type)
-            {
-                // execute the actual thread function
-                f();
+            // Verify that there are no more registered locks for this
+            // OS-thread. This will throw if there are still any locks
+            // held.
+            util::force_error_on_lock();
 
-                // Verify that there are no more registered locks for this
-                // OS-thread. This will throw if there are still any locks
-                // held.
-                util::force_error_on_lock();
+            // run and free all registered exit functions for this thread
+            auto* p = get_self_id_data();
 
-                // run and free all registered exit functions for this thread
-                auto* p = get_self_id_data();
+            p->run_thread_exit_callbacks();
+            p->free_thread_exit_callbacks();
 
-                p->run_thread_exit_callbacks();
-                p->free_thread_exit_callbacks();
-
-                return threads::thread_result_type(
-                    threads::thread_schedule_state::terminated,
-                    threads::invalid_thread_id);
-            }
-        };
-    }    // namespace detail
+            return thread_result_type(
+                thread_schedule_state::terminated, invalid_thread_id);
+        }
+    };
 
     template <typename F>
     thread_function_type make_thread_function(F&& f)
     {
-        return {detail::thread_function<typename std::decay<F>::type>{
-            PIKA_FORWARD(F, f)}};
+        return {
+            thread_function<typename std::decay<F>::type>{PIKA_FORWARD(F, f)}};
     }
 
     template <typename F>
     thread_function_type make_thread_function_nullary(F&& f)
     {
-        return {detail::thread_function_nullary<typename std::decay<F>::type>{
+        return {thread_function_nullary<typename std::decay<F>::type>{
             PIKA_FORWARD(F, f)}};
     }
 
@@ -128,13 +122,12 @@ namespace pika { namespace threads {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    inline threads::thread_id_ref_type register_thread(
-        threads::thread_init_data& data, threads::thread_pool_base* pool,
-        error_code& ec = throws)
+    inline thread_id_ref_type register_thread(
+        thread_init_data& data, thread_pool_base* pool, error_code& ec = throws)
     {
         PIKA_ASSERT(pool);
         data.run_now = true;
-        threads::thread_id_ref_type id = threads::invalid_thread_id;
+        thread_id_ref_type id = invalid_thread_id;
         pool->create_thread(data, id, ec);
         return id;
     }
@@ -159,10 +152,10 @@ namespace pika { namespace threads {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    inline threads::thread_id_ref_type register_thread(
-        threads::thread_init_data& data, error_code& ec = throws)
+    inline thread_id_ref_type register_thread(
+        thread_init_data& data, error_code& ec = throws)
     {
-        return register_thread(data, detail::get_self_or_default_pool(), ec);
+        return register_thread(data, get_self_or_default_pool(), ec);
     }
 
     /// \brief Create a new work item using the given data.
@@ -180,8 +173,8 @@ namespace pika { namespace threads {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    inline thread_id_ref_type register_work(threads::thread_init_data& data,
-        threads::thread_pool_base* pool, error_code& ec = throws)
+    inline thread_id_ref_type register_work(
+        thread_init_data& data, thread_pool_base* pool, error_code& ec = throws)
     {
         PIKA_ASSERT(pool);
         data.run_now = false;
@@ -205,10 +198,10 @@ namespace pika { namespace threads {
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
     inline thread_id_ref_type register_work(
-        threads::thread_init_data& data, error_code& ec = throws)
+        thread_init_data& data, error_code& ec = throws)
     {
-        return register_work(data, detail::get_self_or_default_pool(), ec);
+        return register_work(data, get_self_or_default_pool(), ec);
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 /// \endcond

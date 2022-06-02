@@ -130,7 +130,7 @@ namespace pika { namespace lcos { namespace local {
             std::lock_guard<std::unique_lock<mutex_type>> unlock_next(
                 l, std::adopt_lock);
 
-            threads::thread_restart_state const reason =
+            threads::detail::thread_restart_state const reason =
                 data->cond_.wait_until(l, abs_time, ec);
 
             if (ec)
@@ -138,7 +138,8 @@ namespace pika { namespace lcos { namespace local {
 
             // if the timer has hit, the waiting period timed out
             return (reason ==
-                       threads::thread_restart_state::timeout) ?    //-V110
+                       threads::detail::thread_restart_state::
+                           timeout) ?    //-V110
                 cv_status::timeout :
                 cv_status::no_timeout;
         }
@@ -275,7 +276,7 @@ namespace pika { namespace lcos { namespace local {
             std::lock_guard<std::unique_lock<mutex_type>> unlock_next(
                 l, std::adopt_lock);
 
-            threads::thread_restart_state const reason =
+            threads::detail::thread_restart_state const reason =
                 data->cond_.wait_until(l, abs_time, ec);
 
             if (ec)
@@ -283,7 +284,8 @@ namespace pika { namespace lcos { namespace local {
 
             // if the timer has hit, the waiting period timed out
             return (reason ==
-                       threads::thread_restart_state::timeout) ?    //-V110
+                       threads::detail::thread_restart_state::
+                           timeout) ?    //-V110
                 cv_status::timeout :
                 cv_status::no_timeout;
         }
@@ -402,14 +404,15 @@ namespace pika { namespace lcos { namespace local {
                     std::lock_guard<std::unique_lock<mutex_type>> unlock_next(
                         l, std::adopt_lock);
 
-                    threads::thread_restart_state const reason =
+                    threads::detail::thread_restart_state const reason =
                         data->cond_.wait_until(l, abs_time, ec);
 
                     if (ec)
                         return false;
 
                     should_stop =
-                        (reason == threads::thread_restart_state::timeout) ||
+                        (reason ==
+                            threads::detail::thread_restart_state::timeout) ||
                         stoken.stop_requested();
                 }
 

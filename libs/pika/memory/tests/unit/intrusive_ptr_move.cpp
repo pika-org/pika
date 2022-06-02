@@ -26,7 +26,7 @@
 
 #endif
 
-#include <pika/modules/memory.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/testing.hpp>
 #include <pika/thread_support/atomic_count.hpp>
 

@@ -130,26 +130,25 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 #include <iomanip>
 #include <iostream>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-    namespace posix { namespace ucontext {
-        inline int make_context(::ucontext_t* ctx, void* stack,
-            std::ptrdiff_t size, void (*startfunc)(void*), void* startarg,
-            ::ucontext_t* exitto = nullptr)
-        {
-            int error = ::getcontext(ctx);
-            if (error)
-                return error;
+namespace pika::threads::coroutines::detail::posix::ucontext {
+    inline int make_context(::ucontext_t* ctx, void* stack, std::ptrdiff_t size,
+        void (*startfunc)(void*), void* startarg,
+        ::ucontext_t* exitto = nullptr)
+    {
+        int error = ::getcontext(ctx);
+        if (error)
+            return error;
 
-            ctx->uc_stack.ss_sp = (char*) stack;
-            ctx->uc_stack.ss_size = size;
-            ctx->uc_link = exitto;
+        ctx->uc_stack.ss_sp = (char*) stack;
+        ctx->uc_stack.ss_size = size;
+        ctx->uc_link = exitto;
 
-            using = void (*ctx_main)();
-            //makecontext can't fail.
-            ::makecontext(ctx, (ctx_main) (startfunc), 1, startarg);
-            return 0;
-        }
-}}}}}}    // namespace pika::threads::coroutines::detail::posix::ucontext
+        using = void (*ctx_main)();
+        //makecontext can't fail.
+        ::makecontext(ctx, (ctx_main) (startfunc), 1, startarg);
+        return 0;
+    }
+}    // namespace pika::threads::coroutines::detail::posix::ucontext
 
 #define PIKA_COROUTINE_POSIX_IMPL "ucontext implementation"
 #define PIKA_COROUTINE_DECLARE_CONTEXT(name) ::ucontext_t name
@@ -169,14 +168,16 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 #include <atomic>
 #include <signal.h>    // SIGSTKSZ
 
-namespace pika { namespace threads { namespace coroutines {
-    // some platforms need special preparation of the main thread
-    struct prepare_main_thread
-    {
-        constexpr prepare_main_thread() {}
-    };
+namespace pika::threads::coroutines {
+    namespace detail {
+        // some platforms need special preparation of the main thread
+        struct prepare_main_thread
+        {
+            constexpr prepare_main_thread() {}
+        };
+    }    // namespace detail
 
-    namespace detail { namespace posix {
+    namespace detail::posix {
         /*
          * Posix implementation for the context_impl_base class.
          * @note context_impl is not required to be consistent
@@ -427,8 +428,8 @@ namespace pika { namespace threads { namespace coroutines {
             stack_t segv_stack;
 #endif
         };
-    }}    // namespace detail::posix
-}}}       // namespace pika::threads::coroutines
+    }    // namespace detail::posix
+}    // namespace pika::threads::coroutines
 
 #else
 

@@ -65,11 +65,11 @@ int pika_main()
     // the test to fail
     pika::execution::parallel_executor exec_0_hp(
         &pika::resource::get_thread_pool("default"),
-        pika::threads::thread_priority::high);
+        pika::execution::thread_priority::high);
 
     pika::execution::parallel_executor exec_0(
         &pika::resource::get_thread_pool("default"),
-        pika::threads::thread_priority::default_);
+        pika::execution::thread_priority::default_);
 
     std::vector<pika::future<void>> lotsa_futures;
 
@@ -88,10 +88,10 @@ int pika_main()
         std::string pool_name = "pool-" + std::to_string(i);
         execs.push_back(pika::execution::parallel_executor(
             &pika::resource::get_thread_pool(pool_name),
-            pika::threads::thread_priority::default_));
+            pika::execution::thread_priority::default_));
         execs_hp.push_back(pika::execution::parallel_executor(
             &pika::resource::get_thread_pool(pool_name),
-            pika::threads::thread_priority::high));
+            pika::execution::thread_priority::high));
     }
 
     for (std::size_t i = 0; i < max_threads; ++i)
@@ -105,7 +105,7 @@ int pika_main()
 
     // check that the default executor still works
     pika::execution::parallel_executor large_stack_executor(
-        pika::threads::thread_stacksize::large);
+        pika::execution::thread_stacksize::large);
 
     lotsa_futures.push_back(pika::async(
         large_stack_executor, &dummy_task, 3, "true default + large stack"));

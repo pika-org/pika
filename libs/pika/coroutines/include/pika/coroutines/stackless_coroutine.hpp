@@ -21,9 +21,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace pika { namespace threads { namespace coroutines {
-
-    ////////////////////////////////////////////////////////////////////////////
+namespace pika::threads::coroutines::detail {
     class stackless_coroutine
     {
     private:
@@ -47,12 +45,13 @@ namespace pika { namespace threads { namespace coroutines {
         }
 
     public:
-        friend struct detail::coroutine_accessor;
+        friend struct coroutine_accessor;
 
-        using thread_id_type = pika::threads::thread_id;
+        using thread_id_type = pika::threads::detail::thread_id;
 
-        using result_type = std::pair<thread_schedule_state, thread_id_type>;
-        using arg_type = thread_restart_state;
+        using result_type =
+            std::pair<threads::detail::thread_schedule_state, thread_id_type>;
+        using arg_type = threads::detail::thread_restart_state;
 
         using functor_type = util::unique_function<result_type(arg_type)>;
 
@@ -76,7 +75,7 @@ namespace pika { namespace threads { namespace coroutines {
         ~stackless_coroutine()
         {
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-            detail::delete_tss_storage(thread_data_);
+            delete_tss_storage(thread_data_);
 #else
             thread_data_ = 0;
 #endif
@@ -103,7 +102,7 @@ namespace pika { namespace threads { namespace coroutines {
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
             if (!thread_data_)
                 return 0;
-            return detail::get_tss_thread_data(thread_data_);
+            return get_tss_thread_data(thread_data_);
 #else
             return thread_data_;
 #endif
@@ -112,7 +111,7 @@ namespace pika { namespace threads { namespace coroutines {
         std::size_t set_thread_data(std::size_t data)
         {
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-            return detail::set_tss_thread_data(thread_data_, data);
+            return set_tss_thread_data(thread_data_, data);
 #else
             std::size_t olddata = thread_data_;
             thread_data_ = data;
@@ -156,10 +155,10 @@ namespace pika { namespace threads { namespace coroutines {
 #endif
 
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-        detail::tss_storage* get_thread_tss_data(bool create_if_needed) const
+        tss_storage* get_thread_tss_data(bool create_if_needed) const
         {
             if (!thread_data_ && create_if_needed)
-                thread_data_ = detail::create_tss_storage();
+                thread_data_ = create_tss_storage();
             return thread_data_;
         }
 #endif
@@ -185,7 +184,7 @@ namespace pika { namespace threads { namespace coroutines {
         void reset_tss()
         {
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-            detail::delete_tss_storage(thread_data_);
+            delete_tss_storage(thread_data_);
 #else
             thread_data_ = 0;
 #endif
@@ -252,7 +251,7 @@ namespace pika { namespace threads { namespace coroutines {
         std::size_t phase_;
 #endif
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
-        mutable detail::tss_storage* thread_data_;
+        mutable tss_storage* thread_data_;
 #else
         mutable std::size_t thread_data_;
 #endif
@@ -263,25 +262,23 @@ namespace pika { namespace threads { namespace coroutines {
         mutable std::size_t libcds_dynamic_hazard_pointer_data_;
 #endif
     };
-
-}}}    // namespace pika::threads::coroutines
+}    // namespace pika::threads::coroutines::detail
 
 ////////////////////////////////////////////////////////////////////////////////
 #include <pika/coroutines/detail/coroutine_stackless_self.hpp>
 
-namespace pika { namespace threads { namespace coroutines {
-
+namespace pika::threads::coroutines::detail {
     PIKA_FORCEINLINE stackless_coroutine::result_type
     stackless_coroutine::operator()(arg_type arg)
     {
         PIKA_ASSERT(is_ready());
 
-        result_type result(
-            thread_schedule_state::terminated, invalid_thread_id);
+        result_type result(threads::detail::thread_schedule_state::terminated,
+            threads::detail::invalid_thread_id);
 
         {
-            detail::coroutine_stackless_self self(this);
-            detail::reset_self_on_exit on_self_exit(&self, nullptr);
+            coroutine_stackless_self self(this);
+            reset_self_on_exit on_self_exit(&self, nullptr);
 
             {
                 reset_on_exit on_exit{*this};
@@ -291,8 +288,8 @@ namespace pika { namespace threads { namespace coroutines {
                 result = f_(arg);    // invoke wrapped function
 
                 // we always have to run to completion
-                PIKA_ASSERT(
-                    result.first == threads::thread_schedule_state::terminated);
+                PIKA_ASSERT(result.first ==
+                    threads::detail::thread_schedule_state::terminated);
             }
 
             reset_tss();
@@ -301,5 +298,4 @@ namespace pika { namespace threads { namespace coroutines {
 
         return result;
     }
-
-}}}    // namespace pika::threads::coroutines
+}    // namespace pika::threads::coroutines::detail

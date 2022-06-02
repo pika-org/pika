@@ -20,7 +20,7 @@ namespace pika { namespace threads {
     pika::future<void> resume_processing_unit(
         thread_pool_base& pool, std::size_t virt_core)
     {
-        if (!threads::get_self_ptr())
+        if (!threads::detail::get_self_ptr())
         {
             PIKA_THROW_EXCEPTION(invalid_status, "resume_processing_unit",
                 "cannot call resume_processing_unit from outside pika, use"
@@ -59,7 +59,7 @@ namespace pika { namespace threads {
             callback();
         };
 
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             pika::apply(PIKA_MOVE(resume_direct_wrapper));
         }
@@ -72,7 +72,7 @@ namespace pika { namespace threads {
     pika::future<void> suspend_processing_unit(
         thread_pool_base& pool, std::size_t virt_core)
     {
-        if (!threads::get_self_ptr())
+        if (!threads::detail::get_self_ptr())
         {
             PIKA_THROW_EXCEPTION(invalid_status, "suspend_processing_unit",
                 "cannot call suspend_processing_unit from outside pika, use"
@@ -120,7 +120,7 @@ namespace pika { namespace threads {
             callback();
         };
 
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             if (!pool.get_scheduler()->has_scheduler_mode(
                     policies::enable_stealing) &&
@@ -143,7 +143,7 @@ namespace pika { namespace threads {
 
     future<void> resume_pool(thread_pool_base& pool)
     {
-        if (!threads::get_self_ptr())
+        if (!threads::detail::get_self_ptr())
         {
             PIKA_THROW_EXCEPTION(invalid_status, "resume_pool",
                 "cannot call resume_pool from outside pika, use resume_pool_cb "
@@ -164,7 +164,7 @@ namespace pika { namespace threads {
             callback();
         };
 
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             pika::apply(PIKA_MOVE(resume_direct_wrapper));
         }
@@ -176,7 +176,7 @@ namespace pika { namespace threads {
 
     future<void> suspend_pool(thread_pool_base& pool)
     {
-        if (!threads::get_self_ptr())
+        if (!threads::detail::get_self_ptr())
         {
             PIKA_THROW_EXCEPTION(invalid_status, "suspend_pool",
                 "cannot call suspend_pool from outside pika, use "
@@ -184,7 +184,8 @@ namespace pika { namespace threads {
                 "instead");
             return pika::make_ready_future();
         }
-        if (threads::get_self_ptr() && pika::this_thread::get_pool() == &pool)
+        if (threads::detail::get_self_ptr() &&
+            pika::this_thread::get_pool() == &pool)
         {
             return pika::make_exceptional_future<void>(
                 PIKA_GET_EXCEPTION(bad_parameter, "suspend_pool",
@@ -198,7 +199,8 @@ namespace pika { namespace threads {
     void suspend_pool_cb(thread_pool_base& pool,
         util::function<void(void)> callback, error_code& ec)
     {
-        if (threads::get_self_ptr() && pika::this_thread::get_pool() == &pool)
+        if (threads::detail::get_self_ptr() &&
+            pika::this_thread::get_pool() == &pool)
         {
             PIKA_THROWS_IF(ec, bad_parameter, "suspend_pool_cb",
                 "cannot suspend a pool from itself");
@@ -211,7 +213,7 @@ namespace pika { namespace threads {
             callback();
         };
 
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             pika::apply(PIKA_MOVE(suspend_direct_wrapper));
         }

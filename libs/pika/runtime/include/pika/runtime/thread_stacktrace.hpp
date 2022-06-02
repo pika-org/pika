@@ -17,15 +17,15 @@ namespace pika { namespace util { namespace debug {
 
     // ------------------------------------------------------------------------
     // return a vector of suspended/other task Ids
-    PIKA_EXPORT std::vector<pika::threads::thread_id_type> get_task_ids(
-        pika::threads::thread_schedule_state state =
-            pika::threads::thread_schedule_state::suspended);
+    PIKA_EXPORT std::vector<pika::threads::detail::thread_id_type> get_task_ids(
+        pika::threads::detail::thread_schedule_state state =
+            pika::threads::detail::thread_schedule_state::suspended);
 
     // ------------------------------------------------------------------------
     // return a vector of thread data structure pointers for suspended tasks
-    PIKA_EXPORT std::vector<pika::threads::thread_data*> get_task_data(
-        pika::threads::thread_schedule_state state =
-            pika::threads::thread_schedule_state::suspended);
+    PIKA_EXPORT std::vector<pika::threads::detail::thread_data*> get_task_data(
+        pika::threads::detail::thread_schedule_state state =
+            pika::threads::detail::thread_schedule_state::suspended);
 
     // ------------------------------------------------------------------------
     // return string containing the stack backtrace for suspended tasks

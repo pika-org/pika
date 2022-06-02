@@ -470,7 +470,7 @@ namespace pika {
     {
         runtime*& runtime_ = get_runtime_ptr();
         PIKA_ASSERT(!runtime_);
-        PIKA_ASSERT(nullptr == threads::thread_self::get_self());
+        PIKA_ASSERT(nullptr == threads::detail::thread_self::get_self());
 
         runtime_ = this;
         runtime_uptime() = pika::chrono::high_resolution_clock::now();
@@ -959,10 +959,10 @@ namespace pika { namespace threads {
     }
 
     // shortcut for runtime_configuration::get_stack_size
-    std::ptrdiff_t get_stack_size(threads::thread_stacksize stacksize)
+    std::ptrdiff_t get_stack_size(execution::thread_stacksize stacksize)
     {
-        if (stacksize == threads::thread_stacksize::current)
-            return threads::get_self_stacksize();
+        if (stacksize == execution::thread_stacksize::current)
+            return threads::detail::get_self_stacksize();
 
         return get_runtime().get_config().get_stack_size(stacksize);
     }
@@ -1212,7 +1212,7 @@ namespace pika {
         }
     }    // namespace detail
 
-    threads::thread_result_type runtime::run_helper(
+    threads::detail::thread_result_type runtime::run_helper(
         util::function<runtime::pika_main_function_type> const& func,
         int& result, bool call_startup)
     {
@@ -1231,9 +1231,9 @@ namespace pika {
                     set_state(state_running);
                     finalize(-1.0);
 
-                    return threads::thread_result_type(
-                        threads::thread_schedule_state::terminated,
-                        threads::invalid_thread_id);
+                    return threads::detail::thread_result_type(
+                        threads::detail::thread_schedule_state::terminated,
+                        threads::detail::invalid_thread_id);
                 }
             }
 
@@ -1256,8 +1256,8 @@ namespace pika {
                         "invoke pika_main";
 
                 // Change our thread description, as we're about to call pika_main
-                threads::set_thread_description(
-                    threads::get_self_id(), "pika_main");
+                threads::detail::set_thread_description(
+                    threads::detail::get_self_id(), "pika_main");
 
                 // Call pika_main
                 result = func();
@@ -1282,9 +1282,9 @@ namespace pika {
             finalize(-1.0);    // make sure the application exits
         }
 
-        return threads::thread_result_type(
-            threads::thread_schedule_state::terminated,
-            threads::invalid_thread_id);
+        return threads::detail::thread_result_type(
+            threads::detail::thread_schedule_state::terminated,
+            threads::detail::invalid_thread_id);
     }
 
     int runtime::start(
@@ -1323,13 +1323,16 @@ namespace pika {
         lbt_ << "(1st stage) runtime::start: launching run_helper "
                 "pika thread";
 
-        threads::thread_init_data data(util::bind(&runtime::run_helper, this,
-                                           func, std::ref(result_), true),
-            "run_helper", threads::thread_priority::normal,
-            threads::thread_schedule_hint(0), threads::thread_stacksize::large);
+        threads::detail::thread_init_data data(
+            util::bind(
+                &runtime::run_helper, this, func, std::ref(result_), true),
+            "run_helper", execution::thread_priority::normal,
+            execution::thread_schedule_hint(0),
+            execution::thread_stacksize::large);
 
         this->runtime::starting();
-        threads::thread_id_ref_type id = threads::invalid_thread_id;
+        threads::detail::thread_id_ref_type id =
+            threads::detail::invalid_thread_id;
         thread_manager_->register_thread(data, id);
 
         // }}}
@@ -1448,7 +1451,7 @@ namespace pika {
         detail::external_timer::finalize();
 #endif
 
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             // schedule task on separate thread to execute stop_helper() below
             // this is necessary as this function (stop()) might have been called
@@ -1574,7 +1577,7 @@ namespace pika {
         }
 
         // Early and late exceptions, errors outside of pika-threads
-        if (!threads::get_self_ptr() ||
+        if (!threads::detail::get_self_ptr() ||
             !threads::threadmanager_is(state_running))
         {
             // report the error to the local console
@@ -1759,7 +1762,7 @@ namespace pika {
     void runtime::deinit_tss_helper(
         char const* context, std::size_t global_thread_num)
     {
-        threads::reset_continuation_recursion_count();
+        threads::detail::reset_continuation_recursion_count();
 
         // call thread-specific user-supplied on_stop handler
         if (on_stop_func_)
@@ -1925,21 +1928,27 @@ namespace pika {
     namespace threads {
         char const* get_stack_size_name(std::ptrdiff_t size)
         {
-            thread_stacksize size_enum = thread_stacksize::unknown;
+            execution::thread_stacksize size_enum =
+                execution::thread_stacksize::unknown;
 
             pika::util::runtime_configuration const& rtcfg = pika::get_config();
-            if (rtcfg.get_stack_size(thread_stacksize::small_) == size)
-                size_enum = thread_stacksize::small_;
-            else if (rtcfg.get_stack_size(thread_stacksize::medium) == size)
-                size_enum = thread_stacksize::medium;
-            else if (rtcfg.get_stack_size(thread_stacksize::large) == size)
-                size_enum = thread_stacksize::large;
-            else if (rtcfg.get_stack_size(thread_stacksize::huge) == size)
-                size_enum = thread_stacksize::huge;
-            else if (rtcfg.get_stack_size(thread_stacksize::nostack) == size)
-                size_enum = thread_stacksize::nostack;
+            if (rtcfg.get_stack_size(execution::thread_stacksize::small_) ==
+                size)
+                size_enum = execution::thread_stacksize::small_;
+            else if (rtcfg.get_stack_size(
+                         execution::thread_stacksize::medium) == size)
+                size_enum = execution::thread_stacksize::medium;
+            else if (rtcfg.get_stack_size(execution::thread_stacksize::large) ==
+                size)
+                size_enum = execution::thread_stacksize::large;
+            else if (rtcfg.get_stack_size(execution::thread_stacksize::huge) ==
+                size)
+                size_enum = execution::thread_stacksize::huge;
+            else if (rtcfg.get_stack_size(
+                         execution::thread_stacksize::nostack) == size)
+                size_enum = execution::thread_stacksize::nostack;
 
-            return get_stack_size_enum_name(size_enum);
+            return execution::detail::get_stack_size_enum_name(size_enum);
         }
     }    // namespace threads
 }    // namespace pika

@@ -14,8 +14,8 @@
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/lcos/receive_buffer.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/memory.hpp>
 #include <pika/synchronization/no_mutex.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>

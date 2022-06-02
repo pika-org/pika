@@ -7,9 +7,9 @@
 
 #include <pika/executors/current_executor.hpp>
 
-namespace pika { namespace threads {
+namespace pika::threads {
     parallel::execution::current_executor get_executor(
-        thread_id_type const& id, error_code& ec)
+        detail::thread_id_type const& id, error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
         {
@@ -22,13 +22,15 @@ namespace pika { namespace threads {
             ec = make_success_code();
 
         return parallel::execution::current_executor(
-            get_thread_id_data(id)->get_scheduler_base()->get_parent_pool());
+            detail::get_thread_id_data(id)
+                ->get_scheduler_base()
+                ->get_parent_pool());
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads
 
-namespace pika { namespace this_thread {
+namespace pika::this_thread {
     parallel::execution::current_executor get_executor(error_code& ec)
     {
-        return threads::get_executor(threads::get_self_id(), ec);
+        return threads::get_executor(threads::detail::get_self_id(), ec);
     }
-}}    // namespace pika::this_thread
+}    // namespace pika::this_thread

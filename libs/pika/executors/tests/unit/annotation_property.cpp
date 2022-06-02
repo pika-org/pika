@@ -29,9 +29,9 @@ void test_post_f(int passed_through, pika::lcos::local::latch& l)
 {
     PIKA_TEST_EQ(passed_through, 42);
 
-    annotation =
-        pika::threads::get_thread_description(pika::threads::get_self_id())
-            .get_description();
+    annotation = pika::threads::detail::get_thread_description(
+        pika::threads::detail::get_self_id())
+                     .get_description();
 
     l.count_down(1);
 }
@@ -69,9 +69,9 @@ pika::thread::id test(int passed_through)
 {
     PIKA_TEST_EQ(passed_through, 42);
 
-    annotation =
-        pika::threads::get_thread_description(pika::threads::get_self_id())
-            .get_description();
+    annotation = pika::threads::detail::get_thread_description(
+        pika::threads::detail::get_self_id())
+                     .get_description();
 
     return pika::this_thread::get_id();
 }
@@ -137,9 +137,9 @@ pika::thread::id test_f(pika::future<void> f, int passed_through)
 
     PIKA_TEST_EQ(passed_through, 42);
 
-    annotation =
-        pika::threads::get_thread_description(pika::threads::get_self_id())
-            .get_description();
+    annotation = pika::threads::detail::get_thread_description(
+        pika::threads::detail::get_self_id())
+                     .get_description();
 
     return pika::this_thread::get_id();
 }
@@ -179,9 +179,9 @@ void bulk_test(int seq, pika::thread::id tid, int passed_through)    //-V813
 
     if (seq == 0)
     {
-        annotation =
-            pika::threads::get_thread_description(pika::threads::get_self_id())
-                .get_description();
+        annotation = pika::threads::detail::get_thread_description(
+            pika::threads::detail::get_self_id())
+                         .get_description();
     }
 }
 
@@ -283,9 +283,9 @@ void bulk_test_f(int seq, pika::shared_future<void> f, pika::thread::id tid,
 
     if (seq == 0)
     {
-        annotation =
-            pika::threads::get_thread_description(pika::threads::get_self_id())
-                .get_description();
+        annotation = pika::threads::detail::get_thread_description(
+            pika::threads::detail::get_self_id())
+                         .get_description();
     }
 }
 

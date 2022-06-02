@@ -18,9 +18,9 @@ using pika::program_options::variables_map;
 
 using std::chrono::seconds;
 
-using pika::threads::get_self;
-using pika::threads::get_self_id;
-using pika::threads::set_thread_state;
+using pika::threads::detail::get_self;
+using pika::threads::detail::get_self_id;
+using pika::threads::detail::set_thread_state;
 
 using pika::chrono::high_resolution_timer;
 
@@ -34,11 +34,11 @@ int pika_main()
 
         // Schedule a wakeup in 5 seconds.
         set_thread_state(get_self_id(), seconds(5),
-            pika::threads::thread_schedule_state::pending);
+            pika::threads::detail::thread_schedule_state::pending);
 
         // Suspend this pika thread.
         pika::this_thread::suspend(
-            pika::threads::thread_schedule_state::suspended);
+            pika::threads::detail::thread_schedule_state::suspended);
 
         std::cout << "woke up after " << t.elapsed() << " seconds\n";
     }

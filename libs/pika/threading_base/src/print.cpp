@@ -16,7 +16,7 @@
 namespace pika { namespace debug {
 
     std::ostream& operator<<(
-        std::ostream& os, threadinfo<threads::thread_data*> const& d)
+        std::ostream& os, threadinfo<threads::detail::thread_data*> const& d)
     {
         os << ptr(d.data) << " \""
            << ((d.data != nullptr) ? d.data->get_description() : "nullptr")
@@ -25,7 +25,7 @@ namespace pika { namespace debug {
     }
 
     std::ostream& operator<<(
-        std::ostream& os, threadinfo<threads::thread_id_type*> const& d)
+        std::ostream& os, threadinfo<threads::detail::thread_id_type*> const& d)
     {
         if (d.data == nullptr)
         {
@@ -33,14 +33,14 @@ namespace pika { namespace debug {
         }
         else
         {
-            os << threadinfo<threads::thread_data*>(
+            os << threadinfo<threads::detail::thread_data*>(
                 get_thread_id_data(*d.data));
         }
         return os;
     }
 
-    std::ostream& operator<<(
-        std::ostream& os, threadinfo<threads::thread_id_ref_type*> const& d)
+    std::ostream& operator<<(std::ostream& os,
+        threadinfo<threads::detail::thread_id_ref_type*> const& d)
     {
         if (d.data == nullptr)
         {
@@ -48,14 +48,14 @@ namespace pika { namespace debug {
         }
         else
         {
-            os << threadinfo<threads::thread_data*>(
+            os << threadinfo<threads::detail::thread_data*>(
                 get_thread_id_data(*d.data));
         }
         return os;
     }
 
-    std::ostream& operator<<(
-        std::ostream& os, threadinfo<pika::threads::thread_init_data> const& d)
+    std::ostream& operator<<(std::ostream& os,
+        threadinfo<pika::threads::detail::thread_init_data> const& d)
     {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
         os << std::left << " \"" << d.data.description.get_description()
@@ -73,15 +73,15 @@ namespace pika { namespace debug {
 
         void print_thread_info(std::ostream& os)
         {
-            if (pika::threads::get_self_id() ==
-                pika::threads::invalid_thread_id)
+            if (pika::threads::detail::get_self_id() ==
+                pika::threads::detail::invalid_thread_id)
             {
                 os << "-------------- ";
             }
             else
             {
-                pika::threads::thread_data* dummy =
-                    pika::threads::get_self_id_data();
+                pika::threads::detail::thread_data* dummy =
+                    pika::threads::detail::get_self_id_data();
                 os << dummy << " ";
             }
             os << hex<12, std::thread::id>(std::this_thread::get_id())

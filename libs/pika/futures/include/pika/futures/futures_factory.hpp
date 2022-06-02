@@ -17,8 +17,8 @@
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/traits/future_access.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/memory.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
@@ -92,37 +92,40 @@ namespace pika { namespace lcos { namespace local {
 
         protected:
             // run in a separate thread
-            threads::thread_id_ref_type apply(threads::thread_pool_base* pool,
-                const char* annotation, launch policy, error_code& ec) override
+            threads::detail::thread_id_ref_type apply(
+                threads::thread_pool_base* pool, const char* annotation,
+                launch policy, error_code& ec) override
             {
                 this->check_started();
 
                 pika::intrusive_ptr<base_type> this_(this);
                 if (policy == launch::fork)
                 {
-                    threads::thread_init_data data(
-                        threads::make_thread_function_nullary(
+                    threads::detail::thread_init_data data(
+                        threads::detail::make_thread_function_nullary(
                             util::deferred_call(
                                 &base_type::run_impl, PIKA_MOVE(this_))),
-                        util::thread_description(f_, annotation),
+                        util::detail::thread_description(f_, annotation),
                         policy.priority(),
-                        threads::thread_schedule_hint(
+                        execution::thread_schedule_hint(
                             static_cast<std::int16_t>(get_worker_thread_num())),
                         policy.stacksize(),
-                        threads::thread_schedule_state::pending_do_not_schedule,
+                        threads::detail::thread_schedule_state::
+                            pending_do_not_schedule,
                         true);
 
-                    return threads::register_thread(data, pool, ec);
+                    return threads::detail::register_thread(data, pool, ec);
                 }
 
-                threads::thread_init_data data(
-                    threads::make_thread_function_nullary(util::deferred_call(
-                        &base_type::run_impl, PIKA_MOVE(this_))),
-                    util::thread_description(f_, annotation), policy.priority(),
-                    policy.hint(), policy.stacksize(),
-                    threads::thread_schedule_state::pending);
+                threads::detail::thread_init_data data(
+                    threads::detail::make_thread_function_nullary(
+                        util::deferred_call(
+                            &base_type::run_impl, PIKA_MOVE(this_))),
+                    util::detail::thread_description(f_, annotation),
+                    policy.priority(), policy.hint(), policy.stacksize(),
+                    threads::detail::thread_schedule_state::pending);
 
-                return threads::register_work(data, pool, ec);
+                return threads::detail::register_work(data, pool, ec);
             }
         };
 
@@ -232,8 +235,9 @@ namespace pika { namespace lcos { namespace local {
 
         protected:
             // run in a separate thread
-            threads::thread_id_ref_type apply(threads::thread_pool_base* pool,
-                const char* annotation, launch policy, error_code& ec) override
+            threads::detail::thread_id_ref_type apply(
+                threads::thread_pool_base* pool, const char* annotation,
+                launch policy, error_code& ec) override
             {
                 if (exec_)
                 {
@@ -244,7 +248,7 @@ namespace pika { namespace lcos { namespace local {
                         util::deferred_call(
                             &base_type::run_impl, PIKA_MOVE(this_)),
                         exec_->get_schedulehint(), annotation);
-                    return threads::invalid_thread_id;
+                    return threads::detail::invalid_thread_id;
                 }
 
                 return this->base_type::apply(pool, annotation, policy, ec);
@@ -723,7 +727,7 @@ namespace pika { namespace lcos { namespace local {
         }
 
         // asynchronous execution
-        threads::thread_id_ref_type apply(
+        threads::detail::thread_id_ref_type apply(
             const char* annotation = "futures_factory::apply",
             launch policy = launch::async, error_code& ec = throws) const
         {
@@ -731,7 +735,8 @@ namespace pika { namespace lcos { namespace local {
                 annotation, policy, ec);
         }
 
-        threads::thread_id_ref_type apply(threads::thread_pool_base* pool,
+        threads::detail::thread_id_ref_type apply(
+            threads::thread_pool_base* pool,
             const char* annotation = "futures_factory::apply",
             launch policy = launch::async, error_code& ec = throws) const
         {
@@ -740,7 +745,7 @@ namespace pika { namespace lcos { namespace local {
                 PIKA_THROW_EXCEPTION(task_moved,
                     "futures_factory<Result()>::apply()",
                     "futures_factory invalid (has it been moved?)");
-                return threads::invalid_thread_id;
+                return threads::detail::invalid_thread_id;
             }
             return task_->apply(pool, annotation, policy, ec);
         }

@@ -51,7 +51,8 @@ inline std::size_t st_rand()
 
 int pika_main(variables_map& vm)
 {
-    auto const sched = pika::threads::get_self_id_data()->get_scheduler_base();
+    auto const sched =
+        pika::threads::detail::get_self_id_data()->get_scheduler_base();
     std::cout << "Scheduler is " << sched->get_description() << std::endl;
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
@@ -78,11 +79,11 @@ int pika_main(variables_map& vm)
     // setup executors for different task priorities on the pools
     pika::execution::parallel_executor HP_executor(
         &pika::resource::get_thread_pool("default"),
-        pika::threads::thread_priority::high);
+        pika::execution::thread_priority::high);
 
     pika::execution::parallel_executor NP_executor(
         &pika::resource::get_thread_pool("default"),
-        pika::threads::thread_priority::default_);
+        pika::execution::thread_priority::default_);
 
     // randomly create normal priority tasks
     // and then a set of HP tasks in periodic bursts

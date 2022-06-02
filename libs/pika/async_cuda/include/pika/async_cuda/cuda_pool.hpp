@@ -39,7 +39,7 @@ namespace pika::cuda::experimental {
 
             PIKA_EXPORT streams_holder(int device,
                 std::size_t num_streams_per_thread,
-                pika::threads::thread_priority);
+                pika::execution::thread_priority);
             streams_holder(streams_holder&&) = delete;
             streams_holder(streams_holder const&) = delete;
             streams_holder& operator=(streams_holder&&) = delete;
@@ -81,8 +81,8 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT bool valid() const noexcept;
         PIKA_EXPORT explicit operator bool() noexcept;
         PIKA_EXPORT cuda_stream const& get_next_stream(
-            pika::threads::thread_priority priority =
-                pika::threads::thread_priority::normal);
+            pika::execution::thread_priority priority =
+                pika::execution::thread_priority::normal);
 
         /// \cond NOINTERNAL
         friend bool operator==(

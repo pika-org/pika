@@ -8,7 +8,7 @@
 
 #include <pika/config.hpp>
 #include <pika/futures/traits/future_traits.hpp>
-#include <pika/modules/memory.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/type_support/unused.hpp>
 
 #include <type_traits>

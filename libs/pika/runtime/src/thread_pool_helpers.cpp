@@ -73,13 +73,13 @@ namespace pika { namespace resource {
 }}    // namespace pika::resource
 
 namespace pika { namespace threads {
-    std::int64_t get_thread_count(thread_schedule_state state)
+    std::int64_t get_thread_count(detail::thread_schedule_state state)
     {
         return get_thread_manager().get_thread_count(state);
     }
 
-    std::int64_t get_thread_count(
-        thread_priority priority, thread_schedule_state state)
+    std::int64_t get_thread_count(execution::thread_priority priority,
+        detail::thread_schedule_state state)
     {
         return get_thread_manager().get_thread_count(state, priority);
     }
@@ -94,8 +94,9 @@ namespace pika { namespace threads {
         return get_thread_manager().get_idle_core_mask();
     }
 
-    bool enumerate_threads(util::function<bool(thread_id_type)> const& f,
-        thread_schedule_state state)
+    bool enumerate_threads(
+        util::function<bool(detail::thread_id_type)> const& f,
+        detail::thread_schedule_state state)
     {
         return get_thread_manager().enumerate_threads(f, state);
     }

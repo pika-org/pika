@@ -66,15 +66,15 @@ private:
         return pika::finalize();
     }
 
-    pika::threads::thread_result_type payload_thread_function(
-        pika::threads::thread_restart_state =
-            pika::threads::thread_restart_state::signaled)
+    pika::threads::detail::thread_result_type payload_thread_function(
+        pika::threads::detail::thread_restart_state =
+            pika::threads::detail::thread_restart_state::signaled)
     {
         htts2::payload<BaseClock>(this->payload_duration_ /* = p */);
         //++count_;
-        return pika::threads::thread_result_type(
-            pika::threads::thread_schedule_state::terminated,
-            pika::threads::invalid_thread_id);
+        return pika::threads::detail::thread_result_type(
+            pika::threads::detail::thread_schedule_state::terminated,
+            pika::threads::detail::invalid_thread_id);
     }
 
     void stage_tasks(std::uint64_t target_osthread)
@@ -86,53 +86,53 @@ private:
         if (this_osthread != target_osthread)
         {
             // Reschedule in an attempt to correct.
-            pika::threads::thread_init_data data(
-                pika::threads::make_thread_function_nullary(
+            pika::threads::detail::thread_init_data data(
+                pika::threads::detail::make_thread_function_nullary(
                     pika::util::bind(&pika_driver::stage_tasks, std::ref(*this),
                         target_osthread)),
                 nullptr    // No pika-thread name.
                 ,
-                pika::threads::thread_priority::normal
+                pika::execution::thread_priority::normal
                 // Place in the target OS-thread's queue.
                 ,
-                pika::threads::thread_schedule_hint(target_osthread));
-            pika::threads::register_work(data);
+                pika::execution::thread_schedule_hint(target_osthread));
+            pika::threads::detail::register_work(data);
         }
 
         for (std::uint64_t i = 0; i < this->tasks_; ++i)
         {
             using pika::util::placeholders::_1;
-            pika::threads::thread_init_data data(
+            pika::threads::detail::thread_init_data data(
                 pika::util::bind(
                     &pika_driver::payload_thread_function, std::ref(*this), _1),
                 nullptr    // No pika-thread name.
                 ,
-                pika::threads::thread_priority::normal
+                pika::execution::thread_priority::normal
                 // Place in the target OS-thread's queue.
                 ,
-                pika::threads::thread_schedule_hint(target_osthread));
-            pika::threads::register_work(data);
+                pika::execution::thread_schedule_hint(target_osthread));
+            pika::threads::detail::register_work(data);
         }
     }
 
     void wait_for_tasks(pika::lcos::local::barrier& finished)
     {
-        std::uint64_t const pending_count =
-            get_thread_count(pika::threads::thread_priority::normal,
-                pika::threads::thread_schedule_state::pending);
+        std::uint64_t const pending_count = pika::threads::get_thread_count(
+            pika::execution::thread_priority::normal,
+            pika::threads::detail::thread_schedule_state::pending);
 
         if (pending_count == 0)
         {
-            std::uint64_t const all_count =
-                get_thread_count(pika::threads::thread_priority::normal);
+            std::uint64_t const all_count = pika::threads::get_thread_count(
+                pika::execution::thread_priority::normal);
 
             if (all_count != 1)
             {
-                pika::threads::thread_init_data data(
-                    pika::threads::make_thread_function_nullary(
+                pika::threads::detail::thread_init_data data(
+                    pika::threads::detail::make_thread_function_nullary(
                         pika::util::bind(&pika_driver::wait_for_tasks,
                             std::ref(*this), std::ref(finished))),
-                    nullptr, pika::threads::thread_priority::low);
+                    nullptr, pika::execution::thread_priority::low);
                 register_work(data);
                 return;
             }
@@ -162,16 +162,17 @@ private:
             if (this_osthread == i)
                 continue;
 
-            pika::threads::thread_init_data data(
-                pika::threads::make_thread_function_nullary(pika::util::bind(
-                    &pika_driver::stage_tasks, std::ref(*this), i)),
+            pika::threads::detail::thread_init_data data(
+                pika::threads::detail::make_thread_function_nullary(
+                    pika::util::bind(
+                        &pika_driver::stage_tasks, std::ref(*this), i)),
                 nullptr    // No pika-thread name.
                 ,
-                pika::threads::thread_priority::normal
+                pika::execution::thread_priority::normal
                 // Place in the target OS-thread's queue.
                 ,
-                pika::threads::thread_schedule_hint(i));
-            pika::threads::register_work(data);
+                pika::execution::thread_schedule_hint(i));
+            pika::threads::detail::register_work(data);
         }
 
         stage_tasks(this_osthread);
@@ -193,11 +194,11 @@ private:
         // executed, and then it
         pika::lcos::local::barrier finished(2);
 
-        pika::threads::thread_init_data data(
-            pika::threads::make_thread_function_nullary(
+        pika::threads::detail::thread_init_data data(
+            pika::threads::detail::make_thread_function_nullary(
                 pika::util::bind(&pika_driver::wait_for_tasks, std::ref(*this),
                     std::ref(finished))),
-            nullptr, pika::threads::thread_priority::low);
+            nullptr, pika::execution::thread_priority::low);
         register_work(data);
 
         finished.wait();

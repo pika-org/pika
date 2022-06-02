@@ -380,7 +380,7 @@ namespace pika {
         void init_global_data();
         void deinit_global_data();
 
-        threads::thread_result_type run_helper(
+        threads::detail::thread_result_type run_helper(
             util::function<runtime::pika_main_function_type> const& func,
             int& result, bool call_startup_functions);
 
@@ -496,7 +496,7 @@ namespace pika {
         /// Get the stack size corresponding to the given stack size enumeration.
         ///
         /// \param size this represents the stack size
-        PIKA_EXPORT std::ptrdiff_t get_stack_size(thread_stacksize);
+        PIKA_EXPORT std::ptrdiff_t get_stack_size(execution::thread_stacksize);
     }    // namespace threads
 }    // namespace pika
 

@@ -94,10 +94,10 @@ namespace pika { namespace execution {
 
         /// Create a new parallel executor
         constexpr explicit parallel_policy_executor(
-            threads::thread_priority priority,
-            threads::thread_stacksize stacksize =
-                threads::thread_stacksize::default_,
-            threads::thread_schedule_hint schedulehint = {},
+            execution::thread_priority priority,
+            execution::thread_stacksize stacksize =
+                execution::thread_stacksize::default_,
+            execution::thread_schedule_hint schedulehint = {},
             Policy l =
                 parallel::execution::detail::get_default_policy<Policy>::call(),
             std::size_t hierarchical_threshold =
@@ -109,23 +109,23 @@ namespace pika { namespace execution {
         }
 
         constexpr explicit parallel_policy_executor(
-            threads::thread_stacksize stacksize,
-            threads::thread_schedule_hint schedulehint = {},
+            execution::thread_stacksize stacksize,
+            execution::thread_schedule_hint schedulehint = {},
             Policy l =
                 parallel::execution::detail::get_default_policy<Policy>::call())
           : pool_(nullptr)
-          , policy_(
-                l, threads::thread_priority::default_, stacksize, schedulehint)
+          , policy_(l, execution::thread_priority::default_, stacksize,
+                schedulehint)
         {
         }
 
         constexpr explicit parallel_policy_executor(
-            threads::thread_schedule_hint schedulehint,
+            execution::thread_schedule_hint schedulehint,
             Policy l =
                 parallel::execution::detail::get_default_policy<Policy>::call())
           : pool_(nullptr)
-          , policy_(l, threads::thread_priority::default_,
-                threads::thread_stacksize::default_, schedulehint)
+          , policy_(l, execution::thread_priority::default_,
+                execution::thread_stacksize::default_, schedulehint)
         {
         }
 
@@ -139,11 +139,11 @@ namespace pika { namespace execution {
 
         constexpr explicit parallel_policy_executor(
             threads::thread_pool_base* pool,
-            threads::thread_priority priority =
-                threads::thread_priority::default_,
-            threads::thread_stacksize stacksize =
-                threads::thread_stacksize::default_,
-            threads::thread_schedule_hint schedulehint = {},
+            execution::thread_priority priority =
+                execution::thread_priority::default_,
+            execution::thread_stacksize stacksize =
+                execution::thread_stacksize::default_,
+            execution::thread_schedule_hint schedulehint = {},
             Policy l =
                 parallel::execution::detail::get_default_policy<Policy>::call(),
             std::size_t hierarchical_threshold =
@@ -158,14 +158,14 @@ namespace pika { namespace execution {
         friend constexpr parallel_policy_executor tag_invoke(
             pika::execution::experimental::with_hint_t,
             parallel_policy_executor const& exec,
-            pika::threads::thread_schedule_hint hint)
+            pika::execution::thread_schedule_hint hint)
         {
             auto exec_with_hint = exec;
             exec_with_hint.policy_ = hint;
             return exec_with_hint;
         }
 
-        friend constexpr pika::threads::thread_schedule_hint tag_invoke(
+        friend constexpr pika::execution::thread_schedule_hint tag_invoke(
             pika::execution::experimental::get_hint_t,
             parallel_policy_executor const& exec) noexcept
         {
@@ -175,14 +175,14 @@ namespace pika { namespace execution {
         friend constexpr parallel_policy_executor tag_invoke(
             pika::execution::experimental::with_priority_t,
             parallel_policy_executor const& exec,
-            pika::threads::thread_priority priority)
+            pika::execution::thread_priority priority)
         {
             auto exec_with_priority = exec;
             exec_with_priority.policy_ = priority;
             return exec_with_priority;
         }
 
-        friend constexpr pika::threads::thread_priority tag_invoke(
+        friend constexpr pika::execution::thread_priority tag_invoke(
             pika::execution::experimental::get_priority_t,
             parallel_policy_executor const& exec) noexcept
         {
@@ -204,7 +204,7 @@ namespace pika { namespace execution {
         {
             auto exec_with_annotation = exec;
             exec_with_annotation.annotation_ =
-                detail::store_function_annotation(PIKA_MOVE(annotation));
+                pika::detail::store_function_annotation(PIKA_MOVE(annotation));
             return exec_with_annotation;
         }
 
@@ -255,7 +255,7 @@ namespace pika { namespace execution {
             typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
         async_execute(F&& f, Ts&&... ts) const
         {
-            pika::util::thread_description desc(f, annotation_);
+            pika::util::detail::thread_description desc(f, annotation_);
             auto pool =
                 pool_ ? pool_ : threads::detail::get_self_or_default_pool();
 
@@ -292,7 +292,7 @@ namespace pika { namespace execution {
         template <typename F, typename... Ts>
         void post(F&& f, Ts&&... ts) const
         {
-            pika::util::thread_description desc(f, annotation_);
+            pika::util::detail::thread_description desc(f, annotation_);
             auto pool =
                 pool_ ? pool_ : threads::detail::get_self_or_default_pool();
             parallel::execution::detail::post_policy_dispatch<Policy>::call(
@@ -306,7 +306,7 @@ namespace pika { namespace execution {
                 bulk_function_result<F, S, Ts...>::type>>
         bulk_async_execute(F&& f, S const& shape, Ts&&... ts) const
         {
-            pika::util::thread_description desc(f, annotation_);
+            pika::util::detail::thread_description desc(f, annotation_);
             auto pool =
                 pool_ ? pool_ : threads::detail::get_self_or_default_pool();
             return parallel::execution::detail::

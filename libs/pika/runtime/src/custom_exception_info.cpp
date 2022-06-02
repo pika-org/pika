@@ -401,17 +401,19 @@ namespace pika {
             std::uint32_t node = get_locality_id(ec);
 
             std::size_t shepherd = std::size_t(-1);
-            threads::thread_id_type thread_id;
-            util::thread_description thread_name;
+            threads::detail::thread_id_type thread_id;
+            util::detail::thread_description thread_name;
 
-            threads::thread_self* self = threads::get_self_ptr();
+            threads::detail::thread_self* self =
+                threads::detail::get_self_ptr();
             if (nullptr != self)
             {
                 if (threads::threadmanager_is(state_running))
                     shepherd = pika::get_worker_thread_num();
 
-                thread_id = threads::get_self_id();
-                thread_name = threads::get_thread_description(thread_id);
+                thread_id = threads::detail::get_self_id();
+                thread_name =
+                    threads::detail::get_thread_description(thread_id);
             }
 
             std::string env(pika::detail::get_execution_environment());
@@ -425,7 +427,8 @@ namespace pika {
                 pika::detail::throw_shepherd(shepherd),
                 pika::detail::throw_thread_id(
                     reinterpret_cast<std::size_t>(thread_id.get())),
-                pika::detail::throw_thread_name(util::as_string(thread_name)),
+                pika::detail::throw_thread_name(
+                    util::detail::as_string(thread_name)),
                 pika::detail::throw_function(func),
                 pika::detail::throw_file(file), pika::detail::throw_line(line),
                 pika::detail::throw_env(env),

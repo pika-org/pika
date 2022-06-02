@@ -72,8 +72,8 @@ namespace pika {
 #include <pika/futures/traits/acquire_shared_state.hpp>
 #include <pika/futures/traits/future_access.hpp>
 #include <pika/futures/traits/future_traits.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/memory.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/unused.hpp>
 

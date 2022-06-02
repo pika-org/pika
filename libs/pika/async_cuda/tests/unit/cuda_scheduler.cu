@@ -86,22 +86,22 @@ int main()
         // the given priority. Currently this means that anything high or higher
         // maps to high, and anything below high maps to normal.
         PIKA_TEST_EQ(sched.get_next_stream().get_priority(),
-            pika::threads::thread_priority::normal);
+            pika::execution::thread_priority::normal);
         PIKA_TEST_EQ(
-            ex::with_priority(sched, pika::threads::thread_priority::low)
+            ex::with_priority(sched, pika::execution::thread_priority::low)
                 .get_next_stream()
                 .get_priority(),
-            pika::threads::thread_priority::normal);
+            pika::execution::thread_priority::normal);
         PIKA_TEST_EQ(
-            ex::with_priority(sched, pika::threads::thread_priority::default_)
+            ex::with_priority(sched, pika::execution::thread_priority::default_)
                 .get_next_stream()
                 .get_priority(),
-            pika::threads::thread_priority::normal);
+            pika::execution::thread_priority::normal);
         PIKA_TEST_EQ(
-            ex::with_priority(sched, pika::threads::thread_priority::high)
+            ex::with_priority(sched, pika::execution::thread_priority::high)
                 .get_next_stream()
                 .get_priority(),
-            pika::threads::thread_priority::high);
+            pika::execution::thread_priority::high);
     }
 
     {

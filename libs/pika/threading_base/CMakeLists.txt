@@ -48,6 +48,8 @@ set(threading_base_sources
     external_timer_apex.cpp
     get_default_pool.cpp
     print.cpp
+    reset_backtrace.cpp
+    reset_lco_description.cpp
     scheduler_base.cpp
     set_thread_state.cpp
     set_thread_state_timed.cpp

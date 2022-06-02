@@ -121,7 +121,7 @@ namespace pika {
 
     int finalize(error_code& ec)
     {
-        if (!threads::get_self_ptr())
+        if (!threads::detail::get_self_ptr())
         {
             PIKA_THROWS_IF(ec, invalid_status, "pika::finalize",
                 "this function can be called from an pika thread only");
@@ -155,7 +155,7 @@ namespace pika {
 
     int stop(error_code& ec)
     {
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             PIKA_THROWS_IF(ec, invalid_status, "pika::stop",
                 "this function cannot be called from an pika thread");
@@ -182,7 +182,7 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     int suspend(error_code& ec)
     {
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             PIKA_THROWS_IF(ec, invalid_status, "pika::suspend",
                 "this function cannot be called from an pika thread");
@@ -204,7 +204,7 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     int resume(error_code& ec)
     {
-        if (threads::get_self_ptr())
+        if (threads::detail::get_self_ptr())
         {
             PIKA_THROWS_IF(ec, invalid_status, "pika::resume",
                 "this function cannot be called from an pika thread");

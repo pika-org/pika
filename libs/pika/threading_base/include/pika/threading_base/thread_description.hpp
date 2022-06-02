@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util::detail {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
     ///////////////////////////////////////////////////////////////////////////
     struct thread_description
@@ -135,10 +135,10 @@ namespace pika { namespace util {
         {
             switch (kind())
             {
-            case util::thread_description::data_type_description:
+            case data_type_description:
                 return util::itt::task(domain, get_description_itt());
                 break;
-            case util::thread_description::data_type_address:
+            case data_type_address:
                 return util::itt::task(domain, "address", get_address());
                 break;
             default:
@@ -220,10 +220,10 @@ namespace pika { namespace util {
         {
             switch (kind())
             {
-            case util::thread_description::data_type_description:
+            case data_type_description:
                 return util::itt::task(domain, get_description_itt());
                 break;
-            case util::thread_description::data_type_address:
+            case data_type_address:
                 return util::itt::task(domain, "address", get_address());
                 break;
             default:
@@ -255,9 +255,9 @@ namespace pika { namespace util {
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream&, thread_description const&);
     PIKA_EXPORT std::string as_string(thread_description const& desc);
-}}    // namespace pika::util
+}    // namespace pika::util::detail
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// The function get_thread_description is part of the thread related API
     /// allows to query the description of one of the threads known to the
@@ -278,17 +278,19 @@ namespace pika { namespace threads {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    PIKA_EXPORT util::thread_description get_thread_description(
+    PIKA_EXPORT util::detail::thread_description get_thread_description(
         thread_id_type const& id, error_code& ec = throws);
-    PIKA_EXPORT util::thread_description set_thread_description(
+    PIKA_EXPORT util::detail::thread_description set_thread_description(
         thread_id_type const& id,
-        util::thread_description const& desc = util::thread_description(),
+        util::detail::thread_description const& desc =
+            util::detail::thread_description(),
         error_code& ec = throws);
 
-    PIKA_EXPORT util::thread_description get_thread_lco_description(
+    PIKA_EXPORT util::detail::thread_description get_thread_lco_description(
         thread_id_type const& id, error_code& ec = throws);
-    PIKA_EXPORT util::thread_description set_thread_lco_description(
+    PIKA_EXPORT util::detail::thread_description set_thread_lco_description(
         thread_id_type const& id,
-        util::thread_description const& desc = util::thread_description(),
+        util::detail::thread_description const& desc =
+            util::detail::thread_description(),
         error_code& ec = throws);
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

@@ -44,9 +44,9 @@ using pika::program_options::variables_map;
 
 using pika::get_os_thread_count;
 
-using pika::threads::make_thread_function_nullary;
-using pika::threads::register_work;
-using pika::threads::thread_init_data;
+using pika::threads::detail::make_thread_function_nullary;
+using pika::threads::detail::register_work;
+using pika::threads::detail::thread_init_data;
 
 using pika::this_thread::suspend;
 using pika::threads::get_thread_count;
@@ -158,20 +158,20 @@ void wait_for_tasks(
     pika::lcos::local::barrier& finished, std::uint64_t suspended_tasks)
 {
     std::uint64_t const pending_count =
-        get_thread_count(pika::threads::thread_priority::normal,
-            pika::threads::thread_schedule_state::pending);
+        get_thread_count(pika::execution::thread_priority::normal,
+            pika::threads::detail::thread_schedule_state::pending);
 
     if (pending_count == 0)
     {
         std::uint64_t const all_count =
-            get_thread_count(pika::threads::thread_priority::normal);
+            get_thread_count(pika::execution::thread_priority::normal);
 
         if (all_count != suspended_tasks + 1)
         {
             thread_init_data data(
                 make_thread_function_nullary(pika::util::bind(
                     &wait_for_tasks, std::ref(finished), suspended_tasks)),
-                "wait_for_tasks", pika::threads::thread_priority::low);
+                "wait_for_tasks", pika::execution::thread_priority::low);
             register_work(data);
             return;
         }
@@ -181,29 +181,29 @@ void wait_for_tasks(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-pika::threads::thread_result_type invoke_worker_timed_no_suspension(
-    pika::threads::thread_restart_state ex =
-        pika::threads::thread_restart_state::signaled)
+pika::threads::detail::thread_result_type invoke_worker_timed_no_suspension(
+    pika::threads::detail::thread_restart_state ex =
+        pika::threads::detail::thread_restart_state::signaled)
 {
     worker_timed(delay * 1000);
-    return pika::threads::thread_result_type(
-        pika::threads::thread_schedule_state::terminated,
-        pika::threads::invalid_thread_id);
+    return pika::threads::detail::thread_result_type(
+        pika::threads::detail::thread_schedule_state::terminated,
+        pika::threads::detail::invalid_thread_id);
 }
 
-pika::threads::thread_result_type invoke_worker_timed_suspension(
-    pika::threads::thread_restart_state ex =
-        pika::threads::thread_restart_state::signaled)
+pika::threads::detail::thread_result_type invoke_worker_timed_suspension(
+    pika::threads::detail::thread_restart_state ex =
+        pika::threads::detail::thread_restart_state::signaled)
 {
     worker_timed(delay * 1000);
 
     pika::error_code ec(pika::lightweight);
     pika::this_thread::suspend(
-        pika::threads::thread_schedule_state::suspended, "suspend", ec);
+        pika::threads::detail::thread_schedule_state::suspended, "suspend", ec);
 
-    return pika::threads::thread_result_type(
-        pika::threads::thread_schedule_state::terminated,
-        pika::threads::invalid_thread_id);
+    return pika::threads::detail::thread_result_type(
+        pika::threads::detail::thread_schedule_state::terminated,
+        pika::threads::detail::invalid_thread_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -214,21 +214,22 @@ void stage_worker_static_balanced_stackbased(
 {
     if (suspend)
     {
-        pika::threads::thread_init_data data(&invoke_worker_timed_suspension,
-            "invoke_worker_timed_suspension",
-            pika::threads::thread_priority::normal,
-            pika::threads::thread_schedule_hint(
+        pika::threads::detail::thread_init_data data(
+            &invoke_worker_timed_suspension, "invoke_worker_timed_suspension",
+            pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)));
-        pika::threads::register_work(data);
+        pika::threads::detail::register_work(data);
     }
     else
     {
-        pika::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
+        pika::threads::detail::thread_init_data data(
+            &invoke_worker_timed_no_suspension,
             "invoke_worker_timed_no_suspension",
-            pika::threads::thread_priority::normal,
-            pika::threads::thread_schedule_hint(
+            pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)));
-        pika::threads::register_work(data);
+        pika::threads::detail::register_work(data);
     }
 }
 
@@ -237,23 +238,24 @@ void stage_worker_static_balanced_stackless(
 {
     if (suspend)
     {
-        pika::threads::thread_init_data data(&invoke_worker_timed_suspension,
-            "invoke_worker_timed_suspension",
-            pika::threads::thread_priority::normal,
-            pika::threads::thread_schedule_hint(
+        pika::threads::detail::thread_init_data data(
+            &invoke_worker_timed_suspension, "invoke_worker_timed_suspension",
+            pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)),
-            pika::threads::thread_stacksize::nostack);
-        pika::threads::register_work(data);
+            pika::execution::thread_stacksize::nostack);
+        pika::threads::detail::register_work(data);
     }
     else
     {
-        pika::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
+        pika::threads::detail::thread_init_data data(
+            &invoke_worker_timed_no_suspension,
             "invoke_worker_timed_no_suspension",
-            pika::threads::thread_priority::normal,
-            pika::threads::thread_schedule_hint(
+            pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)),
-            pika::threads::thread_stacksize::nostack);
-        pika::threads::register_work(data);
+            pika::execution::thread_stacksize::nostack);
+        pika::threads::detail::register_work(data);
     }
 }
 
@@ -261,19 +263,20 @@ void stage_worker_static_imbalanced(std::uint64_t target_thread, bool suspend)
 {
     if (suspend)
     {
-        pika::threads::thread_init_data data(&invoke_worker_timed_suspension,
-            "invoke_worker_timed_suspension",
-            pika::threads::thread_priority::normal,
-            pika::threads::thread_schedule_hint(0));
-        pika::threads::register_work(data);
+        pika::threads::detail::thread_init_data data(
+            &invoke_worker_timed_suspension, "invoke_worker_timed_suspension",
+            pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(0));
+        pika::threads::detail::register_work(data);
     }
     else
     {
-        pika::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
+        pika::threads::detail::thread_init_data data(
+            &invoke_worker_timed_no_suspension,
             "invoke_worker_timed_no_suspension",
-            pika::threads::thread_priority::normal,
-            pika::threads::thread_schedule_hint(0));
-        pika::threads::register_work(data);
+            pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(0));
+        pika::threads::detail::register_work(data);
     }
 }
 
@@ -281,15 +284,16 @@ void stage_worker_round_robin(std::uint64_t target_thread, bool suspend)
 {
     if (suspend)
     {
-        pika::threads::thread_init_data data(
+        pika::threads::detail::thread_init_data data(
             &invoke_worker_timed_suspension, "invoke_worker_timed_suspension");
-        pika::threads::register_work(data);
+        pika::threads::detail::register_work(data);
     }
     else
     {
-        pika::threads::thread_init_data data(&invoke_worker_timed_no_suspension,
+        pika::threads::detail::thread_init_data data(
+            &invoke_worker_timed_no_suspension,
             "invoke_worker_timed_no_suspension");
-        pika::threads::register_work(data);
+        pika::threads::detail::register_work(data);
     }
 }
 
@@ -303,8 +307,8 @@ void stage_workers(std::uint64_t target_thread, std::uint64_t local_tasks,
         thread_init_data data(
             make_thread_function_nullary(pika::util::bind(
                 &stage_workers, target_thread, local_tasks, stage_worker)),
-            "stage_workers", pika::threads::thread_priority::normal,
-            pika::threads::thread_schedule_hint(
+            "stage_workers", pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(
                 static_cast<std::int16_t>(target_thread)));
         register_work(data);
         return;
@@ -470,8 +474,8 @@ int pika_main(variables_map& vm)
             thread_init_data data(
                 make_thread_function_nullary(pika::util::bind(
                     &stage_workers, i, tasks_per_feeder, stage_worker)),
-                "stage_workers", pika::threads::thread_priority::normal,
-                pika::threads::thread_schedule_hint(
+                "stage_workers", pika::execution::thread_priority::normal,
+                pika::execution::thread_schedule_hint(
                     static_cast<std::int16_t>(i)));
             register_work(data);
         }
@@ -488,7 +492,7 @@ int pika_main(variables_map& vm)
         thread_init_data data(
             make_thread_function_nullary(pika::util::bind(
                 &wait_for_tasks, std::ref(finished), total_suspended_tasks)),
-            "wait_for_tasks", pika::threads::thread_priority::low);
+            "wait_for_tasks", pika::execution::thread_priority::low);
         register_work(data);
 
         finished.wait();

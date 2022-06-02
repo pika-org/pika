@@ -38,11 +38,11 @@ namespace pika { namespace parallel { namespace execution {
         /// Create a new parallel executor
         restricted_thread_pool_executor(std::size_t first_thread = 0,
             std::size_t num_threads = 1,
-            threads::thread_priority priority =
-                threads::thread_priority::default_,
-            threads::thread_stacksize stacksize =
-                threads::thread_stacksize::default_,
-            threads::thread_schedule_hint schedulehint = {},
+            pika::execution::thread_priority priority =
+                pika::execution::thread_priority::default_,
+            pika::execution::thread_stacksize stacksize =
+                pika::execution::thread_stacksize::default_,
+            pika::execution::thread_schedule_hint schedulehint = {},
             std::size_t hierarchical_threshold =
                 hierarchical_threshold_default_)
           : pool_(this_thread::get_pool())
@@ -105,10 +105,10 @@ namespace pika { namespace parallel { namespace execution {
             typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
         async_execute(F&& f, Ts&&... ts)
         {
-            pika::util::thread_description desc(f);
+            pika::util::detail::thread_description desc(f);
 
             auto policy = launch::async_policy(priority_, stacksize_,
-                threads::thread_schedule_hint(get_next_thread_num()));
+                pika::execution::thread_schedule_hint(get_next_thread_num()));
 
             return pika::detail::async_launch_policy_dispatch<
                 launch::async_policy>::call(policy, desc, pool_,
@@ -139,10 +139,10 @@ namespace pika { namespace parallel { namespace execution {
         template <typename F, typename... Ts>
         void post(F&& f, Ts&&... ts)
         {
-            pika::util::thread_description desc(f);
+            pika::util::detail::thread_description desc(f);
 
             auto policy = launch::async_policy(priority_, stacksize_,
-                threads::thread_schedule_hint(get_next_thread_num()));
+                pika::execution::thread_schedule_hint(get_next_thread_num()));
 
             detail::post_policy_dispatch<launch::async_policy>::call(policy,
                 desc, pool_, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
@@ -176,10 +176,11 @@ namespace pika { namespace parallel { namespace execution {
     private:
         threads::thread_pool_base* pool_ = nullptr;
 
-        threads::thread_priority priority_ = threads::thread_priority::default_;
-        threads::thread_stacksize stacksize_ =
-            threads::thread_stacksize::default_;
-        threads::thread_schedule_hint schedulehint_ = {};
+        pika::execution::thread_priority priority_ =
+            pika::execution::thread_priority::default_;
+        pika::execution::thread_stacksize stacksize_ =
+            pika::execution::thread_stacksize::default_;
+        pika::execution::thread_schedule_hint schedulehint_ = {};
         std::size_t hierarchical_threshold_ = hierarchical_threshold_default_;
 
         std::size_t first_thread_;

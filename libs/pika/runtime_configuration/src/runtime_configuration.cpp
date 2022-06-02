@@ -647,24 +647,24 @@ namespace pika { namespace util {
 
     ///////////////////////////////////////////////////////////////////////////
     std::ptrdiff_t runtime_configuration::get_stack_size(
-        threads::thread_stacksize stacksize) const
+        execution::thread_stacksize stacksize) const
     {
         switch (stacksize)
         {
-        case threads::thread_stacksize::medium:
+        case execution::thread_stacksize::medium:
             return medium_stacksize;
 
-        case threads::thread_stacksize::large:
+        case execution::thread_stacksize::large:
             return large_stacksize;
 
-        case threads::thread_stacksize::huge:
+        case execution::thread_stacksize::huge:
             return huge_stacksize;
 
-        case threads::thread_stacksize::nostack:
+        case execution::thread_stacksize::nostack:
             return (std::numeric_limits<std::ptrdiff_t>::max)();
 
         default:
-        case threads::thread_stacksize::small_:
+        case execution::thread_stacksize::small_:
             break;
         }
         return small_stacksize;

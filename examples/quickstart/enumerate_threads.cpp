@@ -36,14 +36,14 @@ int pika_main()
 
     // Enumerate all suspended threads
     pika::threads::enumerate_threads(
-        [](pika::threads::thread_id_type id) -> bool {
+        [](pika::threads::detail::thread_id_type id) -> bool {
             std::cout << "thread " << pika::thread::id(id) << " is "
-                      << pika::threads::get_thread_state_name(
-                             pika::threads::get_thread_state(id))
+                      << pika::threads::detail::get_thread_state_name(
+                             pika::threads::detail::get_thread_state(id))
                       << std::endl;
             return true;    // always continue enumeration
         },
-        pika::threads::thread_schedule_state::suspended);
+        pika::threads::detail::thread_schedule_state::suspended);
 
     // Wait for all threads to reach this point.
     l.count_down_and_wait();

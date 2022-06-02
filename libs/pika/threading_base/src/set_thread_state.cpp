@@ -23,12 +23,10 @@
 #include <string>
 #include <utility>
 
-namespace pika { namespace threads { namespace detail {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::threads::detail {
     thread_result_type set_active_state(thread_id_ref_type thrd,
         thread_schedule_state newstate, thread_restart_state newstate_ex,
-        thread_priority priority, thread_state previous_state)
+        execution::thread_priority priority, thread_state previous_state)
     {
         if (PIKA_UNLIKELY(!thrd))
         {
@@ -58,12 +56,12 @@ namespace pika { namespace threads { namespace detail {
                 thread_schedule_state::terminated, invalid_thread_id);
         }
 
-        thread_schedule_hint schedulehint{static_cast<std::int16_t>(
+        execution::thread_schedule_hint schedulehint{static_cast<std::int16_t>(
             get_thread_id_data(thrd)->get_last_worker_thread_num())};
 
         // just retry, set_state will create new thread if target is still active
         error_code ec(lightweight);    // do not throw
-        detail::set_thread_state(thrd.noref(), newstate, newstate_ex, priority,
+        set_thread_state(thrd.noref(), newstate, newstate_ex, priority,
             schedulehint, true, ec);
 
         return thread_result_type(
@@ -73,8 +71,9 @@ namespace pika { namespace threads { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
     thread_state set_thread_state(thread_id_type const& thrd,
         thread_schedule_state new_state, thread_restart_state new_state_ex,
-        thread_priority priority, thread_schedule_hint schedulehint,
-        bool retry_on_active, error_code& ec)
+        execution::thread_priority priority,
+        execution::thread_schedule_hint schedulehint, bool retry_on_active,
+        error_code& ec)
     {
         if (PIKA_UNLIKELY(!thrd))
         {
@@ -280,4 +279,4 @@ namespace pika { namespace threads { namespace detail {
 
         return previous_state;
     }
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail

@@ -78,7 +78,7 @@ namespace pika { namespace threads { namespace policies {
         /// Return the next thread to be executed, return false if none is
         /// available
         bool get_next_thread(std::size_t num_thread, bool,
-            threads::thread_id_ref_type& thrd,
+            threads::detail::thread_id_ref_type& thrd,
             bool /*enable_stealing*/) override
         {
             using thread_queue_type = typename base_type::thread_queue_type;

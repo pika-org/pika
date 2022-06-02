@@ -34,7 +34,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace threads { namespace detail {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
     struct init_tss_helper;
@@ -79,7 +79,7 @@ namespace pika { namespace threads { namespace detail {
 
         thread_state set_state(thread_id_type const& id,
             thread_schedule_state new_state, thread_restart_state new_state_ex,
-            thread_priority priority, error_code& ec) override;
+            execution::thread_priority priority, error_code& ec) override;
 
         void report_error(
             std::size_t num, std::exception_ptr const& e) override;
@@ -95,7 +95,8 @@ namespace pika { namespace threads { namespace detail {
         }
 
         std::int64_t get_thread_count(thread_schedule_state state,
-            thread_priority priority, std::size_t num, bool reset) override
+            execution::thread_priority priority, std::size_t num,
+            bool reset) override
         {
             return sched_->Scheduler::get_thread_count(
                 state, priority, num, reset);
@@ -394,6 +395,6 @@ namespace pika { namespace threads { namespace detail {
         std::size_t max_busy_loop_count_;
         std::size_t shutdown_check_count_;
     };
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>

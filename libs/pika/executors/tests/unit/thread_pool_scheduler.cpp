@@ -79,7 +79,8 @@ struct check_context_receiver
         ex::set_value_t, check_context_receiver&& r, Ts&&...) noexcept
     {
         PIKA_TEST_NEQ(r.parent_id, pika::this_thread::get_id());
-        PIKA_TEST_NEQ(pika::thread::id(pika::threads::invalid_thread_id),
+        PIKA_TEST_NEQ(
+            pika::thread::id(pika::threads::detail::invalid_thread_id),
             pika::this_thread::get_id());
         std::lock_guard l{r.mtx};
         r.executed = true;
@@ -271,10 +272,10 @@ void test_properties()
     pika::condition_variable cond;
     bool executed{false};
 
-    constexpr std::array<pika::threads::thread_priority, 3> priorities{
-        {pika::threads::thread_priority::low,
-            pika::threads::thread_priority::normal,
-            pika::threads::thread_priority::high}};
+    constexpr std::array<pika::execution::thread_priority, 3> priorities{
+        {pika::execution::thread_priority::low,
+            pika::execution::thread_priority::normal,
+            pika::execution::thread_priority::high}};
 
     for (auto const prio : priorities)
     {
@@ -296,11 +297,11 @@ void test_properties()
         PIKA_TEST(executed);
     }
 
-    constexpr std::array<pika::threads::thread_stacksize, 4> stacksizes{
-        {pika::threads::thread_stacksize::small_,
-            pika::threads::thread_stacksize::medium,
-            pika::threads::thread_stacksize::large,
-            pika::threads::thread_stacksize::huge}};
+    constexpr std::array<pika::execution::thread_stacksize, 4> stacksizes{
+        {pika::execution::thread_stacksize::small_,
+            pika::execution::thread_stacksize::medium,
+            pika::execution::thread_stacksize::large,
+            pika::execution::thread_stacksize::huge}};
 
     for (auto const stacksize : stacksizes)
     {
@@ -309,7 +310,8 @@ void test_properties()
 
         auto check = [stacksize]() {
             PIKA_TEST_EQ(stacksize,
-                pika::threads::get_thread_id_data(pika::threads::get_self_id())
+                pika::threads::detail::get_thread_id_data(
+                    pika::threads::detail::get_self_id())
                     ->get_stack_size_enum());
         };
         executed = false;
@@ -324,13 +326,13 @@ void test_properties()
         PIKA_TEST(executed);
     }
 
-    constexpr std::array<pika::threads::thread_schedule_hint, 4> hints{
-        {pika::threads::thread_schedule_hint{},
-            pika::threads::thread_schedule_hint{1},
-            pika::threads::thread_schedule_hint{
-                pika::threads::thread_schedule_hint_mode::thread, 2},
-            pika::threads::thread_schedule_hint{
-                pika::threads::thread_schedule_hint_mode::numa, 3}}};
+    constexpr std::array<pika::execution::thread_schedule_hint, 4> hints{
+        {pika::execution::thread_schedule_hint{},
+            pika::execution::thread_schedule_hint{1},
+            pika::execution::thread_schedule_hint{
+                pika::execution::thread_schedule_hint_mode::thread, 2},
+            pika::execution::thread_schedule_hint{
+                pika::execution::thread_schedule_hint_mode::numa, 3}}};
 
     for (auto const hint : hints)
     {
@@ -350,8 +352,8 @@ void test_properties()
         auto check = [annotation]() {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
             PIKA_TEST_EQ(std::string(annotation),
-                pika::threads::get_thread_description(
-                    pika::threads::get_self_id())
+                pika::threads::detail::get_thread_description(
+                    pika::threads::detail::get_self_id())
                     .get_description());
 #else
             (void) annotation;

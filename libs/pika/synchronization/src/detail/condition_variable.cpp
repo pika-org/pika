@@ -62,7 +62,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
     // Return false if no more threads are waiting (returns true if queue
     // is non-empty).
     bool condition_variable::notify_one(std::unique_lock<mutex_type> lock,
-        threads::thread_priority /* priority */, error_code& ec)
+        execution::thread_priority /* priority */, error_code& ec)
     {
         PIKA_ASSERT(lock.owns_lock());
 
@@ -99,7 +99,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
     }
 
     void condition_variable::notify_all(std::unique_lock<mutex_type> lock,
-        threads::thread_priority /* priority */, error_code& ec)
+        execution::thread_priority /* priority */, error_code& ec)
     {
         PIKA_ASSERT(lock.owns_lock());
 
@@ -151,7 +151,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         abort_all<mutex_type>(PIKA_MOVE(lock));
     }
 
-    threads::thread_restart_state condition_variable::wait(
+    threads::detail::thread_restart_state condition_variable::wait(
         std::unique_lock<mutex_type>& lock, char const* /* description */,
         error_code& /* ec */)
     {
@@ -169,11 +169,11 @@ namespace pika { namespace lcos { namespace local { namespace detail {
             this_ctx.suspend();
         }
 
-        return f.ctx_ ? threads::thread_restart_state::timeout :
-                        threads::thread_restart_state::signaled;
+        return f.ctx_ ? threads::detail::thread_restart_state::timeout :
+                        threads::detail::thread_restart_state::signaled;
     }
 
-    threads::thread_restart_state condition_variable::wait_until(
+    threads::detail::thread_restart_state condition_variable::wait_until(
         std::unique_lock<mutex_type>& lock,
         pika::chrono::steady_time_point const& abs_time,
         char const* /* description */, error_code& /* ec */)
@@ -192,8 +192,8 @@ namespace pika { namespace lcos { namespace local { namespace detail {
             this_ctx.sleep_until(abs_time.value());
         }
 
-        return f.ctx_ ? threads::thread_restart_state::timeout :
-                        threads::thread_restart_state::signaled;
+        return f.ctx_ ? threads::detail::thread_restart_state::timeout :
+                        threads::detail::thread_restart_state::signaled;
     }
 
     template <typename Mutex>

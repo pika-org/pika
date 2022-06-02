@@ -18,12 +18,8 @@
 #include <limits>
 #include <utility>
 
-namespace pika { namespace threads { namespace coroutines {
-
+namespace pika::threads::coroutines::detail {
     class stackless_coroutine;
-}}}    // namespace pika::threads::coroutines
-
-namespace pika { namespace threads { namespace coroutines { namespace detail {
 
     class coroutine_stackless_self : public coroutine_self
     {
@@ -38,7 +34,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         {
             // stackless coroutines don't support suspension
             PIKA_ASSERT(false);
-            return threads::thread_restart_state::abort;
+            return threads::detail::thread_restart_state::abort;
         }
 
         thread_id_type get_thread_id() const override
@@ -138,4 +134,4 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
     private:
         stackless_coroutine* pimpl_;
     };
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail

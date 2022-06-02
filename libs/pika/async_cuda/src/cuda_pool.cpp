@@ -19,7 +19,7 @@
 namespace pika::cuda::experimental {
     cuda_pool::streams_holder::streams_holder(int device,
         std::size_t num_streams_per_thread,
-        pika::threads::thread_priority priority)
+        pika::execution::thread_priority priority)
       : num_streams_per_thread(num_streams_per_thread)
       , concurrency(pika::threads::detail::hardware_concurrency())
       , streams(
@@ -48,9 +48,9 @@ namespace pika::cuda::experimental {
         std::size_t num_high_priority_streams_per_thread)
       : device(device)
       , normal_priority_streams(device, num_normal_priority_streams_per_thread,
-            pika::threads::thread_priority::normal)
+            pika::execution::thread_priority::normal)
       , high_priority_streams(device, num_high_priority_streams_per_thread,
-            pika::threads::thread_priority::high)
+            pika::execution::thread_priority::high)
     {
     }
 
@@ -74,11 +74,11 @@ namespace pika::cuda::experimental {
     }
 
     cuda_stream const& cuda_pool::get_next_stream(
-        pika::threads::thread_priority priority)
+        pika::execution::thread_priority priority)
     {
         PIKA_ASSERT(data);
 
-        if (priority <= pika::threads::thread_priority::normal)
+        if (priority <= pika::execution::thread_priority::normal)
         {
             return data->normal_priority_streams.get_next_stream();
         }

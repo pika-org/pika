@@ -41,7 +41,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         pika::future<typename detail::bulk_function_result<F, S, Ts...>::type>>
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     hierarchical_bulk_async_execute_helper(
-        pika::util::thread_description const& desc,
+        pika::util::detail::thread_description const& desc,
         threads::thread_pool_base* pool, std::size_t first_thread,
         std::size_t num_threads, std::size_t hierarchical_threshold,
         Launch policy, F&& f, S const& shape, Ts&&... ts)
@@ -57,7 +57,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         results.resize(size);
 
         auto post_policy = policy;
-        post_policy.set_stacksize(threads::thread_stacksize::small_);
+        post_policy.set_stacksize(pika::execution::thread_stacksize::small_);
 
         lcos::local::latch l(size);
         std::size_t part_begin = 0;
@@ -68,7 +68,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
             std::size_t const part_size = part_end - part_begin;
 
             auto async_policy = policy;
-            async_policy.set_hint(threads::thread_schedule_hint{
+            async_policy.set_hint(pika::execution::thread_schedule_hint{
                 static_cast<std::int16_t>(first_thread + t)});
 
             if (part_size > hierarchical_threshold)
@@ -120,7 +120,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         std::size_t hierarchical_threshold, Launch policy, F&& f,
         S const& shape, Ts&&... ts)
     {
-        pika::util::thread_description const desc(f,
+        pika::util::detail::thread_description const desc(f,
             "pika::parallel::execution::detail::hierarchical_bulk_async_"
             "execute_"
             "helper");

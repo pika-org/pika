@@ -11,21 +11,24 @@
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 
 #include <pika/errors/error_code.hpp>
+#include <pika/threading_base/detail/reset_lco_description.hpp>
 #include <pika/threading_base/thread_description.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 
 namespace pika::threads::detail {
-    struct reset_lco_description
+    reset_lco_description::reset_lco_description(thread_id_type const& id,
+        util::detail::thread_description const& description, error_code& ec)
+      : id_(id)
+      , ec_(ec)
     {
-        PIKA_EXPORT reset_lco_description(thread_id_type const& id,
-            util::detail::thread_description const& description,
-            error_code& ec = throws);
-        PIKA_EXPORT ~reset_lco_description();
+        old_desc_ =
+            threads::detail::set_thread_lco_description(id_, description, ec_);
+    }
 
-        thread_id_type id_;
-        util::detail::thread_description old_desc_;
-        error_code& ec_;
-    };
+    reset_lco_description::~reset_lco_description()
+    {
+        threads::detail::set_thread_lco_description(id_, old_desc_, ec_);
+    }
 }    // namespace pika::threads::detail
 
 #endif    // PIKA_HAVE_THREAD_DESCRIPTION

@@ -151,7 +151,7 @@ namespace pika { namespace lcos { namespace detail {
     struct post_policy_spawner
     {
         template <typename F>
-        void operator()(F&& f, pika::util::thread_description desc)
+        void operator()(F&& f, pika::util::detail::thread_description desc)
         {
             parallel::execution::detail::post_policy_dispatch<
                 pika::launch::async_policy>::call(pika::launch::async, desc,
@@ -165,7 +165,7 @@ namespace pika { namespace lcos { namespace detail {
         Executor exec;
 
         template <typename F>
-        void operator()(F&& f, pika::util::thread_description)
+        void operator()(F&& f, pika::util::detail::thread_description)
         {
             pika::parallel::execution::post(exec, PIKA_FORWARD(F, f));
         }

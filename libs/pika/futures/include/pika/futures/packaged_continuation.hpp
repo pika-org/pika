@@ -16,8 +16,8 @@
 #include <pika/futures/traits/acquire_shared_state.hpp>
 #include <pika/futures/traits/future_access.hpp>
 #include <pika/futures/traits/future_traits.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/memory.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/thread_description.hpp>
 
@@ -133,12 +133,12 @@ namespace pika { namespace lcos { namespace detail {
     protected:
         using base_type::mtx_;
 
-        threads::thread_id_type get_id() const
+        threads::detail::thread_id_type get_id() const
         {
             std::lock_guard<mutex_type> l(mtx_);
             return id_;
         }
-        void set_id(threads::thread_id_type const& id)
+        void set_id(threads::detail::thread_id_type const& id)
         {
             std::lock_guard<mutex_type> l(mtx_);
             id_ = id;
@@ -149,12 +149,12 @@ namespace pika { namespace lcos { namespace detail {
             reset_id(continuation& target)
               : target_(target)
             {
-                if (threads::get_self_ptr() != nullptr)
-                    target.set_id(threads::get_self_id());
+                if (threads::detail::get_self_ptr() != nullptr)
+                    target.set_id(threads::detail::get_self_id());
             }
             ~reset_id()
             {
-                target_.set_id(threads::invalid_thread_id);
+                target_.set_id(threads::detail::invalid_thread_id);
             }
             continuation& target_;
         };
@@ -168,7 +168,7 @@ namespace pika { namespace lcos { namespace detail {
         // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
         continuation(Func&& f)
           : started_(false)
-          , id_(threads::invalid_thread_id)
+          , id_(threads::detail::invalid_thread_id)
           , f_(PIKA_FORWARD(Func, f))
         {
         }
@@ -177,7 +177,7 @@ namespace pika { namespace lcos { namespace detail {
         continuation(init_no_addref no_addref, Func&& f)
           : base_type(no_addref)
           , started_(false)
-          , id_(threads::invalid_thread_id)
+          , id_(threads::detail::invalid_thread_id)
           , f_(PIKA_FORWARD(Func, f))
         {
         }
@@ -283,7 +283,7 @@ namespace pika { namespace lcos { namespace detail {
             }
 
             pika::intrusive_ptr<continuation> this_(this);
-            pika::util::thread_description desc(f_, "async");
+            pika::util::detail::thread_description desc(f_, "async");
             spawner(
                 [this_ = PIKA_MOVE(this_), f = PIKA_MOVE(f)]() mutable -> void {
                     this_->async_impl(PIKA_MOVE(f));
@@ -313,7 +313,7 @@ namespace pika { namespace lcos { namespace detail {
             }
 
             pika::intrusive_ptr<continuation> this_(this);
-            pika::util::thread_description desc(f_, "async_nounwrap");
+            pika::util::detail::thread_description desc(f_, "async_nounwrap");
             spawner(
                 [this_ = PIKA_MOVE(this_), f = PIKA_MOVE(f)]() mutable -> void {
                     this_->async_impl_nounwrap(PIKA_MOVE(f));
@@ -342,10 +342,10 @@ namespace pika { namespace lcos { namespace detail {
                     if (this->is_ready())
                         return;    // nothing we can do
 
-                    if (id_ != threads::invalid_thread_id)
+                    if (id_ != threads::detail::invalid_thread_id)
                     {
                         // interrupt the executing thread
-                        threads::interrupt_thread(id_);
+                        threads::detail::interrupt_thread(id_);
 
                         this->started_ = true;
 
@@ -520,7 +520,7 @@ namespace pika { namespace lcos { namespace detail {
 
     protected:
         bool started_;
-        threads::thread_id_type id_;
+        threads::detail::thread_id_type id_;
         std::decay_t<F> f_;
     };
 
