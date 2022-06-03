@@ -1325,6 +1325,11 @@ if(PIKA_WITH_COMPILER_WARNINGS)
       pika_add_compile_flag_if_available(-Wcast-align)
     endif()
 
+    # GCC gives a bogus warning in the P2300 reference implementation
+    if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION AND CMAKE_COMPILER_IS_GNUCXX)
+      pika_add_compile_flag_if_available(-Wno-non-template-friend)
+    endif()
+
     pika_add_compile_flag_if_available(-Werror=parentheses)
     pika_add_compile_flag_if_available(-Werror=reorder)
     pika_add_compile_flag_if_available(-Werror=return-type)
