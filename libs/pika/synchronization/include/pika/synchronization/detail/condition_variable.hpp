@@ -181,8 +181,10 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         {
         }
 
-        util::cache_aligned_data_derived<mutex_type> mtx_;
-        util::cache_aligned_data_derived<detail::condition_variable> cond_;
+        pika::concurrency::detail::cache_aligned_data_derived<mutex_type> mtx_;
+        pika::concurrency::detail::cache_aligned_data_derived<
+            detail::condition_variable>
+            cond_;
 
     private:
         friend PIKA_EXPORT void intrusive_ptr_add_ref(condition_variable_data*);

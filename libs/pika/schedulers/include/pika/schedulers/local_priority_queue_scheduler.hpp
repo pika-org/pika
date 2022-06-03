@@ -1386,10 +1386,14 @@ namespace pika { namespace threads { namespace policies {
 
         thread_queue_type low_priority_queue_;
 
-        std::vector<util::cache_line_data<thread_queue_type*>> queues_;
-        std::vector<util::cache_line_data<thread_queue_type*>>
+        std::vector<
+            pika::concurrency::detail::cache_line_data<thread_queue_type*>>
+            queues_;
+        std::vector<
+            pika::concurrency::detail::cache_line_data<thread_queue_type*>>
             high_priority_queues_;
-        std::vector<util::cache_line_data<std::vector<std::size_t>>>
+        std::vector<pika::concurrency::detail::cache_line_data<
+            std::vector<std::size_t>>>
             victim_threads_;
     };
 }}}    // namespace pika::threads::policies

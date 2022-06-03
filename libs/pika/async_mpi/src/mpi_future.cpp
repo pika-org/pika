@@ -37,7 +37,7 @@ namespace pika { namespace mpi { namespace experimental {
         };
 
         using request_callback_queue_type =
-            concurrency::ConcurrentQueue<request_callback>;
+            concurrency::detail::ConcurrentQueue<request_callback>;
 
         request_callback_queue_type& get_request_callback_queue()
         {

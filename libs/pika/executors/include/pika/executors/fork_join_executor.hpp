@@ -88,8 +88,8 @@ namespace pika { namespace execution { namespace experimental {
             using queue_type =
                 pika::concurrency::detail::contiguous_index_queue<
                     std::uint32_t>;
-            using queues_type =
-                std::vector<pika::util::cache_aligned_data<queue_type>>;
+            using queues_type = std::vector<
+                pika::concurrency::detail::cache_aligned_data<queue_type>>;
 
             struct region_data_type;
             using thread_function_helper_type = void(region_data_type&,
@@ -115,10 +115,11 @@ namespace pika { namespace execution { namespace experimental {
             // Can't apply 'using' here as the type needs to be forward
             // declared
             struct region_data_type
-              : std::vector<pika::util::cache_aligned_data<region_data>>
+              : std::vector<
+                    pika::concurrency::detail::cache_aligned_data<region_data>>
             {
-                using base_type =
-                    std::vector<pika::util::cache_aligned_data<region_data>>;
+                using base_type = std::vector<
+                    pika::concurrency::detail::cache_aligned_data<region_data>>;
                 using base_type::base_type;
             };
 

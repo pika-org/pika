@@ -27,7 +27,7 @@ namespace pika { namespace lcos { namespace local {
     // This channel is bounded to a size given at construction time and supports
     // multiple producers and multiple consumers. The data is stored in a
     // ring-buffer.
-    template <typename T, typename Mutex = util::spinlock>
+    template <typename T, typename Mutex = pika::concurrency::detail::spinlock>
     class bounded_channel
     {
     private:
@@ -190,9 +190,10 @@ namespace pika { namespace lcos { namespace local {
     private:
         // keep the mutex, the head, and the tail pointer in separate cache
         // lines
-        mutable pika::util::cache_aligned_data<mutex_type> mtx_;
-        mutable pika::util::cache_aligned_data<std::size_t> head_;
-        pika::util::cache_aligned_data<std::size_t> tail_;
+        mutable pika::concurrency::detail::cache_aligned_data<mutex_type> mtx_;
+        mutable pika::concurrency::detail::cache_aligned_data<std::size_t>
+            head_;
+        pika::concurrency::detail::cache_aligned_data<std::size_t> tail_;
 
         // a channel of size n can buffer n-1 items
         std::size_t size_;
@@ -206,10 +207,11 @@ namespace pika { namespace lcos { namespace local {
 
     ////////////////////////////////////////////////////////////////////////////
     // For use with pika threads, the channel_mpmc defined here is the fastest
-    // (even faster than the channel_spsc). Using pika::util::spinlock as the
-    // means of synchronization enables the use of this channel with non-pika
-    // threads, however the performance degrades by a factor of ten compared to
-    // using pika::lcos::local::spinlock.
+    // (even faster than the channel_spsc). Using
+    // pika::concurrency::detail::spinlock as the means of synchronization
+    // enables the use of this channel with non-pika threads, however the
+    // performance degrades by a factor of ten compared to using
+    // pika::lcos::local::spinlock.
     template <typename T>
     using channel_mpmc = bounded_channel<T, pika::lcos::local::spinlock>;
 

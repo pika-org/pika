@@ -36,9 +36,9 @@ namespace pika { namespace threads { namespace policies {
     struct lockfree_fifo_backend
     {
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-        using container_type =
-            boost::lockfree::deque<T, boost::lockfree::caching_freelist_t,
-                pika::detail::aligned_allocator<T>>;
+        using container_type = pika::concurrency::detail::deque<T,
+            pika::concurrency::detail::caching_freelist_t,
+            pika::detail::aligned_allocator<T>>;
 #else
         using container_type =
             boost::lockfree::queue<T, pika::detail::aligned_allocator<T>>;
@@ -106,7 +106,7 @@ namespace pika { namespace threads { namespace policies {
     template <typename T>
     struct moodycamel_fifo_backend
     {
-        using container_type = pika::concurrency::ConcurrentQueue<T>;
+        using container_type = pika::concurrency::detail::ConcurrentQueue<T>;
 
         using value_type = T;
         using reference = T&;
@@ -160,9 +160,9 @@ namespace pika { namespace threads { namespace policies {
     template <typename T>
     struct lockfree_lifo_backend
     {
-        using container_type =
-            boost::lockfree::deque<T, boost::lockfree::caching_freelist_t,
-                pika::detail::aligned_allocator<T>>;
+        using container_type = pika::concurrency::detail::deque<T,
+            pika::concurrency::detail::caching_freelist_t,
+            pika::detail::aligned_allocator<T>>;
 
         using value_type = T;
         using reference = T&;
@@ -221,9 +221,9 @@ namespace pika { namespace threads { namespace policies {
     template <typename T>
     struct lockfree_abp_fifo_backend
     {
-        using container_type =
-            boost::lockfree::deque<T, boost::lockfree::caching_freelist_t,
-                pika::detail::aligned_allocator<T>>;
+        using container_type = pika::concurrency::detail::deque<T,
+            pika::concurrency::detail::caching_freelist_t,
+            pika::detail::aligned_allocator<T>>;
 
         using value_type = T;
         using reference = T&;
@@ -279,9 +279,9 @@ namespace pika { namespace threads { namespace policies {
     template <typename T>
     struct lockfree_abp_lifo_backend
     {
-        using container_type =
-            boost::lockfree::deque<T, boost::lockfree::caching_freelist_t,
-                pika::detail::aligned_allocator<T>>;
+        using container_type = pika::concurrency::detail::deque<T,
+            pika::concurrency::detail::caching_freelist_t,
+            pika::detail::aligned_allocator<T>>;
 
         using value_type = T;
         using reference = T&;

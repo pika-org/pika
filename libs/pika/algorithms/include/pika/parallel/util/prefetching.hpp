@@ -226,7 +226,9 @@ namespace pika { namespace parallel { namespace util {
               : it_begin_(begin)
               , it_end_(end)
               , rngs_(rngs)
-              , chunk_size_((p_factor * threads::get_cache_line_size()) /
+              , chunk_size_(
+                    (p_factor *
+                        pika::concurrency::detail::get_cache_line_size()) /
                     sizeof_first_value_type)
               , range_size_(std::distance(begin, end))
             {

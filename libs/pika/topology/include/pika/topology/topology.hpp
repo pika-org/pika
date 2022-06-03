@@ -380,7 +380,7 @@ namespace pika::threads::detail {
         std::size_t num_of_pus_;
         bool use_pus_as_cores_;
 
-        using mutex_type = pika::util::spinlock;
+        using mutex_type = pika::concurrency::detail::spinlock;
         mutable mutex_type topo_mtx;
 
         // Number masks:

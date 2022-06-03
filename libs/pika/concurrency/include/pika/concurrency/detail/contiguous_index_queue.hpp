@@ -14,7 +14,7 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace pika { namespace concurrency { namespace detail {
+namespace pika::concurrency::detail {
     /// \brief A concurrent queue which can only hold contiguous ranges of
     ///        integers.
     ///
@@ -29,7 +29,7 @@ namespace pika { namespace concurrency { namespace detail {
         static_assert(sizeof(T) <= 4,
             "contiguous_index_queue assumes at most 32 bit indices to fit two "
             "indices in an at most 64 bit struct");
-        static_assert(std::is_integral<T>::value,
+        static_assert(std::is_integral_v<T>,
             "contiguous_index_queue only works with integral indices");
 
         struct range
@@ -183,6 +183,6 @@ namespace pika { namespace concurrency { namespace detail {
 
     private:
         range initial_range;
-        pika::util::cache_line_data<std::atomic<range>> current_range;
+        cache_line_data<std::atomic<range>> current_range;
     };
-}}}    // namespace pika::concurrency::detail
+}    // namespace pika::concurrency::detail

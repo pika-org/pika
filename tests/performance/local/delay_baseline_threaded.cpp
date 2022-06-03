@@ -105,8 +105,8 @@ void invoke_n_workers_nowait(double& elapsed, std::uint64_t workers)
     elapsed = t.elapsed();
 }
 
-void invoke_n_workers(
-    pika::util::barrier& b, double& elapsed, std::uint64_t workers)
+void invoke_n_workers(pika::concurrency::detail::barrier& b, double& elapsed,
+    std::uint64_t workers)
 {
     b.wait();
 
@@ -121,7 +121,7 @@ int app_main(variables_map& vm)
 
     std::vector<double> elapsed(threads - 1);
     std::vector<std::thread> workers;
-    pika::util::barrier b(threads - 1);
+    pika::concurrency::detail::barrier b(threads - 1);
 
     for (std::uint32_t i = 0; i != threads - 1; ++i)
     {

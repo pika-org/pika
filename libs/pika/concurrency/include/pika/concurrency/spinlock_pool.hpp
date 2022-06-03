@@ -21,65 +21,63 @@
 
 #include <cstddef>
 
-namespace pika { namespace util {
-
-    namespace detail {
+namespace pika::concurrency::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0
-        template <typename Tag, std::size_t N>
-        struct itt_spinlock_init
-        {
-            itt_spinlock_init();
-            ~itt_spinlock_init();
-        };
+    template <typename Tag, std::size_t N>
+    struct itt_spinlock_init
+    {
+        itt_spinlock_init();
+        ~itt_spinlock_init();
+    };
 #endif
-    }    // namespace detail
 
     template <typename Tag, std::size_t N = PIKA_HAVE_SPINLOCK_POOL_NUM>
     class spinlock_pool
     {
     private:
-        static cache_aligned_data<detail::spinlock> pool_[N];
+        static pika::concurrency::detail::cache_aligned_data<
+            util::detail::spinlock>
+            pool_[N];
 #if PIKA_HAVE_ITTNOTIFY != 0
         static detail::itt_spinlock_init<Tag, N> init_;
 #endif
 
     public:
-        static detail::spinlock& spinlock_for(void const* pv)
+        static util::detail::spinlock& spinlock_for(void const* pv)
         {
-            std::size_t i = fibhash<N>(reinterpret_cast<std::size_t>(pv));
+            std::size_t i =
+                pika::util::fibhash<N>(reinterpret_cast<std::size_t>(pv));
             return pool_[i].data_;
         }
     };
 
     template <typename Tag, std::size_t N>
-    cache_aligned_data<detail::spinlock> spinlock_pool<Tag, N>::pool_[N];
+    pika::concurrency::detail::cache_aligned_data<util::detail::spinlock>
+        spinlock_pool<Tag, N>::pool_[N];
 
 #if PIKA_HAVE_ITTNOTIFY != 0
-    namespace detail {
-        template <typename Tag, std::size_t N>
-        itt_spinlock_init<Tag, N>::itt_spinlock_init()
+    template <typename Tag, std::size_t N>
+    itt_spinlock_init<Tag, N>::itt_spinlock_init()
+    {
+        for (int i = 0; i < N; ++i)
         {
-            for (int i = 0; i < N; ++i)
-            {
-                PIKA_ITT_SYNC_CREATE((&spinlock_pool<Tag, N>::pool_[i].data_),
-                    "util::detail::spinlock", 0);
-                PIKA_ITT_SYNC_RENAME((&spinlock_pool<Tag, N>::pool_[i].data_),
-                    "util::detail::spinlock");
-            }
+            PIKA_ITT_SYNC_CREATE((&spinlock_pool<Tag, N>::pool_[i].data_),
+                "pika::concurrency::detail::spinlock", 0);
+            PIKA_ITT_SYNC_RENAME((&spinlock_pool<Tag, N>::pool_[i].data_),
+                "pika::concurrency::detail::spinlock");
         }
+    }
 
-        template <typename Tag, std::size_t N>
-        itt_spinlock_init<Tag, N>::~itt_spinlock_init()
+    template <typename Tag, std::size_t N>
+    itt_spinlock_init<Tag, N>::~itt_spinlock_init()
+    {
+        for (int i = 0; i < N; ++i)
         {
-            for (int i = 0; i < N; ++i)
-            {
-                PIKA_ITT_SYNC_DESTROY((&spinlock_pool<Tag, N>::pool_[i].data_));
-            }
+            PIKA_ITT_SYNC_DESTROY((&spinlock_pool<Tag, N>::pool_[i].data_));
         }
-    }    // namespace detail
+    }
 
     template <typename Tag, std::size_t N>
     util::detail::itt_spinlock_init<Tag, N> spinlock_pool<Tag, N>::init_;
 #endif
-
-}}    // namespace pika::util
+}    // namespace pika::concurrency::detail

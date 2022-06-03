@@ -371,7 +371,8 @@ namespace pika { namespace threads { namespace policies {
 
     protected:
         // the scheduler mode, protected from false sharing
-        util::cache_line_data<std::atomic<scheduler_mode>> mode_;
+        pika::concurrency::detail::cache_line_data<std::atomic<scheduler_mode>>
+            mode_;
 
 #if defined(PIKA_HAVE_THREAD_MANAGER_IDLE_BACKOFF)
         // support for suspension on idle queues
@@ -382,7 +383,9 @@ namespace pika { namespace threads { namespace policies {
             std::uint32_t wait_count_;
             double max_idle_backoff_time_;
         };
-        std::vector<util::cache_line_data<idle_backoff_data>> wait_counts_;
+        std::vector<
+            pika::concurrency::detail::cache_line_data<idle_backoff_data>>
+            wait_counts_;
 #endif
 
         // support for suspension of pus

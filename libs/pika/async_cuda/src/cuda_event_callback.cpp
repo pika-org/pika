@@ -53,7 +53,7 @@ namespace pika::cuda::experimental::detail {
     };
 
     using event_callback_queue_type =
-        concurrency::ConcurrentQueue<event_callback>;
+        concurrency::detail::ConcurrentQueue<event_callback>;
     using event_callback_vector_type = std::vector<event_callback>;
 
     event_callback_vector_type& get_event_callback_vector()

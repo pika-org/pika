@@ -31,7 +31,7 @@ using pika::chrono::high_resolution_timer;
 static thread_local double* global_scratch;
 
 ///////////////////////////////////////////////////////////////////////////////
-inline void worker(pika::util::barrier& b, std::uint64_t updates)
+inline void worker(pika::concurrency::detail::barrier& b, std::uint64_t updates)
 {
     b.wait();
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
     // run the test
     std::vector<std::thread> workers;
 
-    pika::util::barrier b(threads);
+    pika::concurrency::detail::barrier b(threads);
 
     high_resolution_timer t;
 

@@ -83,7 +83,8 @@ namespace pika { namespace threads {
         thread_data& operator=(thread_data&&) = delete;
 
     public:
-        using spinlock_pool = util::spinlock_pool<thread_data>;
+        using spinlock_pool =
+            pika::concurrency::detail::spinlock_pool<thread_data>;
 
         /// The get_state function queries the state of this thread instance.
         ///

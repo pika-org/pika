@@ -519,7 +519,7 @@ namespace pika { namespace execution { namespace experimental {
                 operation_state_type op_state;
                 std::size_t num_worker_threads =
                     scheduler.get_thread_pool()->get_os_thread_count();
-                std::vector<pika::util::cache_aligned_data<
+                std::vector<pika::concurrency::detail::cache_aligned_data<
                     pika::concurrency::detail::contiguous_index_queue<>>>
                     queues{num_worker_threads};
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;

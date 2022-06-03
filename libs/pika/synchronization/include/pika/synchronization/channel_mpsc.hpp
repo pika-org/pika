@@ -28,7 +28,7 @@ namespace pika { namespace lcos { namespace local {
     // This channel is bounded to a size given at construction time and supports
     // a multiple producers and a single consumer. The data is stored in a
     // ring-buffer.
-    template <typename T, typename Mutex = util::spinlock>
+    template <typename T, typename Mutex = pika::concurrency::detail::spinlock>
     class base_channel_mpsc
     {
     private:
@@ -198,8 +198,10 @@ namespace pika { namespace lcos { namespace local {
             std::atomic<std::size_t> tail_;
         };
 
-        mutable pika::util::cache_aligned_data<std::atomic<std::size_t>> head_;
-        pika::util::cache_aligned_data<tail_data> tail_;
+        mutable pika::concurrency::detail::cache_aligned_data<
+            std::atomic<std::size_t>>
+            head_;
+        pika::concurrency::detail::cache_aligned_data<tail_data> tail_;
 
         // a channel of size n can buffer n-1 items
         std::size_t size_;
@@ -212,8 +214,8 @@ namespace pika { namespace lcos { namespace local {
     };
 
     ////////////////////////////////////////////////////////////////////////////
-    // Using pika::util::spinlock as the means of synchronization enables the use
-    // of this channel with non-pika threads.
+    // Using pika::concurrency::detail::spinlock as the means of synchronization
+    // enables the use of this channel with non-pika threads.
     template <typename T>
     using channel_mpsc = base_channel_mpsc<T, pika::lcos::local::spinlock>;
 

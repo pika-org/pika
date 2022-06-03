@@ -37,7 +37,8 @@ namespace pika { namespace parallel { inline namespace v2 {
             {
                 std::size_t cores =
                     pika::parallel::execution::detail::get_os_thread_count();
-                data_.reset(new pika::util::cache_line_data<T>[cores]);
+                data_.reset(
+                    new pika::concurrency::detail::cache_line_data<T>[cores]);
                 for (std::size_t i = 0; i != cores; ++i)
                     data_[i].data_ = identity;
             }
@@ -66,7 +67,8 @@ namespace pika { namespace parallel { inline namespace v2 {
         private:
             T& var_;
             Op op_;
-            std::shared_ptr<pika::util::cache_line_data<T>[]> data_;
+            std::shared_ptr<pika::concurrency::detail::cache_line_data<T>[]>
+                data_;
         };
 
         /// \endcond

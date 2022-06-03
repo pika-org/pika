@@ -9,7 +9,7 @@
 
 #include <cstddef>
 
-namespace pika { namespace util {
+namespace pika::concurrency::detail {
     barrier::barrier(std::size_t number_of_threads)
       : number_of_threads_(number_of_threads)
       , total_(barrier_flag)
@@ -66,4 +66,4 @@ namespace pika { namespace util {
             }
         }
     }
-}}    // namespace pika::util
+}    // namespace pika::concurrency::detail

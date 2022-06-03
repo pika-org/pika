@@ -33,7 +33,8 @@ namespace pika::cuda::experimental {
             std::size_t const num_streams_per_thread;
             std::size_t const concurrency;
             std::vector<cuda_stream> streams;
-            std::vector<pika::util::cache_aligned_data<std::size_t>>
+            std::vector<
+                pika::concurrency::detail::cache_aligned_data<std::size_t>>
                 active_stream_indices;
 
             PIKA_EXPORT streams_holder(int device,

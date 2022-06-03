@@ -168,7 +168,7 @@ std::pair<double, double> bench_fifo(Fifo& fifo, std::uint64_t local_iterations)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void perform_iterations(pika::util::barrier& b,
+void perform_iterations(pika::concurrency::detail::barrier& b,
     std::pair<double, double>& elapsed_control,
     std::pair<double, double>& elapsed_lockfree)
 {
@@ -200,7 +200,7 @@ int app_main(variables_map& vm)
     std::vector<std::pair<double, double>> elapsed_lockfree(
         threads, std::pair<double, double>(0.0, 0.0));
     std::vector<std::thread> workers;
-    pika::util::barrier b(threads);
+    pika::concurrency::detail::barrier b(threads);
 
     for (std::uint32_t i = 0; i != threads; ++i)
         workers.push_back(std::thread(perform_iterations, std::ref(b),

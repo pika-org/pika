@@ -13,16 +13,16 @@
 
 #include <cstddef>
 
-namespace boost { namespace lockfree {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::concurrency::detail {
     template <typename T, typename Alloc = std::allocator<T>>
-    class caching_freelist : public lockfree::detail::freelist_stack<T, Alloc>
+    class caching_freelist
+      : public boost::lockfree::detail::freelist_stack<T, Alloc>
     {
-        using base_type = lockfree::detail::freelist_stack<T, Alloc>;
+        using base_type = boost::lockfree::detail::freelist_stack<T, Alloc>;
 
     public:
         caching_freelist(std::size_t n = 0)
-          : lockfree::detail::freelist_stack<T, Alloc>(Alloc(), n)
+          : boost::lockfree::detail::freelist_stack<T, Alloc>(Alloc(), n)
         {
         }
 
@@ -38,13 +38,14 @@ namespace boost { namespace lockfree {
     };
 
     template <typename T, typename Alloc = std::allocator<T>>
-    class static_freelist : public lockfree::detail::freelist_stack<T, Alloc>
+    class static_freelist
+      : public boost::lockfree::detail::freelist_stack<T, Alloc>
     {
-        using base_type = lockfree::detail::freelist_stack<T, Alloc>;
+        using base_type = boost::lockfree::detail::freelist_stack<T, Alloc>;
 
     public:
         static_freelist(std::size_t n = 0)
-          : lockfree::detail::freelist_stack<T, Alloc>(Alloc(), n)
+          : boost::lockfree::detail::freelist_stack<T, Alloc>(Alloc(), n)
         {
         }
 
@@ -65,4 +66,4 @@ namespace boost { namespace lockfree {
     struct static_freelist_t
     {
     };
-}}    // namespace boost::lockfree
+}    // namespace pika::concurrency::detail
