@@ -316,6 +316,20 @@ namespace pika { namespace lcos { namespace detail {
     };
 
     ///////////////////////////////////////////////////////////////////////////
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+    template <typename T>
+    struct set_value_signature_helper
+    {
+        using type = pika::execution::experimental::set_value_t(T);
+    };
+
+    template <>
+    struct set_value_signature_helper<void>
+    {
+        using type = pika::execution::experimental::set_value_t();
+    };
+#endif
+
     template <typename Derived, typename R>
     class future_base
     {
@@ -326,21 +340,9 @@ namespace pika { namespace lcos { namespace detail {
 
         // Sender compatibility
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-        template <typename T>
-        struct set_value_signature
-        {
-            using type = pika::execution::experimental::set_value_t(T);
-        };
-
-        template <>
-        struct set_value_signature<void>
-        {
-            using type = pika::execution::experimental::set_value_t();
-        };
-
         using completion_signatures =
             pika::execution::experimental::completion_signatures<
-                typename set_value_signature<result_type>::type,
+                typename set_value_signature_helper<result_type>::type,
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 #else
         template <template <typename...> class Tuple,
