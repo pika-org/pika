@@ -203,10 +203,10 @@ namespace pika { namespace parallel { namespace execution {
         {
         };    // must be trivial and empty
 
-        PIKA_NORETURN PIKA_EXPORT void throw_bad_polymorphic_executor();
+        [[noreturn]] PIKA_EXPORT void throw_bad_polymorphic_executor();
 
         template <typename R>
-        PIKA_NORETURN inline R throw_bad_polymorphic_executor()
+        [[noreturn]] inline R throw_bad_polymorphic_executor()
         {
             throw_bad_polymorphic_executor();
 #if defined(PIKA_INTEL_VERSION)

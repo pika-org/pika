@@ -28,7 +28,7 @@
 
 namespace pika { namespace detail {
 
-    PIKA_NORETURN void assertion_handler(
+    [[noreturn]] void assertion_handler(
         pika::detail::source_location const& loc, const char* expr,
         std::string const& msg)
     {

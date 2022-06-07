@@ -26,7 +26,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         {
             using type = Result;
 
-            PIKA_NORETURN static Result call()
+            [[noreturn]] static Result call()
             {
                 try
                 {
@@ -53,7 +53,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 return f.get();
             }
 
-            PIKA_NORETURN static Result call(std::exception_ptr const& e)
+            [[noreturn]] static Result call(std::exception_ptr const& e)
             {
                 try
                 {
@@ -184,7 +184,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         PIKA_EXPORT void set_exception_list_termination_handler(
             exception_list_termination_handler_type f);
 
-        PIKA_NORETURN PIKA_EXPORT void exception_list_termination_handler();
+        [[noreturn]] PIKA_EXPORT void exception_list_termination_handler();
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Result>
@@ -193,21 +193,21 @@ namespace pika { namespace parallel { inline namespace v1 {
         {
             using type = Result;
 
-            PIKA_NORETURN static Result call()
+            [[noreturn]] static Result call()
             {
                 // any exceptions thrown by algorithms executed with the
                 // parallel_unsequenced_policy are to call terminate.
                 exception_list_termination_handler();
             }
 
-            PIKA_NORETURN
-            static pika::future<Result> call(pika::future<Result>&&)
+            [[noreturn]] static pika::future<Result> call(
+                pika::future<Result>&&)
             {
                 exception_list_termination_handler();
             }
 
-            PIKA_NORETURN
-            static pika::future<Result> call(std::exception_ptr const&)
+            [[noreturn]] static pika::future<Result> call(
+                std::exception_ptr const&)
             {
                 exception_list_termination_handler();
             }
@@ -219,21 +219,21 @@ namespace pika { namespace parallel { inline namespace v1 {
         {
             using type = Result;
 
-            PIKA_NORETURN static Result call()
+            [[noreturn]] static Result call()
             {
                 // any exceptions thrown by algorithms executed with the
                 // unsequenced_policy are to call terminate.
                 exception_list_termination_handler();
             }
 
-            PIKA_NORETURN
-            static pika::future<Result> call(pika::future<Result>&&)
+            [[noreturn]] static pika::future<Result> call(
+                pika::future<Result>&&)
             {
                 exception_list_termination_handler();
             }
 
-            PIKA_NORETURN
-            static pika::future<Result> call(std::exception_ptr const&)
+            [[noreturn]] static pika::future<Result> call(
+                std::exception_ptr const&)
             {
                 exception_list_termination_handler();
             }

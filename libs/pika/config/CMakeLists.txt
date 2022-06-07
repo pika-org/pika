@@ -16,7 +16,6 @@ set(config_headers
     pika/config/constexpr.hpp
     pika/config/debug.hpp
     pika/config/emulate_deleted.hpp
-    pika/config/endian.hpp
     pika/config/export_definitions.hpp
     pika/config/forceinline.hpp
     pika/config/forward.hpp

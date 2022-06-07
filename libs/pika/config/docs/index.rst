@@ -7,9 +7,9 @@
 
 .. _modules_config:
 
-============
+======
 config
-============
+======
 
 The config module contains various configuration options, typically hidden
 behind macros that choose the correct implementation based on the compiler and

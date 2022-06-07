@@ -111,7 +111,7 @@ namespace pika {
             return id_.noref();
         }
 
-        PIKA_NODISCARD static unsigned int hardware_concurrency() noexcept;
+        [[nodiscard]] static unsigned int hardware_concurrency() noexcept;
 
         // extensions
         void interrupt(bool flag = true);

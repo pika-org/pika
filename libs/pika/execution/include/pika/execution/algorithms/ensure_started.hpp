@@ -217,7 +217,7 @@ namespace pika::execution::experimental {
                 {
                     PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-                    PIKA_NORETURN void operator()(pika::monostate) const
+                    [[noreturn]] void operator()(pika::monostate) const
                     {
                         PIKA_UNREACHABLE;
                     }

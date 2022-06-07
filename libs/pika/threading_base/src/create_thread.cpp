@@ -26,11 +26,11 @@ namespace pika { namespace threads { namespace detail {
         {
         // NOLINTNEXTLINE(bugprone-branch-clone)
         case thread_schedule_state::pending:
-            PIKA_FALLTHROUGH;
+            [[fallthrough]];
         case thread_schedule_state::pending_do_not_schedule:
-            PIKA_FALLTHROUGH;
+            [[fallthrough]];
         case thread_schedule_state::pending_boost:
-            PIKA_FALLTHROUGH;
+            [[fallthrough]];
         case thread_schedule_state::suspended:
             break;
 

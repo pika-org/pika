@@ -25,7 +25,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         get_exception_list_termination_handler() = f;
     }
 
-    PIKA_NORETURN void exception_list_termination_handler()
+    [[noreturn]] void exception_list_termination_handler()
     {
         if (get_exception_list_termination_handler())
         {

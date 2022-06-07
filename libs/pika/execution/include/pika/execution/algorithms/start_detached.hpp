@@ -43,11 +43,11 @@ namespace pika { namespace execution { namespace experimental {
 
                 template <typename Error>
 #if !defined(__NVCC__)
-                PIKA_NORETURN
+                [[noreturn]]
 #endif
-                    friend void
-                    tag_invoke(set_error_t, start_detached_receiver&&,
-                        Error&& error) noexcept
+                friend void
+                tag_invoke(set_error_t, start_detached_receiver&&,
+                    Error&& error) noexcept
                 {
                     if constexpr (std::is_same_v<std::decay_t<Error>,
                                       std::exception_ptr>)

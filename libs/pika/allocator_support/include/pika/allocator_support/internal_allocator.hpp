@@ -65,7 +65,7 @@ namespace pika::detail {
             return &x;
         }
 
-        PIKA_NODISCARD pointer allocate(size_type n, void const* hint = nullptr)
+        [[nodiscard]] pointer allocate(size_type n, void const* hint = nullptr)
         {
             if (max_size() < n)
             {

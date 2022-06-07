@@ -8,7 +8,7 @@
 
 #include <string>
 
-PIKA_NORETURN void assertion_handler(
+[[noreturn]] void assertion_handler(
     pika::detail::source_location const&, const char*, std::string const&)
 {
     std::exit(1);

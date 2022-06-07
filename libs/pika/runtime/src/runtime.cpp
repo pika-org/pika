@@ -134,7 +134,7 @@ namespace pika {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    PIKA_NORETURN PIKA_EXPORT void termination_handler(int signum)
+    [[noreturn]] PIKA_EXPORT void termination_handler(int signum)
     {
         if (signum != SIGINT &&
             get_config_entry("pika.attach_debugger", "") == "exception")

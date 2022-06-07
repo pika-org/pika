@@ -27,14 +27,14 @@
 /// \cond NODETAIL
 namespace pika { namespace detail {
     template <typename Exception>
-    PIKA_NORETURN PIKA_EXPORT void throw_exception(Exception const& e,
+    [[noreturn]] PIKA_EXPORT void throw_exception(Exception const& e,
         std::string const& func, std::string const& file, long line);
 
-    PIKA_NORETURN PIKA_EXPORT void throw_exception(error errcode,
+    [[noreturn]] PIKA_EXPORT void throw_exception(error errcode,
         std::string const& msg, std::string const& func,
         std::string const& file, long line);
 
-    PIKA_NORETURN PIKA_EXPORT void rethrow_exception(
+    [[noreturn]] PIKA_EXPORT void rethrow_exception(
         exception const& e, std::string const& func);
 
     template <typename Exception>
@@ -62,7 +62,7 @@ namespace pika { namespace detail {
     PIKA_EXPORT void rethrows_if(
         pika::error_code& ec, exception const& e, std::string const& func);
 
-    PIKA_NORETURN PIKA_EXPORT void throw_thread_interrupted_exception();
+    [[noreturn]] PIKA_EXPORT void throw_thread_interrupted_exception();
 }}    // namespace pika::detail
 /// \endcond
 
@@ -70,7 +70,7 @@ namespace pika {
     /// \cond NOINTERNAL
 
     /// \brief throw an pika::exception initialized from the given arguments
-    PIKA_NORETURN inline void throw_exception(error e, std::string const& msg,
+    [[noreturn]] inline void throw_exception(error e, std::string const& msg,
         std::string const& func, std::string const& file = "", long line = -1)
     {
         detail::throw_exception(e, msg, func, file, line);

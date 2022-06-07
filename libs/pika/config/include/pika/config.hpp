@@ -52,13 +52,6 @@
 // clang-format off
 
 ///////////////////////////////////////////////////////////////////////////////
-/// This defines the maximum number of possible runtime instances in one
-/// executable
-#if !defined(PIKA_RUNTIME_INSTANCE_LIMIT)
-#  define PIKA_RUNTIME_INSTANCE_LIMIT 1
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 /// By default, enable minimal thread deadlock detection in debug builds only.
 #if !defined(PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT)
 #  define PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT 10000000

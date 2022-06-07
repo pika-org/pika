@@ -196,35 +196,35 @@ namespace pika { namespace util {
             {
             case 11:
                 c += ((size_type) k[10] << 24);
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case 10:
                 c += ((size_type) k[9] << 16);
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case 9:
                 c += ((size_type) k[8] << 8);
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
                 /* the first byte of c is reserved for the length */
             case 8:
                 b += ((size_type) k[7] << 24);
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case 7:
                 b += ((size_type) k[6] << 16);
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case 6:
                 b += ((size_type) k[5] << 8);
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case 5:
                 b += k[4];
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case 4:
                 a += ((size_type) k[3] << 24);
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case 3:
                 a += ((size_type) k[2] << 16);
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case 2:
                 a += ((size_type) k[1] << 8);
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case 1:
                 a += k[0];
                 /* case 0: nothing left to add */

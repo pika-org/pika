@@ -23,7 +23,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         get_parallel_exception_termination_handler() = f;
     }
 
-    PIKA_NORETURN void parallel_exception_termination_handler()
+    [[noreturn]] void parallel_exception_termination_handler()
     {
         if (get_parallel_exception_termination_handler())
         {

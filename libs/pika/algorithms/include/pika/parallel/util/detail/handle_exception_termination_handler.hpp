@@ -16,5 +16,5 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     PIKA_EXPORT void set_parallel_exception_termination_handler(
         parallel_exception_termination_handler_type f);
 
-    PIKA_NORETURN PIKA_EXPORT void parallel_exception_termination_handler();
+    [[noreturn]] PIKA_EXPORT void parallel_exception_termination_handler();
 }}}}    // namespace pika::parallel::util::detail

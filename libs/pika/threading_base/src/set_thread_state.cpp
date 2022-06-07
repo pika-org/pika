@@ -189,7 +189,7 @@ namespace pika { namespace threads { namespace detail {
             }
             break;
             case thread_schedule_state::pending:
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             case thread_schedule_state::pending_boost:
                 if (thread_schedule_state::suspended == new_state)
                 {
@@ -214,7 +214,7 @@ namespace pika { namespace threads { namespace detail {
             case thread_schedule_state::suspended:
                 break;    // fine, just set the new state
             case thread_schedule_state::pending_do_not_schedule:
-                PIKA_FALLTHROUGH;
+                [[fallthrough]];
             default:
             {
                 PIKA_ASSERT_MSG(false,
