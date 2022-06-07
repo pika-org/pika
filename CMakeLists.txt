@@ -1325,15 +1325,6 @@ if(PIKA_WITH_COMPILER_WARNINGS)
       pika_add_compile_flag_if_available(-Wcast-align)
     endif()
 
-    # GCC gives a bogus warning in the P2300 reference implementation
-    if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION AND CMAKE_COMPILER_IS_GNUCXX)
-      pika_add_compile_flag_if_available(-Wno-non-template-friend)
-    endif()
-
-    if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION AND CMAKE_COMPILER_IS_GNUCXX)
-      pika_add_compile_flag_if_available(-Wno-interference-size)
-    endif()
-
     pika_add_compile_flag_if_available(-Werror=parentheses)
     pika_add_compile_flag_if_available(-Werror=reorder)
     pika_add_compile_flag_if_available(-Werror=return-type)
@@ -1343,6 +1334,15 @@ if(PIKA_WITH_COMPILER_WARNINGS)
     pika_add_compile_flag_if_available(-Werror=missing-braces)
     pika_add_compile_flag_if_available(-Werror=sign-compare)
   endif()
+endif()
+
+# GCC gives a bogus warning in the P2300 reference implementation
+if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION AND CMAKE_COMPILER_IS_GNUCXX)
+  pika_add_compile_flag_if_available(-Wno-non-template-friend)
+endif()
+
+if(PIKA_WITH_CXX_STANDARD GREATER_EQUAL 20 AND CMAKE_COMPILER_IS_GNUCXX)
+  pika_add_compile_flag_if_available(-Wno-interference-size)
 endif()
 
 # Configure compiler warnings as errors
