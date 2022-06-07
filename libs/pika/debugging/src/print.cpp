@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -280,8 +281,9 @@ namespace pika { namespace debug {
 #if !defined(__FreeBSD__)
                 gethostname(hostname_, std::size_t(12));
 #endif
-                std::string temp = "(" + std::to_string(guess_rank()) + ")";
-                std::strcat(hostname_, temp.c_str());
+                std::ostringstream temp;
+                temp << '(' << std::to_string(guess_rank()) << ')';
+                std::strcat(hostname_, temp.str().c_str());
             }
             return hostname_;
         }
