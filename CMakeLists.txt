@@ -1336,6 +1336,15 @@ if(PIKA_WITH_COMPILER_WARNINGS)
   endif()
 endif()
 
+# GCC gives a bogus warning in the P2300 reference implementation
+if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION AND CMAKE_COMPILER_IS_GNUCXX)
+  pika_add_compile_flag_if_available(-Wno-non-template-friend)
+endif()
+
+if(PIKA_WITH_CXX_STANDARD GREATER_EQUAL 20 AND CMAKE_COMPILER_IS_GNUCXX)
+  pika_add_compile_flag_if_available(-Wno-interference-size)
+endif()
+
 # Configure compiler warnings as errors
 if(PIKA_WITH_COMPILER_WARNINGS_AS_ERRORS)
   if(MSVC)

@@ -48,6 +48,7 @@ status = [
   "jenkins/cscs/gcc-9-debug",
   "jenkins/cscs/gcc-10-apex-debug",
   "jenkins/cscs/gcc-11-debug",
+  "jenkins/cscs/gcc-12-debug",
   "jenkins/cscs/gcc-cuda-debug",
 ]
 required_approvals = 0
