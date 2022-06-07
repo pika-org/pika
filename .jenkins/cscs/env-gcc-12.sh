@@ -16,6 +16,5 @@ spack_spec="pika@main arch=${spack_arch} %${spack_compiler} malloc=system cxxstd
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
-configure_extra_options+=" -DPIKA_WITH_P2300_REFERENCE_IMPLEMENTATION=ON"
 
 build_extra_options+=" -j10"
