@@ -16,6 +16,8 @@
 #include <pika/modules/itt_notify.hpp>
 #elif defined(PIKA_HAVE_APEX)
 #include <pika/threading_base/external_timer.hpp>
+#elif defined(PIKA_HAVE_TRACY)
+#include <Tracy.hpp>
 #endif
 #endif
 
@@ -64,6 +66,44 @@ namespace pika {
     private:
         pika::util::itt::thread_domain thread_domain_;
         pika::util::itt::task task_;
+    };
+#elif defined(PIKA_HAVE_TRACY)
+    struct PIKA_NODISCARD scoped_annotation
+    {
+        PIKA_NON_COPYABLE(scoped_annotation);
+
+        explicit scoped_annotation(char const* annotation)
+          : annotation(annotation)
+        {
+        }
+
+        explicit scoped_annotation(std::string annotation)
+          : annotation(detail::store_function_annotation(PIKA_MOVE(annotation)))
+        {
+        }
+
+        template <typename F,
+            typename =
+                std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
+        explicit scoped_annotation(F&& f)
+          : annotation(
+                pika::traits::get_function_annotation<std::decay_t<F>>::call(f))
+        {
+        }
+
+    private:
+        char const* annotation;
+
+        // We don't use a Zone* macro from Tracy here because they are only
+        // meant to be used in function scopes. The Zone* macros make use of
+        // e.g.  __FUNCTION__ and other macros that are either unavailable in
+        // this scope or are meaningless since they are not evaluated in the
+        // scope of the scoped_annotation constructor. We instead manually
+        // enable the ScopedZone only if TRACY_ENABLE is set.
+#if defined(TRACY_ENABLE)
+        tracy::ScopedZone tracy_annotation{
+            0, nullptr, 0, nullptr, 0, annotation, strlen(annotation), true};
+#endif
     };
 #else
     struct PIKA_NODISCARD scoped_annotation

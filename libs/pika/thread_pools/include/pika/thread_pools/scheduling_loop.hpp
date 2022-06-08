@@ -13,17 +13,20 @@
 #include <pika/hardware/timestamp.hpp>
 #include <pika/modules/itt_notify.hpp>
 #include <pika/modules/logging.hpp>
+#include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_data.hpp>
+#include <pika/threading_base/thread_num_tss.hpp>
 
 #if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
 #include <pika/thread_pools/detail/scoped_background_timer.hpp>
 #endif
 
-#if defined(PIKA_HAVE_APEX)
-#include <pika/threading_base/external_timer.hpp>
+#if defined(PIKA_HAVE_TRACY)
+#include <Tracy.hpp>
+#include <common/TracyColor.hpp>
 #endif
 
 #include <atomic>
@@ -31,6 +34,7 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <sstream>
 #include <utility>
 
 namespace pika { namespace threads { namespace detail {
@@ -729,6 +733,26 @@ namespace pika { namespace threads { namespace detail {
                                     profiler.yield();
                                 }
 #else
+#if defined(PIKA_HAVE_TRACY)
+                                auto const desc = thrdptr->get_description();
+                                std::ostringstream task_annotation;
+                                task_annotation
+                                    << "pika/task:" << thrd << "/"
+                                    << (desc.kind() ==
+                                                   pika::util::thread_description::
+                                                       data_type::
+                                                           data_type_description ?
+                                               desc.get_description() :
+                                               "<unknown>");
+                                auto task_annotation_str =
+                                    PIKA_MOVE(task_annotation).str();
+                                ZoneTransientN(
+                                    task, task_annotation_str.c_str(), true);
+#if defined(TRACY_ENABLE)
+                                task.Color(tracy::Color::DimGray);
+#endif
+#endif
+
                                 thrd_stat = (*thrdptr)(context_storage);
 #endif
                             }
