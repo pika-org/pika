@@ -9,10 +9,8 @@
 
 #include <atomic>
 #include <chrono>
-#include <condition_variable>
 #include <cstddef>
 #include <exception>
-#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -728,34 +726,7 @@ void test_ensure_started()
 
     // It's allowed to discard the sender from ensure_started
     {
-        std::atomic<bool> done{false};
-        std::condition_variable cv;
-        std::mutex mtx;
-
-        {
-            ex::schedule(sched) | ex::then([&]() {
-                {
-                    std::lock_guard l{mtx};
-                    done = true;
-                }
-                cv.notify_one();
-            }) | ex::ensure_started();
-
-            // Discard the sender at the end of this scope
-        }
-
-        // We don't actually want to leave this detached and have it potentially
-        // run after exiting main so we at least wait for it to have started
-        // here, and do reasonable effort to wait for it to finish. One second
-        // should be enough for most cases, but this may time out spuriously.
-        //
-        // In general detaching a std::thread is a bad idea.
-        {
-            std::unique_lock l{mtx};
-            PIKA_TEST(cv.wait_for(
-                l, std::chrono::seconds(1), [&]() { return done.load(); }));
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
+        ex::schedule(ex::std_thread_scheduler{}) | ex::ensure_started();
     }
 #endif
 }
