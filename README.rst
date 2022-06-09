@@ -11,6 +11,7 @@
 |github_actions_linux_hip_status|
 |github_actions_linux_sanitizers_status|
 |github_actions_macos_debug_status|
+|codacy|
 
 ====
 pika
@@ -137,3 +138,7 @@ Pick your favourite meaning from the following:
 .. |github_actions_macos_debug_status| image:: https://github.com/pika-org/pika/actions/workflows/macos_debug.yml/badge.svg
      :target: https://github.com/pika-org/pika/actions/workflows/macos_debug.yml
      :alt: macOS CI (Debug)
+
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/e03f57f1c4cd40e7b514e552a723c125
+     :target: https://www.codacy.com/gh/pika-org/pika
+     :alt: Codacy
