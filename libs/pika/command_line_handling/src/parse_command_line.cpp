@@ -398,9 +398,8 @@ namespace pika::detail {
                   "values. Do not use with --pika:pu-step, --pika:pu-offset, or "
                   "--pika:affinity options. Implies --pika:numa-sensitive=1"
                   "(--pika:bind=none disables defining thread affinities).")
-                ("pika:use-process-mask", "use the process mask to restrict "
-                 "available hardware resources (implies "
-                 "--pika:ignore-batch-env)")
+                ("pika:ignore-process-mask", "ignore the process mask to restrict "
+                 "available hardware resources, use all available processing units")
                 ("pika:print-bind",
                   "print to the console the bit masks calculated from the "
                   "arguments specified to all --pika:bind options.")
