@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/functional/traits/get_action_name.hpp>
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
