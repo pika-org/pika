@@ -29,7 +29,6 @@ set(functional_headers
     pika/functional/one_shot.hpp
     pika/functional/protect.hpp
     pika/functional/unique_function.hpp
-    pika/functional/traits/get_action_name.hpp
     pika/functional/traits/get_function_address.hpp
     pika/functional/traits/get_function_annotation.hpp
     pika/functional/traits/is_action.hpp
