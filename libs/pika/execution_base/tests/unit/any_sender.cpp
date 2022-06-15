@@ -620,6 +620,29 @@ void test_globals()
 #endif
 }
 
+void test_make_any_sender()
+{
+    static_assert(
+        std::is_same_v<decltype(ex::make_unique_any_sender(ex::just())),
+            ex::unique_any_sender<>>);
+    static_assert(std::is_same_v<decltype(ex::make_any_sender(ex::just())),
+        ex::any_sender<>>);
+    static_assert(
+        std::is_same_v<decltype(ex::make_unique_any_sender(ex::just(3))),
+            ex::unique_any_sender<int>>);
+    static_assert(std::is_same_v<decltype(ex::make_any_sender(ex::just(42))),
+        ex::any_sender<int>>);
+    static_assert(std::is_same_v<decltype(ex::make_unique_any_sender(
+                                     ex::just(3, std::string("hello")))),
+        ex::unique_any_sender<int, std::string>>);
+    static_assert(std::is_same_v<decltype(ex::make_any_sender(
+                                     ex::just(42, std::string("bye")))),
+        ex::any_sender<int, std::string>>);
+    static_assert(!std::is_same_v<decltype(ex::make_any_sender(
+                                      ex::just(42, std::string("bye")))),
+                  ex::any_sender<int, std::string, double>>);
+}
+
 int main()
 {
     // We can only wrap copyable senders in any_sender
@@ -703,6 +726,9 @@ int main()
 
     // Test use of *any_* in globals
     test_globals();
+
+    // Test deducing value types with make(_unique)_any_sender
+    test_make_any_sender();
 
     return pika::util::report_errors();
 }

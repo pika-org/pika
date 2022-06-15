@@ -12,6 +12,7 @@
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
+#include <pika/type_support/pack.hpp>
 
 #include <cstddef>
 #include <cstring>
@@ -864,6 +865,47 @@ namespace pika::execution::experimental {
                 .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
         }
     };
+
+    namespace detail {
+        template <template <typename...> class AnySender, typename Sender>
+        auto make_any_sender_impl(Sender&& sender)
+        {
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            using value_types_pack =
+                pika::execution::experimental::value_types_of_t<Sender,
+                    pika::execution::experimental::detail::empty_env,
+                    pika::util::pack, pika::util::pack>;
+#else
+            using value_types_pack = typename pika::execution::experimental::
+                sender_traits<std::decay_t<Sender>>::template value_types<
+                    pika::util::pack, pika::util::pack>;
+#endif
+            static_assert(value_types_pack::size == 1,
+                "any_sender and unique_any_sender require the predecessor "
+                "sender to send exactly one variant");
+            using single_value_type_variant =
+                typename pika::util::detail::at_index_impl<0,
+                    value_types_pack>::type;
+            using any_sender_type = pika::util::detail::change_pack_t<AnySender,
+                single_value_type_variant>;
+
+            return any_sender_type(std::forward<Sender>(sender));
+        }
+    }    // namespace detail
+
+    template <typename Sender, typename = std::enable_if_t<is_sender_v<Sender>>>
+    auto make_unique_any_sender(Sender&& sender)
+    {
+        return detail::make_any_sender_impl<unique_any_sender>(
+            std::forward<Sender>(sender));
+    }
+
+    template <typename Sender, typename = std::enable_if_t<is_sender_v<Sender>>>
+    auto make_any_sender(Sender&& sender)
+    {
+        return detail::make_any_sender_impl<any_sender>(
+            std::forward<Sender>(sender));
+    }
 }    // namespace pika::execution::experimental
 
 namespace pika::detail {
