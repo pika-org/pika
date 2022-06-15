@@ -94,38 +94,6 @@ namespace pika::threads::coroutines::detail {
             return impl_.set_thread_data(data);
         }
 
-#if defined(PIKA_HAVE_LIBCDS)
-        std::size_t get_libcds_data() const
-        {
-            return impl_.get_libcds_data();
-        }
-
-        std::size_t set_libcds_data(std::size_t data)
-        {
-            return impl_.set_libcds_data(data);
-        }
-
-        std::size_t get_libcds_hazard_pointer_data() const
-        {
-            return impl_.get_libcds_hazard_pointer_data();
-        }
-
-        std::size_t set_libcds_hazard_pointer_data(std::size_t data)
-        {
-            return impl_.set_libcds_hazard_pointer_data(data);
-        }
-
-        std::size_t get_libcds_dynamic_hazard_pointer_data() const
-        {
-            return impl_.get_libcds_dynamic_hazard_pointer_data();
-        }
-
-        std::size_t set_libcds_dynamic_hazard_pointer_data(std::size_t data)
-        {
-            return impl_.set_libcds_dynamic_hazard_pointer_data(data);
-        }
-#endif
-
         void init()
         {
             impl_.init();
