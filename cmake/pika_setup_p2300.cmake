@@ -25,8 +25,8 @@ if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION AND NOT PIKA_FIND_PACKAGE)
 
   add_library(P2300 INTERFACE)
   target_include_directories(
-    P2300 INTERFACE "$<BUILD_INTERFACE:${p2300_SOURCE_DIR}/include>"
-                    "$<INSTALL_INTERFACE:include>"
+    P2300 SYSTEM INTERFACE "$<BUILD_INTERFACE:${p2300_SOURCE_DIR}/include>"
+                           "$<INSTALL_INTERFACE:include>"
   )
   target_compile_features(P2300 INTERFACE cxx_std_20)
 
