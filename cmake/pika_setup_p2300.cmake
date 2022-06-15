@@ -15,8 +15,8 @@ if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION AND NOT PIKA_FIND_PACKAGE)
 
   fetchcontent_declare(
     P2300
-    GIT_REPOSITORY https://github.com/msimberg/wg21_P2300_std_execution.git
-    GIT_TAG misc-fixes
+    GIT_REPOSITORY https://github.com/brycelelbach/wg21_P2300_std_execution.git
+    GIT_TAG 6da4968c0093c188f7d4dfce75a9d401944d8f06
   )
   fetchcontent_getproperties(P2300)
   if(NOT p2300_POPULATED)
