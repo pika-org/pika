@@ -105,11 +105,6 @@ struct f_struct_1
 
 struct f_struct_2
 {
-    void operator()(int) noexcept {};
-};
-
-struct f_struct_3
-{
     void operator()(int = 42){};
 };
 
@@ -122,7 +117,7 @@ int main()
     {
         scheduler_1 s1;
         pika::execution::experimental::execute(s1, f_struct_1{});
-        pika::execution::experimental::execute(s1, f_struct_3{});
+        pika::execution::experimental::execute(s1, f_struct_2{});
         pika::execution::experimental::execute(s1, &f_fun_1);
         PIKA_TEST_EQ(friend_tag_invoke_schedule_calls, std::size_t(3));
         PIKA_TEST_EQ(tag_invoke_execute_calls, std::size_t(0));
@@ -131,7 +126,7 @@ int main()
     {
         scheduler_2 s2;
         pika::execution::experimental::execute(s2, f_struct_1{});
-        pika::execution::experimental::execute(s2, f_struct_3{});
+        pika::execution::experimental::execute(s2, f_struct_2{});
         pika::execution::experimental::execute(s2, &f_fun_1);
         PIKA_TEST_EQ(friend_tag_invoke_schedule_calls, std::size_t(3));
         PIKA_TEST_EQ(tag_invoke_execute_calls, std::size_t(3));
