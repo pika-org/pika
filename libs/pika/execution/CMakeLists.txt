@@ -12,6 +12,7 @@ set(execution_headers
     pika/execution/algorithms/detail/partial_algorithm.hpp
     pika/execution/algorithms/detail/predicates.hpp
     pika/execution/algorithms/detail/single_result.hpp
+    pika/execution/algorithms/drop_value.hpp
     pika/execution/algorithms/ensure_started.hpp
     pika/execution/algorithms/execute.hpp
     pika/execution/algorithms/just.hpp
