@@ -11,12 +11,11 @@
 #include <pika/functional/first_argument.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/futures/future.hpp>
+#include <pika/iterator_support/irange.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/synchronization/barrier.hpp>
 #include <pika/synchronization/mutex.hpp>
 #include <pika/type_support/pack.hpp>
-
-#include <boost/range/irange.hpp>
 
 #include <cstddef>
 #include <functional>
@@ -198,7 +197,7 @@ namespace pika { namespace lcos { namespace local {
         return pika::parallel::execution::bulk_async_execute(policy.executor(),
             detail::spmd_block_helper<F>{
                 barrier, barriers, mtx, PIKA_FORWARD(F, f), num_images},
-            boost::irange(std::size_t(0), num_images),
+            pika::detail::irange(std::size_t(0), num_images),
             PIKA_FORWARD(Args, args)...);
     }
 
@@ -232,7 +231,7 @@ namespace pika { namespace lcos { namespace local {
         pika::parallel::execution::bulk_sync_execute(policy.executor(),
             detail::spmd_block_helper<F>{
                 barrier, barriers, mtx, PIKA_FORWARD(F, f), num_images},
-            boost::irange(std::size_t(0), num_images),
+            pika::detail::irange(std::size_t(0), num_images),
             PIKA_FORWARD(Args, args)...);
     }
 

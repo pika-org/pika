@@ -5,17 +5,18 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(iterator_support_headers
-    pika/iterator_support/traits/is_iterator.hpp
-    pika/iterator_support/traits/is_range.hpp
-    pika/iterator_support/traits/is_sentinel_for.hpp
     pika/iterator_support/boost_iterator_categories.hpp
     pika/iterator_support/counting_iterator.hpp
     pika/iterator_support/counting_shape.hpp
     pika/iterator_support/generator_iterator.hpp
+    pika/iterator_support/irange.hpp
     pika/iterator_support/iterator_adaptor.hpp
     pika/iterator_support/iterator_facade.hpp
     pika/iterator_support/iterator_range.hpp
     pika/iterator_support/range.hpp
+    pika/iterator_support/traits/is_iterator.hpp
+    pika/iterator_support/traits/is_range.hpp
+    pika/iterator_support/traits/is_sentinel_for.hpp
     pika/iterator_support/transform_iterator.hpp
     pika/iterator_support/zip_iterator.hpp
 )
