@@ -88,7 +88,6 @@ namespace pika::cuda::experimental {
                 cuda_scheduler scheduler;
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-                operation_state() = default;
                 operation_state(operation_state&&) = delete;
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state&&) = delete;

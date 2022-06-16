@@ -178,6 +178,10 @@ int main()
     {
         ex::just() | ex::ensure_started();
     }
+
+    {
+        test_adl_isolation(ex::ensure_started(my_namespace::my_sender{}));
+    }
 #endif
 
     return pika::util::report_errors();
