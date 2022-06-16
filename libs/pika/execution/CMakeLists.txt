@@ -54,12 +54,6 @@ set(execution_headers
     pika/execution/traits/detail/simd/vector_pack_find.hpp
     pika/execution/traits/detail/simd/vector_pack_load_store.hpp
     pika/execution/traits/detail/simd/vector_pack_type.hpp
-    pika/execution/traits/detail/vc/vector_pack_alignment_size.hpp
-    pika/execution/traits/detail/vc/vector_pack_all_any_none.hpp
-    pika/execution/traits/detail/vc/vector_pack_count_bits.hpp
-    pika/execution/traits/detail/vc/vector_pack_find.hpp
-    pika/execution/traits/detail/vc/vector_pack_load_store.hpp
-    pika/execution/traits/detail/vc/vector_pack_type.hpp
     pika/execution/traits/executor_traits.hpp
     pika/execution/traits/future_then_result_exec.hpp
     pika/execution/traits/is_execution_policy.hpp
@@ -74,10 +68,6 @@ set(execution_headers
 set(execution_sources execution_parameter_callbacks.cpp
                       polymorphic_executor.cpp
 )
-
-if(TARGET Vc::vc)
-  set(execution_optional_dependencies Vc::vc)
-endif()
 
 include(pika_add_module)
 pika_add_module(
