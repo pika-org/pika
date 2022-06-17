@@ -16,7 +16,6 @@
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/schedulers/queue_holder_numa.hpp>
 #include <pika/schedulers/queue_holder_thread.hpp>
 #include <pika/schedulers/thread_queue_mc.hpp>
@@ -51,7 +50,6 @@
 // #define SHARED_PRIORITY_SCHEDULER_DEBUG_NUMA
 
 namespace pika {
-
     // a debug level of zero disables messages with a level>0
     // a debug level of N shows messages with level 1..N
     constexpr int debug_level = 0;
@@ -64,16 +62,6 @@ namespace pika {
 
 // ------------------------------------------------------------
 namespace pika { namespace threads { namespace policies {
-
-    ///////////////////////////////////////////////////////////////////////////
-#if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
-    using default_shared_priority_queue_scheduler_terminated_queue =
-        lockfree_lifo;
-#else
-    using default_shared_priority_queue_scheduler_terminated_queue =
-        lockfree_fifo;
-#endif
-
     /// Holds core/queue ratios used by schedulers.
     struct core_ratios
     {
