@@ -9,7 +9,7 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //
 
-#include <pika/modules/memory.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/testing.hpp>
 
 #include <functional>

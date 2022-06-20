@@ -505,12 +505,12 @@ namespace pika { namespace threads { namespace policies {
         ///////////////////////////////////////////////////////////////////////
         // create a new thread and schedule it if the initial state is equal to
         // pending
-        void create_thread(thread_init_data& data, thread_id_ref_type* id,
-            error_code& ec) override
+        void create_thread(threads::detail::thread_init_data& data,
+            threads::detail::thread_id_ref_type* id, error_code& ec) override
         {
             // NOTE: This scheduler ignores NUMA hints.
-            std::size_t num_thread =
-                data.schedulehint.mode == thread_schedule_hint_mode::thread ?
+            std::size_t num_thread = data.schedulehint.mode ==
+                    execution::thread_schedule_hint_mode::thread ?
                 data.schedulehint.hint :
                 std::size_t(-1);
 
@@ -526,17 +526,18 @@ namespace pika { namespace threads { namespace policies {
             std::unique_lock<pu_mutex_type> l;
             num_thread = select_active_pu(l, num_thread);
 
-            data.schedulehint.mode = thread_schedule_hint_mode::thread;
+            data.schedulehint.mode =
+                execution::thread_schedule_hint_mode::thread;
             data.schedulehint.hint = static_cast<std::int16_t>(num_thread);
 
             // now create the thread
-            if (data.priority == thread_priority::high_recursive ||
-                data.priority == thread_priority::high ||
-                data.priority == thread_priority::boost)
+            if (data.priority == execution::thread_priority::high_recursive ||
+                data.priority == execution::thread_priority::high ||
+                data.priority == execution::thread_priority::boost)
             {
-                if (data.priority == thread_priority::boost)
+                if (data.priority == execution::thread_priority::boost)
                 {
-                    data.priority = thread_priority::normal;
+                    data.priority = execution::thread_priority::normal;
                 }
                 std::size_t num = num_thread % num_high_priority_queues_;
 
@@ -548,7 +549,8 @@ namespace pika { namespace threads { namespace policies {
                             "pool({}), scheduler({}), worker_thread({}), "
                             "thread({}), priority({})",
                         *this->get_parent_pool(), *this, num,
-                        id ? *id : invalid_thread_id, data.priority)
+                        id ? *id : threads::detail::invalid_thread_id,
+                        data.priority)
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
                     .format(", description({})", data.description)
 #endif
@@ -557,7 +559,7 @@ namespace pika { namespace threads { namespace policies {
                 return;
             }
 
-            if (data.priority == thread_priority::low)
+            if (data.priority == execution::thread_priority::low)
             {
                 low_priority_queue_.create_thread(data, id, ec);
 
@@ -566,7 +568,8 @@ namespace pika { namespace threads { namespace policies {
                             "low priority queue: "
                             "pool({}), scheduler({}), thread({}), priority({})",
                         *this->get_parent_pool(), *this,
-                        id ? *id : invalid_thread_id, data.priority)
+                        id ? *id : threads::detail::invalid_thread_id,
+                        data.priority)
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
                     .format(", description({})", data.description)
 #endif
@@ -584,7 +587,8 @@ namespace pika { namespace threads { namespace policies {
                         "worker_thread({}), "
                         "thread({}), priority({})",
                     *this->get_parent_pool(), *this, num_thread,
-                    id ? *id : invalid_thread_id, data.priority)
+                    id ? *id : threads::detail::invalid_thread_id,
+                    data.priority)
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
                 .format(", description({})", data.description)
 #endif
@@ -594,7 +598,8 @@ namespace pika { namespace threads { namespace policies {
         /// Return the next thread to be executed, return false if none is
         /// available
         bool get_next_thread(std::size_t num_thread, bool running,
-            threads::thread_id_ref_type& thrd, bool enable_stealing) override
+            threads::detail::thread_id_ref_type& thrd,
+            bool enable_stealing) override
         {
             PIKA_ASSERT(num_thread < num_queues_);
             thread_queue_type* this_high_priority_queue = nullptr;
@@ -668,14 +673,16 @@ namespace pika { namespace threads { namespace policies {
         }
 
         /// Schedule the passed thread
-        void schedule_thread(threads::thread_id_ref_type thrd,
-            threads::thread_schedule_hint schedulehint,
+        void schedule_thread(threads::detail::thread_id_ref_type thrd,
+            execution::thread_schedule_hint schedulehint,
             bool allow_fallback = false,
-            thread_priority priority = thread_priority::normal) override
+            execution::thread_priority priority =
+                execution::thread_priority::normal) override
         {
             // NOTE: This scheduler ignores NUMA hints.
             std::size_t num_thread = std::size_t(-1);
-            if (schedulehint.mode == thread_schedule_hint_mode::thread)
+            if (schedulehint.mode ==
+                execution::thread_schedule_hint_mode::thread)
             {
                 num_thread = schedulehint.hint;
             }
@@ -698,9 +705,9 @@ namespace pika { namespace threads { namespace policies {
 
             auto* thrdptr = get_thread_id_data(thrd);
             (void) thrdptr;
-            if (priority == thread_priority::high_recursive ||
-                priority == thread_priority::high ||
-                priority == thread_priority::boost)
+            if (priority == execution::thread_priority::high_recursive ||
+                priority == execution::thread_priority::high ||
+                priority == execution::thread_priority::boost)
             {
                 std::size_t num = num_thread % num_high_priority_queues_;
                 LTM_(debug).format(
@@ -714,7 +721,7 @@ namespace pika { namespace threads { namespace policies {
 
                 high_priority_queues_[num].data_->schedule_thread(thrd);
             }
-            else if (priority == thread_priority::low)
+            else if (priority == execution::thread_priority::low)
             {
                 LTM_(debug).format(
                     "local_priority_queue_scheduler::schedule_thread, "
@@ -743,14 +750,16 @@ namespace pika { namespace threads { namespace policies {
             }
         }
 
-        void schedule_thread_last(threads::thread_id_ref_type thrd,
-            threads::thread_schedule_hint schedulehint,
+        void schedule_thread_last(threads::detail::thread_id_ref_type thrd,
+            execution::thread_schedule_hint schedulehint,
             bool allow_fallback = false,
-            thread_priority priority = thread_priority::normal) override
+            execution::thread_priority priority =
+                execution::thread_priority::normal) override
         {
             // NOTE: This scheduler ignores NUMA hints.
             std::size_t num_thread = std::size_t(-1);
-            if (schedulehint.mode == thread_schedule_hint_mode::thread)
+            if (schedulehint.mode ==
+                execution::thread_schedule_hint_mode::thread)
             {
                 num_thread = schedulehint.hint;
             }
@@ -771,14 +780,14 @@ namespace pika { namespace threads { namespace policies {
             std::unique_lock<pu_mutex_type> l;
             num_thread = select_active_pu(l, num_thread, allow_fallback);
 
-            if (priority == thread_priority::high_recursive ||
-                priority == thread_priority::high ||
-                priority == thread_priority::boost)
+            if (priority == execution::thread_priority::high_recursive ||
+                priority == execution::thread_priority::high ||
+                priority == execution::thread_priority::boost)
             {
                 std::size_t num = num_thread % num_high_priority_queues_;
                 high_priority_queues_[num].data_->schedule_thread(thrd, true);
             }
-            else if (priority == thread_priority::low)
+            else if (priority == execution::thread_priority::low)
             {
                 low_priority_queue_.schedule_thread(thrd, true);
             }
@@ -790,7 +799,7 @@ namespace pika { namespace threads { namespace policies {
         }
 
         /// Destroy the passed thread as it has been terminated
-        void destroy_thread(threads::thread_data* thrd) override
+        void destroy_thread(threads::detail::thread_data* thrd) override
         {
             PIKA_ASSERT(thrd->get_scheduler_base() == this);
             thrd->get_queue<thread_queue_type>().destroy_thread(thrd);
@@ -834,8 +843,10 @@ namespace pika { namespace threads { namespace policies {
         ///////////////////////////////////////////////////////////////////////
         // Queries the current thread count of the queues.
         std::int64_t get_thread_count(
-            thread_schedule_state state = thread_schedule_state::unknown,
-            thread_priority priority = thread_priority::default_,
+            threads::detail::thread_schedule_state state =
+                threads::detail::thread_schedule_state::unknown,
+            execution::thread_priority priority =
+                execution::thread_priority::default_,
             std::size_t num_thread = std::size_t(-1),
             bool /* reset */ = false) const override
         {
@@ -847,7 +858,7 @@ namespace pika { namespace threads { namespace policies {
 
                 switch (priority)
                 {
-                case thread_priority::default_:
+                case execution::thread_priority::default_:
                 {
                     if (num_thread < num_high_priority_queues_)
                     {
@@ -861,19 +872,19 @@ namespace pika { namespace threads { namespace policies {
                         queues_[num_thread].data_->get_thread_count(state);
                 }
 
-                case thread_priority::low:
+                case execution::thread_priority::low:
                 {
                     if (num_queues_ - 1 == num_thread)
                         return low_priority_queue_.get_thread_count(state);
                     break;
                 }
 
-                case thread_priority::normal:
+                case execution::thread_priority::normal:
                     return queues_[num_thread].data_->get_thread_count(state);
 
-                case thread_priority::boost:
-                case thread_priority::high:
-                case thread_priority::high_recursive:
+                case execution::thread_priority::boost:
+                case execution::thread_priority::high:
+                case execution::thread_priority::high_recursive:
                 {
                     if (num_thread < num_high_priority_queues_)
                     {
@@ -884,12 +895,12 @@ namespace pika { namespace threads { namespace policies {
                 }
 
                 default:
-                case thread_priority::unknown:
+                case execution::thread_priority::unknown:
                 {
                     PIKA_THROW_EXCEPTION(bad_parameter,
                         "local_priority_queue_scheduler::get_thread_count",
                         "unknown thread priority value "
-                        "(thread_priority::unknown)");
+                        "(execution::thread_priority::unknown)");
                     return 0;
                 }
                 }
@@ -899,7 +910,7 @@ namespace pika { namespace threads { namespace policies {
             // Return the cumulative count for all queues.
             switch (priority)
             {
-            case thread_priority::default_:
+            case execution::thread_priority::default_:
             {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
@@ -915,10 +926,10 @@ namespace pika { namespace threads { namespace policies {
                 break;
             }
 
-            case thread_priority::low:
+            case execution::thread_priority::low:
                 return low_priority_queue_.get_thread_count(state);
 
-            case thread_priority::normal:
+            case execution::thread_priority::normal:
             {
                 for (std::size_t i = 0; i != num_queues_; ++i)
                 {
@@ -927,9 +938,9 @@ namespace pika { namespace threads { namespace policies {
                 break;
             }
 
-            case thread_priority::boost:
-            case thread_priority::high:
-            case thread_priority::high_recursive:
+            case execution::thread_priority::boost:
+            case execution::thread_priority::high:
+            case execution::thread_priority::high_recursive:
             {
                 for (std::size_t i = 0; i != num_high_priority_queues_; ++i)
                 {
@@ -940,12 +951,12 @@ namespace pika { namespace threads { namespace policies {
             }
 
             default:
-            case thread_priority::unknown:
+            case execution::thread_priority::unknown:
             {
                 PIKA_THROW_EXCEPTION(bad_parameter,
                     "local_priority_queue_scheduler::get_thread_count",
                     "unknown thread priority value "
-                    "(thread_priority::unknown)");
+                    "(execution::thread_priority::unknown)");
                 return 0;
             }
             }
@@ -971,9 +982,10 @@ namespace pika { namespace threads { namespace policies {
 
         ///////////////////////////////////////////////////////////////////////
         // Enumerate matching threads from all queues
-        bool enumerate_threads(util::function<bool(thread_id_type)> const& f,
-            thread_schedule_state state =
-                thread_schedule_state::unknown) const override
+        bool enumerate_threads(
+            util::function<bool(threads::detail::thread_id_type)> const& f,
+            threads::detail::thread_schedule_state state =
+                threads::detail::thread_schedule_state::unknown) const override
         {
             bool result = true;
             for (std::size_t i = 0; i != num_high_priority_queues_; ++i)

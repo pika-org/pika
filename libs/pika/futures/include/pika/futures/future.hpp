@@ -27,8 +27,8 @@
 #include <pika/futures/traits/future_then_result.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/futures/traits/is_future.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/memory.hpp>
 #include <pika/timing/steady_clock.hpp>
 #include <pika/type_support/decay.hpp>
 

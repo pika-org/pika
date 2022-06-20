@@ -61,10 +61,11 @@ namespace pika { namespace threads { namespace policies {
             typename Map::const_iterator end = tm.end();
             for (typename Map::const_iterator it = tm.begin(); it != end; ++it)
             {
-                threads::thread_data const* thrd = get_thread_id_data(*it);
-                threads::thread_schedule_state state =
+                threads::detail::thread_data const* thrd =
+                    get_thread_id_data(*it);
+                threads::detail::thread_schedule_state state =
                     thrd->get_state().state();
-                threads::thread_schedule_state marked_state =
+                threads::detail::thread_schedule_state marked_state =
                     thrd->get_marked_state();
 
                 if (state != marked_state)
@@ -121,12 +122,12 @@ namespace pika { namespace threads { namespace policies {
                     {
                         switch (state)
                         {
-                        case threads::thread_schedule_state::suspended:
+                        case threads::detail::thread_schedule_state::suspended:
                             result = true;    // at least one is suspended
                             break;
 
-                        case threads::thread_schedule_state::pending:
-                        case threads::thread_schedule_state::active:
+                        case threads::detail::thread_schedule_state::pending:
+                        case threads::detail::thread_schedule_state::active:
                             result =
                                 false;    // one is active, no deadlock (yet)
                             collect_suspended = false;

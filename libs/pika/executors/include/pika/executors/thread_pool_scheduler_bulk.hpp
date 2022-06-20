@@ -406,10 +406,10 @@ namespace pika { namespace execution { namespace experimental {
 
                         // Only apply hint if none was given.
                         auto hint = get_hint(op_state->scheduler);
-                        if (hint == pika::threads::thread_schedule_hint())
+                        if (hint == pika::execution::thread_schedule_hint())
                         {
-                            hint = pika::threads::thread_schedule_hint(
-                                pika::threads::thread_schedule_hint_mode::
+                            hint = pika::execution::thread_schedule_hint(
+                                pika::execution::thread_schedule_hint_mode::
                                     thread,
                                 worker_thread);
                         }
@@ -418,18 +418,18 @@ namespace pika { namespace execution { namespace experimental {
                         // the spawned task. Since this is a customization of
                         // bulk for thread_pool_scheduler we must currently be
                         // running on a pika thread.
-                        PIKA_ASSERT(pika::threads::get_self_id());
-                        pika::util::thread_description desc =
-                            pika::threads::get_thread_description(
-                                pika::threads::get_self_id());
+                        PIKA_ASSERT(pika::threads::detail::get_self_id());
+                        pika::util::detail::thread_description desc =
+                            pika::threads::detail::get_thread_description(
+                                pika::threads::detail::get_self_id());
 
                         // Spawn the task.
-                        threads::thread_init_data data(
-                            threads::make_thread_function_nullary(
+                        threads::detail::thread_init_data data(
+                            threads::detail::make_thread_function_nullary(
                                 PIKA_MOVE(task_f)),
                             desc, get_priority(op_state->scheduler), hint,
                             get_stacksize(op_state->scheduler));
-                        threads::register_work(
+                        threads::detail::register_work(
                             data, op_state->scheduler.get_thread_pool());
                     }
 

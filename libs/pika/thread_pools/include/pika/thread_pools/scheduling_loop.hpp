@@ -435,7 +435,7 @@ namespace pika { namespace threads { namespace detail {
     thread_id_ref_type create_background_thread(SchedulingPolicy& scheduler,
         scheduling_callbacks& callbacks,
         std::shared_ptr<bool>& background_running,
-        threads::thread_schedule_hint schedulehint,
+        execution::thread_schedule_hint schedulehint,
         std::int64_t& idle_loop_count)
     {
         thread_id_ref_type background_thread;
@@ -460,9 +460,9 @@ namespace pika { namespace threads { namespace detail {
                 return thread_result_type(
                     thread_schedule_state::terminated, invalid_thread_id);
             },
-            pika::util::thread_description("background_work"),
-            thread_priority::high_recursive, schedulehint,
-            thread_stacksize::large,
+            pika::util::detail::thread_description("background_work"),
+            execution::thread_priority::high_recursive, schedulehint,
+            execution::thread_stacksize::large,
             // Create in suspended to prevent the thread from being scheduled
             // directly...
             thread_schedule_state::suspended, true, &scheduler);
@@ -511,7 +511,7 @@ namespace pika { namespace threads { namespace detail {
                 {
                     // tries to set state to active (only if state is still
                     // the same as 'state')
-                    detail::switch_status_background thrd_stat(
+                    switch_status_background thrd_stat(
                         background_thread, state);
 
                     if (PIKA_LIKELY(thrd_stat.is_valid() &&
@@ -543,7 +543,7 @@ namespace pika { namespace threads { namespace detail {
                                 auto* scheduler = get_thread_id_data(next)
                                                       ->get_scheduler_base();
                                 scheduler->schedule_thread(PIKA_MOVE(next),
-                                    threads::thread_schedule_hint(
+                                    execution::thread_schedule_hint(
                                         static_cast<std::int16_t>(num_thread)),
                                     true);
                                 scheduler->do_some_work(num_thread);
@@ -619,7 +619,8 @@ namespace pika { namespace threads { namespace detail {
         {
             background_thread =
                 create_background_thread(scheduler, params, background_running,
-                    thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
+                    execution::thread_schedule_hint(
+                        static_cast<std::int16_t>(num_thread)),
                     idle_loop_count);
         }
 
@@ -681,12 +682,12 @@ namespace pika { namespace threads { namespace detail {
                     {
                         // tries to set state to active (only if state is still
                         // the same as 'state')
-                        detail::switch_status thrd_stat(thrd, state);
+                        switch_status thrd_stat(thrd, state);
                         if (PIKA_LIKELY(thrd_stat.is_valid() &&
                                 thrd_stat.get_previous() ==
                                     thread_schedule_state::pending))
                         {
-                            detail::write_state_log(scheduler, num_thread, thrd,
+                            write_state_log(scheduler, num_thread, thrd,
                                 thrd_stat.get_previous(),
                                 thread_schedule_state::active);
 
@@ -741,7 +742,7 @@ namespace pika { namespace threads { namespace detail {
 #endif
                             }
 
-                            detail::write_state_log(scheduler, num_thread, thrd,
+                            write_state_log(scheduler, num_thread, thrd,
                                 thread_schedule_state::active,
                                 thrd_stat.get_previous());
 
@@ -755,8 +756,8 @@ namespace pika { namespace threads { namespace detail {
                             // executing this pika-thread, we just continue with
                             // the next one
                             thrd_stat.disable_restore();
-                            detail::write_state_log_warning(scheduler,
-                                num_thread, thrd, state_val, "no execution");
+                            write_state_log_warning(scheduler, num_thread, thrd,
+                                state_val, "no execution");
                             continue;
                         }
 
@@ -766,8 +767,8 @@ namespace pika { namespace threads { namespace detail {
                             // some other worker-thread got in between and changed
                             // the state of this thread, we just continue with
                             // the next one
-                            detail::write_state_log_warning(scheduler,
-                                num_thread, thrd, state_val, "no state change");
+                            write_state_log_warning(scheduler, num_thread, thrd,
+                                state_val, "no state change");
                             continue;
                         }
 
@@ -799,7 +800,7 @@ namespace pika { namespace threads { namespace detail {
                         // the end of the queue
                         scheduler.SchedulingPolicy::schedule_thread_last(
                             PIKA_MOVE(thrd),
-                            threads::thread_schedule_hint(
+                            execution::thread_schedule_hint(
                                 static_cast<std::int16_t>(num_thread)),
                             true);
                         scheduler.SchedulingPolicy::do_some_work(num_thread);
@@ -830,9 +831,9 @@ namespace pika { namespace threads { namespace detail {
                                 // boosted priority
                                 scheduler.SchedulingPolicy::schedule_thread(
                                     PIKA_MOVE(thrd),
-                                    threads::thread_schedule_hint(
+                                    execution::thread_schedule_hint(
                                         static_cast<std::int16_t>(num_thread)),
-                                    true, thread_priority::boost);
+                                    true, execution::thread_priority::boost);
                                 scheduler.SchedulingPolicy::do_some_work(
                                     num_thread);
                             }
@@ -843,9 +844,9 @@ namespace pika { namespace threads { namespace detail {
                             // boosted priority
                             scheduler.SchedulingPolicy::schedule_thread(
                                 PIKA_MOVE(thrd),
-                                threads::thread_schedule_hint(
+                                execution::thread_schedule_hint(
                                     static_cast<std::int16_t>(num_thread)),
-                                true, thread_priority::boost);
+                                true, execution::thread_priority::boost);
                             scheduler.SchedulingPolicy::do_some_work(
                                 num_thread);
                         }
@@ -867,7 +868,7 @@ namespace pika { namespace threads { namespace detail {
                     // yet
                     auto priority = thrdptr->get_priority();
                     scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
-                        threads::thread_schedule_hint(
+                        execution::thread_schedule_hint(
                             static_cast<std::int16_t>(num_thread)),
                         true, priority);
                     scheduler.SchedulingPolicy::do_some_work(num_thread);
@@ -914,7 +915,8 @@ namespace pika { namespace threads { namespace detail {
                         can_exit = can_exit &&
                             scheduler.SchedulingPolicy::get_thread_count(
                                 thread_schedule_state::suspended,
-                                thread_priority::default_, num_thread) == 0;
+                                execution::thread_priority::default_,
+                                num_thread) == 0;
 
                         if (can_exit)
                         {
@@ -934,7 +936,7 @@ namespace pika { namespace threads { namespace detail {
                                         decrement_background_thread_count();
                                     scheduler.SchedulingPolicy::schedule_thread(
                                         PIKA_MOVE(background_thread),
-                                        threads::thread_schedule_hint(
+                                        execution::thread_schedule_hint(
                                             static_cast<std::int16_t>(
                                                 num_thread)),
                                         true, priority);
@@ -993,7 +995,7 @@ namespace pika { namespace threads { namespace detail {
                     // blocked.
                     background_thread = create_background_thread(scheduler,
                         params, background_running,
-                        thread_schedule_hint(
+                        execution::thread_schedule_hint(
                             static_cast<std::int16_t>(num_thread)),
                         idle_loop_count);
                 }
@@ -1045,7 +1047,7 @@ namespace pika { namespace threads { namespace detail {
                     // threads are blocked.
                     background_thread = create_background_thread(scheduler,
                         params, background_running,
-                        thread_schedule_hint(
+                        execution::thread_schedule_hint(
                             static_cast<std::int16_t>(num_thread)),
                         idle_loop_count);
                 }
@@ -1079,7 +1081,7 @@ namespace pika { namespace threads { namespace detail {
                             decrement_background_thread_count();
                         scheduler.SchedulingPolicy::schedule_thread(
                             PIKA_MOVE(background_thread),
-                            threads::thread_schedule_hint(
+                            execution::thread_schedule_hint(
                                 static_cast<std::int16_t>(num_thread)),
                             true, priority);
                         scheduler.SchedulingPolicy::do_some_work(num_thread);
@@ -1094,7 +1096,8 @@ namespace pika { namespace threads { namespace detail {
                                 true) &&
                             scheduler.SchedulingPolicy::get_thread_count(
                                 thread_schedule_state::suspended,
-                                thread_priority::default_, num_thread) == 0 &&
+                                execution::thread_priority::default_,
+                                num_thread) == 0 &&
                             scheduler.SchedulingPolicy::get_queue_length(
                                 num_thread) == 0;
 

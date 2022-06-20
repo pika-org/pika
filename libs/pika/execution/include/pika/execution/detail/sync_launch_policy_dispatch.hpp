@@ -48,15 +48,15 @@ namespace pika { namespace detail {
 
             if (pika::detail::has_async_policy(policy))
             {
-                threads::thread_id_ref_type tid =
+                threads::detail::thread_id_ref_type tid =
                     p.apply(policy, policy.priority());
                 if (tid && policy == launch::fork)
                 {
                     // make sure this thread is executed last
                     // yield_to
                     pika::this_thread::suspend(
-                        threads::thread_schedule_state::pending, tid.noref(),
-                        "sync_launch_policy_dispatch<fork>");
+                        threads::detail::thread_schedule_state::pending,
+                        tid.noref(), "sync_launch_policy_dispatch<fork>");
                 }
             }
 

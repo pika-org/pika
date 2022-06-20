@@ -88,16 +88,18 @@ namespace pika { namespace threads { namespace policies {
         using mutex_type = Mutex;
 
         // this is the type of a map holding all threads (except depleted ones)
-        using thread_map_type = std::unordered_set<thread_id_type,
-            std::hash<thread_id_type>, std::equal_to<thread_id_type>,
-            pika::detail::internal_allocator<thread_id_type>>;
+        using thread_map_type = std::unordered_set<
+            threads::detail::thread_id_type,
+            std::hash<threads::detail::thread_id_type>,
+            std::equal_to<threads::detail::thread_id_type>,
+            pika::detail::internal_allocator<threads::detail::thread_id_type>>;
 
-        using thread_heap_type = std::vector<thread_id_type,
-            pika::detail::internal_allocator<thread_id_type>>;
+        using thread_heap_type = std::vector<threads::detail::thread_id_type,
+            pika::detail::internal_allocator<threads::detail::thread_id_type>>;
 
         struct task_description
         {
-            thread_init_data data;
+            threads::detail::thread_init_data data;
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
             std::uint64_t waittime;
 #endif
@@ -106,13 +108,13 @@ namespace pika { namespace threads { namespace policies {
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
         struct thread_description
         {
-            thread_id_ref_type data;
+            threads::detail::thread_id_ref_type data;
             std::uint64_t waittime;
         };
         using thread_description_ptr = thread_description*;
 #else
         using thread_description_ptr =
-            typename thread_id_ref_type::thread_repr*;
+            typename threads::detail::thread_id_ref_type::thread_repr*;
 #endif
 
         using work_items_type = typename PendingQueuing::template apply<
@@ -122,12 +124,13 @@ namespace pika { namespace threads { namespace policies {
             typename StagedQueuing::template apply<task_description*>::type;
 
         using terminated_items_type =
-            typename TerminatedQueuing::template apply<thread_data*>::type;
+            typename TerminatedQueuing::template apply<
+                threads::detail::thread_data*>::type;
 
     protected:
         template <typename Lock>
-        void create_thread_object(threads::thread_id_ref_type& thrd,
-            threads::thread_init_data& data, Lock& lk)
+        void create_thread_object(threads::detail::thread_id_ref_type& thrd,
+            threads::detail::thread_init_data& data, Lock& lk)
         {
             PIKA_ASSERT(lk.owns_lock());
 
@@ -159,10 +162,13 @@ namespace pika { namespace threads { namespace policies {
             PIKA_ASSERT(heap);
 
             if (data.initial_state ==
-                    thread_schedule_state::pending_do_not_schedule ||
-                data.initial_state == thread_schedule_state::pending_boost)
+                    threads::detail::thread_schedule_state::
+                        pending_do_not_schedule ||
+                data.initial_state ==
+                    threads::detail::thread_schedule_state::pending_boost)
             {
-                data.initial_state = thread_schedule_state::pending;
+                data.initial_state =
+                    threads::detail::thread_schedule_state::pending;
             }
 
             // ASAN gets confused by reusing threads/stacks
@@ -174,7 +180,7 @@ namespace pika { namespace threads { namespace policies {
                 // Take ownership of the thread object and rebind it.
                 thrd = heap->back();
                 heap->pop_back();
-                get_thread_id_data(thrd)->rebind(data);
+                threads::detail::get_thread_id_data(thrd)->rebind(data);
             }
             else
 #endif
@@ -182,18 +188,19 @@ namespace pika { namespace threads { namespace policies {
                 pika::util::unlock_guard<Lock> ull(lk);
 
                 // Allocate a new thread object.
-                threads::thread_data* p = nullptr;
+                threads::detail::thread_data* p = nullptr;
                 if (stacksize == parameters_.nostack_stacksize_)
                 {
-                    p = threads::thread_data_stackless::create(
+                    p = threads::detail::thread_data_stackless::create(
                         data, this, stacksize);
                 }
                 else
                 {
-                    p = threads::thread_data_stackful::create(
+                    p = threads::detail::thread_data_stackful::create(
                         data, this, stacksize);
                 }
-                thrd = thread_id_ref_type(p, thread_id_addref::no);
+                thrd = threads::detail::thread_id_ref_type(
+                    p, threads::detail::thread_id_addref::no);
             }
         }
 
@@ -224,13 +231,13 @@ namespace pika { namespace threads { namespace policies {
                 }
 #endif
                 // create the new thread
-                threads::thread_init_data& data = task->data;
+                threads::detail::thread_init_data& data = task->data;
 
-                bool schedule_now =
-                    data.initial_state == thread_schedule_state::pending;
+                bool schedule_now = data.initial_state ==
+                    threads::detail::thread_schedule_state::pending;
                 (void) schedule_now;
 
-                threads::thread_id_ref_type thrd;
+                threads::detail::thread_id_ref_type thrd;
                 create_thread_object(thrd, data, lk);
 
                 task->~task_description();
@@ -323,10 +330,10 @@ namespace pika { namespace threads { namespace policies {
             return addednew != 0;
         }
 
-        void recycle_thread(thread_id_type thrd)
+        void recycle_thread(threads::detail::thread_id_type thrd)
         {
             std::ptrdiff_t stacksize =
-                get_thread_id_data(thrd)->get_stack_size();
+                threads::detail::get_thread_id_data(thrd)->get_stack_size();
 
             if (stacksize == parameters_.small_stacksize_)
             {
@@ -373,10 +380,10 @@ namespace pika { namespace threads { namespace policies {
             if (delete_all)
             {
                 // delete all threads
-                thread_data* todelete;
+                threads::detail::thread_data* todelete;
                 while (terminated_items_.pop(todelete))
                 {
-                    thread_id_type tid(todelete);
+                    threads::detail::thread_id_type tid(todelete);
                     --terminated_items_count_;
 
                     // this thread has to be in this map
@@ -401,10 +408,10 @@ namespace pika { namespace threads { namespace policies {
                 delete_count = (std::max)(delete_count,
                     static_cast<std::int64_t>(parameters_.min_delete_count_));
 
-                thread_data* todelete;
+                threads::detail::thread_data* todelete;
                 while (delete_count && terminated_items_.pop(todelete))
                 {
-                    thread_id_type tid(todelete);
+                    threads::detail::thread_id_type tid(todelete);
                     --terminated_items_count_;
 
                     // this thread has to be in this map, except if it has changed
@@ -485,7 +492,7 @@ namespace pika { namespace threads { namespace policies {
             work_items_count_.data_ = 0;
         }
 
-        static void deallocate(threads::thread_data* p)
+        static void deallocate(threads::detail::thread_data* p)
         {
             p->destroy();
         }
@@ -493,19 +500,19 @@ namespace pika { namespace threads { namespace policies {
         ~thread_queue()
         {
             for (auto t : thread_heap_small_)
-                deallocate(get_thread_id_data(t));
+                deallocate(threads::detail::get_thread_id_data(t));
 
             for (auto t : thread_heap_medium_)
-                deallocate(get_thread_id_data(t));
+                deallocate(threads::detail::get_thread_id_data(t));
 
             for (auto t : thread_heap_large_)
-                deallocate(get_thread_id_data(t));
+                deallocate(threads::detail::get_thread_id_data(t));
 
             for (auto t : thread_heap_huge_)
-                deallocate(get_thread_id_data(t));
+                deallocate(threads::detail::get_thread_id_data(t));
 
             for (auto t : thread_heap_nostack_)
-                deallocate(get_thread_id_data(t));
+                deallocate(threads::detail::get_thread_id_data(t));
         }
 
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
@@ -648,23 +655,23 @@ namespace pika { namespace threads { namespace policies {
         ///////////////////////////////////////////////////////////////////////
         // create a new thread and schedule it if the initial state is equal to
         // pending
-        void create_thread(
-            thread_init_data& data, thread_id_ref_type* id, error_code& ec)
+        void create_thread(threads::detail::thread_init_data& data,
+            threads::detail::thread_id_ref_type* id, error_code& ec)
         {
             // thread has not been created yet
             if (id)
-                *id = invalid_thread_id;
+                *id = threads::detail::invalid_thread_id;
 
-            if (data.stacksize == threads::thread_stacksize::current)
+            if (data.stacksize == execution::thread_stacksize::current)
             {
-                data.stacksize = get_self_stacksize_enum();
+                data.stacksize = threads::detail::get_self_stacksize_enum();
             }
 
-            PIKA_ASSERT(data.stacksize != threads::thread_stacksize::current);
+            PIKA_ASSERT(data.stacksize != execution::thread_stacksize::current);
 
             if (data.run_now)
             {
-                threads::thread_id_ref_type thrd;
+                threads::detail::thread_id_ref_type thrd;
 
                 // The mutex can not be locked while a new thread is getting
                 // created, as it might have that the current pika thread gets
@@ -672,8 +679,8 @@ namespace pika { namespace threads { namespace policies {
                 {
                     std::unique_lock<mutex_type> lk(mtx_);
 
-                    bool schedule_now =
-                        data.initial_state == thread_schedule_state::pending;
+                    bool schedule_now = data.initial_state ==
+                        threads::detail::thread_schedule_state::pending;
 
                     create_thread_object(thrd, data, lk);
 
@@ -694,9 +701,8 @@ namespace pika { namespace threads { namespace policies {
                     // this thread has to be in the map now
                     PIKA_ASSERT(
                         thread_map_.find(thrd.noref()) != thread_map_.end());
-                    PIKA_ASSERT(
-                        &get_thread_id_data(thrd)->get_queue<thread_queue>() ==
-                        this);
+                    PIKA_ASSERT(&threads::detail::get_thread_id_data(thrd)
+                                     ->get_queue<thread_queue>() == this);
 
                     // push the new thread in the pending thread queue
                     if (schedule_now)
@@ -726,7 +732,8 @@ namespace pika { namespace threads { namespace policies {
             // if the initial state is not pending, delayed creation will
             // fail as the newly created thread would go out of scope right
             // away (can't be scheduled).
-            if (data.initial_state != thread_schedule_state::pending)
+            if (data.initial_state !=
+                threads::detail::thread_schedule_state::pending)
             {
                 PIKA_THROW_EXCEPTION(bad_parameter,
                     "thread_queue::create_thread",
@@ -810,7 +817,7 @@ namespace pika { namespace threads { namespace policies {
 
         /// Return the next thread to be executed, return false if none is
         /// available
-        bool get_next_thread(threads::thread_id_ref_type& thrd,
+        bool get_next_thread(threads::detail::thread_id_ref_type& thrd,
             bool allow_stealing = false, bool steal = false) PIKA_HOT
         {
             std::int64_t work_items_count =
@@ -855,7 +862,7 @@ namespace pika { namespace threads { namespace policies {
 
         /// Schedule the passed thread
         void schedule_thread(
-            threads::thread_id_ref_type thrd, bool other_end = false)
+            threads::detail::thread_id_ref_type thrd, bool other_end = false)
         {
             ++work_items_count_.data_;
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
@@ -870,7 +877,7 @@ namespace pika { namespace threads { namespace policies {
         }
 
         /// Destroy the passed thread as it has been terminated
-        void destroy_thread(threads::thread_data* thrd)
+        void destroy_thread(threads::detail::thread_data* thrd)
         {
             PIKA_ASSERT(&thrd->get_queue<thread_queue>() == this);
 
@@ -886,15 +893,16 @@ namespace pika { namespace threads { namespace policies {
         ///////////////////////////////////////////////////////////////////////
         /// Return the number of existing threads with the given state.
         std::int64_t get_thread_count(
-            thread_schedule_state state = thread_schedule_state::unknown) const
+            threads::detail::thread_schedule_state state =
+                threads::detail::thread_schedule_state::unknown) const
         {
-            if (thread_schedule_state::terminated == state)
+            if (threads::detail::thread_schedule_state::terminated == state)
                 return terminated_items_count_;
 
-            if (thread_schedule_state::staged == state)
+            if (threads::detail::thread_schedule_state::staged == state)
                 return new_tasks_count_.data_;
 
-            if (thread_schedule_state::unknown == state)
+            if (threads::detail::thread_schedule_state::unknown == state)
             {
                 return thread_map_count_ + new_tasks_count_.data_ -
                     terminated_items_count_;
@@ -908,7 +916,9 @@ namespace pika { namespace threads { namespace policies {
             for (thread_map_type::const_iterator it = thread_map_.begin();
                  it != end; ++it)
             {
-                if (get_thread_id_data(*it)->get_state().state() == state)
+                if (threads::detail::get_thread_id_data(*it)
+                        ->get_state()
+                        .state() == state)
                     ++num_threads;
             }
             return num_threads;
@@ -922,29 +932,32 @@ namespace pika { namespace threads { namespace policies {
             for (thread_map_type::iterator it = thread_map_.begin(); it != end;
                  ++it)
             {
-                auto thrd = get_thread_id_data(*it);
+                auto thrd = threads::detail::get_thread_id_data(*it);
                 if (thrd->get_state().state() ==
-                    thread_schedule_state::suspended)
+                    threads::detail::thread_schedule_state::suspended)
                 {
-                    thrd->set_state(thread_schedule_state::pending,
-                        thread_restart_state::abort);
+                    thrd->set_state(
+                        threads::detail::thread_schedule_state::pending,
+                        threads::detail::thread_restart_state::abort);
 
                     // thread holds self-reference
                     PIKA_ASSERT(thrd->count_ > 1);
-                    schedule_thread(thread_id_ref_type(thrd));
+                    schedule_thread(threads::detail::thread_id_ref_type(thrd));
                 }
             }
         }
 
-        bool enumerate_threads(util::function<bool(thread_id_type)> const& f,
-            thread_schedule_state state = thread_schedule_state::unknown) const
+        bool enumerate_threads(
+            util::function<bool(threads::detail::thread_id_type)> const& f,
+            threads::detail::thread_schedule_state state =
+                threads::detail::thread_schedule_state::unknown) const
         {
             std::uint64_t count = thread_map_count_;
-            if (state == thread_schedule_state::terminated)
+            if (state == threads::detail::thread_schedule_state::terminated)
             {
                 count = terminated_items_count_;
             }
-            else if (state == thread_schedule_state::staged)
+            else if (state == threads::detail::thread_schedule_state::staged)
             {
                 PIKA_THROW_EXCEPTION(bad_parameter,
                     "thread_queue::iterate_threads",
@@ -952,10 +965,10 @@ namespace pika { namespace threads { namespace policies {
                 return false;
             }
 
-            std::vector<thread_id_type> ids;
+            std::vector<threads::detail::thread_id_type> ids;
             ids.reserve(static_cast<std::size_t>(count));
 
-            if (state == thread_schedule_state::unknown)
+            if (state == threads::detail::thread_schedule_state::unknown)
             {
                 std::lock_guard<mutex_type> lk(mtx_);
                 thread_map_type::const_iterator end = thread_map_.end();
@@ -972,13 +985,15 @@ namespace pika { namespace threads { namespace policies {
                 for (thread_map_type::const_iterator it = thread_map_.begin();
                      it != end; ++it)
                 {
-                    if (get_thread_id_data(*it)->get_state().state() == state)
+                    if (threads::detail::get_thread_id_data(*it)
+                            ->get_state()
+                            .state() == state)
                         ids.push_back(*it);
                 }
             }
 
             // now invoke callback function for all matching threads
-            for (thread_id_type const& id : ids)
+            for (threads::detail::thread_id_type const& id : ids)
             {
                 if (!f(id))
                     return false;    // stop iteration
@@ -1124,8 +1139,8 @@ namespace pika { namespace threads { namespace policies {
 
             // Pre-allocate init_threads_count threads, with accompanying stack,
             // with the default stack size
-            static_assert(
-                thread_stacksize::default_ == thread_stacksize::small_,
+            static_assert(execution::thread_stacksize::default_ ==
+                    execution::thread_stacksize::small_,
                 "This assumes that the default stacksize is \"small_\". If the "
                 "default changes, so should this code. If this static_assert "
                 "fails you've most likely changed the default without changing "
@@ -1136,13 +1151,14 @@ namespace pika { namespace threads { namespace policies {
             {
                 // We don't care about the init parameters since this thread
                 // will be rebound once it is actually used
-                pika::threads::thread_init_data init_data;
+                threads::detail::thread_init_data init_data;
 
                 // We start the reference count at zero since the thread goes
                 // immediately into the list of recycled threads
-                threads::thread_data* p =
-                    threads::thread_data_stackful::create(init_data, this,
-                        parameters_.small_stacksize_, thread_id_addref::no);
+                threads::detail::thread_data* p =
+                    threads::detail::thread_data_stackful::create(init_data,
+                        this, parameters_.small_stacksize_,
+                        threads::detail::thread_id_addref::no);
                 PIKA_ASSERT(p);
 
                 // We initialize the stack eagerly

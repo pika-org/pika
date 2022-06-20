@@ -54,26 +54,28 @@
 extern "C" void switch_to_fiber(void* lpFiber) noexcept;
 #endif
 
-namespace pika { namespace threads { namespace coroutines {
-    // On Windows we need a special preparation for the main coroutines thread
-    struct prepare_main_thread
-    {
-        prepare_main_thread() noexcept
+namespace pika::threads::coroutines {
+    namespace detail {
+        // On Windows we need a special preparation for the main coroutines thread
+        struct prepare_main_thread
         {
-            LPVOID result = ConvertThreadToFiber(nullptr);
-            PIKA_ASSERT(nullptr != result);
-            PIKA_UNUSED(result);
-        }
+            prepare_main_thread() noexcept
+            {
+                LPVOID result = ConvertThreadToFiber(nullptr);
+                PIKA_ASSERT(nullptr != result);
+                PIKA_UNUSED(result);
+            }
 
-        ~prepare_main_thread() noexcept
-        {
-            BOOL result = ConvertFiberToThread();
-            PIKA_ASSERT(FALSE != result);
-            PIKA_UNUSED(result);
-        }
-    };
+            ~prepare_main_thread() noexcept
+            {
+                BOOL result = ConvertFiberToThread();
+                PIKA_ASSERT(FALSE != result);
+                PIKA_UNUSED(result);
+            }
+        };
+    }    // namespace detail
 
-    namespace detail { namespace windows {
+    namespace detail::windows {
         using fiber_ptr = LPVOID;
 
 #if _WIN32_WINNT < 0x0600
@@ -335,5 +337,5 @@ namespace pika { namespace threads { namespace coroutines {
         private:
             std::ptrdiff_t stacksize_;
         };
-    }}    // namespace detail::windows
-}}}       // namespace pika::threads::coroutines
+    }    // namespace detail::windows
+}    // namespace pika::threads::coroutines

@@ -101,7 +101,7 @@ namespace pika { namespace parallel { inline namespace v2 {
         friend struct detail::define_task_block_impl;
 
         explicit task_block(ExPolicy const& policy = ExPolicy())
-          : id_(threads::get_self_id())
+          : id_(threads::detail::get_self_id())
           , policy_(policy)
         {
         }
@@ -180,7 +180,7 @@ namespace pika { namespace parallel { inline namespace v2 {
         {
             // The proposal requires that the task_block should be
             // 'active' to be usable.
-            if (id_ != threads::get_self_id())
+            if (id_ != threads::detail::get_self_id())
             {
                 PIKA_THROW_EXCEPTION(task_block_not_active, "task_block::run",
                     "the task_block is not active");
@@ -230,7 +230,7 @@ namespace pika { namespace parallel { inline namespace v2 {
         {
             // The proposal requires that the task_block should be
             // 'active' to be usable.
-            if (id_ != threads::get_self_id())
+            if (id_ != threads::detail::get_self_id())
             {
                 PIKA_THROW_EXCEPTION(task_block_not_active, "task_block::run",
                     "the task_block is not active");
@@ -270,7 +270,7 @@ namespace pika { namespace parallel { inline namespace v2 {
         {
             // The proposal requires that the task_block should be
             // 'active' to be usable.
-            if (id_ != threads::get_self_id())
+            if (id_ != threads::detail::get_self_id())
             {
                 PIKA_THROW_EXCEPTION(task_block_not_active, "task_block::run",
                     "the task_block is not active");
@@ -302,7 +302,7 @@ namespace pika { namespace parallel { inline namespace v2 {
 
     private:
         pika::execution::experimental::task_group tasks_;
-        threads::thread_id_type id_;
+        threads::detail::thread_id_type id_;
         ExPolicy policy_;
     };
 

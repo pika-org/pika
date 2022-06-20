@@ -37,7 +37,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads::policies {
     namespace detail {
         enum class polling_status
         {
@@ -194,8 +194,10 @@ namespace pika { namespace threads { namespace policies {
             std::size_t num_thread = std::size_t(-1)) const = 0;
 
         virtual std::int64_t get_thread_count(
-            thread_schedule_state state = thread_schedule_state::unknown,
-            thread_priority priority = thread_priority::default_,
+            threads::detail::thread_schedule_state state =
+                threads::detail::thread_schedule_state::unknown,
+            execution::thread_priority priority =
+                execution::thread_priority::default_,
             std::size_t num_thread = std::size_t(-1),
             bool reset = false) const = 0;
 
@@ -209,9 +211,9 @@ namespace pika { namespace threads { namespace policies {
 
         // Enumerate all matching threads
         virtual bool enumerate_threads(
-            util::function<bool(thread_id_type)> const& f,
-            thread_schedule_state state =
-                thread_schedule_state::unknown) const = 0;
+            util::function<bool(threads::detail::thread_id_type)> const& f,
+            threads::detail::thread_schedule_state state =
+                threads::detail::thread_schedule_state::unknown) const = 0;
 
         virtual void abort_all_suspended_threads() = 0;
 
@@ -219,23 +221,27 @@ namespace pika { namespace threads { namespace policies {
         virtual bool cleanup_terminated(
             std::size_t num_thread, bool delete_all) = 0;
 
-        virtual void create_thread(
-            thread_init_data& data, thread_id_ref_type* id, error_code& ec) = 0;
+        virtual void create_thread(threads::detail::thread_init_data& data,
+            threads::detail::thread_id_ref_type* id, error_code& ec) = 0;
 
         virtual bool get_next_thread(std::size_t num_thread, bool running,
-            threads::thread_id_ref_type& thrd, bool enable_stealing) = 0;
+            threads::detail::thread_id_ref_type& thrd,
+            bool enable_stealing) = 0;
 
-        virtual void schedule_thread(threads::thread_id_ref_type thrd,
-            threads::thread_schedule_hint schedulehint,
+        virtual void schedule_thread(threads::detail::thread_id_ref_type thrd,
+            execution::thread_schedule_hint schedulehint,
             bool allow_fallback = false,
-            thread_priority priority = thread_priority::normal) = 0;
+            execution::thread_priority priority =
+                execution::thread_priority::normal) = 0;
 
-        virtual void schedule_thread_last(threads::thread_id_ref_type thrd,
-            threads::thread_schedule_hint schedulehint,
+        virtual void schedule_thread_last(
+            threads::detail::thread_id_ref_type thrd,
+            execution::thread_schedule_hint schedulehint,
             bool allow_fallback = false,
-            thread_priority priority = thread_priority::normal) = 0;
+            execution::thread_priority priority =
+                execution::thread_priority::normal) = 0;
 
-        virtual void destroy_thread(threads::thread_data* thrd) = 0;
+        virtual void destroy_thread(threads::detail::thread_data* thrd) = 0;
 
         virtual bool wait_or_add_new(std::size_t num_thread, bool running,
             std::int64_t& idle_loop_count, bool enable_stealing,
@@ -255,30 +261,31 @@ namespace pika { namespace threads { namespace policies {
 
         virtual void reset_thread_distribution() {}
 
-        std::ptrdiff_t get_stack_size(threads::thread_stacksize stacksize) const
+        std::ptrdiff_t get_stack_size(
+            execution::thread_stacksize stacksize) const
         {
-            if (stacksize == thread_stacksize::current)
+            if (stacksize == execution::thread_stacksize::current)
             {
-                stacksize = get_self_stacksize_enum();
+                stacksize = threads::detail::get_self_stacksize_enum();
             }
 
-            PIKA_ASSERT(stacksize != thread_stacksize::current);
+            PIKA_ASSERT(stacksize != execution::thread_stacksize::current);
 
             switch (stacksize)
             {
-            case thread_stacksize::small_:
+            case execution::thread_stacksize::small_:
                 return thread_queue_init_.small_stacksize_;
 
-            case thread_stacksize::medium:
+            case execution::thread_stacksize::medium:
                 return thread_queue_init_.medium_stacksize_;
 
-            case thread_stacksize::large:
+            case execution::thread_stacksize::large:
                 return thread_queue_init_.large_stacksize_;
 
-            case thread_stacksize::huge:
+            case execution::thread_stacksize::huge:
                 return thread_queue_init_.huge_stacksize_;
 
-            case thread_stacksize::nostack:
+            case execution::thread_stacksize::nostack:
                 return (std::numeric_limits<std::ptrdiff_t>::max)();
 
             default:
@@ -433,6 +440,6 @@ namespace pika { namespace threads { namespace policies {
 
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream& os, scheduler_base const& scheduler);
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads::policies
 
 #include <pika/config/warnings_suffix.hpp>

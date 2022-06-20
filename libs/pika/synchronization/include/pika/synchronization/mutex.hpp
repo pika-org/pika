@@ -51,7 +51,7 @@ namespace pika { namespace lcos { namespace local {
 
     protected:
         mutable mutex_type mtx_;
-        threads::thread_id_type owner_id_;
+        threads::detail::thread_id_type owner_id_;
         lcos::local::detail::condition_variable cond_;
     };
 

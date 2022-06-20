@@ -40,13 +40,10 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads {
-
-    namespace detail {
-        using get_locality_id_type = std::uint32_t(pika::error_code&);
-        PIKA_EXPORT void set_get_locality_id(get_locality_id_type* f);
-        PIKA_EXPORT std::uint32_t get_locality_id(pika::error_code&);
-    }    // namespace detail
+namespace pika::threads::detail {
+    using get_locality_id_type = std::uint32_t(pika::error_code&);
+    PIKA_EXPORT void set_get_locality_id(get_locality_id_type* f);
+    PIKA_EXPORT std::uint32_t get_locality_id(pika::error_code&);
 
     ////////////////////////////////////////////////////////////////////////////
     class PIKA_EXPORT thread_data;    // forward declaration only
@@ -255,33 +252,34 @@ namespace pika { namespace threads {
         }
 
 #if !defined(PIKA_HAVE_THREAD_DESCRIPTION)
-        util::thread_description get_description() const
+        util::detail::thread_description get_description() const
         {
-            return util::thread_description("<unknown>");
+            return util::detail::thread_description("<unknown>");
         }
-        util::thread_description set_description(
-            util::thread_description /*value*/)
+        util::detail::thread_description set_description(
+            util::detail::thread_description /*value*/)
         {
-            return util::thread_description("<unknown>");
+            return util::detail::thread_description("<unknown>");
         }
 
-        util::thread_description get_lco_description() const
+        util::detail::thread_description get_lco_description() const
         {
-            return util::thread_description("<unknown>");
+            return util::detail::thread_description("<unknown>");
         }
-        util::thread_description set_lco_description(
-            util::thread_description /*value*/)
+        util::detail::thread_description set_lco_description(
+            util::detail::thread_description /*value*/)
         {
-            return util::thread_description("<unknown>");
+            return util::detail::thread_description("<unknown>");
         }
 #else
-        util::thread_description get_description() const
+        util::detail::thread_description get_description() const
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return description_;
         }
-        util::thread_description set_description(util::thread_description value)
+        util::detail::thread_description set_description(
+            util::detail::thread_description value)
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
@@ -289,14 +287,14 @@ namespace pika { namespace threads {
             return value;
         }
 
-        util::thread_description get_lco_description() const
+        util::detail::thread_description get_lco_description() const
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return lco_description_;
         }
-        util::thread_description set_lco_description(
-            util::thread_description value)
+        util::detail::thread_description set_lco_description(
+            util::detail::thread_description value)
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
@@ -316,7 +314,7 @@ namespace pika { namespace threads {
         /// Return the thread id of the parent thread
         constexpr thread_id_type get_parent_thread_id() const noexcept
         {
-            return threads::invalid_thread_id;
+            return invalid_thread_id;
         }
 
         /// Return the phase of the parent thread
@@ -433,11 +431,11 @@ namespace pika { namespace threads {
         }
 #endif
 
-        constexpr thread_priority get_priority() const noexcept
+        constexpr execution::thread_priority get_priority() const noexcept
         {
             return priority_;
         }
-        void set_priority(thread_priority priority) noexcept
+        void set_priority(execution::thread_priority priority) noexcept
         {
             priority_ = priority;
         }
@@ -514,7 +512,7 @@ namespace pika { namespace threads {
             return stacksize_;
         }
 
-        thread_stacksize get_stack_size_enum() const noexcept
+        execution::thread_stacksize get_stack_size_enum() const noexcept
         {
             return stacksize_enum_;
         }
@@ -596,8 +594,8 @@ namespace pika { namespace threads {
         ///////////////////////////////////////////////////////////////////////
         // Debugging/logging information
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
-        util::thread_description description_;
-        util::thread_description lco_description_;
+        util::detail::thread_description description_;
+        util::detail::thread_description lco_description_;
 #endif
 
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
@@ -618,7 +616,7 @@ namespace pika { namespace threads {
 #endif
 #endif
         ///////////////////////////////////////////////////////////////////////
-        thread_priority priority_;
+        execution::thread_priority priority_;
 
         bool requested_interrupt_;
         bool enabled_interrupt_;
@@ -633,7 +631,7 @@ namespace pika { namespace threads {
         std::size_t last_worker_thread_num_;
 
         std::ptrdiff_t stacksize_;
-        thread_stacksize stacksize_enum_;
+        execution::thread_stacksize stacksize_enum_;
 
         void* queue_;
 
@@ -704,7 +702,7 @@ namespace pika { namespace threads {
     /// The function \a get_self_stacksize_enum returns the stack size of the /
     //current thread (or thread_stacksize::default if the current thread is not
     //a pika thread).
-    PIKA_EXPORT thread_stacksize get_self_stacksize_enum();
+    PIKA_EXPORT execution::thread_stacksize get_self_stacksize_enum();
 
     /// The function \a get_parent_locality_id returns the id of the locality of
     /// the current thread's parent (or zero if the current thread is not a
@@ -722,15 +720,14 @@ namespace pika { namespace threads {
     ///       code was compiled with PIKA_HAVE_THREAD_TARGET_ADDRESS
     ///       being defined.
     PIKA_EXPORT std::uint64_t get_self_component_id();
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>
 
 #include <pika/threading_base/thread_data_stackful.hpp>
 #include <pika/threading_base/thread_data_stackless.hpp>
 
-namespace pika { namespace threads {
-
+namespace pika::threads::detail {
     PIKA_FORCEINLINE coroutine_type::result_type thread_data::operator()(
         pika::execution_base::this_thread::detail::agent_storage* agent_storage)
     {
@@ -740,4 +737,4 @@ namespace pika { namespace threads {
         }
         return static_cast<thread_data_stackful*>(this)->call(agent_storage);
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

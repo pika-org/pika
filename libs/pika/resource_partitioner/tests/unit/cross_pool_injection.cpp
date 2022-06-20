@@ -60,7 +60,8 @@ int pika_main()
     // print partition characteristics
     pika::threads::get_thread_manager().print_pools(std::cout);
 
-    auto const sched = pika::threads::get_self_id_data()->get_scheduler_base();
+    auto const sched =
+        pika::threads::detail::get_self_id_data()->get_scheduler_base();
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
     {
@@ -88,9 +89,9 @@ int pika_main()
     {
         std::string pool_name = "pool-" + std::to_string(i);
         HP_executors.emplace_back(&pika::resource::get_thread_pool(pool_name),
-            pika::threads::thread_priority::high);
+            pika::execution::thread_priority::high);
         NP_executors.emplace_back(&pika::resource::get_thread_pool(pool_name),
-            pika::threads::thread_priority::default_);
+            pika::execution::thread_priority::default_);
     }
 
     // randomly create tasks that run on a random pool

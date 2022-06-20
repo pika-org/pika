@@ -25,13 +25,13 @@ namespace pika::cuda::experimental {
     }
 
     cudaStream_t cuda_stream::create_stream(
-        int device, pika::threads::thread_priority priority)
+        int device, pika::execution::thread_priority priority)
     {
         cuda_device_scope d{device};
         auto p = get_available_priorities();
 
         cudaStream_t stream;
-        if (priority <= pika::threads::thread_priority::normal)
+        if (priority <= pika::execution::thread_priority::normal)
         {
             check_cuda_error(cudaStreamCreateWithPriority(
                 &stream, cudaStreamNonBlocking, p.least));
@@ -46,7 +46,7 @@ namespace pika::cuda::experimental {
     }
 
     cuda_stream::cuda_stream(
-        int device, pika::threads::thread_priority priority)
+        int device, pika::execution::thread_priority priority)
       : device(device)
       , priority(priority)
       , stream(create_stream(device, priority))
@@ -59,7 +59,7 @@ namespace pika::cuda::experimental {
       , stream(other.stream)
     {
         other.device = 0;
-        other.priority = pika::threads::thread_priority::default_;
+        other.priority = pika::execution::thread_priority::default_;
         other.stream = 0;
     }
 
@@ -70,7 +70,7 @@ namespace pika::cuda::experimental {
         stream = other.stream;
 
         other.device = 0;
-        other.priority = pika::threads::thread_priority::default_;
+        other.priority = pika::execution::thread_priority::default_;
         other.stream = 0;
 
         return *this;
@@ -105,7 +105,7 @@ namespace pika::cuda::experimental {
         return device;
     }
 
-    pika::threads::thread_priority cuda_stream::get_priority() const noexcept
+    pika::execution::thread_priority cuda_stream::get_priority() const noexcept
     {
         return priority;
     }

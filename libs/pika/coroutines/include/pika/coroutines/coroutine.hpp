@@ -45,15 +45,14 @@
 #include <limits>
 #include <utility>
 
-namespace pika { namespace threads { namespace coroutines {
-
+namespace pika::threads::coroutines::detail {
     /////////////////////////////////////////////////////////////////////////////
     class coroutine
     {
     public:
-        friend struct detail::coroutine_accessor;
+        friend struct coroutine_accessor;
 
-        using impl_type = detail::coroutine_impl;
+        using impl_type = coroutine_impl;
         using thread_id_type = impl_type::thread_id_type;
 
         using result_type = impl_type::result_type;
@@ -62,7 +61,7 @@ namespace pika { namespace threads { namespace coroutines {
         using functor_type = util::unique_function<result_type(arg_type)>;
 
         coroutine(functor_type&& f, thread_id_type id,
-            std::ptrdiff_t stack_size = detail::default_stack_size)
+            std::ptrdiff_t stack_size = default_stack_size)
           : impl_(PIKA_MOVE(f), id, stack_size)
         {
             PIKA_ASSERT(impl_.is_ready());
@@ -170,4 +169,4 @@ namespace pika { namespace threads { namespace coroutines {
     private:
         impl_type impl_;
     };
-}}}    // namespace pika::threads::coroutines
+}    // namespace pika::threads::coroutines::detail

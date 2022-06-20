@@ -32,13 +32,9 @@
 
 #include <pika/config.hpp>
 
-namespace pika { namespace threads { namespace coroutines {
-    namespace detail {
-        class coroutine_self;
-
-        class coroutine_impl;
-    }    // namespace detail
-
+namespace pika::threads::coroutines::detail {
+    class coroutine_self;
+    class coroutine_impl;
     class coroutine;
     class stackless_coroutine;
-}}}    // namespace pika::threads::coroutines
+}    // namespace pika::threads::coroutines::detail

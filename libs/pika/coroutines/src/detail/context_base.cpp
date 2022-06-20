@@ -12,8 +12,6 @@
 #include <pika/coroutines/detail/context_base.hpp>
 #include <pika/coroutines/detail/coroutine_impl.hpp>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-
+namespace pika::threads::coroutines::detail {
     template class context_base<coroutine_impl>;
-
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail

@@ -26,19 +26,22 @@ struct test_data
 
 void test()
 {
-    pika::threads::thread_id_type id = pika::threads::get_self_id();
+    pika::threads::detail::thread_id_type id =
+        pika::threads::detail::get_self_id();
     test_data* p = new test_data;
-    pika::threads::add_thread_exit_callback(id, [p, id]() {
-        pika::threads::thread_id_type id1 = pika::threads::get_self_id();
+    pika::threads::detail::add_thread_exit_callback(id, [p, id]() {
+        pika::threads::detail::thread_id_type id1 =
+            pika::threads::detail::get_self_id();
         PIKA_TEST_EQ(id1, id);
 
-        test_data* p1 =
-            reinterpret_cast<test_data*>(pika::threads::get_thread_data(id1));
+        test_data* p1 = reinterpret_cast<test_data*>(
+            pika::threads::detail::get_thread_data(id1));
         PIKA_TEST_EQ(p1, p);
 
         delete p;
     });
-    pika::threads::set_thread_data(id, reinterpret_cast<std::size_t>(p));
+    pika::threads::detail::set_thread_data(
+        id, reinterpret_cast<std::size_t>(p));
 }
 
 int pika_main()

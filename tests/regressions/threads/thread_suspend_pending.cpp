@@ -20,7 +20,7 @@ using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
 
-using pika::threads::register_work;
+using pika::threads::detail::register_work;
 
 using pika::lcos::local::barrier;
 
@@ -33,7 +33,8 @@ void suspend_test(barrier& b, std::size_t iterations)
     {
         // Enter the 'pending' state and get rescheduled.
         pika::this_thread::suspend(
-            pika::threads::thread_schedule_state::pending, "suspend_test");
+            pika::threads::detail::thread_schedule_state::pending,
+            "suspend_test");
     }
 
     // Wait for all pika threads to enter the barrier.
@@ -59,8 +60,8 @@ int pika_main(variables_map& vm)
         // Create the pika threads.
         for (std::size_t i = 0; i < pxthreads; ++i)
         {
-            pika::threads::thread_init_data data(
-                pika::threads::make_thread_function_nullary(
+            pika::threads::detail::thread_init_data data(
+                pika::threads::detail::make_thread_function_nullary(
                     pika::util::bind(&suspend_test, std::ref(b), iterations)),
                 "suspend_test");
             register_work(data);

@@ -29,7 +29,7 @@
 
 #pragma once
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
+namespace pika::threads::coroutines::detail {
     class default_hint
     {
     };
@@ -45,4 +45,4 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
     struct context_impl_base
     {
     };
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail

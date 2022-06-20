@@ -10,8 +10,8 @@
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/traits/future_access.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/memory.hpp>
 #include <pika/type_support/unused.hpp>
 
 #include <exception>

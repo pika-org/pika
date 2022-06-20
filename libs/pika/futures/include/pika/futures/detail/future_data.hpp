@@ -16,8 +16,8 @@
 #include <pika/futures/future_fwd.hpp>
 #include <pika/futures/traits/future_access.hpp>
 #include <pika/futures/traits/get_remote_result.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/memory.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/thread_support/assert_owns_lock.hpp>
@@ -475,8 +475,8 @@ namespace pika { namespace lcos { namespace detail {
             //       relinquishes the lock before resuming the waiting thread
             //       which avoids suspension of this thread when it tries to
             //       re-lock the mutex while exiting from condition_variable::wait
-            while (
-                cond_.notify_one(PIKA_MOVE(l), threads::thread_priority::boost))
+            while (cond_.notify_one(
+                PIKA_MOVE(l), execution::thread_priority::boost))
             {
                 l = std::unique_lock<mutex_type>(mtx_);
             }
@@ -534,8 +534,8 @@ namespace pika { namespace lcos { namespace detail {
             //       relinquishes the lock before resuming the waiting thread
             //       which avoids suspension of this thread when it tries to
             //       re-lock the mutex while exiting from condition_variable::wait
-            while (
-                cond_.notify_one(PIKA_MOVE(l), threads::thread_priority::boost))
+            while (cond_.notify_one(
+                PIKA_MOVE(l), execution::thread_priority::boost))
             {
                 l = std::unique_lock<mutex_type>(mtx_);
             }
@@ -748,18 +748,19 @@ namespace pika { namespace lcos { namespace detail {
             pika::intrusive_ptr<timed_future_data> this_(this);
 
             error_code ec;
-            threads::thread_init_data data(
-                threads::make_thread_function_nullary(
+            threads::detail::thread_init_data data(
+                threads::detail::make_thread_function_nullary(
                     [this_ = PIKA_MOVE(this_),
                         init = PIKA_FORWARD(Result_, init)]() {
                         this_->set_value(init);
                     }),
                 "timed_future_data<Result>::timed_future_data",
-                threads::thread_priority::boost,
-                threads::thread_schedule_hint(),
-                threads::thread_stacksize::current,
-                threads::thread_schedule_state::suspended, true);
-            threads::thread_id_ref_type id = threads::register_thread(data, ec);
+                execution::thread_priority::boost,
+                execution::thread_schedule_hint(),
+                execution::thread_stacksize::current,
+                threads::detail::thread_schedule_state::suspended, true);
+            threads::detail::thread_id_ref_type id =
+                threads::detail::register_thread(data, ec);
             if (ec)
             {
                 // thread creation failed, report error to the new future
@@ -769,10 +770,10 @@ namespace pika { namespace lcos { namespace detail {
             }
 
             // start new thread at given point in time
-            threads::set_thread_state(id.noref(), abs_time,
-                threads::thread_schedule_state::pending,
-                threads::thread_restart_state::timeout,
-                threads::thread_priority::boost, true, ec);
+            threads::detail::set_thread_state(id.noref(), abs_time,
+                threads::detail::thread_schedule_state::pending,
+                threads::detail::thread_restart_state::timeout,
+                execution::thread_priority::boost, true, ec);
             if (ec)
             {
                 // thread scheduling failed, report error to the new future
@@ -891,12 +892,12 @@ namespace pika { namespace lcos { namespace detail {
         }
 
         // run in a separate thread
-        virtual threads::thread_id_ref_type apply(
+        virtual threads::detail::thread_id_ref_type apply(
             threads::thread_pool_base* /*pool*/, const char* /*annotation*/,
             launch /*policy*/, error_code& /*ec*/)
         {
             PIKA_ASSERT(false);    // shouldn't ever be called
-            return threads::invalid_thread_id;
+            return threads::detail::invalid_thread_id;
         }
 
     protected:
@@ -940,12 +941,12 @@ namespace pika { namespace lcos { namespace detail {
         using base_type::mtx_;
 
     protected:
-        threads::thread_id_type get_thread_id() const noexcept
+        threads::detail::thread_id_type get_thread_id() const noexcept
         {
             std::lock_guard<mutex_type> l(mtx_);
             return id_;
         }
-        void set_thread_id(threads::thread_id_type id) noexcept
+        void set_thread_id(threads::detail::thread_id_type id) noexcept
         {
             std::lock_guard<mutex_type> l(mtx_);
             id_ = id;
@@ -953,13 +954,13 @@ namespace pika { namespace lcos { namespace detail {
 
     public:
         cancelable_task_base() noexcept
-          : id_(threads::invalid_thread_id)
+          : id_(threads::detail::invalid_thread_id)
         {
         }
 
         explicit cancelable_task_base(init_no_addref no_addref) noexcept
           : task_base<Result>(no_addref)
-          , id_(threads::invalid_thread_id)
+          , id_(threads::detail::invalid_thread_id)
         {
         }
 
@@ -969,11 +970,11 @@ namespace pika { namespace lcos { namespace detail {
             reset_id(cancelable_task_base& target)
               : target_(target)
             {
-                target.set_thread_id(threads::get_self_id());
+                target.set_thread_id(threads::detail::get_self_id());
             }
             ~reset_id()
             {
-                target_.set_thread_id(threads::invalid_thread_id);
+                target_.set_thread_id(threads::detail::invalid_thread_id);
             }
             cancelable_task_base& target_;
         };
@@ -1007,10 +1008,10 @@ namespace pika { namespace lcos { namespace detail {
                         return;    // nothing we can do
                     }
 
-                    if (id_ != threads::invalid_thread_id)
+                    if (id_ != threads::detail::invalid_thread_id)
                     {
                         // interrupt the executing thread
-                        threads::interrupt_thread(id_);
+                        threads::detail::interrupt_thread(id_);
 
                         this->started_ = true;
 
@@ -1035,7 +1036,7 @@ namespace pika { namespace lcos { namespace detail {
         }
 
     protected:
-        threads::thread_id_type id_;
+        threads::detail::thread_id_type id_;
     };
 }}}    // namespace pika::lcos::detail
 

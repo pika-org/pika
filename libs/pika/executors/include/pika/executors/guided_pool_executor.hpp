@@ -130,14 +130,16 @@ namespace pika { namespace parallel { namespace execution {
                 gpx_deb.debug(
                     debug::str<>("triggering apply"), "domain ", domain);
                 if (hp_sync_ &&
-                    executor_.priority_ == pika::threads::thread_priority::high)
+                    executor_.priority_ ==
+                        pika::execution::thread_priority::high)
                 {
                     p.apply(executor_.pool_, "guided sync",
                         pika::launch::sync_policy(
-                            pika::threads::thread_priority::high,
+                            pika::execution::thread_priority::high,
                             executor_.stacksize_,
-                            pika::threads::thread_schedule_hint(
-                                pika::threads::thread_schedule_hint_mode::numa,
+                            pika::execution::thread_schedule_hint(
+                                pika::execution::thread_schedule_hint_mode::
+                                    numa,
                                 domain)));
                 }
                 else
@@ -145,8 +147,9 @@ namespace pika { namespace parallel { namespace execution {
                     p.apply(executor_.pool_, "guided async",
                         pika::launch::async_policy(executor_.priority_,
                             executor_.stacksize_,
-                            pika::threads::thread_schedule_hint(
-                                pika::threads::thread_schedule_hint_mode::numa,
+                            pika::execution::thread_schedule_hint(
+                                pika::execution::thread_schedule_hint_mode::
+                                    numa,
                                 domain)));
                 }
 
@@ -192,14 +195,16 @@ namespace pika { namespace parallel { namespace execution {
                         PIKA_FORWARD(Ts, ts)...));
 
                 if (hp_sync_ &&
-                    executor_.priority_ == pika::threads::thread_priority::high)
+                    executor_.priority_ ==
+                        pika::execution::thread_priority::high)
                 {
                     p.apply(executor_.pool_, "guided then",
                         pika::launch::sync_policy(
-                            pika::threads::thread_priority::high,
+                            pika::execution::thread_priority::high,
                             executor_.stacksize_,
-                            pika::threads::thread_schedule_hint(
-                                pika::threads::thread_schedule_hint_mode::numa,
+                            pika::execution::thread_schedule_hint(
+                                pika::execution::thread_schedule_hint_mode::
+                                    numa,
                                 domain)));
                 }
                 else
@@ -207,8 +212,9 @@ namespace pika { namespace parallel { namespace execution {
                     p.apply(executor_.pool_, "guided then",
                         pika::launch::async_policy(executor_.priority_,
                             executor_.stacksize_,
-                            pika::threads::thread_schedule_hint(
-                                pika::threads::thread_schedule_hint_mode::numa,
+                            pika::execution::thread_schedule_hint(
+                                pika::execution::thread_schedule_hint_mode::
+                                    numa,
                                 domain)));
                 }
 
@@ -258,25 +264,25 @@ namespace pika { namespace parallel { namespace execution {
         guided_pool_executor(
             threads::thread_pool_base* pool, bool hp_sync = false)
           : pool_(pool)
-          , priority_(threads::thread_priority::default_)
-          , stacksize_(threads::thread_stacksize::default_)
+          , priority_(pika::execution::thread_priority::default_)
+          , stacksize_(pika::execution::thread_stacksize::default_)
           , hp_sync_(hp_sync)
         {
         }
 
         guided_pool_executor(threads::thread_pool_base* pool,
-            threads::thread_stacksize stacksize, bool hp_sync = false)
+            pika::execution::thread_stacksize stacksize, bool hp_sync = false)
           : pool_(pool)
-          , priority_(threads::thread_priority::default_)
+          , priority_(pika::execution::thread_priority::default_)
           , stacksize_(stacksize)
           , hp_sync_(hp_sync)
         {
         }
 
         guided_pool_executor(threads::thread_pool_base* pool,
-            threads::thread_priority priority,
-            threads::thread_stacksize stacksize =
-                threads::thread_stacksize::default_,
+            pika::execution::thread_priority priority,
+            pika::execution::thread_stacksize stacksize =
+                pika::execution::thread_stacksize::default_,
             bool hp_sync = false)
           : pool_(pool)
           , priority_(priority)
@@ -482,21 +488,21 @@ namespace pika { namespace parallel { namespace execution {
                 pika::util::deferred_call(PIKA_FORWARD(F, f),
                     std::forward<pika::tuple<InnerFutures...>>(predecessor)));
 
-            if (hp_sync_ && priority_ == pika::threads::thread_priority::high)
+            if (hp_sync_ && priority_ == pika::execution::thread_priority::high)
             {
                 p.apply(pool_, "guided async",
                     pika::launch::sync_policy(
-                        pika::threads::thread_priority::high, stacksize_,
-                        pika::threads::thread_schedule_hint(
-                            pika::threads::thread_schedule_hint_mode::numa,
+                        pika::execution::thread_priority::high, stacksize_,
+                        pika::execution::thread_schedule_hint(
+                            pika::execution::thread_schedule_hint_mode::numa,
                             domain)));
             }
             else
             {
                 p.apply(pool_, "guided async",
                     pika::launch::async_policy(priority_, stacksize_,
-                        pika::threads::thread_schedule_hint(
-                            pika::threads::thread_schedule_hint_mode::numa,
+                        pika::execution::thread_schedule_hint(
+                            pika::execution::thread_schedule_hint_mode::numa,
                             domain)));
             }
             return p.get_future();
@@ -504,8 +510,8 @@ namespace pika { namespace parallel { namespace execution {
 
     private:
         threads::thread_pool_base* pool_;
-        threads::thread_priority priority_;
-        threads::thread_stacksize stacksize_;
+        pika::execution::thread_priority priority_;
+        pika::execution::thread_stacksize stacksize_;
         pool_numa_hint<Tag> hint_;
         bool hp_sync_;
     };
@@ -526,16 +532,16 @@ namespace pika { namespace parallel { namespace execution {
         }
 
         guided_pool_executor_shim(bool guided, threads::thread_pool_base* pool,
-            threads::thread_stacksize stacksize, bool hp_sync = false)
+            pika::execution::thread_stacksize stacksize, bool hp_sync = false)
           : guided_(guided)
           , guided_exec_(pool, hp_sync, stacksize)
         {
         }
 
         guided_pool_executor_shim(bool guided, threads::thread_pool_base* pool,
-            threads::thread_priority priority,
-            threads::thread_stacksize stacksize =
-                threads::thread_stacksize::default_,
+            pika::execution::thread_priority priority,
+            pika::execution::thread_stacksize stacksize =
+                pika::execution::thread_stacksize::default_,
             bool hp_sync = false)
           : guided_(guided)
           , guided_exec_(pool, priority, stacksize, hp_sync)

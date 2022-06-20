@@ -21,9 +21,9 @@ using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
 
-using pika::threads::make_thread_function_nullary;
-using pika::threads::register_work;
-using pika::threads::thread_init_data;
+using pika::threads::detail::make_thread_function_nullary;
+using pika::threads::detail::register_work;
+using pika::threads::detail::thread_init_data;
 
 using pika::lcos::local::barrier;
 

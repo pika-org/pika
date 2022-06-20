@@ -42,8 +42,7 @@
 #include <limits>
 #include <utility>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-
+namespace pika::threads::coroutines::detail {
     class coroutine_self
     {
     public:
@@ -68,10 +67,11 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         };
 
     public:
-        using thread_id_type = pika::threads::thread_id;
+        using thread_id_type = pika::threads::detail::thread_id;
 
-        using result_type = std::pair<thread_schedule_state, thread_id_type>;
-        using arg_type = thread_restart_state;
+        using result_type =
+            std::pair<threads::detail::thread_schedule_state, thread_id_type>;
+        using arg_type = threads::detail::thread_restart_state;
 
         using yield_decorator_type = util::function<arg_type(result_type)>;
 
@@ -194,4 +194,4 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         coroutine_self* old_self;
     };
 
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail

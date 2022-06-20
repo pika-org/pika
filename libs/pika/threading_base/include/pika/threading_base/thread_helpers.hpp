@@ -29,7 +29,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// \brief  Set the thread state of the \a thread referenced by the
     ///         thread_id \a id.
@@ -66,7 +66,8 @@ namespace pika { namespace threads {
     PIKA_EXPORT thread_state set_thread_state(thread_id_type const& id,
         thread_schedule_state state = thread_schedule_state::pending,
         thread_restart_state stateex = thread_restart_state::signaled,
-        thread_priority priority = thread_priority::normal,
+        execution::thread_priority priority =
+            execution::thread_priority::normal,
         bool retry_on_active = true, pika::error_code& ec = throws);
 
     ///////////////////////////////////////////////////////////////////////
@@ -103,14 +104,16 @@ namespace pika { namespace threads {
         std::atomic<bool>* started,
         thread_schedule_state state = thread_schedule_state::pending,
         thread_restart_state stateex = thread_restart_state::timeout,
-        thread_priority priority = thread_priority::normal,
+        execution::thread_priority priority =
+            execution::thread_priority::normal,
         bool retry_on_active = true, error_code& ec = throws);
 
     inline thread_id_ref_type set_thread_state(thread_id_type const& id,
         pika::chrono::steady_time_point const& abs_time,
         thread_schedule_state state = thread_schedule_state::pending,
         thread_restart_state stateex = thread_restart_state::timeout,
-        thread_priority priority = thread_priority::normal,
+        execution::thread_priority priority =
+            execution::thread_priority::normal,
         bool retry_on_active = true, error_code& /*ec*/ = throws)
     {
         return set_thread_state(id, abs_time, nullptr, state, stateex, priority,
@@ -148,7 +151,8 @@ namespace pika { namespace threads {
         pika::chrono::steady_duration const& rel_time,
         thread_schedule_state state = thread_schedule_state::pending,
         thread_restart_state stateex = thread_restart_state::timeout,
-        thread_priority priority = thread_priority::normal,
+        execution::thread_priority priority =
+            execution::thread_priority::normal,
         bool retry_on_active = true, error_code& ec = throws)
     {
         return set_thread_state(id, rel_time.from_now(), state, stateex,
@@ -355,7 +359,7 @@ namespace pika { namespace threads {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    PIKA_EXPORT threads::thread_priority get_thread_priority(
+    PIKA_EXPORT execution::thread_priority get_thread_priority(
         thread_id_type const& id, error_code& ec = throws);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -430,9 +434,9 @@ namespace pika { namespace threads {
     ///         \a pika#invalid_status.
     PIKA_EXPORT threads::thread_pool_base* get_pool(
         thread_id_type const& id, error_code& ec = throws);
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
-namespace pika { namespace this_thread {
+namespace pika::this_thread {
     ///////////////////////////////////////////////////////////////////////////
     /// The function \a suspend will return control to the thread manager
     /// (suspends the current thread). It sets the new state of this thread
@@ -450,10 +454,11 @@ namespace pika { namespace this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    PIKA_EXPORT threads::thread_restart_state suspend(
-        threads::thread_schedule_state state, threads::thread_id_type id,
-        util::thread_description const& description = util::thread_description(
-            "this_thread::suspend"),
+    PIKA_EXPORT threads::detail::thread_restart_state suspend(
+        threads::detail::thread_schedule_state state,
+        threads::detail::thread_id_type id,
+        util::detail::thread_description const& description =
+            util::detail::thread_description("this_thread::suspend"),
         error_code& ec = throws);
 
     /// The function \a suspend will return control to the thread manager
@@ -472,14 +477,15 @@ namespace pika { namespace this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    inline threads::thread_restart_state suspend(
-        threads::thread_schedule_state state =
-            threads::thread_schedule_state::pending,
-        util::thread_description const& description = util::thread_description(
-            "this_thread::suspend"),
+    inline threads::detail::thread_restart_state suspend(
+        threads::detail::thread_schedule_state state =
+            threads::detail::thread_schedule_state::pending,
+        util::detail::thread_description const& description =
+            util::detail::thread_description("this_thread::suspend"),
         error_code& ec = throws)
     {
-        return suspend(state, threads::invalid_thread_id, description, ec);
+        return suspend(
+            state, threads::detail::invalid_thread_id, description, ec);
     }
 
     /// The function \a suspend will return control to the thread manager
@@ -499,11 +505,11 @@ namespace pika { namespace this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    PIKA_EXPORT threads::thread_restart_state suspend(
+    PIKA_EXPORT threads::detail::thread_restart_state suspend(
         pika::chrono::steady_time_point const& abs_time,
-        threads::thread_id_type id,
-        util::thread_description const& description = util::thread_description(
-            "this_thread::suspend"),
+        threads::detail::thread_id_type id,
+        util::detail::thread_description const& description =
+            util::detail::thread_description("this_thread::suspend"),
         error_code& ec = throws);
 
     /// The function \a suspend will return control to the thread manager
@@ -523,40 +529,14 @@ namespace pika { namespace this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    inline threads::thread_restart_state suspend(
+    inline threads::detail::thread_restart_state suspend(
         pika::chrono::steady_time_point const& abs_time,
-        util::thread_description const& description = util::thread_description(
-            "this_thread::suspend"),
-        error_code& ec = throws)
-    {
-        return suspend(abs_time, threads::invalid_thread_id, description, ec);
-    }
-
-    /// The function \a suspend will return control to the thread manager
-    /// (suspends the current thread). It sets the new state of this thread
-    /// to \a suspended and schedules a wakeup for this threads after the given
-    /// duration.
-    ///
-    /// \note Must be called from within a pika-thread.
-    ///
-    /// \throws If <code>&ec != &throws</code>, never throws, but will set \a ec
-    ///         to an appropriate value when an error occurs. Otherwise, this
-    ///         function will throw an \a pika#exception with an error code of
-    ///         \a pika#yield_aborted if it is signaled with \a wait_aborted.
-    ///         If called outside of a pika-thread, this function will throw
-    ///         an \a pika#exception with an error code of \a pika::null_thread_id.
-    ///         If this function is called while the thread-manager is not
-    ///         running, it will throw an \a pika#exception with an error code of
-    ///         \a pika#invalid_status.
-    ///
-    inline threads::thread_restart_state suspend(
-        pika::chrono::steady_duration const& rel_time,
-        util::thread_description const& description = util::thread_description(
-            "this_thread::suspend"),
+        util::detail::thread_description const& description =
+            util::detail::thread_description("this_thread::suspend"),
         error_code& ec = throws)
     {
         return suspend(
-            rel_time.from_now(), threads::invalid_thread_id, description, ec);
+            abs_time, threads::detail::invalid_thread_id, description, ec);
     }
 
     /// The function \a suspend will return control to the thread manager
@@ -576,11 +556,38 @@ namespace pika { namespace this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    inline threads::thread_restart_state suspend(
+    inline threads::detail::thread_restart_state suspend(
         pika::chrono::steady_duration const& rel_time,
-        threads::thread_id_type const& id,
-        util::thread_description const& description = util::thread_description(
-            "this_thread::suspend"),
+        util::detail::thread_description const& description =
+            util::detail::thread_description("this_thread::suspend"),
+        error_code& ec = throws)
+    {
+        return suspend(rel_time.from_now(), threads::detail::invalid_thread_id,
+            description, ec);
+    }
+
+    /// The function \a suspend will return control to the thread manager
+    /// (suspends the current thread). It sets the new state of this thread
+    /// to \a suspended and schedules a wakeup for this threads after the given
+    /// duration.
+    ///
+    /// \note Must be called from within a pika-thread.
+    ///
+    /// \throws If <code>&ec != &throws</code>, never throws, but will set \a ec
+    ///         to an appropriate value when an error occurs. Otherwise, this
+    ///         function will throw an \a pika#exception with an error code of
+    ///         \a pika#yield_aborted if it is signaled with \a wait_aborted.
+    ///         If called outside of a pika-thread, this function will throw
+    ///         an \a pika#exception with an error code of \a pika::null_thread_id.
+    ///         If this function is called while the thread-manager is not
+    ///         running, it will throw an \a pika#exception with an error code of
+    ///         \a pika#invalid_status.
+    ///
+    inline threads::detail::thread_restart_state suspend(
+        pika::chrono::steady_duration const& rel_time,
+        threads::detail::thread_id_type const& id,
+        util::detail::thread_description const& description =
+            util::detail::thread_description("this_thread::suspend"),
         error_code& ec = throws)
     {
         return suspend(rel_time.from_now(), id, description, ec);
@@ -603,13 +610,13 @@ namespace pika { namespace this_thread {
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
     ///
-    inline threads::thread_restart_state suspend(std::uint64_t ms,
-        util::thread_description const& description = util::thread_description(
-            "this_thread::suspend"),
+    inline threads::detail::thread_restart_state suspend(std::uint64_t ms,
+        util::detail::thread_description const& description =
+            util::detail::thread_description("this_thread::suspend"),
         error_code& ec = throws)
     {
         return suspend(std::chrono::milliseconds(ms),
-            threads::invalid_thread_id, description, ec);
+            threads::detail::invalid_thread_id, description, ec);
     }
 
     /// Returns a pointer to the pool that was used to run the current thread
@@ -635,4 +642,4 @@ namespace pika { namespace this_thread {
         std::size_t space_needed = static_cast<std::size_t>(8) *
             PIKA_THREADS_STACK_OVERHEAD);
     /// \endcond
-}}    // namespace pika::this_thread
+}    // namespace pika::this_thread

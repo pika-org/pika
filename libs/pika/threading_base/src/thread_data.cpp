@@ -24,30 +24,28 @@
 #include <memory>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads {
-    namespace detail {
-        static get_locality_id_type* get_locality_id_f;
+namespace pika::threads::detail {
+    static get_locality_id_type* get_locality_id_f;
 
-        void set_get_locality_id(get_locality_id_type* f)
+    void set_get_locality_id(get_locality_id_type* f)
+    {
+        get_locality_id_f = f;
+    }
+
+    std::uint32_t get_locality_id(pika::error_code& ec)
+    {
+        if (get_locality_id_f)
         {
-            get_locality_id_f = f;
+            return get_locality_id_f(ec);
         }
 
-        std::uint32_t get_locality_id(pika::error_code& ec)
-        {
-            if (get_locality_id_f)
-            {
-                return get_locality_id_f(ec);
-            }
-
-            // same as naming::invalid_locality_id
-            return ~static_cast<std::uint32_t>(0);
-        }
-    }    // namespace detail
+        // same as naming::invalid_locality_id
+        return ~static_cast<std::uint32_t>(0);
+    }
 
     thread_data::thread_data(thread_init_data& init_data, void* queue,
         std::ptrdiff_t stacksize, bool is_stackless, thread_id_addref addref)
-      : detail::thread_data_reference_counting(addref)
+      : thread_data_reference_counting(addref)
       , current_state_(thread_state(
             init_data.initial_state, thread_restart_state::signaled))
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
@@ -79,7 +77,7 @@ namespace pika { namespace threads {
         LTM_(debug).format(
             "thread::thread({}), description({})", this, get_description());
 
-        PIKA_ASSERT(stacksize_enum_ != threads::thread_stacksize::current);
+        PIKA_ASSERT(stacksize_enum_ != execution::thread_stacksize::current);
 
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
         // store the thread id of the parent thread, mainly for debugging
@@ -89,12 +87,12 @@ namespace pika { namespace threads {
             thread_self* self = get_self_ptr();
             if (self)
             {
-                parent_thread_id_ = threads::get_self_id();
+                parent_thread_id_ = get_self_id();
                 parent_thread_phase_ = self->get_thread_phase();
             }
         }
         if (0 == parent_locality_id_)
-            parent_locality_id_ = detail::get_locality_id(pika::throws);
+            parent_locality_id_ = get_locality_id(pika::throws);
 #endif
 #if defined(PIKA_HAVE_APEX)
         set_timer_data(init_data.timer_data);
@@ -201,7 +199,7 @@ namespace pika { namespace threads {
 
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
         description_ = init_data.description;
-        lco_description_ = util::thread_description();
+        lco_description_ = util::detail::thread_description();
 #endif
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
         parent_locality_id_ = init_data.parent_locality_id;
@@ -240,13 +238,13 @@ namespace pika { namespace threads {
             thread_self* self = get_self_ptr();
             if (self)
             {
-                parent_thread_id_ = threads::get_self_id();
+                parent_thread_id_ = get_self_id();
                 parent_thread_phase_ = self->get_thread_phase();
             }
         }
         if (0 == parent_locality_id_)
         {
-            parent_locality_id_ = detail::get_locality_id(pika::throws);
+            parent_locality_id_ = get_locality_id(pika::throws);
         }
 #endif
 #if defined(PIKA_HAVE_APEX)
@@ -260,7 +258,7 @@ namespace pika { namespace threads {
         thread_self* p = get_self_ptr();
         if (PIKA_UNLIKELY(p == nullptr))
         {
-            PIKA_THROW_EXCEPTION(null_thread_id, "threads::get_self",
+            PIKA_THROW_EXCEPTION(null_thread_id, "get_self",
                 "null thread id encountered (is this executed on a "
                 "pika-thread?)");
         }
@@ -291,7 +289,7 @@ namespace pika { namespace threads {
 
         if (PIKA_UNLIKELY(p == nullptr))
         {
-            PIKA_THROWS_IF(ec, null_thread_id, "threads::get_self_ptr_checked",
+            PIKA_THROWS_IF(ec, null_thread_id, "get_self_ptr_checked",
                 "null thread id encountered (is this executed on a "
                 "pika-thread?)");
             return nullptr;
@@ -309,7 +307,7 @@ namespace pika { namespace threads {
         if (PIKA_LIKELY(nullptr != self))
             return self->get_thread_id();
 
-        return threads::invalid_thread_id;
+        return invalid_thread_id;
     }
 
     thread_data* get_self_id_data()
@@ -327,20 +325,20 @@ namespace pika { namespace threads {
         return thrd_data ? thrd_data->get_stack_size() : 0;
     }
 
-    thread_stacksize get_self_stacksize_enum()
+    execution::thread_stacksize get_self_stacksize_enum()
     {
         thread_data* thrd_data = get_self_id_data();
-        thread_stacksize stacksize = thrd_data ?
+        execution::thread_stacksize stacksize = thrd_data ?
             thrd_data->get_stack_size_enum() :
-            thread_stacksize::default_;
-        PIKA_ASSERT(stacksize != thread_stacksize::current);
+            execution::thread_stacksize::default_;
+        PIKA_ASSERT(stacksize != execution::thread_stacksize::current);
         return stacksize;
     }
 
 #ifndef PIKA_HAVE_THREAD_PARENT_REFERENCE
     thread_id_type get_parent_id()
     {
-        return threads::invalid_thread_id;
+        return invalid_thread_id;
     }
 
     std::size_t get_parent_phase()
@@ -361,7 +359,7 @@ namespace pika { namespace threads {
         {
             return thrd_data->get_parent_thread_id();
         }
-        return threads::invalid_thread_id;
+        return invalid_thread_id;
     }
 
     std::size_t get_parent_phase()
@@ -423,4 +421,4 @@ namespace pika { namespace threads {
         return;
     }
 #endif
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

@@ -11,10 +11,10 @@
 
 #include <cstddef>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
+namespace pika::threads::coroutines::detail {
     coroutine_self*& coroutine_self::local_self()
     {
         static thread_local coroutine_self* local_self_ = nullptr;
         return local_self_;
     }
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail

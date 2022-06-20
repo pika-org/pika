@@ -49,30 +49,33 @@ namespace pika { namespace threads {
             std::exception_ptr exception;
 
             // Create the pika thread
-            pika::threads::thread_init_data data(
-                pika::threads::make_thread_function_nullary([&, cond]() {
-                    try
-                    {
-                        // Execute the given function, forward all parameters,
-                        // store result.
-                        result.emplace(PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)...));
-                    }
-                    catch (...)
-                    {
-                        // make sure exceptions do not escape the pika thread
-                        // scheduler
-                        exception = std::current_exception();
-                    }
+            pika::threads::detail::thread_init_data data(
+                pika::threads::detail::make_thread_function_nullary(
+                    [&, cond]() {
+                        try
+                        {
+                            // Execute the given function, forward all parameters,
+                            // store result.
+                            result.emplace(
+                                PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)...));
+                        }
+                        catch (...)
+                        {
+                            // make sure exceptions do not escape the pika thread
+                            // scheduler
+                            exception = std::current_exception();
+                        }
 
-                    // Now signal to the waiting thread that we're done.
-                    {
-                        std::lock_guard<pika::lcos::local::spinlock> lk(mtx);
-                        stopping = true;
-                    }
-                    cond->notify_all();
-                }),
+                        // Now signal to the waiting thread that we're done.
+                        {
+                            std::lock_guard<pika::lcos::local::spinlock> lk(
+                                mtx);
+                            stopping = true;
+                        }
+                        cond->notify_all();
+                    }),
                 "run_as_pika_thread (non-void)");
-            pika::threads::register_work(data);
+            pika::threads::detail::register_work(data);
 
             // wait for the pika thread to exit
             std::unique_lock<pika::lcos::local::spinlock> lk(mtx);
@@ -99,29 +102,31 @@ namespace pika { namespace threads {
             std::exception_ptr exception;
 
             // Create an pika thread
-            pika::threads::thread_init_data data(
-                pika::threads::make_thread_function_nullary([&, cond]() {
-                    try
-                    {
-                        // Execute the given function, forward all parameters.
-                        PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)...);
-                    }
-                    catch (...)
-                    {
-                        // make sure exceptions do not escape the pika thread
-                        // scheduler
-                        exception = std::current_exception();
-                    }
+            pika::threads::detail::thread_init_data data(
+                pika::threads::detail::make_thread_function_nullary(
+                    [&, cond]() {
+                        try
+                        {
+                            // Execute the given function, forward all parameters.
+                            PIKA_INVOKE(f, PIKA_FORWARD(Ts, ts)...);
+                        }
+                        catch (...)
+                        {
+                            // make sure exceptions do not escape the pika thread
+                            // scheduler
+                            exception = std::current_exception();
+                        }
 
-                    // Now signal to the waiting thread that we're done.
-                    {
-                        std::lock_guard<pika::lcos::local::spinlock> lk(mtx);
-                        stopping = true;
-                    }
-                    cond->notify_all();
-                }),
+                        // Now signal to the waiting thread that we're done.
+                        {
+                            std::lock_guard<pika::lcos::local::spinlock> lk(
+                                mtx);
+                            stopping = true;
+                        }
+                        cond->notify_all();
+                    }),
                 "run_as_pika_thread (void)");
-            pika::threads::register_work(data);
+            pika::threads::detail::register_work(data);
 
             // wait for the pika thread to exit
             std::unique_lock<pika::lcos::local::spinlock> lk(mtx);
@@ -139,7 +144,7 @@ namespace pika { namespace threads {
         F const& f, Ts&&... vs)
     {
         // This shouldn't be used on a pika-thread
-        PIKA_ASSERT(pika::threads::get_self_ptr() == nullptr);
+        PIKA_ASSERT(pika::threads::detail::get_self_ptr() == nullptr);
 
         using result_is_void = typename std::is_void<
             typename util::invoke_result<F, Ts...>::type>::type;

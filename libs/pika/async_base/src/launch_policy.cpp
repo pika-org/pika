@@ -11,9 +11,9 @@
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     const detail::async_policy launch::async =
-        detail::async_policy{threads::thread_priority::default_};
+        detail::async_policy{execution::thread_priority::default_};
     const detail::fork_policy launch::fork =
-        detail::fork_policy{threads::thread_priority::default_};
+        detail::fork_policy{execution::thread_priority::default_};
     const detail::sync_policy launch::sync = detail::sync_policy{};
     const detail::deferred_policy launch::deferred = detail::deferred_policy{};
     const detail::apply_policy launch::apply = detail::apply_policy{};

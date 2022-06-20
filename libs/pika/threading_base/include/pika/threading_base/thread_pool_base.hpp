@@ -238,14 +238,15 @@ namespace pika { namespace threads {
 
         virtual std::size_t get_active_os_thread_count() const;
 
-        virtual void create_thread(
-            thread_init_data& data, thread_id_ref_type& id, error_code& ec) = 0;
-        virtual thread_id_ref_type create_work(
-            thread_init_data& data, error_code& ec) = 0;
+        virtual void create_thread(detail::thread_init_data& data,
+            detail::thread_id_ref_type& id, error_code& ec) = 0;
+        virtual detail::thread_id_ref_type create_work(
+            detail::thread_init_data& data, error_code& ec) = 0;
 
-        virtual thread_state set_state(thread_id_type const& id,
-            thread_schedule_state new_state, thread_restart_state new_state_ex,
-            thread_priority priority, error_code& ec) = 0;
+        virtual detail::thread_state set_state(detail::thread_id_type const& id,
+            detail::thread_schedule_state new_state,
+            detail::thread_restart_state new_state_ex,
+            execution::thread_priority priority, error_code& ec) = 0;
 
         std::size_t get_pool_index() const
         {
@@ -432,8 +433,9 @@ namespace pika { namespace threads {
         }
 #endif
 
-        virtual std::int64_t get_thread_count(thread_schedule_state /*state*/,
-            thread_priority /*priority*/, std::size_t /*num_thread*/,
+        virtual std::int64_t get_thread_count(
+            detail::thread_schedule_state /*state*/,
+            execution::thread_priority /*priority*/, std::size_t /*num_thread*/,
             bool /*reset*/)
         {
             return 0;
@@ -454,36 +456,36 @@ namespace pika { namespace threads {
         std::int64_t get_thread_count_unknown(
             std::size_t num_thread, bool reset)
         {
-            return get_thread_count(thread_schedule_state::unknown,
-                thread_priority::default_, num_thread, reset);
+            return get_thread_count(detail::thread_schedule_state::unknown,
+                execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_active(std::size_t num_thread, bool reset)
         {
-            return get_thread_count(thread_schedule_state::active,
-                thread_priority::default_, num_thread, reset);
+            return get_thread_count(detail::thread_schedule_state::active,
+                execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_pending(
             std::size_t num_thread, bool reset)
         {
-            return get_thread_count(thread_schedule_state::pending,
-                thread_priority::default_, num_thread, reset);
+            return get_thread_count(detail::thread_schedule_state::pending,
+                execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_suspended(
             std::size_t num_thread, bool reset)
         {
-            return get_thread_count(thread_schedule_state::suspended,
-                thread_priority::default_, num_thread, reset);
+            return get_thread_count(detail::thread_schedule_state::suspended,
+                execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_terminated(
             std::size_t num_thread, bool reset)
         {
-            return get_thread_count(thread_schedule_state::terminated,
-                thread_priority::default_, num_thread, reset);
+            return get_thread_count(detail::thread_schedule_state::terminated,
+                execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_staged(std::size_t num_thread, bool reset)
         {
-            return get_thread_count(thread_schedule_state::staged,
-                thread_priority::default_, num_thread, reset);
+            return get_thread_count(detail::thread_schedule_state::staged,
+                execution::thread_priority::default_, num_thread, reset);
         }
 
         virtual std::int64_t get_scheduler_utilization() const = 0;
@@ -495,9 +497,9 @@ namespace pika { namespace threads {
 
         ///////////////////////////////////////////////////////////////////////
         virtual bool enumerate_threads(
-            util::function<bool(thread_id_type)> const& /*f*/,
-            thread_schedule_state /*state*/ =
-                thread_schedule_state::unknown) const
+            util::function<bool(detail::thread_id_type)> const& /*f*/,
+            detail::thread_schedule_state /*state*/ =
+                detail::thread_schedule_state::unknown) const
         {
             return false;
         }

@@ -32,7 +32,7 @@ void run_with_large_stack()
               << pika::threads::get_stack_size_name(
                      pika::this_thread::get_stack_size())
               << " stack and "
-              << pika::threads::get_thread_priority_name(
+              << pika::execution::detail::get_thread_priority_name(
                      pika::this_thread::get_priority())
               << " priority." << std::endl;
 }
@@ -41,7 +41,7 @@ void run_with_large_stack()
 void run_with_high_priority()
 {
     std::cout << "This thread runs with "
-              << pika::threads::get_thread_priority_name(
+              << pika::execution::detail::get_thread_priority_name(
                      pika::this_thread::get_priority())
               << " priority." << std::endl;
 }
@@ -52,7 +52,7 @@ int pika_main()
     // run a thread on a large stack
     {
         pika::execution::parallel_executor large_stack_executor(
-            pika::threads::thread_stacksize::large);
+            pika::execution::thread_stacksize::large);
 
         pika::future<void> f =
             pika::async(large_stack_executor, &run_with_large_stack);
@@ -62,7 +62,7 @@ int pika_main()
     // run a thread with high priority
     {
         pika::execution::parallel_executor high_priority_executor(
-            pika::threads::thread_priority::high);
+            pika::execution::thread_priority::high);
 
         pika::future<void> f =
             pika::async(high_priority_executor, &run_with_high_priority);
@@ -72,8 +72,8 @@ int pika_main()
     // combine both
     {
         pika::execution::parallel_executor fancy_executor(
-            pika::threads::thread_priority::high,
-            pika::threads::thread_stacksize::large);
+            pika::execution::thread_priority::high,
+            pika::execution::thread_stacksize::large);
 
         pika::future<void> f =
             pika::async(fancy_executor, &run_with_large_stack);

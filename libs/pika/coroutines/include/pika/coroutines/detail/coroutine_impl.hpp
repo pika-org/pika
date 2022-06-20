@@ -47,7 +47,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
+namespace pika::threads::coroutines::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     // This type augments the context_base type with the type of the stored
@@ -61,15 +61,17 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         using super_type = context_base;
         using thread_id_type = context_base::thread_id_type;
 
-        using result_type = std::pair<thread_schedule_state, thread_id_type>;
-        using arg_type = thread_restart_state;
+        using result_type =
+            std::pair<threads::detail::thread_schedule_state, thread_id_type>;
+        using arg_type = threads::detail::thread_restart_state;
 
         using functor_type = util::unique_function<result_type(arg_type)>;
 
         coroutine_impl(
             functor_type&& f, thread_id_type id, std::ptrdiff_t stack_size)
           : context_base(stack_size, id)
-          , m_result(thread_schedule_state::unknown, invalid_thread_id)
+          , m_result(threads::detail::thread_schedule_state::unknown,
+                threads::detail::invalid_thread_id)
           , m_arg(nullptr)
           , m_fun(PIKA_MOVE(f))
         {
@@ -85,7 +87,8 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
     public:
         void bind_result(result_type res)
         {
-            PIKA_ASSERT(m_result.first != thread_schedule_state::terminated);
+            PIKA_ASSERT(m_result.first !=
+                threads::detail::thread_schedule_state::terminated);
             m_result = res;
         }
 
@@ -130,11 +133,14 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
         void rebind(functor_type&& f, thread_id_type id)
         {
-            PIKA_ASSERT(m_result.first == thread_schedule_state::unknown ||
-                m_result.first == thread_schedule_state::terminated);
+            PIKA_ASSERT(m_result.first ==
+                    threads::detail::thread_schedule_state::unknown ||
+                m_result.first ==
+                    threads::detail::thread_schedule_state::terminated);
             this->rebind_stack();    // count how often a coroutines object was reused
             m_result =
-                result_type(thread_schedule_state::unknown, invalid_thread_id);
+                result_type(threads::detail::thread_schedule_state::unknown,
+                    threads::detail::invalid_thread_id);
             m_arg = nullptr;
             m_fun = PIKA_MOVE(f);
             this->super_type::rebind_base(id);
@@ -145,7 +151,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         arg_type* m_arg;
         functor_type m_fun;
     };
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
 #pragma warning(pop)

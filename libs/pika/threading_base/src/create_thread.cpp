@@ -15,11 +15,9 @@
 
 #include <cstddef>
 
-namespace pika { namespace threads { namespace detail {
-
+namespace pika::threads::detail {
     void create_thread(policies::scheduler_base* scheduler,
-        threads::thread_init_data& data, threads::thread_id_ref_type& id,
-        error_code& ec)
+        thread_init_data& data, thread_id_ref_type& id, error_code& ec)
     {
         // verify parameters
         switch (data.initial_state)
@@ -58,12 +56,13 @@ namespace pika { namespace threads { namespace detail {
         {
             if (self)
             {
-                data.parent_id = get_thread_id_data(threads::get_self_id());
+                data.parent_id =
+                    get_thread_id_data(threads::detail::get_self_id());
                 data.parent_phase = self->get_thread_phase();
             }
         }
         if (0 == data.parent_locality_id)
-            data.parent_locality_id = detail::get_locality_id(pika::throws);
+            data.parent_locality_id = get_locality_id(pika::throws);
 #endif
 
         if (nullptr == data.scheduler_base)
@@ -73,16 +72,16 @@ namespace pika { namespace threads { namespace detail {
         // none is explicitly specified).
         if (self)
         {
-            if (data.priority == thread_priority::default_ &&
-                thread_priority::high_recursive ==
-                    get_thread_id_data(threads::get_self_id())->get_priority())
+            if (data.priority == execution::thread_priority::default_ &&
+                execution::thread_priority::high_recursive ==
+                    get_thread_id_data(get_self_id())->get_priority())
             {
-                data.priority = thread_priority::high_recursive;
+                data.priority = execution::thread_priority::high_recursive;
             }
         }
 
-        if (data.priority == thread_priority::default_)
-            data.priority = thread_priority::normal;
+        if (data.priority == execution::thread_priority::default_)
+            data.priority = execution::thread_priority::normal;
 
         // create the new thread
         scheduler->create_thread(data, &id, ec);
@@ -102,4 +101,4 @@ namespace pika { namespace threads { namespace detail {
         // thread.
         scheduler->do_some_work(data.schedulehint.hint);
     }
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail

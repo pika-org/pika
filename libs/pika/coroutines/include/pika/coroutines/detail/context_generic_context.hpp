@@ -60,14 +60,16 @@ void __splitstack_setcontext(void* [PIKA_COROUTINES_SEGMENTS]);
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace coroutines {
-    // some platforms need special preparation of the main thread
-    struct prepare_main_thread
-    {
-        constexpr prepare_main_thread() {}
-    };
+namespace pika::threads::coroutines {
+    namespace detail {
+        // some platforms need special preparation of the main thread
+        struct prepare_main_thread
+        {
+            constexpr prepare_main_thread() {}
+        };
+    }    // namespace detail
 
-    namespace detail { namespace generic_context {
+    namespace detail::generic_context {
         ///////////////////////////////////////////////////////////////////////
         // This is taken directly from one of the Boost.Context examples
 #if !defined(PIKA_GENERIC_CONTEXT_USE_SEGMENTED_STACKS)
@@ -337,5 +339,5 @@ namespace pika { namespace threads { namespace coroutines {
             std::size_t stack_size_;
             void* stack_pointer_;
         };
-    }}    // namespace detail::generic_context
-}}}       // namespace pika::threads::coroutines
+    }    // namespace detail::generic_context
+}    // namespace pika::threads::coroutines

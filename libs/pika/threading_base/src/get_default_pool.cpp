@@ -27,7 +27,7 @@ namespace pika_start {
 
 #endif
 
-namespace pika { namespace threads { namespace detail {
+namespace pika::threads::detail {
     static get_default_pool_type get_default_pool;
 
     void set_get_default_pool(get_default_pool_type f)
@@ -43,9 +43,9 @@ namespace pika { namespace threads { namespace detail {
         {
             pool = thrd_data->get_scheduler_base()->get_parent_pool();
         }
-        else if (detail::get_default_pool)
+        else if (get_default_pool)
         {
-            pool = detail::get_default_pool();
+            pool = get_default_pool();
             PIKA_ASSERT(pool);
         }
         else
@@ -59,4 +59,4 @@ namespace pika { namespace threads { namespace detail {
 
         return pool;
     }
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail

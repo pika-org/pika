@@ -21,7 +21,7 @@
 #include <memory>
 #include <utility>
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     class thread_init_data
     {
@@ -39,9 +39,9 @@ namespace pika { namespace threads {
 #ifdef PIKA_HAVE_APEX
           , timer_data(nullptr)
 #endif
-          , priority(thread_priority::normal)
+          , priority(execution::thread_priority::normal)
           , schedulehint()
-          , stacksize(thread_stacksize::default_)
+          , stacksize(execution::thread_stacksize::default_)
           , initial_state(thread_schedule_state::pending)
           , run_now(false)
           , scheduler_base(nullptr)
@@ -105,10 +105,13 @@ namespace pika { namespace threads {
         }
 
         template <typename F>
-        thread_init_data(F&& f, util::thread_description const& desc,
-            thread_priority priority_ = thread_priority::normal,
-            thread_schedule_hint os_thread = thread_schedule_hint(),
-            thread_stacksize stacksize_ = thread_stacksize::default_,
+        thread_init_data(F&& f, util::detail::thread_description const& desc,
+            execution::thread_priority priority_ =
+                execution::thread_priority::normal,
+            execution::thread_schedule_hint os_thread =
+                execution::thread_schedule_hint(),
+            execution::thread_stacksize stacksize_ =
+                execution::thread_stacksize::default_,
             thread_schedule_state initial_state_ =
                 thread_schedule_state::pending,
             bool run_now_ = false,
@@ -145,14 +148,14 @@ namespace pika { namespace threads {
             }
         }
 
-        threads::thread_function_type func;
+        thread_function_type func;
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-        util::thread_description description;
+        util::detail::thread_description description;
 #endif
 #if defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
         std::uint32_t parent_locality_id;
-        threads::thread_id_type parent_id;
+        thread_id_type parent_id;
         std::size_t parent_phase;
 #endif
 #ifdef PIKA_HAVE_APEX
@@ -161,12 +164,12 @@ namespace pika { namespace threads {
         std::shared_ptr<pika::detail::external_timer::task_wrapper> timer_data;
 #endif
 
-        thread_priority priority;
-        thread_schedule_hint schedulehint;
-        thread_stacksize stacksize;
+        execution::thread_priority priority;
+        execution::thread_schedule_hint schedulehint;
+        execution::thread_stacksize stacksize;
         thread_schedule_state initial_state;
         bool run_now;
 
         policies::scheduler_base* scheduler_base;
     };
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

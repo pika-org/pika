@@ -242,7 +242,7 @@ namespace boost { namespace inspect {
             "system_error"},
         // boost
         {"(\\bpika\\s*::\\s*intrusive_ptr\\b)", "pika::intrusive_ptr",
-            "pika/modules/memory.hpp"},
+            "pika/memory/intrusive_ptr.hpp"},
         {"(\\bpika\\s*::\\s*util\\s*::\\s*from_string\\b)",
             "pika::util::from_string", "pika/util/from_string.hpp"},
         {"(\\bpika\\s*::\\s*util\\s*::\\s*to_string\\b)",

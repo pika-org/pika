@@ -31,13 +31,14 @@ void blocker(pika::barrier<>& exit_barrier, std::atomic<std::uint64_t>& entered,
     // reschedule if we are not on the correct OS thread...
     if (worker != pika::get_worker_thread_num())
     {
-        pika::threads::thread_init_data data(
-            pika::threads::make_thread_function_nullary(pika::util::bind(
-                &blocker, std::ref(exit_barrier), std::ref(entered),
-                std::ref(started), std::ref(blocked_threads), worker)),
-            "blocker", pika::threads::thread_priority::normal,
-            pika::threads::thread_schedule_hint(worker));
-        pika::threads::register_work(data);
+        pika::threads::detail::thread_init_data data(
+            pika::threads::detail::make_thread_function_nullary(
+                pika::util::bind(&blocker, std::ref(exit_barrier),
+                    std::ref(entered), std::ref(started),
+                    std::ref(blocked_threads), worker)),
+            "blocker", pika::execution::thread_priority::normal,
+            pika::execution::thread_schedule_hint(worker));
+        pika::threads::detail::register_work(data);
         return;
     }
 
@@ -80,13 +81,14 @@ int pika_main()
             if (i == pika::get_worker_thread_num())
                 continue;
 
-            pika::threads::thread_init_data data(
-                pika::threads::make_thread_function_nullary(pika::util::bind(
-                    &blocker, std::ref(exit_barrier), std::ref(entered),
-                    std::ref(started), std::ref(blocked_threads), i)),
-                "blocker", pika::threads::thread_priority::normal,
-                pika::threads::thread_schedule_hint(i));
-            pika::threads::register_work(data);
+            pika::threads::detail::thread_init_data data(
+                pika::threads::detail::make_thread_function_nullary(
+                    pika::util::bind(&blocker, std::ref(exit_barrier),
+                        std::ref(entered), std::ref(started),
+                        std::ref(blocked_threads), i)),
+                "blocker", pika::execution::thread_priority::normal,
+                pika::execution::thread_schedule_hint(i));
+            pika::threads::detail::register_work(data);
             ++scheduled;
         }
         PIKA_TEST_EQ(scheduled, os_thread_count - 1);

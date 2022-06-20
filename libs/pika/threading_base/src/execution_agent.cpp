@@ -31,8 +31,7 @@
 #include <string>
 #include <utility>
 
-namespace pika { namespace threads {
-
+namespace pika::threads::detail {
     execution_agent::execution_agent(
         coroutines::detail::coroutine_impl* coroutine) noexcept
       : self_(coroutine)
@@ -55,7 +54,7 @@ namespace pika { namespace threads {
 
     void execution_agent::yield(const char* desc)
     {
-        do_yield(desc, pika::threads::thread_schedule_state::pending);
+        do_yield(desc, thread_schedule_state::pending);
     }
 
     void execution_agent::yield_k(std::size_t k, const char* desc)
@@ -69,27 +68,27 @@ namespace pika { namespace threads {
         }
         else if (k < 32 || k & 1)    //-V112
         {
-            do_yield(desc, pika::threads::thread_schedule_state::pending_boost);
+            do_yield(desc, thread_schedule_state::pending_boost);
         }
         else
         {
-            do_yield(desc, pika::threads::thread_schedule_state::pending);
+            do_yield(desc, thread_schedule_state::pending);
         }
     }
 
     void execution_agent::resume(const char* desc)
     {
-        do_resume(desc, threads::thread_restart_state::signaled);
+        do_resume(desc, thread_restart_state::signaled);
     }
 
     void execution_agent::abort(const char* desc)
     {
-        do_resume(desc, threads::thread_restart_state::abort);
+        do_resume(desc, thread_restart_state::abort);
     }
 
     void execution_agent::suspend(const char* desc)
     {
-        do_yield(desc, threads::thread_schedule_state::suspended);
+        do_yield(desc, thread_schedule_state::suspended);
     }
 
     void execution_agent::sleep_for(
@@ -112,12 +111,11 @@ namespace pika { namespace threads {
         {
             if (k < 32 || k & 1)
             {
-                do_yield(
-                    desc, pika::threads::thread_schedule_state::pending_boost);
+                do_yield(desc, thread_schedule_state::pending_boost);
             }
             else
             {
-                do_yield(desc, pika::threads::thread_schedule_state::pending);
+                do_yield(desc, thread_schedule_state::pending);
             }
             ++k;
             now = std::chrono::steady_clock::now();
@@ -145,8 +143,8 @@ namespace pika { namespace threads {
     };
 #endif
 
-    pika::threads::thread_restart_state execution_agent::do_yield(
-        const char* desc, threads::thread_schedule_state state)
+    thread_restart_state execution_agent::do_yield(
+        const char* desc, thread_schedule_state state)
     {
         thread_id_ref_type id = self_.get_thread_id();    // keep alive
         if (PIKA_UNLIKELY(!id))
@@ -173,16 +171,15 @@ namespace pika { namespace threads {
         thrd_data->set_last_worker_thread_num(
             pika::get_local_worker_thread_num());
 
-        threads::thread_restart_state statex =
-            threads::thread_restart_state::unknown;
+        thread_restart_state statex = thread_restart_state::unknown;
 
         {
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
-            threads::detail::reset_lco_description desc(
-                id.noref(), util::thread_description(desc));
+            reset_lco_description desc(
+                id.noref(), util::detail::thread_description(desc));
 #endif
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
-            threads::detail::reset_backtrace bt(id);
+            reset_backtrace bt(id);
 #endif
             on_exit_reset_held_lock_data held_locks;
             PIKA_UNUSED(held_locks);
@@ -190,8 +187,7 @@ namespace pika { namespace threads {
             PIKA_ASSERT(thrd_data->get_state().state() ==
                 thread_schedule_state::active);
             PIKA_ASSERT(state != thread_schedule_state::active);
-            statex = self_.yield(
-                threads::thread_result_type(state, threads::invalid_thread_id));
+            statex = self_.yield(thread_result_type(state, invalid_thread_id));
             PIKA_ASSERT(get_thread_id_data(id)->get_state().state() ==
                 thread_schedule_state::active);
         }
@@ -200,7 +196,7 @@ namespace pika { namespace threads {
         thrd_data->interruption_point();
 
         // handle interrupt and abort
-        if (statex == threads::thread_restart_state::abort)
+        if (statex == thread_restart_state::abort)
         {
             PIKA_THROW_EXCEPTION(yield_aborted, desc,
                 "thread({}) aborted (yield returned wait_abort)",
@@ -211,13 +207,13 @@ namespace pika { namespace threads {
     }
 
     void execution_agent::do_resume(
-        const char* /* desc */, pika::threads::thread_restart_state statex)
+        const char* /* desc */, thread_restart_state statex)
     {
         auto thrd = self_.get_thread_id();
-        threads::detail::set_thread_state(PIKA_MOVE(thrd),
-            thread_schedule_state::pending, statex, thread_priority::normal,
-            thread_schedule_hint{static_cast<std::int16_t>(
+        set_thread_state(PIKA_MOVE(thrd), thread_schedule_state::pending,
+            statex, execution::thread_priority::normal,
+            execution::thread_schedule_hint{static_cast<std::int16_t>(
                 get_thread_id_data(thrd)->get_last_worker_thread_num())},
             false);
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

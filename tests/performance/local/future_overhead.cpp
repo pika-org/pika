@@ -164,7 +164,8 @@ void function_futures_limiting_executor(
     std::uint64_t const tasks = num_threads * 2000;
     std::atomic<std::uint64_t> sanity_check(count);
 
-    auto const sched = pika::threads::get_self_id_data()->get_scheduler_base();
+    auto const sched =
+        pika::threads::detail::get_self_id_data()->get_scheduler_base();
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
     {
@@ -276,13 +277,13 @@ void function_futures_register_work(std::uint64_t count, bool csv)
     high_resolution_timer walltime;
     for (std::uint64_t i = 0; i < count; ++i)
     {
-        pika::threads::thread_init_data data(
-            pika::threads::make_thread_function_nullary([&l]() {
+        pika::threads::detail::thread_init_data data(
+            pika::threads::detail::make_thread_function_nullary([&l]() {
                 null_function();
                 l.count_down(1);
             }),
             "null_function");
-        pika::threads::register_work(data);
+        pika::threads::detail::register_work(data);
     }
     l.wait();
 
@@ -295,26 +296,28 @@ void function_futures_create_thread(std::uint64_t count, bool csv)
 {
     pika::lcos::local::latch l(count);
 
-    auto const sched = pika::threads::get_self_id_data()->get_scheduler_base();
+    auto const sched =
+        pika::threads::detail::get_self_id_data()->get_scheduler_base();
     auto func = [&l]() {
         null_function();
         l.count_down(1);
     };
     auto const thread_func =
         pika::threads::detail::thread_function_nullary<decltype(func)>{func};
-    auto const desc = pika::util::thread_description();
-    auto const prio = pika::threads::thread_priority::normal;
-    auto const hint = pika::threads::thread_schedule_hint();
-    auto const stack_size = pika::threads::thread_stacksize::small_;
+    auto const desc = pika::util::detail::thread_description();
+    auto const prio = pika::execution::thread_priority::normal;
+    auto const hint = pika::execution::thread_schedule_hint();
+    auto const stack_size = pika::execution::thread_stacksize::small_;
     pika::error_code ec;
 
     // start the clock
     high_resolution_timer walltime;
     for (std::uint64_t i = 0; i < count; ++i)
     {
-        auto init = pika::threads::thread_init_data(
-            pika::threads::thread_function_type(thread_func), desc, prio, hint,
-            stack_size, pika::threads::thread_schedule_state::pending, false,
+        auto init = pika::threads::detail::thread_init_data(
+            pika::threads::detail::thread_function_type(thread_func), desc,
+            prio, hint, stack_size,
+            pika::threads::detail::thread_schedule_state::pending, false,
             sched);
         sched->create_thread(init, nullptr, ec);
     }
@@ -330,7 +333,8 @@ void function_futures_create_thread_hierarchical_placement(
 {
     pika::lcos::local::latch l(count);
 
-    auto sched = pika::threads::get_self_id_data()->get_scheduler_base();
+    auto sched =
+        pika::threads::detail::get_self_id_data()->get_scheduler_base();
 
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
@@ -351,9 +355,9 @@ void function_futures_create_thread_hierarchical_placement(
     };
     auto const thread_func =
         pika::threads::detail::thread_function_nullary<decltype(func)>{func};
-    auto const desc = pika::util::thread_description();
-    auto prio = pika::threads::thread_priority::normal;
-    auto const stack_size = pika::threads::thread_stacksize::small_;
+    auto const desc = pika::util::detail::thread_description();
+    auto prio = pika::execution::thread_priority::normal;
+    auto const stack_size = pika::execution::thread_stacksize::small_;
     auto const num_threads = pika::get_num_worker_threads();
     pika::error_code ec;
 
@@ -362,7 +366,7 @@ void function_futures_create_thread_hierarchical_placement(
     for (std::size_t t = 0; t < num_threads; ++t)
     {
         auto const hint =
-            pika::threads::thread_schedule_hint(static_cast<std::int16_t>(t));
+            pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
         auto spawn_func = [&thread_func, sched, hint, t, count, num_threads,
                               desc, prio]() {
             std::uint64_t const count_start = t * count / num_threads;
@@ -370,11 +374,11 @@ void function_futures_create_thread_hierarchical_placement(
             pika::error_code ec;
             for (std::uint64_t i = count_start; i < count_end; ++i)
             {
-                pika::threads::thread_init_data init(
-                    pika::threads::thread_function_type(thread_func), desc,
-                    prio, hint, stack_size,
-                    pika::threads::thread_schedule_state::pending, false,
-                    sched);
+                pika::threads::detail::thread_init_data init(
+                    pika::threads::detail::thread_function_type(thread_func),
+                    desc, prio, hint, stack_size,
+                    pika::threads::detail::thread_schedule_state::pending,
+                    false, sched);
                 sched->create_thread(init, nullptr, ec);
             }
         };
@@ -382,10 +386,11 @@ void function_futures_create_thread_hierarchical_placement(
             pika::threads::detail::thread_function_nullary<
                 decltype(spawn_func)>{spawn_func};
 
-        pika::threads::thread_init_data init(
-            pika::threads::thread_function_type(thread_spawn_func), desc, prio,
-            hint, stack_size, pika::threads::thread_schedule_state::pending,
-            false, sched);
+        pika::threads::detail::thread_init_data init(
+            pika::threads::detail::thread_function_type(thread_spawn_func),
+            desc, prio, hint, stack_size,
+            pika::threads::detail::thread_schedule_state::pending, false,
+            sched);
         sched->create_thread(init, nullptr, ec);
     }
     l.wait();
@@ -412,7 +417,7 @@ void function_futures_apply_hierarchical_placement(
     for (std::size_t t = 0; t < num_threads; ++t)
     {
         auto const hint =
-            pika::threads::thread_schedule_hint(static_cast<std::int16_t>(t));
+            pika::execution::thread_schedule_hint(static_cast<std::int16_t>(t));
         auto spawn_func = [&func, hint, t, count, num_threads]() {
             auto exec = pika::execution::parallel_executor(hint);
             std::uint64_t const count_start = t * count / num_threads;
@@ -465,8 +470,8 @@ int pika_main(variables_map& vm)
         pika::execution::parallel_executor par;
         pika::parallel::execution::parallel_executor_aggregated par_agg;
         pika::execution::parallel_executor par_nostack(
-            pika::threads::thread_priority::default_,
-            pika::threads::thread_stacksize::nostack);
+            pika::execution::thread_priority::default_,
+            pika::execution::thread_stacksize::nostack);
         pika::execution::experimental::scheduler_executor<
             pika::execution::experimental::thread_pool_scheduler>
             sched_exec_tps;

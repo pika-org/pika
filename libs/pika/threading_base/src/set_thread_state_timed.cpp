@@ -21,15 +21,13 @@
 #include <system_error>
 #include <utility>
 
-namespace pika { namespace threads { namespace detail {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::threads::detail {
     /// This thread function is used by the at_timer thread below to trigger
     /// the required action.
     thread_result_type wake_timer_thread(thread_id_ref_type const& thrd,
         thread_schedule_state /*newstate*/,
-        thread_restart_state /*newstate_ex*/, thread_priority /*priority*/,
-        thread_id_type timer_id,
+        thread_restart_state /*newstate_ex*/,
+        execution::thread_priority /*priority*/, thread_id_type timer_id,
         std::shared_ptr<std::atomic<bool>> const& triggered,
         bool retry_on_active, thread_restart_state my_statex)
     {
@@ -58,8 +56,8 @@ namespace pika { namespace threads { namespace detail {
         {
             error_code ec(lightweight);    // do not throw
             set_thread_state(timer_id, thread_schedule_state::pending,
-                my_statex, thread_priority::boost, thread_schedule_hint(),
-                retry_on_active, ec);
+                my_statex, execution::thread_priority::boost,
+                execution::thread_schedule_hint(), retry_on_active, ec);
         }
 
         return thread_result_type(
@@ -71,7 +69,7 @@ namespace pika { namespace threads { namespace detail {
     thread_result_type at_timer(policies::scheduler_base* scheduler,
         std::chrono::steady_clock::time_point& /*abs_time*/,
         thread_id_ref_type const& thrd, thread_schedule_state newstate,
-        thread_restart_state newstate_ex, thread_priority priority,
+        thread_restart_state newstate_ex, execution::thread_priority priority,
         std::atomic<bool>* /*started*/, bool retry_on_active)
     {
         if (PIKA_UNLIKELY(!thrd))
@@ -93,8 +91,9 @@ namespace pika { namespace threads { namespace detail {
         thread_init_data data(
             util::bind_front(&wake_timer_thread, thrd, newstate, newstate_ex,
                 priority, self_id.noref(), triggered, retry_on_active),
-            "wake_timer", priority, thread_schedule_hint(),
-            thread_stacksize::small_, thread_schedule_state::suspended, true);
+            "wake_timer", priority, execution::thread_schedule_hint(),
+            execution::thread_stacksize::small_,
+            thread_schedule_state::suspended, true);
 
         thread_id_ref_type wake_id = invalid_thread_id;
         create_thread(scheduler, data, wake_id);
@@ -114,16 +113,16 @@ namespace pika { namespace threads { namespace detail {
         //                  std::error_code const& ec) {
         //     if (ec == std::make_error_code(std::errc::operation_canceled))
         //     {
-        //         set_thread_state(wake_id.noref(),
-        //             thread_schedule_state::pending, thread_restart_state::abort,
-        //             priority, thread_schedule_hint(), retry_on_active, throws);
+        //            set_thread_state(wake_id.noref(), thread_schedule_state::pending,
+        //                thread_restart_state::abort, priority,
+        //                execution::thread_schedule_hint(), retry_on_active, throws);
         //     }
         //     else
         //     {
         //         set_thread_state(wake_id.noref(),
         //             thread_schedule_state::pending,
         //             thread_restart_state::timeout, priority,
-        //             thread_schedule_hint(), retry_on_active, throws);
+        //             execution::thread_schedule_hint(), retry_on_active, throws);
         //     }
         // });
 
@@ -150,7 +149,7 @@ namespace pika { namespace threads { namespace detail {
         // }
         // else
         // {
-        //     detail::set_thread_state(
+        //     set_thread_state(
         //         thrd.noref(), newstate, newstate_ex, priority);
         // }
 
@@ -164,9 +163,9 @@ namespace pika { namespace threads { namespace detail {
         policies::scheduler_base* scheduler,
         pika::chrono::steady_time_point const& abs_time,
         thread_id_type const& thrd, thread_schedule_state newstate,
-        thread_restart_state newstate_ex, thread_priority priority,
-        thread_schedule_hint schedulehint, std::atomic<bool>* started,
-        bool retry_on_active, error_code& ec)
+        thread_restart_state newstate_ex, execution::thread_priority priority,
+        execution::thread_schedule_hint schedulehint,
+        std::atomic<bool>* started, bool retry_on_active, error_code& ec)
     {
         if (PIKA_UNLIKELY(!thrd))
         {
@@ -183,10 +182,11 @@ namespace pika { namespace threads { namespace detail {
                 thread_id_ref_type(thrd), newstate, newstate_ex, priority,
                 started, retry_on_active),
             "at_timer (expire at)", priority, schedulehint,
-            thread_stacksize::small_, thread_schedule_state::pending, true);
+            execution::thread_stacksize::small_, thread_schedule_state::pending,
+            true);
 
         thread_id_ref_type newid = invalid_thread_id;
         create_thread(scheduler, data, newid, ec);    //-V601
         return newid;
     }
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail

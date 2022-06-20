@@ -57,14 +57,14 @@ namespace pika { namespace execution { namespace experimental {
         friend thread_pool_scheduler tag_invoke(
             pika::execution::experimental::with_priority_t,
             thread_pool_scheduler const& scheduler,
-            pika::threads::thread_priority priority)
+            pika::execution::thread_priority priority)
         {
             auto sched_with_priority = scheduler;
             sched_with_priority.priority_ = priority;
             return sched_with_priority;
         }
 
-        friend pika::threads::thread_priority tag_invoke(
+        friend pika::execution::thread_priority tag_invoke(
             pika::execution::experimental::get_priority_t,
             thread_pool_scheduler const& scheduler)
         {
@@ -75,14 +75,14 @@ namespace pika { namespace execution { namespace experimental {
         friend thread_pool_scheduler tag_invoke(
             pika::execution::experimental::with_stacksize_t,
             thread_pool_scheduler const& scheduler,
-            pika::threads::thread_stacksize stacksize)
+            pika::execution::thread_stacksize stacksize)
         {
             auto sched_with_stacksize = scheduler;
             sched_with_stacksize.stacksize_ = stacksize;
             return sched_with_stacksize;
         }
 
-        friend pika::threads::thread_stacksize tag_invoke(
+        friend pika::execution::thread_stacksize tag_invoke(
             pika::execution::experimental::get_stacksize_t,
             thread_pool_scheduler const& scheduler)
         {
@@ -93,14 +93,14 @@ namespace pika { namespace execution { namespace experimental {
         friend thread_pool_scheduler tag_invoke(
             pika::execution::experimental::with_hint_t,
             thread_pool_scheduler const& scheduler,
-            pika::threads::thread_schedule_hint hint)
+            pika::execution::thread_schedule_hint hint)
         {
             auto sched_with_hint = scheduler;
             sched_with_hint.schedulehint_ = hint;
             return sched_with_hint;
         }
 
-        friend pika::threads::thread_schedule_hint tag_invoke(
+        friend pika::execution::thread_schedule_hint tag_invoke(
             pika::execution::experimental::get_hint_t,
             thread_pool_scheduler const& scheduler)
         {
@@ -138,11 +138,12 @@ namespace pika { namespace execution { namespace experimental {
         template <typename F>
         void execute(F&& f, char const* fallback_annotation) const
         {
-            pika::util::thread_description desc(f, fallback_annotation);
-            threads::thread_init_data data(
-                threads::make_thread_function_nullary(PIKA_FORWARD(F, f)), desc,
-                priority_, schedulehint_, stacksize_);
-            threads::register_work(data, pool_);
+            pika::util::detail::thread_description desc(f, fallback_annotation);
+            threads::detail::thread_init_data data(
+                threads::detail::make_thread_function_nullary(
+                    PIKA_FORWARD(F, f)),
+                desc, priority_, schedulehint_, stacksize_);
+            threads::detail::register_work(data, pool_);
         }
 
         template <typename F>
@@ -310,13 +311,15 @@ namespace pika { namespace execution { namespace experimental {
             }
 
             // Next is the annotation from the current context scheduling work
-            pika::threads::thread_id_type id = pika::threads::get_self_id();
+            pika::threads::detail::thread_id_type id =
+                pika::threads::detail::get_self_id();
             if (id)
             {
-                pika::util::thread_description desc =
-                    pika::threads::get_thread_description(id);
+                pika::util::detail::thread_description desc =
+                    pika::threads::detail::get_thread_description(id);
                 if (desc.kind() ==
-                    pika::util::thread_description::data_type_description)
+                    pika::util::detail::thread_description::
+                        data_type_description)
                 {
                     return desc.get_description();
                 }
@@ -331,11 +334,11 @@ namespace pika { namespace execution { namespace experimental {
 
         pika::threads::thread_pool_base* pool_ =
             pika::threads::detail::get_self_or_default_pool();
-        pika::threads::thread_priority priority_ =
-            pika::threads::thread_priority::normal;
-        pika::threads::thread_stacksize stacksize_ =
-            pika::threads::thread_stacksize::small_;
-        pika::threads::thread_schedule_hint schedulehint_{};
+        pika::execution::thread_priority priority_ =
+            pika::execution::thread_priority::normal;
+        pika::execution::thread_stacksize stacksize_ =
+            pika::execution::thread_stacksize::small_;
+        pika::execution::thread_schedule_hint schedulehint_{};
         char const* annotation_ = nullptr;
         /// \endcond
     };

@@ -31,8 +31,6 @@
 
 #include <pika/config.hpp>
 
-#include <boost/version.hpp>
-
 #include <cstddef>
 
 /*

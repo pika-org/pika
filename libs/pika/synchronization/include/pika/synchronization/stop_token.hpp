@@ -177,7 +177,7 @@ namespace pika {
 
             std::atomic<std::uint64_t> state_;
             stop_callback_base* callbacks_ = nullptr;
-            pika::threads::thread_id_type signalling_thread_;
+            pika::threads::detail::thread_id_type signalling_thread_;
         };
 
     }    // namespace detail

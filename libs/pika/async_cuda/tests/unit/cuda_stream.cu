@@ -26,7 +26,7 @@ int main()
 
         PIKA_TEST_EQ(stream.get_device(), 0);
         PIKA_TEST_EQ(
-            stream.get_priority(), pika::threads::thread_priority::default_);
+            stream.get_priority(), pika::execution::thread_priority::default_);
 
         PIKA_TEST_NEQ(stream.get(), cudaStream_t{});
 
@@ -45,7 +45,7 @@ int main()
 
         PIKA_TEST_EQ(stream.get_device(), 0);
         PIKA_TEST_EQ(
-            stream.get_priority(), pika::threads::thread_priority::default_);
+            stream.get_priority(), pika::execution::thread_priority::default_);
 
         PIKA_TEST_NEQ(stream.get(), cudaStream_t{});
 
@@ -57,11 +57,11 @@ int main()
 
     {
         // We should also be able to set the priority.
-        cu::cuda_stream stream{0, pika::threads::thread_priority::normal};
+        cu::cuda_stream stream{0, pika::execution::thread_priority::normal};
 
         PIKA_TEST_EQ(stream.get_device(), 0);
         PIKA_TEST_EQ(
-            stream.get_priority(), pika::threads::thread_priority::normal);
+            stream.get_priority(), pika::execution::thread_priority::normal);
 
         PIKA_TEST_NEQ(stream.get(), cudaStream_t{});
 
@@ -70,9 +70,9 @@ int main()
         PIKA_TEST_EQ(stream.get(), cudaStream_t{});
         PIKA_TEST_NEQ(stream2.get(), cudaStream_t{});
         PIKA_TEST_EQ(
-            stream.get_priority(), pika::threads::thread_priority::default_);
+            stream.get_priority(), pika::execution::thread_priority::default_);
         PIKA_TEST_EQ(
-            stream2.get_priority(), pika::threads::thread_priority::normal);
+            stream2.get_priority(), pika::execution::thread_priority::normal);
 
         cu::cuda_stream stream3{stream};
         cu::cuda_stream stream4{stream2};
@@ -81,17 +81,17 @@ int main()
         PIKA_TEST_NEQ(stream4.get(), cudaStream_t{});
         PIKA_TEST_NEQ(stream4.get(), stream2.get());
         PIKA_TEST_EQ(
-            stream3.get_priority(), pika::threads::thread_priority::default_);
+            stream3.get_priority(), pika::execution::thread_priority::default_);
         PIKA_TEST_EQ(
-            stream4.get_priority(), pika::threads::thread_priority::normal);
+            stream4.get_priority(), pika::execution::thread_priority::normal);
     }
 
     {
-        cu::cuda_stream stream{0, pika::threads::thread_priority::high};
+        cu::cuda_stream stream{0, pika::execution::thread_priority::high};
 
         PIKA_TEST_EQ(stream.get_device(), 0);
         PIKA_TEST_EQ(
-            stream.get_priority(), pika::threads::thread_priority::high);
+            stream.get_priority(), pika::execution::thread_priority::high);
 
         PIKA_TEST_NEQ(stream.get(), cudaStream_t{});
 
@@ -100,9 +100,9 @@ int main()
         PIKA_TEST_EQ(stream.get(), cudaStream_t{});
         PIKA_TEST_NEQ(stream2.get(), cudaStream_t{});
         PIKA_TEST_EQ(
-            stream.get_priority(), pika::threads::thread_priority::default_);
+            stream.get_priority(), pika::execution::thread_priority::default_);
         PIKA_TEST_EQ(
-            stream2.get_priority(), pika::threads::thread_priority::high);
+            stream2.get_priority(), pika::execution::thread_priority::high);
 
         cu::cuda_stream stream3{stream};
         cu::cuda_stream stream4{stream2};
@@ -111,16 +111,16 @@ int main()
         PIKA_TEST_NEQ(stream4.get(), cudaStream_t{});
         PIKA_TEST_NEQ(stream4.get(), stream2.get());
         PIKA_TEST_EQ(
-            stream3.get_priority(), pika::threads::thread_priority::default_);
+            stream3.get_priority(), pika::execution::thread_priority::default_);
         PIKA_TEST_EQ(
-            stream4.get_priority(), pika::threads::thread_priority::high);
+            stream4.get_priority(), pika::execution::thread_priority::high);
     }
 
     {
         // Equality is based on the underlying stream.
-        cu::cuda_stream stream1{0, pika::threads::thread_priority::normal};
-        cu::cuda_stream stream2{0, pika::threads::thread_priority::normal};
-        cu::cuda_stream stream3{0, pika::threads::thread_priority::high};
+        cu::cuda_stream stream1{0, pika::execution::thread_priority::normal};
+        cu::cuda_stream stream2{0, pika::execution::thread_priority::normal};
+        cu::cuda_stream stream3{0, pika::execution::thread_priority::high};
 
         PIKA_TEST_NEQ(stream1, stream2);
         PIKA_TEST_NEQ(stream1, stream3);
@@ -141,8 +141,8 @@ int main()
         streams.emplace_back();
         streams.emplace_back();
         streams.emplace_back(0);
-        streams.emplace_back(0, pika::threads::thread_priority::normal);
-        streams.emplace_back(0, pika::threads::thread_priority::high);
+        streams.emplace_back(0, pika::execution::thread_priority::normal);
+        streams.emplace_back(0, pika::execution::thread_priority::high);
         // The first stream should stay usable after this
         streams.push_back(std::move(streams[0]));
 

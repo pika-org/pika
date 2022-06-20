@@ -13,10 +13,8 @@
 
 #include <cstddef>
 
-namespace pika { namespace threads {
-    ///////////////////////////////////////////////////////////////////////
+namespace pika::threads::detail {
     namespace strings {
-
         // clang-format off
         char const* const thread_state_names[] = {
             "unknown",
@@ -54,7 +52,6 @@ namespace pika { namespace threads {
 
     ///////////////////////////////////////////////////////////////////////
     namespace strings {
-
         // clang-format off
         char const* const thread_state_ex_names[] = {
             "wait_unknown",
@@ -64,7 +61,6 @@ namespace pika { namespace threads {
             "wait_abort"
         };
         // clang-format on
-
     }    // namespace strings
 
     char const* get_thread_state_ex_name(thread_restart_state state_ex)
@@ -81,11 +77,12 @@ namespace pika { namespace threads {
            << ")";
         return os;
     }
+}    // namespace pika::threads::detail
 
-    ///////////////////////////////////////////////////////////////////////
-    namespace strings {
-
-        // clang-format off
+namespace pika::execution {
+    namespace detail {
+        namespace strings {
+            // clang-format off
         char const* const thread_priority_names[] = {
             "default",
             "low",
@@ -94,30 +91,22 @@ namespace pika { namespace threads {
             "boost",
             "high (non-recursive)",
         };
-        // clang-format on
-    }    // namespace strings
+            // clang-format on
+        }    // namespace strings
 
-    char const* get_thread_priority_name(thread_priority priority)
-    {
-        if (priority < thread_priority::default_ ||
-            priority > thread_priority::high)
+        char const* get_thread_priority_name(thread_priority priority)
         {
-            return "unknown";
+            if (priority < thread_priority::default_ ||
+                priority > thread_priority::high)
+            {
+                return "unknown";
+            }
+            return strings::thread_priority_names[static_cast<std::size_t>(
+                priority)];
         }
-        return strings::thread_priority_names[static_cast<std::size_t>(
-            priority)];
-    }
 
-    std::ostream& operator<<(std::ostream& os, thread_priority const t)
-    {
-        os << get_thread_priority_name(t) << " (" << static_cast<std::size_t>(t)
-           << ")";
-        return os;
-    }
-
-    namespace strings {
-
-        // clang-format off
+        namespace strings {
+            // clang-format off
         char const* const stack_size_names[] = {
             "small",
             "medium",
@@ -125,25 +114,34 @@ namespace pika { namespace threads {
             "huge",
             "nostack",
         };
-        // clang-format on
+            // clang-format on
+        }    // namespace strings
 
-    }    // namespace strings
+        char const* get_stack_size_enum_name(thread_stacksize size)
+        {
+            if (size == thread_stacksize::unknown)
+                return "unknown";
 
-    char const* get_stack_size_enum_name(thread_stacksize size)
-    {
-        if (size == thread_stacksize::unknown)
-            return "unknown";
+            if (size < thread_stacksize::small_ ||
+                size > thread_stacksize::nostack)
+                return "custom";
 
-        if (size < thread_stacksize::small_ || size > thread_stacksize::nostack)
-            return "custom";
-
-        return strings::stack_size_names[static_cast<std::size_t>(size) - 1];
-    }
+            return strings::stack_size_names[static_cast<std::size_t>(size) -
+                1];
+        }
+    }    // namespace detail
 
     std::ostream& operator<<(std::ostream& os, thread_stacksize const t)
     {
-        os << get_stack_size_enum_name(t) << " (" << static_cast<std::size_t>(t)
-           << ")";
+        os << detail::get_stack_size_enum_name(t) << " ("
+           << static_cast<std::size_t>(t) << ")";
         return os;
     }
-}}    // namespace pika::threads
+
+    std::ostream& operator<<(std::ostream& os, thread_priority const t)
+    {
+        os << detail::get_thread_priority_name(t) << " ("
+           << static_cast<std::size_t>(t) << ")";
+        return os;
+    }
+}    // namespace pika::execution

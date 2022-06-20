@@ -26,10 +26,10 @@ int pika_main()
     if (!run)
     {
         // This thread should get scheduled last (because of
-        // pika::threads::thread_schedule_state::pending) and let the function
+        // pika::threads::detail::thread_schedule_state::pending) and let the function
         // spawned above run.
         pika::this_thread::suspend(
-            pika::threads::thread_schedule_state::pending);
+            pika::threads::detail::thread_schedule_state::pending);
     }
 
     PIKA_TEST(run);

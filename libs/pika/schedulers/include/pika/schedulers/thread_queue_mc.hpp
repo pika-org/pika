@@ -55,14 +55,14 @@ namespace pika { namespace threads { namespace policies {
     public:
         using thread_queue_type = thread_queue_mc;
 
-        using thread_heap_type = std::list<thread_id_type,
-            pika::detail::internal_allocator<thread_id_type>>;
+        using thread_heap_type = std::list<threads::detail::thread_id_type,
+            pika::detail::internal_allocator<threads::detail::thread_id_type>>;
 
-        using task_description = thread_init_data;
-        using thread_description = thread_data;
+        using task_description = threads::detail::thread_init_data;
+        using thread_description = threads::detail::thread_data;
 
-        using work_items_type =
-            concurrentqueue_fifo::apply<thread_id_ref_type>::type;
+        using work_items_type = concurrentqueue_fifo::apply<
+            threads::detail::thread_id_ref_type>::type;
 
         using task_items_type =
             concurrentqueue_fifo::apply<task_description>::type;
@@ -96,8 +96,8 @@ namespace pika { namespace threads { namespace policies {
             while (add_count-- && addfrom->new_task_items_.pop(task, stealing))
             {
                 // create the new thread
-                threads::thread_init_data& data = task;
-                threads::thread_id_ref_type tid;
+                threads::detail::thread_init_data& data = task;
+                threads::detail::thread_id_ref_type tid;
 
                 holder_->create_thread_object(tid, data);
                 holder_->add_to_thread_map(tid.noref());
@@ -106,12 +106,13 @@ namespace pika { namespace threads { namespace policies {
                 --addfrom->new_tasks_count_.data_;
 
                 tqmc_deb.debug(debug::str<>("add_new"), "stealing", stealing,
-                    debug::threadinfo<threads::thread_id_ref_type*>(&tid));
+                    debug::threadinfo<threads::detail::thread_id_ref_type*>(
+                        &tid));
 
                 // insert the thread into work-items queue assuming it is in
                 // pending state
-                PIKA_ASSERT(
-                    data.initial_state == thread_schedule_state::pending);
+                PIKA_ASSERT(data.initial_state ==
+                    threads::detail::thread_schedule_state::pending);
 
                 // pushing the new thread into the pending queue of the
                 // specified thread_queue
@@ -181,28 +182,29 @@ namespace pika { namespace threads { namespace policies {
 
         // create a new thread and schedule it if the initial state is equal to
         // pending
-        void create_thread(
-            thread_init_data& data, thread_id_ref_type* id, error_code& ec)
+        void create_thread(threads::detail::thread_init_data& data,
+            threads::detail::thread_id_ref_type* id, error_code& ec)
         {
             // thread has not been created yet
             if (id)
-                *id = invalid_thread_id;
+                *id = threads::detail::invalid_thread_id;
 
-            if (data.stacksize == threads::thread_stacksize::current)
+            if (data.stacksize == execution::thread_stacksize::current)
             {
-                data.stacksize = get_self_stacksize_enum();
+                data.stacksize = threads::detail::get_self_stacksize_enum();
             }
 
-            PIKA_ASSERT(data.stacksize != threads::thread_stacksize::current);
+            PIKA_ASSERT(data.stacksize != execution::thread_stacksize::current);
 
             if (data.run_now)
             {
-                threads::thread_id_ref_type tid;
+                threads::detail::thread_id_ref_type tid;
                 holder_->create_thread_object(tid, data);
                 holder_->add_to_thread_map(tid.noref());
 
                 // push the new thread in the pending queue thread
-                if (data.initial_state == thread_schedule_state::pending)
+                if (data.initial_state ==
+                    threads::detail::thread_schedule_state::pending)
                 {
                     // return the thread_id_ref of the newly created thread
                     if (id)
@@ -228,7 +230,8 @@ namespace pika { namespace threads { namespace policies {
             // if the initial state is not pending, delayed creation will
             // fail as the newly created thread would go out of scope right
             // away (can't be scheduled).
-            if (data.initial_state != thread_schedule_state::pending)
+            if (data.initial_state !=
+                threads::detail::thread_schedule_state::pending)
             {
                 PIKA_THROW_EXCEPTION(bad_parameter,
                     "thread_queue_mc::create_thread",
@@ -248,8 +251,8 @@ namespace pika { namespace threads { namespace policies {
         // ----------------------------------------------------------------
         /// Return the next thread to be executed,
         /// return false if none is available
-        bool get_next_thread(threads::thread_id_ref_type& thrd, bool other_end,
-            bool check_new = false) PIKA_HOT
+        bool get_next_thread(threads::detail::thread_id_ref_type& thrd,
+            bool other_end, bool check_new = false) PIKA_HOT
         {
             [[maybe_unused]] auto scp =
                 tqmc_deb.scope(debug::ptr(this), __func__);
@@ -265,7 +268,8 @@ namespace pika { namespace threads { namespace policies {
                     debug::dec<3>(queue_index_), "n",
                     debug::dec<4>(new_tasks_count_.data_), "w",
                     debug::dec<4>(work_items_count_.data_),
-                    debug::threadinfo<threads::thread_id_ref_type*>(&thrd));
+                    debug::threadinfo<threads::detail::thread_id_ref_type*>(
+                        &thrd));
                 return true;
             }
 
@@ -282,7 +286,8 @@ namespace pika { namespace threads { namespace policies {
 
         // ----------------------------------------------------------------
         /// Schedule the passed thread (put it on the ready work queue)
-        void schedule_work(threads::thread_id_ref_type thrd, bool other_end)
+        void schedule_work(
+            threads::detail::thread_id_ref_type thrd, bool other_end)
         {
             ++work_items_count_.data_;
             tqmc_deb.debug(debug::str<>("schedule_work"), "stealing", other_end,
@@ -290,7 +295,7 @@ namespace pika { namespace threads { namespace policies {
                 debug::dec<3>(queue_index_), "n",
                 debug::dec<4>(new_tasks_count_.data_), "w",
                 debug::dec<4>(work_items_count_.data_),
-                debug::threadinfo<threads::thread_id_ref_type*>(&thrd));
+                debug::threadinfo<threads::detail::thread_id_ref_type*>(&thrd));
             //
             work_items_.push(PIKA_MOVE(thrd), other_end);
 #ifdef DEBUG_QUEUE_EXTRA
@@ -320,7 +325,7 @@ namespace pika { namespace threads { namespace policies {
             while (q.pop(thrd))
             {
                 tqmc_deb.debug(debug::str<>("debug_queue"), x++,
-                    debug::threadinfo<threads::thread_data*>(thrd));
+                    debug::threadinfo<threads::detail::thread_data*>(thrd));
                 work_items_copy_.push(thrd);
             }
             tqmc_deb.debug(debug::str<>("debug_queue"), "Push work items");
@@ -328,7 +333,7 @@ namespace pika { namespace threads { namespace policies {
             {
                 q.push(thrd);
                 tqmc_deb.debug(debug::str<>("debug_queue"), --x,
-                    debug::threadinfo<threads::thread_data*>(thrd));
+                    debug::threadinfo<threads::detail::thread_data*>(thrd));
             }
             tqmc_deb.debug(debug::str<>("debug_queue"), "Finished");
         }

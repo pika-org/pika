@@ -103,7 +103,7 @@ namespace pika { namespace lcos { namespace local {
                 // which avoids suspension of this thread when it tries to
                 // re-lock the mutex while exiting from condition_variable::wait
                 while (cond_.data_.notify_one(
-                    PIKA_MOVE(l), threads::thread_priority::boost))
+                    PIKA_MOVE(l), execution::thread_priority::boost))
                 {
                     l = std::unique_lock(mtx_.data_);
                 }
@@ -165,7 +165,7 @@ namespace pika { namespace lcos { namespace local {
                 // which avoids suspension of this thread when it tries to
                 // re-lock the mutex while exiting from condition_variable::wait
                 while (cond_.data_.notify_one(
-                    PIKA_MOVE(l), threads::thread_priority::boost))
+                    PIKA_MOVE(l), execution::thread_priority::boost))
                 {
                     l = std::unique_lock(mtx_.data_);
                 }

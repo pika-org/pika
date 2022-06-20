@@ -39,9 +39,7 @@
 #include <exception>
 #include <utility>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-    ///////////////////////////////////////////////////////////////////////////
-
+namespace pika::threads::coroutines::detail {
 #if defined(PIKA_DEBUG)
     coroutine_impl::~coroutine_impl()
     {
@@ -55,8 +53,8 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         context_exit_status status = super_type::ctx_not_exited;
 
         // yield value once the thread function has finished executing
-        result_type result_last(
-            thread_schedule_state::unknown, invalid_thread_id);
+        result_type result_last(threads::detail::thread_schedule_state::unknown,
+            threads::detail::invalid_thread_id);
 
         // loop as long this coroutine has been rebound
         do
@@ -72,8 +70,8 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
                 try
                 {
                     result_last = m_fun(*this->args());
-                    PIKA_ASSERT(
-                        result_last.first == thread_schedule_state::terminated);
+                    PIKA_ASSERT(result_last.first ==
+                        threads::detail::thread_schedule_state::terminated);
                     status = super_type::ctx_exited_return;
                 }
                 catch (...)
@@ -96,4 +94,4 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         // should not get here, never
         PIKA_ASSERT(this->m_state == super_type::ctx_running);
     }
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail

@@ -25,8 +25,7 @@
 #include <cstddef>
 #include <limits>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-
+namespace pika::threads::coroutines::detail {
     inline std::size_t get_stack_ptr()
     {
 #if defined(PIKA_GCC_VERSION)
@@ -47,5 +46,5 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         return stack_ptr;
 #endif
     }
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail
 #endif

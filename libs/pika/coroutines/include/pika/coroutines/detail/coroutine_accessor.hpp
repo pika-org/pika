@@ -31,8 +31,7 @@
 
 #include <pika/config.hpp>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-
+namespace pika::threads::coroutines::detail {
     struct coroutine_accessor
     {
         template <typename Coroutine>
@@ -42,4 +41,4 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
             return x.get_impl();
         }
     };
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail

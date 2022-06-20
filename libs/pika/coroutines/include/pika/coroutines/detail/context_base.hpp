@@ -60,9 +60,7 @@
     (PIKA_COROUTINE_NUM_HEAPS + PIKA_COROUTINE_NUM_HEAPS / 2 +                 \
         PIKA_COROUTINE_NUM_HEAPS / 4 + PIKA_COROUTINE_NUM_HEAPS / 4) /**/
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
-
-    /////////////////////////////////////////////////////////////////////////////
+namespace pika::threads::coroutines::detail {
     constexpr std::ptrdiff_t const default_stack_size = -1;
 
     template <typename CoroutineImpl>
@@ -72,7 +70,7 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
     public:
         using deleter_type = void(context_base const*);
-        using thread_id_type = pika::threads::thread_id;
+        using thread_id_type = pika::threads::detail::thread_id;
 
         context_base(std::ptrdiff_t stack_size, thread_id_type id)
           : base_type(stack_size)
@@ -433,4 +431,4 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
         std::size_t continuation_recursion_count_;
     };
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail

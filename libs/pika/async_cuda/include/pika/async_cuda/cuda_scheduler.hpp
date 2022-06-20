@@ -29,7 +29,7 @@ namespace pika::cuda::experimental {
     {
     private:
         cuda_pool pool;
-        pika::threads::thread_priority priority;
+        pika::execution::thread_priority priority;
 
     public:
         PIKA_EXPORT
@@ -60,14 +60,14 @@ namespace pika::cuda::experimental {
         friend cuda_scheduler tag_invoke(
             pika::execution::experimental::with_priority_t,
             cuda_scheduler const& scheduler,
-            pika::threads::thread_priority priority)
+            pika::execution::thread_priority priority)
         {
             auto sched_with_priority = scheduler;
             sched_with_priority.priority = priority;
             return sched_with_priority;
         }
 
-        friend pika::threads::thread_priority tag_invoke(
+        friend pika::execution::thread_priority tag_invoke(
             pika::execution::experimental::get_priority_t,
             cuda_scheduler const& scheduler)
         {

@@ -96,7 +96,7 @@ namespace pika { namespace threads { namespace policies {
 
         // ----------------------------------------------------------------
         inline bool get_next_thread_HP(std::size_t qidx,
-            threads::thread_id_ref_type& thrd, bool stealing,
+            threads::detail::thread_id_ref_type& thrd, bool stealing,
             bool core_stealing)
         {
             // loop over queues and take one task,
@@ -114,7 +114,8 @@ namespace pika { namespace threads { namespace policies {
                          , "Qidx",  debug::dec<3>(qidx)
                          , ((i==0 && !stealing) ? "taken" : "stolen from")
                          , typename ThreadQueue::queue_data_print(queues_[q])
-                         , debug::threadinfo<threads::thread_id_ref_type*>(&thrd));
+                         , debug::threadinfo<
+                                 threads::detail::thread_id_ref_type*>(&thrd));
                     // clang-format on
                     return true;
                 }
@@ -127,7 +128,7 @@ namespace pika { namespace threads { namespace policies {
 
         // ----------------------------------------------------------------
         inline bool get_next_thread(std::size_t qidx,
-            threads::thread_id_ref_type& thrd, bool stealing,
+            threads::detail::thread_id_ref_type& thrd, bool stealing,
             bool core_stealing)
         {
             // loop over queues and take one task,
@@ -144,7 +145,8 @@ namespace pika { namespace threads { namespace policies {
                         debug::dec<3>(qidx),
                         ((i == 0 && !stealing) ? "taken" : "stolen from"),
                         typename ThreadQueue::queue_data_print(queues_[q]),
-                        debug::threadinfo<threads::thread_id_ref_type*>(&thrd));
+                        debug::threadinfo<threads::detail::thread_id_ref_type*>(
+                            &thrd));
                     return true;
                 }
                 // if stealing disabled, do not check other queues
@@ -227,8 +229,10 @@ namespace pika { namespace threads { namespace policies {
 
         // ----------------------------------------------------------------
         inline std::int64_t get_thread_count(
-            thread_schedule_state state = thread_schedule_state::unknown,
-            thread_priority priority = thread_priority::default_) const
+            threads::detail::thread_schedule_state state =
+                threads::detail::thread_schedule_state::unknown,
+            execution::thread_priority priority =
+                execution::thread_priority::default_) const
         {
             std::size_t len = 0;
             for (auto& q : queues_)
@@ -244,8 +248,9 @@ namespace pika { namespace threads { namespace policies {
         }
 
         // ----------------------------------------------------------------
-        bool enumerate_threads(util::function<bool(thread_id_type)> const& f,
-            thread_schedule_state state) const
+        bool enumerate_threads(
+            util::function<bool(threads::detail::thread_id_type)> const& f,
+            threads::detail::thread_schedule_state state) const
         {
             bool result = true;
             for (auto& q : queues_)

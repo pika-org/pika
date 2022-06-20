@@ -37,30 +37,31 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads {
+namespace pika::threads::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     thread_state set_thread_state(thread_id_type const& id,
         thread_schedule_state state, thread_restart_state stateex,
-        thread_priority priority, bool retry_on_active, error_code& ec)
+        execution::thread_priority priority, bool retry_on_active,
+        error_code& ec)
     {
         if (&ec != &throws)
             ec = make_success_code();
 
-        return detail::set_thread_state(id, state, stateex, priority,
-            thread_schedule_hint(), retry_on_active, ec);
+        return set_thread_state(id, state, stateex, priority,
+            execution::thread_schedule_hint(), retry_on_active, ec);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     thread_id_ref_type set_thread_state(thread_id_type const& id,
         pika::chrono::steady_time_point const& abs_time,
         std::atomic<bool>* timer_started, thread_schedule_state state,
-        thread_restart_state stateex, thread_priority priority,
+        thread_restart_state stateex, execution::thread_priority priority,
         bool retry_on_active, error_code& ec)
     {
-        return detail::set_thread_state_timed(
+        return set_thread_state_timed(
             get_thread_id_data(id)->get_scheduler_base(), abs_time, id, state,
-            stateex, priority, thread_schedule_hint(), timer_started,
+            stateex, priority, execution::thread_schedule_hint(), timer_started,
             retry_on_active, ec);
     }
 
@@ -81,18 +82,19 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::thread_priority get_thread_priority(
+    execution::thread_priority get_thread_priority(
         thread_id_type const& id, error_code& /* ec */)
     {
         return id ? get_thread_id_data(id)->get_priority() :
-                    thread_priority::unknown;
+                    execution::thread_priority::unknown;
     }
 
     std::ptrdiff_t get_stack_size(
         thread_id_type const& id, error_code& /* ec */)
     {
-        return id ? get_thread_id_data(id)->get_stack_size() :
-                    static_cast<std::ptrdiff_t>(thread_stacksize::unknown);
+        return id ?
+            get_thread_id_data(id)->get_stack_size() :
+            static_cast<std::ptrdiff_t>(execution::thread_stacksize::unknown);
     }
 
     void interrupt_thread(thread_id_type const& id, bool flag, error_code& ec)
@@ -100,7 +102,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::interrupt_thread",
+                "pika::threads::detail::interrupt_thread",
                 "null thread id encountered");
             return;
         }
@@ -113,7 +115,8 @@ namespace pika { namespace threads {
         // Set thread state to pending. If the thread is currently active we do
         // not retry. The thread will either exit or hit an interruption_point.
         set_thread_state(id, thread_schedule_state::pending,
-            thread_restart_state::abort, thread_priority::normal, false, ec);
+            thread_restart_state::abort, execution::thread_priority::normal,
+            false, ec);
     }
 
     void interruption_point(thread_id_type const& id, error_code& ec)
@@ -121,7 +124,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::interruption_point",
+                "pika::threads::detail::interruption_point",
                 "null thread id encountered");
             return;
         }
@@ -139,7 +142,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROW_EXCEPTION(null_thread_id,
-                "pika::threads::get_thread_interruption_enabled",
+                "pika::threads::detail::get_thread_interruption_enabled",
                 "null thread id encountered");
             return false;
         }
@@ -156,7 +159,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROW_EXCEPTION(null_thread_id,
-                "pika::threads::get_thread_interruption_enabled",
+                "pika::threads::detail::get_thread_interruption_enabled",
                 "null thread id encountered");
             return false;
         }
@@ -173,7 +176,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::get_thread_interruption_requested",
+                "pika::threads::detail::get_thread_interruption_requested",
                 "null thread id encountered");
             return false;
         }
@@ -189,7 +192,8 @@ namespace pika { namespace threads {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id, "pika::threads::get_thread_data",
+            PIKA_THROWS_IF(ec, null_thread_id,
+                "pika::threads::detail::get_thread_data",
                 "null thread id encountered");
             return 0;
         }
@@ -202,7 +206,8 @@ namespace pika { namespace threads {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id, "pika::threads::set_thread_data",
+            PIKA_THROWS_IF(ec, null_thread_id,
+                "pika::threads::detail::set_thread_data",
                 "null thread id encountered");
             return 0;
         }
@@ -215,7 +220,8 @@ namespace pika { namespace threads {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id, "pika::threads::get_libcds_data",
+            PIKA_THROWS_IF(ec, null_thread_id,
+                "pika::threads::detail::get_libcds_data",
                 "null thread id encountered");
             return 0;
         }
@@ -228,7 +234,8 @@ namespace pika { namespace threads {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id, "pika::threads::set_libcds_data",
+            PIKA_THROWS_IF(ec, null_thread_id,
+                "pika::threads::detail::set_libcds_data",
                 "null thread id encountered");
             return 0;
         }
@@ -242,7 +249,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::get_libcds_hazard_pointer_data",
+                "pika::threads::detail::get_libcds_hazard_pointer_data",
                 "null thread id encountered");
             return 0;
         }
@@ -256,7 +263,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::set_libcds_hazard_pointer_data",
+                "pika::threads::detail::set_libcds_hazard_pointer_data",
                 "null thread id encountered");
             return 0;
         }
@@ -270,7 +277,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::get_libcds_dynamic_hazard_pointer_data",
+                "pika::threads::detail::get_libcds_dynamic_hazard_pointer_data",
                 "null thread id encountered");
             return 0;
         }
@@ -284,7 +291,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::set_libcds_dynamic_hazard_pointer_data",
+                "pika::threads::detail::set_libcds_dynamic_hazard_pointer_data",
                 "null thread id encountered");
             return 0;
         }
@@ -319,7 +326,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::run_thread_exit_callbacks",
+                "pika::threads::detail::run_thread_exit_callbacks",
                 "null thread id encountered");
             return;
         }
@@ -336,7 +343,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::add_thread_exit_callback",
+                "pika::threads::detail::add_thread_exit_callback",
                 "null thread id encountered");
             return false;
         }
@@ -352,7 +359,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::add_thread_exit_callback",
+                "pika::threads::detail::add_thread_exit_callback",
                 "null thread id encountered");
             return;
         }
@@ -374,7 +381,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::get_thread_backtrace",
+                "pika::threads::detail::get_thread_backtrace",
                 "null thread id encountered");
             return nullptr;
         }
@@ -396,7 +403,7 @@ namespace pika { namespace threads {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, null_thread_id,
-                "pika::threads::set_thread_backtrace",
+                "pika::threads::detail::set_thread_backtrace",
                 "null thread id encountered");
             return nullptr;
         }
@@ -412,7 +419,8 @@ namespace pika { namespace threads {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id, "pika::threads::get_pool",
+            PIKA_THROWS_IF(ec, null_thread_id,
+                "pika::threads::detail::get_pool",
                 "null thread id encountered");
             return nullptr;
         }
@@ -422,9 +430,9 @@ namespace pika { namespace threads {
 
         return get_thread_id_data(id)->get_scheduler_base()->get_parent_pool();
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
-namespace pika { namespace this_thread {
+namespace pika::this_thread {
 
     /// The function \a suspend will return control to the thread manager
     /// (suspends the current thread). It sets the new state of this thread
@@ -432,23 +440,24 @@ namespace pika { namespace this_thread {
     ///
     /// If the suspension was aborted, this function will throw a
     /// \a yield_aborted exception.
-    threads::thread_restart_state suspend(threads::thread_schedule_state state,
-        threads::thread_id_type nextid,
-        util::thread_description const& description, error_code& ec)
+    threads::detail::thread_restart_state suspend(
+        threads::detail::thread_schedule_state state,
+        threads::detail::thread_id_type nextid,
+        util::detail::thread_description const& description, error_code& ec)
     {
         // let the thread manager do other things while waiting
-        threads::thread_self& self = threads::get_self();
+        threads::detail::thread_self& self = threads::detail::get_self();
 
         // keep alive
-        threads::thread_id_ref_type id = self.get_thread_id();
+        threads::detail::thread_id_ref_type id = self.get_thread_id();
 
         // handle interruption, if needed
-        threads::interruption_point(id.noref(), ec);
+        threads::detail::interruption_point(id.noref(), ec);
         if (ec)
-            return threads::thread_restart_state::unknown;
+            return threads::detail::thread_restart_state::unknown;
 
-        threads::thread_restart_state statex =
-            threads::thread_restart_state::unknown;
+        threads::detail::thread_restart_state statex =
+            threads::detail::thread_restart_state::unknown;
 
         {
             // verify that there are no more registered locks for this OS-thread
@@ -473,28 +482,29 @@ namespace pika { namespace this_thread {
                 auto* scheduler =
                     get_thread_id_data(nextid)->get_scheduler_base();
                 scheduler->schedule_thread(
-                    PIKA_MOVE(nextid), threads::thread_schedule_hint());
-                statex = self.yield(threads::thread_result_type(
-                    state, threads::invalid_thread_id));
+                    PIKA_MOVE(nextid), execution::thread_schedule_hint());
+                statex = self.yield(threads::detail::thread_result_type(
+                    state, threads::detail::invalid_thread_id));
             }
             else
             {
-                statex = self.yield(
-                    threads::thread_result_type(state, PIKA_MOVE(nextid)));
+                statex = self.yield(threads::detail::thread_result_type(
+                    state, PIKA_MOVE(nextid)));
             }
         }
 
         // handle interruption, if needed
-        threads::interruption_point(id.noref(), ec);
+        threads::detail::interruption_point(id.noref(), ec);
         if (ec)
-            return threads::thread_restart_state::unknown;
+            return threads::detail::thread_restart_state::unknown;
 
         // handle interrupt and abort
-        if (statex == threads::thread_restart_state::abort)
+        if (statex == threads::detail::thread_restart_state::abort)
         {
             PIKA_THROWS_IF(ec, yield_aborted, "suspend",
                 "thread({}, {}) aborted (yield returned wait_abort)",
-                id.noref(), threads::get_thread_description(id.noref()));
+                id.noref(),
+                threads::detail::get_thread_description(id.noref()));
         }
 
         if (&ec != &throws)
@@ -503,25 +513,25 @@ namespace pika { namespace this_thread {
         return statex;
     }
 
-    threads::thread_restart_state suspend(
+    threads::detail::thread_restart_state suspend(
         pika::chrono::steady_time_point const& abs_time,
-        threads::thread_id_type nextid,
-        util::thread_description const& description, error_code& ec)
+        threads::detail::thread_id_type nextid,
+        util::detail::thread_description const& description, error_code& ec)
     {
         // schedule a thread waking us up at_time
-        threads::thread_self& self = threads::get_self();
+        threads::detail::thread_self& self = threads::detail::get_self();
 
         // keep alive
-        threads::thread_id_ref_type id = self.get_thread_id();
+        threads::detail::thread_id_ref_type id = self.get_thread_id();
 
         // handle interruption, if needed
-        threads::interruption_point(id.noref(), ec);
+        threads::detail::interruption_point(id.noref(), ec);
         if (ec)
-            return threads::thread_restart_state::unknown;
+            return threads::detail::thread_restart_state::unknown;
 
         // let the thread manager do other things while waiting
-        threads::thread_restart_state statex =
-            threads::thread_restart_state::unknown;
+        threads::detail::thread_restart_state statex =
+            threads::detail::thread_restart_state::unknown;
 
         {
 #ifdef PIKA_HAVE_VERIFY_LOCKS
@@ -538,13 +548,14 @@ namespace pika { namespace this_thread {
             threads::detail::reset_backtrace bt(id, ec);
 #endif
             std::atomic<bool> timer_started(false);
-            threads::thread_id_ref_type timer_id =
-                threads::set_thread_state(id.noref(), abs_time, &timer_started,
-                    threads::thread_schedule_state::pending,
-                    threads::thread_restart_state::timeout,
-                    threads::thread_priority::boost, true, ec);
+            threads::detail::thread_id_ref_type timer_id =
+                threads::detail::set_thread_state(id.noref(), abs_time,
+                    &timer_started,
+                    threads::detail::thread_schedule_state::pending,
+                    threads::detail::thread_restart_state::timeout,
+                    execution::thread_priority::boost, true, ec);
             if (ec)
-                return threads::thread_restart_state::unknown;
+                return threads::detail::thread_restart_state::unknown;
 
             // We might need to dispatch 'nextid' to it's correct scheduler
             // only if our current scheduler is the same, we should yield the id
@@ -555,44 +566,46 @@ namespace pika { namespace this_thread {
                 auto* scheduler =
                     get_thread_id_data(nextid)->get_scheduler_base();
                 scheduler->schedule_thread(
-                    PIKA_MOVE(nextid), threads::thread_schedule_hint());
-                statex = self.yield(threads::thread_result_type(
-                    threads::thread_schedule_state::suspended,
-                    threads::invalid_thread_id));
+                    PIKA_MOVE(nextid), execution::thread_schedule_hint());
+                statex = self.yield(threads::detail::thread_result_type(
+                    threads::detail::thread_schedule_state::suspended,
+                    threads::detail::invalid_thread_id));
             }
             else
             {
-                statex = self.yield(threads::thread_result_type(
-                    threads::thread_schedule_state::suspended,
+                statex = self.yield(threads::detail::thread_result_type(
+                    threads::detail::thread_schedule_state::suspended,
                     PIKA_MOVE(nextid)));
             }
 
-            if (statex != threads::thread_restart_state::timeout)
+            if (statex != threads::detail::thread_restart_state::timeout)
             {
-                PIKA_ASSERT(statex == threads::thread_restart_state::abort ||
-                    statex == threads::thread_restart_state::signaled);
+                PIKA_ASSERT(
+                    statex == threads::detail::thread_restart_state::abort ||
+                    statex == threads::detail::thread_restart_state::signaled);
                 error_code ec1(lightweight);    // do not throw
                 pika::util::yield_while(
                     [&timer_started]() { return !timer_started.load(); },
                     "set_thread_state_timed");
-                threads::set_thread_state(timer_id.noref(),
-                    threads::thread_schedule_state::pending,
-                    threads::thread_restart_state::abort,
-                    threads::thread_priority::boost, true, ec1);
+                threads::detail::set_thread_state(timer_id.noref(),
+                    threads::detail::thread_schedule_state::pending,
+                    threads::detail::thread_restart_state::abort,
+                    execution::thread_priority::boost, true, ec1);
             }
         }
 
         // handle interruption, if needed
-        threads::interruption_point(id.noref(), ec);
+        threads::detail::interruption_point(id.noref(), ec);
         if (ec)
-            return threads::thread_restart_state::unknown;
+            return threads::detail::thread_restart_state::unknown;
 
         // handle interrupt and abort
-        if (statex == threads::thread_restart_state::abort)
+        if (statex == threads::detail::thread_restart_state::abort)
         {
             PIKA_THROWS_IF(ec, yield_aborted, "suspend_at",
                 "thread({}, {}) aborted (yield returned wait_abort)",
-                id.noref(), threads::get_thread_description(id.noref()));
+                id.noref(),
+                threads::detail::get_thread_description(id.noref()));
         }
 
         if (&ec != &throws)
@@ -604,12 +617,12 @@ namespace pika { namespace this_thread {
     ///////////////////////////////////////////////////////////////////////////
     threads::thread_pool_base* get_pool(error_code& ec)
     {
-        return threads::get_pool(threads::get_self_id(), ec);
+        return threads::detail::get_pool(threads::detail::get_self_id(), ec);
     }
 
     std::ptrdiff_t get_available_stack_space()
     {
-        threads::thread_self* self = threads::get_self_ptr();
+        threads::detail::thread_self* self = threads::detail::get_self_ptr();
         if (self)
         {
             return self->get_available_stack_space();
@@ -620,7 +633,7 @@ namespace pika { namespace this_thread {
 
     bool has_sufficient_stack_space(std::size_t space_needed)
     {
-        if (nullptr == pika::threads::get_self_ptr())
+        if (nullptr == pika::threads::detail::get_self_ptr())
             return false;
 
 #if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
@@ -638,4 +651,4 @@ namespace pika { namespace this_thread {
         return true;
 #endif
     }
-}}    // namespace pika::this_thread
+}    // namespace pika::this_thread

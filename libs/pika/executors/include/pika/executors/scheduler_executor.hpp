@@ -136,18 +136,18 @@ namespace pika { namespace execution { namespace experimental {
 
         template <typename Enable =
                       std::enable_if_t<pika::is_invocable_v<with_priority_t,
-                          BaseScheduler, pika::threads::thread_priority>>>
+                          BaseScheduler, pika::execution::thread_priority>>>
         friend scheduler_executor tag_invoke(
             pika::execution::experimental::with_priority_t,
             scheduler_executor const& exec,
-            pika::threads::thread_priority priority)
+            pika::execution::thread_priority priority)
         {
             return scheduler_executor(with_priority(exec.sched_, priority));
         }
 
         template <typename Enable = std::enable_if_t<
                       pika::is_invocable_v<get_priority_t, BaseScheduler>>>
-        friend pika::threads::thread_priority tag_invoke(
+        friend pika::execution::thread_priority tag_invoke(
             pika::execution::experimental::get_priority_t,
             scheduler_executor const& exec)
         {
@@ -156,18 +156,18 @@ namespace pika { namespace execution { namespace experimental {
 
         template <typename Enable =
                       std::enable_if_t<pika::is_invocable_v<with_stacksize_t,
-                          BaseScheduler, pika::threads::thread_stacksize>>>
+                          BaseScheduler, pika::execution::thread_stacksize>>>
         friend scheduler_executor tag_invoke(
             pika::execution::experimental::with_stacksize_t,
             scheduler_executor const& exec,
-            pika::threads::thread_stacksize stacksize)
+            pika::execution::thread_stacksize stacksize)
         {
             return scheduler_executor(with_stacksize(exec.sched_, stacksize));
         }
 
         template <typename Enable = std::enable_if_t<
                       pika::is_invocable_v<get_stacksize_t, BaseScheduler>>>
-        friend pika::threads::thread_stacksize tag_invoke(
+        friend pika::execution::thread_stacksize tag_invoke(
             pika::execution::experimental::get_stacksize_t,
             scheduler_executor const& exec)
         {
@@ -176,18 +176,18 @@ namespace pika { namespace execution { namespace experimental {
 
         template <
             typename Enable = std::enable_if_t<pika::is_invocable_v<with_hint_t,
-                BaseScheduler, pika::threads::thread_schedule_hint>>>
+                BaseScheduler, pika::execution::thread_schedule_hint>>>
         friend scheduler_executor tag_invoke(
             pika::execution::experimental::with_hint_t,
             scheduler_executor const& exec,
-            pika::threads::thread_schedule_hint hint)
+            pika::execution::thread_schedule_hint hint)
         {
             return scheduler_executor(with_hint(exec.sched_, hint));
         }
 
         template <typename Enable = std::enable_if_t<
                       pika::is_invocable_v<get_hint_t, BaseScheduler>>>
-        friend pika::threads::thread_schedule_hint tag_invoke(
+        friend pika::execution::thread_schedule_hint tag_invoke(
             pika::execution::experimental::get_hint_t,
             scheduler_executor const& exec)
         {

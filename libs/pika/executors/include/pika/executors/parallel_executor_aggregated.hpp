@@ -106,7 +106,7 @@ namespace pika { namespace parallel { namespace execution {
         template <typename F, typename... Ts>
         static void post(F&& f, Ts&&... ts)
         {
-            pika::util::thread_description desc(
+            pika::util::detail::thread_description desc(
                 f, "parallel_executor_aggregated::post");
 
             detail::post_policy_dispatch<Policy>::call(
@@ -308,7 +308,7 @@ namespace pika { namespace parallel { namespace execution {
         template <typename F, typename... Ts>
         void post(F&& f, Ts&&... ts) const
         {
-            pika::util::thread_description desc(
+            pika::util::detail::thread_description desc(
                 f, "parallel_executor_aggregated::post");
 
             detail::post_policy_dispatch<pika::launch>::call(
@@ -366,7 +366,7 @@ namespace pika { namespace parallel { namespace execution {
                 lcos::local::spinlock& mtx_e, Ts&&... ts) const
             {
                 // spawn tasks sequentially
-                pika::util::thread_description desc(
+                pika::util::detail::thread_description desc(
                     f, "parallel_executor_aggregated::spawn_sequential");
 
                 for (std::size_t i = 0; i != size; ++i, ++it)
@@ -399,7 +399,7 @@ namespace pika { namespace parallel { namespace execution {
                 if (size > num_tasks)
                 {
                     // spawn hierarchical tasks
-                    pika::util::thread_description desc(
+                    pika::util::detail::thread_description desc(
                         f, "parallel_executor_aggregated::spawn_hierarchical");
 
                     std::size_t chunk_size =

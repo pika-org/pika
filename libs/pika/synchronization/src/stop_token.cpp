@@ -221,7 +221,7 @@ namespace pika { namespace detail {
 
         // Callback has either already executed or is executing concurrently
         // on another thread.
-        if (signalling_thread_ == pika::threads::get_self_id())
+        if (signalling_thread_ == pika::threads::detail::get_self_id())
         {
             // Callback executed on this thread or is still currently executing
             // and is unregistering itself from within the callback.
@@ -278,7 +278,7 @@ namespace pika { namespace detail {
 
         PIKA_ASSERT(stop_requested(state_.load(std::memory_order_acquire)));
 
-        signalling_thread_ = pika::threads::get_self_id();
+        signalling_thread_ = pika::threads::detail::get_self_id();
 
         // invoke registered callbacks
         while (callbacks_ != nullptr)

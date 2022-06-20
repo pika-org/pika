@@ -11,9 +11,8 @@
 #include <pika/threading_base/thread_init_data.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
 
-namespace pika { namespace threads { namespace detail {
-
+namespace pika::threads::detail {
     PIKA_EXPORT thread_id_ref_type create_work(
-        policies::scheduler_base* scheduler, threads::thread_init_data& data,
+        policies::scheduler_base* scheduler, thread_init_data& data,
         error_code& ec = throws);
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail

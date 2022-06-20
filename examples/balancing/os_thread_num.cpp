@@ -29,8 +29,8 @@ using pika::program_options::variables_map;
 
 using pika::lcos::local::barrier;
 
-using pika::threads::register_work;
-using pika::threads::thread_init_data;
+using pika::threads::detail::register_work;
+using pika::threads::detail::thread_init_data;
 
 ///////////////////////////////////////////////////////////////////////////////
 // we use globals here to prevent the delay from being optimized away
@@ -81,11 +81,12 @@ int pika_main(variables_map& vm)
             for (std::size_t j = 0; j < pxthreads; ++j)
             {
                 thread_init_data data(
-                    pika::threads::make_thread_function_nullary(
+                    pika::threads::detail::make_thread_function_nullary(
                         pika::util::bind(&get_os_thread_num, std::ref(barr),
                             std::ref(os_threads))),
-                    "get_os_thread_num", pika::threads::thread_priority::normal,
-                    pika::threads::thread_schedule_hint(0));
+                    "get_os_thread_num",
+                    pika::execution::thread_priority::normal,
+                    pika::execution::thread_schedule_hint(0));
                 register_work(data);
             }
 

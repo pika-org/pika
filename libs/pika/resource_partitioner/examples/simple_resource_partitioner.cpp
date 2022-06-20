@@ -68,7 +68,7 @@ int pika_main(pika::program_options::variables_map&)
     // create an executor with high priority for important tasks
     pika::execution::parallel_executor high_priority_executor(
         pika::this_thread::get_pool(),
-        pika::threads::thread_priority::critical);
+        pika::execution::thread_priority::critical);
     pika::execution::parallel_executor normal_priority_executor;
 
     pika::execution::parallel_executor mpi_executor;
@@ -184,7 +184,7 @@ int pika_main(pika::program_options::variables_map&)
     thread_set.clear();
 
     //     auto high_priority_async_policy =
-    //         pika::launch::async_policy(pika::threads::thread_priority::critical);
+    //         pika::launch::async_policy(pika::execution::thread_priority::critical);
     //     auto normal_priority_async_policy = pika::launch::async_policy();
 
     // test a parallel algorithm on custom pool with high priority

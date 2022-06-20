@@ -123,7 +123,7 @@ namespace pika { namespace detail {
 
     bool register_locks_predicate()
     {
-        return threads::get_self_ptr() != nullptr;
+        return threads::detail::get_self_ptr() != nullptr;
     }
 #endif
 

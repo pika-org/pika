@@ -72,7 +72,7 @@ namespace pika { namespace threads {
         ~thread_specific_ptr()
         {
             // clean up data if this type is used locally for one thread
-            if (get_self_ptr())
+            if (detail::get_self_ptr())
                 coroutines::detail::erase_tss_node(this, true);
         }
 

@@ -32,11 +32,11 @@ int main()
         PIKA_TEST_EQ(stream1, stream3);
 
         auto& hpstream1 =
-            pool.get_next_stream(pika::threads::thread_priority::high);
+            pool.get_next_stream(pika::execution::thread_priority::high);
         auto& hpstream2 =
-            pool.get_next_stream(pika::threads::thread_priority::high);
+            pool.get_next_stream(pika::execution::thread_priority::high);
         auto& hpstream3 =
-            pool.get_next_stream(pika::threads::thread_priority::high);
+            pool.get_next_stream(pika::execution::thread_priority::high);
 
         PIKA_TEST_EQ(hpstream1, hpstream2);
         PIKA_TEST_EQ(hpstream1, hpstream3);
@@ -61,13 +61,13 @@ int main()
         PIKA_TEST_NEQ(stream2, stream3);
 
         auto& hpstream1 =
-            pool.get_next_stream(pika::threads::thread_priority::high);
+            pool.get_next_stream(pika::execution::thread_priority::high);
         auto& hpstream2 =
-            pool.get_next_stream(pika::threads::thread_priority::high);
+            pool.get_next_stream(pika::execution::thread_priority::high);
         auto& hpstream3 =
-            pool.get_next_stream(pika::threads::thread_priority::high);
+            pool.get_next_stream(pika::execution::thread_priority::high);
         auto& hpstream4 =
-            pool.get_next_stream(pika::threads::thread_priority::high);
+            pool.get_next_stream(pika::execution::thread_priority::high);
 
         PIKA_TEST_EQ(hpstream1, hpstream3);
         PIKA_TEST_EQ(hpstream2, hpstream4);

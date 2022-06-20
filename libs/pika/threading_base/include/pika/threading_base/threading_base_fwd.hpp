@@ -37,37 +37,41 @@ namespace pika::detail::external_timer {
 }    // namespace pika::detail::external_timer
 
 namespace pika::threads {
-
-    class thread_data;
-    class thread_data_stackful;
-    class thread_data_stackless;
-
     namespace policies {
         struct scheduler_base;
     }
+
     class PIKA_EXPORT thread_pool_base;
 
     /// \cond NOINTERNAL
-    using thread_id_ref_type = thread_id_ref;
-    using thread_id_type = thread_id;
+    namespace detail {
+        class thread_data;
+        class thread_data_stackful;
+        class thread_data_stackless;
 
-    using coroutine_type = coroutines::coroutine;
-    using stackless_coroutine_type = coroutines::stackless_coroutine;
+        using thread_id_ref_type = thread_id_ref;
+        using thread_id_type = thread_id;
 
-    using thread_result_type = std::pair<thread_schedule_state, thread_id_type>;
-    using thread_arg_type = thread_restart_state;
+        using coroutine_type = coroutines::detail::coroutine;
+        using stackless_coroutine_type =
+            coroutines::detail::stackless_coroutine;
 
-    using thread_function_sig = thread_result_type(thread_arg_type);
-    using thread_function_type = util::unique_function<thread_function_sig>;
+        using thread_result_type =
+            std::pair<thread_schedule_state, thread_id_type>;
+        using thread_arg_type = thread_restart_state;
 
-    using thread_self = coroutines::detail::coroutine_self;
-    using thread_self_impl_type = coroutines::detail::coroutine_impl;
+        using thread_function_sig = thread_result_type(thread_arg_type);
+        using thread_function_type = util::unique_function<thread_function_sig>;
+
+        using thread_self = coroutines::detail::coroutine_self;
+        using thread_self_impl_type = coroutines::detail::coroutine_impl;
 
 #if defined(PIKA_HAVE_APEX)
-    PIKA_EXPORT std::shared_ptr<pika::detail::external_timer::task_wrapper>
-    get_self_timer_data(void);
-    PIKA_EXPORT void set_self_timer_data(
-        std::shared_ptr<pika::detail::external_timer::task_wrapper> data);
+        PIKA_EXPORT std::shared_ptr<pika::detail::external_timer::task_wrapper>
+        get_self_timer_data(void);
+        PIKA_EXPORT void set_self_timer_data(
+            std::shared_ptr<pika::detail::external_timer::task_wrapper> data);
 #endif
+    }    // namespace detail
     /// \endcond
 }    // namespace pika::threads

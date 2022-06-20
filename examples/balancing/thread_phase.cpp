@@ -31,16 +31,16 @@ using std::chrono::milliseconds;
 using pika::lcos::local::barrier;
 using pika::lcos::local::mutex;
 
-using pika::threads::make_thread_function_nullary;
-using pika::threads::register_thread;
-using pika::threads::thread_init_data;
+using pika::threads::detail::make_thread_function_nullary;
+using pika::threads::detail::register_thread;
+using pika::threads::detail::thread_init_data;
 
-using pika::threads::get_self;
-using pika::threads::get_self_id;
 using pika::threads::get_thread_phase;
-using pika::threads::set_thread_state;
-using pika::threads::thread_id_ref_type;
-using pika::threads::thread_id_type;
+using pika::threads::detail::get_self;
+using pika::threads::detail::get_self_id;
+using pika::threads::detail::set_thread_state;
+using pika::threads::detail::thread_id_ref_type;
+using pika::threads::detail::thread_id_type;
 
 using value_type = std::pair<thread_id_type, std::size_t>;
 using fifo_type = std::vector<value_type>;
@@ -68,11 +68,11 @@ void lock_and_wait(mutex& m, barrier& b0, barrier& b1, value_type& entry,
 
         // Schedule a wakeup.
         set_thread_state(this_.noref(), milliseconds(30),
-            pika::threads::thread_schedule_state::pending);
+            pika::threads::detail::thread_schedule_state::pending);
 
         // Suspend this pika thread.
         pika::this_thread::suspend(
-            pika::threads::thread_schedule_state::suspended);
+            pika::threads::detail::thread_schedule_state::suspended);
     }
 
     // Make pika_main wait for us to finish.

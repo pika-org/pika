@@ -66,9 +66,9 @@ void threadLoop()
     for (std::size_t i = 0; i < iterations; ++i)
     {
         auto exec = pika::execution::parallel_executor(
-            pika::threads::thread_priority::bound,
-            pika::threads::thread_stacksize::default_,
-            pika::threads::thread_schedule_hint(std::int16_t(i % threads)));
+            pika::execution::thread_priority::bound,
+            pika::execution::thread_stacksize::default_,
+            pika::execution::thread_schedule_hint(std::int16_t(i % threads)));
         pika::async(exec, f, i, (i % threads)).get();
     }
 
@@ -87,7 +87,7 @@ void threadLoop()
 int pika_main()
 {
     auto const current =
-        pika::threads::get_self_id_data()->get_scheduler_base();
+        pika::threads::detail::get_self_id_data()->get_scheduler_base();
     std::cout << "Scheduler is " << current->get_description() << std::endl;
     if (std::string("core-shared_priority_queue_scheduler") !=
         current->get_description())

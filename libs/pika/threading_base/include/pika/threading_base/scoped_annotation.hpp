@@ -72,24 +72,25 @@ namespace pika {
 
         explicit scoped_annotation(char const* name)
         {
-            auto* self = pika::threads::get_self_ptr();
+            auto* self = pika::threads::detail::get_self_ptr();
             if (self != nullptr)
             {
-                desc_ = threads::get_thread_id_data(self->get_thread_id())
-                            ->set_description(name);
+                desc_ =
+                    threads::detail::get_thread_id_data(self->get_thread_id())
+                        ->set_description(name);
             }
 
 #if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
-            threads::set_self_timer_data(
+            threads::detail::set_self_timer_data(
                 pika::detail::external_timer::update_task(
-                    threads::get_self_timer_data(), std::string(name)));
+                    threads::detail::get_self_timer_data(), std::string(name)));
 #endif
         }
 
         explicit scoped_annotation(std::string name)
         {
-            auto* self = pika::threads::get_self_ptr();
+            auto* self = pika::threads::detail::get_self_ptr();
             if (self != nullptr)
             {
                 char const* name_c_str =
@@ -98,15 +99,16 @@ namespace pika {
 #else
                     detail::store_function_annotation(PIKA_MOVE(name));
 #endif
-                desc_ = threads::get_thread_id_data(self->get_thread_id())
-                            ->set_description(name_c_str);
+                desc_ =
+                    threads::detail::get_thread_id_data(self->get_thread_id())
+                        ->set_description(name_c_str);
             }
 
 #if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
-            threads::set_self_timer_data(
+            threads::detail::set_self_timer_data(
                 pika::detail::external_timer::update_task(
-                    threads::get_self_timer_data(), PIKA_MOVE(name)));
+                    threads::detail::get_self_timer_data(), PIKA_MOVE(name)));
 #endif
         }
 
@@ -115,40 +117,41 @@ namespace pika {
                 std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
         explicit scoped_annotation(F&& f)
         {
-            pika::util::thread_description desc(f);
+            pika::util::detail::thread_description desc(f);
 
-            auto* self = pika::threads::get_self_ptr();
+            auto* self = pika::threads::detail::get_self_ptr();
             if (self != nullptr)
             {
-                desc_ = threads::get_thread_id_data(self->get_thread_id())
-                            ->set_description(desc);
+                desc_ =
+                    threads::detail::get_thread_id_data(self->get_thread_id())
+                        ->set_description(desc);
             }
 
 #if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
-            threads::set_self_timer_data(
+            threads::detail::set_self_timer_data(
                 pika::detail::external_timer::update_task(
-                    threads::get_self_timer_data(), desc));
+                    threads::detail::get_self_timer_data(), desc));
 #endif
         }
 
         ~scoped_annotation()
         {
-            auto* self = pika::threads::get_self_ptr();
+            auto* self = pika::threads::detail::get_self_ptr();
             if (self != nullptr)
             {
-                threads::get_thread_id_data(self->get_thread_id())
+                threads::detail::get_thread_id_data(self->get_thread_id())
                     ->set_description(desc_);
             }
 
 #if defined(PIKA_HAVE_APEX)
-            threads::set_self_timer_data(
+            threads::detail::set_self_timer_data(
                 pika::detail::external_timer::update_task(
-                    threads::get_self_timer_data(), desc_));
+                    threads::detail::get_self_timer_data(), desc_));
 #endif
         }
 
-        pika::util::thread_description desc_;
+        pika::util::detail::thread_description desc_;
     };
 #endif
 

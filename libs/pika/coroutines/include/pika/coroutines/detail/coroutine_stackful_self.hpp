@@ -18,7 +18,7 @@
 #include <limits>
 #include <utility>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail {
+namespace pika::threads::coroutines::detail {
 
     class coroutine_stackful_self : public coroutine_self
     {
@@ -149,4 +149,4 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
         }
         coroutine_impl* pimpl_;
     };
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail

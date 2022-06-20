@@ -24,7 +24,7 @@
 namespace pika { namespace lcos { namespace local {
     ///////////////////////////////////////////////////////////////////////////
     mutex::mutex(char const* const description)
-      : owner_id_(threads::invalid_thread_id)
+      : owner_id_(threads::detail::invalid_thread_id)
     {
         PIKA_ITT_SYNC_CREATE(this, "lcos::local::mutex", description);
         PIKA_ITT_SYNC_RENAME(this, "lcos::local::mutex");
@@ -37,12 +37,13 @@ namespace pika { namespace lcos { namespace local {
 
     void mutex::lock(char const* description, error_code& ec)
     {
-        PIKA_ASSERT(threads::get_self_ptr() != nullptr);
+        PIKA_ASSERT(threads::detail::get_self_ptr() != nullptr);
 
         PIKA_ITT_SYNC_PREPARE(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        threads::thread_id_type self_id = threads::get_self_id();
+        threads::detail::thread_id_type self_id =
+            threads::detail::get_self_id();
         if (owner_id_ == self_id)
         {
             PIKA_ITT_SYNC_CANCEL(this);
@@ -52,7 +53,7 @@ namespace pika { namespace lcos { namespace local {
             return;
         }
 
-        while (owner_id_ != threads::invalid_thread_id)
+        while (owner_id_ != threads::detail::invalid_thread_id)
         {
             cond_.wait(l, ec);
             if (ec)
@@ -69,18 +70,19 @@ namespace pika { namespace lcos { namespace local {
 
     bool mutex::try_lock(char const* /* description */, error_code& /* ec */)
     {
-        PIKA_ASSERT(threads::get_self_ptr() != nullptr);
+        PIKA_ASSERT(threads::detail::get_self_ptr() != nullptr);
 
         PIKA_ITT_SYNC_PREPARE(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        if (owner_id_ != threads::invalid_thread_id)
+        if (owner_id_ != threads::detail::invalid_thread_id)
         {
             PIKA_ITT_SYNC_CANCEL(this);
             return false;
         }
 
-        threads::thread_id_type self_id = threads::get_self_id();
+        threads::detail::thread_id_type self_id =
+            threads::detail::get_self_id();
         util::register_lock(this);
         PIKA_ITT_SYNC_ACQUIRED(this);
         owner_id_ = self_id;
@@ -89,14 +91,15 @@ namespace pika { namespace lcos { namespace local {
 
     void mutex::unlock(error_code& ec)
     {
-        PIKA_ASSERT(threads::get_self_ptr() != nullptr);
+        PIKA_ASSERT(threads::detail::get_self_ptr() != nullptr);
 
         PIKA_ITT_SYNC_RELEASING(this);
         // Unregister lock early as the lock guard below may suspend.
         util::unregister_lock(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        threads::thread_id_type self_id = threads::get_self_id();
+        threads::detail::thread_id_type self_id =
+            threads::detail::get_self_id();
         if (PIKA_UNLIKELY(owner_id_ != self_id))
         {
             l.unlock();
@@ -106,13 +109,14 @@ namespace pika { namespace lcos { namespace local {
         }
 
         PIKA_ITT_SYNC_RELEASED(this);
-        owner_id_ = threads::invalid_thread_id;
+        owner_id_ = threads::detail::invalid_thread_id;
 
         {
             util::ignore_while_checking il(&l);
             PIKA_UNUSED(il);
 
-            cond_.notify_one(PIKA_MOVE(l), threads::thread_priority::boost, ec);
+            cond_.notify_one(
+                PIKA_MOVE(l), execution::thread_priority::boost, ec);
         }
     }
 
@@ -128,15 +132,16 @@ namespace pika { namespace lcos { namespace local {
         pika::chrono::steady_time_point const& abs_time,
         char const* /* description */, error_code& ec)
     {
-        PIKA_ASSERT(threads::get_self_ptr() != nullptr);
+        PIKA_ASSERT(threads::detail::get_self_ptr() != nullptr);
 
         PIKA_ITT_SYNC_PREPARE(this);
         std::unique_lock<mutex_type> l(mtx_);
 
-        threads::thread_id_type self_id = threads::get_self_id();
-        if (owner_id_ != threads::invalid_thread_id)
+        threads::detail::thread_id_type self_id =
+            threads::detail::get_self_id();
+        if (owner_id_ != threads::detail::invalid_thread_id)
         {
-            threads::thread_restart_state const reason =
+            threads::detail::thread_restart_state const reason =
                 cond_.wait_until(l, abs_time, ec);
             if (ec)
             {
@@ -144,13 +149,14 @@ namespace pika { namespace lcos { namespace local {
                 return false;
             }
 
-            if (reason == threads::thread_restart_state::timeout)    //-V110
+            if (reason ==
+                threads::detail::thread_restart_state::timeout)    //-V110
             {
                 PIKA_ITT_SYNC_CANCEL(this);
                 return false;
             }
 
-            if (owner_id_ != threads::invalid_thread_id)    //-V110
+            if (owner_id_ != threads::detail::invalid_thread_id)    //-V110
             {
                 PIKA_ITT_SYNC_CANCEL(this);
                 return false;

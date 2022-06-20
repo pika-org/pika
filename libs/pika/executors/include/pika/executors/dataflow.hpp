@@ -26,7 +26,7 @@
 #include <pika/futures/traits/acquire_future.hpp>
 #include <pika/futures/traits/future_access.hpp>
 #include <pika/futures/traits/is_future.hpp>
-#include <pika/modules/memory.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
 #include <pika/pack_traversal/pack_traversal_async.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
@@ -273,14 +273,14 @@ namespace pika::detail {
             // We need to run the completion on a new thread if we are on a
             // non pika thread.
             bool recurse_asynchronously =
-                pika::threads::get_self_ptr() == nullptr;
+                pika::threads::detail::get_self_ptr() == nullptr;
 #if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
             recurse_asynchronously = !this_thread::has_sufficient_stack_space();
 #else
             struct handle_continuation_recursion_count
             {
                 handle_continuation_recursion_count()
-                  : count_(threads::get_continuation_recursion_count())
+                  : count_(threads::detail::get_continuation_recursion_count())
                 {
                     ++count_;
                 }

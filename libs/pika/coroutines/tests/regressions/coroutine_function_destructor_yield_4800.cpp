@@ -16,10 +16,11 @@
 
 struct thread_function_yield_destructor
 {
-    pika::threads::thread_result_type operator()(pika::threads::thread_arg_type)
+    pika::threads::detail::thread_result_type operator()(
+        pika::threads::detail::thread_arg_type)
     {
-        return {pika::threads::thread_schedule_state::terminated,
-            pika::threads::invalid_thread_id};
+        return {pika::threads::detail::thread_schedule_state::terminated,
+            pika::threads::detail::invalid_thread_id};
     }
 
     ~thread_function_yield_destructor()
@@ -41,9 +42,10 @@ int pika_main()
     // We supply the thread function ourselves which means that the destructor
     // will be called late in the coroutine call operator.
     {
-        pika::threads::thread_init_data data{thread_function_yield_destructor{},
+        pika::threads::detail::thread_init_data data{
+            thread_function_yield_destructor{},
             "thread_function_yield_destructor"};
-        pika::threads::register_thread(data);
+        pika::threads::detail::register_thread(data);
     }
 
     // This is a more complicated example which sometimes leads to the yielder

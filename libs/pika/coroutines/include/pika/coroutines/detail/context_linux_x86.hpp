@@ -78,14 +78,16 @@ extern "C" void swapcontext_stack2(void***, void**) noexcept
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace coroutines {
-    // some platforms need special preparation of the main thread
-    struct prepare_main_thread
-    {
-        constexpr prepare_main_thread() {}
-    };
+namespace pika::threads::coroutines {
+    namespace detail {
+        // some platforms need special preparation of the main thread
+        struct prepare_main_thread
+        {
+            constexpr prepare_main_thread() {}
+        };
+    }    // namespace detail
 
-    namespace detail { namespace lx {
+    namespace detail::lx {
         template <typename T>
         PIKA_FORCEINLINE void trampoline(void* fun)
         {
@@ -284,192 +286,179 @@ namespace pika { namespace threads { namespace coroutines {
 // heuristic value 1 kilobyte
 #define COROUTINE_STACKOVERFLOW_ADDR_EPSILON 1000UL
 
-                        static void check_coroutine_stack_overflow(
-                            siginfo_t* infoptr, void* ctxptr)
-                        {
-                            ucontext_t* uc_ctx =
-                                static_cast<ucontext_t*>(ctxptr);
-                            char* sigsegv_ptr =
-                                static_cast<char*>(infoptr->si_addr);
+            static void check_coroutine_stack_overflow(
+                siginfo_t* infoptr, void* ctxptr)
+            {
+                ucontext_t* uc_ctx = static_cast<ucontext_t*>(ctxptr);
+                char* sigsegv_ptr = static_cast<char*>(infoptr->si_addr);
 
-                            // https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html
-                            //
-                            char* stk_ptr =
-                                static_cast<char*>(uc_ctx->uc_stack.ss_sp);
+                // https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html
+                //
+                char* stk_ptr = static_cast<char*>(uc_ctx->uc_stack.ss_sp);
 
-                            std::ptrdiff_t addr_delta =
-                                (sigsegv_ptr > stk_ptr) ?
-                                (sigsegv_ptr - stk_ptr) :
-                                (stk_ptr - sigsegv_ptr);
+                std::ptrdiff_t addr_delta = (sigsegv_ptr > stk_ptr) ?
+                    (sigsegv_ptr - stk_ptr) :
+                    (stk_ptr - sigsegv_ptr);
 
-                            // check the stack addresses, if they're < 10 apart, terminate
-                            // program should filter segmentation faults caused by
-                            // coroutine stack overflows from 'genuine' stack overflows
-                            //
-                            if (static_cast<size_t>(addr_delta) <
-                                COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
-                            {
-                                std::cerr
-                                    << "Stack overflow in coroutine at address "
-                                    << std::internal << std::hex
-                                    << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
-                                    << std::setfill('0') << sigsegv_ptr
-                                    << ".\n\n";
+                // check the stack addresses, if they're < 10 apart, terminate
+                // program should filter segmentation faults caused by
+                // coroutine stack overflows from 'genuine' stack overflows
+                //
+                if (static_cast<size_t>(addr_delta) <
+                    COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
+                {
+                    std::cerr << "Stack overflow in coroutine at address "
+                              << std::internal << std::hex
+                              << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
+                              << std::setfill('0') << sigsegv_ptr << ".\n\n";
 
-                                std::cerr << "Configure the pika runtime to "
-                                             "allocate a larger "
-                                             "coroutine stack size.\n Use the "
-                                             "pika.stacks.small_size, "
-                                             "pika.stacks.medium_size,\n "
-                                             "pika.stacks.large_size, or "
-                                             "pika.stacks.huge_size "
-                                             "configuration\nflags to "
-                                             "configure coroutine stack "
-                                             "sizes.\n"
-                                          << std::endl;
-                            }
-                        }
+                    std::cerr << "Configure the pika runtime to "
+                                 "allocate a larger "
+                                 "coroutine stack size.\n Use the "
+                                 "pika.stacks.small_size, "
+                                 "pika.stacks.medium_size,\n "
+                                 "pika.stacks.large_size, or "
+                                 "pika.stacks.huge_size "
+                                 "configuration\nflags to "
+                                 "configure coroutine stack "
+                                 "sizes.\n"
+                              << std::endl;
+                }
+            }
 
-                        static void sigsegv_handler(
-                            int signum, siginfo_t* infoptr, void* ctxptr)
-                        {
-                            char* reason = strsignal(signum);
-                            std::cerr << "{what}: "
-                                      << (reason ? reason : "Unknown signal")
-                                      << std::endl;
+            static void sigsegv_handler(
+                int signum, siginfo_t* infoptr, void* ctxptr)
+            {
+                char* reason = strsignal(signum);
+                std::cerr << "{what}: " << (reason ? reason : "Unknown signal")
+                          << std::endl;
 
-                            check_coroutine_stack_overflow(infoptr, ctxptr);
+                check_coroutine_stack_overflow(infoptr, ctxptr);
 
-                            std::abort();
-                        }
+                std::abort();
+            }
 #endif
 
-                        // Return the size of the reserved stack address space.
-                        std::ptrdiff_t get_stacksize() const
-                        {
-                            return m_stack_size;
-                        }
+            // Return the size of the reserved stack address space.
+            std::ptrdiff_t get_stacksize() const
+            {
+                return m_stack_size;
+            }
 
-                        void reset_stack()
-                        {
-                            PIKA_ASSERT(m_stack);
-                            if (posix::reset_stack(m_stack,
-                                    static_cast<std::size_t>(m_stack_size)))
-                            {
+            void reset_stack()
+            {
+                PIKA_ASSERT(m_stack);
+                if (posix::reset_stack(
+                        m_stack, static_cast<std::size_t>(m_stack_size)))
+                {
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
-                                increment_stack_unbind_count();
+                    increment_stack_unbind_count();
 #endif
-                            }
-                        }
+                }
+            }
 
-                        void rebind_stack()
-                        {
-                            PIKA_ASSERT(m_stack);
+            void rebind_stack()
+            {
+                PIKA_ASSERT(m_stack);
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
-                            increment_stack_recycle_count();
+                increment_stack_recycle_count();
 #endif
 
-                            // On rebind, we initialize our stack to ensure a virgin stack
-                            m_sp = (static_cast<void**>(m_stack) +
-                                       static_cast<std::size_t>(m_stack_size) /
-                                           sizeof(void*)) -
-                                context_size;
+                // On rebind, we initialize our stack to ensure a virgin stack
+                m_sp = (static_cast<void**>(m_stack) +
+                           static_cast<std::size_t>(m_stack_size) /
+                               sizeof(void*)) -
+                    context_size;
 
-                            using fun = void(void*);
-                            fun* funp = trampoline<CoroutineImpl>;
-                            m_sp[cb_idx] = this;
-                            m_sp[funp_idx] = reinterpret_cast<void*>(funp);
+                using fun = void(void*);
+                fun* funp = trampoline<CoroutineImpl>;
+                m_sp[cb_idx] = this;
+                m_sp[funp_idx] = reinterpret_cast<void*>(funp);
 #if defined(PIKA_HAVE_ADDRESS_SANITIZER)
-                            asan_stack_size = m_stack_size;
-                            asan_stack_bottom =
-                                const_cast<const void*>(m_stack);
+                asan_stack_size = m_stack_size;
+                asan_stack_bottom = const_cast<const void*>(m_stack);
 #endif
-                        }
+            }
 
-                        std::ptrdiff_t get_available_stack_space()
-                        {
-                            return get_stack_ptr() -
-                                reinterpret_cast<std::size_t>(m_stack) -
-                                context_size;
-                        }
+            std::ptrdiff_t get_available_stack_space()
+            {
+                return get_stack_ptr() -
+                    reinterpret_cast<std::size_t>(m_stack) - context_size;
+            }
 
-                        using counter_type = std::atomic<std::int64_t>;
+            using counter_type = std::atomic<std::int64_t>;
 
 #if defined(PIKA_HAVE_COROUTINE_COUNTERS)
-                    private:
-                        static counter_type& get_stack_unbind_counter()
-                        {
-                            static counter_type counter(0);
-                            return counter;
-                        }
+        private:
+            static counter_type& get_stack_unbind_counter()
+            {
+                static counter_type counter(0);
+                return counter;
+            }
 
-                        static counter_type& get_stack_recycle_counter()
-                        {
-                            static counter_type counter(0);
-                            return counter;
-                        }
+            static counter_type& get_stack_recycle_counter()
+            {
+                static counter_type counter(0);
+                return counter;
+            }
 
-                        static std::uint64_t increment_stack_unbind_count()
-                        {
-                            return ++get_stack_unbind_counter();
-                        }
+            static std::uint64_t increment_stack_unbind_count()
+            {
+                return ++get_stack_unbind_counter();
+            }
 
-                        static std::uint64_t increment_stack_recycle_count()
-                        {
-                            return ++get_stack_recycle_counter();
-                        }
+            static std::uint64_t increment_stack_recycle_count()
+            {
+                return ++get_stack_recycle_counter();
+            }
 
-                    public:
-                        static std::uint64_t get_stack_unbind_count(bool reset)
-                        {
-                            return util::get_and_reset_value(
-                                get_stack_unbind_counter(), reset);
-                        }
+        public:
+            static std::uint64_t get_stack_unbind_count(bool reset)
+            {
+                return util::get_and_reset_value(
+                    get_stack_unbind_counter(), reset);
+            }
 
-                        static std::uint64_t get_stack_recycle_count(bool reset)
-                        {
-                            return util::get_and_reset_value(
-                                get_stack_recycle_counter(), reset);
-                        }
+            static std::uint64_t get_stack_recycle_count(bool reset)
+            {
+                return util::get_and_reset_value(
+                    get_stack_recycle_counter(), reset);
+            }
 #endif
 
-                        friend void swap_context(
-                            x86_linux_context_impl_base& from,
-                            x86_linux_context_impl_base const& to,
-                            default_hint);
+            friend void swap_context(x86_linux_context_impl_base& from,
+                x86_linux_context_impl_base const& to, default_hint);
 
-                        friend void swap_context(
-                            x86_linux_context_impl_base& from,
-                            x86_linux_context_impl_base const& to, yield_hint);
+            friend void swap_context(x86_linux_context_impl_base& from,
+                x86_linux_context_impl_base const& to, yield_hint);
 
-                    private:
-                        void set_sigsegv_handler()
-                        {
+        private:
+            void set_sigsegv_handler()
+            {
 #if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                              \
     !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-                            // concept inspired by the following links:
-                            //
-                            // https://rethinkdb.com/blog/handling-stack-overflow-on-custom-stacks/
-                            // http://www.evanjones.ca/software/threading.html
-                            //
-                            segv_stack.ss_sp = valloc(SEGV_STACK_SIZE);
-                            segv_stack.ss_flags = 0;
-                            segv_stack.ss_size = SEGV_STACK_SIZE;
+                // concept inspired by the following links:
+                //
+                // https://rethinkdb.com/blog/handling-stack-overflow-on-custom-stacks/
+                // http://www.evanjones.ca/software/threading.html
+                //
+                segv_stack.ss_sp = valloc(SEGV_STACK_SIZE);
+                segv_stack.ss_flags = 0;
+                segv_stack.ss_size = SEGV_STACK_SIZE;
 
-                            std::memset(&action, '\0', sizeof(action));
-                            action.sa_flags = SA_SIGINFO | SA_ONSTACK;
-                            action.sa_sigaction =
-                                &x86_linux_context_impl::sigsegv_handler;
+                std::memset(&action, '\0', sizeof(action));
+                action.sa_flags = SA_SIGINFO | SA_ONSTACK;
+                action.sa_sigaction = &x86_linux_context_impl::sigsegv_handler;
 
-                            sigaltstack(&segv_stack, nullptr);
-                            sigemptyset(&action.sa_mask);
-                            sigaddset(&action.sa_mask, SIGSEGV);
-                            sigaction(SIGSEGV, &action, nullptr);
+                sigaltstack(&segv_stack, nullptr);
+                sigemptyset(&action.sa_mask);
+                sigaddset(&action.sa_mask, SIGSEGV);
+                sigaction(SIGSEGV, &action, nullptr);
 #endif
-                        }
+            }
 
 #if defined(__x86_64__)
-                        /** structure of context_data:
+            /** structure of context_data:
              * 11: additional alignment (or valgrind_id if enabled)
              * 10: parm 0 of trampoline
              * 9:  dummy return address for trampoline
@@ -484,12 +473,12 @@ namespace pika { namespace threads { namespace coroutines {
              * 0:  r15
              **/
 #if defined(PIKA_HAVE_VALGRIND) && !defined(NVALGRIND)
-                        static const std::size_t valgrind_id_idx = 11;
+            static const std::size_t valgrind_id_idx = 11;
 #endif
 
-                        static const std::size_t context_size = 12;
-                        static const std::size_t cb_idx = 10;
-                        static const std::size_t funp_idx = 8;
+            static const std::size_t context_size = 12;
+            static const std::size_t cb_idx = 10;
+            static const std::size_t funp_idx = 8;
 #else
             /** structure of context_data:
              * 7: valgrind_id (if enabled)
@@ -512,42 +501,42 @@ namespace pika { namespace threads { namespace coroutines {
             static const std::size_t funp_idx = 4;
 #endif
 
-                        std::ptrdiff_t m_stack_size;
-                        void* m_stack;
+            std::ptrdiff_t m_stack_size;
+            void* m_stack;
 
 #if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) &&                              \
     !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-                        struct sigaction action;
-                        stack_t segv_stack;
+            struct sigaction action;
+            stack_t segv_stack;
 #endif
-                    };
+        };
 
-                    /**
+        /**
          * Free function. Saves the current context in @p from
          * and restores the context in @p to.
          * @note This function is found by ADL.
          */
-                    inline void swap_context(x86_linux_context_impl_base& from,
-                        x86_linux_context_impl_base const& to, default_hint)
-                    {
-                        //        PIKA_ASSERT(*(void**)to.m_stack == (void*)~0);
-                        to.prefetch();
-                        swapcontext_stack(&from.m_sp, to.m_sp);
-                    }
+        inline void swap_context(x86_linux_context_impl_base& from,
+            x86_linux_context_impl_base const& to, default_hint)
+        {
+            //        PIKA_ASSERT(*(void**)to.m_stack == (void*)~0);
+            to.prefetch();
+            swapcontext_stack(&from.m_sp, to.m_sp);
+        }
 
-                    inline void swap_context(x86_linux_context_impl_base& from,
-                        x86_linux_context_impl_base const& to, yield_hint)
-                    {
-                        //        PIKA_ASSERT(*(void**)from.m_stack == (void*)~0);
-                        to.prefetch();
+        inline void swap_context(x86_linux_context_impl_base& from,
+            x86_linux_context_impl_base const& to, yield_hint)
+        {
+            //        PIKA_ASSERT(*(void**)from.m_stack == (void*)~0);
+            to.prefetch();
 #if !defined(PIKA_COROUTINE_NO_SEPARATE_CALL_SITES)
-                        swapcontext_stack2(&from.m_sp, to.m_sp);
+            swapcontext_stack2(&from.m_sp, to.m_sp);
 #else
             swapcontext_stack(&from.m_sp, to.m_sp);
 #endif
-                    }
-            }}    // namespace detail::lx
-}}}               // namespace pika::threads::coroutines
+        }
+    }    // namespace detail::lx
+}    // namespace pika::threads::coroutines
 
 #if defined(PIKA_HAVE_VALGRIND)
 #if defined(__GNUG__) && !defined(__INTEL_COMPILER)

@@ -8,11 +8,11 @@
 
 #include <pika/executors/thread_pool_executor.hpp>
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     using current_executor = parallel::execution::thread_pool_executor;
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
-namespace pika { namespace threads {
+namespace pika::threads {
     ///  Returns a reference to the executor which was used to create
     /// the given thread.
     ///
@@ -27,10 +27,10 @@ namespace pika { namespace threads {
     ///         \a pika#invalid_status.
     ///
     PIKA_EXPORT parallel::execution::current_executor get_executor(
-        thread_id_type const& id, error_code& ec = throws);
-}}    // namespace pika::threads
+        detail::thread_id_type const& id, error_code& ec = throws);
+}    // namespace pika::threads
 
-namespace pika { namespace this_thread {
+namespace pika::this_thread {
     /// Returns a reference to the executor which was used to create the current
     /// thread.
     ///
@@ -46,4 +46,4 @@ namespace pika { namespace this_thread {
     ///
     PIKA_EXPORT parallel::execution::current_executor get_executor(
         error_code& ec = throws);
-}}    // namespace pika::this_thread
+}    // namespace pika::this_thread

@@ -96,8 +96,8 @@ namespace pika { namespace threads {
         ///               information is used for logging purposes mainly, but
         ///               might be useful for debugging as well. This parameter
         ///               is optional and defaults to an empty string.
-        thread_id_ref_type register_work(
-            thread_init_data& data, error_code& ec = throws);
+        detail::thread_id_ref_type register_work(
+            detail::thread_init_data& data, error_code& ec = throws);
 
         /// The function \a register_thread adds a new work item to the thread
         /// manager. It creates a new \a thread, adds it to the internal
@@ -115,8 +115,8 @@ namespace pika { namespace threads {
         ///               information is used for logging purposes mainly, but
         ///               might be useful for debugging as well. This parameter
         ///               is optional and defaults to an empty string.
-        void register_thread(thread_init_data& data, thread_id_ref_type& id,
-            error_code& ec = throws);
+        void register_thread(detail::thread_init_data& data,
+            detail::thread_id_ref_type& id, error_code& ec = throws);
 
         /// \brief  Run the thread manager's work queue. This function
         ///         instantiates the specified number of OS threads in each
@@ -164,8 +164,10 @@ namespace pika { namespace threads {
         ///
         /// \note This function lock the internal OS lock in the thread manager
         std::int64_t get_thread_count(
-            thread_schedule_state state = thread_schedule_state::unknown,
-            thread_priority priority = thread_priority::default_,
+            detail::thread_schedule_state state =
+                detail::thread_schedule_state::unknown,
+            execution::thread_priority priority =
+                execution::thread_priority::default_,
             std::size_t num_thread = std::size_t(-1), bool reset = false);
 
         std::int64_t get_idle_core_count();
@@ -175,8 +177,10 @@ namespace pika { namespace threads {
         std::int64_t get_background_thread_count();
 
         // Enumerate all matching threads
-        bool enumerate_threads(util::function<bool(thread_id_type)> const& f,
-            thread_schedule_state state = thread_schedule_state::unknown) const;
+        bool enumerate_threads(
+            util::function<bool(detail::thread_id_type)> const& f,
+            detail::thread_schedule_state state =
+                detail::thread_schedule_state::unknown) const;
 
         // \brief Abort all threads which are in suspended state. This will set
         //        the state of all suspended threads to \a pending while
@@ -330,33 +334,33 @@ namespace pika { namespace threads {
 
         std::int64_t get_thread_count_unknown(bool reset)
         {
-            return get_thread_count(thread_schedule_state::unknown,
-                thread_priority::default_, std::size_t(-1), reset);
+            return get_thread_count(detail::thread_schedule_state::unknown,
+                execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_active(bool reset)
         {
-            return get_thread_count(thread_schedule_state::active,
-                thread_priority::default_, std::size_t(-1), reset);
+            return get_thread_count(detail::thread_schedule_state::active,
+                execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_pending(bool reset)
         {
-            return get_thread_count(thread_schedule_state::pending,
-                thread_priority::default_, std::size_t(-1), reset);
+            return get_thread_count(detail::thread_schedule_state::pending,
+                execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_suspended(bool reset)
         {
-            return get_thread_count(thread_schedule_state::suspended,
-                thread_priority::default_, std::size_t(-1), reset);
+            return get_thread_count(detail::thread_schedule_state::suspended,
+                execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_terminated(bool reset)
         {
-            return get_thread_count(thread_schedule_state::terminated,
-                thread_priority::default_, std::size_t(-1), reset);
+            return get_thread_count(detail::thread_schedule_state::terminated,
+                execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_staged(bool reset)
         {
-            return get_thread_count(thread_schedule_state::staged,
-                thread_priority::default_, std::size_t(-1), reset);
+            return get_thread_count(detail::thread_schedule_state::staged,
+                execution::thread_priority::default_, std::size_t(-1), reset);
         }
 
 #ifdef PIKA_HAVE_THREAD_IDLE_RATES
