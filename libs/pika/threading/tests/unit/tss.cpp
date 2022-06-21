@@ -42,7 +42,7 @@ struct tss_value_t
     int value;
 };
 
-pika::threads::detail::thread_specific_ptr<tss_value_t> tss_value;
+pika::threads::thread_specific_ptr<tss_value_t> tss_value;
 
 void test_tss_thread(pika::lcos::local::promise<void> p)
 {
@@ -95,8 +95,7 @@ void tss_custom_cleanup(Dummy* d)
     tss_cleanup_called = true;
 }
 
-pika::threads::detail::thread_specific_ptr<Dummy> tss_with_cleanup(
-    &tss_custom_cleanup);
+pika::threads::thread_specific_ptr<Dummy> tss_with_cleanup(&tss_custom_cleanup);
 
 void tss_thread_with_custom_cleanup()
 {
@@ -154,7 +153,7 @@ struct dummy_class_tracks_deletions
 
 unsigned dummy_class_tracks_deletions::deletions = 0;
 
-pika::threads::detail::thread_specific_ptr<dummy_class_tracks_deletions>
+pika::threads::thread_specific_ptr<dummy_class_tracks_deletions>
     tss_with_null_cleanup(nullptr);
 
 void tss_thread_with_null_cleanup(dummy_class_tracks_deletions* delete_tracker)
@@ -182,8 +181,7 @@ void thread_with_local_tss_ptr()
     tss_cleanup_called = false;
 
     {
-        pika::threads::detail::thread_specific_ptr<Dummy> local_tss(
-            tss_custom_cleanup);
+        pika::threads::thread_specific_ptr<Dummy> local_tss(tss_custom_cleanup);
         local_tss.reset(new Dummy);
     }
 
@@ -202,8 +200,7 @@ void test_tss_does_not_call_cleanup_after_ptr_destroyed()
 ///////////////////////////////////////////////////////////////////////////////
 void test_tss_cleanup_not_called_for_null_pointer()
 {
-    pika::threads::detail::thread_specific_ptr<Dummy> local_tss(
-        tss_custom_cleanup);
+    pika::threads::thread_specific_ptr<Dummy> local_tss(tss_custom_cleanup);
     local_tss.reset(new Dummy);
 
     tss_cleanup_called = false;
