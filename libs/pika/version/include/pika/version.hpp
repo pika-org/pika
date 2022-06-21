@@ -16,7 +16,6 @@
 #include <pika/preprocessor/stringize.hpp>
 
 #include <cstdint>
-#include <sstream>
 #include <string>
 #include <string_view>
 

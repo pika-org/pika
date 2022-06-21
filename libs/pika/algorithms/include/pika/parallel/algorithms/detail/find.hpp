@@ -17,7 +17,6 @@
 #include <pika/parallel/util/projection_identity.hpp>
 
 #include <cstddef>
-#include <iostream>
 #include <type_traits>
 #include <utility>
 

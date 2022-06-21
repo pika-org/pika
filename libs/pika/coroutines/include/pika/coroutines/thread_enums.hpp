@@ -13,7 +13,7 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <ostream>
+#include <iosfwd>
 
 namespace pika::threads::detail {
     // clang-format off

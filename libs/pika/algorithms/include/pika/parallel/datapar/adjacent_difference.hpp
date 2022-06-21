@@ -20,7 +20,6 @@
 #include <pika/parallel/util/result_types.hpp>
 
 #include <cstddef>
-#include <iostream>
 #include <type_traits>
 #include <utility>
 

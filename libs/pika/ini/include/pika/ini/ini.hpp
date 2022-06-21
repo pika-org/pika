@@ -13,9 +13,9 @@
 #include <pika/functional/function.hpp>
 #include <pika/util/to_string.hpp>
 
+#include <iosfwd>
 #include <map>
 #include <mutex>
-#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
