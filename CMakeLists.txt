@@ -969,6 +969,21 @@ if(PIKA_WITH_APEX)
   endif()
 endif()
 
+pika_option(
+  PIKA_WITH_TRACY BOOL "Enable Tracy instrumentation support." OFF
+  CATEGORY "Profiling"
+)
+if(PIKA_WITH_TRACY)
+  pika_add_config_define(PIKA_HAVE_TRACY)
+  pika_add_config_define(PIKA_HAVE_THREAD_DESCRIPTION)
+  pika_add_config_define(PIKA_HAVE_THREAD_PARENT_REFERENCE)
+  if(PIKA_WITH_THREAD_DESCRIPTION_FULL)
+    pika_add_config_define(PIKA_HAVE_THREAD_DESCRIPTION_FULL)
+  endif()
+  find_package(Tracy REQUIRED)
+  target_link_libraries(pika_base_libraries INTERFACE Tracy::TracyClient)
+endif()
+
 if(PIKA_WITH_THREAD_DEBUG_INFO)
   pika_add_config_define(PIKA_HAVE_THREAD_PARENT_REFERENCE)
   pika_add_config_define(PIKA_HAVE_THREAD_PHASE_INFORMATION)

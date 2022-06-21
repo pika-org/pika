@@ -96,6 +96,11 @@ include(pika_setup_mpi)
 set(PIKA_APEX_ROOT "@APEX_ROOT@")
 include(pika_setup_apex)
 
+# Tracy
+if(PIKA_WITH_TRACY)
+  find_dependency(Tracy REQUIRED)
+endif()
+
 set(PIKA_WITH_MALLOC_DEFAULT @PIKA_WITH_MALLOC@)
 
 if(NOT PIKA_CMAKE_LOGLEVEL)

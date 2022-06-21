@@ -37,6 +37,10 @@
 #include <pika/util/from_string.hpp>
 #include <pika/version.hpp>
 
+#if defined(PIKA_HAVE_TRACY)
+#include <common/TracySystem.hpp>
+#endif
+
 #include <atomic>
 #include <condition_variable>
 #include <cstddef>
@@ -1695,15 +1699,27 @@ namespace pika {
         error_code& ec)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
-        // set the thread's name, if it's not already set
-        PIKA_ASSERT(detail::thread_name().empty());
-
-        std::string fullname;
-        fullname += context;
+        std::ostringstream fullname;
+        fullname << "pika/" << context;
+        if (pool_name && *pool_name)
+        {
+            fullname << "/pool:" << pool_name;
+        }
         if (postfix && *postfix)
-            fullname += postfix;
-        fullname += "#" + std::to_string(global_thread_num);
-        detail::thread_name() = PIKA_MOVE(fullname);
+        {
+            fullname << '/' << postfix;
+        }
+        if (global_thread_num != std::size_t(-1))
+        {
+            fullname << "/global:" + std::to_string(global_thread_num);
+        }
+        if (local_thread_num != std::size_t(-1))
+        {
+            fullname << "/local:" + std::to_string(local_thread_num);
+        }
+
+        PIKA_ASSERT(detail::thread_name().empty());
+        detail::thread_name() = PIKA_MOVE(fullname).str();
 
         char const* name = detail::thread_name().c_str();
 
@@ -1719,6 +1735,10 @@ namespace pika {
 #if defined(PIKA_HAVE_APEX)
         if (std::strstr(name, "worker") != nullptr)
             detail::external_timer::register_thread(name);
+#endif
+
+#ifdef PIKA_HAVE_TRACY
+        tracy::SetThreadName(name);
 #endif
 
         // call thread-specific user-supplied on_start handler
