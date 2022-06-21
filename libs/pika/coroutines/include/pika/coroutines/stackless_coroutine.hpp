@@ -119,41 +119,6 @@ namespace pika::threads::coroutines::detail {
 #endif
         }
 
-#if defined(PIKA_HAVE_LIBCDS)
-        std::size_t get_libcds_data() const
-        {
-            return libcds_data_;
-        }
-
-        std::size_t set_libcds_data(std::size_t data)
-        {
-            std::swap(data, libcds_data_);
-            return data;
-        }
-
-        std::size_t get_libcds_hazard_pointer_data() const
-        {
-            return libcds_hazard_pointer_data_;
-        }
-
-        std::size_t set_libcds_hazard_pointer_data(std::size_t data)
-        {
-            std::swap(data, libcds_hazard_pointer_data_);
-            return data;
-        }
-
-        std::size_t get_libcds_dynamic_hazard_pointer_data() const
-        {
-            return libcds_dynamic_hazard_pointer_data_;
-        }
-
-        std::size_t set_libcds_dynamic_hazard_pointer_data(std::size_t data)
-        {
-            std::swap(data, libcds_dynamic_hazard_pointer_data_);
-            return data;
-        }
-#endif
-
 #if defined(PIKA_HAVE_THREAD_LOCAL_STORAGE)
         tss_storage* get_thread_tss_data(bool create_if_needed) const
         {
@@ -256,11 +221,6 @@ namespace pika::threads::coroutines::detail {
         mutable std::size_t thread_data_;
 #endif
         std::size_t continuation_recursion_count_;
-#if defined(PIKA_HAVE_LIBCDS)
-        mutable std::size_t libcds_data_;
-        mutable std::size_t libcds_hazard_pointer_data_;
-        mutable std::size_t libcds_dynamic_hazard_pointer_data_;
-#endif
     };
 }    // namespace pika::threads::coroutines::detail
 

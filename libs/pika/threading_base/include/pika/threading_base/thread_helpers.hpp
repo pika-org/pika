@@ -397,26 +397,6 @@ namespace pika::threads::detail {
     PIKA_EXPORT std::size_t set_thread_data(
         thread_id_type const& id, std::size_t data, error_code& ec = throws);
 
-#if defined(PIKA_HAVE_LIBCDS)
-    PIKA_EXPORT std::size_t get_libcds_data(
-        thread_id_type const& id, error_code& ec = throws);
-
-    PIKA_EXPORT std::size_t set_libcds_data(
-        thread_id_type const& id, std::size_t data, error_code& ec = throws);
-
-    PIKA_EXPORT std::size_t get_libcds_hazard_pointer_data(
-        thread_id_type const& id, error_code& ec = throws);
-
-    PIKA_EXPORT std::size_t set_libcds_hazard_pointer_data(
-        thread_id_type const& id, std::size_t data, error_code& ec = throws);
-
-    PIKA_EXPORT std::size_t get_libcds_dynamic_hazard_pointer_data(
-        thread_id_type const& id, error_code& ec = throws);
-
-    PIKA_EXPORT std::size_t set_libcds_dynamic_hazard_pointer_data(
-        thread_id_type const& id, std::size_t data, error_code& ec = throws);
-#endif
-
     PIKA_EXPORT std::size_t& get_continuation_recursion_count() noexcept;
     PIKA_EXPORT void reset_continuation_recursion_count() noexcept;
     /// \endcond

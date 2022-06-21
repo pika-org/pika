@@ -124,15 +124,6 @@ namespace pika {
         std::size_t get_thread_data() const;
         std::size_t set_thread_data(std::size_t);
 
-#if defined(PIKA_HAVE_LIBCDS)
-        std::size_t get_libcds_data() const;
-        std::size_t set_libcds_data(std::size_t);
-        std::size_t get_libcds_hazard_pointer_data() const;
-        std::size_t set_libcds_hazard_pointer_data(std::size_t);
-        std::size_t get_libcds_dynamic_hazard_pointer_data() const;
-        std::size_t set_libcds_dynamic_hazard_pointer_data(std::size_t);
-#endif
-
     private:
         bool joinable_locked() const noexcept
         {
@@ -276,16 +267,6 @@ namespace pika {
 
         PIKA_EXPORT std::size_t get_thread_data();
         PIKA_EXPORT std::size_t set_thread_data(std::size_t);
-
-#if defined(PIKA_HAVE_LIBCDS)
-        PIKA_EXPORT std::size_t get_libcds_data();
-        PIKA_EXPORT std::size_t set_libcds_data(std::size_t);
-        PIKA_EXPORT std::size_t get_libcds_hazard_pointer_data();
-        PIKA_EXPORT std::size_t set_libcds_hazard_pointer_data(std::size_t);
-        PIKA_EXPORT std::size_t get_libcds_dynamic_hazard_pointer_data();
-        PIKA_EXPORT std::size_t set_libcds_dynamic_hazard_pointer_data(
-            std::size_t);
-#endif
 
         class PIKA_EXPORT disable_interruption
         {
