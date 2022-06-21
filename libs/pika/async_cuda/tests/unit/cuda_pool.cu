@@ -74,6 +74,40 @@ int main()
         PIKA_TEST_NEQ(hpstream1, hpstream2);
     }
 
+    // Flags can be set on streams in the pool
+    {
+        cu::cuda_pool pool{0, 3, 2};
+
+        unsigned int expected_flags = 0;
+        unsigned int flags = 0;
+        cu::cuda_stream const& stream = pool.get_next_stream();
+        cu::check_cuda_error(cudaStreamGetFlags(stream.get(), &flags));
+        PIKA_TEST_EQ(stream.get_flags(), expected_flags);
+        PIKA_TEST_EQ(flags, expected_flags);
+    }
+
+    {
+        unsigned int expected_flags = 0;
+        cu::cuda_pool pool{0, 3, 2, expected_flags};
+
+        unsigned int flags = 0;
+        cu::cuda_stream const& stream = pool.get_next_stream();
+        cu::check_cuda_error(cudaStreamGetFlags(stream.get(), &flags));
+        PIKA_TEST_EQ(stream.get_flags(), expected_flags);
+        PIKA_TEST_EQ(flags, expected_flags);
+    }
+
+    {
+        unsigned int expected_flags = cudaStreamNonBlocking;
+        cu::cuda_pool pool{0, 3, 2, expected_flags};
+
+        unsigned int flags = 0;
+        cu::cuda_stream const& stream = pool.get_next_stream();
+        cu::check_cuda_error(cudaStreamGetFlags(stream.get(), &flags));
+        PIKA_TEST_EQ(stream.get_flags(), expected_flags);
+        PIKA_TEST_EQ(flags, expected_flags);
+    }
+
     {
         // A pool is reference counted
         cu::cuda_pool pool{};

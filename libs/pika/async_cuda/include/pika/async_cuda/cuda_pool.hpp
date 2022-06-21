@@ -39,7 +39,7 @@ namespace pika::cuda::experimental {
 
             PIKA_EXPORT streams_holder(int device,
                 std::size_t num_streams_per_thread,
-                pika::execution::thread_priority);
+                pika::execution::thread_priority, unsigned int flags);
             streams_holder(streams_holder&&) = delete;
             streams_holder(streams_holder const&) = delete;
             streams_holder& operator=(streams_holder&&) = delete;
@@ -56,7 +56,8 @@ namespace pika::cuda::experimental {
 
             PIKA_EXPORT pool_data(int device,
                 std::size_t num_normal_priority_streams_per_thread,
-                std::size_t num_high_priority_streams_per_thread);
+                std::size_t num_high_priority_streams_per_thread,
+                unsigned int flags);
             pool_data(pool_data&&) = delete;
             pool_data(pool_data const&) = delete;
             pool_data& operator=(pool_data&&) = delete;
@@ -68,7 +69,8 @@ namespace pika::cuda::experimental {
     public:
         PIKA_EXPORT explicit cuda_pool(int device = 0,
             std::size_t num_normal_priority_streams_per_thread = 3,
-            std::size_t num_high_priority_streams_per_thread = 3);
+            std::size_t num_high_priority_streams_per_thread = 3,
+            unsigned int flags = 0);
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         cuda_pool(cuda_pool&&) = default;
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE

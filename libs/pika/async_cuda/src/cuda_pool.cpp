@@ -19,11 +19,11 @@
 namespace pika::cuda::experimental {
     cuda_pool::streams_holder::streams_holder(int device,
         std::size_t num_streams_per_thread,
-        pika::execution::thread_priority priority)
+        pika::execution::thread_priority priority, unsigned int flags)
       : num_streams_per_thread(num_streams_per_thread)
       , concurrency(pika::threads::detail::hardware_concurrency())
-      , streams(
-            num_streams_per_thread * concurrency, cuda_stream{device, priority})
+      , streams(num_streams_per_thread * concurrency,
+            cuda_stream{device, priority, flags})
       , active_stream_indices(concurrency, {0})
     {
         PIKA_ASSERT(num_streams_per_thread > 0);
@@ -45,21 +45,21 @@ namespace pika::cuda::experimental {
 
     cuda_pool::pool_data::pool_data(int device,
         std::size_t num_normal_priority_streams_per_thread,
-        std::size_t num_high_priority_streams_per_thread)
+        std::size_t num_high_priority_streams_per_thread, unsigned int flags)
       : device(device)
       , normal_priority_streams(device, num_normal_priority_streams_per_thread,
-            pika::execution::thread_priority::normal)
+            pika::execution::thread_priority::normal, flags)
       , high_priority_streams(device, num_high_priority_streams_per_thread,
-            pika::execution::thread_priority::high)
+            pika::execution::thread_priority::high, flags)
     {
     }
 
     cuda_pool::cuda_pool(int device,
         std::size_t num_normal_priority_streams_per_thread,
-        std::size_t num_high_priority_streams_per_thread)
+        std::size_t num_high_priority_streams_per_thread, unsigned int flags)
       : data(std::make_shared<pool_data>(device,
             num_normal_priority_streams_per_thread,
-            num_high_priority_streams_per_thread))
+            num_high_priority_streams_per_thread, flags))
     {
     }
 

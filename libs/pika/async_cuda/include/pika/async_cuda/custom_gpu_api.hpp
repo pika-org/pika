@@ -67,6 +67,7 @@
     #define cudaStreamCreateWithFlags hipStreamCreateWithFlags
     #define cudaStreamCreateWithPriority hipStreamCreateWithPriority
     #define cudaStreamDestroy hipStreamDestroy
+    #define cudaStreamGetFlags hipStreamGetFlags
     #define cudaStreamNonBlocking hipStreamNonBlocking
     #define cudaStreamSynchronize hipStreamSynchronize
     #define cudaSuccess hipSuccess
