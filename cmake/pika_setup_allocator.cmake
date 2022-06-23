@@ -78,7 +78,7 @@ if(NOT TARGET pika_dependencies_allocator)
     # ##########################################################################
     # MIMALLOC
     if("${PIKA_WITH_MALLOC_UPPER}" STREQUAL "MIMALLOC")
-      find_package(mimalloc 1.0)
+      find_package(mimalloc)
       if(NOT mimalloc_FOUND)
         pika_error(${allocator_error})
       endif()
