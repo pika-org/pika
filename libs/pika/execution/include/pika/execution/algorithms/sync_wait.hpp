@@ -98,7 +98,7 @@ namespace pika::this_thread::experimental {
             // variant.
             using error_type =
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    predecessor_error_types<pika::variant>,
+                    predecessor_error_types<pika::detail::variant>,
                     std::exception_ptr>>;
 #else
             // value and error_types of the predecessor sender
@@ -138,7 +138,7 @@ namespace pika::this_thread::experimental {
             // variant.
             using error_type =
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    predecessor_error_types<pika::variant>,
+                    predecessor_error_types<pika::detail::variant>,
                     std::exception_ptr>>;
 #endif
 
@@ -150,7 +150,9 @@ namespace pika::this_thread::experimental {
                 pika::lcos::local::condition_variable cond_var;
                 mutex_type mtx;
                 std::atomic<bool> set_called = false;
-                pika::variant<pika::monostate, error_type, value_type> value;
+                pika::detail::variant<pika::detail::monostate, error_type,
+                    value_type>
+                    value;
 
                 void wait()
                 {
@@ -166,7 +168,7 @@ namespace pika::this_thread::experimental {
 
                 auto get_value()
                 {
-                    if (pika::holds_alternative<value_type>(value))
+                    if (pika::detail::holds_alternative<value_type>(value))
                     {
                         if constexpr (is_void_result)
                         {
@@ -174,16 +176,17 @@ namespace pika::this_thread::experimental {
                         }
                         else
                         {
-                            return PIKA_MOVE(pika::get<value_type>(value));
+                            return PIKA_MOVE(
+                                pika::detail::get<value_type>(value));
                         }
                     }
-                    else if (pika::holds_alternative<error_type>(value))
+                    else if (pika::detail::holds_alternative<error_type>(value))
                     {
-                        pika::visit(sync_wait_error_visitor{},
-                            pika::get<error_type>(value));
+                        pika::detail::visit(sync_wait_error_visitor{},
+                            pika::detail::get<error_type>(value));
                     }
 
-                    // If the variant holds a pika::monostate something has gone
+                    // If the variant holds a pika::detail::monostate something has gone
                     // wrong and we terminate
                     PIKA_UNREACHABLE;
                 }
@@ -195,8 +198,10 @@ namespace pika::this_thread::experimental {
             {
                 std::unique_lock<mutex_type> l(state.mtx);
                 state.set_called = true;
+#if defined(PIKA_COMPUTE_DEVICE_CODE)
                 pika::util::ignore_while_checking<decltype(l)> il(&l);
                 PIKA_UNUSED(il);
+#endif
 
                 state.cond_var.notify_one();
             }

@@ -184,7 +184,7 @@ namespace pika { namespace execution { namespace experimental {
                         operation_state* const op_state;
                         task_function const* const task_f;
 
-                        void operator()(pika::monostate const&) const
+                        void operator()(pika::detail::monostate const&) const
                         {
                             PIKA_UNREACHABLE;
                         }
@@ -219,7 +219,7 @@ namespace pika { namespace execution { namespace experimental {
                         // chunks from neighboring threads.
                         template <typename Ts,
                             typename = std::enable_if_t<!std::is_same_v<
-                                std::decay_t<Ts>, pika::monostate>>>
+                                std::decay_t<Ts>, pika::detail::monostate>>>
                         void operator()(Ts& ts) const
                         {
                             auto& local_queue =
@@ -256,7 +256,7 @@ namespace pika { namespace execution { namespace experimental {
                     {
                         operation_state* const op_state;
 
-                        void operator()(pika::monostate&&) const
+                        void operator()(pika::detail::monostate&&) const
                         {
                             std::terminate();
                         }
@@ -267,7 +267,7 @@ namespace pika { namespace execution { namespace experimental {
                         // should be signalled.
                         template <typename Ts,
                             typename = std::enable_if_t<!std::is_same_v<
-                                std::decay_t<Ts>, pika::monostate>>>
+                                std::decay_t<Ts>, pika::detail::monostate>>>
                         void operator()(Ts&& ts) const
                         {
                             pika::util::invoke_fused(
@@ -289,7 +289,8 @@ namespace pika { namespace execution { namespace experimental {
                         // Visit the values sent by the predecessor sender.
                         void do_work() const
                         {
-                            pika::visit(set_value_loop_visitor{op_state, this},
+                            pika::detail::visit(
+                                set_value_loop_visitor{op_state, this},
                                 op_state->ts);
                         }
 
@@ -325,7 +326,7 @@ namespace pika { namespace execution { namespace experimental {
                                 }
                                 else
                                 {
-                                    pika::visit(
+                                    pika::detail::visit(
                                         set_value_end_loop_visitor{op_state},
                                         PIKA_MOVE(op_state->ts));
                                 }
@@ -528,7 +529,8 @@ namespace pika { namespace execution { namespace experimental {
                 std::atomic<decltype(pika::util::size(shape))> tasks_remaining{
                     num_worker_threads};
                 pika::util::detail::prepend_t<
-                    value_types<pika::tuple, pika::variant>, pika::monostate>
+                    value_types<pika::tuple, pika::detail::variant>,
+                    pika::detail::monostate>
                     ts;
                 std::atomic<bool> exception_thrown{false};
                 std::optional<std::exception_ptr> exception;

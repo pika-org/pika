@@ -135,7 +135,8 @@ namespace pika { namespace execution { namespace experimental {
 
                     struct start_visitor
                     {
-                        [[noreturn]] void operator()(pika::monostate) const
+                        [[noreturn]] void operator()(
+                            pika::detail::monostate) const
                         {
                             PIKA_UNREACHABLE;
                         }
@@ -143,7 +144,7 @@ namespace pika { namespace execution { namespace experimental {
                         template <typename OperationState_,
                             typename = std::enable_if_t<
                                 !std::is_same_v<std::decay_t<OperationState_>,
-                                    pika::monostate>>>
+                                    pika::detail::monostate>>>
                         void operator()(OperationState_& op_state) const
                         {
                             pika::execution::experimental::start(op_state);
@@ -156,14 +157,15 @@ namespace pika { namespace execution { namespace experimental {
                         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
                         operation_state& op_state;
 
-                        [[noreturn]] void operator()(pika::monostate) const
+                        [[noreturn]] void operator()(
+                            pika::detail::monostate) const
                         {
                             PIKA_UNREACHABLE;
                         }
 
                         template <typename Error,
                             typename = std::enable_if_t<!std::is_same_v<
-                                std::decay_t<Error>, pika::monostate>>>
+                                std::decay_t<Error>, pika::detail::monostate>>>
                         void operator()(Error& error)
                         {
                             using operation_state_type =
@@ -193,7 +195,7 @@ namespace pika { namespace execution { namespace experimental {
                                     PIKA_INVOKE(PIKA_MOVE(f), error),
                                     PIKA_MOVE(receiver));
 #endif
-                            pika::visit(
+                            pika::detail::visit(
                                 start_visitor{}, op_state.successor_op_state);
                         }
                     };
@@ -210,7 +212,7 @@ namespace pika { namespace execution { namespace experimental {
                                 r.op_state.predecessor_error
                                     .template emplace<Error>(
                                         PIKA_FORWARD(Error, error));
-                                pika::visit(
+                                pika::detail::visit(
                                     set_error_visitor{PIKA_MOVE(r.receiver),
                                         PIKA_MOVE(r.f), r.op_state},
                                     r.op_state.predecessor_error);
@@ -266,15 +268,16 @@ namespace pika { namespace execution { namespace experimental {
 
                 // Potential errors returned from the predecessor sender
                 pika::util::detail::prepend_t<
-                    predecessor_error_types<pika::variant>, pika::monostate>
+                    predecessor_error_types<pika::detail::variant>,
+                    pika::detail::monostate>
                     predecessor_error;
 
                 // Potential operation states returned when connecting a sender
                 // in successor_sender_types to the receiver connected to the
                 // let_error_sender
                 pika::util::detail::prepend_t<
-                    successor_operation_state_types<pika::variant>,
-                    pika::monostate>
+                    successor_operation_state_types<pika::detail::variant>,
+                    pika::detail::monostate>
                     successor_op_state;
 
                 template <typename PredecessorSender_, typename Receiver_,

@@ -232,7 +232,7 @@ namespace pika::execution::experimental {
                 // The first error sent by any predecessor sender is stored in a
                 // optional of a variant of the error_types
                 using error_types_storage_type =
-                    pika::optional<error_types<pika::variant>>;
+                    pika::optional<error_types<pika::detail::variant>>;
                 error_types_storage_type error;
 
                 // Set to true when set_stopped or set_error has been called
@@ -305,7 +305,7 @@ namespace pika::execution::experimental {
                         }
                         else if (error)
                         {
-                            pika::visit(
+                            pika::detail::visit(
                                 [this](auto&& error) {
                                     pika::execution::experimental::set_error(
                                         PIKA_MOVE(receiver),

@@ -223,25 +223,25 @@ namespace pika { namespace mpi { namespace experimental {
                 using ts_type = pika::util::detail::prepend_t<
                     typename pika::execution::experimental::sender_traits<
                         std::decay_t<Sender>>::template value_types<pika::tuple,
-                        pika::variant>,
-                    pika::monostate>;
+                        pika::detail::variant>,
+                    pika::detail::monostate>;
                 ts_type ts;
 
                 // We store the return value of f in a variant. We know that
                 // value_types of the transform_mpi_sender contains packs of at
                 // most one element (the return value of f), so we only
                 // specialize result_types_helper for zero or one value. For
-                // empty packs we use pika::monostate since we don't need to
-                // store anything in that case.
+                // empty packs we use pika::detail::monostate since we don't
+                // need to store anything in that case.
                 //
                 // All in all, we:
                 // - transform one-element packs to the single element, and
-                //   empty packs to pika::monostate
-                // - add pika::monostate to the pack in case it wasn't there
-                //   already
-                // - remove duplicates in case pika::monostate has been added
-                //   twice
-                // - change the outer pack to a pika::variant
+                //   empty packs to pika::detail::monostate
+                // - add pika::detail::monostate to the pack in case it wasn't
+                //   there already
+                // - remove duplicates in case pika::detail::monostate has been
+                //   added twice
+                // - change the outer pack to a pika::detail::variant
                 template <typename Tuple>
                 struct result_types_helper;
 
@@ -254,17 +254,17 @@ namespace pika { namespace mpi { namespace experimental {
                 template <template <typename...> class Tuple>
                 struct result_types_helper<Tuple<>>
                 {
-                    using type = pika::monostate;
+                    using type = pika::detail::monostate;
                 };
 
                 using result_type = pika::util::detail::change_pack_t<
-                    pika::variant,
+                    pika::detail::variant,
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
                         pika::util::detail::transform_t<
                             transform_mpi_sender::value_types<pika::util::pack,
                                 pika::util::pack>,
                             result_types_helper>,
-                        pika::monostate>>>;
+                        pika::detail::monostate>>>;
 
                 result_type result;
 

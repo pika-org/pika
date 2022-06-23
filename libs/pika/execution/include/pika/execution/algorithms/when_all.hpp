@@ -268,7 +268,7 @@ namespace pika { namespace execution { namespace experimental {
                 // senders.
                 value_types_storage_type ts;
 
-                pika::optional<error_types<pika::variant>> error;
+                pika::optional<error_types<pika::detail::variant>> error;
                 std::atomic<bool> set_stopped_error_called{false};
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
@@ -321,7 +321,7 @@ namespace pika { namespace execution { namespace experimental {
                         }
                         else if (error)
                         {
-                            pika::visit(
+                            pika::detail::visit(
                                 [this](auto&& error) {
                                     pika::execution::experimental::set_error(
                                         PIKA_MOVE(receiver),

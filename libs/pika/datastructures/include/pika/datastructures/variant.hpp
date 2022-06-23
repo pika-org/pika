@@ -11,26 +11,24 @@
 #if defined(PIKA_HAVE_CXX17_COPY_ELISION)
 #include <variant>
 
-namespace pika {
-
+namespace pika::detail {
     using std::get;
     using std::holds_alternative;
     using std::monostate;
     using std::variant;
     using std::visit;
-}    // namespace pika
+}    // namespace pika::detail
 
 #else
 
 #include <pika/datastructures/detail/variant.hpp>
 
-namespace pika {
-
+namespace pika::detail {
     using pika::variant_ns::get;
     using pika::variant_ns::holds_alternative;
     using pika::variant_ns::monostate;
     using pika::variant_ns::variant;
     using pika::variant_ns::visit;
-}    // namespace pika
+}    // namespace pika::detail
 
 #endif
