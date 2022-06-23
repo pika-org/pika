@@ -117,6 +117,35 @@ int main()
     }
 
     {
+        // We should be able to set flags on the stream
+        cu::cuda_stream stream(0, pika::execution::thread_priority::default_);
+
+        unsigned int expected_flags = 0;
+        unsigned int flags = 0;
+        cu::check_cuda_error(cudaStreamGetFlags(stream.get(), &flags));
+        PIKA_TEST_EQ(stream.get_flags(), expected_flags);
+        PIKA_TEST_EQ(flags, expected_flags);
+
+        expected_flags = 0;
+        cu::cuda_stream stream2{
+            0, pika::execution::thread_priority::default_, expected_flags};
+
+        flags = 0;
+        cu::check_cuda_error(cudaStreamGetFlags(stream2.get(), &flags));
+        PIKA_TEST_EQ(stream2.get_flags(), expected_flags);
+        PIKA_TEST_EQ(flags, expected_flags);
+
+        expected_flags = cudaStreamNonBlocking;
+        cu::cuda_stream stream3{
+            0, pika::execution::thread_priority::default_, expected_flags};
+
+        flags = 0;
+        cu::check_cuda_error(cudaStreamGetFlags(stream3.get(), &flags));
+        PIKA_TEST_EQ(stream3.get_flags(), expected_flags);
+        PIKA_TEST_EQ(flags, expected_flags);
+    }
+
+    {
         // Equality is based on the underlying stream.
         cu::cuda_stream stream1{0, pika::execution::thread_priority::normal};
         cu::cuda_stream stream2{0, pika::execution::thread_priority::normal};
