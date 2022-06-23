@@ -4,7 +4,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests any boost_any is_tuple_like unique_any tuple)
+set(tests is_tuple_like tuple)
 
 if(PIKA_WITH_CXX17_MEMORY_RESOURCE)
   set(tests ${tests} small_vector)
