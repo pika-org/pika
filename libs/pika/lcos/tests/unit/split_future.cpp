@@ -95,29 +95,6 @@ void test_split_future3()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-#if defined(PIKA_DATASTRUCTURES_HAVE_ADAPT_STD_TUPLE)
-std::tuple<int, int, int> make_std_tuple_slowly()
-{
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    return std::make_tuple(42, 43, 44);
-}
-
-void test_split_std_future()
-{
-    pika::lcos::local::futures_factory<std::tuple<int, int, int>()> pt(
-        make_std_tuple_slowly);
-    pt.apply();
-
-    std::tuple<pika::future<int>, pika::future<int>, pika::future<int>> result =
-        pika::split_future(pt.get_future());
-
-    PIKA_TEST_EQ(std::get<0>(result).get(), 42);
-    PIKA_TEST_EQ(std::get<1>(result).get(), 43);
-    PIKA_TEST_EQ(std::get<2>(result).get(), 44);
-}
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
 std::pair<int, int> make_pair_slowly()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));

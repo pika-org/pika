@@ -4,21 +4,6 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-# Compatibility with using Boost.FileSystem, introduced in V1.4.0
-pika_option(
-  PIKA_DATASTRUCTURES_WITH_ADAPT_STD_TUPLE BOOL
-  "Enable compatibility of pika::tuple with std::tuple. (default: ON)" ON
-  ADVANCED
-  CATEGORY "Modules"
-  MODULE DATASTRUCTURES
-)
-
-if(PIKA_DATASTRUCTURES_WITH_ADAPT_STD_TUPLE)
-  pika_add_config_define_namespace(
-    DEFINE PIKA_DATASTRUCTURES_HAVE_ADAPT_STD_TUPLE NAMESPACE DATASTRUCTURES
-  )
-endif()
-
 set(datastructures_headers
     pika/datastructures/any.hpp
     pika/datastructures/detail/small_vector.hpp
