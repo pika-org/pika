@@ -35,7 +35,7 @@ int pika_main()
             auto now = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> dif = now - start_time;
 
-            PIKA_TEST_LTE(dif.count(), 1.1);
+            PIKA_TEST_LTE(dif.count(), 1.5);
             break;
         }
         else
@@ -45,7 +45,7 @@ int pika_main()
 
         auto now = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> dif = now - start_time;
-        PIKA_TEST_LT(dif.count(), 1.1);
+        PIKA_TEST_LT(dif.count(), 1.5);
     }
 
     return pika::finalize();
