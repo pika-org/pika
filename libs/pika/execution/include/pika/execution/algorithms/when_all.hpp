@@ -90,7 +90,7 @@ namespace pika { namespace execution { namespace experimental {
                         typename OperationState::value_types_storage_type>()
                         .template get<OperationState::i_storage_offset + Is>()
                         .emplace(PIKA_FORWARD(Ts, ts)),
-                    ...))
+                    ...), void())
             {
                 // op_state.ts holds values from all predecessor senders. We
                 // emplace the values using the offset calculated while
@@ -106,7 +106,7 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename... Ts>
             auto set_value(Ts&&... ts) noexcept -> decltype(set_value_helper(
-                index_pack_type{}, PIKA_FORWARD(Ts, ts)...))
+                index_pack_type{}, PIKA_FORWARD(Ts, ts)...), void())
             {
                 if constexpr (OperationState::sender_pack_size > 0)
                 {
@@ -144,7 +144,7 @@ namespace pika { namespace execution { namespace experimental {
         // overload.
         template <typename Receiver, typename... Ts>
         auto tag_invoke(set_value_t, Receiver&& r, Ts&&... ts) noexcept
-            -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...))
+            -> decltype(r.set_value(PIKA_FORWARD(Ts, ts)...), void())
         {
             r.set_value(PIKA_FORWARD(Ts, ts)...);
         }
