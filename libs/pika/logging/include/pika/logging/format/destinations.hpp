@@ -22,7 +22,6 @@
 #include <ios>
 #include <iosfwd>
 #include <memory>
-#include <ostream>
 #include <string>
 
 namespace pika { namespace util { namespace logging { namespace destination {
