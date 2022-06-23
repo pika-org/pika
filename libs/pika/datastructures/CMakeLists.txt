@@ -26,7 +26,6 @@ set(datastructures_headers
     pika/datastructures/member_pack.hpp
     pika/datastructures/optional.hpp
     pika/datastructures/tuple.hpp
-    pika/datastructures/traits/supports_streaming_with_any.hpp
     pika/datastructures/traits/is_tuple_like.hpp
     pika/datastructures/variant.hpp
     pika/datastructures/variant_helper.hpp
