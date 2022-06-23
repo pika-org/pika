@@ -1935,6 +1935,58 @@ void test_completion_scheduler()
     }
 }
 
+void test_drop_value()
+{
+    ex::thread_pool_scheduler sched{};
+
+    {
+        tt::sync_wait(ex::drop_value(ex::schedule(sched)));
+        static_assert(std::is_void_v<decltype(tt::sync_wait(
+                ex::drop_value(ex::schedule(sched))))>);
+    }
+
+    {
+        tt::sync_wait(ex::drop_value(ex::transfer_just(sched, 3)));
+        static_assert(std::is_void_v<decltype(tt::sync_wait(
+                ex::drop_value(ex::transfer_just(sched, 3))))>);
+    }
+
+    {
+        tt::sync_wait(
+            ex::drop_value(ex::transfer_just(sched, std::string("hello"))));
+        static_assert(std::is_void_v<decltype(tt::sync_wait(ex::drop_value(
+                ex::transfer_just(sched, std::string("hello")))))>);
+    }
+
+    {
+        tt::sync_wait(ex::drop_value(ex::transfer_just(
+            sched, custom_type_non_default_constructible_non_copyable{0})));
+        static_assert(std::is_void_v<decltype(tt::sync_wait(
+                ex::drop_value(ex::transfer_just(sched,
+                    custom_type_non_default_constructible_non_copyable{0}))))>);
+    }
+
+    {
+        auto s = ex::drop_value(
+            ex::then(ex::just(), [] { throw std::runtime_error("error"); }));
+
+        bool exception_thrown = false;
+
+        try
+        {
+            tt::sync_wait(std::move(s));
+            PIKA_TEST(false);
+        }
+        catch (std::runtime_error const& e)
+        {
+            PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
+            exception_thrown = true;
+        }
+
+        PIKA_TEST(exception_thrown);
+    }
+}
+
 void test_scheduler_queries()
 {
     PIKA_TEST(ex::get_forward_progress_guarantee(ex::thread_pool_scheduler{}) ==
@@ -1971,6 +2023,7 @@ int pika_main()
     test_let_error();
     test_detach();
     test_bulk();
+    test_drop_value();
     test_completion_scheduler();
     test_scheduler_queries();
 
