@@ -7,6 +7,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/chrono.hpp>
+#include <pika/datastructures/tuple.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution.hpp>
 #include <pika/functional.hpp>
@@ -15,7 +16,6 @@
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/program_options.hpp>
 #include <pika/testing.hpp>
-#include <pika/tuple.hpp>
 
 #include <atomic>
 #include <cstddef>

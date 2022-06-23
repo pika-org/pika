@@ -6,7 +6,6 @@
 
 set(include_headers
     pika/algorithm.hpp
-    pika/any.hpp
     pika/barrier.hpp
     pika/channel.hpp
     pika/chrono.hpp
@@ -21,7 +20,6 @@ set(include_headers
     pika/mpi.hpp
     pika/mutex.hpp
     pika/numeric.hpp
-    pika/optional.hpp
     pika/runtime.hpp
     pika/semaphore.hpp
     pika/shared_mutex.hpp
@@ -29,7 +27,6 @@ set(include_headers
     pika/system_error.hpp
     pika/task_block.hpp
     pika/thread.hpp
-    pika/tuple.hpp
     pika/type_traits.hpp
     pika/unwrap.hpp
 )

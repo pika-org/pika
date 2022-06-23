@@ -38,8 +38,9 @@ int pika_main()
         std::cout << "unsorted sequence: {";
         print_sequence(keys, values);
 
-        pika::parallel::sort_by_key(
-            pika::execution::par, keys.begin(), keys.end(), values.begin());
+        // TODO
+        // pika::parallel::sort_by_key(
+        //     pika::execution::par, keys.begin(), keys.end(), values.begin());
 
         std::cout << "sorted sequence:   {";
         print_sequence(keys, values);

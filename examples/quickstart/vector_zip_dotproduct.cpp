@@ -5,10 +5,10 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/algorithm.hpp>
+#include <pika/datastructures/tuple.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/iterator_support.hpp>
 #include <pika/numeric.hpp>
-#include <pika/tuple.hpp>
 
 #include <iostream>
 #include <iterator>
