@@ -71,7 +71,7 @@ struct random_fill
 // test case for iterator - sentinel_value
 void test_remove_if_sent()
 {
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 100;
     std::vector<std::int16_t> c(size);
@@ -92,7 +92,7 @@ void test_remove_if_sent(ExPolicy policy)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 100;
     std::vector<std::int16_t> c(size);
@@ -111,7 +111,7 @@ void test_remove_if_sent(ExPolicy policy)
 template <typename DataType>
 void test_remove_if(DataType)
 {
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;
@@ -135,7 +135,7 @@ void test_remove_if(ExPolicy policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;
@@ -159,7 +159,7 @@ void test_remove_if_async(ExPolicy policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;

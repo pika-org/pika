@@ -381,13 +381,13 @@ namespace pika { namespace parallel { namespace execution {
         template <typename F, template <typename> class OuterFuture,
             typename... InnerFutures, typename... Ts,
             typename = std::enable_if_t<detail::is_future_of_tuple_of_futures<
-                OuterFuture<pika::tuple<InnerFutures...>>>::value>,
+                OuterFuture<std::tuple<InnerFutures...>>>::value>,
             typename = std::enable_if_t<pika::traits::is_future_tuple<
-                pika::tuple<InnerFutures...>>::value>>
+                std::tuple<InnerFutures...>>::value>>
         auto then_execute(F&& f,
-            OuterFuture<pika::tuple<InnerFutures...>>&& predecessor, Ts&&... ts)
+            OuterFuture<std::tuple<InnerFutures...>>&& predecessor, Ts&&... ts)
             -> future<typename pika::util::detail::invoke_deferred_result<F,
-                OuterFuture<pika::tuple<InnerFutures...>>, Ts...>::type>
+                OuterFuture<std::tuple<InnerFutures...>>, Ts...>::type>
         {
 #ifdef GUIDED_EXECUTOR_DEBUG
             // get the tuple of futures from the predecessor future <tuple of futures>
@@ -400,12 +400,12 @@ namespace pika { namespace parallel { namespace execution {
 
             using result_type =
                 typename pika::util::detail::invoke_deferred_result<F,
-                    OuterFuture<pika::tuple<InnerFutures...>>, Ts...>::type;
+                    OuterFuture<std::tuple<InnerFutures...>>, Ts...>::type;
 
             // clang-format off
             gpx_deb.debug(debug::str<>("when_all(fut) : Predecessor")
                 , pika::util::debug::print_type<
-                       OuterFuture<pika::tuple<InnerFutures...>>>()
+                       OuterFuture<std::tuple<InnerFutures...>>>()
                 , "\n"
                 , "when_all(fut) : unwrapped   : "
                 , pika::util::debug::print_type<decltype(unwrapped_futures_tuple)>(
@@ -423,17 +423,17 @@ namespace pika { namespace parallel { namespace execution {
             return dataflow(
                 launch::sync,
                 [f = PIKA_FORWARD(F, f), this](
-                    OuterFuture<pika::tuple<InnerFutures...>>&& predecessor,
+                    OuterFuture<std::tuple<InnerFutures...>>&& predecessor,
                     Ts&&... /* ts */) mutable {
                     detail::pre_execution_then_domain_schedule<
                         guided_pool_executor, pool_numa_hint<Tag>>
                         pre_exec{*this, hint_, hp_sync_};
 
                     return pre_exec(PIKA_MOVE(f),
-                        std::forward<OuterFuture<pika::tuple<InnerFutures...>>>(
+                        std::forward<OuterFuture<std::tuple<InnerFutures...>>>(
                             predecessor));
                 },
-                std::forward<OuterFuture<pika::tuple<InnerFutures...>>>(
+                std::forward<OuterFuture<std::tuple<InnerFutures...>>>(
                     predecessor),
                 PIKA_FORWARD(Ts, ts)...);
         }
@@ -445,14 +445,14 @@ namespace pika { namespace parallel { namespace execution {
         // --------------------------------------------------------------------
         template <typename F, typename... InnerFutures,
             typename = std::enable_if_t<pika::traits::is_future_tuple<
-                pika::tuple<InnerFutures...>>::value>>
-        auto async_execute(F&& f, pika::tuple<InnerFutures...>&& predecessor)
+                std::tuple<InnerFutures...>>::value>>
+        auto async_execute(F&& f, std::tuple<InnerFutures...>&& predecessor)
             -> future<typename pika::util::detail::invoke_deferred_result<F,
-                pika::tuple<InnerFutures...>>::type>
+                std::tuple<InnerFutures...>>::type>
         {
             using result_type =
                 typename pika::util::detail::invoke_deferred_result<F,
-                    pika::tuple<InnerFutures...>>::type;
+                    std::tuple<InnerFutures...>>::type;
 
             // invoke the hint function with the unwrapped tuple futures
 #ifdef GUIDED_POOL_EXECUTOR_FAKE_NOOP
@@ -468,7 +468,7 @@ namespace pika { namespace parallel { namespace execution {
 #ifndef GUIDED_EXECUTOR_DEBUG
             // clang-format off
             gpx_deb.debug(debug::str<>("dataflow      : Predecessor")
-                      , pika::util::debug::print_type<pika::tuple<InnerFutures...>>()
+                      , pika::util::debug::print_type<std::tuple<InnerFutures...>>()
                       , "\n"
                       , "dataflow      : unwrapped   : "
                       , pika::util::debug::print_type<
@@ -486,7 +486,7 @@ namespace pika { namespace parallel { namespace execution {
             // forward the task execution on to the real internal executor
             lcos::local::futures_factory<result_type()> p(
                 pika::util::deferred_call(PIKA_FORWARD(F, f),
-                    std::forward<pika::tuple<InnerFutures...>>(predecessor)));
+                    std::forward<std::tuple<InnerFutures...>>(predecessor)));
 
             if (hp_sync_ && priority_ == pika::execution::thread_priority::high)
             {

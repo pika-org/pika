@@ -638,17 +638,17 @@ void test_wait_for_either_of_two_futures_1()
     pt1();
 
     pika::future<pika::when_any_result<
-        pika::tuple<pika::shared_future<int>, pika::shared_future<int>>>>
+        std::tuple<pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>> t =
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>> t =
         r.get().futures;
 
     PIKA_TEST(f1.is_ready());
     PIKA_TEST(!f2.is_ready());
     PIKA_TEST_EQ(f1.get(), 42);
 
-    PIKA_TEST(pika::get<0>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<0>(t).get(), 42);
+    PIKA_TEST(std::get<0>(t).is_ready());
+    PIKA_TEST_EQ(std::get<0>(t).get(), 42);
 }
 
 void test_wait_for_either_of_two_futures_2()
@@ -661,17 +661,17 @@ void test_wait_for_either_of_two_futures_2()
     pt2();
 
     pika::future<pika::when_any_result<
-        pika::tuple<pika::shared_future<int>, pika::shared_future<int>>>>
+        std::tuple<pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>> t =
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>> t =
         r.get().futures;
 
     PIKA_TEST(!f1.is_ready());
     PIKA_TEST(f2.is_ready());
     PIKA_TEST_EQ(f2.get(), 42);
 
-    PIKA_TEST(pika::get<1>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<1>(t).get(), 42);
+    PIKA_TEST(std::get<1>(t).is_ready());
+    PIKA_TEST_EQ(std::get<1>(t).get(), 42);
 }
 
 void test_wait_for_either_of_two_futures_list_1()
@@ -737,10 +737,10 @@ void test_wait_for_either_of_three_futures_1()
 
     pt1();
 
-    pika::future<pika::when_any_result<pika::tuple<pika::shared_future<int>,
+    pika::future<pika::when_any_result<std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>>
         t = r.get().futures;
 
@@ -749,8 +749,8 @@ void test_wait_for_either_of_three_futures_1()
     PIKA_TEST(!f3.is_ready());
     PIKA_TEST_EQ(f1.get(), 42);
 
-    PIKA_TEST(pika::get<0>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<0>(t).get(), 42);
+    PIKA_TEST(std::get<0>(t).is_ready());
+    PIKA_TEST_EQ(std::get<0>(t).get(), 42);
 }
 
 void test_wait_for_either_of_three_futures_2()
@@ -764,10 +764,10 @@ void test_wait_for_either_of_three_futures_2()
 
     pt2();
 
-    pika::future<pika::when_any_result<pika::tuple<pika::shared_future<int>,
+    pika::future<pika::when_any_result<std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>>
         t = r.get().futures;
 
@@ -776,8 +776,8 @@ void test_wait_for_either_of_three_futures_2()
     PIKA_TEST(!f3.is_ready());
     PIKA_TEST_EQ(f2.get(), 42);
 
-    PIKA_TEST(pika::get<1>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<1>(t).get(), 42);
+    PIKA_TEST(std::get<1>(t).is_ready());
+    PIKA_TEST_EQ(std::get<1>(t).get(), 42);
 }
 
 void test_wait_for_either_of_three_futures_3()
@@ -791,10 +791,10 @@ void test_wait_for_either_of_three_futures_3()
 
     pt3();
 
-    pika::future<pika::when_any_result<pika::tuple<pika::shared_future<int>,
+    pika::future<pika::when_any_result<std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>>
         t = r.get().futures;
 
@@ -803,8 +803,8 @@ void test_wait_for_either_of_three_futures_3()
     PIKA_TEST(f3.is_ready());
     PIKA_TEST_EQ(f3.get(), 42);
 
-    PIKA_TEST(pika::get<2>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<2>(t).get(), 42);
+    PIKA_TEST(std::get<2>(t).is_ready());
+    PIKA_TEST_EQ(std::get<2>(t).get(), 42);
 }
 
 void test_wait_for_either_of_four_futures_1()
@@ -821,10 +821,10 @@ void test_wait_for_either_of_four_futures_1()
     pt1();
 
     pika::future<pika::when_any_result<
-        pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+        std::tuple<pika::shared_future<int>, pika::shared_future<int>,
             pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3, f4);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>
         t = r.get().futures;
 
@@ -834,8 +834,8 @@ void test_wait_for_either_of_four_futures_1()
     PIKA_TEST(!f4.is_ready());
     PIKA_TEST_EQ(f1.get(), 42);
 
-    PIKA_TEST(pika::get<0>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<0>(t).get(), 42);
+    PIKA_TEST(std::get<0>(t).is_ready());
+    PIKA_TEST_EQ(std::get<0>(t).get(), 42);
 }
 
 void test_wait_for_either_of_four_futures_2()
@@ -852,10 +852,10 @@ void test_wait_for_either_of_four_futures_2()
     pt2();
 
     pika::future<pika::when_any_result<
-        pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+        std::tuple<pika::shared_future<int>, pika::shared_future<int>,
             pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3, f4);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>
         t = r.get().futures;
 
@@ -865,8 +865,8 @@ void test_wait_for_either_of_four_futures_2()
     PIKA_TEST(!f4.is_ready());
     PIKA_TEST_EQ(f2.get(), 42);
 
-    PIKA_TEST(pika::get<1>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<1>(t).get(), 42);
+    PIKA_TEST(std::get<1>(t).is_ready());
+    PIKA_TEST_EQ(std::get<1>(t).get(), 42);
 }
 
 void test_wait_for_either_of_four_futures_3()
@@ -883,10 +883,10 @@ void test_wait_for_either_of_four_futures_3()
     pt3();
 
     pika::future<pika::when_any_result<
-        pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+        std::tuple<pika::shared_future<int>, pika::shared_future<int>,
             pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3, f4);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>
         t = r.get().futures;
 
@@ -896,8 +896,8 @@ void test_wait_for_either_of_four_futures_3()
     PIKA_TEST(!f4.is_ready());
     PIKA_TEST_EQ(f3.get(), 42);
 
-    PIKA_TEST(pika::get<2>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<2>(t).get(), 42);
+    PIKA_TEST(std::get<2>(t).is_ready());
+    PIKA_TEST_EQ(std::get<2>(t).get(), 42);
 }
 
 void test_wait_for_either_of_four_futures_4()
@@ -914,10 +914,10 @@ void test_wait_for_either_of_four_futures_4()
     pt4();
 
     pika::future<pika::when_any_result<
-        pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+        std::tuple<pika::shared_future<int>, pika::shared_future<int>,
             pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3, f4);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>
         t = r.get().futures;
 
@@ -927,8 +927,8 @@ void test_wait_for_either_of_four_futures_4()
     PIKA_TEST(f4.is_ready());
     PIKA_TEST_EQ(f4.get(), 42);
 
-    PIKA_TEST(pika::get<3>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<3>(t).get(), 42);
+    PIKA_TEST(std::get<3>(t).is_ready());
+    PIKA_TEST_EQ(std::get<3>(t).get(), 42);
 }
 
 void test_wait_for_either_of_five_futures_1_from_list()
@@ -1028,11 +1028,11 @@ void test_wait_for_either_of_five_futures_1()
 
     pt1();
 
-    pika::future<pika::when_any_result<pika::tuple<pika::shared_future<int>,
+    pika::future<pika::when_any_result<std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3, f4, f5);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>>
         t = r.get().futures;
@@ -1044,8 +1044,8 @@ void test_wait_for_either_of_five_futures_1()
     PIKA_TEST(!f5.is_ready());
     PIKA_TEST_EQ(f1.get(), 42);
 
-    PIKA_TEST(pika::get<0>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<0>(t).get(), 42);
+    PIKA_TEST(std::get<0>(t).is_ready());
+    PIKA_TEST_EQ(std::get<0>(t).get(), 42);
 }
 
 void test_wait_for_either_of_five_futures_2()
@@ -1063,11 +1063,11 @@ void test_wait_for_either_of_five_futures_2()
 
     pt2();
 
-    pika::future<pika::when_any_result<pika::tuple<pika::shared_future<int>,
+    pika::future<pika::when_any_result<std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3, f4, f5);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>>
         t = r.get().futures;
@@ -1079,8 +1079,8 @@ void test_wait_for_either_of_five_futures_2()
     PIKA_TEST(!f5.is_ready());
     PIKA_TEST_EQ(f2.get(), 42);
 
-    PIKA_TEST(pika::get<1>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<1>(t).get(), 42);
+    PIKA_TEST(std::get<1>(t).is_ready());
+    PIKA_TEST_EQ(std::get<1>(t).get(), 42);
 }
 
 void test_wait_for_either_of_five_futures_3()
@@ -1098,11 +1098,11 @@ void test_wait_for_either_of_five_futures_3()
 
     pt3();
 
-    pika::future<pika::when_any_result<pika::tuple<pika::shared_future<int>,
+    pika::future<pika::when_any_result<std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3, f4, f5);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>>
         t = r.get().futures;
@@ -1114,8 +1114,8 @@ void test_wait_for_either_of_five_futures_3()
     PIKA_TEST(!f5.is_ready());
     PIKA_TEST_EQ(f3.get(), 42);
 
-    PIKA_TEST(pika::get<2>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<2>(t).get(), 42);
+    PIKA_TEST(std::get<2>(t).is_ready());
+    PIKA_TEST_EQ(std::get<2>(t).get(), 42);
 }
 
 void test_wait_for_either_of_five_futures_4()
@@ -1133,11 +1133,11 @@ void test_wait_for_either_of_five_futures_4()
 
     pt4();
 
-    pika::future<pika::when_any_result<pika::tuple<pika::shared_future<int>,
+    pika::future<pika::when_any_result<std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3, f4, f5);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>>
         t = r.get().futures;
@@ -1149,8 +1149,8 @@ void test_wait_for_either_of_five_futures_4()
     PIKA_TEST(!f5.is_ready());
     PIKA_TEST_EQ(f4.get(), 42);
 
-    PIKA_TEST(pika::get<3>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<3>(t).get(), 42);
+    PIKA_TEST(std::get<3>(t).is_ready());
+    PIKA_TEST_EQ(std::get<3>(t).get(), 42);
 }
 
 void test_wait_for_either_of_five_futures_5()
@@ -1168,11 +1168,11 @@ void test_wait_for_either_of_five_futures_5()
 
     pt5();
 
-    pika::future<pika::when_any_result<pika::tuple<pika::shared_future<int>,
+    pika::future<pika::when_any_result<std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>>>
         r = pika::when_any(f1, f2, f3, f4, f5);
-    pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+    std::tuple<pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>>
         t = r.get().futures;
@@ -1184,8 +1184,8 @@ void test_wait_for_either_of_five_futures_5()
     PIKA_TEST(f5.is_ready());
     PIKA_TEST_EQ(f5.get(), 42);
 
-    PIKA_TEST(pika::get<4>(t).is_ready());
-    PIKA_TEST_EQ(pika::get<4>(t).get(), 42);
+    PIKA_TEST(std::get<4>(t).is_ready());
+    PIKA_TEST_EQ(std::get<4>(t).get(), 42);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1299,13 +1299,13 @@ void test_wait_for_all_two_futures()
     pt2.apply();
 
     using result_type =
-        pika::tuple<pika::shared_future<int>, pika::shared_future<int>>;
+        std::tuple<pika::shared_future<int>, pika::shared_future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2);
 
     result_type result = r.get();
 
-    PIKA_TEST(pika::get<0>(result).is_ready());
-    PIKA_TEST(pika::get<1>(result).is_ready());
+    PIKA_TEST(std::get<0>(result).is_ready());
+    PIKA_TEST(std::get<1>(result).is_ready());
     PIKA_TEST(f1.is_ready());
     PIKA_TEST(f2.is_ready());
 }
@@ -1322,15 +1322,15 @@ void test_wait_for_all_three_futures()
     pika::shared_future<int> f3 = pt3.get_future();
     pt3.apply();
 
-    using result_type = pika::tuple<pika::shared_future<int>,
+    using result_type = std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3);
 
     result_type result = r.get();
 
-    PIKA_TEST(pika::get<0>(result).is_ready());
-    PIKA_TEST(pika::get<1>(result).is_ready());
-    PIKA_TEST(pika::get<2>(result).is_ready());
+    PIKA_TEST(std::get<0>(result).is_ready());
+    PIKA_TEST(std::get<1>(result).is_ready());
+    PIKA_TEST(std::get<2>(result).is_ready());
     PIKA_TEST(f1.is_ready());
     PIKA_TEST(f2.is_ready());
     PIKA_TEST(f3.is_ready());
@@ -1352,16 +1352,16 @@ void test_wait_for_all_four_futures()
     pt4.apply();
 
     using result_type =
-        pika::tuple<pika::shared_future<int>, pika::shared_future<int>,
+        std::tuple<pika::shared_future<int>, pika::shared_future<int>,
             pika::shared_future<int>, pika::shared_future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3, f4);
 
     result_type result = r.get();
 
-    PIKA_TEST(pika::get<0>(result).is_ready());
-    PIKA_TEST(pika::get<1>(result).is_ready());
-    PIKA_TEST(pika::get<2>(result).is_ready());
-    PIKA_TEST(pika::get<3>(result).is_ready());
+    PIKA_TEST(std::get<0>(result).is_ready());
+    PIKA_TEST(std::get<1>(result).is_ready());
+    PIKA_TEST(std::get<2>(result).is_ready());
+    PIKA_TEST(std::get<3>(result).is_ready());
     PIKA_TEST(f1.is_ready());
     PIKA_TEST(f2.is_ready());
     PIKA_TEST(f3.is_ready());
@@ -1386,18 +1386,18 @@ void test_wait_for_all_five_futures()
     pika::shared_future<int> f5 = pt5.get_future();
     pt5.apply();
 
-    using result_type = pika::tuple<pika::shared_future<int>,
+    using result_type = std::tuple<pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>,
         pika::shared_future<int>, pika::shared_future<int>>;
     pika::future<result_type> r = pika::when_all(f1, f2, f3, f4, f5);
 
     result_type result = r.get();
 
-    PIKA_TEST(pika::get<0>(result).is_ready());
-    PIKA_TEST(pika::get<1>(result).is_ready());
-    PIKA_TEST(pika::get<2>(result).is_ready());
-    PIKA_TEST(pika::get<3>(result).is_ready());
-    PIKA_TEST(pika::get<4>(result).is_ready());
+    PIKA_TEST(std::get<0>(result).is_ready());
+    PIKA_TEST(std::get<1>(result).is_ready());
+    PIKA_TEST(std::get<2>(result).is_ready());
+    PIKA_TEST(std::get<3>(result).is_ready());
+    PIKA_TEST(std::get<4>(result).is_ready());
     PIKA_TEST(f1.is_ready());
     PIKA_TEST(f2.is_ready());
     PIKA_TEST(f3.is_ready());
@@ -1423,7 +1423,7 @@ void test_wait_for_two_out_of_five_futures()
     pika::shared_future<int> f5 = pt5.get_future();
 
     using result_type =
-        pika::when_some_result<pika::tuple<pika::shared_future<int>,
+        pika::when_some_result<std::tuple<pika::shared_future<int>,
             pika::shared_future<int>, pika::shared_future<int>,
             pika::shared_future<int>, pika::shared_future<int>>>;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
@@ -1437,11 +1437,11 @@ void test_wait_for_two_out_of_five_futures()
     PIKA_TEST(!f5.is_ready());
 
     PIKA_TEST_EQ(result.indices.size(), count);
-    PIKA_TEST(!pika::get<0>(result.futures).is_ready());
-    PIKA_TEST(pika::get<1>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<2>(result.futures).is_ready());
-    PIKA_TEST(pika::get<3>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<4>(result.futures).is_ready());
+    PIKA_TEST(!std::get<0>(result.futures).is_ready());
+    PIKA_TEST(std::get<1>(result.futures).is_ready());
+    PIKA_TEST(!std::get<2>(result.futures).is_ready());
+    PIKA_TEST(std::get<3>(result.futures).is_ready());
+    PIKA_TEST(!std::get<4>(result.futures).is_ready());
 }
 
 void test_wait_for_three_out_of_five_futures()
@@ -1463,7 +1463,7 @@ void test_wait_for_three_out_of_five_futures()
     pt5();
 
     using result_type =
-        pika::when_some_result<pika::tuple<pika::shared_future<int>,
+        pika::when_some_result<std::tuple<pika::shared_future<int>,
             pika::shared_future<int>, pika::shared_future<int>,
             pika::shared_future<int>, pika::shared_future<int>>>;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
@@ -1477,11 +1477,11 @@ void test_wait_for_three_out_of_five_futures()
     PIKA_TEST(f5.is_ready());
 
     PIKA_TEST_EQ(result.indices.size(), count);
-    PIKA_TEST(pika::get<0>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<1>(result.futures).is_ready());
-    PIKA_TEST(pika::get<2>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<3>(result.futures).is_ready());
-    PIKA_TEST(pika::get<4>(result.futures).is_ready());
+    PIKA_TEST(std::get<0>(result.futures).is_ready());
+    PIKA_TEST(!std::get<1>(result.futures).is_ready());
+    PIKA_TEST(std::get<2>(result.futures).is_ready());
+    PIKA_TEST(!std::get<3>(result.futures).is_ready());
+    PIKA_TEST(std::get<4>(result.futures).is_ready());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

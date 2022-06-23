@@ -9,10 +9,10 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_DATAPAR)
-#include <pika/datastructures/tuple.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <cstddef>
+#include <tuple>
 #include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,11 +41,11 @@ namespace pika { namespace parallel { namespace traits {
     struct vector_pack_alignment;
 
     template <typename... Vector>
-    struct vector_pack_alignment<pika::tuple<Vector...>,
+    struct vector_pack_alignment<std::tuple<Vector...>,
         typename std::enable_if<
             pika::util::all_of<is_vector_pack<Vector>...>::value>::type>
     {
-        typedef typename pika::tuple_element<0, pika::tuple<Vector...>>::type
+        typedef typename std::tuple_element<0, std::tuple<Vector...>>::type
             pack_type;
 
         static std::size_t const value =
@@ -57,11 +57,11 @@ namespace pika { namespace parallel { namespace traits {
     struct vector_pack_size;
 
     template <typename... Vector>
-    struct vector_pack_size<pika::tuple<Vector...>,
+    struct vector_pack_size<std::tuple<Vector...>,
         typename std::enable_if<
             pika::util::all_of<is_vector_pack<Vector>...>::value>::type>
     {
-        typedef typename pika::tuple_element<0, pika::tuple<Vector...>>::type
+        typedef typename std::tuple_element<0, std::tuple<Vector...>>::type
             pack_type;
 
         static std::size_t const value = vector_pack_size<pack_type>::value;

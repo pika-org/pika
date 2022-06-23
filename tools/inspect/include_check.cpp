@@ -232,6 +232,15 @@ namespace boost { namespace inspect {
             "std::uniform_real_distribution", "random"},
         {"(\\bstd\\s*::\\s*exponential_distribution\\b)",
             "std::exponential_distribution", "random"},
+        // tuple
+        {"(\\bstd\\s*::\\s*forward_as_tuple\\b)", "std::forward_as_tuple", "tuple"},
+        {"(\\bstd\\s*::\\s*ignore\\b)", "std::ignore", "tuple"},
+        {"(\\bstd\\s*::\\s*make_tuple\\b)", "std::make_tuple", "tuple"},
+        {"(\\bstd\\s*::\\s*tie\\b)", "std::tie", "tuple"},
+        {"(\\bstd\\s*::\\s*tuple\\b)", "std::tuple", "tuple"},
+        {"(\\bstd\\s*::\\s*tuple_cat\\b)", "std::tuple_cat", "tuple"},
+        {"(\\bstd\\s*::\\s*tuple_element\\b)", "std::tuple_element", "tuple"},
+        {"(\\bstd\\s*::\\s*tuple_size\\b)", "std::tuple_size", "tuple"},
         // system_error
         {"(\\bstd\\s*::\\s*error_code\\b)", "std::error_code", "system_error"},
         {"(\\bstd\\s*::\\s*error_condition\\b)", "std::error_condition",

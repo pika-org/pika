@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/datastructures/optional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/synchronization/spinlock.hpp>
@@ -22,6 +21,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 

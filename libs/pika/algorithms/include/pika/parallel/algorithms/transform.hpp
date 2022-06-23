@@ -177,7 +177,6 @@ namespace pika {
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #endif
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -198,6 +197,7 @@ namespace pika {
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -288,15 +288,15 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             template <typename Iter, typename F_ = fun_type>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE
-                std::pair<typename pika::tuple_element<0,
+                std::pair<typename std::tuple_element<0,
                               typename Iter::iterator_tuple_type>::type,
-                    typename pika::tuple_element<1,
+                    typename std::tuple_element<1,
                         typename Iter::iterator_tuple_type>::type>
                 operator()(Iter part_begin, std::size_t part_size, std::size_t)
             {
                 auto iters = part_begin.get_iterator_tuple();
                 return util::transform_loop_n<execution_policy_type>(
-                    pika::get<0>(iters), part_size, pika::get<1>(iters),
+                    std::get<0>(iters), part_size, std::get<1>(iters),
                     transform_projected<F, Proj>(f_, proj_));
             }
         };
@@ -336,15 +336,15 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             template <typename Iter, typename F_ = fun_type>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE
-                std::pair<typename pika::tuple_element<0,
+                std::pair<typename std::tuple_element<0,
                               typename Iter::iterator_tuple_type>::type,
-                    typename pika::tuple_element<1,
+                    typename std::tuple_element<1,
                         typename Iter::iterator_tuple_type>::type>
                 operator()(Iter part_begin, std::size_t part_size, std::size_t)
             {
                 auto iters = part_begin.get_iterator_tuple();
                 return util::transform_loop_n_ind<execution_policy_type>(
-                    pika::get<0>(iters), part_size, pika::get<1>(iters), f_);
+                    std::get<0>(iters), part_size, std::get<1>(iters), f_);
             }
         };
 
@@ -480,18 +480,18 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             template <typename Iter, typename F_ = fun_type>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE
-                pika::tuple<typename pika::tuple_element<0,
-                                typename Iter::iterator_tuple_type>::type,
-                    typename pika::tuple_element<1,
+                std::tuple<typename std::tuple_element<0,
+                               typename Iter::iterator_tuple_type>::type,
+                    typename std::tuple_element<1,
                         typename Iter::iterator_tuple_type>::type,
-                    typename pika::tuple_element<2,
+                    typename std::tuple_element<2,
                         typename Iter::iterator_tuple_type>::type>
                 operator()(Iter part_begin, std::size_t part_size, std::size_t)
             {
                 auto iters = part_begin.get_iterator_tuple();
                 return util::transform_binary_loop_n<execution_policy_type>(
-                    pika::get<0>(iters), part_size, pika::get<1>(iters),
-                    pika::get<2>(iters),
+                    std::get<0>(iters), part_size, std::get<1>(iters),
+                    std::get<2>(iters),
                     transform_binary_projected<F_, Proj1, Proj2>{
                         f_, proj1_, proj2_});
             }
@@ -537,18 +537,18 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             template <typename Iter, typename F_ = fun_type>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE
-                pika::tuple<typename pika::tuple_element<0,
-                                typename Iter::iterator_tuple_type>::type,
-                    typename pika::tuple_element<1,
+                std::tuple<typename std::tuple_element<0,
+                               typename Iter::iterator_tuple_type>::type,
+                    typename std::tuple_element<1,
                         typename Iter::iterator_tuple_type>::type,
-                    typename pika::tuple_element<2,
+                    typename std::tuple_element<2,
                         typename Iter::iterator_tuple_type>::type>
                 operator()(Iter part_begin, std::size_t part_size, std::size_t)
             {
                 auto iters = part_begin.get_iterator_tuple();
                 return util::transform_binary_loop_ind_n<execution_policy_type>(
-                    pika::get<0>(iters), part_size, pika::get<1>(iters),
-                    pika::get<2>(iters), f_);
+                    std::get<0>(iters), part_size, std::get<1>(iters),
+                    std::get<2>(iters), f_);
             }
         };
 

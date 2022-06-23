@@ -11,7 +11,6 @@
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/format.hpp>
@@ -41,6 +40,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <tuple>
 #include <unordered_set>
 #include <utility>
 #include <vector>

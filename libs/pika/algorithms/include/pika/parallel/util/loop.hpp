@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
@@ -20,6 +19,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -64,8 +64,8 @@ namespace pika { namespace parallel { namespace util {
     private:
         template <typename Iter>
         friend PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr bool
-        tag_fallback_invoke(
-            pika::parallel::util::loop_optimization_t<ExPolicy>, Iter, Iter)
+            tag_fallback_invoke(
+                pika::parallel::util::loop_optimization_t<ExPolicy>, Iter, Iter)
         {
             return false;
         }

@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -17,6 +16,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,13 +47,13 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iterator>
     struct chunk_size_iterator
       : public pika::util::iterator_facade<chunk_size_iterator<Iterator>,
-            pika::tuple<Iterator, std::size_t> const,
+            std::tuple<Iterator, std::size_t> const,
             chunk_size_iterator_category_t<Iterator>>
     {
     private:
         using base_type =
             pika::util::iterator_facade<chunk_size_iterator<Iterator>,
-                pika::tuple<Iterator, std::size_t> const,
+                std::tuple<Iterator, std::size_t> const,
                 chunk_size_iterator_category_t<Iterator>>;
 
         PIKA_HOST_DEVICE static constexpr std::size_t get_last_chunk_size(
@@ -90,20 +90,20 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     private:
         PIKA_HOST_DEVICE Iterator& iterator() noexcept
         {
-            return pika::get<0>(data_);
+            return std::get<0>(data_);
         }
         PIKA_HOST_DEVICE constexpr Iterator iterator() const noexcept
         {
-            return pika::get<0>(data_);
+            return std::get<0>(data_);
         }
 
         PIKA_HOST_DEVICE std::size_t& chunk() noexcept
         {
-            return pika::get<1>(data_);
+            return std::get<1>(data_);
         }
         PIKA_HOST_DEVICE constexpr std::size_t chunk() const noexcept
         {
-            return pika::get<1>(data_);
+            return std::get<1>(data_);
         }
 
     protected:
@@ -217,7 +217,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         }
 
     private:
-        pika::tuple<Iterator, std::size_t> data_;
+        std::tuple<Iterator, std::size_t> data_;
         std::size_t chunk_size_ = 0;
         std::size_t last_chunk_size_ = 0;
         std::size_t count_ = 0;
@@ -228,13 +228,13 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iterator>
     struct chunk_size_idx_iterator
       : public pika::util::iterator_facade<chunk_size_idx_iterator<Iterator>,
-            pika::tuple<Iterator, std::size_t, std::size_t> const,
+            std::tuple<Iterator, std::size_t, std::size_t> const,
             chunk_size_iterator_category_t<Iterator>>
     {
     private:
         using base_type =
             pika::util::iterator_facade<chunk_size_idx_iterator<Iterator>,
-                pika::tuple<Iterator, std::size_t, std::size_t> const,
+                std::tuple<Iterator, std::size_t, std::size_t> const,
                 chunk_size_iterator_category_t<Iterator>>;
 
         PIKA_HOST_DEVICE static constexpr std::size_t get_last_chunk_size(
@@ -271,30 +271,30 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     private:
         PIKA_HOST_DEVICE Iterator& iterator() noexcept
         {
-            return pika::get<0>(data_);
+            return std::get<0>(data_);
         }
         PIKA_HOST_DEVICE constexpr Iterator iterator() const noexcept
         {
-            return pika::get<0>(data_);
+            return std::get<0>(data_);
         }
 
         PIKA_HOST_DEVICE std::size_t& chunk() noexcept
         {
-            return pika::get<1>(data_);
+            return std::get<1>(data_);
         }
         PIKA_HOST_DEVICE constexpr std::size_t chunk() const noexcept
         {
-            return pika::get<1>(data_);
+            return std::get<1>(data_);
         }
 
         PIKA_HOST_DEVICE std::size_t& base_index() noexcept
         {
-            return pika::get<2>(data_);
+            return std::get<2>(data_);
         }
 
         PIKA_HOST_DEVICE constexpr std::size_t base_index() const noexcept
         {
-            return pika::get<2>(data_);
+            return std::get<2>(data_);
         }
 
     protected:
@@ -411,7 +411,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         }
 
     private:
-        pika::tuple<Iterator, std::size_t, std::size_t> data_;
+        std::tuple<Iterator, std::size_t, std::size_t> data_;
         std::size_t chunk_size_ = 0;
         std::size_t last_chunk_size_ = 0;
         std::size_t count_ = 0;

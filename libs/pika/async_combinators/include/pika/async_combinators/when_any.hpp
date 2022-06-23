@@ -123,7 +123,6 @@ namespace pika {
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_combinators/when_any.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/futures/future.hpp>
@@ -141,6 +140,7 @@ namespace pika {
 #include <cstddef>
 #include <iterator>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -276,12 +276,12 @@ namespace pika {
                 Tuple& tuple, pika::util::index_pack<Is...>) const
             {
                 int const _sequencer[] = {
-                    (((*this)(pika::get<Is>(tuple))), 0)...};
+                    (((*this)(std::get<Is>(tuple))), 0)...};
                 (void) _sequencer;
             }
 
             template <typename... Ts>
-            PIKA_FORCEINLINE void apply(pika::tuple<Ts...>& sequence) const
+            PIKA_FORCEINLINE void apply(std::tuple<Ts...>& sequence) const
             {
                 apply(sequence, pika::util::make_index_pack_t<sizeof...(Ts)>());
             }
@@ -414,7 +414,7 @@ namespace pika {
 
     inline auto when_any()
     {
-        return pika::make_ready_future(pika::when_any_result<pika::tuple<>>());
+        return pika::make_ready_future(pika::when_any_result<std::tuple<>>());
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -442,11 +442,11 @@ namespace pika {
         typename Enable = std::enable_if_t<!(
             pika::traits::is_future_range_v<T> && sizeof...(Ts) == 0)>>
     pika::future<
-        pika::when_any_result<pika::tuple<pika::traits::acquire_future_t<T>,
+        pika::when_any_result<std::tuple<pika::traits::acquire_future_t<T>,
             pika::traits::acquire_future_t<Ts>...>>>
     when_any(T&& t, Ts&&... ts)
     {
-        using result_type = pika::tuple<pika::traits::acquire_future_t<T>,
+        using result_type = std::tuple<pika::traits::acquire_future_t<T>,
             pika::traits::acquire_future_t<Ts>...>;
 
         pika::traits::acquire_future_disp func;

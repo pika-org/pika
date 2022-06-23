@@ -20,15 +20,15 @@
 #include <vector>
 
 using pika::future;
-using pika::get;
 using pika::make_ready_future;
-using pika::make_tuple;
-using pika::tuple;
 using pika::traits::future_traits;
 using pika::traits::is_future;
 using pika::util::map_pack;
 using pika::util::spread_this;
 using pika::util::traverse_pack;
+using std::get;
+using std::make_tuple;
+using std::tuple;
 
 struct all_map_float
 {
@@ -61,12 +61,12 @@ struct all_map
 static void test_mixed_traversal()
 {
     {
-        auto res = map_pack(all_map_float{}, 0, 1.f, pika::make_tuple(1.f, 3),
+        auto res = map_pack(all_map_float{}, 0, 1.f, std::make_tuple(1.f, 3),
             std::vector<std::vector<int>>{{1, 2}, {4, 5}},
             std::vector<std::vector<float>>{{1.f, 2.f}, {4.f, 5.f}}, 2);
 
-        auto expected = pika::make_tuple(    // ...
-            1.f, 2.f, pika::make_tuple(2.f, 4.f),
+        auto expected = std::make_tuple(    // ...
+            1.f, 2.f, std::make_tuple(2.f, 4.f),
             std::vector<std::vector<float>>{{2.f, 3.f}, {5.f, 6.f}},
             std::vector<std::vector<float>>{{2.f, 3.f}, {5.f, 6.f}}, 3.f);
 
@@ -89,14 +89,14 @@ static void test_mixed_traversal()
 
     {
         auto res = map_pack(my_mapper{}, 0, 1.f,
-            pika::make_tuple(1.f, 3,
+            std::make_tuple(1.f, 3,
                 std::vector<std::vector<int>>{{1, 2}, {4, 5}},
                 std::vector<std::vector<float>>{{1.f, 2.f}, {4.f, 5.f}}),
             2);
 
-        auto expected = pika::make_tuple(    // ...
+        auto expected = std::make_tuple(    // ...
             1.f, 1.f,
-            pika::make_tuple(1.f, 4.f,
+            std::make_tuple(1.f, 4.f,
                 std::vector<std::vector<float>>{{2.f, 3.f}, {5.f, 6.f}},
                 std::vector<std::vector<float>>{{1.f, 2.f}, {4.f, 5.f}}),
             3.f);
@@ -114,7 +114,7 @@ static void test_mixed_traversal()
                 count = el;
             },
             1,
-            pika::make_tuple(
+            std::make_tuple(
                 2, 3, std::vector<std::vector<int>>{{4, 5}, {6, 7}}));
 
         PIKA_TEST_EQ(count, 7);
@@ -140,7 +140,7 @@ static void test_mixed_early_unwrapping()
             0, 1, make_ready_future(3),
             make_tuple(make_ready_future(4), make_ready_future(5)));
 
-        auto expected = pika::make_tuple(0, 1, 3, pika::make_tuple(4, 5));
+        auto expected = std::make_tuple(0, 1, 3, std::make_tuple(4, 5));
 
         static_assert(std::is_same<decltype(res), decltype(expected)>::value,
             "Type mismatch!");
@@ -272,15 +272,14 @@ struct my_int_mapper
 static void test_mixed_fall_through()
 {
     traverse_pack(my_int_mapper{}, int(0),
-        std::vector<pika::tuple<float, float>>{pika::make_tuple(1.f, 2.f)},
-        pika::make_tuple(std::vector<float>{1.f, 2.f}));
+        std::vector<std::tuple<float, float>>{std::make_tuple(1.f, 2.f)},
+        std::make_tuple(std::vector<float>{1.f, 2.f}));
 
     traverse_pack(my_int_mapper{}, int(0),
-        std::vector<std::vector<float>>{{1.f, 2.f}},
-        pika::make_tuple(1.f, 2.f));
+        std::vector<std::vector<float>>{{1.f, 2.f}}, std::make_tuple(1.f, 2.f));
 
     auto res1 = map_pack(my_int_mapper{}, int(0),
-        std::vector<std::vector<float>>{{1.f, 2.f}}, pika::make_tuple(77.f, 2));
+        std::vector<std::vector<float>>{{1.f, 2.f}}, std::make_tuple(77.f, 2));
 
     auto res2 = map_pack(
         [](int) {
@@ -502,7 +501,7 @@ static void test_strategic_traverse()
         std::unique_ptr<int> ptr1(new int(6));
         std::unique_ptr<int> ptr2(new int(7));
 
-        pika::tuple<std::unique_ptr<int> const&, std::unique_ptr<int> const&>
+        std::tuple<std::unique_ptr<int> const&, std::unique_ptr<int> const&>
             ref = map_pack(
                 [](std::unique_ptr<int> const& ref)
                     -> std::unique_ptr<int> const& {
@@ -711,10 +710,10 @@ static void test_strategic_tuple_like_traverse()
     // Make it possible to pass tuples containing move only objects
     // in as reference, while returning those as reference.
     {
-        auto value = pika::make_tuple(
+        auto value = std::make_tuple(
             std::unique_ptr<int>(new int(6)), std::unique_ptr<int>(new int(7)));
 
-        pika::tuple<std::unique_ptr<int> const&, std::unique_ptr<int> const&>
+        std::tuple<std::unique_ptr<int> const&, std::unique_ptr<int> const&>
             ref = map_pack(
                 [](std::unique_ptr<int> const& ref)
                     -> std::unique_ptr<int> const& {
@@ -805,8 +804,8 @@ static void test_spread_tuple_like_traverse()
 
     // 1:0 mappings
     {
-        using Result = decltype(map_pack(
-            zero_mapper{}, make_tuple(make_tuple(1, 2), 1), 1));
+        using Result = decltype(
+            map_pack(zero_mapper{}, make_tuple(make_tuple(1, 2), 1), 1));
         static_assert(std::is_void<Result>::value, "Failed...");
     }
 

@@ -21,7 +21,7 @@ int pika_main()
     auto zip_it_end = pika::util::make_zip_iterator(large.end());
 
     pika::for_each(pika::execution::par_simd, zip_it_begin, zip_it_end,
-        [](auto& t) -> void { pika::get<0>(t) = 10.0; });
+        [](auto& t) -> void { std::get<0>(t) = 10.0; });
 
     PIKA_TEST_EQ(std::count(large.begin(), large.end(), 10.0),
         std::ptrdiff_t(large.size()));

@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/debugging/print.hpp>
 #include <pika/schedulers/lockfree_queue_backends.hpp>
 #include <pika/threading_base/print.hpp>
@@ -31,6 +30,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <tuple>
 #include <unordered_set>
 #include <utility>
 #include <vector>

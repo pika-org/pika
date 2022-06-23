@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <pika/datastructures/tuple.hpp>
-
+#include <tuple>
 #include <type_traits>
 
 namespace pika { namespace util {
@@ -18,13 +17,13 @@ namespace pika { namespace util {
         struct tuple_first_argument;
 
         template <>
-        struct tuple_first_argument<pika::tuple<>>
+        struct tuple_first_argument<std::tuple<>>
         {
             using type = std::false_type;
         };
 
         template <typename Arg0, typename... Args>
-        struct tuple_first_argument<pika::tuple<Arg0, Args...>>
+        struct tuple_first_argument<std::tuple<Arg0, Args...>>
         {
             using type = typename std::decay<Arg0>::type;
         };

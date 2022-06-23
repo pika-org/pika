@@ -7,13 +7,13 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/type_support/pack.hpp>
 #include <pika/type_support/void_guard.hpp>
 
 #include <cstddef>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -23,7 +23,7 @@ namespace pika { namespace util {
         template <typename Tuple>
         struct fused_index_pack
           : make_index_pack<
-                pika::tuple_size<typename std::decay<Tuple>::type>::value>
+                std::tuple_size<typename std::decay<Tuple>::type>::value>
         {
         };
 
@@ -34,14 +34,14 @@ namespace pika { namespace util {
         template <typename F, typename Tuple, std::size_t... Is>
         struct invoke_fused_result_impl<F, Tuple&, index_pack<Is...>>
           : util::invoke_result<F,
-                typename pika::tuple_element<Is, Tuple>::type&...>
+                typename std::tuple_element<Is, Tuple>::type&...>
         {
         };
 
         template <typename F, typename Tuple, std::size_t... Is>
         struct invoke_fused_result_impl<F, Tuple&&, index_pack<Is...>>
           : util::invoke_result<F,
-                typename pika::tuple_element<Is, Tuple>::type&&...>
+                typename std::tuple_element<Is, Tuple>::type&&...>
         {
         };
 
@@ -59,7 +59,7 @@ namespace pika { namespace util {
             invoke_fused_impl(index_pack<Is...>, F&& f, Tuple&& t)
         {
             return PIKA_INVOKE(
-                PIKA_FORWARD(F, f), pika::get<Is>(PIKA_FORWARD(Tuple, t))...);
+                PIKA_FORWARD(F, f), std::get<Is>(PIKA_FORWARD(Tuple, t))...);
         }
     }    // namespace detail
 

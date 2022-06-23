@@ -372,7 +372,7 @@ namespace pika { namespace execution { namespace experimental {
                     pika::util::index_pack<Is_...>, F_&& f, A_&& a, Tuple_&& t)
                 {
                     PIKA_INVOKE(PIKA_FORWARD(F_, f), PIKA_FORWARD(A_, a),
-                        pika::get<Is_>(PIKA_FORWARD(Tuple_, t))...);
+                        std::get<Is_>(PIKA_FORWARD(Tuple_, t))...);
                 }
 
                 static void set_state(std::atomic<thread_state>& tstate,
@@ -549,7 +549,7 @@ namespace pika { namespace execution { namespace experimental {
 
                 // Set the data for this parallel region
                 auto argument_pack =
-                    pika::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
+                    std::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
 
                 // Signal all worker threads to start partitioning work for
                 // themselves, and then starting the actual work.

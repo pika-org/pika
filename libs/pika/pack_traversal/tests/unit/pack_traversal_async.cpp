@@ -6,7 +6,6 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/pack_traversal/pack_traversal_async.hpp>
 #include <pika/testing.hpp>
 #include <pika/thread_support/atomic_count.hpp>
@@ -18,16 +17,17 @@
 #include <list>
 #include <memory>
 #include <set>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
-using pika::make_tuple;
-using pika::tuple;
 using pika::util::async_traverse_complete_tag;
 using pika::util::async_traverse_detach_tag;
 using pika::util::async_traverse_visit_tag;
 using pika::util::traverse_pack_async;
+using std::make_tuple;
+using std::tuple;
 
 /// A tag which isn't accepted by any mapper
 struct not_accepted_tag
@@ -303,11 +303,10 @@ static void test_async_mixed_traversal()
     using container_t = std::vector<std::size_t>;
 
     // Test hierarchies where container and tuple like types are mixed
-    test_async_traversal_base<4U>(
-        0U, pika::make_tuple(container_t{1U, 2U}), 3U);
+    test_async_traversal_base<4U>(0U, std::make_tuple(container_t{1U, 2U}), 3U);
 
     test_async_traversal_base<4U>(
-        pika::make_tuple(
+        std::make_tuple(
             0U, vector_of(not_accepted_tag{}), vector_of(vector_of(1U))),
         make_tuple(2U, 3U));
 

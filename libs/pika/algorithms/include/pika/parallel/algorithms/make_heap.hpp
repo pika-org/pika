@@ -102,7 +102,6 @@ namespace pika {
 
 #include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/bind_front.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/traits/is_invocable.hpp>
@@ -130,6 +129,7 @@ namespace pika {
 #include <iterator>
 #include <list>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -274,11 +274,11 @@ namespace pika { namespace parallel { inline namespace v1 {
                 std::vector<pika::future<void>> workitems;
                 std::list<std::exception_ptr> errors;
 
-                using tuple_type = pika::tuple<RndIter, std::size_t>;
+                using tuple_type = std::tuple<RndIter, std::size_t>;
 
                 auto op = [=](tuple_type const& t) {
                     sift_down_range(first, comp, proj, (std::size_t) n,
-                        pika::get<0>(t), pika::get<1>(t));
+                        std::get<0>(t), std::get<1>(t));
                 };
 
                 std::size_t const cores = execution::processing_units_count(
@@ -318,7 +318,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         // don't bother parallelizing and simply run sequentially
                         if (chunk_size * 2 > level_items)
                         {
-                            op(pika::make_tuple(first + start, level_items));
+                            op(std::make_tuple(first + start, level_items));
                         }
                         else
                         {
@@ -328,7 +328,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                             std::size_t cnt = 0;
                             while (cnt + chunk_size < level_items)
                             {
-                                shapes.push_back(pika::make_tuple(
+                                shapes.push_back(std::make_tuple(
                                     first + start - cnt, chunk_size));
                                 cnt += chunk_size;
                             }
@@ -336,7 +336,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                             // Schedule any left-over work
                             if (cnt < level_items)
                             {
-                                shapes.push_back(pika::make_tuple(
+                                shapes.push_back(std::make_tuple(
                                     first + start - cnt, level_items - cnt));
                             }
 

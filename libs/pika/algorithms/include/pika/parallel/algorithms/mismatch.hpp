@@ -289,8 +289,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                         [&f, &proj1, &proj2, &tok](
                             reference t, std::size_t i) mutable -> void {
                             if (!pika::util::invoke(f,
-                                    pika::util::invoke(proj1, pika::get<0>(t)),
-                                    pika::util::invoke(proj2, pika::get<1>(t))))
+                                    pika::util::invoke(proj1, std::get<0>(t)),
+                                    pika::util::invoke(proj2, std::get<1>(t))))
                             {
                                 tok.cancel(i);
                             }
@@ -398,7 +398,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         part_count, tok,
                         [&f, &tok](reference t, std::size_t i) mutable -> void {
                             if (!pika::util::invoke(
-                                    f, pika::get<0>(t), pika::get<1>(t)))
+                                    f, std::get<0>(t), std::get<1>(t)))
                             {
                                 tok.cancel(i);
                             }

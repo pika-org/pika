@@ -332,7 +332,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 // results for each partition and the second produces the
                 // overall result
 
-                using pika::get;
+                using std::get;
                 using pika::util::make_zip_iterator;
 
                 auto f3 = [op](zip_iterator part_begin, std::size_t part_size,

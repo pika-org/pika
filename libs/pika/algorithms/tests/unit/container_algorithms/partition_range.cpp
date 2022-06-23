@@ -93,7 +93,7 @@ struct random_fill
 ////////////////////////////////////////////////////////////////////////////
 void test_partition_sent()
 {
-    using pika::get;
+    using std::get;
     using DataType = int;
 
     int rand_base = std::rand();
@@ -134,7 +134,7 @@ void test_partition_sent(ExPolicy policy)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
     using DataType = int;
 
     int rand_base = std::rand();
@@ -172,7 +172,7 @@ void test_partition_sent(ExPolicy policy)
 template <typename DataType>
 void test_partition(DataType)
 {
-    using pika::get;
+    using std::get;
 
     int rand_base = std::rand();
     auto pred = [rand_base](
@@ -209,7 +209,7 @@ void test_partition(ExPolicy policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     int rand_base = std::rand();
     auto pred = [rand_base](
@@ -246,7 +246,7 @@ void test_partition_async(ExPolicy policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     int rand_base = std::rand();
     auto pred = [rand_base](

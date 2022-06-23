@@ -14,7 +14,6 @@
 #include <pika/assert.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
 #include <pika/coroutines/thread_enums.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/bulk.hpp>
 #include <pika/execution/executors/execution_parameters.hpp>
@@ -37,6 +36,7 @@
 #include <exception>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -469,7 +469,7 @@ namespace pika { namespace execution { namespace experimental {
                             (n + chunk_size - 1) / chunk_size;
 
                         // Store sent values in the operation state
-                        r.op_state->ts.template emplace<pika::tuple<Ts...>>(
+                        r.op_state->ts.template emplace<std::tuple<Ts...>>(
                             PIKA_FORWARD(Ts, ts)...);
 
                         // Initialize the queues for all worker threads so that
@@ -529,7 +529,7 @@ namespace pika { namespace execution { namespace experimental {
                 std::atomic<decltype(pika::util::size(shape))> tasks_remaining{
                     num_worker_threads};
                 pika::util::detail::prepend_t<
-                    value_types<pika::tuple, pika::detail::variant>,
+                    value_types<std::tuple, pika::detail::variant>,
                     pika::detail::monostate>
                     ts;
                 std::atomic<bool> exception_thrown{false};

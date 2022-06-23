@@ -182,7 +182,6 @@ namespace pika {
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/futures_factory.hpp>
@@ -202,6 +201,7 @@ namespace pika {
 #include <iterator>
 #include <memory>
 #include <mutex>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -301,12 +301,12 @@ namespace pika {
                 Tuple& tuple, util::index_pack<Is...>) const
             {
                 int const _sequencer[] = {
-                    (((*this)(pika::get<Is>(tuple))), 0)...};
+                    (((*this)(std::get<Is>(tuple))), 0)...};
                 (void) _sequencer;
             }
 
             template <typename... Ts>
-            PIKA_FORCEINLINE void apply(pika::tuple<Ts...>& sequence) const
+            PIKA_FORCEINLINE void apply(std::tuple<Ts...>& sequence) const
             {
                 apply(sequence, util::make_index_pack_t<sizeof...(Ts)>());
             }
@@ -484,10 +484,9 @@ namespace pika {
         return pika::when_some(n, PIKA_MOVE(values));
     }
 
-    inline pika::future<when_some_result<pika::tuple<>>> when_some(
-        std::size_t n)
+    inline pika::future<when_some_result<std::tuple<>>> when_some(std::size_t n)
     {
-        using result_type = pika::tuple<>;
+        using result_type = std::tuple<>;
 
         if (n == 0)
         {
@@ -504,11 +503,11 @@ namespace pika {
     typename std::enable_if<!(traits::is_future_range<T>::value &&
                                 sizeof...(Ts) == 0),
         pika::future<when_some_result<
-            pika::tuple<typename traits::acquire_future<T>::type,
+            std::tuple<typename traits::acquire_future<T>::type,
                 typename traits::acquire_future<Ts>::type...>>>>::type
     when_some(std::size_t n, T&& t, Ts&&... ts)
     {
-        using result_type = pika::tuple<traits::acquire_future_t<T>,
+        using result_type = std::tuple<traits::acquire_future_t<T>,
             traits::acquire_future_t<Ts>...>;
 
         if (n == 0)

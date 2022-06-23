@@ -9,7 +9,6 @@
 
 #include <pika/config.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/execution/executors/execution.hpp>
 #include <pika/executors/exception_list.hpp>
 #include <pika/executors/execution_policy.hpp>
@@ -23,6 +22,7 @@
 #include <execution>
 #endif
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 

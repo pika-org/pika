@@ -40,12 +40,12 @@ std::uint64_t add(
 struct when_all_wrapper
 {
     using data_type =
-        pika::tuple<pika::future<std::uint64_t>, pika::future<std::uint64_t>>;
+        std::tuple<pika::future<std::uint64_t>, pika::future<std::uint64_t>>;
 
     std::uint64_t operator()(pika::future<data_type> data) const
     {
         data_type v = data.get();
-        return pika::get<0>(v).get() + pika::get<1>(v).get();
+        return std::get<0>(v).get() + std::get<1>(v).get();
     }
 };
 

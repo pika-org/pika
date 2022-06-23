@@ -12,7 +12,6 @@
 #include <pika/async/dataflow.hpp>
 #endif
 #include <pika/async_combinators/wait_all.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/type_support/empty_function.hpp>
@@ -32,6 +31,7 @@
 #include <iterator>
 #include <list>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -123,7 +123,7 @@ namespace pika { namespace parallel { namespace util {
                 pika::util::begin(chunk_sizes);
 
             using tuple_type =
-                typename pika::tuple<typename data_type::value_type, FwdIter,
+                typename std::tuple<typename data_type::value_type, FwdIter,
                     std::size_t>;
 
             // schedule every chunk on a separate thread
@@ -135,7 +135,7 @@ namespace pika { namespace parallel { namespace util {
                 std::size_t chunk = (std::min)(count, *chunk_size_it);
                 PIKA_ASSERT(chunk != 0);
 
-                shape.push_back(pika::make_tuple(*data_it, first, chunk));
+                shape.push_back(std::make_tuple(*data_it, first, chunk));
 
                 count -= chunk;
                 std::advance(first, chunk);

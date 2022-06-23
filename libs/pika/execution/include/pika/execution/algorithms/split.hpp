@@ -18,7 +18,6 @@
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/datastructures/optional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
@@ -40,6 +39,7 @@
 #include <exception>
 #include <memory>
 #include <mutex>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -144,7 +144,7 @@ namespace pika { namespace execution { namespace experimental {
                 };
                 using value_type =
                     typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<pika::tuple,
+                        Sender>::template value_types<std::tuple,
                         pika::detail::variant>;
                 using error_type =
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
@@ -181,21 +181,21 @@ namespace pika { namespace execution { namespace experimental {
                     // here.
                     using value_type =
                         typename pika::execution::experimental::sender_traits<
-                            Sender>::template value_types<pika::tuple,
+                            Sender>::template value_types<std::tuple,
                             pika::detail::variant>;
 
                     template <typename... Ts>
                     friend auto tag_invoke(
                         set_value_t, split_receiver&& r, Ts&&... ts) noexcept
-                        -> decltype(std::declval<pika::detail::variant<
-                                        pika::detail::monostate, value_type>>()
-                                        .template emplace<value_type>(
-                                            pika::make_tuple<>(
-                                                PIKA_FORWARD(Ts, ts)...)),
+                        -> decltype(
+                            std::declval<pika::detail::variant<
+                                pika::detail::monostate, value_type>>()
+                                .template emplace<value_type>(
+                                    std::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
                             void())
                     {
                         r.state.v.template emplace<value_type>(
-                            pika::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
+                            std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
 
                         r.state.set_predecessor_done();
                     }

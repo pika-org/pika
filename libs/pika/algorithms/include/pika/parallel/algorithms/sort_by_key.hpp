@@ -8,13 +8,12 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/datastructures/tuple.hpp>
-
 #include <pika/parallel/algorithms/sort.hpp>
 #include <pika/parallel/util/zip_iterator.hpp>
 
 #include <algorithm>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -31,9 +30,9 @@ namespace pika { namespace parallel { inline namespace v1 {
         {
             template <typename Tuple>
             auto operator()(Tuple&& t) const
-                -> decltype(pika::get<0>(PIKA_FORWARD(Tuple, t)))
+                -> decltype(std::get<0>(PIKA_FORWARD(Tuple, t)))
             {
-                return pika::get<0>(PIKA_FORWARD(Tuple, t));
+                return std::get<0>(PIKA_FORWARD(Tuple, t));
             }
         };
         /// \endcond

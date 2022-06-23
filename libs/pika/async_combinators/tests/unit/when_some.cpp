@@ -44,7 +44,7 @@ void test_wait_for_two_out_of_five_futures()
     pika::future<int> f5 = pt5.get_future();
 
     using result_type =
-        pika::when_some_result<pika::tuple<pika::future<int>, pika::future<int>,
+        pika::when_some_result<std::tuple<pika::future<int>, pika::future<int>,
             pika::future<int>, pika::future<int>, pika::future<int>>>;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
@@ -57,11 +57,11 @@ void test_wait_for_two_out_of_five_futures()
     PIKA_TEST(!f5.valid());
 
     PIKA_TEST_EQ(result.indices.size(), count);
-    PIKA_TEST(!pika::get<0>(result.futures).is_ready());
-    PIKA_TEST(pika::get<1>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<2>(result.futures).is_ready());
-    PIKA_TEST(pika::get<3>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<4>(result.futures).is_ready());
+    PIKA_TEST(!std::get<0>(result.futures).is_ready());
+    PIKA_TEST(std::get<1>(result.futures).is_ready());
+    PIKA_TEST(!std::get<2>(result.futures).is_ready());
+    PIKA_TEST(std::get<3>(result.futures).is_ready());
+    PIKA_TEST(!std::get<4>(result.futures).is_ready());
 }
 
 void test_wait_for_three_out_of_five_futures()
@@ -83,7 +83,7 @@ void test_wait_for_three_out_of_five_futures()
     pt5();
 
     using result_type =
-        pika::when_some_result<pika::tuple<pika::future<int>, pika::future<int>,
+        pika::when_some_result<std::tuple<pika::future<int>, pika::future<int>,
             pika::future<int>, pika::future<int>, pika::future<int>>>;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
@@ -96,11 +96,11 @@ void test_wait_for_three_out_of_five_futures()
     PIKA_TEST(!f5.valid());
 
     PIKA_TEST_EQ(result.indices.size(), count);
-    PIKA_TEST(pika::get<0>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<1>(result.futures).is_ready());
-    PIKA_TEST(pika::get<2>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<3>(result.futures).is_ready());
-    PIKA_TEST(pika::get<4>(result.futures).is_ready());
+    PIKA_TEST(std::get<0>(result.futures).is_ready());
+    PIKA_TEST(!std::get<1>(result.futures).is_ready());
+    PIKA_TEST(std::get<2>(result.futures).is_ready());
+    PIKA_TEST(!std::get<3>(result.futures).is_ready());
+    PIKA_TEST(std::get<4>(result.futures).is_ready());
 }
 
 void test_wait_for_two_out_of_five_late_futures()
@@ -119,7 +119,7 @@ void test_wait_for_two_out_of_five_late_futures()
     pika::future<int> f5 = pt5.get_future();
 
     using result_type =
-        pika::when_some_result<pika::tuple<pika::future<int>, pika::future<int>,
+        pika::when_some_result<std::tuple<pika::future<int>, pika::future<int>,
             pika::future<int>, pika::future<int>, pika::future<int>>>;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
@@ -135,11 +135,11 @@ void test_wait_for_two_out_of_five_late_futures()
     result_type result = r.get();
 
     PIKA_TEST_EQ(result.indices.size(), count);
-    PIKA_TEST(!pika::get<0>(result.futures).is_ready());
-    PIKA_TEST(pika::get<1>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<2>(result.futures).is_ready());
-    PIKA_TEST(pika::get<3>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<4>(result.futures).is_ready());
+    PIKA_TEST(!std::get<0>(result.futures).is_ready());
+    PIKA_TEST(std::get<1>(result.futures).is_ready());
+    PIKA_TEST(!std::get<2>(result.futures).is_ready());
+    PIKA_TEST(std::get<3>(result.futures).is_ready());
+    PIKA_TEST(!std::get<4>(result.futures).is_ready());
 }
 
 void test_wait_for_two_out_of_five_deferred_futures()
@@ -158,7 +158,7 @@ void test_wait_for_two_out_of_five_deferred_futures()
         pika::async(pika::launch::deferred, &make_int_slowly);
 
     using result_type =
-        pika::when_some_result<pika::tuple<pika::future<int>, pika::future<int>,
+        pika::when_some_result<std::tuple<pika::future<int>, pika::future<int>,
             pika::future<int>, pika::future<int>, pika::future<int>>>;
     pika::future<result_type> r = pika::when_some(count, f1, f2, f3, f4, f5);
 
@@ -171,11 +171,11 @@ void test_wait_for_two_out_of_five_deferred_futures()
     result_type result = r.get();
 
     PIKA_TEST_EQ(result.indices.size(), count);
-    PIKA_TEST(pika::get<0>(result.futures).is_ready());
-    PIKA_TEST(pika::get<1>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<2>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<3>(result.futures).is_ready());
-    PIKA_TEST(!pika::get<4>(result.futures).is_ready());
+    PIKA_TEST(std::get<0>(result.futures).is_ready());
+    PIKA_TEST(std::get<1>(result.futures).is_ready());
+    PIKA_TEST(!std::get<2>(result.futures).is_ready());
+    PIKA_TEST(!std::get<3>(result.futures).is_ready());
+    PIKA_TEST(!std::get<4>(result.futures).is_ready());
 }
 
 template <class Container>

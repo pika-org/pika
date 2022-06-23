@@ -125,7 +125,6 @@ namespace pika {
 
 #include <pika/config.hpp>
 #include <pika/async_combinators/detail/throw_if_exceptional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/traits/acquire_shared_state.hpp>
 #include <pika/futures/traits/detail/future_traits.hpp>
@@ -142,6 +141,7 @@ namespace pika {
 #include <cstddef>
 #include <functional>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -238,8 +238,7 @@ namespace pika {
 
             template <std::size_t I>
             struct is_end
-              : std::integral_constant<bool,
-                    pika::tuple_size<Tuple>::value == I>
+              : std::integral_constant<bool, std::tuple_size<Tuple>::value == I>
             {
             };
 
@@ -306,8 +305,8 @@ namespace pika {
             PIKA_FORCEINLINE void await_range()
             {
                 await_range<I>(
-                    pika::util::begin(pika::util::unwrap_ref(pika::get<I>(t_))),
-                    pika::util::end(pika::util::unwrap_ref(pika::get<I>(t_))));
+                    pika::util::begin(pika::util::unwrap_ref(std::get<I>(t_))),
+                    pika::util::end(pika::util::unwrap_ref(std::get<I>(t_))));
             }
 
             // Current element is a simple future
@@ -316,7 +315,7 @@ namespace pika {
             {
                 pika::intrusive_ptr<wait_all_frame> this_(this);
                 auto next_future_data =
-                    pika::traits::detail::get_shared_state(pika::get<I>(t_));
+                    pika::traits::detail::get_shared_state(std::get<I>(t_));
 
                 if (next_future_data && !next_future_data->is_ready())
                 {
@@ -352,7 +351,7 @@ namespace pika {
                 else
                 {
                     using future_type = pika::util::decay_unwrap_t<
-                        typename pika::tuple_element<I, Tuple>::type>;
+                        typename std::tuple_element<I, Tuple>::type>;
 
                     if constexpr (is_future_or_shared_state_v<future_type>)
                     {
@@ -392,7 +391,7 @@ namespace pika {
     {
         if (!values.empty())
         {
-            using result_type = pika::tuple<std::vector<Future> const&>;
+            using result_type = std::tuple<std::vector<Future> const&>;
             using frame_type = pika::detail::wait_all_frame<result_type>;
 
             result_type data(values);
@@ -448,7 +447,7 @@ namespace pika {
     template <typename Future, std::size_t N>
     void wait_all_nothrow(std::array<Future, N> const& values)
     {
-        using result_type = pika::tuple<std::array<Future, N> const&>;
+        using result_type = std::tuple<std::array<Future, N> const&>;
         using frame_type = pika::detail::wait_all_frame<result_type>;
 
         result_type data(values);
@@ -560,7 +559,7 @@ namespace pika {
         if constexpr (sizeof...(Ts) != 0)
         {
             using result_type =
-                pika::tuple<traits::detail::shared_state_ptr_for_t<Ts>...>;
+                std::tuple<traits::detail::shared_state_ptr_for_t<Ts>...>;
             using frame_type = detail::wait_all_frame<result_type>;
 
             result_type values =

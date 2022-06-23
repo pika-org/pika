@@ -248,7 +248,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
                 Iter part_begin, std::size_t part_size, std::size_t) const
             {
-                using pika::get;
+                using std::get;
                 auto iters = part_begin.get_iterator_tuple();
                 util::copy_n<execution_policy_type>(
                     get<0>(iters), part_size, get<1>(iters));
@@ -318,7 +318,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         detail::distance(first, last),
                         copy_iteration<ExPolicy>(),
                         [](zip_iterator&& last) -> zip_iterator {
-                            using pika::get;
+                            using std::get;
                             auto iters = last.get_iterator_tuple();
                             util::copy_synchronize(
                                 get<0>(iters), get<1>(iters));
@@ -380,14 +380,14 @@ namespace pika { namespace parallel { inline namespace v1 {
                         pika::util::make_zip_iterator(first, dest), count,
                         [](zip_iterator part_begin, std::size_t part_size,
                             std::size_t) {
-                            using pika::get;
+                            using std::get;
 
                             auto iters = part_begin.get_iterator_tuple();
                             util::copy_n<ExPolicy>(
                                 get<0>(iters), part_size, get<1>(iters));
                         },
                         [](zip_iterator&& last) -> zip_iterator {
-                            using pika::get;
+                            using std::get;
                             auto iters = last.get_iterator_tuple();
                             util::copy_synchronize(
                                 get<0>(iters), get<1>(iters));
@@ -461,8 +461,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 std::shared_ptr<bool[]> flags(new bool[count]);
                 std::size_t init = 0;
 
-                using pika::get;
                 using pika::util::make_zip_iterator;
+                using std::get;
                 using scan_partitioner_type = util::scan_partitioner<ExPolicy,
                     util::in_out_result<FwdIter1, FwdIter3>, std::size_t>;
 

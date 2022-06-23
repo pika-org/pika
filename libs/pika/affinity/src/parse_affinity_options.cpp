@@ -6,7 +6,6 @@
 
 #include <pika/affinity/parse_affinity_options.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/topology/topology.hpp>
 
@@ -17,6 +16,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <tuple>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,15 +55,15 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     //                  index,       mask
-    using mask_info = pika::tuple<std::size_t, threads::detail::mask_type>;
+    using mask_info = std::tuple<std::size_t, threads::detail::mask_type>;
 
     inline std::size_t get_index(mask_info const& smi)
     {
-        return pika::get<0>(smi);
+        return std::get<0>(smi);
     }
     inline threads::detail::mask_cref_type get_mask(mask_info const& smi)
     {
-        return pika::get<1>(smi);
+        return std::get<1>(smi);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ namespace pika::detail {
         std::vector<mask_info> masks;
         for (std::int64_t index : b)
         {
-            masks.push_back(pika::make_tuple(static_cast<std::size_t>(index),
+            masks.push_back(std::make_tuple(static_cast<std::size_t>(index),
                 t.init_socket_affinity_mask_from_socket(
                     static_cast<std::size_t>(index))));
         }
@@ -86,7 +86,7 @@ namespace pika::detail {
         std::vector<mask_info> masks;
         for (std::int64_t index : b)
         {
-            masks.push_back(pika::make_tuple(static_cast<std::size_t>(index),
+            masks.push_back(std::make_tuple(static_cast<std::size_t>(index),
                 t.init_numa_node_affinity_mask_from_numa_node(
                     static_cast<std::size_t>(index))));
         }

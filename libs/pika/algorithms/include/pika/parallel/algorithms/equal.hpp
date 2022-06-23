@@ -293,8 +293,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                         [&f, &proj1, &proj2, &tok](zip_iterator const& curr) {
                             reference t = *curr;
                             if (!pika::util::invoke(f,
-                                    pika::util::invoke(proj1, pika::get<0>(t)),
-                                    pika::util::invoke(proj2, pika::get<1>(t))))
+                                    pika::util::invoke(proj1, std::get<0>(t)),
+                                    pika::util::invoke(proj2, std::get<1>(t))))
                             {
                                 tok.cancel();
                             }
@@ -362,7 +362,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         [&f, &tok](zip_iterator const& curr) mutable -> void {
                             reference t = *curr;
                             if (!PIKA_INVOKE(
-                                    f, pika::get<0>(t), pika::get<1>(t)))
+                                    f, std::get<0>(t), std::get<1>(t)))
                             {
                                 tok.cancel();
                             }

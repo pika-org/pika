@@ -14,9 +14,9 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/modules/futures.hpp>
 
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -232,27 +232,27 @@ namespace pika { namespace parallel { namespace util {
 
     template <typename... Ts>
     constexpr PIKA_FORCEINLINE in_out_out_result<Ts...> make_in_out_out_result(
-        pika::tuple<Ts...>&& t)
+        std::tuple<Ts...>&& t)
     {
-        static_assert(pika::tuple_size<pika::tuple<Ts...>>::value == 3,
+        static_assert(std::tuple_size<std::tuple<Ts...>>::value == 3,
             "size of tuple should be 3 to convert to in_out_out_result");
 
         using result_type = in_out_out_result<Ts...>;
 
-        return result_type{pika::get<0>(t), pika::get<1>(t), pika::get<2>(t)};
+        return result_type{std::get<0>(t), std::get<1>(t), std::get<2>(t)};
     }
 
     template <typename... Ts>
     pika::future<in_out_out_result<Ts...>> make_in_out_out_result(
-        pika::future<pika::tuple<Ts...>>&& f)
+        pika::future<std::tuple<Ts...>>&& f)
     {
-        static_assert(pika::tuple_size<pika::tuple<Ts...>>::value == 3,
+        static_assert(std::tuple_size<std::tuple<Ts...>>::value == 3,
             "size of tuple should be 3 to convert to in_out_out_result");
 
         using result_type = in_out_out_result<Ts...>;
 
         return pika::make_future<result_type>(
-            PIKA_MOVE(f), [](pika::tuple<Ts...>&& t) -> result_type {
+            PIKA_MOVE(f), [](std::tuple<Ts...>&& t) -> result_type {
                 return make_in_out_out_result(PIKA_MOVE(t));
             });
     }
@@ -305,35 +305,35 @@ namespace pika { namespace parallel { namespace util {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         template <typename ZipIter>
-        in_out_result<typename pika::tuple_element<0,
+        in_out_result<typename std::tuple_element<0,
                           typename ZipIter::iterator_tuple_type>::type,
-            typename pika::tuple_element<1,
+            typename std::tuple_element<1,
                 typename ZipIter::iterator_tuple_type>::type>
         get_in_out_result(ZipIter&& zipiter)
         {
             using iterator_tuple_type = typename ZipIter::iterator_tuple_type;
 
             using result_type = in_out_result<
-                typename pika::tuple_element<0, iterator_tuple_type>::type,
-                typename pika::tuple_element<1, iterator_tuple_type>::type>;
+                typename std::tuple_element<0, iterator_tuple_type>::type,
+                typename std::tuple_element<1, iterator_tuple_type>::type>;
 
             iterator_tuple_type t = zipiter.get_iterator_tuple();
-            return result_type{pika::get<0>(t), pika::get<1>(t)};
+            return result_type{std::get<0>(t), std::get<1>(t)};
         }
 
         template <typename ZipIter>
         pika::future<
-            in_out_result<typename pika::tuple_element<0,
+            in_out_result<typename std::tuple_element<0,
                               typename ZipIter::iterator_tuple_type>::type,
-                typename pika::tuple_element<1,
+                typename std::tuple_element<1,
                     typename ZipIter::iterator_tuple_type>::type>>
         get_in_out_result(pika::future<ZipIter>&& zipiter)
         {
             using iterator_tuple_type = typename ZipIter::iterator_tuple_type;
 
             using result_type = in_out_result<
-                typename pika::tuple_element<0, iterator_tuple_type>::type,
-                typename pika::tuple_element<1, iterator_tuple_type>::type>;
+                typename std::tuple_element<0, iterator_tuple_type>::type,
+                typename std::tuple_element<1, iterator_tuple_type>::type>;
 
             return pika::make_future<result_type>(
                 PIKA_MOVE(zipiter), [](ZipIter zipiter) {
@@ -342,28 +342,28 @@ namespace pika { namespace parallel { namespace util {
         }
 
         template <typename ZipIter>
-        min_max_result<typename pika::tuple_element<0,
+        min_max_result<typename std::tuple_element<0,
             typename ZipIter::iterator_tuple_type>::type>
         get_min_max_result(ZipIter&& zipiter)
         {
             using iterator_tuple_type = typename ZipIter::iterator_tuple_type;
 
             using result_type = min_max_result<
-                typename pika::tuple_element<0, iterator_tuple_type>::type>;
+                typename std::tuple_element<0, iterator_tuple_type>::type>;
 
             iterator_tuple_type t = zipiter.get_iterator_tuple();
-            return result_type{pika::get<0>(t), pika::get<1>(t)};
+            return result_type{std::get<0>(t), std::get<1>(t)};
         }
 
         template <typename ZipIter>
-        pika::future<min_max_result<typename pika::tuple_element<0,
+        pika::future<min_max_result<typename std::tuple_element<0,
             typename ZipIter::iterator_tuple_type>::type>>
         get_min_max_result(pika::future<ZipIter>&& zipiter)
         {
             using iterator_tuple_type = typename ZipIter::iterator_tuple_type;
 
             using result_type = min_max_result<
-                typename pika::tuple_element<0, iterator_tuple_type>::type>;
+                typename std::tuple_element<0, iterator_tuple_type>::type>;
 
             return pika::make_future<result_type>(
                 PIKA_MOVE(zipiter), [](ZipIter zipiter) {
@@ -372,42 +372,41 @@ namespace pika { namespace parallel { namespace util {
         }
 
         template <typename ZipIter>
-        in_in_out_result<typename pika::tuple_element<0,
+        in_in_out_result<typename std::tuple_element<0,
                              typename ZipIter::iterator_tuple_type>::type,
-            typename pika::tuple_element<1,
+            typename std::tuple_element<1,
                 typename ZipIter::iterator_tuple_type>::type,
-            typename pika::tuple_element<2,
+            typename std::tuple_element<2,
                 typename ZipIter::iterator_tuple_type>::type>
         get_in_in_out_result(ZipIter&& zipiter)
         {
             using iterator_tuple_type = typename ZipIter::iterator_tuple_type;
 
             using result_type = in_in_out_result<
-                typename pika::tuple_element<0, iterator_tuple_type>::type,
-                typename pika::tuple_element<1, iterator_tuple_type>::type,
-                typename pika::tuple_element<2, iterator_tuple_type>::type>;
+                typename std::tuple_element<0, iterator_tuple_type>::type,
+                typename std::tuple_element<1, iterator_tuple_type>::type,
+                typename std::tuple_element<2, iterator_tuple_type>::type>;
 
             iterator_tuple_type t = zipiter.get_iterator_tuple();
-            return result_type{
-                pika::get<0>(t), pika::get<1>(t), pika::get<2>(t)};
+            return result_type{std::get<0>(t), std::get<1>(t), std::get<2>(t)};
         }
 
         template <typename ZipIter>
         pika::future<
-            in_in_out_result<typename pika::tuple_element<0,
+            in_in_out_result<typename std::tuple_element<0,
                                  typename ZipIter::iterator_tuple_type>::type,
-                typename pika::tuple_element<1,
+                typename std::tuple_element<1,
                     typename ZipIter::iterator_tuple_type>::type,
-                typename pika::tuple_element<2,
+                typename std::tuple_element<2,
                     typename ZipIter::iterator_tuple_type>::type>>
         get_in_in_out_result(pika::future<ZipIter>&& zipiter)
         {
             using iterator_tuple_type = typename ZipIter::iterator_tuple_type;
 
             using result_type = in_in_out_result<
-                typename pika::tuple_element<0, iterator_tuple_type>::type,
-                typename pika::tuple_element<1, iterator_tuple_type>::type,
-                typename pika::tuple_element<2, iterator_tuple_type>::type>;
+                typename std::tuple_element<0, iterator_tuple_type>::type,
+                typename std::tuple_element<1, iterator_tuple_type>::type,
+                typename std::tuple_element<2, iterator_tuple_type>::type>;
 
             return pika::make_future<result_type>(
                 PIKA_MOVE(zipiter), [](ZipIter zipiter) {

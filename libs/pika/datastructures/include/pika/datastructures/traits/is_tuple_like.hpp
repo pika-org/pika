@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <pika/datastructures/tuple.hpp>
-
+#include <tuple>
 #include <type_traits>
 
 namespace pika::traits::detail {
@@ -18,7 +17,7 @@ namespace pika::traits::detail {
 
     template <typename T>
     struct is_tuple_like_impl<T,
-        std::void_t<decltype(pika::tuple_size<T>::value)>> : std::true_type
+        std::void_t<decltype(std::tuple_size<T>::value)>> : std::true_type
     {
     };
 

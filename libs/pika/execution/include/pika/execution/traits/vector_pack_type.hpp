@@ -9,9 +9,9 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_DATAPAR)
-#include <pika/datastructures/tuple.hpp>
 
 #include <cstddef>
+#include <tuple>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace parallel { namespace traits {
@@ -22,9 +22,9 @@ namespace pika { namespace parallel { namespace traits {
 
     // handle tuple<> transformations
     template <typename... T, std::size_t N, typename Abi>
-    struct vector_pack_type<pika::tuple<T...>, N, Abi>
+    struct vector_pack_type<std::tuple<T...>, N, Abi>
     {
-        using type = pika::tuple<typename vector_pack_type<T, N, Abi>::type...>;
+        using type = std::tuple<typename vector_pack_type<T, N, Abi>::type...>;
     };
 
     ///////////////////////////////////////////////////////////////////////////

@@ -92,7 +92,7 @@ namespace pika {
     ///       The future returned by \a when_all will not throw an exception,
     ///       but the futures held in the output collection may.
     template <typename... T>
-    pika::future<pika::tuple<pika::future<T>...>> when_all(T&&... futures);
+    pika::future<std::tuple<pika::future<T>...>> when_all(T&&... futures);
 
     /// The function \a when_all_n is an operator allowing to join on the result
     /// of all given futures. It AND-composes all future objects given and
@@ -134,7 +134,6 @@ namespace pika {
 
 #include <pika/config.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/futures/detail/future_data.hpp>
 #include <pika/futures/detail/future_transforms.hpp>
 #include <pika/futures/future.hpp>
@@ -148,6 +147,7 @@ namespace pika {
 
 #include <cstddef>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -168,14 +168,14 @@ namespace pika {
         };
 
         template <typename T>
-        struct when_all_result<pika::tuple<T>,
+        struct when_all_result<std::tuple<T>,
             std::enable_if_t<pika::traits::is_future_range_v<T>>>
         {
             using type = T;
 
-            static type call(pika::tuple<T>&& t) noexcept
+            static type call(std::tuple<T>&& t) noexcept
             {
-                return PIKA_MOVE(pika::get<0>(t));
+                return PIKA_MOVE(std::get<0>(t));
             }
         };
 
@@ -224,11 +224,11 @@ namespace pika {
 
         template <typename... T>
         typename async_when_all_frame<
-            pika::tuple<pika::traits::acquire_future_t<T>...>>::type
+            std::tuple<pika::traits::acquire_future_t<T>...>>::type
         when_all_impl(T&&... args)
         {
             using result_type =
-                pika::tuple<pika::traits::acquire_future_t<T>...>;
+                std::tuple<pika::traits::acquire_future_t<T>...>;
             using frame_type = async_when_all_frame<result_type>;
             using no_addref = typename frame_type::base_type::init_no_addref;
 
@@ -275,10 +275,10 @@ namespace pika {
                 begin, count));
     }
 
-    inline pika::future<pika::tuple<>>    //-V524
+    inline pika::future<std::tuple<>>    //-V524
     when_all()
     {
-        return pika::make_ready_future(pika::tuple<>());
+        return pika::make_ready_future(std::tuple<>());
     }
 }    // namespace pika
 #endif    // DOXYGEN

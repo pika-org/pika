@@ -732,7 +732,6 @@ namespace pika {
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
@@ -754,6 +753,7 @@ namespace pika {
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -767,56 +767,55 @@ namespace pika {
             ///////////////////////////////////////////////////////////////////////
             template <typename... Ts, std::size_t... Is>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void init_iteration(
-                pika::tuple<Ts...>& args, pika::util::index_pack<Is...>,
+                std::tuple<Ts...>& args, pika::util::index_pack<Is...>,
                 std::size_t part_index) noexcept
             {
                 int const _sequencer[] = {
-                    0, (pika::get<Is>(args).init_iteration(part_index), 0)...};
+                    0, (std::get<Is>(args).init_iteration(part_index), 0)...};
                 (void) _sequencer;
             }
 
             template <typename... Ts, std::size_t... Is, typename F, typename B>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void invoke_iteration(
-                pika::tuple<Ts...>& args, pika::util::index_pack<Is...>, F&& f,
+                std::tuple<Ts...>& args, pika::util::index_pack<Is...>, F&& f,
                 B part_begin)
             {
                 PIKA_INVOKE(PIKA_FORWARD(F, f), part_begin,
-                    pika::get<Is>(args).iteration_value()...);
+                    std::get<Is>(args).iteration_value()...);
             }
 
             template <typename... Ts, std::size_t... Is>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void next_iteration(
-                pika::tuple<Ts...>& args,
-                pika::util::index_pack<Is...>) noexcept
+                std::tuple<Ts...>& args, pika::util::index_pack<Is...>) noexcept
             {
                 int const _sequencer[] = {
-                    0, (pika::get<Is>(args).next_iteration(), 0)...};
+                    0, (std::get<Is>(args).next_iteration(), 0)...};
                 (void) _sequencer;
             }
 
             template <typename... Ts, std::size_t... Is>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void exit_iteration(
-                pika::tuple<Ts...>& args, pika::util::index_pack<Is...>,
+                std::tuple<Ts...>& args, pika::util::index_pack<Is...>,
                 std::size_t size) noexcept
             {
                 int const _sequencer[] = {
-                    0, (pika::get<Is>(args).exit_iteration(size), 0)...};
+                    0, (std::get<Is>(args).exit_iteration(size), 0)...};
                 (void) _sequencer;
             }
 
             ///////////////////////////////////////////////////////////////////////
             template <typename ExPolicy, typename F, typename S,
-                typename Tuple = pika::tuple<>>
+                typename Tuple = std::tuple<>>
             struct part_iterations;
 
             template <typename ExPolicy, typename F, typename S, typename... Ts>
-            struct part_iterations<ExPolicy, F, S, pika::tuple<Ts...>>
+            struct part_iterations<ExPolicy, F, S, std::tuple<Ts...>>
             {
                 using fun_type = std::decay_t<F>;
 
                 fun_type f_;
                 S stride_;
-                pika::tuple<Ts...> args_;
+                std::tuple<Ts...> args_;
 
                 template <typename F_, typename S_, typename Args>
                 part_iterations(F_&& f, S_&& stride, Args&& args)
@@ -890,7 +889,7 @@ namespace pika {
             };
 
             template <typename ExPolicy, typename F, typename S>
-            struct part_iterations<ExPolicy, F, S, pika::tuple<>>
+            struct part_iterations<ExPolicy, F, S, std::tuple<>>
             {
                 using fun_type = std::decay_t<F>;
 
@@ -1116,10 +1115,10 @@ namespace pika {
                     {
                         // we need to decay copy here to properly transport
                         // everything to a GPU device
-                        using args_type = pika::tuple<std::decay_t<Ts>...>;
+                        using args_type = std::tuple<std::decay_t<Ts>...>;
 
                         args_type args =
-                            pika::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
+                            std::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
 
                         return util::partitioner<ExPolicy>::call_with_index(
                             policy, first, size, stride,
@@ -1162,11 +1161,11 @@ namespace pika {
                     "boundaries.");
 
                 std::size_t size = parallel::v1::detail::distance(first, last);
-                auto&& t = pika::forward_as_tuple(PIKA_FORWARD(Args, args)...);
+                auto&& t = std::forward_as_tuple(PIKA_FORWARD(Args, args)...);
 
                 return for_loop_algo().call(PIKA_FORWARD(ExPolicy, policy),
-                    first, size, stride, pika::get<sizeof...(Args) - 1>(t),
-                    pika::get<Is>(t)...);
+                    first, size, stride, std::get<sizeof...(Args) - 1>(t),
+                    std::get<Is>(t)...);
             }
 
             // reshuffle arguments, last argument is function object, will go first
@@ -1192,11 +1191,11 @@ namespace pika {
                     "Requires at least forward iterator or integral loop "
                     "boundaries.");
 
-                auto&& t = pika::forward_as_tuple(PIKA_FORWARD(Args, args)...);
+                auto&& t = std::forward_as_tuple(PIKA_FORWARD(Args, args)...);
 
                 return for_loop_algo().call(PIKA_FORWARD(ExPolicy, policy),
-                    first, size, stride, pika::get<sizeof...(Args) - 1>(t),
-                    pika::get<Is>(t)...);
+                    first, size, stride, std::get<sizeof...(Args) - 1>(t),
+                    std::get<Is>(t)...);
             }
             /// \endcond
         }    // namespace detail

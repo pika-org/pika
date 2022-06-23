@@ -17,7 +17,6 @@
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/optional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
@@ -39,6 +38,7 @@
 #include <exception>
 #include <memory>
 #include <mutex>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -154,7 +154,7 @@ namespace pika::execution::experimental {
                 using value_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         typename pika::execution::experimental::sender_traits<
-                            Sender>::template value_types<pika::tuple,
+                            Sender>::template value_types<std::tuple,
                             pika::detail::variant>,
                         value_types_helper>,
                     pika::detail::monostate>;
@@ -202,7 +202,7 @@ namespace pika::execution::experimental {
                         pika::util::detail::transform_t<
                             typename pika::execution::experimental::
                                 sender_traits<Sender>::template value_types<
-                                    pika::tuple, pika::detail::variant>,
+                                    std::tuple, pika::detail::variant>,
                             value_types_helper>,
                         pika::detail::monostate>;
 
@@ -212,12 +212,12 @@ namespace pika::execution::experimental {
                         -> decltype(std::declval<pika::detail::variant<
                                         pika::detail::monostate, value_type>>()
                                         .template emplace<value_type>(
-                                            pika::make_tuple<>(
+                                            std::make_tuple<>(
                                                 PIKA_FORWARD(Ts, ts)...)),
                             void())
                     {
                         r.state->v.template emplace<value_type>(
-                            pika::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
+                            std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
                         r.state->set_predecessor_done();
                     }
                 };

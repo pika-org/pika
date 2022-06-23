@@ -13,7 +13,6 @@
 #include <pika/assert.hpp>
 #include <pika/async_mpi/mpi_future.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution_base/receiver.hpp>
@@ -25,6 +24,7 @@
 #include <pika/mpi_base/mpi.hpp>
 
 #include <exception>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -73,7 +73,7 @@ namespace pika { namespace mpi { namespace experimental {
                         std::holds_alternative<Result>(op_state.result));
                     set_value_request_callback_helper(status,
                         PIKA_MOVE(op_state.receiver),
-                        PIKA_MOVE(pika::get<Result>(op_state.result)));
+                        PIKA_MOVE(std::get<Result>(op_state.result)));
                 },
                 request);
         }
@@ -162,10 +162,10 @@ namespace pika { namespace mpi { namespace experimental {
                         transform_mpi_receiver&& r, Ts&&... ts) noexcept
                     {
                         using ts_element_type =
-                            pika::tuple<std::decay_t<Ts>...>;
+                            std::tuple<std::decay_t<Ts>...>;
                         r.op_state.ts.template emplace<ts_element_type>(
                             PIKA_FORWARD(Ts, ts)...);
-                        auto& t = pika::get<ts_element_type>(r.op_state.ts);
+                        auto& t = std::get<ts_element_type>(r.op_state.ts);
 
                         pika::detail::try_catch_exception_ptr(
                             [&]() {
@@ -222,7 +222,7 @@ namespace pika { namespace mpi { namespace experimental {
 
                 using ts_type = pika::util::detail::prepend_t<
                     typename pika::execution::experimental::sender_traits<
-                        std::decay_t<Sender>>::template value_types<pika::tuple,
+                        std::decay_t<Sender>>::template value_types<std::tuple,
                         pika::detail::variant>,
                     pika::detail::monostate>;
                 ts_type ts;

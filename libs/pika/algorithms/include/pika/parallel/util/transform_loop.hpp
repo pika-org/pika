@@ -7,7 +7,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/parallel/util/cancellation_token.hpp>
@@ -16,6 +15,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -556,7 +556,7 @@ namespace pika { namespace parallel { namespace util {
         {
             template <typename InIter1, typename InIter2, typename OutIter,
                 typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr pika::tuple<
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr std::tuple<
                 InIter1, InIter2, OutIter>
             call(InIter1 first1, std::size_t num, InIter2 first2, OutIter dest,
                 F&& f)
@@ -576,7 +576,7 @@ namespace pika { namespace parallel { namespace util {
                     *dest = PIKA_INVOKE(f, first1, first2);
                 }
 
-                return pika::make_tuple(
+                return std::make_tuple(
                     PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest));
             }
         };
@@ -591,7 +591,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename InIter1, typename InIter2, typename OutIter,
             typename F>
         friend PIKA_HOST_DEVICE
-            PIKA_FORCEINLINE constexpr pika::tuple<InIter1, InIter2, OutIter>
+            PIKA_FORCEINLINE constexpr std::tuple<InIter1, InIter2, OutIter>
             tag_fallback_invoke(
                 pika::parallel::util::transform_binary_loop_n_t<ExPolicy>,
                 InIter1 first1, std::size_t count, InIter2 first2, OutIter dest,
@@ -610,7 +610,7 @@ namespace pika { namespace parallel { namespace util {
     template <typename ExPolicy, typename InIter1, typename InIter2,
         typename OutIter, typename F>
     PIKA_HOST_DEVICE
-        PIKA_FORCEINLINE constexpr pika::tuple<InIter1, InIter2, OutIter>
+        PIKA_FORCEINLINE constexpr std::tuple<InIter1, InIter2, OutIter>
         transform_binary_loop_n(InIter1 first1, std::size_t count,
             InIter2 first2, OutIter dest, F&& f)
     {
@@ -627,7 +627,7 @@ namespace pika { namespace parallel { namespace util {
         {
             template <typename InIter1, typename InIter2, typename OutIter,
                 typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr pika::tuple<
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr std::tuple<
                 InIter1, InIter2, OutIter>
             call(InIter1 first1, std::size_t num, InIter2 first2, OutIter dest,
                 F&& f)
@@ -647,7 +647,7 @@ namespace pika { namespace parallel { namespace util {
                     *dest = PIKA_INVOKE(f, *first1, *first2);
                 }
 
-                return pika::make_tuple(
+                return std::make_tuple(
                     PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest));
             }
         };
@@ -662,7 +662,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename InIter1, typename InIter2, typename OutIter,
             typename F>
         friend PIKA_HOST_DEVICE
-            PIKA_FORCEINLINE constexpr pika::tuple<InIter1, InIter2, OutIter>
+            PIKA_FORCEINLINE constexpr std::tuple<InIter1, InIter2, OutIter>
             tag_fallback_invoke(
                 pika::parallel::util::transform_binary_loop_ind_n_t<ExPolicy>,
                 InIter1 first1, std::size_t count, InIter2 first2, OutIter dest,
@@ -681,7 +681,7 @@ namespace pika { namespace parallel { namespace util {
     template <typename ExPolicy, typename InIter1, typename InIter2,
         typename OutIter, typename F>
     PIKA_HOST_DEVICE
-        PIKA_FORCEINLINE constexpr pika::tuple<InIter1, InIter2, OutIter>
+        PIKA_FORCEINLINE constexpr std::tuple<InIter1, InIter2, OutIter>
         transform_binary_loop_ind_n(InIter1 first1, std::size_t count,
             InIter2 first2, OutIter dest, F&& f)
     {

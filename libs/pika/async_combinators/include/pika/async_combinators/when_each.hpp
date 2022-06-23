@@ -127,7 +127,6 @@ namespace pika {
 
 #include <pika/config.hpp>
 #include <pika/async_base/launch_policy.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/traits/acquire_future.hpp>
 #include <pika/futures/traits/detail/future_traits.hpp>
@@ -143,6 +142,7 @@ namespace pika {
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -166,8 +166,7 @@ namespace pika {
 
             template <std::size_t I>
             struct is_end
-              : std::integral_constant<bool,
-                    pika::tuple_size<Tuple>::value == I>
+              : std::integral_constant<bool, std::tuple_size<Tuple>::value == I>
             {
             };
 
@@ -195,7 +194,7 @@ namespace pika {
                 else
                 {
                     using future_type = pika::util::decay_unwrap_t<
-                        typename pika::tuple_element<I, Tuple>::type>;
+                        typename std::tuple_element<I, Tuple>::type>;
 
                     if constexpr (pika::traits::is_future_v<future_type> ||
                         pika::traits::is_ref_wrapped_future_v<future_type>)
@@ -210,7 +209,7 @@ namespace pika {
                                     future_type>,
                             "element must be future or range of futures");
 
-                        auto&& curr = pika::util::unwrap_ref(pika::get<I>(t_));
+                        auto&& curr = pika::util::unwrap_ref(std::get<I>(t_));
                         await_range<I>(
                             pika::util::begin(curr), pika::util::end(curr));
                     }
@@ -288,11 +287,11 @@ namespace pika {
             PIKA_FORCEINLINE void await_future()
             {
                 using future_type = pika::util::decay_unwrap_t<
-                    typename pika::tuple_element<I, Tuple>::type>;
+                    typename std::tuple_element<I, Tuple>::type>;
 
                 pika::intrusive_ptr<when_each_frame> this_(this);
 
-                future_type& fut = pika::get<I>(t_);
+                future_type& fut = std::get<I>(t_);
                 auto next_future_data = traits::detail::get_shared_state(fut);
                 if (next_future_data && !next_future_data->is_ready())
                 {
@@ -345,7 +344,7 @@ namespace pika {
         typename Enable = std::enable_if_t<pika::traits::is_future_v<Future>>>
     pika::future<void> when_each(F&& func, std::vector<Future>& lazy_values)
     {
-        using argument_type = pika::tuple<std::vector<Future>>;
+        using argument_type = std::tuple<std::vector<Future>>;
         using frame_type =
             detail::when_each_frame<argument_type, std::decay_t<F>>;
 
@@ -356,7 +355,7 @@ namespace pika {
             std::back_inserter(values), traits::acquire_future_disp());
 
         pika::intrusive_ptr<frame_type> p(
-            new frame_type(pika::forward_as_tuple(PIKA_MOVE(values)),
+            new frame_type(std::forward_as_tuple(PIKA_MOVE(values)),
                 PIKA_FORWARD(F, func), values.size()));
 
         p->template do_await<0>();
@@ -433,7 +432,7 @@ namespace pika {
         pika::future<void>>
     when_each(F&& f, Ts&&... ts)
     {
-        using argument_type = pika::tuple<traits::acquire_future_t<Ts>...>;
+        using argument_type = std::tuple<traits::acquire_future_t<Ts>...>;
         using frame_type =
             detail::when_each_frame<argument_type, std::decay_t<F>>;
 

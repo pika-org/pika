@@ -251,7 +251,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         part_count, tok,
                         [&pred, &tok, &proj1, &proj2](
                             reference t, std::size_t i) mutable -> void {
-                            using pika::get;
+                            using std::get;
                             if (PIKA_INVOKE(pred, PIKA_INVOKE(proj1, get<0>(t)),
                                     PIKA_INVOKE(proj2, get<1>(t))) ||
                                 PIKA_INVOKE(pred, PIKA_INVOKE(proj2, get<1>(t)),

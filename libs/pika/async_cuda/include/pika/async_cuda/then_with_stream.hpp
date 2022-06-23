@@ -17,7 +17,6 @@
 #include <pika/async_cuda/custom_lapack_api.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
 #include <pika/datastructures/optional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/then.hpp>
@@ -29,6 +28,7 @@
 #include <exception>
 #include <functional>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -98,7 +98,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     {
         PIKA_ASSERT(pika::detail::holds_alternative<Result>(op_state.result));
         pika::execution::experimental::set_value(PIKA_MOVE(op_state.receiver),
-            PIKA_MOVE(pika::get<Result>(op_state.result)));
+            PIKA_MOVE(pika::detail::get<Result>(op_state.result)));
     }
 
     template <typename OperationState>
@@ -124,7 +124,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                     pika::detail::holds_alternative<Result>(op_state.result));
                 set_value_event_callback_helper(status,
                     PIKA_MOVE(op_state.receiver),
-                    PIKA_MOVE(pika::get<Result>(op_state.result)));
+                    PIKA_MOVE(pika::detail::get<Result>(op_state.result)));
             },
             op_state.stream.value().get().get());
     }
@@ -421,7 +421,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
             using ts_type = pika::util::detail::prepend_t<
                 typename pika::execution::experimental::sender_traits<
-                    std::decay_t<Sender>>::template value_types<pika::tuple,
+                    std::decay_t<Sender>>::template value_types<std::tuple,
                     pika::detail::variant>,
                 pika::detail::monostate>;
             ts_type ts;

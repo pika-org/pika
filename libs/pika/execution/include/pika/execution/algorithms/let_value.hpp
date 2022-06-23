@@ -13,7 +13,6 @@
 #else
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -143,7 +142,7 @@ namespace pika { namespace execution { namespace experimental {
                 predecessor_operation_state_type predecessor_op_state;
 
                 using predecessor_ts_type = pika::util::detail::prepend_t<
-                    predecessor_value_types<pika::tuple, pika::detail::variant>,
+                    predecessor_value_types<std::tuple, pika::detail::variant>,
                     pika::detail::monostate>;
 
                 // Potential values returned from the predecessor sender
@@ -153,7 +152,7 @@ namespace pika { namespace execution { namespace experimental {
                 // in successor_sender_types to the receiver connected to the
                 // let_value_sender
                 pika::util::detail::prepend_t<
-                    successor_operation_state_types<pika::tuple,
+                    successor_operation_state_types<std::tuple,
                         pika::detail::variant>,
                     pika::detail::monostate>
                     successor_op_state;
@@ -260,7 +259,7 @@ namespace pika { namespace execution { namespace experimental {
                     // parent typedef is not instantiated early enough for use
                     // here.
                     using predecessor_ts_type = pika::util::detail::prepend_t<
-                        predecessor_value_types<pika::tuple,
+                        predecessor_value_types<std::tuple,
                             pika::detail::variant>,
                         pika::detail::monostate>;
 
@@ -270,7 +269,7 @@ namespace pika { namespace execution { namespace experimental {
                         pika::detail::try_catch_exception_ptr(
                             [&]() {
                                 op_state.predecessor_ts
-                                    .template emplace<pika::tuple<Ts...>>(
+                                    .template emplace<std::tuple<Ts...>>(
                                         PIKA_FORWARD(Ts, ts)...);
                                 pika::detail::visit(
                                     set_value_visitor{PIKA_MOVE(receiver),
@@ -287,7 +286,7 @@ namespace pika { namespace execution { namespace experimental {
                     friend auto tag_invoke(set_value_t,
                         let_value_predecessor_receiver&& r, Ts&&... ts) noexcept
                         -> decltype(std::declval<predecessor_ts_type>()
-                                        .template emplace<pika::tuple<Ts...>>(
+                                        .template emplace<std::tuple<Ts...>>(
                                             PIKA_FORWARD(Ts, ts)...),
                             void())
                     {

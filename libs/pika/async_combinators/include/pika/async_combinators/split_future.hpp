@@ -16,7 +16,7 @@ namespace pika {
     ///
     /// \param f    [in] A future holding an arbitrary sequence of values stored
     ///             in a tuple-like container. This facility supports
-    ///             \a pika::tuple<>, \a std::pair<T1, T2>, and
+    ///             \a std::tuple<>, \a std::pair<T1, T2>, and
     ///             \a std::array<T, N>
     ///
     /// \return     Returns an equivalent container (same container type as
@@ -62,7 +62,6 @@ namespace pika {
 #else    // DOXYGEN
 
 #include <pika/config.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/futures/detail/future_data.hpp>
@@ -107,7 +106,7 @@ namespace pika {
                             typename traits::future_traits<T>::type;
                         result_type* result = state->get_result();
                         this->base_type::set_value(
-                            PIKA_MOVE(pika::get<I>(*result)));
+                            PIKA_MOVE(std::get<I>(*result)));
                     },
                     [&](std::exception_ptr ep) {
                         this->base_type::set_exception(PIKA_MOVE(ep));
@@ -139,7 +138,7 @@ namespace pika {
         template <typename Result, typename Tuple, std::size_t I,
             typename Future>
         inline typename pika::traits::detail::shared_state_ptr<
-            typename pika::tuple_element<I, Tuple>::type>::type
+            typename std::tuple_element<I, Tuple>::type>::type
         extract_nth_continuation(Future& future)
         {
             using shared_state = split_nth_continuation<Result>;
@@ -154,10 +153,10 @@ namespace pika {
         ///////////////////////////////////////////////////////////////////////
         template <std::size_t I, typename Tuple>
         PIKA_FORCEINLINE
-            pika::future<typename pika::tuple_element<I, Tuple>::type>
+            pika::future<typename std::tuple_element<I, Tuple>::type>
             extract_nth_future(pika::future<Tuple>& future)
         {
-            using result_type = typename pika::tuple_element<I, Tuple>::type;
+            using result_type = typename std::tuple_element<I, Tuple>::type;
 
             return pika::traits::future_access<pika::future<result_type>>::
                 create(extract_nth_continuation<result_type, Tuple, I>(future));
@@ -165,10 +164,10 @@ namespace pika {
 
         template <std::size_t I, typename Tuple>
         PIKA_FORCEINLINE
-            pika::future<typename pika::tuple_element<I, Tuple>::type>
+            pika::future<typename std::tuple_element<I, Tuple>::type>
             extract_nth_future(pika::shared_future<Tuple>& future)
         {
-            using result_type = typename pika::tuple_element<I, Tuple>::type;
+            using result_type = typename std::tuple_element<I, Tuple>::type;
 
             return pika::traits::future_access<pika::future<result_type>>::
                 create(extract_nth_continuation<result_type, Tuple, I>(future));
@@ -176,18 +175,18 @@ namespace pika {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename... Ts, std::size_t... Is>
-        PIKA_FORCEINLINE pika::tuple<pika::future<Ts>...> split_future_helper(
-            pika::future<pika::tuple<Ts...>>&& f, pika::util::index_pack<Is...>)
+        PIKA_FORCEINLINE std::tuple<pika::future<Ts>...> split_future_helper(
+            pika::future<std::tuple<Ts...>>&& f, pika::util::index_pack<Is...>)
         {
-            return pika::make_tuple(extract_nth_future<Is>(f)...);
+            return std::make_tuple(extract_nth_future<Is>(f)...);
         }
 
         template <typename... Ts, std::size_t... Is>
-        PIKA_FORCEINLINE pika::tuple<pika::future<Ts>...> split_future_helper(
-            pika::shared_future<pika::tuple<Ts...>>&& f,
+        PIKA_FORCEINLINE std::tuple<pika::future<Ts>...> split_future_helper(
+            pika::shared_future<std::tuple<Ts...>>&& f,
             pika::util::index_pack<Is...>)
         {
-            return pika::make_tuple(extract_nth_future<Is>(f)...);
+            return std::make_tuple(extract_nth_future<Is>(f)...);
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -299,31 +298,31 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename... Ts>
-    PIKA_FORCEINLINE pika::tuple<pika::future<Ts>...> split_future(
-        pika::future<pika::tuple<Ts...>>&& f)
+    PIKA_FORCEINLINE std::tuple<pika::future<Ts>...> split_future(
+        pika::future<std::tuple<Ts...>>&& f)
     {
         return detail::split_future_helper(PIKA_MOVE(f),
             typename pika::util::make_index_pack<sizeof...(Ts)>::type());
     }
 
-    PIKA_FORCEINLINE pika::tuple<pika::future<void>> split_future(
-        pika::future<pika::tuple<>>&& f)
+    PIKA_FORCEINLINE std::tuple<pika::future<void>> split_future(
+        pika::future<std::tuple<>>&& f)
     {
-        return pika::make_tuple(pika::future<void>(PIKA_MOVE(f)));
+        return std::make_tuple(pika::future<void>(PIKA_MOVE(f)));
     }
 
     template <typename... Ts>
-    PIKA_FORCEINLINE pika::tuple<pika::future<Ts>...> split_future(
-        pika::shared_future<pika::tuple<Ts...>>&& f)
+    PIKA_FORCEINLINE std::tuple<pika::future<Ts>...> split_future(
+        pika::shared_future<std::tuple<Ts...>>&& f)
     {
         return detail::split_future_helper(PIKA_MOVE(f),
             typename pika::util::make_index_pack<sizeof...(Ts)>::type());
     }
 
-    PIKA_FORCEINLINE pika::tuple<pika::future<void>> split_future(
-        pika::shared_future<pika::tuple<>>&& f)
+    PIKA_FORCEINLINE std::tuple<pika::future<void>> split_future(
+        pika::shared_future<std::tuple<>>&& f)
     {
-        return pika::make_tuple(pika::make_future<void>(PIKA_MOVE(f)));
+        return std::make_tuple(pika::make_future<void>(PIKA_MOVE(f)));
     }
 
     ///////////////////////////////////////////////////////////////////////////

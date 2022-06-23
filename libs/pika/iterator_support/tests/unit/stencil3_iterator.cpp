@@ -7,12 +7,12 @@
 #include <pika/init.hpp>
 #include <pika/modules/iterator_support.hpp>
 #include <pika/testing.hpp>
-#include <pika/tuple.hpp>
 
 #include <iterator>
 #include <numeric>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -40,7 +40,7 @@ namespace test {
                 using element_type =
                     typename std::iterator_traits<Iterator>::reference;
                 using type =
-                    pika::tuple<element_type, element_type, element_type>;
+                    std::tuple<element_type, element_type, element_type>;
             };
 
             // it will dereference tuple(it-1, it, it+1)
@@ -123,7 +123,7 @@ void test_stencil3_iterator()
     std::ostringstream str;
 
     std::for_each(r.first, r.second, [&str](reference val) {
-        using pika::get;
+        using std::get;
         str << get<0>(val) << get<1>(val) << get<2>(val) << " ";
     });
 
@@ -143,7 +143,7 @@ namespace test {
             using value_type =
                 typename pika::util::invoke_result<F, element_type>::type;
 
-            using type = pika::tuple<value_type, element_type, value_type>;
+            using type = std::tuple<value_type, element_type, value_type>;
         };
 
         custom_stencil_transformer(F f)
@@ -186,7 +186,7 @@ void test_stencil3_iterator_custom()
     std::ostringstream str;
 
     std::for_each(r.first, r.second, [&str](reference val) {
-        using pika::get;
+        using std::get;
         str << get<0>(val) << get<1>(val) << get<2>(val) << " ";
     });
 

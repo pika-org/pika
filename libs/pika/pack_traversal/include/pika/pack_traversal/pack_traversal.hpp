@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <pika/datastructures/tuple.hpp>
 #include <pika/pack_traversal/detail/pack_traversal_impl.hpp>
 
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -18,7 +18,7 @@ namespace pika { namespace util {
     ///
     /// This function tries to visit all plain elements which may be wrapped in:
     /// - homogeneous containers (`std::vector`, `std::list`)
-    /// - heterogeneous containers `(pika::tuple`, `std::pair`, `std::array`)
+    /// - heterogeneous containers `(std::tuple`, `std::pair`, `std::array`)
     /// and re-assembles the pack with the result of the mapper.
     /// Mapping from one type to a different one is supported.
     ///
@@ -30,7 +30,7 @@ namespace pika { namespace util {
     ///    map_pack([](int value) {
     ///        return float(value);
     ///    },
-    ///    1, pika::make_tuple(2, std::vector<int>{3, 4}), 5);
+    ///    1, std::make_tuple(2, std::vector<int>{3, 4}), 5);
     ///    ```
     ///
     /// \throws       std::exception like objects which are thrown by an
@@ -43,7 +43,7 @@ namespace pika { namespace util {
     ///
     /// \returns      The mapped element or in case the pack contains
     ///               multiple elements, the pack is wrapped into
-    ///               a `pika::tuple`.
+    ///               a `std::tuple`.
     ///
     template <typename Mapper, typename... T>
     <unspecified> map_pack(Mapper&& mapper, T&&... pack);
@@ -68,7 +68,7 @@ namespace pika { namespace util {
     spread_this(T&&... args)
     {
         return detail::spreading::spread_box<typename std::decay<T>::type...>(
-            pika::make_tuple(PIKA_FORWARD(T, args)...));
+            std::make_tuple(PIKA_FORWARD(T, args)...));
     }
 
     /// Traverses the pack with the given visitor.

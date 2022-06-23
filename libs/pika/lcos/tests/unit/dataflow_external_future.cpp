@@ -7,7 +7,6 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/chrono.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution.hpp>
 #include <pika/functional.hpp>
@@ -25,6 +24,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -171,8 +171,8 @@ struct external_future_additional_argument_executor
             [&]() {
                 additional_argument a{};
                 pika::util::invoke_fused(std::forward<F>(f),
-                    pika::tuple_cat(
-                        pika::tie(a), std::forward<Futures>(futures)));
+                    std::tuple_cat(
+                        std::tie(a), std::forward<Futures>(futures)));
 
                 // Signal completion from another thread/task.
                 pika::intrusive_ptr<typename std::remove_pointer<
@@ -196,8 +196,8 @@ struct external_future_additional_argument_executor
             [&]() {
                 additional_argument a{};
                 auto&& r = pika::util::invoke_fused(std::forward<F>(f),
-                    pika::tuple_cat(
-                        pika::tie(a), std::forward<Futures>(futures)));
+                    std::tuple_cat(
+                        std::tie(a), std::forward<Futures>(futures)));
 
                 // Signal completion from another thread/task.
                 pika::intrusive_ptr<typename std::remove_pointer<

@@ -298,7 +298,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 std::shared_ptr<bool[]> flags(new bool[count]);
                 std::size_t init = 0u;
 
-                using pika::get;
+                using std::get;
                 using pika::util::make_zip_iterator;
                 using scan_partitioner_type =
                     util::scan_partitioner<ExPolicy, Iter, std::size_t, void,

@@ -13,7 +13,6 @@
 #else
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/optional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution_base/completion_scheduler.hpp>
 #include <pika/execution_base/receiver.hpp>
@@ -27,6 +26,7 @@
 #include <atomic>
 #include <cstddef>
 #include <exception>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -128,7 +128,7 @@ namespace pika { namespace execution { namespace experimental {
                 using value_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         typename pika::execution::experimental::sender_traits<
-                            Sender>::template value_types<pika::tuple,
+                            Sender>::template value_types<std::tuple,
                             pika::detail::variant>,
                         value_types_helper>,
                     pika::detail::monostate>;
@@ -194,7 +194,7 @@ namespace pika { namespace execution { namespace experimental {
                         pika::util::detail::transform_t<
                             typename pika::execution::experimental::
                                 sender_traits<Sender>::template value_types<
-                                    pika::tuple, pika::detail::variant>,
+                                    std::tuple, pika::detail::variant>,
                             value_types_helper>,
                         pika::detail::monostate>;
 
@@ -203,7 +203,7 @@ namespace pika { namespace execution { namespace experimental {
                         predecessor_sender_receiver&& r, Ts&&... ts) noexcept
                         -> decltype(std::declval<value_type>()
                                         .template emplace<
-                                            pika::tuple<std::decay_t<Ts>...>>(
+                                            std::tuple<std::decay_t<Ts>...>>(
                                             PIKA_FORWARD(Ts, ts)...),
                             void())
                     {
@@ -228,7 +228,7 @@ namespace pika { namespace execution { namespace experimental {
                 template <typename... Us>
                 void set_value_predecessor_sender(Us&&... us) noexcept
                 {
-                    ts.template emplace<pika::tuple<std::decay_t<Us>...>>(
+                    ts.template emplace<std::tuple<std::decay_t<Us>...>>(
                         PIKA_FORWARD(Us, us)...);
 #if defined(PIKA_HAVE_CXX17_COPY_ELISION)
                     // with_result_of is used to emplace the operation
