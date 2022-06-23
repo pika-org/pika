@@ -9,9 +9,9 @@
 
 #include <pika/barrier.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
+#include <pika/datastructures/optional.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/optional.hpp>
 #include <pika/program_options.hpp>
 #include <pika/testing.hpp>
 
