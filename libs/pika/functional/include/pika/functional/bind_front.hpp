@@ -142,7 +142,7 @@ namespace pika { namespace util {
 
         private:
             F _f;
-            util::member_pack_for<Ts...> _args;
+            util::detail::member_pack_for<Ts...> _args;
         };
     }    // namespace detail
 

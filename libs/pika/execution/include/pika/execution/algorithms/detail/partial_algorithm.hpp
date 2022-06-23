@@ -23,7 +23,7 @@ namespace pika {
     struct partial_algorithm_base<Tag, pika::util::index_pack<Is...>, Ts...>
     {
     private:
-        pika::util::member_pack_for<Ts...> ts;
+        pika::util::detail::member_pack_for<Ts...> ts;
 
     public:
         template <typename... Ts_>

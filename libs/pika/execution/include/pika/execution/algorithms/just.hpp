@@ -32,7 +32,7 @@ namespace pika { namespace execution { namespace experimental {
         {
             struct just_sender_type
             {
-                pika::util::member_pack_for<std::decay_t<Ts>...> ts;
+                pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts;
 
                 constexpr just_sender_type() = default;
 
@@ -70,11 +70,11 @@ namespace pika { namespace execution { namespace experimental {
                 struct operation_state
                 {
                     PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
-                    pika::util::member_pack_for<std::decay_t<Ts>...> ts;
+                    pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts;
 
                     template <typename Receiver_>
                     operation_state(Receiver_&& receiver,
-                        pika::util::member_pack_for<std::decay_t<Ts>...> ts)
+                        pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts)
                       : receiver(PIKA_FORWARD(Receiver_, receiver))
                       , ts(PIKA_MOVE(ts))
                     {
