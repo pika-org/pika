@@ -10,25 +10,25 @@
 
 #include <type_traits>
 
-namespace pika { namespace traits {
-    namespace detail {
-        template <typename T, typename Enable = void>
-        struct is_tuple_like_impl : std::false_type
-        {
-        };
+namespace pika::traits::detail {
+    template <typename T, typename Enable = void>
+    struct is_tuple_like_impl : std::false_type
+    {
+    };
 
-        template <typename T>
-        struct is_tuple_like_impl<T,
-            std::void_t<decltype(pika::tuple_size<T>::value)>> : std::true_type
-        {
-        };
-    }    // namespace detail
+    template <typename T>
+    struct is_tuple_like_impl<T,
+        std::void_t<decltype(pika::tuple_size<T>::value)>> : std::true_type
+    {
+    };
 
     /// Deduces to a true type if the given parameter T
     /// has a specific tuple like size.
     template <typename T>
-    struct is_tuple_like
-      : detail::is_tuple_like_impl<typename std::remove_cv<T>::type>
+    struct is_tuple_like : is_tuple_like_impl<typename std::remove_cv<T>::type>
     {
     };
-}}    // namespace pika::traits
+
+    template <typename T>
+    inline constexpr bool is_tuple_like_v = is_tuple_like<T>::value;
+}    // namespace pika::traits::detail

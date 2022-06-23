@@ -201,7 +201,7 @@ namespace pika { namespace util { namespace detail {
     template <bool HadMultipleArguments, typename T>
     using should_fuse_invoke = std::integral_constant<bool,
         (HadMultipleArguments &&
-            traits::is_tuple_like<typename std::decay<T>::type>::value)>;
+            traits::detail::is_tuple_like_v<typename std::decay<T>::type>)>;
 
     /// Invokes the callable object with the result:
     /// - If the result is a tuple-like type `invoke_fused` is used
