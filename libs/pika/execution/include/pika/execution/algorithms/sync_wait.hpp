@@ -198,10 +198,8 @@ namespace pika::this_thread::experimental {
             {
                 std::unique_lock<mutex_type> l(state.mtx);
                 state.set_called = true;
-#if defined(PIKA_COMPUTE_DEVICE_CODE)
-                pika::util::ignore_while_checking<decltype(l)> il(&l);
-                PIKA_UNUSED(il);
-#endif
+                [[maybe_unused]] pika::util::ignore_while_checking<decltype(l)>
+                    il(&l);
 
                 state.cond_var.notify_one();
             }
