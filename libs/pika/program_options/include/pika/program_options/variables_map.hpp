@@ -7,8 +7,8 @@
 #pragma once
 
 #include <pika/program_options/config.hpp>
-#include <pika/datastructures/any.hpp>
 
+#include <any>
 #include <map>
 #include <memory>
 #include <set>
@@ -55,7 +55,7 @@ namespace pika { namespace program_options {
           : m_defaulted(false)
         {
         }
-        variable_value(const pika::any_nonser& xv, bool xdefaulted)
+        variable_value(const std::any& xv, bool xdefaulted)
           : v(xv)
           , m_defaulted(xdefaulted)
         {
@@ -66,13 +66,13 @@ namespace pika { namespace program_options {
         template <class T>
         const T& as() const
         {
-            return pika::any_cast<const T&>(v);
+            return std::any_cast<const T&>(v);
         }
         /** @overload */
         template <class T>
         T& as()
         {
-            return pika::any_cast<T&>(v);
+            return std::any_cast<T&>(v);
         }
 
         /// Returns true if no value is stored.
@@ -81,13 +81,13 @@ namespace pika { namespace program_options {
             given, but has default value. */
         bool defaulted() const;
         /** Returns the contained value. */
-        const pika::any_nonser& value() const;
+        const std::any& value() const;
 
         /** Returns the contained value. */
-        pika::any_nonser& value();
+        std::any& value();
 
     private:
-        pika::any_nonser v;
+        std::any v;
         bool m_defaulted;
         // Internal reference to value semantic. We need to run
         // notifications when *final* values of options are known, and
@@ -197,12 +197,12 @@ namespace pika { namespace program_options {
         return m_defaulted;
     }
 
-    inline const pika::any_nonser& variable_value::value() const
+    inline const std::any& variable_value::value() const
     {
         return v;
     }
 
-    inline pika::any_nonser& variable_value::value()
+    inline std::any& variable_value::value()
     {
         return v;
     }

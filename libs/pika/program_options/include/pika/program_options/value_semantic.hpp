@@ -7,10 +7,10 @@
 #pragma once
 
 #include <pika/program_options/config.hpp>
-#include <pika/datastructures/any.hpp>
 #include <pika/program_options/errors.hpp>
 #include <pika/util/to_string.hpp>
 
+#include <any>
 #include <functional>
 #include <limits>
 #include <string>
@@ -54,17 +54,17 @@ namespace pika { namespace program_options {
             is desired. May be be called several times if value of the same
             option is specified more than once.
         */
-        virtual void parse(pika::any_nonser& value_store,
+        virtual void parse(std::any& value_store,
             const std::vector<std::string>& new_tokens, bool utf8) const = 0;
 
         /** Called to assign default value to 'value_store'. Returns
             true if default value is assigned, and false if no default
             value exists. */
-        virtual bool apply_default(pika::any_nonser& value_store) const = 0;
+        virtual bool apply_default(std::any& value_store) const = 0;
 
         /** Called when final value of an option is determined.
         */
-        virtual void notify(const pika::any_nonser& value_store) const = 0;
+        virtual void notify(const std::any& value_store) const = 0;
 
         virtual ~value_semantic() {}
     };
@@ -90,12 +90,12 @@ namespace pika { namespace program_options {
       : public value_semantic
     {
     private:    // base overrides
-        void parse(pika::any_nonser& value_store,
+        void parse(std::any& value_store,
             const std::vector<std::string>& new_tokens,
             bool utf8) const override;
 
     protected:    // interface for derived classes.
-        virtual void xparse(pika::any_nonser& value_store,
+        virtual void xparse(std::any& value_store,
             const std::vector<std::string>& new_tokens) const = 0;
     };
 
@@ -111,12 +111,12 @@ namespace pika { namespace program_options {
       : public value_semantic
     {
     private:    // base overrides
-        void parse(pika::any_nonser& value_store,
+        void parse(std::any& value_store,
             const std::vector<std::string>& new_tokens,
             bool utf8) const override;
 
     protected:    // interface for derived classes.
-        virtual void xparse(pika::any_nonser& value_store,
+        virtual void xparse(std::any& value_store,
             const std::vector<std::wstring>& new_tokens) const = 0;
     };
 
@@ -150,17 +150,17 @@ namespace pika { namespace program_options {
             the first string from 'new_tokens' to 'value_store', without
             any modifications.
          */
-        void xparse(pika::any_nonser& value_store,
+        void xparse(std::any& value_store,
             const std::vector<std::string>& new_tokens) const override;
 
         /** Does nothing. */
-        bool apply_default(pika::any_nonser&) const override
+        bool apply_default(std::any&) const override
         {
             return false;
         }
 
         /** Does nothing. */
-        void notify(const pika::any_nonser&) const override {}
+        void notify(const std::any&) const override {}
 
     private:
         bool m_zero_tokens;
@@ -208,7 +208,7 @@ namespace pika { namespace program_options {
         */
         typed_value* default_value(const T& v)
         {
-            m_default_value = pika::any_nonser(v);
+            m_default_value = std::any(v);
             m_default_value_as_text = pika::util::to_string(v);
             return this;
         }
@@ -221,7 +221,7 @@ namespace pika { namespace program_options {
         */
         typed_value* default_value(const T& v, const std::string& textual)
         {
-            m_default_value = pika::any_nonser(v);
+            m_default_value = std::any(v);
             m_default_value_as_text = textual;
             return this;
         }
@@ -232,7 +232,7 @@ namespace pika { namespace program_options {
         */
         typed_value* implicit_value(const T& v)
         {
-            m_implicit_value = pika::any_nonser(v);
+            m_implicit_value = std::any(v);
             m_implicit_value_as_text = pika::util::to_string(v);
             return this;
         }
@@ -256,7 +256,7 @@ namespace pika { namespace program_options {
         */
         typed_value* implicit_value(const T& v, const std::string& textual)
         {
-            m_implicit_value = pika::any_nonser(v);
+            m_implicit_value = std::any(v);
             m_implicit_value_as_text = textual;
             return this;
         }
@@ -349,7 +349,7 @@ namespace pika { namespace program_options {
 
         /** Creates an instance of the 'validator' class and calls
             its operator() to perform the actual conversion. */
-        void xparse(pika::any_nonser& value_store,
+        void xparse(std::any& value_store,
             const std::vector<std::basic_string<Char>>& new_tokens)
             const override;
 
@@ -357,7 +357,7 @@ namespace pika { namespace program_options {
             'default_value', stores that value into 'value_store'.
             Returns true if default value was stored.
         */
-        virtual bool apply_default(pika::any_nonser& value_store) const override
+        virtual bool apply_default(std::any& value_store) const override
         {
             if (!m_default_value.has_value())
             {
@@ -373,7 +373,7 @@ namespace pika { namespace program_options {
         /** If an address of variable to store value was specified
             when creating *this, stores the value there. Otherwise,
             does nothing. */
-        void notify(const pika::any_nonser& value_store) const override;
+        void notify(const std::any& value_store) const override;
 
     public:    // typed_value_base overrides
         const std::type_info& value_type() const override
@@ -384,12 +384,12 @@ namespace pika { namespace program_options {
     private:
         T* m_store_to;
 
-        // Default value is stored as pika::any_nonser and not
+        // Default value is stored as std::any and not
         // as boost::optional to avoid unnecessary instantiations.
         std::string m_value_name;
-        pika::any_nonser m_default_value;
+        std::any m_default_value;
         std::string m_default_value_as_text;
-        pika::any_nonser m_implicit_value;
+        std::any m_implicit_value;
         std::string m_implicit_value_as_text;
         bool m_composing, m_implicit, m_multitoken, m_zero_tokens, m_required;
         std::function<void(const T&)> m_notifier;

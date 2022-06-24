@@ -5,11 +5,11 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/program_options/config.hpp>
-#include <pika/datastructures/any.hpp>
 #include <pika/program_options/detail/cmdline.hpp>
 #include <pika/program_options/detail/convert.hpp>
 #include <pika/program_options/value_semantic.hpp>
 
+#include <any>
 #include <cctype>
 #include <cstddef>
 #include <map>
@@ -36,7 +36,7 @@ namespace pika { namespace program_options {
     }    // namespace
 
     void value_semantic_codecvt_helper<char>::parse(
-        pika::any_nonser& value_store,
+        std::any& value_store,
         const std::vector<std::string>& new_tokens, bool utf8) const
     {
         if (utf8)
@@ -58,7 +58,7 @@ namespace pika { namespace program_options {
     }
 
     void value_semantic_codecvt_helper<wchar_t>::parse(
-        pika::any_nonser& value_store,
+        std::any& value_store,
         const std::vector<std::string>& new_tokens, bool utf8) const
     {
         std::vector<wstring> tokens;
@@ -105,7 +105,7 @@ namespace pika { namespace program_options {
             return 1;
     }
 
-    void untyped_value::xparse(pika::any_nonser& value_store,
+    void untyped_value::xparse(std::any& value_store,
         const std::vector<std::string>& new_tokens) const
     {
         if (value_store.has_value())
@@ -130,12 +130,12 @@ namespace pika { namespace program_options {
     }
 
     /* Validates bool value.
-        pika::any_nonser of "1", "true", "yes", "on" will be converted to "1".
-        pika::any_nonser of "0", "false", "no", "off" will be converted to "0".
+        std::any of "1", "true", "yes", "on" will be converted to "1".
+        std::any of "0", "false", "no", "off" will be converted to "0".
         Case is ignored. The 'xs' vector can either be empty, in which
         case the value is 'true', or can contain explicit value.
     */
-    void validate(pika::any_nonser& v, const vector<string>& xs, bool*, int)
+    void validate(std::any& v, const vector<string>& xs, bool*, int)
     {
         check_first_occurrence(v);
         string s(get_single_string(xs, true));
@@ -144,9 +144,9 @@ namespace pika { namespace program_options {
             i = char(std::tolower(i));
 
         if (s.empty() || s == "on" || s == "yes" || s == "1" || s == "true")
-            v = pika::any_nonser(true);
+            v = std::any(true);
         else if (s == "off" || s == "no" || s == "0" || s == "false")
-            v = pika::any_nonser(false);
+            v = std::any(false);
         else
             throw invalid_bool_value(s);
     }
@@ -156,7 +156,7 @@ namespace pika { namespace program_options {
     // create auxiliary 'widen' routine to convert from char* into
     // needed string type, and that's more work.
     PIKA_EXPORT
-    void validate(pika::any_nonser& v, const vector<wstring>& xs, bool*, int)
+    void validate(std::any& v, const vector<wstring>& xs, bool*, int)
     {
         check_first_occurrence(v);
         wstring s(get_single_string(xs, true));
@@ -165,33 +165,33 @@ namespace pika { namespace program_options {
             i = wchar_t(tolower(i));
 
         if (s.empty() || s == L"on" || s == L"yes" || s == L"1" || s == L"true")
-            v = pika::any_nonser(true);
+            v = std::any(true);
         else if (s == L"off" || s == L"no" || s == L"0" || s == L"false")
-            v = pika::any_nonser(false);
+            v = std::any(false);
         else
             throw invalid_bool_value(convert_value(s));
     }
 
     PIKA_EXPORT
     void validate(
-        pika::any_nonser& v, const vector<string>& xs, std::string*, int)
+        std::any& v, const vector<string>& xs, std::string*, int)
     {
         check_first_occurrence(v);
-        v = pika::any_nonser(get_single_string(xs));
+        v = std::any(get_single_string(xs));
     }
 
     PIKA_EXPORT
     void validate(
-        pika::any_nonser& v, const vector<wstring>& xs, std::string*, int)
+        std::any& v, const vector<wstring>& xs, std::string*, int)
     {
         check_first_occurrence(v);
-        v = pika::any_nonser(get_single_string(xs));
+        v = std::any(get_single_string(xs));
     }
 
     namespace validators {
 
         PIKA_EXPORT
-        void check_first_occurrence(const pika::any_nonser& value)
+        void check_first_occurrence(const std::any& value)
         {
             if (value.has_value())
                 throw multiple_occurrences();

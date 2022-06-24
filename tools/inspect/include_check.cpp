@@ -246,6 +246,9 @@ namespace boost { namespace inspect {
         {"(\\bstd\\s*::\\s*optional\\b)", "std::optional", "optional"},
         {"(\\bstd\\s*::\\s*make_optional\\b)", "std::make_optional", "optional"},
         {"(\\bstd\\s*::\\s*nullopt\\b)", "std::nullopt", "optional"},
+        // any
+        {"(\\bstd\\s*::\\s*any\\b)", "std::any", "any"},
+        {"(\\bstd\\s*::\\s*any_cast\\b)", "std::any_cast", "any"},
         // system_error
         {"(\\bstd\\s*::\\s*error_code\\b)", "std::error_code", "system_error"},
         {"(\\bstd\\s*::\\s*error_condition\\b)", "std::error_condition",

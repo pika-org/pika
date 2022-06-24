@@ -7,12 +7,12 @@
 
 #include <pika/program_options/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/any.hpp>
 #include <pika/program_options/options_description.hpp>
 #include <pika/program_options/parsers.hpp>
 #include <pika/program_options/value_semantic.hpp>
 #include <pika/program_options/variables_map.hpp>
 
+#include <any>
 #include <cstddef>
 #include <map>
 #include <set>
@@ -122,7 +122,7 @@ namespace pika { namespace program_options {
             }
             if (m.count(key) == 0)
             {
-                pika::any_nonser def;
+                std::any def;
                 if (d.semantic()->apply_default(def))
                 {
                     m[key] = variable_value(def, true);
