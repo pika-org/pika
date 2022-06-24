@@ -1668,6 +1668,7 @@ endif()
 if(PIKA_WITH_PRECOMPILED_HEADERS)
   set(system_precompiled_headers
       <algorithm>
+      <any>
       <array>
       <atomic>
       <bitset>
@@ -1704,6 +1705,7 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
       <mutex>
       <new>
       <numeric>
+      <optional>
       <ostream>
       <random>
       <regex>
