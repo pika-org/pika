@@ -38,6 +38,8 @@ jobs:
               -DPIKA_WITH_MALLOC=system \
               -DPIKA_WITH_EXAMPLES=ON \
               -DPIKA_WITH_TESTS=OFF \
+              -DPIKA_WITH_COMPILER_WARNINGS=ON \
+              -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
               -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
 
     - name: Build
