@@ -10,7 +10,6 @@ set(datastructures_headers
     pika/datastructures/member_pack.hpp
     pika/datastructures/traits/is_tuple_like.hpp
     pika/datastructures/variant.hpp
-    pika/datastructures/variant_helper.hpp
 )
 
 set(datastructures_sources)
@@ -21,7 +20,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${datastructures_sources}
   HEADERS ${datastructures_headers}
-  EXCLUDE_FROM_GLOBAL_HEADER "pika/datastructures/variant_helper.hpp"
   MODULE_DEPENDENCIES pika_assertion pika_config pika_concepts pika_type_support
   CMAKE_SUBDIRS examples tests
 )

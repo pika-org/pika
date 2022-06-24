@@ -349,7 +349,7 @@ namespace pika { namespace variant_ns {
 #define PIKA_VARIANT_RETURN(...) \
   noexcept(noexcept(__VA_ARGS__)) -> decltype(__VA_ARGS__) { return __VA_ARGS__; }
 
-namespace pika { namespace variant_ns {
+namespace pika::variant_ns {
   namespace lib {
     template <typename T>
     struct identity { using type = T; };
@@ -861,12 +861,12 @@ namespace pika { namespace variant_ns {
     };
 
   }  // namespace lib
-}}  // namespace pika::variant_ns
+}  // namespace pika::variant_ns
 
 #undef PIKA_VARIANT_RETURN
 
 
-namespace pika { namespace variant_ns {
+namespace pika::variant_ns {
 
 #ifdef PIKA_VARIANT_RETURN_TYPE_DEDUCTION
 
@@ -2780,7 +2780,7 @@ namespace pika { namespace variant_ns {
 #undef DECLTYPE_AUTO
 #undef DECLTYPE_AUTO_RETURN
 
-}}  // namespace pika::variant_ns
+}  // namespace pika::variant_ns
 
 namespace std {
 
