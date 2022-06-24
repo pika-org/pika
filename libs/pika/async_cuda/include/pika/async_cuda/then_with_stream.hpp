@@ -110,7 +110,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 set_value_event_callback_helper(
                     status, PIKA_MOVE(op_state.receiver));
             },
-            op_state.stream.value().get().get());
+            op_state.stream.value().get());
     }
 
     template <typename Result, typename OperationState>
@@ -123,7 +123,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                     PIKA_MOVE(op_state.receiver),
                     PIKA_MOVE(pika::get<Result>(op_state.result)));
             },
-            op_state.stream.value().get().get());
+            op_state.stream.value().get());
     }
 
     template <typename Sender, typename F>

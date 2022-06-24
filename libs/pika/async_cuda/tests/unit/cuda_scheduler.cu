@@ -6,12 +6,22 @@
 
 #include <pika/cuda.hpp>
 #include <pika/execution.hpp>
+#include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <cstddef>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace cu = pika::cuda::experimental;
 namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
+
+__global__ void kernel(int* p, int i)
+{
+    p[i] = i * 2;
+}
 
 template <typename Scheduler>
 inline constexpr bool is_cuda_scheduler_v =
@@ -25,8 +35,10 @@ inline constexpr bool is_cuda_scheduler_v =
     static_assert(!is_cuda_scheduler_v<decltype(ex::get_completion_scheduler<  \
                       ex::set_value_t>(__VA_ARGS__))>)
 
-int main()
+int pika_main()
 {
+    pika::scoped_finalize sf;
+
     cu::cuda_pool pool{};
     cu::cuda_scheduler sched{pool};
 
@@ -108,4 +120,61 @@ int main()
         PIKA_TEST(ex::get_forward_progress_guarantee(sched) ==
             ex::forward_progress_guarantee::weakly_parallel);
     }
+
+    // Schedule work with the scheduler
+    {
+        cu::enable_user_polling poll("default");
+
+        int const n = 1000;
+        int* p;
+        cu::check_cuda_error(cudaMalloc(&p, sizeof(int) * n));
+
+        cu::cuda_pool pool{};
+        cu::cuda_scheduler sched{pool};
+
+        std::vector<ex::unique_any_sender<>> senders;
+        senders.reserve(n);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            using pika::execution::thread_priority;
+
+            senders.push_back(
+                ex::schedule(ex::with_priority(sched,
+                    i % 2 ? thread_priority::high : thread_priority::normal)) |
+                cu::then_with_stream([p, i](cudaStream_t stream) {
+                    kernel<<<1, 1, 0, stream>>>(p, i);
+                    cu::check_cuda_error(cudaGetLastError());
+                }));
+        }
+
+        // This should use the following:
+        //
+        //     tt::sync_wait(ex::when_all_vector(std::move(senders)));
+        //
+        // However, nvcc fails to compile it with an internal compiler error so
+        // we use the less efficient but working manual version of it.
+        for (auto& s : senders)
+        {
+            tt::sync_wait(std::move(s));
+        }
+
+        std::vector<int> s(n, 0);
+
+        cu::check_cuda_error(
+            cudaMemcpy(s.data(), p, sizeof(int) * n, cudaMemcpyDeviceToHost));
+        cu::check_cuda_error(cudaFree(p));
+
+        for (int i = 0; i < n; ++i)
+        {
+            PIKA_TEST_EQ(s[i], i * 2);
+        }
+    }
+
+    return 0;
+}
+
+int main(int argc, char** argv)
+{
+    PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
+    return pika::util::report_errors();
 }

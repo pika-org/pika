@@ -51,6 +51,13 @@ namespace pika::cuda::experimental::detail {
         using mutex_type = pika::lcos::local::spinlock;
         using event_callback_vector_type = std::vector<event_callback>;
 
+        // Background progress function for async CUDA operations. Checks for
+        // completed cudaEvent_t and calls the associated callback when ready.
+        // We first process events that have been added to the vector of events,
+        // which should be processed under a lock.  After that we process events
+        // that have been added to the lockfree queue. If an event from the
+        // queue is not ready it is added to the vector of events for later
+        // checking.
         pika::threads::policies::detail::polling_status poll()
         {
             using pika::threads::policies::detail::polling_status;
@@ -136,23 +143,22 @@ namespace pika::cuda::experimental::detail {
         }
 
         void add_to_event_callback_queue(
-            event_callback_function_type&& f, cudaStream_t stream)
+            event_callback_function_type&& f, cuda_stream const& stream)
         {
             cudaEvent_t event;
             if (!cuda_event_pool::get_event_pool().pop(event))
             {
-                PIKA_THROW_EXCEPTION(invalid_status, "add_event_callback",
-                    "could not get an event");
+                PIKA_THROW_EXCEPTION(invalid_status,
+                    "add_to_event_callback_queue", "could not get an event");
             }
-            check_cuda_error(cudaEventRecord(event, stream));
+            check_cuda_error(cudaEventRecord(event, stream.get()));
 
             event_callback continuation{event, PIKA_MOVE(f)};
 
             PIKA_ASSERT_MSG(get_register_polling_count() != 0,
                 "CUDA event polling has not been enabled on any pool. Make "
-                "sure "
-                "that CUDA event polling is enabled on at least one thread "
-                "pool.");
+                "sure that CUDA event polling is enabled on at least one "
+                "thread pool.");
 
             event_callback_queue.enqueue(PIKA_MOVE(continuation));
 
@@ -199,33 +205,65 @@ namespace pika::cuda::experimental::detail {
         event_callback_vector_type event_callback_vector;
     };
 
-    cuda_event_queue& get_cuda_event_queue()
+    class cuda_event_queue_holder
     {
-        static cuda_event_queue queue;
-        return queue;
+    public:
+        pika::threads::policies::detail::polling_status poll()
+        {
+            auto hp_status = hp_queue.poll();
+            auto np_status = np_queue.poll();
+
+            using pika::threads::policies::detail::polling_status;
+
+            return np_status == polling_status::busy ||
+                    hp_status == polling_status::busy ?
+                polling_status::busy :
+                polling_status::idle;
+        }
+
+        void add_to_event_callback_queue(
+            event_callback_function_type&& f, cuda_stream const& stream)
+        {
+            auto* queue = &np_queue;
+            if (stream.get_priority() >= pika::execution::thread_priority::high)
+            {
+                queue = &hp_queue;
+            }
+
+            queue->add_to_event_callback_queue(std::move(f), stream);
+        }
+
+        std::size_t get_work_count() const noexcept
+        {
+            return hp_queue.get_work_count() + np_queue.get_work_count();
+        }
+
+    private:
+        cuda_event_queue np_queue;
+        cuda_event_queue hp_queue;
+    };
+
+    cuda_event_queue_holder& get_cuda_event_queue_holder()
+    {
+        static cuda_event_queue_holder holder;
+        return holder;
     }
 
     void add_event_callback(
-        event_callback_function_type&& f, cudaStream_t stream)
+        event_callback_function_type&& f, cuda_stream const& stream)
     {
-        get_cuda_event_queue().add_to_event_callback_queue(
+        get_cuda_event_queue_holder().add_to_event_callback_queue(
             std::move(f), stream);
     }
 
-    // Background progress function for async CUDA operations. Checks for completed
-    // cudaEvent_t and calls the associated callback when ready. We first process
-    // events that have been added to the vector of events, which should be
-    // processed under a lock.  After that we process events that have been added to
-    // the lockfree queue. If an event from the queue is not ready it is added to
-    // the vector of events for later checking.
     pika::threads::policies::detail::polling_status poll()
     {
-        return get_cuda_event_queue().poll();
+        return get_cuda_event_queue_holder().poll();
     }
 
     std::size_t get_work_count()
     {
-        return get_cuda_event_queue().get_work_count();
+        return get_cuda_event_queue_holder().get_work_count();
     }
 
     // -------------------------------------------------------------
@@ -245,17 +283,7 @@ namespace pika::cuda::experimental::detail {
     {
 #if defined(PIKA_DEBUG)
         {
-            std::unique_lock<cuda_event_queue::mutex_type> lk(
-                detail::get_vector_mtx());
-            bool event_queue_empty =
-                get_event_callback_queue().size_approx() == 0;
-            bool event_vector_empty = get_event_callback_vector().empty();
-            lk.unlock();
-            PIKA_ASSERT_MSG(event_queue_empty,
-                "CUDA event polling was disabled while there are unprocessed "
-                "CUDA events. Make sure CUDA event polling is not disabled too "
-                "early.");
-            PIKA_ASSERT_MSG(event_vector_empty,
+            PIKA_ASSERT_MSG(get_work_count() == 0,
                 "CUDA event polling was disabled while there are unprocessed "
                 "CUDA events. Make sure CUDA event polling is not disabled too "
                 "early.");
