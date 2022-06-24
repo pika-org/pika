@@ -82,7 +82,9 @@ namespace pika { namespace debug {
             {
                 pika::threads::detail::thread_data* dummy =
                     pika::threads::detail::get_self_id_data();
-                os << dummy << " ";
+                os << hex<12, std::uintptr_t>(
+                          reinterpret_cast<std::uintptr_t>(dummy))
+                   << " ";
             }
             os << hex<12, std::thread::id>(std::this_thread::get_id())
 #ifdef DEBUGGING_PRINT_LINUX

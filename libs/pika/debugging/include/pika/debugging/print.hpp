@@ -66,7 +66,7 @@
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
-namespace pika { namespace debug {
+namespace NS_DEBUG {
 
     // ------------------------------------------------------------------
     // format as zero padded int
@@ -396,33 +396,56 @@ namespace pika { namespace debug {
         }
     };
 
+    struct empty_timed_var
+    {
+        constexpr bool trigger() const
+        {
+            return false;
+        }
+
+        constexpr double elapsed() const
+        {
+            return 0;
+        }
+    };
+
     template <typename... Args>
     struct timed_var
     {
         mutable std::chrono::steady_clock::time_point time_start_;
+        mutable std::chrono::steady_clock::time_point time_check_;
         double const delay_;
         std::tuple<Args...> const message_;
         //
         timed_var(double const& delay, Args const&... args)
           : time_start_(std::chrono::steady_clock::now())
+          , time_check_(time_start_)
           , delay_(delay)
           , message_(args...)
         {
         }
 
-        bool elapsed(std::chrono::steady_clock::time_point const& now) const
+        bool trigger() const
         {
+            auto now = std::chrono::steady_clock::now();
             double elapsed_ =
                 std::chrono::duration_cast<std::chrono::duration<double>>(
-                    now - time_start_)
+                    now - time_check_)
                     .count();
 
             if (elapsed_ > delay_)
             {
-                time_start_ = now;
+                time_check_ = now;
                 return true;
             }
             return false;
+        }
+
+        double elapsed() const
+        {
+            return std::chrono::duration_cast<std::chrono::duration<double>>(
+                std::chrono::steady_clock::now() - time_start_)
+                .count();
         }
 
         friend std::ostream& operator<<(
@@ -507,9 +530,9 @@ namespace pika { namespace debug {
 
         // @todo, return void so that timers have zero footprint when disabled
         template <typename... Args>
-        constexpr int make_timer(const double, Args const&...) const
+        constexpr empty_timed_var make_timer(const double, Args const&...) const
         {
-            return 0;
+            return empty_timed_var{};
         }
 
         template <typename Expr>
@@ -581,8 +604,7 @@ namespace pika { namespace debug {
         template <typename... T, typename... Args>
         void timed(timed_var<T...> const& init, Args const&... args) const
         {
-            auto now = std::chrono::steady_clock::now();
-            if (init.elapsed(now))
+            if (init.trigger())
             {
                 detail::timed(prefix_, init, args...);
             }
@@ -613,14 +635,14 @@ namespace pika { namespace debug {
             return T(args...);
         }
 
-        template <typename T>
-        void set(T& var, T const& val)
+        template <typename T, typename V>
+        void set(T& var, V const& val)
         {
             var = val;
         }
 
         template <typename... Args>
-        timed_var<Args...> make_timer(
+        constexpr timed_var<Args...> make_timer(
             const double delay, const Args... args) const
         {
             return timed_var<Args...>(delay, args...);
@@ -643,5 +665,5 @@ namespace pika { namespace debug {
         using base_type::base_type;
     };
 
-}}    // namespace pika::debug
+}    // namespace NS_DEBUG
 /// \endcond
