@@ -28,6 +28,11 @@
 namespace pika { namespace mpi { namespace experimental {
 
     // -----------------------------------------------------------------
+    // by convention the title is 7 chars (for alignment)
+    using print_on = debug::enable_print<false>;
+    static constexpr print_on mpi_debug("MPI_FUT");
+
+    // -----------------------------------------------------------------
     namespace detail {
 
         using request_callback_function_type =
@@ -37,21 +42,6 @@ namespace pika { namespace mpi { namespace experimental {
             request_callback_function_type&& f, MPI_Request req);
         PIKA_EXPORT void register_polling(pika::threads::thread_pool_base&);
         PIKA_EXPORT void unregister_polling(pika::threads::thread_pool_base&);
-
-    }    // namespace detail
-
-    // by convention the title is 7 chars (for alignment)
-    using print_on = debug::enable_print<false>;
-    static constexpr print_on mpi_debug("MPI_FUT");
-
-    namespace detail {
-
-        using mutex_type = pika::lcos::local::spinlock;
-
-        // mutex needed to protect mpi request vector, note that the
-        // mpi poll function takes place inside the main scheduling loop
-        // of pika and not on an pika worker thread, so we must use std:mutex
-        PIKA_EXPORT mutex_type& get_vector_mtx();
 
         // -----------------------------------------------------------------
         // An implementation of future_data for MPI
@@ -109,59 +99,39 @@ namespace pika { namespace mpi { namespace experimental {
         using future_data_ptr = memory::intrusive_ptr<future_data>;
 
         // -----------------------------------------------------------------
-        // a convenience structure to hold state vars
-        // used extensivey with debug::print to display rank etc
-        struct mpi_info
-        {
-            bool error_handler_initialized_ = false;
-            int rank_ = -1;
-            int size_ = -1;
-            // requests vector holds the requests that are checked; this
-            // represents the number of active requests in the vector, not the
-            // size of the vector
-            std::atomic<std::uint32_t> active_requests_vector_size_{0};
-            // requests queue holds the requests recently added
-            std::atomic<std::uint32_t> requests_queue_size_{0};
-        };
-
-        // an instance of mpi_info that we store data in
-        PIKA_EXPORT mpi_info& get_mpi_info();
-
-        // stream operator to display debug mpi_info
-        PIKA_EXPORT std::ostream& operator<<(
-            std::ostream& os, mpi_info const& i);
-
-        // -----------------------------------------------------------------
         // an MPI error handling type that we can use to intercept
-        // MPI errors is we enable the error handler
+        // MPI errors if we enable the error handler
         PIKA_EXPORT extern MPI_Errhandler pika_mpi_errhandler;
 
         // function that converts an MPI error into an exception
         PIKA_EXPORT void pika_MPI_Handler(MPI_Comm*, int* errorcode, ...);
 
         // -----------------------------------------------------------------
-        // we track requests and callbacks in two vectors even though
-        // we have the request stored in the request_callback vector already
-        // the reason for this is because we can use MPI_Testany
-        // with a vector of requests to save overheads compared
-        // to testing one by one every item (using a list)
-        PIKA_EXPORT std::vector<MPI_Request>& get_requests_vector();
-
-        // -----------------------------------------------------------------
-        // define a lockfree queue type to place requests in prior to handling
-        // this is done only to avoid taking a lock every time a request is
-        // returned from MPI. Instead the requests are placed into a queue
-        // and the polling code pops them prior to calling Testany
-        using queue_type =
-            concurrency::detail::ConcurrentQueue<future_data_ptr>;
-
-        // -----------------------------------------------------------------
-        // used internally to query how many requests are 'in flight'
-        // these are requests that are being polled for actively
-        // and not the same as the requests enqueued
-        PIKA_EXPORT std::size_t get_number_of_active_requests();
+        /// Called by the mpi senders/executors to initiate throttling
+        /// when necessary
+        PIKA_EXPORT void wait_for_throttling();
 
     }    // namespace detail
+
+    // -----------------------------------------------------------------
+    /// Set the number of messages above which throttling will be applied
+    /// when invoking an MPI function. If the number of messages in flight
+    /// exceeds the amount specified, then any thread attempting to invoke
+    /// and MPI function that generates an MPI_Request will be suspended.
+    /// This should be used with great caution as setting it too low can
+    /// cause deadlocks. The default value is size_t(-1) - i.e. unlimited
+    /// The value can be set using an environment variable as folows
+    /// PIKA_MPI_MSG_THROTTLE=512
+    /// but user code setting it will override any default or env value
+    /// This function returns the previous throttling threshold value
+    PIKA_EXPORT size_t set_max_requests_in_flight(size_t);
+
+    /// Query the current value of the throttling threshold
+    PIKA_EXPORT size_t get_max_requests_in_flight();
+
+    // -----------------------------------------------------------------
+    /// returns the number of mpi requests currently outstanding
+    PIKA_EXPORT size_t get_num_requests_in_flight();
 
     // -----------------------------------------------------------------
     // set an error handler for communicators that will be called
@@ -171,6 +141,11 @@ namespace pika { namespace mpi { namespace experimental {
     // -----------------------------------------------------------------
     // return a future object from a user supplied MPI_Request
     PIKA_EXPORT pika::future<void> get_future(MPI_Request request);
+
+    // -----------------------------------------------------------------
+    // Background progress function for MPI async operations
+    // Checks for completed MPI_Requests and sets ready state in waiting receivers
+    PIKA_EXPORT pika::threads::policies::detail::polling_status poll();
 
     // -----------------------------------------------------------------
     // return a future from an async call to MPI_Ixxx function
@@ -195,44 +170,6 @@ namespace pika { namespace mpi { namespace experimental {
             return future_access<pika::future<int>>::create(PIKA_MOVE(data));
         }
     }    // namespace detail
-
-    // -----------------------------------------------------------------
-    // Background progress function for MPI async operations
-    // Checks for completed MPI_Requests and sets mpi::experimental::future ready
-    // when found
-    PIKA_EXPORT pika::threads::policies::detail::polling_status poll();
-
-    // -----------------------------------------------------------------
-    // This is not completely safe as it will return when the request vector is
-    // empty, but cannot guarantee that other communications are not about
-    // to be launched in outstanding continuations etc.
-    inline void wait()
-    {
-        pika::util::yield_while([]() {
-            std::unique_lock<detail::mutex_type> lk(
-                detail::get_vector_mtx(), std::try_to_lock);
-            if (!lk.owns_lock())
-            {
-                return true;
-            }
-            return (detail::get_mpi_info().active_requests_vector_size_ > 0);
-        });
-    }
-
-    template <typename F>
-    inline void wait(F&& f)
-    {
-        pika::util::yield_while([&]() {
-            std::unique_lock<detail::mutex_type> lk(
-                detail::get_vector_mtx(), std::try_to_lock);
-            if (!lk.owns_lock())
-            {
-                return true;
-            }
-            return (detail::get_mpi_info().active_requests_vector_size_ > 0) ||
-                f();
-        });
-    }
 
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
@@ -265,9 +202,11 @@ namespace pika { namespace mpi { namespace experimental {
     };
 
     // -----------------------------------------------------------------
-    template <typename... Args>
-    inline void debug(Args&&... args)
-    {
-        mpi_debug.debug(detail::get_mpi_info(), PIKA_FORWARD(Args, args)...);
-    }
+    //    template <typename... Args>
+    //    inline void debug(const char *title, Args&&... args)
+    //    {
+    //        if constexpr (mpi_debug.is_enabled())
+    //                mpi_debug.debug(debug::str<>(title),
+    //                                detail::get_mpi_info(), PIKA_FORWARD(Args, args)...);
+    //    }
 }}}    // namespace pika::mpi::experimental

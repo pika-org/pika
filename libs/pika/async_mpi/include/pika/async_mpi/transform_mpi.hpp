@@ -191,6 +191,9 @@ namespace pika { namespace mpi { namespace experimental {
                                 }
                                 else
                                 {
+                                    // throttle if too many "in flight"
+                                    wait_for_throttling();
+
                                     pika::util::invoke_fused(
                                         [&](auto&... ts) mutable {
                                             r.op_state.result.template emplace<
