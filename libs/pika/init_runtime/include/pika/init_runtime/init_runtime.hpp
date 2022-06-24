@@ -106,11 +106,13 @@ namespace pika {
         PIKA_EXPORT int run_or_start(
             util::function<int(pika::program_options::variables_map& vm)> const&
                 f,
-            int argc, char** argv, init_params const& params, bool blocking);
+            int argc, const char* const* argv, init_params const& params,
+            bool blocking);
 
         inline int init_start_impl(
             util::function<int(pika::program_options::variables_map&)> f,
-            int argc, char** argv, init_params const& params, bool blocking)
+            int argc, const char* const* argv, init_params const& params,
+            bool blocking)
         {
             if (argc == 0 || argv == nullptr)
             {
@@ -132,14 +134,14 @@ namespace pika {
     }    // namespace detail
 
     inline int init(std::function<int(pika::program_options::variables_map&)> f,
-        int const argc, char** const argv,
+        int argc, const char* const* argv,
         init_params const& params = init_params())
     {
         return detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, true);
     }
 
-    inline int init(std::function<int(int, char**)> f, int const argc,
-        char** const argv, init_params const& params = init_params())
+    inline int init(std::function<int(int, char**)> f, int argc,
+        const char* const* argv, init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::bind_back(pika::detail::init_helper, f);
@@ -147,7 +149,7 @@ namespace pika {
             PIKA_MOVE(main_f), argc, argv, params, true);
     }
 
-    inline int init(std::function<int()> f, int const argc, char** const argv,
+    inline int init(std::function<int()> f, int argc, const char* const* argv,
         init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f =
@@ -156,7 +158,7 @@ namespace pika {
             PIKA_MOVE(main_f), argc, argv, params, true);
     }
 
-    inline int init(std::nullptr_t, int const argc, char** const argv,
+    inline int init(std::nullptr_t, int argc, const char* const* argv,
         init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f;
@@ -165,16 +167,15 @@ namespace pika {
     }
 
     inline bool start(
-        std::function<int(pika::program_options::variables_map&)> f,
-        int const argc, char** const argv,
-        init_params const& params = init_params())
+        std::function<int(pika::program_options::variables_map&)> f, int argc,
+        const char* const* argv, init_params const& params = init_params())
     {
         return 0 ==
             detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false);
     }
 
-    inline bool start(std::function<int(int, char**)> f, int argc, char** argv,
-        init_params const& params = init_params())
+    inline bool start(std::function<int(int, char**)> f, int argc,
+        const char* const* argv, init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::bind_back(pika::detail::init_helper, f);
@@ -183,7 +184,7 @@ namespace pika {
                 PIKA_MOVE(main_f), argc, argv, params, false);
     }
 
-    inline bool start(std::function<int()> f, int const argc, char** const argv,
+    inline bool start(std::function<int()> f, int argc, const char* const* argv,
         init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f =
@@ -193,7 +194,7 @@ namespace pika {
                 PIKA_MOVE(main_f), argc, argv, params, false);
     }
 
-    inline bool start(std::nullptr_t, int const argc, char** const argv,
+    inline bool start(std::nullptr_t, int argc, const char* const* argv,
         init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f;

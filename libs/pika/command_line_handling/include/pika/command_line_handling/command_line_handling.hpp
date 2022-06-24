@@ -43,7 +43,7 @@ namespace pika::detail {
         }
 
         int call(pika::program_options::options_description const& desc_cmdline,
-            int argc, char** argv);
+            int argc, const char* const* argv);
 
         pika::program_options::variables_map vm_;
         pika::util::runtime_configuration rtcfg_;
@@ -79,7 +79,7 @@ namespace pika::detail {
         void enable_logging_settings(pika::program_options::variables_map& vm,
             std::vector<std::string>& ini_config);
 
-        void store_command_line(int argc, char** argv);
+        void store_command_line(int argc, const char* const* argv);
         void store_unregistered_options(std::string const& cmd_name,
             std::vector<std::string> const& unregistered_options);
         bool handle_help_options(
@@ -88,6 +88,6 @@ namespace pika::detail {
         void handle_attach_debugger();
 
         std::vector<std::string> preprocess_config_settings(
-            int argc, char** argv);
+            int argc, const char* const* argv);
     };
 }    // namespace pika::detail
