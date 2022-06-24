@@ -16,7 +16,6 @@
 #include <pika/allocator_support/traits/is_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
@@ -38,6 +37,7 @@
 #include <exception>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -140,7 +140,7 @@ namespace pika::execution::experimental {
                 // reset it as soon as the the ensure_started_receiver has been
                 // signaled.  This is useful to ensure that resources held by
                 // the predecessor work is released as soon as possible.
-                pika::optional<operation_state_type> os;
+                std::optional<operation_state_type> os;
 
                 struct done_type
                 {
@@ -167,7 +167,7 @@ namespace pika::execution::experimental {
                     v;
 
                 using continuation_type = pika::util::unique_function<void()>;
-                pika::optional<continuation_type> continuation;
+                std::optional<continuation_type> continuation;
 
                 struct ensure_started_receiver
                 {
@@ -209,11 +209,11 @@ namespace pika::execution::experimental {
                     template <typename... Ts>
                     friend auto tag_invoke(set_value_t,
                         ensure_started_receiver&& r, Ts&&... ts) noexcept
-                        -> decltype(std::declval<pika::detail::variant<
-                                        pika::detail::monostate, value_type>>()
-                                        .template emplace<value_type>(
-                                            std::make_tuple<>(
-                                                PIKA_FORWARD(Ts, ts)...)),
+                        -> decltype(
+                            std::declval<pika::detail::variant<
+                                pika::detail::monostate, value_type>>()
+                                .template emplace<value_type>(
+                                    std::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
                             void())
                     {
                         r.state->v.template emplace<value_type>(

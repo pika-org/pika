@@ -9,7 +9,6 @@
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -19,6 +18,7 @@
 #include <exception>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -35,7 +35,7 @@ namespace pika { namespace experimental {
         {
             using shared_state_ptr_type =
                 std::shared_ptr<async_rw_mutex_shared_state>;
-            pika::util::optional<T> value;
+            std::optional<T> value;
             shared_state_ptr_type next_state;
             pika::lcos::local::mutex mtx;
             pika::detail::small_vector<

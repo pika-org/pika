@@ -12,7 +12,6 @@
 #include <pika/execution_base/p2300_forward.hpp>
 #else
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution_base/completion_scheduler.hpp>
 #include <pika/execution_base/receiver.hpp>
@@ -26,6 +25,7 @@
 #include <atomic>
 #include <cstddef>
 #include <exception>
+#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -142,7 +142,7 @@ namespace pika { namespace execution { namespace experimental {
                     connect_result_t<typename pika::util::invoke_result<
                                          schedule_t, Scheduler>::type,
                         scheduler_sender_receiver>;
-                pika::util::optional<scheduler_operation_state_type>
+                std::optional<scheduler_operation_state_type>
                     scheduler_op_state;
 
                 template <typename Sender_, typename Scheduler_,

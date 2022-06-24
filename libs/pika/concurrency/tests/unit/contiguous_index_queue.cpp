@@ -9,7 +9,6 @@
 
 #include <pika/barrier.hpp>
 #include <pika/concurrency/detail/contiguous_index_queue.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/program_options.hpp>
@@ -20,6 +19,7 @@
 #include <cstdint>
 #include <functional>
 #include <iterator>
+#include <optional>
 #include <random>
 #include <vector>
 
@@ -45,7 +45,7 @@ void test_basic()
         for (std::uint32_t curr_expected = first; curr_expected < last;
              ++curr_expected)
         {
-            pika::optional<std::uint32_t> curr = q.pop_left();
+            std::optional<std::uint32_t> curr = q.pop_left();
             PIKA_TEST(curr);
             PIKA_TEST_EQ(curr.value(), curr_expected);
         }
@@ -64,7 +64,7 @@ void test_basic()
         for (std::uint32_t curr_expected = last - 1; curr_expected >= first;
              --curr_expected)
         {
-            pika::optional<std::uint32_t> curr = q.pop_right();
+            std::optional<std::uint32_t> curr = q.pop_right();
             PIKA_TEST(curr);
             PIKA_TEST_EQ(curr.value(), curr_expected);
         }
@@ -80,7 +80,7 @@ void test_basic()
         for (std::uint32_t curr_expected = last - 1; curr_expected >= first;
              --curr_expected)
         {
-            pika::optional<std::uint32_t> curr = q.pop_right();
+            std::optional<std::uint32_t> curr = q.pop_right();
             PIKA_TEST(curr);
             PIKA_TEST_EQ(curr.value(), curr_expected);
         }
@@ -102,7 +102,7 @@ void test_concurrent_worker(pop_mode m, std::size_t thread_index,
     pika::barrier<>& b, pika::concurrency::detail::contiguous_index_queue<>& q,
     std::vector<std::uint32_t>& popped_indices)
 {
-    pika::optional<std::uint32_t> curr;
+    std::optional<std::uint32_t> curr;
     std::mt19937 r(seed + thread_index);
     std::uniform_int_distribution<> d(0, 1);
 

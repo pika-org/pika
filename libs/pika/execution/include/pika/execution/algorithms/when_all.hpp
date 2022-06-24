@@ -12,7 +12,6 @@
 #include <pika/execution_base/p2300_forward.hpp>
 #else
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
 #include <pika/execution_base/operation_state.hpp>
@@ -27,6 +26,7 @@
 #include <exception>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -251,7 +251,7 @@ namespace pika { namespace execution { namespace experimental {
                 template <typename T>
                 struct add_optional
                 {
-                    using type = pika::optional<std::decay_t<T>>;
+                    using type = std::optional<std::decay_t<T>>;
                 };
                 using value_types_storage_type =
                     pika::util::detail::change_pack_t<
@@ -268,7 +268,7 @@ namespace pika { namespace execution { namespace experimental {
                 // senders.
                 value_types_storage_type ts;
 
-                pika::optional<error_types<pika::detail::variant>> error;
+                std::optional<error_types<pika::detail::variant>> error;
                 std::atomic<bool> set_stopped_error_called{false};
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 

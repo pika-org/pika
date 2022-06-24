@@ -226,7 +226,7 @@ namespace pika { namespace execution { namespace experimental {
                                 op_state->queues[task_f->worker_thread].data_;
 
                             // Handle local queue first
-                            pika::util::optional<std::uint32_t> index;
+                            std::optional<std::uint32_t> index;
                             while ((index = local_queue.pop_left()))
                             {
                                 do_work_chunk(ts, index.value());

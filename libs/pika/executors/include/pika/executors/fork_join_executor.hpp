@@ -458,7 +458,7 @@ namespace pika { namespace execution { namespace experimental {
                         set_state(data.state_, thread_state::active);
 
                         // Process local items first.
-                        pika::util::optional<std::uint32_t> index;
+                        std::optional<std::uint32_t> index;
                         while ((index = local_queue.pop_left()))
                         {
                             auto it = std::next(

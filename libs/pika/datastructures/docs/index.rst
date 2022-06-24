@@ -15,8 +15,6 @@ The datastructures module provides basic data structures (typically provided for
 compatibility with older C++ standards):
 
 * :cpp:class:`pika::util::basic_any`
-* :cpp:class:`pika::util::optional`
-* :cpp:class:`pika::util::tuple`
 
 See the :ref:`API reference <modules_datastructures_api>` of the module for more
 details.

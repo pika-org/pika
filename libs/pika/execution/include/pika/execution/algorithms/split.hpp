@@ -17,7 +17,6 @@
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
@@ -39,6 +38,7 @@
 #include <exception>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -137,7 +137,7 @@ namespace pika { namespace execution { namespace experimental {
                 // reset it as soon as the the split_receiver has been signaled.
                 // This is useful to ensure that resources held by the
                 // predecessor work is released as soon as possible.
-                pika::optional<operation_state_type> os;
+                std::optional<operation_state_type> os;
 
                 struct done_type
                 {

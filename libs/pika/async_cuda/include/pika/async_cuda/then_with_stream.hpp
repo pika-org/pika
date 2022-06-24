@@ -16,7 +16,6 @@
 #include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/async_cuda/custom_lapack_api.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/then.hpp>
@@ -27,6 +26,7 @@
 
 #include <exception>
 #include <functional>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -216,7 +216,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             cuda_scheduler sched;
-            pika::optional<std::reference_wrapper<const cuda_stream>> stream;
+            std::optional<std::reference_wrapper<const cuda_stream>> stream;
 
             struct then_with_cuda_stream_receiver_tag
             {

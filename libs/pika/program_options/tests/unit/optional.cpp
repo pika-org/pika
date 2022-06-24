@@ -5,10 +5,10 @@
 //  (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/datastructures/optional.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/testing.hpp>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,7 +24,7 @@ std::vector<std::string> sv(const char* array[], unsigned size)
 
 void test_optional()
 {
-    po::optional<int> foo, bar, baz;
+    std::optional<int> foo, bar, baz;
 
     po::options_description desc;
     // clang-format off

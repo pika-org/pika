@@ -10,12 +10,12 @@
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
-#include <pika/datastructures/optional.hpp>
 
 #include <atomic>
 #include <cstddef>
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace pika::cuda::experimental {

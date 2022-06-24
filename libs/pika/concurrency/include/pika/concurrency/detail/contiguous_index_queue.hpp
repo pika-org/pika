@@ -8,10 +8,10 @@
 
 #include <pika/assert.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
-#include <pika/datastructures/optional.hpp>
 
 #include <atomic>
 #include <cstdint>
+#include <optional>
 #include <type_traits>
 
 namespace pika::concurrency::detail {
@@ -125,8 +125,8 @@ namespace pika::concurrency::detail {
         /// \brief Attempt to pop an item from the left of the queue.
         ///
         /// Attempt to pop an item from the left (beginning) of the queue. If
-        /// no items are left pika::util::nullopt is returned.
-        constexpr pika::util::optional<T> pop_left() noexcept
+        /// no items are left std::nullopt is returned.
+        constexpr std::optional<T> pop_left() noexcept
         {
             range desired_range{0, 0};
             T index = 0;
@@ -138,7 +138,7 @@ namespace pika::concurrency::detail {
             {
                 if (expected_range.empty())
                 {
-                    return pika::util::nullopt;
+                    return std::nullopt;
                 }
 
                 index = expected_range.first;
@@ -146,14 +146,14 @@ namespace pika::concurrency::detail {
             } while (!current_range.data_.compare_exchange_weak(
                 expected_range, desired_range));
 
-            return pika::util::make_optional<>(index);
+            return std::make_optional<>(index);
         }
 
         /// \brief Attempt to pop an item from the right of the queue.
         ///
         /// Attempt to pop an item from the right (end) of the queue. If
-        /// no items are left pika::util::nullopt is returned.
-        constexpr pika::util::optional<T> pop_right() noexcept
+        /// no items are left std::nullopt is returned.
+        constexpr std::optional<T> pop_right() noexcept
         {
             range desired_range{0, 0};
             T index = 0;
@@ -165,7 +165,7 @@ namespace pika::concurrency::detail {
             {
                 if (expected_range.empty())
                 {
-                    return pika::util::nullopt;
+                    return std::nullopt;
                 }
 
                 desired_range = expected_range.decrement_last();
@@ -173,7 +173,7 @@ namespace pika::concurrency::detail {
             } while (!current_range.data_.compare_exchange_weak(
                 expected_range, desired_range));
 
-            return pika::util::make_optional(index);
+            return std::make_optional(index);
         }
 
         constexpr bool empty() noexcept

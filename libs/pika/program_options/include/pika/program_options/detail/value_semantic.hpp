@@ -12,11 +12,11 @@
 #include <pika/program_options/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/datastructures/any.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/program_options/errors.hpp>
 #include <pika/util/from_string.hpp>
 
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -164,14 +164,13 @@ namespace pika { namespace program_options {
     /** Validates optional arguments. */
     template <class T, class Char>
     void validate(pika::any_nonser& v,
-        const std::vector<std::basic_string<Char>>& s, pika::util::optional<T>*,
-        int)
+        const std::vector<std::basic_string<Char>>& s, std::optional<T>*, int)
     {
         validators::check_first_occurrence(v);
         validators::get_single_string(s);
         pika::any_nonser a;
         validate(a, s, (T*) nullptr, 0);
-        v = pika::any_nonser(pika::util::optional<T>(pika::any_cast<T>(a)));
+        v = pika::any_nonser(std::optional<T>(pika::any_cast<T>(a)));
     }
 
     template <class T, class Char>
