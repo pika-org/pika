@@ -84,6 +84,8 @@ namespace pika { namespace mpi { namespace experimental {
             request_callback_queue_type request_callback_queue_;
             std::vector<MPI_Request> request_vector_;
             std::vector<request_callback_function_type> callback_vector_;
+            std::vector<MPI_Status> status_vector_;
+            std::vector<int> indices_vector_;
 
             // mutex needed to protect mpi request vector, note that the
             // mpi poll function usually takes place inside the main scheduling loop
@@ -331,6 +333,9 @@ namespace pika { namespace mpi { namespace experimental {
     {
         using pika::threads::policies::detail::polling_status;
 
+        if (detail::mpi_data_.in_flight_.load(std::memory_order_relaxed) == 0)
+            return polling_status::idle;
+
         std::unique_lock<detail::mutex_type> lk(
             detail::mpi_data_.polling_vector_mtx_, std::try_to_lock);
         if (!lk.owns_lock())
@@ -355,114 +360,79 @@ namespace pika { namespace mpi { namespace experimental {
             mpi_debug.timed(poll_deb, detail::mpi_data_);
         }
 
+        // Before moving requests from the queue to the vector
+        compact_vectors();
+
+        // Move requests in the queue (that have not yet been polled for)
+        // into the polling vector ...
+        // Number in_flight does not change during this section as one
+        // is moved off the queue and into the vector
+
+        detail::request_callback req_callback;
+        while (
+            detail::mpi_data_.request_callback_queue_.try_dequeue(req_callback))
         {
-            // Before moving requests from the queue to the vector
-            compact_vectors();
-
-            // Move requests in the queue (that have not yet been polled for)
-            // into the polling vector ...
-            // number in_flight does not change during this section as one
-            // is popped off the queue and added to the vector
-
-            detail::request_callback req_callback;
-            while (detail::mpi_data_.request_callback_queue_.try_dequeue(
-                req_callback))
-            {
-                --detail::mpi_data_.request_queue_size_;
-                add_to_request_callback_vector(PIKA_MOVE(req_callback));
-            }
+            --detail::mpi_data_.request_queue_size_;
+            add_to_request_callback_vector(PIKA_MOVE(req_callback));
         }
 
-        bool keep_trying = !detail::mpi_data_.request_vector_.empty();
-        while (keep_trying)
-        {
-            int index = 0;
-            int flag = false;
-            MPI_Status status;
+        int outcount = 0;
+        int vsize = detail::mpi_data_.request_vector_.size();
+        detail::mpi_data_.indices_vector_.reserve(vsize);
+        detail::mpi_data_.status_vector_.reserve(vsize);
+        int result =
+            MPI_Testsome(vsize, detail::mpi_data_.request_vector_.data(),
+                &outcount, detail::mpi_data_.indices_vector_.data(),
+                detail::mpi_data_.status_vector_.data());
 
-            int result = MPI_Testany(
-                static_cast<int>(detail::mpi_data_.request_vector_.size()),
-                detail::mpi_data_.request_vector_.data(), &index, &flag,
-                &status);
+        if (result != MPI_SUCCESS)
+            std::terminate();
+
+        if constexpr (mpi_debug.is_enabled())
+        {
+            // output a heartbeat every seconds
+            static auto poll_deb =
+                mpi_debug.make_timer(1, debug::str<>("Poll - success"));
+            mpi_debug.timed(poll_deb, detail::mpi_data_, "outcount", outcount,
+                debug::dec<4>(outcount));
+        }
+
+        // for each completed request
+        for (int i = 0; i < outcount; ++i)
+        {
+            size_t index = detail::mpi_data_.indices_vector_[i];
 
             if constexpr (mpi_debug.is_enabled())
             {
-                if (result == MPI_SUCCESS)
-                {
-                    static auto poll_deb =
-                        mpi_debug.make_timer(1, debug::str<>("Poll - success"));
-
-                    mpi_debug.timed(poll_deb, detail::mpi_data_, "success",
-                        "index",
-                        debug::dec<>(index == MPI_UNDEFINED ? -1 : index),
-                        "flag", debug::dec<>(flag), "status",
-                        debug::hex(status.MPI_ERROR));
-                }
-                else
-                {
-                    auto poll_deb =
-                        mpi_debug.make_timer(1, debug::str<>("Poll - <ERR>"));
-
-                    mpi_debug.error(poll_deb, detail::mpi_data_, "Poll <ERR>",
-                        "MPI_ERROR", detail::error_message(status.MPI_ERROR),
-                        "status", debug::dec<>(status.MPI_ERROR), "index",
-                        debug::dec<>(index), "flag", debug::dec<>(flag));
-                }
+                mpi_debug.debug(debug::str<>("MPI_Testsome (set)"),
+                    detail::mpi_data_, "request",
+                    debug::hex<8>(detail::mpi_data_.request_vector_[index]));
             }
 
-            // No operation completed
-            if (index == MPI_UNDEFINED)
-                break;
+            // decrement before invoking callback to avoid race
+            // if invoked code checks in_flight value
+            size_t inflight = --detail::mpi_data_.in_flight_;
+            --detail::mpi_data_.active_request_vector_size_;
 
-            keep_trying = flag;
-            if constexpr (mpi_debug.is_enabled())
+            // Invoke the callback with the status of the completed
+            // operation (status of the request is forwarded to MPI_Testany)
+            detail::mpi_data_.callback_vector_[index](result);
+
+            // Remove the request from our vector to prevent retesting
+            detail::mpi_data_.callback_vector_[index].reset();
+            detail::mpi_data_.request_vector_[index] = MPI_REQUEST_NULL;
+
+            // wake any thread that is waiting for throttling
+            if (inflight < detail::mpi_data_.throttling_limit_)
             {
-                // One operation completed
-                if (keep_trying)
-                {
-                    mpi_debug.debug(debug::str<>("MPI_Testany(set)"),
-                        detail::mpi_data_, "request",
-                        debug::hex<8>(
-                            detail::mpi_data_.request_vector_[size_t(index)]),
-                        "vector size",
-                        debug::dec<3>(detail::mpi_data_.request_vector_.size()),
-                        "non null",
-                        debug::dec<3>(
-                            detail::get_num_null_requests_in_vector()));
-                }
-            }
-
-            if (result != MPI_SUCCESS)    // Error and operation not completed
-                keep_trying = false;
-
-            if (keep_trying || result != MPI_SUCCESS)
-            {
-                // decrement before invoking callback to avoid race
-                // if invoked code checks value
-                size_t inflight = --detail::mpi_data_.in_flight_;
-                --detail::mpi_data_.active_request_vector_size_;
-
-                // Invoke the callback with the status of the completed
-                // operation (status of the request is forwarded to MPI_Testany)
-                detail::mpi_data_.callback_vector_[size_t(index)].operator()(
-                    result);
-
-                // Remove the request from our vector to prevent retesting
-                detail::mpi_data_.callback_vector_[size_t(index)].reset();
-                detail::mpi_data_.request_vector_[size_t(index)] =
-                    MPI_REQUEST_NULL;
-
-                // wake any thread that is waiting for throttling
-                if (inflight < detail::mpi_data_.throttling_limit_)
-                {
-                    mpi_debug.debug(debug::str<>("throttling"), "notify_one",
-                        "in_flight", debug::dec<4>(inflight));
-                    detail::mpi_data_.throttling_cond_.notify_one();
-                }
+                mpi_debug.debug(debug::str<>("throttling"), "notify_one",
+                    "in_flight", debug::dec<4>(inflight));
+                detail::mpi_data_.throttling_cond_.notify_one();
             }
         }
 
-        return detail::mpi_data_.request_vector_.empty() ?
+        return detail::mpi_data_.in_flight_.load(std::memory_order_relaxed) ==
+                0 ?
             polling_status::idle :
             polling_status::busy;
     }
