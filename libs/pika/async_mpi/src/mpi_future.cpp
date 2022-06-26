@@ -17,13 +17,13 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <exception>
 #include <memory>
+#include <mpi.h>
 #include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <mpi.h>
 
 namespace pika { namespace mpi { namespace experimental {
 
@@ -89,7 +89,7 @@ namespace pika { namespace mpi { namespace experimental {
 
             // mutex needed to protect mpi request vector, note that the
             // mpi poll function usually takes place inside the main scheduling loop
-            // though poll may also be callled directly by a user task.
+            // though poll may also be called directly by a user task.
             // we use a spinlock for both cases
             mutex_type polling_vector_mtx_;
 
@@ -378,8 +378,8 @@ namespace pika { namespace mpi { namespace experimental {
 
         int outcount = 0;
         int vsize = detail::mpi_data_.request_vector_.size();
-        detail::mpi_data_.indices_vector_.reserve(vsize);
-        detail::mpi_data_.status_vector_.reserve(vsize);
+        detail::mpi_data_.indices_vector_.resize(vsize);
+        detail::mpi_data_.status_vector_.resize(vsize);
         int result =
             MPI_Testsome(vsize, detail::mpi_data_.request_vector_.data(),
                 &outcount, detail::mpi_data_.indices_vector_.data(),
@@ -401,6 +401,10 @@ namespace pika { namespace mpi { namespace experimental {
         for (int i = 0; i < outcount; ++i)
         {
             size_t index = detail::mpi_data_.indices_vector_[i];
+            if (detail::mpi_data_.status_vector_[i].MPI_ERROR != MPI_SUCCESS)
+            {
+                std::terminate();
+            }
 
             if constexpr (mpi_debug.is_enabled())
             {

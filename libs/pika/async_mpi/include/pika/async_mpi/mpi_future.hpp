@@ -120,7 +120,7 @@ namespace pika { namespace mpi { namespace experimental {
     /// and MPI function that generates an MPI_Request will be suspended.
     /// This should be used with great caution as setting it too low can
     /// cause deadlocks. The default value is size_t(-1) - i.e. unlimited
-    /// The value can be set using an environment variable as folows
+    /// The value can be set using an environment variable as follows
     /// PIKA_MPI_MSG_THROTTLE=512
     /// but user code setting it will override any default or env value
     /// This function returns the previous throttling threshold value
@@ -200,13 +200,4 @@ namespace pika { namespace mpi { namespace experimental {
     private:
         std::string pool_name_;
     };
-
-    // -----------------------------------------------------------------
-    //    template <typename... Args>
-    //    inline void debug(const char *title, Args&&... args)
-    //    {
-    //        if constexpr (mpi_debug.is_enabled())
-    //                mpi_debug.debug(debug::str<>(title),
-    //                                detail::get_mpi_info(), PIKA_FORWARD(Args, args)...);
-    //    }
 }}}    // namespace pika::mpi::experimental

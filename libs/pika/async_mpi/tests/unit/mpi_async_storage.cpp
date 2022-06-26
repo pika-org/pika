@@ -31,6 +31,7 @@
 #include <memory>
 #include <mutex>
 #include <random>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -113,13 +114,13 @@ void display(perf const& data, const test_options& options)
         temp << "IOPs/s (local)       : " << IOPs_s << "\n";
         temp << "Aggregate BW         : " << BW << " MB/s";
         temp << "\n";
-        // a complete set of results that our python matplotlib script will ingest
-        char const* msg =
-            "CSVData, {8}, network, "
-            "{1}, ranks, {2}, threads, {3}, Memory, {4}, IOPsize, {5}, "
-            "IOPS/s, {6}, BW(MB/s), {7}, ";
         if (/*options.final && */ !options.warmup)
         {
+            // a complete set of results that our python matplotlib script will ingest
+            char const* msg =
+                "CSVData, {8}, network, "
+                "{1}, ranks, {2}, threads, {3}, Memory, {4}, IOPsize, {5}, "
+                "IOPS/s, {6}, BW(MB/s), {7}, ";
             pika::util::format_to(temp, msg, "mpi", data.nranks,
                 options.threads, data.dataMB, options.transfer_size_B, IOPs_s,
                 BW, data.mode.c_str())
@@ -177,11 +178,11 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
 
     std::string tempstr = "rank " + std::to_string(rank);
     write_arr.array(
-        tempstr + " # offset  ", &offsets[0], std::min(array_size, 32ul));
+        tempstr + " # offset  ", &offsets[0], (std::min)(array_size, 32ul));
     write_arr.array(
-        tempstr + " # send    ", &sends[0], std::min(array_size, 32ul));
+        tempstr + " # send    ", &sends[0], (std::min)(array_size, 32ul));
     write_arr.array(
-        tempstr + " # recv    ", &recvs[0], std::min(array_size, 32ul));
+        tempstr + " # recv    ", &recvs[0], (std::min)(array_size, 32ul));
 
     // ----------------------------------------------------------------
     nws_deb<2>.debug("Entering Barrier at start of write on rank", rank);
@@ -205,9 +206,8 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
     // Start main message sending loop
     //
     pika::chrono::high_resolution_timer exec_timer;
-    uint64_t final_count = std::numeric_limits<uint64_t>().max();
+    uint64_t final_count = (std::numeric_limits<uint64_t>().max)();
     bool count_complete = false;
-    bool time_up;
     // loop for allowed time : sending and receiving
     do
     {
@@ -283,7 +283,7 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
             std::cout << ((debug_tick++ % 10 == 9) ? "x" : ".") << std::flush;
         }
 
-        time_up = (exec_timer.elapsed() >= options.num_seconds);
+        bool time_up = (exec_timer.elapsed() >= options.num_seconds);
 
         //
         if (time_up && !count_complete)
@@ -306,7 +306,7 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
             // reduction step
             final_count = messages_sent;
             std::for_each(counts.begin(), counts.end(),
-                [&](uint64_t c) { final_count = std::max(final_count, c); });
+                [&](uint64_t c) { final_count = (std::max)(final_count, c); });
             nws_deb<2>.debug(
                 "Rank ", rank, "count max", deb::dec<8>(final_count));
             //

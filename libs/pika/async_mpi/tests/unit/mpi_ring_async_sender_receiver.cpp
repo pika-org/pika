@@ -4,6 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/assert.hpp>
 #include <pika/execution.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
@@ -155,7 +156,7 @@ int pika_main(pika::program_options::variables_map& vm)
                                         [=, &tokens, &counter](int /*result*/) {
                                             msg_send(rank, size, rank_to,
                                                 rank_from, tokens[tag], tag);
-                                            // ranks > 0 are done when they have sent their token
+                                            // ranks > 0 are done after sending token
                                             --counter;
                                         });
                                 ex::start_detached(s4);
