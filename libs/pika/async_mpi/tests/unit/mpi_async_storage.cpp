@@ -74,7 +74,6 @@ namespace deb = pika::debug;
 struct test_options
 {
     std::uint64_t local_storage_MB;
-    std::uint64_t global_storage_MB;
     std::uint64_t transfer_size_B;
     std::uint64_t threads;
     std::uint64_t num_seconds;
@@ -82,7 +81,6 @@ struct test_options
 
     bool warmup;
     bool final;
-    bool auto_throttling;
     bool yield;
 };
 
@@ -118,12 +116,12 @@ void display(perf const& data, const test_options& options)
         {
             // a complete set of results that our python matplotlib script will ingest
             char const* msg =
-                "CSVData, {8}, network, "
-                "{1}, ranks, {2}, threads, {3}, Memory, {4}, IOPsize, {5}, "
-                "IOPS/s, {6}, BW(MB/s), {7}, ";
-            pika::util::format_to(temp, msg, "mpi", data.nranks,
-                options.threads, data.dataMB, options.transfer_size_B, IOPs_s,
-                BW, data.mode.c_str())
+                "CSVData, {1}, network, "
+                "{2}, ranks, {3}, threads, {4}, Memory, {5}, IOPsize, {6}, "
+                "IOPS/s, {7}, BW(MB/s), {8}, in_flight, {9}";
+            pika::util::format_to(temp, msg, data.mode.c_str(), "pika-mpi",
+                data.nranks, options.threads, data.dataMB,
+                options.transfer_size_B, IOPs_s, BW, options.in_flight_limit)
                 << std::endl;
         }
         std::cout << temp.str() << std::endl;
@@ -148,7 +146,10 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
     static deb::print_threshold<1, debug_level> write_arr(" WRITE ");
 
     // this needs to scope all uses of mpi::experimental::executor
-    mpi::enable_user_polling enable_polling;
+    std::string poolname = "default";
+    if (pika::resource::pool_exists("mpi"))
+        poolname = "mpi";
+    mpi::enable_user_polling enable_polling(poolname);
 
     pika::scoped_annotation annotate("test_write");
     std::stringstream temp;
@@ -352,7 +353,8 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
     nws_deb<2>.debug("Passed Barrier before update_performance on rank", rank);
     // ----------------------------------------------------------------
 
-    perf p{rank, nranks, MB, Time, IOPs, options.warmup ? "warmup" : "write "};
+    perf p{
+        rank, nranks, MB, Time, IOPs, options.warmup ? "warmup" : "send/recv "};
     display(p, options);
 }
 
@@ -362,6 +364,10 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
 // transmit/receive time to see how well we're doing.
 int pika_main(pika::program_options::variables_map& vm)
 {
+    // Disable idle backoff on the default pool
+    pika::threads::remove_scheduler_mode(
+        pika::threads::policies::enable_idle_backoff);
+
     pika::util::mpi_environment mpi_env;
     pika::runtime* rt = pika::get_runtime_ptr();
     pika::util::runtime_configuration cfg = rt->get_config();
@@ -389,11 +395,9 @@ int pika_main(pika::program_options::variables_map& vm)
     options.transfer_size_B =
         static_cast<uint64_t>(vm["transferKB"].as<double>() * 1024);
     options.local_storage_MB = vm["localMB"].as<std::uint64_t>();
-    options.global_storage_MB = vm["globalMB"].as<std::uint64_t>();
     options.num_seconds = vm["seconds"].as<std::uint64_t>();
     options.in_flight_limit = vm["in-flight-limit"].as<std::uint64_t>();
     options.threads = pika::get_os_thread_count();
-    options.auto_throttling = vm["auto-throttling"].as<bool>();
     options.yield = vm.count("yield") > 0;
     options.warmup = false;
     options.final = false;
@@ -404,19 +408,18 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::mpi::experimental::set_max_requests_in_flight(
             options.in_flight_limit);
     }
-
-    //
-    if (options.global_storage_MB > 0)
+    else
     {
-        options.local_storage_MB = options.global_storage_MB / nranks;
+        options.in_flight_limit = throttling;
     }
 
-    nws_deb<1>.debug("Allocating local storage on rank", rank);
+    nws_deb<1>.debug("Allocating local storage on rank", rank, "MB",
+        deb::dec<03>(options.local_storage_MB));
     local_send_storage.resize(options.local_storage_MB * 1024 * 1024);
     local_recv_storage.resize(options.local_storage_MB * 1024 * 1024);
     for (uint64_t i = 0; i < local_send_storage.size(); i += sizeof(uint64_t))
     {
-        // each block is filled with the block number
+        // each block is filled with the rank and block number
         uint64_t temp = (rank << 32) + i / options.transfer_size_B;
         *reinterpret_cast<uint64_t*>(&local_send_storage[i]) = temp;
         *reinterpret_cast<uint64_t*>(&local_recv_storage[i]) = temp;
@@ -488,6 +491,32 @@ int pika_main(pika::program_options::variables_map& vm)
 }
 
 //----------------------------------------------------------------------------
+void init_resource_partitioner_handler(pika::resource::partitioner& rp,
+    pika::program_options::variables_map const& vm)
+{
+    // Don't create the MPI pool if the user disabled it
+    if (vm["no-mpi-pool"].as<bool>())
+        return;
+
+    // Don't create the MPI pool if there is a single process
+    int ntasks;
+    MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
+    if (ntasks == 1)
+        return;
+
+    // Disable idle backoff on the MPI pool
+    using pika::threads::policies::scheduler_mode;
+    auto mode = scheduler_mode::default_mode;
+    mode = scheduler_mode(mode & ~scheduler_mode::enable_idle_backoff);
+
+    // Create a thread pool with a single core that we will use for all
+    // communication related tasks
+    rp.create_thread_pool(
+        "mpi", pika::resource::scheduling_policy::local_priority_fifo, mode);
+    rp.add_resource(rp.numa_domains()[0].cores()[0].pus()[0], "mpi");
+}
+
+//----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
     // Init MPI
@@ -504,16 +533,13 @@ int main(int argc, char* argv[])
     pika::program_options::options_description cmdline(
         "Usage: " PIKA_APPLICATION_STRING " [options]");
 
+    cmdline.add_options()("no-mpi-pool", pika::program_options::bool_switch(),
+        "Disable the MPI pool.");
+
     cmdline.add_options()("localMB",
         pika::program_options::value<std::uint64_t>()->default_value(256),
         "Sets the storage capacity (in MB) on each node.\n"
         "The total storage will be num_ranks * localMB");
-
-    cmdline.add_options()("globalMB",
-        pika::program_options::value<std::uint64_t>()->default_value(0),
-        "Sets the storage capacity (in MB) for the entire job.\n"
-        "The storage per node will be globalMB / num_ranks\n"
-        "By default, localMB is used, setting this overrides localMB value.");
 
     cmdline.add_options()("in-flight-limit",
         pika::program_options::value<std::uint64_t>()->default_value(64),
@@ -528,16 +554,14 @@ int main(int argc, char* argv[])
         pika::program_options::value<std::uint64_t>()->default_value(5),
         "The number of seconds to run each iteration for.\n");
 
-    cmdline.add_options()("auto-throttling",
-        pika::program_options::value<bool>()->default_value(false),
-        "When set, throttling of messages is enabled");
-
     cmdline.add_options()(
         "yield", "When set, throttling uses a yield instead of a poll");
 
     nws_deb<6>.debug(3, "Calling pika::init");
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
+    // Set the callback to init the thread_pools
+    init_args.rp_callback = &init_resource_partitioner_handler;
 
     auto res = pika::init(pika_main, argc, argv, init_args);
     MPI_Finalize();
