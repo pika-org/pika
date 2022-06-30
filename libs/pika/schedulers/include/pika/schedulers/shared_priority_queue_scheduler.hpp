@@ -36,6 +36,7 @@
 #include <mutex>
 #include <numeric>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <vector>
 

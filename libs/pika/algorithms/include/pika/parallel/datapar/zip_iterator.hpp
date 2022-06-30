@@ -24,6 +24,7 @@
 #include <iterator>
 #include <memory>
 #include <numeric>
+#include <tuple>
 #include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////

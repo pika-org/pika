@@ -15,6 +15,7 @@
 #include <functional>
 #include <list>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>

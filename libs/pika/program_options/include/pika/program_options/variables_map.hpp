@@ -13,6 +13,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 
 #include <pika/config/warnings_prefix.hpp>
 

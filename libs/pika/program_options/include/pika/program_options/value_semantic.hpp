@@ -14,6 +14,7 @@
 #include <functional>
 #include <limits>
 #include <string>
+#include <tuple>
 #include <typeinfo>
 #include <vector>
 

@@ -31,6 +31,8 @@
 #include <exception>
 #include <iosfwd>
 #include <memory>
+#include <optional>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>

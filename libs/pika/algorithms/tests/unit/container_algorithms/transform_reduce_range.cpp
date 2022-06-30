@@ -15,6 +15,7 @@
 #include <iterator>
 #include <numeric>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "test_utils.hpp"

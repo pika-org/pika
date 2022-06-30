@@ -15,6 +15,7 @@
 #include <atomic>
 #include <exception>
 #include <string>
+#include <tuple>
 #include <utility>
 
 namespace ex = pika::execution::experimental;

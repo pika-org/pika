@@ -11,6 +11,7 @@
 #include <pika/testing.hpp>
 
 #include <cstddef>
+#include <tuple>
 #include <type_traits>
 #include <vector>
 

@@ -910,6 +910,7 @@ namespace pika {
 #include <pika/algorithms/traits/projected_range.hpp>
 #include <pika/parallel/algorithms/partition.hpp>
 
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
