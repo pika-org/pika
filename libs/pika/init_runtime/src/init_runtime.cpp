@@ -425,7 +425,8 @@ namespace pika {
         int run_or_start(
             util::function<int(pika::program_options::variables_map& vm)> const&
                 f,
-            int argc, char** argv, init_params const& params, bool blocking)
+            int argc, const char* const* argv, init_params const& params,
+            bool blocking)
         {
             init_environment();
 
