@@ -118,8 +118,7 @@ namespace pika { namespace parallel { namespace traits {
         {
             auto const& t = iter.get_iterator_tuple();
             int const sequencer[] = {0,
-                (vector_pack_store<
-                     typename std::tuple_element<Is, Tuple>::type,
+                (vector_pack_store<typename std::tuple_element<Is, Tuple>::type,
                      typename std::iterator_traits<Iter>::value_type>::
                         aligned(std::get<Is>(value), std::get<Is>(t)),
                     0)...};
@@ -133,8 +132,7 @@ namespace pika { namespace parallel { namespace traits {
         {
             auto const& t = iter.get_iterator_tuple();
             int const sequencer[] = {0,
-                (vector_pack_store<
-                     typename std::tuple_element<Is, Tuple>::type,
+                (vector_pack_store<typename std::tuple_element<Is, Tuple>::type,
                      typename std::iterator_traits<Iter>::value_type>::
                         unaligned(std::get<Is>(value), std::get<Is>(t)),
                     0)...};

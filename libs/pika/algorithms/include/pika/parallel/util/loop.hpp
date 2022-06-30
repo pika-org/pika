@@ -64,8 +64,8 @@ namespace pika { namespace parallel { namespace util {
     private:
         template <typename Iter>
         friend PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr bool
-            tag_fallback_invoke(
-                pika::parallel::util::loop_optimization_t<ExPolicy>, Iter, Iter)
+        tag_fallback_invoke(
+            pika::parallel::util::loop_optimization_t<ExPolicy>, Iter, Iter)
         {
             return false;
         }

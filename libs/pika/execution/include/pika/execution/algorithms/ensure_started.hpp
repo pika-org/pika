@@ -209,11 +209,11 @@ namespace pika::execution::experimental {
                     template <typename... Ts>
                     friend auto tag_invoke(set_value_t,
                         ensure_started_receiver&& r, Ts&&... ts) noexcept
-                        -> decltype(
-                            std::declval<pika::detail::variant<
-                                pika::detail::monostate, value_type>>()
-                                .template emplace<value_type>(
-                                    std::make_tuple<>(PIKA_FORWARD(Ts, ts)...)),
+                        -> decltype(std::declval<pika::detail::variant<
+                                        pika::detail::monostate, value_type>>()
+                                        .template emplace<value_type>(
+                                            std::make_tuple<>(
+                                                PIKA_FORWARD(Ts, ts)...)),
                             void())
                     {
                         r.state->v.template emplace<value_type>(

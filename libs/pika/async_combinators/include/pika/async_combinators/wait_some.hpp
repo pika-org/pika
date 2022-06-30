@@ -227,8 +227,7 @@ namespace pika {
             }
 
             template <typename... Ts>
-            PIKA_FORCEINLINE void apply(
-                std::tuple<Ts...> const& sequence) const
+            PIKA_FORCEINLINE void apply(std::tuple<Ts...> const& sequence) const
             {
                 apply(sequence, pika::util::make_index_pack_t<sizeof...(Ts)>());
             }

@@ -74,7 +74,8 @@ namespace pika { namespace execution { namespace experimental {
 
                     template <typename Receiver_>
                     operation_state(Receiver_&& receiver,
-                        pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts)
+                        pika::util::detail::member_pack_for<std::decay_t<Ts>...>
+                            ts)
                       : receiver(PIKA_FORWARD(Receiver_, receiver))
                       , ts(PIKA_MOVE(ts))
                     {

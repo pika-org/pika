@@ -81,9 +81,9 @@ namespace pika { namespace parallel { namespace execution {
             template <typename OneWayExecutor, typename F, typename... Ts>
             PIKA_FORCEINLINE static auto call_impl(
                 std::false_type, OneWayExecutor&& exec, F&& f, Ts&&... ts)
-                -> pika::future<decltype(
-                    sync_execute_dispatch(0, PIKA_FORWARD(OneWayExecutor, exec),
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))>
+                -> pika::future<decltype(sync_execute_dispatch(0,
+                    PIKA_FORWARD(OneWayExecutor, exec), PIKA_FORWARD(F, f),
+                    PIKA_FORWARD(Ts, ts)...))>
             {
                 return pika::make_ready_future(
                     sync_execute_dispatch(0, PIKA_FORWARD(OneWayExecutor, exec),
@@ -105,9 +105,9 @@ namespace pika { namespace parallel { namespace execution {
                 PIKA_FORWARD(OneWayExecutor, exec), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...))>
             {
-                using is_void = std::is_void<decltype(
-                    sync_execute_dispatch(0, PIKA_FORWARD(OneWayExecutor, exec),
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))>;
+                using is_void = std::is_void<decltype(sync_execute_dispatch(0,
+                    PIKA_FORWARD(OneWayExecutor, exec), PIKA_FORWARD(F, f),
+                    PIKA_FORWARD(Ts, ts)...))>;
 
                 return call_impl(is_void(), exec, PIKA_FORWARD(F, f),
                     PIKA_FORWARD(Ts, ts)...);
@@ -178,9 +178,9 @@ namespace pika { namespace parallel { namespace execution {
                 typename... Ts>
             struct result
             {
-                using type = decltype(
-                    call(std::declval<OneWayExecutor>(), std::declval<F>(),
-                        std::declval<Future>(), std::declval<Ts>()...));
+                using type = decltype(call(std::declval<OneWayExecutor>(),
+                    std::declval<F>(), std::declval<Future>(),
+                    std::declval<Ts>()...));
             };
         };
 
@@ -252,8 +252,8 @@ namespace pika { namespace parallel { namespace execution {
         template <typename TwoWayExecutor, typename F, typename... Ts>
         PIKA_FORCEINLINE auto async_execute_dispatch(
             int, TwoWayExecutor&& exec, F&& f, Ts&&... ts)
-            -> decltype(
-                exec.async_execute(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
+            -> decltype(exec.async_execute(
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
             return exec.async_execute(
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
@@ -424,9 +424,9 @@ namespace pika { namespace parallel { namespace execution {
                 typename... Ts>
             struct result
             {
-                using type = decltype(
-                    call(std::declval<TwoWayExecutor>(), std::declval<F>(),
-                        std::declval<Future>(), std::declval<Ts>()...));
+                using type = decltype(call(std::declval<TwoWayExecutor>(),
+                    std::declval<F>(), std::declval<Future>(),
+                    std::declval<Ts>()...));
             };
         };
 
@@ -632,9 +632,9 @@ namespace pika { namespace parallel { namespace execution {
                 typename... Ts>
             struct result
             {
-                using type = decltype(
-                    call(std::declval<BulkExecutor>(), std::declval<F>(),
-                        std::declval<Shape const&>(), std::declval<Ts>()...));
+                using type = decltype(call(std::declval<BulkExecutor>(),
+                    std::declval<F>(), std::declval<Shape const&>(),
+                    std::declval<Ts>()...));
             };
         };
 
@@ -660,9 +660,9 @@ namespace pika { namespace parallel { namespace execution {
                 typename... Ts>
             struct result
             {
-                using type = decltype(
-                    call(std::declval<BulkExecutor>(), std::declval<F>(),
-                        std::declval<Shape const&>(), std::declval<Ts>()...));
+                using type = decltype(call(std::declval<BulkExecutor>(),
+                    std::declval<F>(), std::declval<Shape const&>(),
+                    std::declval<Ts>()...));
             };
         };
 
@@ -825,9 +825,9 @@ namespace pika { namespace parallel { namespace execution {
                 typename... Ts>
             struct result
             {
-                using type = decltype(
-                    call(std::declval<BulkExecutor>(), std::declval<F>(),
-                        std::declval<Shape const&>(), std::declval<Ts>()...));
+                using type = decltype(call(std::declval<BulkExecutor>(),
+                    std::declval<F>(), std::declval<Shape const&>(),
+                    std::declval<Ts>()...));
             };
         };
 
@@ -956,9 +956,9 @@ namespace pika { namespace parallel { namespace execution {
                 typename... Ts>
             struct result
             {
-                using type = decltype(
-                    call(std::declval<BulkExecutor>(), std::declval<F>(),
-                        std::declval<Shape const&>(), std::declval<Ts>()...));
+                using type = decltype(call(std::declval<BulkExecutor>(),
+                    std::declval<F>(), std::declval<Shape const&>(),
+                    std::declval<Ts>()...));
             };
         };
 
@@ -984,9 +984,9 @@ namespace pika { namespace parallel { namespace execution {
                 typename... Ts>
             struct result
             {
-                using type = decltype(
-                    call(std::declval<BulkExecutor>(), std::declval<F>(),
-                        std::declval<Shape const&>(), std::declval<Ts>()...));
+                using type = decltype(call(std::declval<BulkExecutor>(),
+                    std::declval<F>(), std::declval<Shape const&>(),
+                    std::declval<Ts>()...));
             };
         };
     }    // namespace detail

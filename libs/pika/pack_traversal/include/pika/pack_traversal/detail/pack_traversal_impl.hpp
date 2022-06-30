@@ -235,8 +235,8 @@ namespace pika { namespace util { namespace detail {
         /// Converts the given variadic arguments into a tuple in a way
         /// that spread return values are inserted into the current pack.
         template <typename... T>
-        constexpr auto tupelize(T&&... args) -> decltype(
-            map_spread(tupelizer_of_t<>{}, PIKA_FORWARD(T, args)...))
+        constexpr auto tupelize(T&&... args) -> decltype(map_spread(
+            tupelizer_of_t<>{}, PIKA_FORWARD(T, args)...))
         {
             return map_spread(tupelizer_of_t<>{}, PIKA_FORWARD(T, args)...);
         }
@@ -246,8 +246,8 @@ namespace pika { namespace util { namespace detail {
         /// If the arguments were mapped to zero arguments, the empty
         /// mapping is propagated backwards to the caller.
         template <template <typename...> class Type, typename... T>
-        constexpr auto flat_tupelize_to(T&&... args) -> decltype(
-            map_spread(flat_tupelizer_of_t<Type>{}, PIKA_FORWARD(T, args)...))
+        constexpr auto flat_tupelize_to(T&&... args) -> decltype(map_spread(
+            flat_tupelizer_of_t<Type>{}, PIKA_FORWARD(T, args)...))
         {
             return map_spread(
                 flat_tupelizer_of_t<Type>{}, PIKA_FORWARD(T, args)...);
@@ -259,8 +259,8 @@ namespace pika { namespace util { namespace detail {
         /// If the arguments were mapped to zero arguments, the empty
         /// mapping is propagated backwards to the caller.
         template <template <typename, std::size_t> class Type, typename... T>
-        constexpr auto flat_arraylize_to(T&&... args) -> decltype(
-            map_spread(flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...))
+        constexpr auto flat_arraylize_to(T&&... args) -> decltype(map_spread(
+            flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...))
         {
             return map_spread(
                 flat_arraylizer<Type>{}, PIKA_FORWARD(T, args)...);
@@ -336,9 +336,9 @@ namespace pika { namespace util { namespace detail {
 
         /// Specialization for a container with a single type T
         template <typename NewType, typename Container>
-        auto rebind_container(Container const& container) -> decltype(
-            traits::pack_traversal_rebind_container<NewType, Container>::call(
-                std::declval<Container>()))
+        auto rebind_container(Container const& container)
+            -> decltype(traits::pack_traversal_rebind_container<NewType,
+                Container>::call(std::declval<Container>()))
         {
             return traits::pack_traversal_rebind_container<NewType,
                 Container>::call(container);
@@ -737,9 +737,11 @@ namespace pika { namespace util { namespace detail {
             using traversal_callable_base::traversal_callable_base;
 
             template <typename T>
-            auto operator()(T&& element) -> decltype(
-                std::declval<try_traversor>().get_helper()->try_traverse(
-                    Strategy{}, PIKA_FORWARD(T, element)))
+            auto operator()(T&& element)
+                -> decltype(std::declval<try_traversor>()
+                                .get_helper()
+                                ->try_traverse(
+                                    Strategy{}, PIKA_FORWARD(T, element)))
             {
                 return this->get_helper()->try_traverse(
                     Strategy{}, PIKA_FORWARD(T, element));
@@ -751,8 +753,9 @@ namespace pika { namespace util { namespace detail {
 
         /// Invokes the real mapper with the given element
         template <typename T>
-        auto invoke_mapper(T&& element) -> decltype(
-            std::declval<mapping_helper>().mapper_(PIKA_FORWARD(T, element)))
+        auto invoke_mapper(T&& element)
+            -> decltype(std::declval<mapping_helper>().mapper_(
+                PIKA_FORWARD(T, element)))
         {
             return mapper_(PIKA_FORWARD(T, element));
         }
@@ -790,8 +793,9 @@ namespace pika { namespace util { namespace detail {
         /// This works recursively, so we only call the mapper
         /// with the minimal needed set of accepted arguments.
         template <typename MatcherTag, typename T>
-        auto try_match(MatcherTag, T&& element) -> decltype(
-            std::declval<mapping_helper>().may_void(PIKA_FORWARD(T, element)))
+        auto try_match(MatcherTag, T&& element)
+            -> decltype(std::declval<mapping_helper>().may_void(
+                PIKA_FORWARD(T, element)))
         {
             return this->may_void(PIKA_FORWARD(T, element));
         }
@@ -920,10 +924,9 @@ namespace pika { namespace util { namespace detail {
     /// Traverses the given pack with the given mapper and strategy
     template <typename Strategy, typename Mapper, typename... T>
     auto apply_pack_transform(Strategy strategy, Mapper&& mapper, T&&... pack)
-        -> decltype(
-            std::declval<
-                mapping_helper<Strategy, typename std::decay<Mapper>::type>>()
-                .init_traverse(strategy, PIKA_FORWARD(T, pack)...))
+        -> decltype(std::declval<mapping_helper<Strategy,
+                        typename std::decay<Mapper>::type>>()
+                        .init_traverse(strategy, PIKA_FORWARD(T, pack)...))
     {
         mapping_helper<Strategy, typename std::decay<Mapper>::type> helper(
             PIKA_FORWARD(Mapper, mapper));

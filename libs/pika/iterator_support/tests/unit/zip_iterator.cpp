@@ -414,8 +414,8 @@ int main(void)
     // A combining iterator with all vector iterators must have random access
     // traversal.
     //
-    using all_vects_type = pika::util::zip_iterator<
-        std::tuple<std::vector<double>::const_iterator,
+    using all_vects_type =
+        pika::util::zip_iterator<std::tuple<std::vector<double>::const_iterator,
             std::vector<double>::const_iterator>>;
 
     bool bAllVectsIsRandomAccessIterator = std::is_convertible<

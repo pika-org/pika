@@ -123,9 +123,9 @@ namespace pika::detail {
     template <typename Executor, typename F, typename... Ts>
     struct dataflow_return_impl_executor<Executor, F, std::tuple<Ts...>>
     {
-        using type = decltype(
-            pika::parallel::execution::async_execute(std::declval<Executor&&>(),
-                std::declval<F>(), std::declval<Ts>()...));
+        using type = decltype(pika::parallel::execution::async_execute(
+            std::declval<Executor&&>(), std::declval<F>(),
+            std::declval<Ts>()...));
     };
 
     template <typename Policy, typename F, typename Args>

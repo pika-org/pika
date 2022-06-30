@@ -234,7 +234,8 @@ namespace boost { namespace inspect {
         {"(\\bstd\\s*::\\s*exponential_distribution\\b)",
             "std::exponential_distribution", "random"},
         // tuple
-        {"(\\bstd\\s*::\\s*forward_as_tuple\\b)", "std::forward_as_tuple", "tuple"},
+        {"(\\bstd\\s*::\\s*forward_as_tuple\\b)", "std::forward_as_tuple",
+            "tuple"},
         {"(\\bstd\\s*::\\s*ignore\\b)", "std::ignore", "tuple"},
         {"(\\bstd\\s*::\\s*make_tuple\\b)", "std::make_tuple", "tuple"},
         {"(\\bstd\\s*::\\s*tie\\b)", "std::tie", "tuple"},
@@ -244,7 +245,8 @@ namespace boost { namespace inspect {
         {"(\\bstd\\s*::\\s*tuple_size\\b)", "std::tuple_size", "tuple"},
         // optional
         {"(\\bstd\\s*::\\s*optional\\b)", "std::optional", "optional"},
-        {"(\\bstd\\s*::\\s*make_optional\\b)", "std::make_optional", "optional"},
+        {"(\\bstd\\s*::\\s*make_optional\\b)", "std::make_optional",
+            "optional"},
         {"(\\bstd\\s*::\\s*nullopt\\b)", "std::nullopt", "optional"},
         // any
         {"(\\bstd\\s*::\\s*any\\b)", "std::any", "any"},

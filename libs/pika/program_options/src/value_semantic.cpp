@@ -35,8 +35,7 @@ namespace pika { namespace program_options {
         }
     }    // namespace
 
-    void value_semantic_codecvt_helper<char>::parse(
-        std::any& value_store,
+    void value_semantic_codecvt_helper<char>::parse(std::any& value_store,
         const std::vector<std::string>& new_tokens, bool utf8) const
     {
         if (utf8)
@@ -57,8 +56,7 @@ namespace pika { namespace program_options {
         }
     }
 
-    void value_semantic_codecvt_helper<wchar_t>::parse(
-        std::any& value_store,
+    void value_semantic_codecvt_helper<wchar_t>::parse(std::any& value_store,
         const std::vector<std::string>& new_tokens, bool utf8) const
     {
         std::vector<wstring> tokens;
@@ -105,8 +103,8 @@ namespace pika { namespace program_options {
             return 1;
     }
 
-    void untyped_value::xparse(std::any& value_store,
-        const std::vector<std::string>& new_tokens) const
+    void untyped_value::xparse(
+        std::any& value_store, const std::vector<std::string>& new_tokens) const
     {
         if (value_store.has_value())
             throw multiple_occurrences();
@@ -173,16 +171,14 @@ namespace pika { namespace program_options {
     }
 
     PIKA_EXPORT
-    void validate(
-        std::any& v, const vector<string>& xs, std::string*, int)
+    void validate(std::any& v, const vector<string>& xs, std::string*, int)
     {
         check_first_occurrence(v);
         v = std::any(get_single_string(xs));
     }
 
     PIKA_EXPORT
-    void validate(
-        std::any& v, const vector<wstring>& xs, std::string*, int)
+    void validate(std::any& v, const vector<wstring>& xs, std::string*, int)
     {
         check_first_occurrence(v);
         v = std::any(get_single_string(xs));

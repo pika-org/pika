@@ -161,8 +161,7 @@ namespace pika { namespace mpi { namespace experimental {
                         pika::execution::experimental::set_value_t,
                         transform_mpi_receiver&& r, Ts&&... ts) noexcept
                     {
-                        using ts_element_type =
-                            std::tuple<std::decay_t<Ts>...>;
+                        using ts_element_type = std::tuple<std::decay_t<Ts>...>;
                         r.op_state.ts.template emplace<ts_element_type>(
                             PIKA_FORWARD(Ts, ts)...);
                         auto& t = std::get<ts_element_type>(r.op_state.ts);

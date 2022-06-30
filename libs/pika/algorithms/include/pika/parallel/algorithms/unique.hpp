@@ -567,8 +567,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
                 flags[0] = false;
 
-                using std::get;
                 using pika::util::make_zip_iterator;
+                using std::get;
                 using scan_partitioner_type =
                     util::scan_partitioner<ExPolicy, FwdIter, std::size_t, void,
                         util::scan_partitioner_sequential_f3_tag>;
@@ -813,8 +813,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 std::shared_ptr<bool[]> flags(new bool[count - 1]);
                 std::size_t init = 0;
 
-                using std::get;
                 using pika::util::make_zip_iterator;
+                using std::get;
                 using scan_partitioner_type = util::scan_partitioner<ExPolicy,
                     unique_copy_result<FwdIter1, FwdIter2>, std::size_t>;
 

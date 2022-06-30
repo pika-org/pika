@@ -1494,8 +1494,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 std::shared_ptr<bool[]> flags(new bool[count]);
                 output_iterator_offset init = {0, 0};
 
-                using std::get;
                 using pika::util::make_zip_iterator;
+                using std::get;
                 using scan_partitioner_type = util::scan_partitioner<ExPolicy,
                     std::tuple<FwdIter1, FwdIter2, FwdIter3>,
                     output_iterator_offset>;

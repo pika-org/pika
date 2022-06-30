@@ -85,13 +85,12 @@ namespace pika { namespace execution { namespace experimental {
 
             template <typename... Ts, std::size_t... Is>
             auto set_value_helper(pika::util::index_pack<Is...>, Ts&&... ts)
-                -> decltype(
-                    (std::declval<
-                         typename OperationState::value_types_storage_type>()
-                            .template get<OperationState::i_storage_offset +
-                                Is>()
-                            .emplace(PIKA_FORWARD(Ts, ts)),
-                        ...),
+                -> decltype((std::declval<typename OperationState::
+                                     value_types_storage_type>()
+                                    .template get<
+                                        OperationState::i_storage_offset + Is>()
+                                    .emplace(PIKA_FORWARD(Ts, ts)),
+                                ...),
                     void())
             {
                 // op_state.ts holds values from all predecessor senders. We
@@ -107,9 +106,10 @@ namespace pika { namespace execution { namespace experimental {
                 OperationState::sender_pack_size>::type;
 
             template <typename... Ts>
-            auto set_value(Ts&&... ts) noexcept -> decltype(
-                set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...),
-                void())
+            auto set_value(Ts&&... ts) noexcept
+                -> decltype(set_value_helper(
+                                index_pack_type{}, PIKA_FORWARD(Ts, ts)...),
+                    void())
             {
                 if constexpr (OperationState::sender_pack_size > 0)
                 {
@@ -272,8 +272,8 @@ namespace pika { namespace execution { namespace experimental {
                 std::atomic<bool> set_stopped_error_called{false};
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-                using operation_state_type = std::decay_t<decltype(
-                    pika::execution::experimental::connect(
+                using operation_state_type = std::decay_t<
+                    decltype(pika::execution::experimental::connect(
                         std::declval<SendersPack>().template get<i>(),
                         when_all_receiver<operation_state>(
                             std::declval<std::decay_t<operation_state>&>())))>;
@@ -354,8 +354,8 @@ namespace pika { namespace execution { namespace experimental {
                 static constexpr std::size_t i_storage_offset =
                     base_type::i_storage_offset + base_type::sender_pack_size;
 
-                using operation_state_type = std::decay_t<decltype(
-                    pika::execution::experimental::connect(
+                using operation_state_type = std::decay_t<
+                    decltype(pika::execution::experimental::connect(
                         PIKA_FORWARD(SendersPack, senders).template get<i>(),
                         when_all_receiver<operation_state>(
                             std::declval<std::decay_t<operation_state>&>())))>;

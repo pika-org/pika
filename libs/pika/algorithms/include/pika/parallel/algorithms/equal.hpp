@@ -361,8 +361,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                     util::loop_n<std::decay_t<ExPolicy>>(it, part_count, tok,
                         [&f, &tok](zip_iterator const& curr) mutable -> void {
                             reference t = *curr;
-                            if (!PIKA_INVOKE(
-                                    f, std::get<0>(t), std::get<1>(t)))
+                            if (!PIKA_INVOKE(f, std::get<0>(t), std::get<1>(t)))
                             {
                                 tok.cancel();
                             }

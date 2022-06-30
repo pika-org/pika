@@ -87,8 +87,8 @@ void test_split_future3()
         make_tuple3_slowly);
     pt.apply();
 
-    std::tuple<pika::future<int>, pika::future<int>, pika::future<int>>
-        result = pika::split_future(
+    std::tuple<pika::future<int>, pika::future<int>, pika::future<int>> result =
+        pika::split_future(
             pika::shared_future<std::tuple<int, int, int>>(pt.get_future()));
 
     PIKA_TEST_EQ(std::get<0>(result).get(), 42);
