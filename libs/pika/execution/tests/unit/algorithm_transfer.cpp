@@ -315,6 +315,25 @@ int main()
         PIKA_TEST(scheduler_schedule_called);
     }
 
+    {
+        std::atomic<bool> set_value_called{false};
+        std::atomic<bool> scheduler_execute_called{false};
+        std::atomic<bool> scheduler_schedule_called{false};
+        std::atomic<bool> tag_invoke_overload_called{false};
+        int x = 3;
+        auto s = ex::transfer(const_reference_sender<int>{x},
+            scheduler{scheduler_schedule_called, scheduler_execute_called,
+                tag_invoke_overload_called});
+        auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+        PIKA_TEST(!tag_invoke_overload_called);
+        PIKA_TEST(!scheduler_execute_called);
+        PIKA_TEST(scheduler_schedule_called);
+    }
+
     // operator| overload
     {
         std::atomic<bool> set_value_called{false};

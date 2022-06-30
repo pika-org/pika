@@ -377,6 +377,47 @@ struct custom_sender2 : custom_sender
 };
 
 template <typename T>
+struct const_reference_sender
+{
+    std::reference_wrapper<std::decay_t<T>> x;
+
+    template <template <class...> class Tuple,
+        template <class...> class Variant>
+    using value_types = Variant<Tuple<std::decay_t<T> const&>>;
+
+    template <template <class...> class Variant>
+    using error_types = Variant<std::exception_ptr>;
+
+    static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(std::decay_t<T>&),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
+
+    template <typename R>
+    struct operation_state
+    {
+        std::reference_wrapper<std::decay_t<T>> const x;
+        std::decay_t<R> r;
+
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
+        {
+            pika::execution::experimental::set_value(
+                std::move(os.r), os.x.get());
+        };
+    };
+
+    template <typename R>
+    friend auto tag_invoke(pika::execution::experimental::connect_t,
+        const_reference_sender&& s, R&& r)
+    {
+        return operation_state<R>{std::move(s.x), std::forward<R>(r)};
+    }
+};
+
+template <typename T>
 struct custom_type
 {
     std::atomic<bool>& tag_invoke_overload_called;
