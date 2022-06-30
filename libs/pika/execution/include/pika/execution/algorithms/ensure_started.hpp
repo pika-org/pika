@@ -62,6 +62,11 @@ namespace pika::execution::experimental {
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
+            void operator()(std::monostate)
+            {
+                PIKA_UNREACHABLE;
+            }
+
             template <typename Ts>
             void operator()(Ts&& ts)
             {
@@ -140,10 +145,19 @@ namespace pika::execution::experimental {
                 struct done_type
                 {
                 };
-                using value_type =
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<pika::tuple,
-                        pika::variant>;
+                template <typename Tuple>
+                struct value_types_helper
+                {
+                    using type =
+                        pika::util::detail::transform_t<Tuple, std::decay>;
+                };
+                using value_type = pika::util::detail::prepend_t<
+                    pika::util::detail::transform_t<
+                        typename pika::execution::experimental::sender_traits<
+                            Sender>::template value_types<pika::tuple,
+                            pika::variant>,
+                        value_types_helper>,
+                    pika::monostate>;
                 using error_type =
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
                         error_types<pika::variant>, std::exception_ptr>>;
@@ -173,13 +187,23 @@ namespace pika::execution::experimental {
                         r.state->set_predecessor_done();
                     };
 
-                    // This typedef is duplicated from the parent struct. The
-                    // parent typedef is not instantiated early enough for use
+                    // These typedefs are duplicated from the parent struct. The
+                    // parent typedefs are not instantiated early enough for use
                     // here.
-                    using value_type =
-                        typename pika::execution::experimental::sender_traits<
-                            Sender>::template value_types<pika::tuple,
-                            pika::variant>;
+                    template <typename Tuple>
+                    struct value_types_helper
+                    {
+                        using type =
+                            pika::util::detail::transform_t<Tuple, std::decay>;
+                    };
+
+                    using value_type = pika::util::detail::prepend_t<
+                        pika::util::detail::transform_t<
+                            typename pika::execution::experimental::
+                                sender_traits<Sender>::template value_types<
+                                    pika::tuple, pika::variant>,
+                            value_types_helper>,
+                        pika::monostate>;
 
                     template <typename... Ts>
                     friend auto tag_invoke(set_value_t,
@@ -217,7 +241,11 @@ namespace pika::execution::experimental {
                 {
                     PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-                    [[noreturn]] void operator()(pika::monostate) const
+                    template <typename T,
+                        typename = std::enable_if_t<
+                            std::is_same_v<std::decay_t<T>, pika::monostate> &&
+                            !std::is_same_v<std::decay_t<T>, value_type>>>
+                    [[noreturn]] void operator()(T&&) const
                     {
                         PIKA_UNREACHABLE;
                     }
@@ -235,11 +263,15 @@ namespace pika::execution::experimental {
                             PIKA_MOVE(error));
                     }
 
-                    void operator()(value_type&& ts)
+                    template <typename T,
+                        typename = std::enable_if_t<
+                            !std::is_same_v<std::decay_t<T>, pika::monostate> &&
+                            std::is_same_v<std::decay_t<T>, value_type>>>
+                    void operator()(T&& t)
                     {
                         pika::visit(value_visitor<Receiver>{PIKA_FORWARD(
                                         Receiver, receiver)},
-                            PIKA_MOVE(ts));
+                            PIKA_FORWARD(T, t));
                     }
                 };
 
