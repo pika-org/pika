@@ -12,6 +12,7 @@
 #include <pika/execution_base/p2300_forward.hpp>
 #else
 #include <pika/concepts/concepts.hpp>
+#include <pika/datastructures/member_pack.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
 #include <pika/execution_base/operation_state.hpp>
