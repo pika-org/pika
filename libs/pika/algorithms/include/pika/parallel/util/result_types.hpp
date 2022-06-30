@@ -117,7 +117,7 @@ namespace pika { namespace parallel { namespace util {
             PIKA_MOVE(f), [](util::in_out_result<I, O>&& p) { return p.out; });
     }
 
-    // converst a in_out_result into a iterator_range
+    // convert a in_out_result into a iterator_range
     template <typename I, typename O>
     pika::util::iterator_range<I, O> get_subrange(
         in_out_result<I, O> const& ior)
