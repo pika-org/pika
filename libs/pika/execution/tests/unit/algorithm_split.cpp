@@ -31,9 +31,6 @@ auto tag_invoke(
 
 int main()
 {
-    // TODO: split doesn't have a default implementation in the reference
-    // implementation.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     // Success path
     {
         std::atomic<bool> set_value_called{false};
@@ -126,7 +123,10 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-    // Chained split calls do not create new shared states
+    // Chained split calls do not create new shared states. This is an
+    // implementation detail of our own implementation. We can't test this for
+    // the reference implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     {
         std::atomic<bool> receiver_set_value_called{false};
         auto s1 = ex::just() | ex::split();
@@ -154,6 +154,7 @@ int main()
         ex::start(os);
         PIKA_TEST(receiver_set_value_called);
     }
+#endif
 
     {
         auto s = ex::split(my_namespace::my_sender{});
@@ -164,7 +165,6 @@ int main()
         // the sender has been connected and started before being released.
         tt::sync_wait(std::move(s));
     }
-#endif
 
     return pika::util::report_errors();
 }
