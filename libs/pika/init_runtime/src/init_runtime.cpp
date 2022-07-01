@@ -462,8 +462,8 @@ namespace pika {
                             cmdline.rtcfg_, "pika.pu_step", 0),
                         0, cmdline.rtcfg_.get_entry("pika.affinity", ""),
                         cmdline.rtcfg_.get_entry("pika.bind", ""),
-                        pika::util::get_entry_as<bool>(
-                            cmdline.rtcfg_, "pika.use_process_mask", 0));
+                        !pika::util::get_entry_as<bool>(
+                            cmdline.rtcfg_, "pika.ignore_process_mask", false));
 
                     pika::resource::partitioner rp =
                         pika::resource::detail::make_partitioner(
