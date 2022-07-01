@@ -98,6 +98,18 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+    {
+        std::atomic<bool> set_value_called{false};
+        int x = 42;
+        auto s1 = const_reference_sender<int>{x};
+        auto s2 = ex::ensure_started(std::move(s1));
+        auto f = [](auto&& x) { PIKA_TEST_EQ(x, 42); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s2), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
     // operator| overload
     {
         std::atomic<bool> set_value_called{false};

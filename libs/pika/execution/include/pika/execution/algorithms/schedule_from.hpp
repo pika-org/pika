@@ -118,10 +118,19 @@ namespace pika { namespace execution { namespace experimental {
                 struct predecessor_sender_receiver;
                 struct scheduler_sender_receiver;
 
+                template <typename Tuple>
+                struct value_types_helper
+                {
+                    using type =
+                        pika::util::detail::transform_t<Tuple, std::decay>;
+                };
+
                 using value_type = pika::util::detail::prepend_t<
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<pika::tuple,
-                        pika::variant>,
+                    pika::util::detail::transform_t<
+                        typename pika::execution::experimental::sender_traits<
+                            Sender>::template value_types<pika::tuple,
+                            pika::variant>,
+                        value_types_helper>,
                     pika::monostate>;
                 value_type ts;
 
@@ -171,20 +180,30 @@ namespace pika { namespace execution { namespace experimental {
                         r.op_state.set_stopped_predecessor_sender();
                     }
 
-                    // This typedef is duplicated from the parent struct. The
-                    // parent typedef is not instantiated early enough for use
+                    // These typedefs are duplicated from the parent struct. The
+                    // parent typedefs are not instantiated early enough for use
                     // here.
+                    template <typename Tuple>
+                    struct value_types_helper
+                    {
+                        using type =
+                            pika::util::detail::transform_t<Tuple, std::decay>;
+                    };
+
                     using value_type = pika::util::detail::prepend_t<
-                        typename pika::execution::experimental::sender_traits<
-                            Sender>::template value_types<pika::tuple,
-                            pika::variant>,
+                        pika::util::detail::transform_t<
+                            typename pika::execution::experimental::
+                                sender_traits<Sender>::template value_types<
+                                    pika::tuple, pika::variant>,
+                            value_types_helper>,
                         pika::monostate>;
 
                     template <typename... Ts>
                     friend auto tag_invoke(set_value_t,
                         predecessor_sender_receiver&& r, Ts&&... ts) noexcept
                         -> decltype(std::declval<value_type>()
-                                        .template emplace<pika::tuple<Ts...>>(
+                                        .template emplace<
+                                            pika::tuple<std::decay_t<Ts>...>>(
                                             PIKA_FORWARD(Ts, ts)...),
                             void())
                     {
@@ -209,7 +228,7 @@ namespace pika { namespace execution { namespace experimental {
                 template <typename... Us>
                 void set_value_predecessor_sender(Us&&... us) noexcept
                 {
-                    ts.template emplace<pika::tuple<Us...>>(
+                    ts.template emplace<pika::tuple<std::decay_t<Us>...>>(
                         PIKA_FORWARD(Us, us)...);
 #if defined(PIKA_HAVE_CXX17_COPY_ELISION)
                     // with_result_of is used to emplace the operation
