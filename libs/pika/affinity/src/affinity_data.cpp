@@ -40,7 +40,7 @@ namespace pika::detail {
       , affinity_masks_()
       , pu_nums_()
       , no_affinity_()
-      , use_process_mask_(false)
+      , use_process_mask_(true)
       , num_pus_needed_(0)
     {
         threads::detail::resize(

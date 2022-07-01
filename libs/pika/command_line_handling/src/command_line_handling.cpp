@@ -451,18 +451,16 @@ namespace pika::detail {
             cfgmap.add(cfg);
         }
 
-        ignore_process_mask_ =
+        use_process_mask_ =
 #if defined(__APPLE__)
-            true;
+            false;
 #else
-            (cfgmap.get_value<int>("pika.ignore_process_mask", 0) > 0) ||
+            !(cfgmap.get_value<int>("pika.ignore_process_mask", 0) > 0) ||
             (vm.count("pika:ignore-process-mask") > 0);
 #endif
 
-        ini_config.emplace_back("pika.ignore_process_mask!=" +
-            std::to_string(ignore_process_mask_));
-
-        bool use_process_mask = !ignore_process_mask_;
+        ini_config.emplace_back(
+            "pika.ignore_process_mask!=" + std::to_string(!use_process_mask_));
 
         // handle setting related to schedulers
         queuing_ = detail::handle_queuing(cfgmap, vm, "local-priority-fifo");
@@ -552,9 +550,9 @@ namespace pika::detail {
 
         // handle number of cores and threads
         num_threads_ =
-            detail::handle_num_threads(cfgmap, rtcfg_, vm, use_process_mask);
+            detail::handle_num_threads(cfgmap, rtcfg_, vm, use_process_mask_);
         num_cores_ = detail::handle_num_cores(
-            cfgmap, vm, num_threads_, use_process_mask);
+            cfgmap, vm, num_threads_, use_process_mask_);
 
         // Set number of cores and OS threads in configuration.
         ini_config.emplace_back(
@@ -969,7 +967,7 @@ namespace pika::detail {
         // Print a warning about process masks resulting in only one worker
         // thread, but only do so if that would not be the default on the given
         // system and it was not given explicitly to --pika:threads.
-        if (!ignore_process_mask_)
+        if (use_process_mask_)
         {
             bool const command_line_arguments_given =
                 vm_.count("pika:threads") != 0 || vm_.count("pika:cores") != 0;

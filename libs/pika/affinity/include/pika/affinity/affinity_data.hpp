@@ -31,7 +31,7 @@ namespace pika::detail {
             std::size_t pu_offset = 0, std::size_t pu_step = 1,
             std::size_t used_cores = 0, std::string affinity_domain = "pu",
             std::string const& affinity_description = "balanced",
-            bool use_process_mask = false);
+            bool use_process_mask = true);
 
         void set_num_threads(size_t num_threads)
         {
