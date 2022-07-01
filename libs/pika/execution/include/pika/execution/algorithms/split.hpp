@@ -93,13 +93,17 @@ namespace pika { namespace execution { namespace experimental {
 
             using allocator_type = Allocator;
 
+            template <typename T>
+            struct add_const_lvalue_reference
+            {
+                using type = std::add_lvalue_reference_t<std::add_const_t<T>>;
+            };
+
             template <typename Tuple>
             struct value_types_helper
             {
-                using const_type =
-                    pika::util::detail::transform_t<Tuple, std::add_const>;
-                using type = pika::util::detail::transform_t<const_type,
-                    std::add_lvalue_reference>;
+                using type = pika::util::detail::transform_t<Tuple,
+                    add_const_lvalue_reference>;
             };
 
             template <template <typename...> class Tuple,
@@ -112,8 +116,10 @@ namespace pika { namespace execution { namespace experimental {
             template <template <typename...> class Variant>
             using error_types =
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    typename pika::execution::experimental::sender_traits<
-                        Sender>::template error_types<Variant>,
+                    pika::util::detail::transform_t<
+                        typename pika::execution::experimental::sender_traits<
+                            Sender>::template error_types<Variant>,
+                        add_const_lvalue_reference>,
                     std::exception_ptr>>;
 
             static constexpr bool sends_done = false;
@@ -139,16 +145,28 @@ namespace pika { namespace execution { namespace experimental {
                 // predecessor work is released as soon as possible.
                 std::optional<operation_state_type> os;
 
+                template <typename Tuple>
+                struct value_type_helper
+                {
+                    using type =
+                        pika::util::detail::transform_t<Tuple, std::decay>;
+                };
+
                 struct done_type
                 {
                 };
-                using value_type =
+                using value_type = pika::util::detail::transform_t<
                     typename pika::execution::experimental::sender_traits<
                         Sender>::template value_types<std::tuple,
-                        pika::detail::variant>;
+                        pika::detail::variant>,
+                    value_type_helper>;
                 using error_type =
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                        error_types<pika::detail::variant>,
+                        pika::util::detail::transform_t<
+                            typename pika::execution::experimental::
+                                sender_traits<Sender>::template error_types<
+                                    pika::detail::variant>,
+                            std::decay>,
                         std::exception_ptr>>;
                 pika::detail::variant<pika::detail::monostate, done_type,
                     error_type, value_type>
@@ -179,10 +197,17 @@ namespace pika { namespace execution { namespace experimental {
                     // This typedef is duplicated from the parent struct. The
                     // parent typedef is not instantiated early enough for use
                     // here.
-                    using value_type =
+                    template <typename Tuple>
+                    struct value_type_helper
+                    {
+                        using type =
+                            pika::util::detail::transform_t<Tuple, std::decay>;
+                    };
+                    using value_type = pika::util::detail::transform_t<
                         typename pika::execution::experimental::sender_traits<
                             Sender>::template value_types<std::tuple,
-                            pika::detail::variant>;
+                            pika::detail::variant>,
+                        value_type_helper>;
 
                     template <typename... Ts>
                     friend auto tag_invoke(

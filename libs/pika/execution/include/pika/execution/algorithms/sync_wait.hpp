@@ -98,7 +98,9 @@ namespace pika::this_thread::experimental {
             // variant.
             using error_type =
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    predecessor_error_types<pika::detail::variant>,
+                    pika::util::detail::transform_t<
+                        predecessor_error_types<pika::detail::variant>,
+                        std::decay>,
                     std::exception_ptr>>;
 #else
             // value and error_types of the predecessor sender
@@ -138,7 +140,9 @@ namespace pika::this_thread::experimental {
             // variant.
             using error_type =
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    predecessor_error_types<pika::detail::variant>,
+                    pika::util::detail::transform_t<
+                        predecessor_error_types<pika::detail::variant>,
+                        std::decay>,
                     std::exception_ptr>>;
 #endif
 
