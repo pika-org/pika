@@ -33,6 +33,7 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 // a debug level of zero disables messages with a priority>0
@@ -241,17 +242,16 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
                              "send in flight", deb::dec<4>(sends_in_flight));
             // clang-format on
             void* buffer_to_recv = &local_recv_storage[memory_offset_recv];
-            auto rsnd1 = mpi::transform_mpi(
-                ex::just(buffer_to_recv, options.transfer_size_B,
-                    MPI_UNSIGNED_CHAR, recv_rank, tag, MPI_COMM_WORLD),
-                MPI_Irecv);
-            auto rsnd2 = rsnd1 | ex::then([&](int result) {
-                --recvs_in_flight;
-                nws_deb<5>.debug(deb::str<>("recv complete"), "recv in flight",
-                    recvs_in_flight, "send in flight", sends_in_flight);
-                return result;
-            });
-            ex::start_detached(rsnd2);
+            auto rsnd = ex::just(buffer_to_recv, options.transfer_size_B,
+                            MPI_UNSIGNED_CHAR, recv_rank, tag, MPI_COMM_WORLD) |
+                mpi::transform_mpi(MPI_Irecv) | ex::then([&](int result) {
+                    --recvs_in_flight;
+                    nws_deb<5>.debug(deb::str<>("recv complete"),
+                        "recv in flight", recvs_in_flight, "send in flight",
+                        sends_in_flight);
+                    return result;
+                });
+            ex::start_detached(std::move(rsnd));
 
             // we are about to send, so increment our counter
             ++sends_in_flight;
@@ -265,17 +265,16 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
                              "send in flight", deb::dec<4>(sends_in_flight));
             // clang-format on
             void* buffer_to_send = &local_send_storage[memory_offset_send];
-            auto ssnd1 = mpi::transform_mpi(
-                ex::just(buffer_to_send, options.transfer_size_B,
-                    MPI_UNSIGNED_CHAR, send_rank, tag, MPI_COMM_WORLD),
-                MPI_Isend);
-            auto ssnd2 = ssnd1 | ex::then([&](int result) {
-                --sends_in_flight;
-                nws_deb<5>.debug(deb::str<>("send complete"), "recv in flight",
-                    recvs_in_flight, "send in flight", sends_in_flight);
-                return result;
-            });
-            ex::start_detached(ssnd2);
+            auto ssnd = ex::just(buffer_to_send, options.transfer_size_B,
+                            MPI_UNSIGNED_CHAR, send_rank, tag, MPI_COMM_WORLD) |
+                mpi::transform_mpi(MPI_Isend) | ex::then([&](int result) {
+                    --sends_in_flight;
+                    nws_deb<5>.debug(deb::str<>("send complete"),
+                        "recv in flight", recvs_in_flight, "send in flight",
+                        sends_in_flight);
+                    return result;
+                });
+            ex::start_detached(std::move(ssnd));
         }
         messages_sent++;
         //

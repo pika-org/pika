@@ -386,7 +386,9 @@ namespace pika { namespace mpi { namespace experimental {
                 detail::mpi_data_.status_vector_.data());
 
         if (result != MPI_SUCCESS)
-            std::terminate();
+        {
+            throw mpi_exception(result, "Testsome error");
+        }
 
         if constexpr (mpi_debug.is_enabled())
         {
@@ -401,10 +403,6 @@ namespace pika { namespace mpi { namespace experimental {
         for (int i = 0; i < outcount; ++i)
         {
             size_t index = detail::mpi_data_.indices_vector_[i];
-            if (detail::mpi_data_.status_vector_[i].MPI_ERROR != MPI_SUCCESS)
-            {
-                std::terminate();
-            }
 
             if constexpr (mpi_debug.is_enabled())
             {
@@ -420,7 +418,8 @@ namespace pika { namespace mpi { namespace experimental {
 
             // Invoke the callback with the status of the completed
             // operation (status of the request is forwarded to MPI_Testany)
-            detail::mpi_data_.callback_vector_[index](result);
+            detail::mpi_data_.callback_vector_[index](
+                detail::mpi_data_.status_vector_[i].MPI_ERROR);
 
             // Remove the request from our vector to prevent retesting
             detail::mpi_data_.callback_vector_[index].reset();
