@@ -256,8 +256,28 @@ namespace pika {
 #include <functional>
 #include <iterator>
 #include <list>
+#include <tuple>
 #include <type_traits>
 #include <utility>
+
+#if defined(PIKA_HAVE_TUPLE_RVALUE_SWAP)
+namespace std {
+    // BADBAD: This overload of swap is necessary to work around the problems
+    //         caused by zip_iterator not being a real random access iterator.
+    //         Dereferencing zip_iterator does not yield a true reference but
+    //         only a temporary tuple holding true references.
+    //
+    // A real fix for this problem is proposed in PR0022R0
+    // (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0022r0.html)
+    //
+    template <typename... Ts>
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE void swap(std::tuple<Ts&...>&& x,
+        std::tuple<Ts&...>&& y) noexcept(noexcept(x.swap(y)))
+    {
+        x.swap(y);
+    }
+}    // namespace std
+#endif
 
 namespace pika { namespace parallel { inline namespace v1 {
 

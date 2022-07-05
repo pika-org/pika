@@ -117,8 +117,10 @@ namespace pika { namespace parallel { inline namespace v1 {
         typename Compare = detail::less>
     util::detail::algorithm_result_t<ExPolicy,
         sort_by_key_result<KeyIter, ValueIter>>
-    sort_by_key(ExPolicy&& policy, KeyIter key_first, KeyIter key_last,
-        ValueIter value_first, Compare&& comp = Compare())
+    sort_by_key([[maybe_unused]] ExPolicy&& policy,
+        [[maybe_unused]] KeyIter key_first, [[maybe_unused]] KeyIter key_last,
+        [[maybe_unused]] ValueIter value_first,
+        [[maybe_unused]] Compare&& comp = Compare())
     {
 #if !defined(PIKA_HAVE_TUPLE_RVALUE_SWAP)
         static_assert(sizeof(KeyIter) == 0,    // always false
