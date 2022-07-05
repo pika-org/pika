@@ -4,6 +4,26 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.6.0 (2022-07-06)
+
+### New features
+
+- Added basic support for Tracy. The Tracy integration can currently only be used with threads that do not yield. ([#252](https://github.com/pika-org/pika/pull/252))
+- Added `make_any_sender` and `make_unique_any_sender` helpers for deducing the template parameters of `any_sender` and `unique_any_sender`. ([#259](https://github.com/pika-org/pika/pull/259))
+- Added a `drop_value` sender adaptor which ignores values sent from the predecessor. ([#262](https://github.com/pika-org/pika/pull/262))
+- Allow passing flags to the `cuda_stream` and `cuda_pool` constructor. ([#270](https://github.com/pika-org/pika/pull/270))
+- Allow using any version of mimalloc. The version was previously unnecessarily constrained to 1. ([#273](https://github.com/pika-org/pika/pull/273))
+- Further relax the requirements for constness on `argc` and `argv` passed to `pika::init` and `pika::start`. ([#275](https://github.com/pika-org/pika/pull/275))
+
+### Breaking changes
+
+- If a process mask is set the pika runtime now uses the mask by default to restrict the number of threads. The command-line option `--pika:use-process-mask` which was previously used to enable this behaviour has been removed along with the corresponding configuration option. The process mask can be explicitly ignored with the command-line option `--pika:ignore-process-mask` or the configuration option `pika.ignore_process_mask`. ([#242](https://github.com/pika-org/pika/pull/242))
+- Moved internal functionality into the `detail` namespace. ([#246](https://github.com/pika-org/pika/pull/246), [#248](https://github.com/pika-org/pika/pull/248), [#257](https://github.com/pika-org/pika/pull/257))
+
+### Bugfixes
+
+- Fix handling of reference types sent by predecessors to `ensure_started` and `schedule_from`. ([#282](https://github.com/pika-org/pika/pull/282))
+
 ## 0.5.0 (2022-06-02)
 
 ### New features
