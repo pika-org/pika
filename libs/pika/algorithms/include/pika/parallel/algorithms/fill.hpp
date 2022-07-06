@@ -140,7 +140,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             template <typename U>
             PIKA_HOST_DEVICE typename std::enable_if<
-                !pika::traits::is_value_proxy<U>::value>::type
+                !pika::detail::is_value_proxy<U>::value>::type
             operator()(U& u) const
             {
                 u = val_;
@@ -148,7 +148,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 
             template <typename U>
             PIKA_HOST_DEVICE typename std::enable_if<
-                pika::traits::is_value_proxy<U>::value>::type
+                pika::detail::is_value_proxy<U>::value>::type
             operator()(U u) const
             {
                 u = val_;

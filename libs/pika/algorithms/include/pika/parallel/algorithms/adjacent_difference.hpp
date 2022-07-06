@@ -215,7 +215,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 difference_type count = detail::distance(first, last) - 1;
 
                 FwdIter1 prev = first;
-                pika::traits::proxy_value_t<
+                pika::detail::proxy_value_t<
                     typename std::iterator_traits<FwdIter1>::value_type>
                     tmp = *first++;
                 *dest++ = PIKA_MOVE(tmp);

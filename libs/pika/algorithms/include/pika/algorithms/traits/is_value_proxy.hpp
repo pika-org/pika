@@ -12,8 +12,7 @@
 
 #include <type_traits>
 
-namespace pika { namespace traits {
-
+namespace pika::detail {
     template <typename T>
     struct is_value_proxy : std::false_type
     {
@@ -30,4 +29,4 @@ namespace pika { namespace traits {
 
     template <typename T>
     using proxy_value_t = typename proxy_value<T>::type;
-}}    // namespace pika::traits
+}    // namespace pika::detail

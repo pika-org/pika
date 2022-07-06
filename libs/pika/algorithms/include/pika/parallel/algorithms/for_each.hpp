@@ -276,7 +276,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using value_type = std::decay_t<
                     typename std::iterator_traits<Iter>::reference>;
-                if constexpr (pika::traits::is_value_proxy_v<value_type>)
+                if constexpr (pika::detail::is_value_proxy_v<value_type>)
                 {
                     auto tmp = PIKA_INVOKE(proj_, *curr);
                     PIKA_INVOKE(f_, tmp);
@@ -310,7 +310,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using value_type = std::decay_t<
                     typename std::iterator_traits<Iter>::reference>;
-                if constexpr (pika::traits::is_value_proxy_v<value_type>)
+                if constexpr (pika::detail::is_value_proxy_v<value_type>)
                 {
                     auto tmp = *curr;
                     PIKA_INVOKE(f_, tmp);
@@ -414,7 +414,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using value_type = std::decay_t<
                     typename std::iterator_traits<Iter>::reference>;
-                if constexpr (pika::traits::is_value_proxy_v<value_type>)
+                if constexpr (pika::detail::is_value_proxy_v<value_type>)
                 {
                     util::loop_n<execution_policy_type>(
                         part_begin, part_size, invoke_projected<F>(f_));
