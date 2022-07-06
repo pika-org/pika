@@ -56,7 +56,6 @@ static pika::debug::print_threshold<Level, debug_level> nws_deb("STORAGE");
 //
 // Each locality allocates a buffer of memory which is used to host transfers
 //
-static pika::util::detail::spinlock storage_mutex;
 using local_storage_type = std::vector<char>;
 static local_storage_type local_send_storage;
 static local_storage_type local_recv_storage;
