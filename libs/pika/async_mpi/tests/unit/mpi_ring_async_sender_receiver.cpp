@@ -19,6 +19,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <mpi.h>
@@ -37,6 +38,7 @@ using pika::program_options::variables_map;
 namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
+namespace deb = pika::debug;
 
 static bool output = true;
 
@@ -80,7 +82,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
     // if comm size < 2 this test should fail
     // it needs to run on N>2 ranks to be useful
-    //PIKA_TEST_MSG(size > 1, "This test requires N>1 mpi ranks");
+    PIKA_TEST_MSG(size > 1, "This test requires N>1 mpi ranks");
 
     const std::uint64_t iterations = vm["iterations"].as<std::uint64_t>();
     //
@@ -108,8 +110,6 @@ int pika_main(pika::program_options::variables_map& vm)
         // Rank 0      : Send then Recv
         // Rank 1->N-1 : Recv then Send
 
-        pika::mpi::experimental::executor exec(MPI_COMM_WORLD);
-
         std::vector<int> tokens(iterations, -1);
 
         pika::chrono::high_resolution_timer t;
@@ -129,61 +129,57 @@ int pika_main(pika::program_options::variables_map& vm)
                 int rank_from = (size + rank - 1) % size;
                 int rank_to = (rank + 1) % size;
 
-                // all ranks pre-post a receive
-                auto s1 =
-                    mpi::transform_mpi(ex::just(&tokens[tag], 1, MPI_INT,
-                                           rank_from, tag, MPI_COMM_WORLD),
-                        MPI_Irecv);
-
-                // when that receive completes, send the message on to the next rank
-                auto s2 = s1 |
-                    pika::execution::experimental::then(
-                        [=, &tokens, &counter](int /*result*/) {
+                // all ranks pre-post a receive, but when rank-0 receives it, we're done
+                if (rank == 0)
+                {
+                    auto snd = ex::just(&tokens[tag], 1, MPI_INT, rank_from,
+                                   tag, MPI_COMM_WORLD) |
+                        mpi::transform_mpi(MPI_Irecv) |
+                        ex::then([=, &tokens, &counter](int /*result*/) {
                             msg_recv(rank, size, rank_to, rank_from,
                                 tokens[tag], tag);
-                            if (rank > 0)
-                            {
-                                // send the incremented token to the next rank
-                                ++tokens[tag];
-                                auto s3 = mpi::transform_mpi(
-                                    ex::just(&tokens[tag], 1, MPI_INT, rank_to,
-                                        tag, MPI_COMM_WORLD),
-                                    MPI_Isend);
-
-                                // when the send completes
-                                auto s4 = s3 |
-                                    pika::execution::experimental::then(
-                                        [=, &tokens, &counter](int /*result*/) {
-                                            msg_send(rank, size, rank_to,
-                                                rank_from, tokens[tag], tag);
-                                            // ranks > 0 are done after sending token
-                                            --counter;
-                                        });
-                                ex::start_detached(s4);
-                            }
-                            else
-                            {
-                                // rank 0 is done when it receives its token
-                                --counter;
-                            }
+                            --counter;
                         });
-                ex::start_detached(s2);
+                    ex::start_detached(std::move(snd));
+                }
+                // when ranks>0 complete receives, send the message to next rank
+                else
+                {
+                    auto recv_snd = ex::just(&tokens[tag], 1, MPI_INT,
+                                        rank_from, tag, MPI_COMM_WORLD) |
+                        mpi::transform_mpi(MPI_Irecv) |
+                        ex::then([=, &tokens](int /*result*/) {
+                            msg_recv(rank, size, rank_to, rank_from,
+                                tokens[tag], tag);
+                            // increment the token
+                            ++tokens[tag];
+                        });
+
+                    auto send_snd =
+                        ex::when_all(ex::just(&tokens[tag], 1, MPI_INT, rank_to,
+                                         tag, MPI_COMM_WORLD),
+                            std::move(recv_snd)) |
+                        mpi::transform_mpi(MPI_Isend) |
+                        ex::then([=, &tokens, &counter](int /*result*/) {
+                            msg_send(rank, size, rank_to, rank_from,
+                                tokens[tag], tag);
+                            // ranks > 0 are done after sending token
+                            --counter;
+                        });
+                    ex::start_detached(std::move(send_snd));
+                }
 
                 // rank 0 starts the process with a send
                 if (rank == 0)
                 {
-                    auto s5 =
-                        mpi::transform_mpi(ex::just(&tokens[tag], 1, MPI_INT,
-                                               rank_to, tag, MPI_COMM_WORLD),
-                            MPI_Isend);
-
-                    auto s6 = s5 |
-                        pika::execution::experimental::then(
-                            [=, &tokens](int /*result*/) {
-                                msg_send(rank, size, rank_to, rank_from,
-                                    tokens[tag], tag);
-                            });
-                    ex::start_detached(s6);
+                    auto snd0 = ex::just(&tokens[tag], 1, MPI_INT, rank_to, tag,
+                                    MPI_COMM_WORLD) |
+                        mpi::transform_mpi(MPI_Isend) |
+                        ex::then([=, &tokens](int /*result*/) {
+                            msg_send(rank, size, rank_to, rank_from,
+                                tokens[tag], tag);
+                        });
+                    ex::start_detached(snd0);
                 }
             }
             // block until messages are drained
