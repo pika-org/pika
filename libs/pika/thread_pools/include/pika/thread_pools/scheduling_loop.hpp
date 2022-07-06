@@ -748,9 +748,10 @@ namespace pika { namespace threads { namespace detail {
                                 task_annotation
                                     << "pika/task:" << thrd << "/"
                                     << (desc.kind() ==
-                                                   pika::util::thread_description::
-                                                       data_type::
-                                                           data_type_description ?
+                                                   pika::util::detail::
+                                                       thread_description::
+                                                           data_type::
+                                                               data_type_description ?
                                                desc.get_description() :
                                                "<unknown>");
                                 auto task_annotation_str =
