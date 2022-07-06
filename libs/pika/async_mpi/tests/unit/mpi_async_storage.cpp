@@ -134,14 +134,15 @@ static std::atomic<size_t> results_received{0};
 static test_options options;
 
 //----------------------------------------------------------------------------
-static std::atomic<uint32_t> sends_in_flight;
-static std::atomic<uint32_t> recvs_in_flight;
+static std::atomic<std::uint32_t> sends_in_flight;
+static std::atomic<std::uint32_t> recvs_in_flight;
 
 //----------------------------------------------------------------------------
 // Test speed of write/put
-void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
-    std::uniform_int_distribution<uint64_t>& random_offset,
-    std::uniform_int_distribution<uint64_t>& random_slot, test_options& options)
+void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
+    std::uniform_int_distribution<std::uint64_t>& random_offset,
+    std::uniform_int_distribution<std::uint64_t>& random_slot,
+    test_options& options)
 {
     static deb::print_threshold<1, debug_level> write_arr(" WRITE ");
 
@@ -160,7 +161,7 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
     results_received = 0;
     sends_in_flight = 0;
     recvs_in_flight = 0;
-    uint64_t messages_sent = 0;
+    std::uint64_t messages_sent = 0;
     //
     if (rank == 0)
     {
@@ -201,13 +202,13 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
     std::vector<MPI_Status> sendss(nranks);
     recvsr[rank] = MPI_REQUEST_NULL;
     sendsr[rank] = MPI_REQUEST_NULL;
-    std::vector<uint64_t> counts(nranks, 0);
+    std::vector<std::uint64_t> counts(nranks, 0);
 
     //
     // Start main message sending loop
     //
     pika::chrono::high_resolution_timer exec_timer;
-    uint64_t final_count = (std::numeric_limits<uint64_t>().max)();
+    std::uint64_t final_count = (std::numeric_limits<std::uint64_t>().max)();
     bool count_complete = false;
     // loop for allowed time : sending and receiving
     do
@@ -217,15 +218,15 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
         int read_slot = random_slot(gen);
         int write_slot = random_slot(gen);
 
-        uint32_t memory_offset_recv =
-            static_cast<uint32_t>(read_slot * options.transfer_size_B);
-        uint32_t memory_offset_send =
-            static_cast<uint32_t>(write_slot * options.transfer_size_B);
+        std::uint32_t memory_offset_recv =
+            static_cast<std::uint32_t>(read_slot * options.transfer_size_B);
+        std::uint32_t memory_offset_send =
+            static_cast<std::uint32_t>(write_slot * options.transfer_size_B);
 
         // next message to recv from here
-        uint32_t recv_rank = recvs[messages_sent % array_size];
+        std::uint32_t recv_rank = recvs[messages_sent % array_size];
         // next message to send goes here
-        uint32_t send_rank = sends[messages_sent % array_size];
+        std::uint32_t send_rank = sends[messages_sent % array_size];
         //
         int tag = messages_sent & 0xffff;
         {
@@ -287,7 +288,7 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
         //
         if (time_up && !count_complete)
         {
-            for (uint32_t i = 0; i < nranks; ++i)
+            for (std::uint32_t i = 0; i < nranks; ++i)
             {
                 if (i != rank)
                 {
@@ -297,15 +298,16 @@ void test_send_recv(uint32_t rank, uint32_t nranks, std::mt19937& gen,
                         MPI_COMM_WORLD, &sendsr[i]);
                 }
             }
-            for (uint32_t i = 0; i < nranks; ++i)
+            for (std::uint32_t i = 0; i < nranks; ++i)
             {
                 MPI_Waitall(nranks, sendsr.data(), sendss.data());
                 MPI_Waitall(nranks, recvsr.data(), recvss.data());
             }
             // reduction step
             final_count = messages_sent;
-            std::for_each(counts.begin(), counts.end(),
-                [&](uint64_t c) { final_count = (std::max)(final_count, c); });
+            std::for_each(counts.begin(), counts.end(), [&](std::uint64_t c) {
+                final_count = (std::max)(final_count, c);
+            });
             nws_deb<2>.debug(
                 "Rank ", rank, "count max", deb::dec<8>(final_count));
             //
@@ -375,8 +377,8 @@ int pika_main(pika::program_options::variables_map& vm)
     nws_deb<2>.debug(deb::str<>("PIKA main"));
     //
     std::string name = mpi_env.get_processor_name();
-    uint64_t rank = mpi_env.rank();
-    uint64_t nranks = mpi_env.size();
+    std::uint64_t rank = mpi_env.rank();
+    std::uint64_t nranks = mpi_env.size();
     std::size_t current = pika::get_worker_thread_num();
 
     if (rank == 0)
@@ -391,7 +393,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
     // extract command line argument
     options.transfer_size_B =
-        static_cast<uint64_t>(vm["transferKB"].as<double>() * 1024);
+        static_cast<std::uint64_t>(vm["transferKB"].as<double>() * 1024);
     options.local_storage_MB = vm["localMB"].as<std::uint64_t>();
     options.num_seconds = vm["seconds"].as<std::uint64_t>();
     options.in_flight_limit = vm["in-flight-limit"].as<std::uint64_t>();
@@ -415,12 +417,13 @@ int pika_main(pika::program_options::variables_map& vm)
         deb::dec<03>(options.local_storage_MB));
     local_send_storage.resize(options.local_storage_MB * 1024 * 1024);
     local_recv_storage.resize(options.local_storage_MB * 1024 * 1024);
-    for (uint64_t i = 0; i < local_send_storage.size(); i += sizeof(uint64_t))
+    for (std::uint64_t i = 0; i < local_send_storage.size();
+         i += sizeof(std::uint64_t))
     {
         // each block is filled with the rank and block number
-        uint64_t temp = (rank << 32) + i / options.transfer_size_B;
-        *reinterpret_cast<uint64_t*>(&local_send_storage[i]) = temp;
-        *reinterpret_cast<uint64_t*>(&local_recv_storage[i]) = temp;
+        std::uint64_t temp = (rank << 32) + i / options.transfer_size_B;
+        *reinterpret_cast<std::uint64_t*>(&local_send_storage[i]) = temp;
+        *reinterpret_cast<std::uint64_t*>(&local_recv_storage[i]) = temp;
     }
     //
     std::uint64_t num_slots = static_cast<std::uint64_t>(1024) *
@@ -447,8 +450,10 @@ int pika_main(pika::program_options::variables_map& vm)
         nws_deb<1>.debug("Received Seed", deb::dec<8>(random_number));
     }
     std::mt19937 gen(random_number);
-    std::uniform_int_distribution<uint64_t> random_offset(1, (int) nranks - 1);
-    std::uniform_int_distribution<uint64_t> random_slot(0, (int) num_slots - 1);
+    std::uniform_int_distribution<std::uint64_t> random_offset(
+        1, (int) nranks - 1);
+    std::uniform_int_distribution<std::uint64_t> random_slot(
+        0, (int) num_slots - 1);
 
     // ----------------------------------------------------------------
     if (rank == 0)
