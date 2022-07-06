@@ -423,8 +423,9 @@ int pika_main(pika::program_options::variables_map& vm)
         *reinterpret_cast<uint64_t*>(&local_recv_storage[i]) = temp;
     }
     //
-    uint64_t num_slots =
-        1024 * 1024 * options.local_storage_MB / options.transfer_size_B;
+    std::uint64_t num_slots = static_cast<std::uint64_t>(1024) *
+        static_cast<std::uint64_t>(1024) * options.local_storage_MB /
+        options.transfer_size_B;
     nws_deb<6>.debug(
         "num ranks ", nranks, ", num_slots ", num_slots, " on rank", rank);
     //
