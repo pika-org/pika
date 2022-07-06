@@ -174,6 +174,9 @@ namespace pika { namespace mpi { namespace experimental {
                                 using invoke_result_type =
                                     mpi_request_invoke_result_t<F, Ts...>;
 
+                                // throttle if too many "in flight"
+                                wait_for_throttling();
+
                                 if constexpr (std::is_void_v<
                                                   invoke_result_type>)
                                 {

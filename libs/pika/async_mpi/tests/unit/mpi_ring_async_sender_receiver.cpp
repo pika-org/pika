@@ -19,6 +19,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <mpi.h>
@@ -33,6 +34,11 @@
 using pika::program_options::options_description;
 using pika::program_options::value;
 using pika::program_options::variables_map;
+
+namespace ex = pika::execution::experimental;
+namespace mpi = pika::mpi::experimental;
+namespace tt = pika::this_thread::experimental;
+namespace deb = pika::debug;
 
 static bool output = true;
 
@@ -90,21 +96,19 @@ int pika_main(pika::program_options::variables_map& vm)
     }
 
     {
-        // this needs to scope all uses of pika::mpi::experimental::executor
-        pika::mpi::experimental::enable_user_polling enable_polling;
-
-        // Ring send/recv around N ranks
-        // Rank 0      : Send then Recv
-        // Rank 1->N-1 : Recv then Send
-
-        pika::mpi::experimental::executor exec(MPI_COMM_WORLD);
-
         size_t throttling =
             pika::mpi::experimental::get_max_requests_in_flight();
         if (throttling == size_t(-1))
         {
             pika::mpi::experimental::set_max_requests_in_flight(512);
         }
+
+        // this needs to scope all uses of pika::mpi::experimental::executor
+        pika::mpi::experimental::enable_user_polling enable_polling;
+
+        // Ring send/recv around N ranks
+        // Rank 0      : Send then Recv
+        // Rank 1->N-1 : Recv then Send
 
         std::vector<int> tokens(iterations, -1);
 
@@ -125,43 +129,57 @@ int pika_main(pika::program_options::variables_map& vm)
                 int rank_from = (size + rank - 1) % size;
                 int rank_to = (rank + 1) % size;
 
-                // all ranks pre-post a receive
-                pika::future<int> f_recv = pika::async(
-                    exec, MPI_Irecv, &tokens[i], 1, MPI_INT, rank_from, tag);
-
-                // when the recv completes,
-                f_recv.then([=, &exec, &tokens, &counter](auto&&) {
-                    msg_recv(rank, size, rank_to, rank_from, tokens[i], tag);
-                    if (rank > 0)
-                    {
-                        // send the incremented token to the next rank
-                        ++tokens[tag];
-                        pika::future<int> f_send = pika::async(exec, MPI_Isend,
-                            &tokens[tag], 1, MPI_INT, rank_to, tag);
-                        // when the send completes
-                        f_send.then([=, &tokens, &counter](auto&&) {
-                            msg_send(rank, size, rank_to, rank_from,
+                // all ranks pre-post a receive, but when rank-0 receives it, we're done
+                if (rank == 0)
+                {
+                    auto snd = ex::just(&tokens[tag], 1, MPI_INT, rank_from,
+                                   tag, MPI_COMM_WORLD) |
+                        mpi::transform_mpi(MPI_Irecv) |
+                        ex::then([=, &tokens, &counter](int /*result*/) {
+                            msg_recv(rank, size, rank_to, rank_from,
                                 tokens[tag], tag);
-                            // ranks > 0 are done when they have sent their token
                             --counter;
                         });
-                    }
-                    else
-                    {
-                        // rank 0 is done when it receives its token
-                        --counter;
-                    }
-                });
+                    ex::start_detached(std::move(snd));
+                }
+                // when ranks>0 complete receives, send the message to next rank
+                else
+                {
+                    auto recv_snd = ex::just(&tokens[tag], 1, MPI_INT,
+                                        rank_from, tag, MPI_COMM_WORLD) |
+                        mpi::transform_mpi(MPI_Irecv) |
+                        ex::then([=, &tokens](int /*result*/) {
+                            msg_recv(rank, size, rank_to, rank_from,
+                                tokens[tag], tag);
+                            // increment the token
+                            ++tokens[tag];
+                        });
+
+                    auto send_snd =
+                        ex::when_all(ex::just(&tokens[tag], 1, MPI_INT, rank_to,
+                                         tag, MPI_COMM_WORLD),
+                            std::move(recv_snd)) |
+                        mpi::transform_mpi(MPI_Isend) |
+                        ex::then([=, &tokens, &counter](int /*result*/) {
+                            msg_send(rank, size, rank_to, rank_from,
+                                tokens[tag], tag);
+                            // ranks > 0 are done after sending token
+                            --counter;
+                        });
+                    ex::start_detached(std::move(send_snd));
+                }
 
                 // rank 0 starts the process with a send
                 if (rank == 0)
                 {
-                    auto f_send = pika::async(exec, MPI_Isend, &tokens[tag], 1,
-                        MPI_INT, rank_to, tag);
-                    f_send.then([=, &tokens](auto&&) {
-                        msg_send(
-                            rank, size, rank_to, rank_from, tokens[tag], tag);
-                    });
+                    auto snd0 = ex::just(&tokens[tag], 1, MPI_INT, rank_to, tag,
+                                    MPI_COMM_WORLD) |
+                        mpi::transform_mpi(MPI_Isend) |
+                        ex::then([=, &tokens](int /*result*/) {
+                            msg_send(rank, size, rank_to, rank_from,
+                                tokens[tag], tag);
+                        });
+                    ex::start_detached(snd0);
                 }
             }
             // block until messages are drained
@@ -171,6 +189,12 @@ int pika_main(pika::program_options::variables_map& vm)
             }
         }
 
+        auto tt = pika::mpi::experimental::get_num_requests_in_flight();
+        if (tt != 0)
+        {
+            std::cout << "Rank " << rank << " flight " << tt << " counter "
+                      << counter << std::endl;
+        }
         PIKA_ASSERT(pika::mpi::experimental::get_num_requests_in_flight() == 0);
         std::cout << "Rank " << rank << " reached end of test " << counter
                   << std::endl;

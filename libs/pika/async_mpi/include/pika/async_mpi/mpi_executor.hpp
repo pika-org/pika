@@ -60,8 +60,7 @@ namespace pika { namespace mpi { namespace experimental {
 
         std::size_t in_flight_estimate() const
         {
-            return detail::get_mpi_info().active_requests_vector_size_ +
-                detail::get_mpi_info().requests_queue_size_;
+            return pika::mpi::experimental::get_num_requests_in_flight();
         }
 
     private:
