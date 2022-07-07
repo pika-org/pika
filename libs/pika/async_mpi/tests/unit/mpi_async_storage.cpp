@@ -45,14 +45,6 @@ template <int Level>
 static pika::debug::print_threshold<Level, debug_level> nws_deb("STORAGE");
 
 //----------------------------------------------------------------------------
-// #defines to control program
-//----------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------
-#define TEST_SUCCESS 0
-#define TEST_FAIL 1
-
-//----------------------------------------------------------------------------
 //
 // Each locality allocates a buffer of memory which is used to host transfers
 //
