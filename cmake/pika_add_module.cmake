@@ -229,7 +229,7 @@ function(pika_add_module libname modulename)
     ${module_public_keyword}
     $<BUILD_INTERFACE:${HEADER_ROOT}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
   target_link_libraries(
@@ -261,7 +261,8 @@ function(pika_add_module libname modulename)
 
   target_include_directories(
     pika_${modulename} ${module_public_keyword}
-    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
   pika_add_source_group(
