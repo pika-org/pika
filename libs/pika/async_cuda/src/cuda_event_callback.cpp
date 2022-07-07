@@ -149,6 +149,15 @@ namespace pika::cuda::experimental::detail {
         void add_to_event_callback_queue(
             event_callback_function_type&& f, cudaStream_t stream)
         {
+            // Eagerly check if the stream is empty. If it is the kernel has
+            // already completed and we can call the callback immediately.
+            auto status = cudaStreamQuery(stream);
+            if (status == cudaSuccess)
+            {
+                PIKA_INVOKE(PIKA_MOVE(f), status);
+                return;
+            }
+
             cudaEvent_t event;
             if (!cuda_event_pool::get_event_pool().pop(event))
             {
