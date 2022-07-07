@@ -538,7 +538,7 @@ int main(int argc, char* argv[])
         "The total storage will be num_ranks * localMB");
 
     cmdline.add_options()("in-flight-limit",
-        pika::program_options::value<std::uint64_t>()->default_value(64),
+        pika::program_options::value<std::uint64_t>()->default_value(256),
         "Apply a limit to then number of messages in flight.");
 
     cmdline.add_options()("transferKB",
