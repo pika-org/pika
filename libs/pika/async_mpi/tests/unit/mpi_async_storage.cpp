@@ -73,7 +73,6 @@ struct test_options
 
     bool warmup;
     bool final;
-    bool yield;
 };
 
 //----------------------------------------------------------------------------
@@ -321,7 +320,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
         mpi::poll();
         if (debug_timer.trigger())
             nws_deb<5>.debug(
-                "Rank ", rank, "yield", "counter", deb::dec<8>(messages_sent));
+                "Rank ", rank, "counter", deb::dec<8>(messages_sent));
     }
     //
     nws_deb<2>.debug(deb::str<>("final"), "Rank ", rank, "recvs in flight",
@@ -390,7 +389,6 @@ int pika_main(pika::program_options::variables_map& vm)
     options.num_seconds = vm["seconds"].as<std::uint64_t>();
     options.in_flight_limit = vm["in-flight-limit"].as<std::uint64_t>();
     options.threads = pika::get_os_thread_count();
-    options.yield = vm.count("yield") > 0;
     options.warmup = false;
     options.final = false;
 
@@ -549,9 +547,6 @@ int main(int argc, char* argv[])
     cmdline.add_options()("seconds",
         pika::program_options::value<std::uint64_t>()->default_value(5),
         "The number of seconds to run each iteration for.\n");
-
-    cmdline.add_options()(
-        "yield", "When set, throttling uses a yield instead of a poll");
 
     nws_deb<6>.debug(3, "Calling pika::init");
     pika::init_params init_args;
