@@ -25,10 +25,6 @@
 
 #include <hwloc.h>
 
-#if defined(PIKA_NATIVE_MIC) && HWLOC_API_VERSION < 0x00010600
-#error On Intel Xeon/Phi coprocessors pika cannot be use with a HWLOC version earlier than V1.6.
-#endif
-
 namespace pika::threads::detail {
 
     struct pika_hwloc_bitmap_wrapper
@@ -366,16 +362,8 @@ namespace pika::threads::detail {
 
         hwloc_topology_t topo;
 
-        // We need to define a constant pu offset.
-        // This is mainly to skip the first Core on the Xeon Phi
-        // which is reserved for OS related tasks
-#if !defined(PIKA_NATIVE_MIC)
         static constexpr std::size_t pu_offset = 0;
         static constexpr std::size_t core_offset = 0;
-#else
-        static constexpr std::size_t pu_offset = 4;
-        static constexpr std::size_t core_offset = 1;
-#endif
 
         std::size_t num_of_pus_;
         bool use_pus_as_cores_;
