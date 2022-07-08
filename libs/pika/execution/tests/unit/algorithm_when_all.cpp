@@ -186,6 +186,17 @@ int main()
         PIKA_TEST(tag_invoke_overload_called);
     }
 
+    {
+        std::atomic<bool> set_value_called{false};
+        int x = 42;
+        auto s = ex::when_all(const_reference_sender<int>{x});
+        auto f = [](auto&& x) { PIKA_TEST_EQ(x, 42); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
     // Failure path
     {
         std::atomic<bool> set_error_called{false};
