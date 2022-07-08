@@ -68,7 +68,7 @@ namespace pika {
         pika::util::itt::task task_;
     };
 #elif defined(PIKA_HAVE_TRACY)
-    struct PIKA_NODISCARD scoped_annotation
+    struct [[nodiscard]] scoped_annotation
     {
         PIKA_NON_COPYABLE(scoped_annotation);
 
@@ -86,13 +86,16 @@ namespace pika {
             typename =
                 std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
         explicit scoped_annotation(F&& f)
-          : annotation(
-                pika::traits::get_function_annotation<std::decay_t<F>>::call(f))
         {
+            if (auto f_annotation = pika::traits::get_function_annotation<
+                    std::decay_t<F>>::call(f))
+            {
+                annotation = f_annotation;
+            }
         }
 
     private:
-        char const* annotation;
+        char const* annotation = "<unknown>";
 
         // We don't use a Zone* macro from Tracy here because they are only
         // meant to be used in function scopes. The Zone* macros make use of
