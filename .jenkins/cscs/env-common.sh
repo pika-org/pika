@@ -6,6 +6,7 @@
 
 module load daint-gpu spack-config
 
+export SPACK_ROOT="/apps/daint/SSL/pika/spack"
 export SPACK_USER_CONFIG_PATH="${SPACK_ROOT}/../spack-user-config"
 export SPACK_USER_CACHE_PATH="/scratch/snx3000/simbergm/spack-user-cache-jenkins"
 source "${SPACK_ROOT}/share/spack/setup-env.sh"
