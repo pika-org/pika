@@ -23,8 +23,6 @@
 #define PIKA_MINGW
 /// This macro is set if the compilation is for Windows.
 #define PIKA_WINDOWS
-/// This macro is set if the compilation is for Intel Knights Landing.
-#define PIKA_NATIVE_MIC
 #else
 
 // clang-format off
@@ -74,11 +72,6 @@
 
 #  undef PIKA_INTEL_VERSION
 
-#endif
-
-// Identify if we compile for the MIC
-#if defined(__MIC)
-#   define PIKA_NATIVE_MIC
 #endif
 
 #if defined(_MSC_VER)

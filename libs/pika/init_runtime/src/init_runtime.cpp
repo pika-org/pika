@@ -46,7 +46,7 @@
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
 
-#if defined(PIKA_NATIVE_MIC) || defined(__bgq__)
+#if defined(__bgq__)
 #include <cstdlib>
 #endif
 
@@ -390,7 +390,7 @@ namespace pika {
             pika::parallel::execution::detail::set_get_os_thread_count(
                 []() { return pika::get_os_thread_count(); });
 
-#if defined(PIKA_NATIVE_MIC) || defined(__bgq__) || defined(__bgqion__)
+#if defined(__bgq__) || defined(__bgqion__)
             unsetenv("LANG");
             unsetenv("LC_CTYPE");
             unsetenv("LC_NUMERIC");
