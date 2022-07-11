@@ -6,6 +6,7 @@
 
 module load daint-gpu spack-config
 
+export SPACK_ROOT="/apps/daint/SSL/pika/spack"
 export SPACK_USER_CONFIG_PATH="${SPACK_ROOT}/../spack-user-config"
 export SPACK_USER_CACHE_PATH="/scratch/snx3000/simbergm/spack-user-cache-jenkins"
 source "${SPACK_ROOT}/share/spack/setup-env.sh"
@@ -14,7 +15,7 @@ spack load ccache@4.5.1 %gcc@10.3.0
 
 export CMAKE_CXX_COMPILER_LAUNCHER=ccache
 export CMAKE_GENERATOR=Ninja
-export CCACHE_DIR=/scratch/snx3000/simbergm/ccache-jenkins-pika
+export CCACHE_DIR="${SCRATCH}/jenkins-pika-ccache"
 export CCACHE_MAXSIZE=100G
 export CCACHE_MAXFILES=50000
 export CCACHE_COMPILERCHECK="%compiler% -v"

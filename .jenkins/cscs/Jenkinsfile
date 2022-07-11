@@ -23,7 +23,6 @@ pipeline {
         )
     }
     environment {
-        SPACK_ROOT = '/apps/daint/SSL/pika/spack'
         GITHUB_TOKEN = credentials('PIKA_BOT_GITHUB_TOKEN')
     }
     stages {
