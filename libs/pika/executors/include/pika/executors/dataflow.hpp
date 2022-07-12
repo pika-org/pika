@@ -12,7 +12,6 @@
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/async_base/traits/is_launch_policy.hpp>
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/executors/execution.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>
@@ -35,6 +34,7 @@
 #include <exception>
 #include <functional>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -121,7 +121,7 @@ namespace pika::detail {
     struct dataflow_return_impl_executor;
 
     template <typename Executor, typename F, typename... Ts>
-    struct dataflow_return_impl_executor<Executor, F, pika::tuple<Ts...>>
+    struct dataflow_return_impl_executor<Executor, F, std::tuple<Ts...>>
     {
         using type = decltype(pika::parallel::execution::async_execute(
             std::declval<Executor&&>(), std::declval<F>(),
@@ -392,7 +392,7 @@ namespace pika::detail {
     template <typename Policy, typename Func, typename... Ts,
         typename Frame = dataflow_frame<typename std::decay<Policy>::type,
             typename std::decay<Func>::type,
-            pika::tuple<typename std::decay<Ts>::type...>>>
+            std::tuple<typename std::decay<Ts>::type...>>>
     typename Frame::type create_dataflow(
         Policy&& policy, Func&& func, Ts&&... ts)
     {
@@ -415,7 +415,7 @@ namespace pika::detail {
         typename... Ts,
         typename Frame = dataflow_frame<typename std::decay<Policy>::type,
             typename std::decay<Func>::type,
-            pika::tuple<typename std::decay<Ts>::type...>>>
+            std::tuple<typename std::decay<Ts>::type...>>>
     typename Frame::type create_dataflow_alloc(
         Allocator const& alloc, Policy&& policy, Func&& func, Ts&&... ts)
     {

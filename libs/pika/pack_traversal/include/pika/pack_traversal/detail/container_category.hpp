@@ -22,5 +22,5 @@ namespace pika { namespace util { namespace detail {
     template <typename T>
     using container_category_of_t =
         container_category_tag<traits::is_range<T>::value,
-            traits::is_tuple_like<T>::value>;
+            traits::detail::is_tuple_like_v<T>>;
 }}}    // namespace pika::util::detail

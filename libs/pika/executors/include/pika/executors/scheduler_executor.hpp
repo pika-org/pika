@@ -9,7 +9,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/execution/algorithms/bulk.hpp>
 #include <pika/execution/algorithms/keep_future.hpp>
 #include <pika/execution/algorithms/make_future.hpp>
@@ -30,6 +29,7 @@
 
 #include <exception>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -66,7 +66,7 @@ namespace pika { namespace execution { namespace experimental {
         auto captured_args_then_void(F&& f, Rng&& rng, Ts&&... ts)
         {
             return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
-                       t = pika::make_tuple(PIKA_FORWARD(Ts, ts)...)](
+                       t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&&... predecessor) mutable {
                 pika::util::invoke_fused(
                     pika::util::bind_front(PIKA_FORWARD(F, f),
@@ -80,7 +80,7 @@ namespace pika { namespace execution { namespace experimental {
         auto captured_args_then(F&& f, Rng&& rng, Ts&&... ts)
         {
             return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
-                       t = pika::make_tuple(PIKA_FORWARD(Ts, ts)...)](
+                       t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&& predecessor, auto& v) mutable {
                 v[i] = pika::util::invoke_fused(
                     pika::util::bind_front(PIKA_FORWARD(F, f),

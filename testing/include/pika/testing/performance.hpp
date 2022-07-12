@@ -14,6 +14,7 @@
 #include <map>
 #include <ostream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace pika { namespace util {

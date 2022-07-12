@@ -212,6 +212,7 @@ namespace boost { namespace inspect {
         {"(\\bstd\\s*::\\s*declval\\b)", "std::declval", "utility"},
         {"(\\bstd\\s*::\\s*pair\\b)", "std::pair", "utility"},
         {"(\\bstd\\s*::\\s*make_pair\\b)", "std::make_pair", "utility"},
+        {"(\\bstd\\s*::\\s*in_place\\b)", "std::in_place", "utility"},
         // exception
         {"(\\bstd\\s*::\\s*exception_ptr\\b)", "std::exception_ptr",
             "exception"},
@@ -232,6 +233,24 @@ namespace boost { namespace inspect {
             "std::uniform_real_distribution", "random"},
         {"(\\bstd\\s*::\\s*exponential_distribution\\b)",
             "std::exponential_distribution", "random"},
+        // tuple
+        {"(\\bstd\\s*::\\s*forward_as_tuple\\b)", "std::forward_as_tuple",
+            "tuple"},
+        {"(\\bstd\\s*::\\s*ignore\\b)", "std::ignore", "tuple"},
+        {"(\\bstd\\s*::\\s*make_tuple\\b)", "std::make_tuple", "tuple"},
+        {"(\\bstd\\s*::\\s*tie\\b)", "std::tie", "tuple"},
+        {"(\\bstd\\s*::\\s*tuple\\b)", "std::tuple", "tuple"},
+        {"(\\bstd\\s*::\\s*tuple_cat\\b)", "std::tuple_cat", "tuple"},
+        {"(\\bstd\\s*::\\s*tuple_element\\b)", "std::tuple_element", "tuple"},
+        {"(\\bstd\\s*::\\s*tuple_size\\b)", "std::tuple_size", "tuple"},
+        // optional
+        {"(\\bstd\\s*::\\s*optional\\b)", "std::optional", "optional"},
+        {"(\\bstd\\s*::\\s*make_optional\\b)", "std::make_optional",
+            "optional"},
+        {"(\\bstd\\s*::\\s*nullopt\\b)", "std::nullopt", "optional"},
+        // any
+        {"(\\bstd\\s*::\\s*any\\b)", "std::any", "any"},
+        {"(\\bstd\\s*::\\s*any_cast\\b)", "std::any_cast", "any"},
         // system_error
         {"(\\bstd\\s*::\\s*error_code\\b)", "std::error_code", "system_error"},
         {"(\\bstd\\s*::\\s*error_condition\\b)", "std::error_condition",

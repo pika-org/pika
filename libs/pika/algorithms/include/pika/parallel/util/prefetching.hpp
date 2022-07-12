@@ -8,7 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/concurrency/cache_line_data.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
 #include <pika/parallel/util/loop.hpp>
@@ -18,6 +17,7 @@
 #include <cstddef>
 #include <functional>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -48,7 +48,7 @@ namespace pika { namespace parallel { namespace util {
             using reference = value_type&;
 
         private:
-            using ranges_type = pika::tuple<std::reference_wrapper<Ts>...>;
+            using ranges_type = std::tuple<std::reference_wrapper<Ts>...>;
 
             ranges_type rngs_;
             base_iterator base_;
@@ -209,7 +209,7 @@ namespace pika { namespace parallel { namespace util {
         struct prefetcher_context
         {
         private:
-            using ranges_type = pika::tuple<std::reference_wrapper<Ts>...>;
+            using ranges_type = std::tuple<std::reference_wrapper<Ts>...>;
 
             Itr it_begin_;
             Itr it_end_;
@@ -217,8 +217,8 @@ namespace pika { namespace parallel { namespace util {
             std::size_t chunk_size_;
             std::size_t range_size_;
 
-            static constexpr std::size_t sizeof_first_value_type = sizeof(
-                typename pika::tuple_element<0, ranges_type>::type::type);
+            static constexpr std::size_t sizeof_first_value_type =
+                sizeof(typename std::tuple_element<0, ranges_type>::type::type);
 
         public:
             prefetcher_context(Itr begin, Itr end, ranges_type const& rngs,
@@ -261,17 +261,17 @@ namespace pika { namespace parallel { namespace util {
         }
 
         template <typename... Ts, std::size_t... Is>
-        PIKA_FORCEINLINE void prefetch_containers(pika::tuple<Ts...> const& t,
+        PIKA_FORCEINLINE void prefetch_containers(std::tuple<Ts...> const& t,
             pika::util::index_pack<Is...>, std::size_t idx)
         {
-            prefetch_addresses((pika::get<Is>(t).get())[idx]...);
+            prefetch_addresses((std::get<Is>(t).get())[idx]...);
         }
 #else
         template <typename... Ts, std::size_t... Is>
-        PIKA_FORCEINLINE void prefetch_containers(pika::tuple<Ts...> const& t,
+        PIKA_FORCEINLINE void prefetch_containers(std::tuple<Ts...> const& t,
             pika::util::index_pack<Is...>, std::size_t idx)
         {
-            int const sequencer[] = {(pika::get<Is>(t).get()[idx], 0)..., 0};
+            int const sequencer[] = {(std::get<Is>(t).get()[idx], 0)..., 0};
             (void) sequencer;
         }
 #endif
@@ -454,7 +454,7 @@ namespace pika { namespace parallel { namespace util {
         static_assert(pika::util::all_of<pika::traits::is_range<Ts>...>::value,
             "All variadic parameters have to represent ranges");
 
-        using ranges_type = pika::tuple<std::reference_wrapper<Ts const>...>;
+        using ranges_type = std::tuple<std::reference_wrapper<Ts const>...>;
 
         auto&& ranges = ranges_type(std::cref(rngs)...);
         return prefetching::prefetcher_context<Itr, Ts const...>(

@@ -16,8 +16,6 @@
 #include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/async_cuda/custom_lapack_api.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
-#include <pika/datastructures/optional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/then.hpp>
@@ -28,7 +26,9 @@
 
 #include <exception>
 #include <functional>
+#include <optional>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -88,16 +88,17 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     template <typename OperationState>
     void set_value_immediate_void(OperationState& op_state)
     {
-        PIKA_ASSERT(pika::holds_alternative<pika::monostate>(op_state.result));
+        PIKA_ASSERT(pika::detail::holds_alternative<pika::detail::monostate>(
+            op_state.result));
         pika::execution::experimental::set_value(PIKA_MOVE(op_state.receiver));
     }
 
     template <typename Result, typename OperationState>
     void set_value_immediate_non_void(OperationState& op_state)
     {
-        PIKA_ASSERT(pika::holds_alternative<Result>(op_state.result));
+        PIKA_ASSERT(pika::detail::holds_alternative<Result>(op_state.result));
         pika::execution::experimental::set_value(PIKA_MOVE(op_state.receiver),
-            PIKA_MOVE(pika::get<Result>(op_state.result)));
+            PIKA_MOVE(pika::detail::get<Result>(op_state.result)));
     }
 
     template <typename OperationState>
@@ -106,7 +107,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         detail::add_event_callback(
             [&op_state](cudaError_t status) mutable {
                 PIKA_ASSERT(
-                    pika::holds_alternative<pika::monostate>(op_state.result));
+                    pika::detail::holds_alternative<pika::detail::monostate>(
+                        op_state.result));
                 set_value_event_callback_helper(
                     status, PIKA_MOVE(op_state.receiver));
             },
@@ -118,10 +120,11 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     {
         detail::add_event_callback(
             [&op_state](cudaError_t status) mutable {
-                PIKA_ASSERT(pika::holds_alternative<Result>(op_state.result));
+                PIKA_ASSERT(
+                    pika::detail::holds_alternative<Result>(op_state.result));
                 set_value_event_callback_helper(status,
                     PIKA_MOVE(op_state.receiver),
-                    PIKA_MOVE(pika::get<Result>(op_state.result)));
+                    PIKA_MOVE(pika::detail::get<Result>(op_state.result)));
             },
             op_state.stream.value().get().get());
     }
@@ -213,7 +216,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             cuda_scheduler sched;
-            pika::optional<std::reference_wrapper<const cuda_stream>> stream;
+            std::optional<std::reference_wrapper<const cuda_stream>> stream;
 
             struct then_with_cuda_stream_receiver_tag
             {
@@ -420,24 +423,24 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
             using ts_type = pika::util::detail::prepend_t<
                 typename pika::execution::experimental::sender_traits<
-                    std::decay_t<Sender>>::template value_types<pika::tuple,
-                    pika::variant>,
-                pika::monostate>;
+                    std::decay_t<Sender>>::template value_types<std::tuple,
+                    pika::detail::variant>,
+                pika::detail::monostate>;
             ts_type ts;
 
             // We store the return value of f in a variant. We know that
             // value_types of the transform_mpi_sender contains packs of at most
             // one element (the return value of f), so we only specialize
             // result_types_helper for zero or one value. For empty packs we use
-            // pika::monostate since we don't need to store anything in that
+            // pika::detail::monostate since we don't need to store anything in that
             // case.
             //
             // All in all, we:
             // - transform one-element packs to the single element, and empty
-            //   packs to pika::monostate
-            // - add pika::monostate to the pack in case it wasn't there already
-            // - remove duplicates in case pika::monostate has been added twice
-            // - change the outer pack to a pika::variant
+            //   packs to pika::detail::monostate
+            // - add pika::detail::monostate to the pack in case it wasn't there already
+            // - remove duplicates in case pika::detail::monostate has been added twice
+            // - change the outer pack to a pika::detail::variant
             template <typename Tuple>
             struct result_types_helper;
 
@@ -450,15 +453,16 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             template <template <typename...> class Tuple>
             struct result_types_helper<Tuple<>>
             {
-                using type = pika::monostate;
+                using type = pika::detail::monostate;
             };
-            using result_type = pika::util::detail::change_pack_t<pika::variant,
-                pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    pika::util::detail::transform_t<
-                        then_with_cuda_stream_sender::value_types<
-                            pika::util::pack, pika::util::pack>,
-                        result_types_helper>,
-                    pika::monostate>>>;
+            using result_type =
+                pika::util::detail::change_pack_t<pika::detail::variant,
+                    pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                        pika::util::detail::transform_t<
+                            then_with_cuda_stream_sender::value_types<
+                                pika::util::pack, pika::util::pack>,
+                            result_types_helper>,
+                        pika::detail::monostate>>>;
             result_type result;
 
             template <typename Receiver_, typename F_, typename Sender_>

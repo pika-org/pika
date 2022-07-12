@@ -143,7 +143,6 @@ namespace pika {
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_combinators/detail/throw_if_exceptional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/futures/traits/acquire_shared_state.hpp>
@@ -161,6 +160,7 @@ namespace pika {
 #include <cstddef>
 #include <iterator>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -222,13 +222,12 @@ namespace pika {
                 Tuple const& tuple, pika::util::index_pack<Is...>) const
             {
                 int const _sequencer[] = {
-                    0, (((*this)(pika::get<Is>(tuple))), 0)...};
+                    0, (((*this)(std::get<Is>(tuple))), 0)...};
                 (void) _sequencer;
             }
 
             template <typename... Ts>
-            PIKA_FORCEINLINE void apply(
-                pika::tuple<Ts...> const& sequence) const
+            PIKA_FORCEINLINE void apply(std::tuple<Ts...> const& sequence) const
             {
                 apply(sequence, pika::util::make_index_pack_t<sizeof...(Ts)>());
             }
@@ -558,7 +557,7 @@ namespace pika {
         }
 
         using result_type =
-            pika::tuple<traits::detail::shared_state_ptr_for_t<Ts>...>;
+            std::tuple<traits::detail::shared_state_ptr_for_t<Ts>...>;
 
         result_type values(traits::detail::get_shared_state(ts)...);
         auto f = detail::get_wait_some_frame(values, n);

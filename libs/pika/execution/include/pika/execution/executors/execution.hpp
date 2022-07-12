@@ -15,7 +15,6 @@
 
 #include <pika/assert.hpp>
 #include <pika/async_combinators/wait_all.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/execution/executors/fused_bulk_execute.hpp>
 #include <pika/execution/traits/executor_traits.hpp>
 #include <pika/execution/traits/future_then_result_exec.hpp>
@@ -37,6 +36,7 @@
 #include <functional>
 #include <iterator>
 #include <stdexcept>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -1017,7 +1017,7 @@ namespace pika { namespace parallel { namespace execution {
 
                 auto func = make_fused_bulk_sync_execute_helper<result_type>(
                     exec, PIKA_FORWARD(F, f), shape,
-                    pika::make_tuple(PIKA_FORWARD(Ts, ts)...));
+                    std::make_tuple(PIKA_FORWARD(Ts, ts)...));
 
                 shared_state_type p =
                     lcos::detail::make_continuation_exec<result_type>(
@@ -1036,7 +1036,7 @@ namespace pika { namespace parallel { namespace execution {
             {
                 auto func = make_fused_bulk_sync_execute_helper<void>(exec,
                     PIKA_FORWARD(F, f), shape,
-                    pika::make_tuple(PIKA_FORWARD(Ts, ts)...));
+                    std::make_tuple(PIKA_FORWARD(Ts, ts)...));
 
                 pika::traits::detail::shared_state_ptr_t<void> p =
                     lcos::detail::make_continuation_exec<void>(
@@ -1137,7 +1137,7 @@ namespace pika { namespace parallel { namespace execution {
 
                 auto func = make_fused_bulk_async_execute_helper<result_type>(
                     exec, PIKA_FORWARD(F, f), shape,
-                    pika::make_tuple(PIKA_FORWARD(Ts, ts)...));
+                    std::make_tuple(PIKA_FORWARD(Ts, ts)...));
 
                 // void or std::vector<func_result_type>
                 using vector_result_type =

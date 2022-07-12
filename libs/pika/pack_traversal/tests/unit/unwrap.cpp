@@ -11,26 +11,26 @@
 #include <pika/pack_traversal/unwrap.hpp>
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
-#include <pika/tuple.hpp>
 
 #include <array>
 #include <atomic>
 #include <cstddef>
 #include <numeric>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
-using pika::get;
-using pika::make_tuple;
-using pika::tuple;
 using pika::unwrap;
 using pika::unwrap_all;
 using pika::unwrap_n;
 using pika::unwrapping;
 using pika::unwrapping_all;
 using pika::unwrapping_n;
+using std::get;
+using std::make_tuple;
+using std::tuple;
 
 /// Since the mapping functionality is provided by the `map_pack`
 /// API, we only need to test here for the specific behaviour of `unwrap`

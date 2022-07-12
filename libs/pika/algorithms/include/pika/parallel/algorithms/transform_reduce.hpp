@@ -521,8 +521,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                               zip_iterator part_begin,
                               std::size_t part_size) mutable -> T {
                     auto iters = part_begin.get_iterator_tuple();
-                    Iter it1 = pika::get<0>(iters);
-                    Iter2 it2 = pika::get<1>(iters);
+                    Iter it1 = std::get<0>(iters);
+                    Iter2 it2 = std::get<1>(iters);
 
                     Iter last1 = it1;
                     std::advance(last1, part_size);

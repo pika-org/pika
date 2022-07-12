@@ -24,7 +24,7 @@
 ////////////////////////////////////////////////////////////////////////////
 void test_replace_copy_sent()
 {
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 100;
     std::vector<std::int16_t> c(size), d(size);
@@ -48,7 +48,7 @@ void test_replace_copy_sent(ExPolicy policy)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 100;
     std::vector<std::int16_t> c(size), d(size);

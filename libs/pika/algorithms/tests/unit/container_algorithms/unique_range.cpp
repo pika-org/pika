@@ -135,7 +135,7 @@ void test_unique(ExPolicy policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;
@@ -157,7 +157,7 @@ void test_unique_async(ExPolicy policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d;

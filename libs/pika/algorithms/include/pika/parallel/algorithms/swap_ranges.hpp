@@ -145,7 +145,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 PIKA_FORWARD(ExPolicy, policy),
                 pika::util::make_zip_iterator(first1, first2), n,
                 [](reference t) -> void {
-                    using pika::get;
+                    using std::get;
                     std::swap(get<0>(t), get<1>(t));
                 },
                 util::projection_identity()));

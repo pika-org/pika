@@ -9,7 +9,6 @@
 //  Creative Commons Attribution 4.0 International License
 //  (http://creativecommons.org/licenses/by/4.0/).
 
-#include <pika/datastructures/optional.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/threading.hpp>
 #include <pika/testing.hpp>
@@ -18,6 +17,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <functional>
+#include <optional>
 #include <thread>
 #include <utility>
 
@@ -83,7 +83,7 @@ void test_callback_unregister()
 
     // register callback that unregisters itself
     bool cb1_called = false;
-    pika::util::optional<pika::stop_callback<std::function<void()>>> cb;
+    std::optional<pika::stop_callback<std::function<void()>>> cb;
     cb.emplace(stok, [&] {
         cb1_called = true;
         // remove this lambda in optional while being called
@@ -109,7 +109,7 @@ void test_callback_unregister()
 ///////////////////////////////////////////////////////////////////////////////
 struct reg_unreg_cb
 {
-    pika::util::optional<pika::stop_callback<std::function<void()>>> cb{};
+    std::optional<pika::stop_callback<std::function<void()>>> cb{};
     bool called = false;
 
     void reg(pika::stop_token& stok)
@@ -129,7 +129,7 @@ void test_callback_concurrent_unregister()
     pika::stop_token stok{ssrc.get_token()};
 
     std::atomic<bool> cb1_called{false};
-    pika::util::optional<pika::stop_callback<std::function<void()>>> opt_cb;
+    std::optional<pika::stop_callback<std::function<void()>>> opt_cb;
 
     auto cb1 = [&] {
         opt_cb.reset();
@@ -157,7 +157,7 @@ void test_callback_concurrent_unregister_other_thread()
     pika::stop_token stok{ssrc.get_token()};
 
     std::atomic<bool> cb1_called{false};
-    pika::util::optional<pika::stop_callback<std::function<void()>>> opt_cb;
+    std::optional<pika::stop_callback<std::function<void()>>> opt_cb;
 
     auto cb1 = [&] {
         opt_cb.reset();

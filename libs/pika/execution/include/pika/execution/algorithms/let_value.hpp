@@ -13,7 +13,6 @@
 #else
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -143,8 +142,8 @@ namespace pika { namespace execution { namespace experimental {
                 predecessor_operation_state_type predecessor_op_state;
 
                 using predecessor_ts_type = pika::util::detail::prepend_t<
-                    predecessor_value_types<pika::tuple, pika::variant>,
-                    pika::monostate>;
+                    predecessor_value_types<std::tuple, pika::detail::variant>,
+                    pika::detail::monostate>;
 
                 // Potential values returned from the predecessor sender
                 predecessor_ts_type predecessor_ts;
@@ -153,8 +152,9 @@ namespace pika { namespace execution { namespace experimental {
                 // in successor_sender_types to the receiver connected to the
                 // let_value_sender
                 pika::util::detail::prepend_t<
-                    successor_operation_state_types<pika::tuple, pika::variant>,
-                    pika::monostate>
+                    successor_operation_state_types<std::tuple,
+                        pika::detail::variant>,
+                    pika::detail::monostate>
                     successor_op_state;
 
                 struct let_value_predecessor_receiver
@@ -190,7 +190,8 @@ namespace pika { namespace execution { namespace experimental {
 
                     struct start_visitor
                     {
-                        [[noreturn]] void operator()(pika::monostate) const
+                        [[noreturn]] void operator()(
+                            pika::detail::monostate) const
                         {
                             PIKA_UNREACHABLE;
                         }
@@ -198,7 +199,7 @@ namespace pika { namespace execution { namespace experimental {
                         template <typename OperationState_,
                             typename = std::enable_if_t<
                                 !std::is_same_v<std::decay_t<OperationState_>,
-                                    pika::monostate>>>
+                                    pika::detail::monostate>>>
                         void operator()(OperationState_& op_state) const
                         {
                             pika::execution::experimental::start(op_state);
@@ -211,14 +212,15 @@ namespace pika { namespace execution { namespace experimental {
                         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
                         operation_state& op_state;
 
-                        [[noreturn]] void operator()(pika::monostate) const
+                        [[noreturn]] void operator()(
+                            pika::detail::monostate) const
                         {
                             PIKA_UNREACHABLE;
                         }
 
                         template <typename T,
                             typename = std::enable_if_t<!std::is_same_v<
-                                std::decay_t<T>, pika::monostate>>>
+                                std::decay_t<T>, pika::detail::monostate>>>
                         void operator()(T& t)
                         {
                             using operation_state_type =
@@ -248,7 +250,7 @@ namespace pika { namespace execution { namespace experimental {
                                     pika::util::invoke_fused(PIKA_MOVE(f), t),
                                     PIKA_MOVE(receiver));
 #endif
-                            pika::visit(
+                            pika::detail::visit(
                                 start_visitor{}, op_state.successor_op_state);
                         }
                     };
@@ -257,8 +259,9 @@ namespace pika { namespace execution { namespace experimental {
                     // parent typedef is not instantiated early enough for use
                     // here.
                     using predecessor_ts_type = pika::util::detail::prepend_t<
-                        predecessor_value_types<pika::tuple, pika::variant>,
-                        pika::monostate>;
+                        predecessor_value_types<std::tuple,
+                            pika::detail::variant>,
+                        pika::detail::monostate>;
 
                     template <typename... Ts>
                     void set_value(Ts&&... ts)
@@ -266,9 +269,9 @@ namespace pika { namespace execution { namespace experimental {
                         pika::detail::try_catch_exception_ptr(
                             [&]() {
                                 op_state.predecessor_ts
-                                    .template emplace<pika::tuple<Ts...>>(
+                                    .template emplace<std::tuple<Ts...>>(
                                         PIKA_FORWARD(Ts, ts)...);
-                                pika::visit(
+                                pika::detail::visit(
                                     set_value_visitor{PIKA_MOVE(receiver),
                                         PIKA_MOVE(f), op_state},
                                     op_state.predecessor_ts);
@@ -283,7 +286,7 @@ namespace pika { namespace execution { namespace experimental {
                     friend auto tag_invoke(set_value_t,
                         let_value_predecessor_receiver&& r, Ts&&... ts) noexcept
                         -> decltype(std::declval<predecessor_ts_type>()
-                                        .template emplace<pika::tuple<Ts...>>(
+                                        .template emplace<std::tuple<Ts...>>(
                                             PIKA_FORWARD(Ts, ts)...),
                             void())
                     {

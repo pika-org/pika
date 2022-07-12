@@ -122,7 +122,6 @@ set(tests
     shift_left
     shift_right
     sort
-    sort_by_key
     sort_exceptions
     stable_partition
     stable_sort
@@ -153,7 +152,11 @@ set(tests
 )
 
 if(PIKA_WITH_CXX17_STD_EXECUTION_POLICIES)
-  set(tests ${tests} foreach_std_policies)
+  list(APPEND tests foreach_std_policies)
+endif()
+
+if(PIKA_WITH_TUPLE_RVALUE_SWAP)
+  list(APPEND tests sort_by_key)
 endif()
 
 foreach(test ${tests})

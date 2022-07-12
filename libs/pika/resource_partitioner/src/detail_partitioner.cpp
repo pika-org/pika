@@ -27,6 +27,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -110,7 +111,7 @@ namespace pika { namespace resource { namespace detail {
         {
             assigned_pus_.push_back(pu_mask);
             assigned_pu_nums_.push_back(
-                pika::make_tuple(pu_index, exclusive, false));
+                std::make_tuple(pu_index, exclusive, false));
         }
     }
 
@@ -164,33 +165,33 @@ namespace pika { namespace resource { namespace detail {
     void init_pool_data::assign_pu(std::size_t virt_core)
     {
         PIKA_ASSERT(virt_core <= assigned_pu_nums_.size());
-        PIKA_ASSERT(!pika::get<2>(assigned_pu_nums_[virt_core]));
+        PIKA_ASSERT(!std::get<2>(assigned_pu_nums_[virt_core]));
 
-        pika::get<2>(assigned_pu_nums_[virt_core]) = true;    // -V601
+        std::get<2>(assigned_pu_nums_[virt_core]) = true;    // -V601
     }
 
     void init_pool_data::unassign_pu(std::size_t virt_core)
     {
         PIKA_ASSERT(virt_core <= assigned_pu_nums_.size());
-        PIKA_ASSERT(pika::get<2>(assigned_pu_nums_[virt_core]));
+        PIKA_ASSERT(std::get<2>(assigned_pu_nums_[virt_core]));
 
-        pika::get<2>(assigned_pu_nums_[virt_core]) = false;    // -V601
+        std::get<2>(assigned_pu_nums_[virt_core]) = false;    // -V601
     }
 
     bool init_pool_data::pu_is_exclusive(std::size_t virt_core) const
     {
         PIKA_ASSERT(virt_core <= assigned_pu_nums_.size());
-        PIKA_ASSERT(pika::get<2>(assigned_pu_nums_[virt_core]));
+        PIKA_ASSERT(std::get<2>(assigned_pu_nums_[virt_core]));
 
-        return pika::get<1>(assigned_pu_nums_[virt_core]);
+        return std::get<1>(assigned_pu_nums_[virt_core]);
     }
 
     bool init_pool_data::pu_is_assigned(std::size_t virt_core) const
     {
         PIKA_ASSERT(virt_core <= assigned_pu_nums_.size());
-        PIKA_ASSERT(pika::get<2>(assigned_pu_nums_[virt_core]));
+        PIKA_ASSERT(std::get<2>(assigned_pu_nums_[virt_core]));
 
-        return pika::get<2>(assigned_pu_nums_[virt_core]);
+        return std::get<2>(assigned_pu_nums_[virt_core]);
     }
 
     // 'shift' all thread assignments up by the first_core offset
@@ -198,7 +199,7 @@ namespace pika { namespace resource { namespace detail {
     {
         for (std::size_t i = 0; i != num_threads_; ++i)
         {
-            std::size_t& pu_num = pika::get<0>(assigned_pu_nums_[i]);
+            std::size_t& pu_num = std::get<0>(assigned_pu_nums_[i]);
             pu_num =
                 (pu_num + first_core) % threads::detail::hardware_concurrency();
 
@@ -534,7 +535,7 @@ namespace pika { namespace resource { namespace detail {
                 }
                 for (auto const& pu_num : itp.assigned_pu_nums_)
                 {
-                    new_pu_nums.push_back(pika::get<0>(pu_num));
+                    new_pu_nums.push_back(std::get<0>(pu_num));
                 }
             }
         }

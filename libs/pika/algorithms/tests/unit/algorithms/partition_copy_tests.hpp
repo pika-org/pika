@@ -102,7 +102,7 @@ void test_partition_copy(IteratorTag, DataType, Pred pred, int rand_base)
     using base_iterator = typename std::vector<DataType>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d_true_res(size), d_false_res(size),
@@ -136,7 +136,7 @@ void test_partition_copy(
     using base_iterator = typename std::vector<DataType>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d_true_res(size), d_false_res(size),
@@ -170,7 +170,7 @@ void test_partition_copy_async(
     using base_iterator = typename std::vector<DataType>::iterator;
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), d_true_res(size), d_false_res(size),

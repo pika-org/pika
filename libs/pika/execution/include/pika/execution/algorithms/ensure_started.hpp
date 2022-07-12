@@ -16,8 +16,6 @@
 #include <pika/allocator_support/traits/is_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/optional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
@@ -39,6 +37,8 @@
 #include <exception>
 #include <memory>
 #include <mutex>
+#include <optional>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -140,7 +140,7 @@ namespace pika::execution::experimental {
                 // reset it as soon as the the ensure_started_receiver has been
                 // signaled.  This is useful to ensure that resources held by
                 // the predecessor work is released as soon as possible.
-                pika::optional<operation_state_type> os;
+                std::optional<operation_state_type> os;
 
                 struct done_type
                 {
@@ -154,19 +154,20 @@ namespace pika::execution::experimental {
                 using value_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         typename pika::execution::experimental::sender_traits<
-                            Sender>::template value_types<pika::tuple,
-                            pika::variant>,
+                            Sender>::template value_types<std::tuple,
+                            pika::detail::variant>,
                         value_types_helper>,
-                    pika::monostate>;
+                    pika::detail::monostate>;
                 using error_type =
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                        error_types<pika::variant>, std::exception_ptr>>;
-                pika::variant<pika::monostate, done_type, error_type,
-                    value_type>
+                        error_types<pika::detail::variant>,
+                        std::exception_ptr>>;
+                pika::detail::variant<pika::detail::monostate, done_type,
+                    error_type, value_type>
                     v;
 
                 using continuation_type = pika::util::unique_function<void()>;
-                pika::optional<continuation_type> continuation;
+                std::optional<continuation_type> continuation;
 
                 struct ensure_started_receiver
                 {
@@ -201,22 +202,22 @@ namespace pika::execution::experimental {
                         pika::util::detail::transform_t<
                             typename pika::execution::experimental::
                                 sender_traits<Sender>::template value_types<
-                                    pika::tuple, pika::variant>,
+                                    std::tuple, pika::detail::variant>,
                             value_types_helper>,
-                        pika::monostate>;
+                        pika::detail::monostate>;
 
                     template <typename... Ts>
                     friend auto tag_invoke(set_value_t,
                         ensure_started_receiver&& r, Ts&&... ts) noexcept
-                        -> decltype(std::declval<pika::variant<pika::monostate,
-                                        value_type>>()
+                        -> decltype(std::declval<pika::detail::variant<
+                                        pika::detail::monostate, value_type>>()
                                         .template emplace<value_type>(
-                                            pika::make_tuple<>(
+                                            std::make_tuple<>(
                                                 PIKA_FORWARD(Ts, ts)...)),
                             void())
                     {
                         r.state->v.template emplace<value_type>(
-                            pika::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
+                            std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
                         r.state->set_predecessor_done();
                     }
                 };
@@ -240,9 +241,10 @@ namespace pika::execution::experimental {
                     PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
                     template <typename T,
-                        typename = std::enable_if_t<
-                            std::is_same_v<std::decay_t<T>, pika::monostate> &&
-                            !std::is_same_v<std::decay_t<T>, value_type>>>
+                        typename =
+                            std::enable_if_t<std::is_same_v<std::decay_t<T>,
+                                                 pika::detail::monostate> &&
+                                !std::is_same_v<std::decay_t<T>, value_type>>>
                     [[noreturn]] void operator()(T&&) const
                     {
                         PIKA_UNREACHABLE;
@@ -256,19 +258,22 @@ namespace pika::execution::experimental {
 
                     void operator()(error_type&& error)
                     {
-                        pika::visit(error_visitor<Receiver>{PIKA_FORWARD(
-                                        Receiver, receiver)},
+                        pika::detail::visit(
+                            error_visitor<Receiver>{
+                                PIKA_FORWARD(Receiver, receiver)},
                             PIKA_MOVE(error));
                     }
 
                     template <typename T,
-                        typename = std::enable_if_t<
-                            !std::is_same_v<std::decay_t<T>, pika::monostate> &&
-                            std::is_same_v<std::decay_t<T>, value_type>>>
+                        typename =
+                            std::enable_if_t<!std::is_same_v<std::decay_t<T>,
+                                                 pika::detail::monostate> &&
+                                std::is_same_v<std::decay_t<T>, value_type>>>
                     void operator()(T&& t)
                     {
-                        pika::visit(value_visitor<Receiver>{PIKA_FORWARD(
-                                        Receiver, receiver)},
+                        pika::detail::visit(
+                            value_visitor<Receiver>{
+                                PIKA_FORWARD(Receiver, receiver)},
                             PIKA_FORWARD(T, t));
                     }
                 };
@@ -342,7 +347,7 @@ namespace pika::execution::experimental {
                         // We can trigger the continuation directly.
                         // TODO: Should this preserve the scheduler? It does not
                         // if we call set_* inline.
-                        pika::visit(
+                        pika::detail::visit(
                             done_error_value_visitor<Receiver>{
                                 PIKA_FORWARD(Receiver, receiver)},
                             PIKA_MOVE(v));
@@ -360,7 +365,7 @@ namespace pika::execution::experimental {
                             // release the lock early and call the continuation
                             // directly again.
                             l.unlock();
-                            pika::visit(
+                            pika::detail::visit(
                                 done_error_value_visitor<Receiver>{
                                     PIKA_FORWARD(Receiver, receiver)},
                                 PIKA_MOVE(v));
@@ -375,7 +380,7 @@ namespace pika::execution::experimental {
                                 [this,
                                     receiver = PIKA_FORWARD(
                                         Receiver, receiver)]() mutable {
-                                    pika::visit(
+                                    pika::detail::visit(
                                         done_error_value_visitor<Receiver>{
                                             PIKA_MOVE(receiver)},
                                         PIKA_MOVE(v));

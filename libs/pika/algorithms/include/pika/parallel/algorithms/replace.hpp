@@ -676,7 +676,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         detail::distance(first, sent),
                         [old_value, new_value, proj = PIKA_FORWARD(Proj, proj)](
                             reference t) -> void {
-                            using pika::get;
+                            using std::get;
                             if (PIKA_INVOKE(proj, get<0>(t)) == old_value)
                                 get<1>(t) = new_value;
                             else
@@ -752,7 +752,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         [new_value, f = PIKA_FORWARD(F, f),
                             proj = PIKA_FORWARD(Proj, proj)](
                             reference t) mutable -> void {
-                            using pika::get;
+                            using std::get;
                             if (PIKA_INVOKE(f, PIKA_INVOKE(proj, get<0>(t))))
                             {
                                 get<1>(t) = new_value;

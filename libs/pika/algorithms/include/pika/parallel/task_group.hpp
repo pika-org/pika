@@ -12,7 +12,6 @@
 
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/errors/exception_list.hpp>
 #include <pika/execution_base/execution.hpp>
 #include <pika/execution_base/traits/is_executor.hpp>
@@ -26,6 +25,7 @@
 #include <atomic>
 #include <exception>
 #include <stdexcept>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -68,7 +68,7 @@ namespace pika { namespace execution { namespace experimental {
 
             pika::parallel::execution::post(PIKA_FORWARD(Executor, exec),
                 [this, l = PIKA_MOVE(l), f = PIKA_FORWARD(F, f),
-                    t = pika::make_tuple(PIKA_FORWARD(Ts, ts)...)]() mutable {
+                    t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)]() mutable {
                     // latch needs to be released before the lambda exits
                     on_exit _(PIKA_MOVE(l));
                     std::exception_ptr p;

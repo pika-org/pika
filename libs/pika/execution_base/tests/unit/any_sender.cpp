@@ -15,6 +15,7 @@
 #include <atomic>
 #include <exception>
 #include <string>
+#include <tuple>
 #include <utility>
 
 namespace ex = pika::execution::experimental;
@@ -39,7 +40,7 @@ struct custom_type_non_copyable
 template <typename... Ts>
 struct non_copyable_sender
 {
-    pika::tuple<std::decay_t<Ts>...> ts;
+    std::tuple<std::decay_t<Ts>...> ts;
 
     template <template <class...> class Tuple,
         template <class...> class Variant>
@@ -77,7 +78,7 @@ struct non_copyable_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        pika::tuple<std::decay_t<Ts>...> ts;
+        std::tuple<std::decay_t<Ts>...> ts;
 
         friend void tag_invoke(pika::execution::experimental::start_t,
             operation_state& os) noexcept
@@ -101,7 +102,7 @@ struct non_copyable_sender
 template <typename... Ts>
 struct sender
 {
-    pika::tuple<std::decay_t<Ts>...> ts;
+    std::tuple<std::decay_t<Ts>...> ts;
 
     template <template <class...> class Tuple,
         template <class...> class Variant>
@@ -138,7 +139,7 @@ struct sender
     struct operation_state
     {
         std::decay_t<R> r;
-        pika::tuple<std::decay_t<Ts>...> ts;
+        std::tuple<std::decay_t<Ts>...> ts;
 
         friend void tag_invoke(pika::execution::experimental::start_t,
             operation_state& os) noexcept

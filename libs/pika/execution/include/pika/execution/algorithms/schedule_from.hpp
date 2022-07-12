@@ -12,8 +12,6 @@
 #include <pika/execution_base/p2300_forward.hpp>
 #else
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/optional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution_base/completion_scheduler.hpp>
 #include <pika/execution_base/receiver.hpp>
@@ -27,6 +25,8 @@
 #include <atomic>
 #include <cstddef>
 #include <exception>
+#include <optional>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -128,10 +128,10 @@ namespace pika { namespace execution { namespace experimental {
                 using value_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         typename pika::execution::experimental::sender_traits<
-                            Sender>::template value_types<pika::tuple,
-                            pika::variant>,
+                            Sender>::template value_types<std::tuple,
+                            pika::detail::variant>,
                         value_types_helper>,
-                    pika::monostate>;
+                    pika::detail::monostate>;
                 value_type ts;
 
                 using sender_operation_state_type =
@@ -142,7 +142,7 @@ namespace pika { namespace execution { namespace experimental {
                     connect_result_t<typename pika::util::invoke_result<
                                          schedule_t, Scheduler>::type,
                         scheduler_sender_receiver>;
-                pika::util::optional<scheduler_operation_state_type>
+                std::optional<scheduler_operation_state_type>
                     scheduler_op_state;
 
                 template <typename Sender_, typename Scheduler_,
@@ -194,16 +194,16 @@ namespace pika { namespace execution { namespace experimental {
                         pika::util::detail::transform_t<
                             typename pika::execution::experimental::
                                 sender_traits<Sender>::template value_types<
-                                    pika::tuple, pika::variant>,
+                                    std::tuple, pika::detail::variant>,
                             value_types_helper>,
-                        pika::monostate>;
+                        pika::detail::monostate>;
 
                     template <typename... Ts>
                     friend auto tag_invoke(set_value_t,
                         predecessor_sender_receiver&& r, Ts&&... ts) noexcept
                         -> decltype(std::declval<value_type>()
                                         .template emplace<
-                                            pika::tuple<std::decay_t<Ts>...>>(
+                                            std::tuple<std::decay_t<Ts>...>>(
                                             PIKA_FORWARD(Ts, ts)...),
                             void())
                     {
@@ -228,7 +228,7 @@ namespace pika { namespace execution { namespace experimental {
                 template <typename... Us>
                 void set_value_predecessor_sender(Us&&... us) noexcept
                 {
-                    ts.template emplace<pika::tuple<std::decay_t<Us>...>>(
+                    ts.template emplace<std::tuple<std::decay_t<Us>...>>(
                         PIKA_FORWARD(Us, us)...);
 #if defined(PIKA_HAVE_CXX17_COPY_ELISION)
                     // with_result_of is used to emplace the operation
@@ -284,14 +284,14 @@ namespace pika { namespace execution { namespace experimental {
                 {
                     PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-                    [[noreturn]] void operator()(pika::monostate) const
+                    [[noreturn]] void operator()(pika::detail::monostate) const
                     {
                         PIKA_UNREACHABLE;
                     }
 
                     template <typename Ts,
-                        typename = std::enable_if_t<
-                            !std::is_same_v<std::decay_t<Ts>, pika::monostate>>>
+                        typename = std::enable_if_t<!std::is_same_v<
+                            std::decay_t<Ts>, pika::detail::monostate>>>
                     void operator()(Ts&& ts)
                     {
                         pika::util::invoke_fused(
@@ -320,7 +320,7 @@ namespace pika { namespace execution { namespace experimental {
                 void set_value_scheduler_sender() noexcept
                 {
                     scheduler_op_state.reset();
-                    pika::visit(
+                    pika::detail::visit(
                         scheduler_sender_value_visitor{PIKA_MOVE(receiver)},
                         PIKA_MOVE(ts));
                 }

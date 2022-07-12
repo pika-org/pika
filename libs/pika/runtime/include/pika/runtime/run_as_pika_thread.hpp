@@ -8,8 +8,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/optional.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_result.hpp>
 #include <pika/synchronization/spinlock.hpp>
@@ -21,6 +19,7 @@
 #include <exception>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <thread>
 #include <type_traits>
 #include <utility>
@@ -45,7 +44,7 @@ namespace pika { namespace threads {
             // Using the optional for storing the returned result value
             // allows to support non-default-constructible and move-only
             // types.
-            pika::util::optional<result_type> result;
+            std::optional<result_type> result;
             std::exception_ptr exception;
 
             // Create the pika thread

@@ -10,10 +10,11 @@
 
 #include <iostream>
 #include <random>
+#include <tuple>
 #include <vector>
 
 void final_task(
-    pika::future<pika::tuple<pika::future<double>, pika::future<void>>>)
+    pika::future<std::tuple<pika::future<double>, pika::future<void>>>)
 {
     std::cout << "in final_task" << std::endl;
 }

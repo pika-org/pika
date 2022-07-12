@@ -14,7 +14,6 @@
 
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
 #include <pika/execution_base/operation_state.hpp>
@@ -29,6 +28,7 @@
 #include <exception>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -226,13 +226,13 @@ namespace pika::execution::experimental {
                 // predecessor senders send nothing
                 using value_types_storage_type =
                     std::conditional_t<is_void_value_type, void_value_type,
-                        std::vector<pika::optional<element_value_type>>>;
+                        std::vector<std::optional<element_value_type>>>;
                 value_types_storage_type ts;
 
                 // The first error sent by any predecessor sender is stored in a
                 // optional of a variant of the error_types
                 using error_types_storage_type =
-                    pika::optional<error_types<pika::variant>>;
+                    std::optional<error_types<pika::detail::variant>>;
                 error_types_storage_type error;
 
                 // Set to true when set_stopped or set_error has been called
@@ -245,7 +245,7 @@ namespace pika::execution::experimental {
                     pika::execution::experimental::connect_result_t<Sender,
                         when_all_vector_receiver>;
                 using operation_states_storage_type =
-                    std::unique_ptr<pika::optional<operation_state_type>[]>;
+                    std::unique_ptr<std::optional<operation_state_type>[]>;
                 operation_states_storage_type op_states = nullptr;
 
                 template <typename Receiver_>
@@ -254,9 +254,9 @@ namespace pika::execution::experimental {
                   : num_predecessors(senders.size())
                   , receiver(PIKA_FORWARD(Receiver_, receiver))
                 {
-                    op_states = std::make_unique<
-                        pika::optional<operation_state_type>[]>(
-                        num_predecessors);
+                    op_states =
+                        std::make_unique<std::optional<operation_state_type>[]>(
+                            num_predecessors);
                     std::size_t i = 0;
                     for (auto&& sender : senders)
                     {
@@ -305,7 +305,7 @@ namespace pika::execution::experimental {
                         }
                         else if (error)
                         {
-                            pika::visit(
+                            pika::detail::visit(
                                 [this](auto&& error) {
                                     pika::execution::experimental::set_error(
                                         PIKA_MOVE(receiver),

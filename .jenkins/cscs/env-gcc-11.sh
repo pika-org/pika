@@ -17,6 +17,5 @@ configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MAX_CPU_COUNT=128"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
-configure_extra_options+=" -DPIKA_DATASTRUCTURES_WITH_ADAPT_STD_TUPLE=OFF"
 
 build_extra_options+=" -j10"

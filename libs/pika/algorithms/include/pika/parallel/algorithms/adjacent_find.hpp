@@ -196,7 +196,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                     util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                         part_size, tok,
                         [&pred_projected, &tok](reference t, std::size_t i) {
-                            using pika::get;
+                            using std::get;
                             if (pred_projected(get<0>(t), get<1>(t)))
                                 tok.cancel(i);
                         });

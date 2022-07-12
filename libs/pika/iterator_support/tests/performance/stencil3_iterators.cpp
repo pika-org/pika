@@ -8,7 +8,6 @@
 #include <pika/modules/iterator_support.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/testing.hpp>
-#include <pika/tuple.hpp>
 
 #include <chrono>
 #include <cstddef>
@@ -16,6 +15,7 @@
 #include <iostream>
 #include <iterator>
 #include <numeric>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -162,7 +162,7 @@ namespace pika { namespace experimental {
                 util::transform_iterator<Iterator, right_transformer>;
 
             using type = util::detail::zip_iterator_base<
-                pika::tuple<left_iterator, Iterator, right_iterator>,
+                std::tuple<left_iterator, Iterator, right_iterator>,
                 stencil3_iterator_full<Iterator, IterBegin, IterValueBegin,
                     IterEnd, IterValueEnd>>;
 
@@ -174,13 +174,13 @@ namespace pika { namespace experimental {
                 auto next = make_next_transformer(end, end_val);
 
                 return type(
-                    pika::make_tuple(util::make_transform_iterator(it, prev),
-                        it, util::make_transform_iterator(it, next)));
+                    std::make_tuple(util::make_transform_iterator(it, prev), it,
+                        util::make_transform_iterator(it, next)));
             }
 
             static type create(Iterator const& it)
             {
-                return type(pika::make_tuple(
+                return type(std::make_tuple(
                     util::make_transform_iterator(it, left_transformer()), it,
                     util::make_transform_iterator(it, right_transformer())));
             }
@@ -219,8 +219,8 @@ namespace pika { namespace experimental {
 
         bool equal(stencil3_iterator_full const& other) const
         {
-            return pika::get<1>(this->get_iterator_tuple()) ==
-                pika::get<1>(other.get_iterator_tuple());
+            return std::get<1>(this->get_iterator_tuple()) ==
+                std::get<1>(other.get_iterator_tuple());
         }
     };
 
@@ -272,7 +272,7 @@ std::chrono::duration<double> bench_stencil3_iterator_full()
     int result = 0;
 
     std::for_each(r.first, r.second, [&result](reference val) {
-        using pika::get;
+        using std::get;
         result += get<0>(val) + get<1>(val) + get<2>(val);
     });
 
@@ -285,12 +285,12 @@ namespace pika { namespace experimental {
     template <typename Iterator>
     class stencil3_iterator_v1
       : public util::detail::zip_iterator_base<
-            pika::tuple<Iterator, Iterator, Iterator>,
+            std::tuple<Iterator, Iterator, Iterator>,
             stencil3_iterator_v1<Iterator>>
     {
     private:
         using base_type = util::detail::zip_iterator_base<
-            pika::tuple<Iterator, Iterator, Iterator>,
+            std::tuple<Iterator, Iterator, Iterator>,
             stencil3_iterator_v1<Iterator>>;
 
     public:
@@ -298,7 +298,7 @@ namespace pika { namespace experimental {
 
         explicit stencil3_iterator_v1(Iterator const& it)
           : base_type(
-                pika::make_tuple(detail::previous(it), it, detail::next(it)))
+                std::make_tuple(detail::previous(it), it, detail::next(it)))
         {
         }
 
@@ -307,8 +307,8 @@ namespace pika { namespace experimental {
 
         bool equal(stencil3_iterator_v1 const& other) const
         {
-            return pika::get<1>(this->get_iterator_tuple()) ==
-                pika::get<1>(other.get_iterator_tuple());
+            return std::get<1>(this->get_iterator_tuple()) ==
+                std::get<1>(other.get_iterator_tuple());
         }
     };
 
@@ -345,7 +345,7 @@ std::chrono::duration<double> bench_stencil3_iterator_v1()
     int result = values.back() + values.front() + values[1];
 
     std::for_each(r.first, r.second, [&result](reference val) {
-        using pika::get;
+        using std::get;
         result += get<0>(val) + get<1>(val) + get<2>(val);
     });
 
@@ -367,7 +367,7 @@ namespace pika { namespace experimental {
                 using element_type =
                     typename std::iterator_traits<Iterator>::reference;
                 using type =
-                    pika::tuple<element_type, element_type, element_type>;
+                    std::tuple<element_type, element_type, element_type>;
             };
 
             // it will dereference tuple(it-1, it, it+1)
@@ -454,7 +454,7 @@ std::chrono::duration<double> bench_stencil3_iterator_v2()
     int result = values.back() + values.front() + values[1];
 
     std::for_each(r.first, r.second, [&result](reference val) {
-        using pika::get;
+        using std::get;
         result += get<0>(val) + get<1>(val) + get<2>(val);
     });
 

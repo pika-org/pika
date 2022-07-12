@@ -15,7 +15,6 @@
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/allocator_support/traits/is_allocator.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
@@ -31,6 +30,7 @@
 
 #include <exception>
 #include <memory>
+#include <optional>
 #include <utility>
 
 namespace pika { namespace execution { namespace experimental {
@@ -174,7 +174,7 @@ namespace pika { namespace execution { namespace experimental {
 
             // The operation state is stored in an optional so that it can be
             // reset explicitly as soon as set_* is called.
-            pika::optional<operation_state_type> op_state;
+            std::optional<operation_state_type> op_state;
 
             template <typename Sender>
             future_data(init_no_addref no_addref, other_allocator const& alloc,

@@ -8,22 +8,22 @@
 
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/tuple.hpp>
 
 #include <iostream>
+#include <tuple>
 
 ///////////////////////////////////////////////////////////////////////////////
 struct cout_continuation
 {
     using data_type =
-        pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>>;
+        std::tuple<pika::future<int>, pika::future<int>, pika::future<int>>;
 
     void operator()(pika::future<data_type> data) const
     {
         data_type v = data.get();
-        std::cout << pika::get<0>(v).get() << "\n";
-        std::cout << pika::get<1>(v).get() << "\n";
-        std::cout << pika::get<2>(v).get() << "\n";
+        std::cout << std::get<0>(v).get() << "\n";
+        std::cout << std::get<1>(v).get() << "\n";
+        std::cout << std::get<2>(v).get() << "\n";
     }
 };
 ///////////////////////////////////////////////////////////////////////////////

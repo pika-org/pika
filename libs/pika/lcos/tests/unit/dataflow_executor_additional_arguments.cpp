@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <functional>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -57,11 +58,10 @@ struct additional_argument_executor
     }
 
     template <typename A, typename... Ts>
-    void post(
-        pika::detail::dataflow_finalization<A>&& f, pika::tuple<Ts...>&& t)
+    void post(pika::detail::dataflow_finalization<A>&& f, std::tuple<Ts...>&& t)
     {
         additional_argument a;
-        pika::apply(f, pika::tuple_cat(pika::tie(a), std::move(t)));
+        pika::apply(f, std::tuple_cat(std::tie(a), std::move(t)));
     }
 };
 

@@ -39,7 +39,7 @@ namespace pika { namespace util {
             static constexpr PIKA_HOST_DEVICE decltype(auto) call(
                 T&& /*t*/, Us&&... vs)
             {
-                return util::member_pack_for<Us&&...>(
+                return util::detail::member_pack_for<Us&&...>(
                     std::piecewise_construct, PIKA_FORWARD(Us, vs)...)
                     .template get<I>();
             }
@@ -206,7 +206,7 @@ namespace pika { namespace util {
 
         private:
             F _f;
-            util::member_pack_for<Ts...> _args;
+            util::detail::member_pack_for<Ts...> _args;
         };
     }    // namespace detail
 

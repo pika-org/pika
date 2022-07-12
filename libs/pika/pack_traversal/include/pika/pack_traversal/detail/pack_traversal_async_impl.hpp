@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/functional/invoke_result.hpp>
@@ -25,6 +24,7 @@
 #include <functional>
 #include <iterator>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -105,7 +105,7 @@ namespace pika {
         class async_traversal_frame : public Visitor
         {
         protected:
-            pika::tuple<Args...> args_;
+            std::tuple<Args...> args_;
             std::atomic<bool> finished_;
 
             Visitor& visitor() noexcept
@@ -121,7 +121,7 @@ namespace pika {
         public:
             explicit async_traversal_frame(Visitor visitor, Args... args)
               : Visitor(PIKA_MOVE(visitor))
-              , args_(pika::make_tuple(PIKA_MOVE(args)...))
+              , args_(std::make_tuple(PIKA_MOVE(args)...))
               , finished_(false)
             {
             }
@@ -136,13 +136,13 @@ namespace pika {
             explicit async_traversal_frame(async_traverse_in_place_tag<Visitor>,
                 MapperArg&& mapper_arg, Args... args)
               : Visitor(PIKA_FORWARD(MapperArg, mapper_arg))
-              , args_(pika::make_tuple(PIKA_MOVE(args)...))
+              , args_(std::make_tuple(PIKA_MOVE(args)...))
               , finished_(false)
             {
             }
 
             /// Returns the arguments of the frame
-            pika::tuple<Args...>& head() noexcept
+            std::tuple<Args...>& head() noexcept
             {
                 return args_;
             }
@@ -274,9 +274,9 @@ namespace pika {
             }
 
             constexpr auto operator*() const noexcept
-                -> decltype(pika::get<Begin>(*target_))
+                -> decltype(std::get<Begin>(*target_))
             {
-                return pika::get<Begin>(*target_);
+                return std::get<Begin>(*target_);
             }
 
             template <std::size_t Position>
@@ -314,7 +314,7 @@ namespace pika {
         /// Returns a static range for the given type
         template <typename T,
             typename Range = static_async_range<typename std::decay<T>::type,
-                0U, pika::tuple_size<typename std::decay<T>::type>::value>>
+                0U, std::tuple_size<typename std::decay<T>::type>::value>>
         Range make_static_range(T&& element)
         {
             auto pointer = std::addressof(element);
@@ -376,12 +376,12 @@ namespace pika {
         class async_traversal_point
         {
             Frame frame_;
-            pika::tuple<Hierarchy...> hierarchy_;
+            std::tuple<Hierarchy...> hierarchy_;
             bool& detached_;
 
         public:
-            explicit async_traversal_point(Frame frame,
-                pika::tuple<Hierarchy...> hierarchy, bool& detached)
+            explicit async_traversal_point(
+                Frame frame, std::tuple<Hierarchy...> hierarchy, bool& detached)
               : frame_(PIKA_MOVE(frame))
               , hierarchy_(PIKA_MOVE(hierarchy))
               , detached_(detached)
@@ -408,8 +408,8 @@ namespace pika {
             {
                 // Create a new hierarchy which contains the
                 // the parent (the last traversed element).
-                auto hierarchy = pika::tuple_cat(
-                    pika::make_tuple(PIKA_FORWARD(Parent, parent)), hierarchy_);
+                auto hierarchy = std::tuple_cat(
+                    std::make_tuple(PIKA_FORWARD(Parent, parent)), hierarchy_);
 
                 return async_traversal_point<Frame,
                     typename std::decay<Parent>::type, Hierarchy...>(
@@ -451,8 +451,8 @@ namespace pika {
                 {
                     // Store the current call hierarchy into a tuple for
                     // later re-entrance.
-                    auto hierarchy = pika::tuple_cat(
-                        pika::make_tuple(current.next()), hierarchy_);
+                    auto hierarchy = std::tuple_cat(
+                        std::make_tuple(current.next()), hierarchy_);
 
                     // First detach the current execution context
                     detach();
@@ -572,7 +572,7 @@ namespace pika {
                 if (!current.is_finished())
                 {
                     traversal_point_of_t<Frame> point(
-                        frame, pika::make_tuple(), detached);
+                        frame, std::make_tuple(), detached);
 
                     point.async_traverse(PIKA_FORWARD(Current, current));
 
@@ -600,8 +600,7 @@ namespace pika {
                     // Don't forward the arguments here, since we still need
                     // the objects in a valid state later.
                     traversal_point_of_t<Frame, Parent, Hierarchy...> point(
-                        frame, pika::make_tuple(parent, hierarchy...),
-                        detached);
+                        frame, std::make_tuple(parent, hierarchy...), detached);
 
                     point.async_traverse(PIKA_FORWARD(Current, current));
 
@@ -627,7 +626,7 @@ namespace pika {
         template <typename Frame, typename State>
         void resume_traversal_callable<Frame, State>::operator()()
         {
-            auto hierarchy = pika::tuple_cat(pika::make_tuple(frame_), state_);
+            auto hierarchy = std::tuple_cat(std::make_tuple(frame_), state_);
             util::invoke_fused(resume_state_callable{}, PIKA_MOVE(hierarchy));
         }
 
@@ -674,7 +673,7 @@ namespace pika {
             auto range = make_static_range(frame->head());
 
             auto resumer = make_resume_traversal_callable(
-                frame, pika::make_tuple(PIKA_MOVE(range)));
+                frame, std::make_tuple(PIKA_MOVE(range)));
 
             // Start the asynchronous traversal
             resumer();
@@ -717,7 +716,7 @@ namespace pika {
             auto range = make_static_range(frame->head());
 
             auto resumer = make_resume_traversal_callable(
-                frame, pika::make_tuple(PIKA_MOVE(range)));
+                frame, std::make_tuple(PIKA_MOVE(range)));
 
             // Start the asynchronous traversal
             resumer();

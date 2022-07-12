@@ -8,11 +8,11 @@
 #include <pika/init.hpp>
 #include <pika/modules/iterator_support.hpp>
 #include <pika/numeric.hpp>
-#include <pika/tuple.hpp>
 
 #include <iostream>
 #include <iterator>
 #include <string>
+#include <tuple>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,9 +24,9 @@ int pika_main()
     std::fill(std::begin(xvalues), std::end(xvalues), 1.0);
     std::fill(std::begin(yvalues), std::end(yvalues), 1.0);
 
-    using pika::get;
-    using pika::tuple;
     using pika::util::make_zip_iterator;
+    using std::get;
+    using std::tuple;
 
     double result = pika::transform_reduce(pika::execution::par,
         make_zip_iterator(std::begin(xvalues), std::begin(yvalues)),

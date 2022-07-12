@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <pika/datastructures/tuple.hpp>
 #include <pika/futures/traits/is_future.hpp>
 #include <pika/type_support/pack.hpp>
 
+#include <tuple>
 #include <type_traits>
 
 namespace pika { namespace traits {
@@ -19,7 +19,7 @@ namespace pika { namespace traits {
     };
 
     template <typename... Ts>
-    struct is_future_tuple<pika::tuple<Ts...>> : util::all_of<is_future<Ts>...>
+    struct is_future_tuple<std::tuple<Ts...>> : util::all_of<is_future<Ts>...>
     {
     };
 }}    // namespace pika::traits

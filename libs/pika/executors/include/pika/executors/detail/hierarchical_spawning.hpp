@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -145,7 +146,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
 
         auto&& func = detail::make_fused_bulk_async_execute_helper<result_type>(
             executor, PIKA_FORWARD(F, f), shape,
-            pika::make_tuple(PIKA_FORWARD(Ts, ts)...));
+            std::make_tuple(PIKA_FORWARD(Ts, ts)...));
 
         // void or std::vector<func_result_type>
         using vector_result_type = typename detail::bulk_then_execute_result<F,

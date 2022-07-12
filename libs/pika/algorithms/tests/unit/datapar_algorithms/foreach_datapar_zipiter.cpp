@@ -26,8 +26,8 @@ struct set_42
     template <typename Tuple>
     void operator()(Tuple&& t)
     {
-        pika::get<0>(t) = 42;
-        pika::get<1>(t) = 42;
+        std::get<0>(t) = 42;
+        std::get<1>(t) = 42;
     }
 };
 

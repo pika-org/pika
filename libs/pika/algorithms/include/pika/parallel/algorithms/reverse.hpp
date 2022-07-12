@@ -247,7 +247,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                             first, destination_iterator(last2)),
                         detail::distance(first, last2) / 2,
                         [](reference t) -> void {
-                            using pika::get;
+                            using std::get;
                             std::swap(get<0>(t), get<1>(t));
                         },
                         util::projection_identity()),

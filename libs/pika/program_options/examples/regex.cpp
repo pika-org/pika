@@ -20,10 +20,10 @@
 //
 // and the second invocation should issue an error message.
 
-#include <pika/datastructures/any.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/util/from_string.hpp>
 
+#include <any>
 #include <iostream>
 #include <regex>
 #include <string>
@@ -54,7 +54,7 @@ bool operator==(magic_number const& lhs, magic_number const& rhs)
    regex can be used to validate values.
 */
 void validate(
-    any& v, const std::vector<std::string>& values, magic_number*, int)
+    std::any& v, const std::vector<std::string>& values, magic_number*, int)
 {
     static std::regex r(R"(\d\d\d-(\d\d\d))");
 
@@ -70,7 +70,7 @@ void validate(
     std::smatch match;
     if (regex_match(s, match, r))
     {
-        v = any(magic_number(pika::util::from_string<int>(match[1])));
+        v = std::any(magic_number(pika::util::from_string<int>(match[1])));
     }
     else
     {

@@ -11,12 +11,12 @@
 
 #include <pika/program_options/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/any.hpp>
-#include <pika/datastructures/optional.hpp>
 #include <pika/program_options/errors.hpp>
 #include <pika/util/from_string.hpp>
 
+#include <any>
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -49,9 +49,9 @@ namespace pika { namespace program_options {
     }
 
     template <class T, class Char>
-    void typed_value<T, Char>::notify(const pika::any_nonser& value_store) const
+    void typed_value<T, Char>::notify(const std::any& value_store) const
     {
-        const T* value = pika::any_cast<T>(&value_store);
+        const T* value = std::any_cast<T>(&value_store);
         if (m_store_to)
         {
             *m_store_to = *value;
@@ -87,7 +87,7 @@ namespace pika { namespace program_options {
         }
 
         /* Throws multiple_occurrences if 'value' is not empty. */
-        PIKA_EXPORT void check_first_occurrence(const pika::any_nonser& value);
+        PIKA_EXPORT void check_first_occurrence(const std::any& value);
     }    // namespace validators
 
     using namespace validators;
@@ -100,14 +100,14 @@ namespace pika { namespace program_options {
         partial template ordering, just like the last 'long/int' parameter.
     */
     template <class T, class Char>
-    void validate(pika::any_nonser& v,
-        const std::vector<std::basic_string<Char>>& xs, T*, long)
+    void validate(
+        std::any& v, const std::vector<std::basic_string<Char>>& xs, T*, long)
     {
         validators::check_first_occurrence(v);
         std::basic_string<Char> s(validators::get_single_string(xs));
         try
         {
-            v = pika::any_nonser(pika::util::from_string<T>(s));
+            v = std::any(pika::util::from_string<T>(s));
         }
         catch (const pika::util::bad_lexical_cast&)
         {
@@ -116,30 +116,30 @@ namespace pika { namespace program_options {
     }
 
     PIKA_EXPORT void validate(
-        pika::any_nonser& v, const std::vector<std::string>& xs, bool*, int);
+        std::any& v, const std::vector<std::string>& xs, bool*, int);
 
     PIKA_EXPORT void validate(
-        pika::any_nonser& v, const std::vector<std::wstring>& xs, bool*, int);
+        std::any& v, const std::vector<std::wstring>& xs, bool*, int);
 
     // For some reason, this declaration, which is require by the standard,
     // cause msvc 7.1 to not generate code to specialization defined in
     // value_semantic.cpp
-    PIKA_EXPORT void validate(pika::any_nonser& v,
-        const std::vector<std::string>& xs, std::string*, int);
-    PIKA_EXPORT void validate(pika::any_nonser& v,
-        const std::vector<std::wstring>& xs, std::string*, int);
+    PIKA_EXPORT void validate(
+        std::any& v, const std::vector<std::string>& xs, std::string*, int);
+    PIKA_EXPORT void validate(
+        std::any& v, const std::vector<std::wstring>& xs, std::string*, int);
 
     /** Validates sequences. Allows multiple values per option occurrence
        and multiple occurrences. */
     template <class T, class Char>
-    void validate(pika::any_nonser& v,
-        const std::vector<std::basic_string<Char>>& s, std::vector<T>*, int)
+    void validate(std::any& v, const std::vector<std::basic_string<Char>>& s,
+        std::vector<T>*, int)
     {
         if (!v.has_value())
         {
-            v = pika::any_nonser(std::vector<T>());
+            v = std::any(std::vector<T>());
         }
-        std::vector<T>* tv = pika::any_cast<std::vector<T>>(&v);
+        std::vector<T>* tv = std::any_cast<std::vector<T>>(&v);
         PIKA_ASSERT(nullptr != tv);
         for (std::size_t i = 0; i < s.size(); ++i)
         {
@@ -148,11 +148,11 @@ namespace pika { namespace program_options {
                 /* We call validate so that if user provided
                    a validator for class T, we use it even
                    when parsing vector<T>.  */
-                pika::any_nonser a;
+                std::any a;
                 std::vector<std::basic_string<Char>> cv;
                 cv.push_back(s[i]);
                 validate(a, cv, (T*) nullptr, 0);
-                tv->push_back(pika::any_cast<T>(a));
+                tv->push_back(std::any_cast<T>(a));
             }
             catch (const pika::util::bad_lexical_cast& /*e*/)
             {
@@ -163,19 +163,18 @@ namespace pika { namespace program_options {
 
     /** Validates optional arguments. */
     template <class T, class Char>
-    void validate(pika::any_nonser& v,
-        const std::vector<std::basic_string<Char>>& s, pika::util::optional<T>*,
-        int)
+    void validate(std::any& v, const std::vector<std::basic_string<Char>>& s,
+        std::optional<T>*, int)
     {
         validators::check_first_occurrence(v);
         validators::get_single_string(s);
-        pika::any_nonser a;
+        std::any a;
         validate(a, s, (T*) nullptr, 0);
-        v = pika::any_nonser(pika::util::optional<T>(pika::any_cast<T>(a)));
+        v = std::any(std::optional<T>(std::any_cast<T>(a)));
     }
 
     template <class T, class Char>
-    void typed_value<T, Char>::xparse(pika::any_nonser& value_store,
+    void typed_value<T, Char>::xparse(std::any& value_store,
         const std::vector<std::basic_string<Char>>& new_tokens) const
     {
         // If no tokens were given, and the option accepts an implicit

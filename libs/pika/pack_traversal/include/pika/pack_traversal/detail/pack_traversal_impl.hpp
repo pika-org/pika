@@ -7,7 +7,6 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/functional/detail/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/functional/invoke_result.hpp>
@@ -21,6 +20,7 @@
 #include <cstddef>
 #include <iterator>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -31,15 +31,15 @@ namespace pika { namespace util { namespace detail {
         template <typename... T>
         class spread_box
         {
-            pika::tuple<T...> boxed_;
+            std::tuple<T...> boxed_;
 
         public:
-            explicit constexpr spread_box(pika::tuple<T...> boxed)
+            explicit constexpr spread_box(std::tuple<T...> boxed)
               : boxed_(PIKA_MOVE(boxed))
             {
             }
 
-            pika::tuple<T...> unbox()
+            std::tuple<T...> unbox()
             {
                 return PIKA_MOVE(boxed_);
             }
@@ -50,11 +50,11 @@ namespace pika { namespace util { namespace detail {
         {
         public:
             explicit constexpr spread_box() noexcept {}
-            explicit constexpr spread_box(pika::tuple<> const&) noexcept {}
+            explicit constexpr spread_box(std::tuple<> const&) noexcept {}
 
-            constexpr pika::tuple<> unbox() const noexcept
+            constexpr std::tuple<> unbox() const noexcept
             {
-                return pika::tuple<>{};
+                return std::tuple<>{};
             }
         };
 
@@ -118,9 +118,9 @@ namespace pika { namespace util { namespace detail {
         /// Converts types to the a tuple carrying the single type and
         /// spread_box objects to its underlying tuple.
         template <typename T>
-        constexpr pika::tuple<T> undecorate(T&& type)
+        constexpr std::tuple<T> undecorate(T&& type)
         {
-            return pika::tuple<T>{PIKA_FORWARD(T, type)};
+            return std::tuple<T>{PIKA_FORWARD(T, type)};
         }
         template <typename... T>
         constexpr auto undecorate(spread_box<T...> type)
@@ -154,14 +154,14 @@ namespace pika { namespace util { namespace detail {
         };
 
         /// A callable object which maps its content back to a tuple.
-        template <template <typename...> class Type = pika::tuple>
-        using tupelizer_of_t = tupelizer_base<pika::tuple<>, Type>;
+        template <template <typename...> class Type = std::tuple>
+        using tupelizer_of_t = tupelizer_base<std::tuple<>, Type>;
 
         /// A callable object which maps its content back to a tuple like
         /// type if it wasn't empty. For empty types arguments an empty
         /// spread box is returned instead. This is useful to propagate
         /// empty mappings back to the caller.
-        template <template <typename...> class Type = pika::tuple>
+        template <template <typename...> class Type = std::tuple>
         using flat_tupelizer_of_t = tupelizer_base<spread_box<>, Type>;
 
         /// A callable object which maps its content back to an
@@ -199,10 +199,10 @@ namespace pika { namespace util { namespace detail {
         template <typename C, typename... T>
         constexpr auto apply_spread_impl(std::true_type, C&& callable,
             T&&... args) -> decltype(invoke_fused(PIKA_FORWARD(C, callable),
-            pika::tuple_cat(undecorate(PIKA_FORWARD(T, args))...)))
+            std::tuple_cat(undecorate(PIKA_FORWARD(T, args))...)))
         {
             return invoke_fused(PIKA_FORWARD(C, callable),
-                pika::tuple_cat(undecorate(PIKA_FORWARD(T, args))...));
+                std::tuple_cat(undecorate(PIKA_FORWARD(T, args))...));
         }
 
         /// Use the linear instantiation for variadic packs which don't
@@ -268,12 +268,12 @@ namespace pika { namespace util { namespace detail {
 
         /// Converts an empty tuple to void
         template <typename First, typename... Rest>
-        constexpr pika::tuple<First, Rest...> voidify_empty_tuple(
-            pika::tuple<First, Rest...> val)
+        constexpr std::tuple<First, Rest...> voidify_empty_tuple(
+            std::tuple<First, Rest...> val)
         {
             return val;
         }
-        inline void voidify_empty_tuple(pika::tuple<> const&) noexcept {}
+        inline void voidify_empty_tuple(std::tuple<> const&) noexcept {}
 
         /// Converts the given variadic arguments into a tuple in a way
         /// that spread return values are inserted into the current pack.

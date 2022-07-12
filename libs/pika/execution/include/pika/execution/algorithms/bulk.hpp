@@ -13,7 +13,6 @@
 #include <pika/execution_base/p2300_forward.hpp>
 #else
 #include <pika/concepts/concepts.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -28,6 +27,7 @@
 
 #include <exception>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 

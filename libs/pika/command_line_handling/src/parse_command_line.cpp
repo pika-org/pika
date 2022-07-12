@@ -5,7 +5,6 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/command_line_handling/parse_command_line.hpp>
-#include <pika/datastructures/any.hpp>
 #include <pika/detail/filesystem.hpp>
 #include <pika/ini/ini.hpp>
 #include <pika/program_options/options_description.hpp>
@@ -13,6 +12,7 @@
 #include <pika/program_options/variables_map.hpp>
 #include <pika/util/from_string.hpp>
 
+#include <any>
 #include <cctype>
 #include <cstddef>
 #include <filesystem>
@@ -20,6 +20,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -635,26 +636,26 @@ namespace pika::detail {
         std::string command_line;
         for (auto const& v : vm)
         {
-            pika::program_options::any const& value = v.second.value();
-            if (pika::program_options::any_cast<std::string>(&value)) {
+            std::any const& value = v.second.value();
+            if (std::any_cast<std::string>(&value)) {
                 add_as_option(command_line, v.first,
                     embed_in_quotes(v.second.as<std::string>()));
                 if (!command_line.empty())
                     command_line += " ";
             }
-            else if (pika::program_options::any_cast<double>(&value)) {
+            else if (std::any_cast<double>(&value)) {
                 add_as_option(command_line, v.first,
                     std::to_string(v.second.as<double>()));
                 if (!command_line.empty())
                     command_line += " ";
             }
-            else if (pika::program_options::any_cast<int>(&value)) {
+            else if (std::any_cast<int>(&value)) {
                 add_as_option(command_line, v.first,
                     std::to_string(v.second.as<int>()));
                 if (!command_line.empty())
                     command_line += " ";
             }
-            else if (pika::program_options::any_cast<std::vector<std::string>>(
+            else if (std::any_cast<std::vector<std::string>>(
                          &value))
             {
                 auto const& vec = v.second.as<std::vector<std::string>>();

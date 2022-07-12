@@ -559,8 +559,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 // right to be used by the third step--which operates on the
                 // same partitions the first step operated on.
 
-                using pika::get;
                 using pika::util::make_zip_iterator;
+                using std::get;
 
                 auto f3 = [op](zip_iterator part_begin, std::size_t part_size,
                               T val) mutable -> void {

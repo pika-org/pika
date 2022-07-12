@@ -910,6 +910,7 @@ namespace pika {
 #include <pika/algorithms/traits/projected_range.hpp>
 #include <pika/parallel/algorithms/partition.hpp>
 
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -1186,7 +1187,7 @@ namespace pika { namespace ranges {
             Proj&& proj = Proj())
         {
             using iterator = pika::traits::range_iterator_t<Rng>;
-            using result_type = pika::tuple<iterator, OutIter2, OutIter3>;
+            using result_type = std::tuple<iterator, OutIter2, OutIter3>;
 
             static_assert(pika::traits::is_input_iterator_v<iterator>,
                 "Requires at least input iterator.");
@@ -1220,7 +1221,7 @@ namespace pika { namespace ranges {
             Proj&& proj = Proj())
         {
             using iterator = pika::traits::range_iterator_t<Rng>;
-            using result_type = pika::tuple<iterator, FwdIter2, FwdIter3>;
+            using result_type = std::tuple<iterator, FwdIter2, FwdIter3>;
 
             static_assert(pika::traits::is_forward_iterator_v<iterator>,
                 "Requires at least forward iterator.");
@@ -1252,7 +1253,7 @@ namespace pika { namespace ranges {
             Sent last, OutIter2 dest_true, OutIter3 dest_false, Pred&& pred,
             Proj&& proj = Proj())
         {
-            using result_type = pika::tuple<InIter, OutIter2, OutIter3>;
+            using result_type = std::tuple<InIter, OutIter2, OutIter3>;
 
             static_assert(pika::traits::is_input_iterator_v<InIter>,
                 "Requires at least input iterator.");
@@ -1285,7 +1286,7 @@ namespace pika { namespace ranges {
             FwdIter first, Sent last, OutIter2 dest_true, OutIter3 dest_false,
             Pred&& pred, Proj&& proj = Proj())
         {
-            using result_type = pika::tuple<FwdIter, OutIter2, OutIter3>;
+            using result_type = std::tuple<FwdIter, OutIter2, OutIter3>;
 
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");

@@ -1023,8 +1023,8 @@ pika_option(
 pika_option(
   PIKA_WITH_TUPLE_RVALUE_SWAP
   BOOL
-  "Enable swapping of rvalue tuples (needed for parallel::sort_by_key, default: ON)."
-  ON
+  "Enable swapping of rvalue tuples (needed for parallel::sort_by_key, default: OFF)."
+  OFF
   CATEGORY "Utility"
   ADVANCED
 )
@@ -1668,6 +1668,7 @@ endif()
 if(PIKA_WITH_PRECOMPILED_HEADERS)
   set(system_precompiled_headers
       <algorithm>
+      <any>
       <array>
       <atomic>
       <bitset>
@@ -1704,6 +1705,7 @@ if(PIKA_WITH_PRECOMPILED_HEADERS)
       <mutex>
       <new>
       <numeric>
+      <optional>
       <ostream>
       <random>
       <regex>

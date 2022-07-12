@@ -13,87 +13,88 @@
 #include <chrono>
 #include <string>
 #include <thread>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-pika::tuple<> make_tuple0_slowly()
+std::tuple<> make_tuple0_slowly()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    return pika::make_tuple();
+    return std::make_tuple();
 }
 
 void test_split_future0()
 {
-    pika::lcos::local::futures_factory<pika::tuple<>()> pt(make_tuple0_slowly);
+    pika::lcos::local::futures_factory<std::tuple<>()> pt(make_tuple0_slowly);
     pt.apply();
 
-    pika::tuple<pika::future<void>> result =
-        pika::split_future(pika::shared_future<pika::tuple<>>(pt.get_future()));
+    std::tuple<pika::future<void>> result =
+        pika::split_future(pika::shared_future<std::tuple<>>(pt.get_future()));
 
-    pika::get<0>(result).get();
+    std::get<0>(result).get();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-pika::tuple<int> make_tuple1_slowly()
+std::tuple<int> make_tuple1_slowly()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    return pika::make_tuple(42);
+    return std::make_tuple(42);
 }
 
 void test_split_future1()
 {
-    pika::lcos::local::futures_factory<pika::tuple<int>()> pt(
+    pika::lcos::local::futures_factory<std::tuple<int>()> pt(
         make_tuple1_slowly);
     pt.apply();
 
-    pika::tuple<pika::future<int>> result = pika::split_future(
-        pika::shared_future<pika::tuple<int>>(pt.get_future()));
+    std::tuple<pika::future<int>> result = pika::split_future(
+        pika::shared_future<std::tuple<int>>(pt.get_future()));
 
-    PIKA_TEST_EQ(pika::get<0>(result).get(), 42);
+    PIKA_TEST_EQ(std::get<0>(result).get(), 42);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-pika::tuple<int, int> make_tuple2_slowly()
+std::tuple<int, int> make_tuple2_slowly()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    return pika::make_tuple(42, 43);
+    return std::make_tuple(42, 43);
 }
 
 void test_split_future2()
 {
-    pika::lcos::local::futures_factory<pika::tuple<int, int>()> pt(
+    pika::lcos::local::futures_factory<std::tuple<int, int>()> pt(
         make_tuple2_slowly);
     pt.apply();
 
-    pika::tuple<pika::future<int>, pika::future<int>> result =
+    std::tuple<pika::future<int>, pika::future<int>> result =
         pika::split_future(
-            pika::shared_future<pika::tuple<int, int>>(pt.get_future()));
+            pika::shared_future<std::tuple<int, int>>(pt.get_future()));
 
-    PIKA_TEST_EQ(pika::get<0>(result).get(), 42);
-    PIKA_TEST_EQ(pika::get<1>(result).get(), 43);
+    PIKA_TEST_EQ(std::get<0>(result).get(), 42);
+    PIKA_TEST_EQ(std::get<1>(result).get(), 43);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-pika::tuple<int, int, int> make_tuple3_slowly()
+std::tuple<int, int, int> make_tuple3_slowly()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    return pika::make_tuple(42, 43, 44);
+    return std::make_tuple(42, 43, 44);
 }
 
 void test_split_future3()
 {
-    pika::lcos::local::futures_factory<pika::tuple<int, int, int>()> pt(
+    pika::lcos::local::futures_factory<std::tuple<int, int, int>()> pt(
         make_tuple3_slowly);
     pt.apply();
 
-    pika::tuple<pika::future<int>, pika::future<int>, pika::future<int>>
-        result = pika::split_future(
-            pika::shared_future<pika::tuple<int, int, int>>(pt.get_future()));
+    std::tuple<pika::future<int>, pika::future<int>, pika::future<int>> result =
+        pika::split_future(
+            pika::shared_future<std::tuple<int, int, int>>(pt.get_future()));
 
-    PIKA_TEST_EQ(pika::get<0>(result).get(), 42);
-    PIKA_TEST_EQ(pika::get<1>(result).get(), 43);
-    PIKA_TEST_EQ(pika::get<2>(result).get(), 44);
+    PIKA_TEST_EQ(std::get<0>(result).get(), 42);
+    PIKA_TEST_EQ(std::get<1>(result).get(), 43);
+    PIKA_TEST_EQ(std::get<2>(result).get(), 44);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

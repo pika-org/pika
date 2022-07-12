@@ -11,7 +11,6 @@
 #include <pika/config.hpp>
 #include <pika/execution/executors/execution.hpp>
 //
-#include <pika/datastructures/tuple.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/transform_iterator.hpp>
 #include <pika/parallel/algorithms/for_each.hpp>
@@ -23,6 +22,7 @@
 //
 #include <cstdint>
 #include <functional>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -58,7 +58,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 using element_type =
                     typename std::iterator_traits<Iterator>::reference;
                 using type =
-                    pika::tuple<element_type, element_type, element_type>;
+                    std::tuple<element_type, element_type, element_type>;
             };
 
             // call operator for stencil transform
@@ -143,9 +143,9 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 // resolves to a tuple of values for *(it-1), *it, *(it+1)
 
-                element_type left = pika::get<0>(value);
-                element_type mid = pika::get<1>(value);
-                element_type right = pika::get<2>(value);
+                element_type left = std::get<0>(value);
+                element_type mid = std::get<1>(value);
+                element_type right = std::get<2>(value);
 
                 // we need to determine which of three states this
                 // index is. It can be:
@@ -174,7 +174,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         {
             // the iterator we want is 'second' part of pair type (from copy_if)
             auto t = zipiter.out.get_iterator_tuple();
-            iKey key_end = pika::get<0>(t);
+            iKey key_end = std::get<0>(t);
             return util::in_out_result<iKey, iVal>{key_end,
                 std::next(val_start, std::distance(key_start, key_end))};
         }
@@ -189,7 +189,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             return pika::make_future<result_type>(
                 PIKA_MOVE(ziter), [=](ZIter zipiter) {
                     auto t = zipiter.second.get_iterator_tuple();
-                    iKey key_end = pika::get<0>(t);
+                    iKey key_end = std::get<0>(t);
                     return result_type{key_end,
                         std::next(
                             val_start, std::distance(key_start, key_end))};
@@ -268,7 +268,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                             reduce_begin + 1, key_state.begin() + 1),
                         make_zip_iterator(reduce_end - 1, key_state.end() - 1),
                         [&kernel, &comp](zip_ref ref) {
-                            kernel(pika::get<0>(ref), pika::get<1>(ref), comp);
+                            kernel(std::get<0>(ref), std::get<1>(ref), comp);
                         });
                     // Last element
                     element_type elemN = *std::prev(key_last);
@@ -299,16 +299,16 @@ namespace pika { namespace parallel { inline namespace v1 {
                 zip_type_in initial;
                 //
                 using lambda_type =
-                    pika::tuple<value_type, reduce_key_series_states>;
+                    std::tuple<value_type, reduce_key_series_states>;
                 pika::inclusive_scan(
                     policy(pika::execution::non_task), states_begin, states_end,
                     states_out_begin,
                     // B is the current entry, A is the one passed in from 'previous'
                     [&func](zip_type_in a, zip_type_in b) -> lambda_type {
-                        value_type a_val = pika::get<0>(a);
-                        reduce_key_series_states a_state = pika::get<1>(a);
-                        value_type b_val = pika::get<0>(b);
-                        reduce_key_series_states b_state = pika::get<1>(b);
+                        value_type a_val = std::get<0>(a);
+                        reduce_key_series_states a_state = std::get<1>(a);
+                        value_type b_val = std::get<0>(b);
+                        reduce_key_series_states b_state = std::get<1>(b);
                         debug_reduce_by_key("{ " << a_val << "+" << b_val
                                                  << " },\t" << a_state
                                                  << b_state);
@@ -316,7 +316,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         if (b_state.start)
                         {
                             debug_reduce_by_key(" = " << b_val << std::endl);
-                            return pika::make_tuple(b_val,
+                            return std::make_tuple(b_val,
                                 reduce_key_series_states(
                                     a_state.start || b_state.start,
                                     b_state.end));
@@ -327,7 +327,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                             debug_reduce_by_key(
                                 " = " << func(a_val, b_val) << std::endl);
                             value_type temp = func(a_val, b_val);
-                            return pika::make_tuple(temp,
+                            return std::make_tuple(temp,
                                 reduce_key_series_states(
                                     a_state.start || b_state.start,
                                     b_state.end));
@@ -355,7 +355,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         make_zip_iterator(keys_output, values_output,
                             pika::util::begin(key_state)),
                         // copies to dest only when 'end' state is true
-                        [](zip2_ref it) { return pika::get<2>(it).end; }),
+                        [](zip2_ref it) { return std::get<2>(it).end; }),
                     keys_output, values_output);
             }
         }

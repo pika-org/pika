@@ -483,6 +483,7 @@ namespace pika {
 #include <iterator>
 #include <list>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -491,21 +492,21 @@ namespace pika { namespace parallel { inline namespace v1 {
 
     template <typename Tuple>
     constexpr PIKA_FORCEINLINE
-        std::pair<typename pika::tuple_element<1, Tuple>::type,
-            typename pika::tuple_element<2, Tuple>::type>
+        std::pair<typename std::tuple_element<1, Tuple>::type,
+            typename std::tuple_element<2, Tuple>::type>
         tuple_to_pair(Tuple&& t)
     {
-        return std::make_pair(pika::get<1>(t), pika::get<2>(t));
+        return std::make_pair(std::get<1>(t), std::get<2>(t));
     }
 
     template <typename Tuple>
-    pika::future<std::pair<typename pika::tuple_element<1, Tuple>::type,
-        typename pika::tuple_element<2, Tuple>::type>>
+    pika::future<std::pair<typename std::tuple_element<1, Tuple>::type,
+        typename std::tuple_element<2, Tuple>::type>>
     tuple_to_pair(pika::future<Tuple>&& f)
     {
         using result_type =
-            std::pair<typename pika::tuple_element<1, Tuple>::type,
-                typename pika::tuple_element<2, Tuple>::type>;
+            std::pair<typename std::tuple_element<1, Tuple>::type,
+                typename std::tuple_element<2, Tuple>::type>;
 
         return pika::make_future<result_type>(
             PIKA_MOVE(f), [](Tuple&& t) -> result_type {
@@ -1428,7 +1429,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         // sequential partition_copy with projection function
         template <typename InIter, typename OutIter1, typename OutIter2,
             typename Pred, typename Proj>
-        pika::tuple<InIter, OutIter1, OutIter2> sequential_partition_copy(
+        std::tuple<InIter, OutIter1, OutIter2> sequential_partition_copy(
             InIter first, InIter last, OutIter1 dest_true, OutIter2 dest_false,
             Pred&& pred, Proj&& proj)
         {
@@ -1440,7 +1441,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                     *dest_false++ = *first;
                 first++;
             }
-            return pika::make_tuple(
+            return std::make_tuple(
                 PIKA_MOVE(last), PIKA_MOVE(dest_true), PIKA_MOVE(dest_false));
         }
 
@@ -1456,7 +1457,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             template <typename ExPolicy, typename InIter, typename Sent,
                 typename OutIter1, typename OutIter2, typename Pred,
                 typename Proj = util::projection_identity>
-            static pika::tuple<InIter, OutIter1, OutIter2> sequential(ExPolicy,
+            static std::tuple<InIter, OutIter1, OutIter2> sequential(ExPolicy,
                 InIter first, Sent last, OutIter1 dest_true,
                 OutIter2 dest_false, Pred&& pred, Proj&& proj)
             {
@@ -1470,14 +1471,14 @@ namespace pika { namespace parallel { inline namespace v1 {
                 typename FwdIter2, typename FwdIter3, typename Pred,
                 typename Proj = util::projection_identity>
             static typename util::detail::algorithm_result<ExPolicy,
-                pika::tuple<FwdIter1, FwdIter2, FwdIter3>>::type
+                std::tuple<FwdIter1, FwdIter2, FwdIter3>>::type
             parallel(ExPolicy&& policy, FwdIter1 first, Sent last,
                 FwdIter2 dest_true, FwdIter3 dest_false, Pred&& pred,
                 Proj&& proj)
             {
                 using zip_iterator = pika::util::zip_iterator<FwdIter1, bool*>;
                 using result = util::detail::algorithm_result<ExPolicy,
-                    pika::tuple<FwdIter1, FwdIter2, FwdIter3>>;
+                    std::tuple<FwdIter1, FwdIter2, FwdIter3>>;
                 using difference_type =
                     typename std::iterator_traits<FwdIter1>::difference_type;
                 using output_iterator_offset =
@@ -1485,7 +1486,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 
                 if (first == last)
                     return result::get(
-                        pika::make_tuple(first, dest_true, dest_false));
+                        std::make_tuple(first, dest_true, dest_false));
 
                 auto last_iter = first;
                 difference_type count =
@@ -1494,10 +1495,10 @@ namespace pika { namespace parallel { inline namespace v1 {
                 std::shared_ptr<bool[]> flags(new bool[count]);
                 output_iterator_offset init = {0, 0};
 
-                using pika::get;
                 using pika::util::make_zip_iterator;
+                using std::get;
                 using scan_partitioner_type = util::scan_partitioner<ExPolicy,
-                    pika::tuple<FwdIter1, FwdIter2, FwdIter3>,
+                    std::tuple<FwdIter1, FwdIter2, FwdIter3>,
                     output_iterator_offset>;
 
                 // Note: replacing the invoke() with PIKA_INVOKE()
@@ -1552,7 +1553,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 auto f4 = [last_iter, dest_true, dest_false, flags](
                               std::vector<output_iterator_offset>&& items,
                               std::vector<pika::future<void>>&&) mutable
-                    -> pika::tuple<FwdIter1, FwdIter2, FwdIter3> {
+                    -> std::tuple<FwdIter1, FwdIter2, FwdIter3> {
                     PIKA_UNUSED(flags);
 
                     output_iterator_offset count_pair = items.back();
@@ -1561,7 +1562,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                     std::advance(dest_true, count_true);
                     std::advance(dest_false, count_false);
 
-                    return pika::make_tuple(last_iter, dest_true, dest_false);
+                    return std::make_tuple(last_iter, dest_true, dest_false);
                 };
 
                 return scan_partitioner_type::call(
@@ -1611,7 +1612,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
-        using result_type = pika::tuple<FwdIter1, FwdIter2, FwdIter3>;
+        using result_type = std::tuple<FwdIter1, FwdIter2, FwdIter3>;
 
         return parallel::v1::tuple_to_pair(
             detail::partition_copy<result_type>().call(
@@ -1764,7 +1765,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter3>),
                 "Requires at least forward iterator.");
 
-            using result_type = pika::tuple<FwdIter1, FwdIter2, FwdIter3>;
+            using result_type = std::tuple<FwdIter1, FwdIter2, FwdIter3>;
 
             return parallel::v1::tuple_to_pair(
                 parallel::v1::detail::partition_copy<result_type>().call(
@@ -1799,7 +1800,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter3>),
                 "Requires at least forward iterator.");
 
-            using result_type = pika::tuple<FwdIter1, FwdIter2, FwdIter3>;
+            using result_type = std::tuple<FwdIter1, FwdIter2, FwdIter3>;
 
             return parallel::v1::tuple_to_pair(
                 parallel::v1::detail::partition_copy<result_type>().call(

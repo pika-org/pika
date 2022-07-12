@@ -9,7 +9,6 @@
 //  Creative Commons Attribution 4.0 International License
 //  (http://creativecommons.org/licenses/by/4.0/).
 
-#include <pika/datastructures/optional.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/synchronization.hpp>
 #include <pika/modules/threading.hpp>
@@ -22,6 +21,7 @@
 #include <functional>
 #include <iostream>
 #include <mutex>
+#include <optional>
 #include <thread>
 #include <utility>
 
@@ -202,7 +202,7 @@ void test_concurrent_callback_registration()
 void test_callback_deregistered_from_within_callback_does_not_deadlock()
 {
     pika::stop_source src;
-    pika::util::optional<pika::stop_callback<std::function<void()>>> cb;
+    std::optional<pika::stop_callback<std::function<void()>>> cb;
 
     cb.emplace(src.get_token(), [&] { cb.reset(); });
 
@@ -224,8 +224,8 @@ void test_callback_deregistration_doesnt_wait_for_others_to_finish_executing()
 
     auto dummy_callback = [] {};
 
-    pika::util::optional<pika::stop_callback<decltype(dummy_callback)&>> cb1(
-        pika::util::in_place, src.get_token(), dummy_callback);
+    std::optional<pika::stop_callback<decltype(dummy_callback)&>> cb1(
+        std::in_place, src.get_token(), dummy_callback);
 
     // Register a first callback that will signal when it starts executing
     // and then block until it receives a signal.
@@ -238,8 +238,8 @@ void test_callback_deregistration_doesnt_wait_for_others_to_finish_executing()
     pika::stop_callback<decltype(f)> blocking_callback(
         src.get_token(), std::move(f));
 
-    pika::util::optional<pika::stop_callback<decltype(dummy_callback)&>> cb2{
-        pika::util::in_place, src.get_token(), dummy_callback};
+    std::optional<pika::stop_callback<decltype(dummy_callback)&>> cb2{
+        std::in_place, src.get_token(), dummy_callback};
 
     pika::thread signalling_thread{[&] { src.request_stop(); }};
 

@@ -11,6 +11,7 @@
 #include <pika/testing.hpp>
 
 #include <cstddef>
+#include <tuple>
 #include <type_traits>
 #include <vector>
 
@@ -23,8 +24,7 @@ int pika_main()
 
     pika::for_each(
         pika::execution::par_simd, zip_it_begin, zip_it_end, [](auto t) {
-            using comp_type =
-                typename pika::tuple_element<0, decltype(t)>::type;
+            using comp_type = typename std::tuple_element<0, decltype(t)>::type;
             using var_type = typename std::decay<comp_type>::type;
 
             var_type mass_density = 0.0;

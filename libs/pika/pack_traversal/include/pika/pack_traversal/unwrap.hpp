@@ -34,7 +34,7 @@ namespace pika {
     ///   int i1 = pika:unwrap(pika::make_ready_future(0));
     ///
     ///   // Multiple arguments
-    ///   pika::tuple<int, int> i2 =
+    ///   std::tuple<int, int> i2 =
     ///       pika:unwrap(pika::make_ready_future(1),
     ///                  pika::make_ready_future(2));
     ///   ```
@@ -51,7 +51,7 @@ namespace pika {
     ///          arbitrary future or non future type.
     ///
     /// \returns Depending on the count of arguments this function returns
-    ///          a pika::tuple containing the unwrapped arguments
+    ///          a std::tuple containing the unwrapped arguments
     ///          if multiple arguments are given.
     ///          In case the function is called with a single argument,
     ///          the argument is unwrapped and returned.

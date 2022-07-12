@@ -18,17 +18,18 @@
 #include <iterator>
 #include <list>
 #include <numeric>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 // define operators for the type returned by the chunk_size_iterator to make
 // the tests compile
 template <typename Iter>
-bool operator==(pika::tuple<Iter, std::size_t> const& lhs,
-    pika::tuple<Iter, std::size_t> const& rhs)
+bool operator==(std::tuple<Iter, std::size_t> const& lhs,
+    std::tuple<Iter, std::size_t> const& rhs)
 {
-    return pika::get<0>(lhs) == pika::get<0>(rhs) &&
-        pika::get<1>(lhs) == pika::get<1>(rhs);
+    return std::get<0>(lhs) == std::get<0>(rhs) &&
+        std::get<1>(lhs) == std::get<1>(rhs);
 }
 
 // Special tests for RandomAccess Iterator.
@@ -100,7 +101,7 @@ void test_aux(
     for (Iterator p = start; p != finish && std::next(p) != finish; ++p)
     {
         auto c = *p;
-        PIKA_TEST(pika::get<0>(c) + chunk_size == pika::get<0>(*std::next(p)));
+        PIKA_TEST(std::get<0>(c) + chunk_size == std::get<0>(*std::next(p)));
     }
 
     // prove that a reference can be formed to these values

@@ -21,7 +21,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 void test_max_element_sent()
 {
-    using pika::get;
+    using std::get;
 
     auto c = test::random_iota(100);
     auto ref = std::max_element(std::begin(c), std::begin(c) + 50);
@@ -53,7 +53,7 @@ void test_max_element_sent(ExPolicy policy)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     auto c = test::random_iota(100);
     auto ref = std::max_element(std::begin(c), std::begin(c) + 50);

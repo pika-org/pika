@@ -138,8 +138,8 @@ namespace pika { namespace parallel { namespace util {
                     // performed when all f1 tasks are done
                     for (auto const& elem : shape)
                     {
-                        FwdIter it = pika::get<0>(elem);
-                        std::size_t size = pika::get<1>(elem);
+                        FwdIter it = std::get<0>(elem);
+                        std::size_t size = std::get<1>(elem);
 
                         auto curr = execution::async_execute(
                             policy.executor(), f1, it, size)
@@ -166,8 +166,8 @@ namespace pika { namespace parallel { namespace util {
                     for (auto const& elem : shape)
                     {
                         finalitems.push_back(execution::async_execute(
-                            policy.executor(), f3, pika::get<0>(elem),
-                            pika::get<1>(elem), f2results[i]));
+                            policy.executor(), f3, std::get<0>(elem),
+                            std::get<1>(elem), f2results[i]));
                         i++;
                     }
 
@@ -254,8 +254,8 @@ namespace pika { namespace parallel { namespace util {
                     // partition to the left is ready.
                     for (auto const& elem : shape)
                     {
-                        FwdIter it = pika::get<0>(elem);
-                        std::size_t size = pika::get<1>(elem);
+                        FwdIter it = std::get<0>(elem);
+                        std::size_t size = std::get<1>(elem);
 
                         pika::shared_future<Result1> prev = workitems.back();
                         auto curr = execution::async_execute(
@@ -281,8 +281,8 @@ namespace pika { namespace parallel { namespace util {
                     else
                     {
                         auto elem = *shape_iter++;
-                        FwdIter it = pika::get<0>(elem);
-                        std::size_t size = pika::get<1>(elem);
+                        FwdIter it = std::get<0>(elem);
+                        std::size_t size = std::get<1>(elem);
 
                         finalitems.push_back(dataflow(pika::launch::sync, f3,
                             it, size, workitems[0], workitems[1]));
@@ -296,8 +296,8 @@ namespace pika { namespace parallel { namespace util {
                          ++shape_iter, ++widx)
                     {
                         auto elem = *shape_iter;
-                        FwdIter it = pika::get<0>(elem);
-                        std::size_t size = pika::get<1>(elem);
+                        FwdIter it = std::get<0>(elem);
+                        std::size_t size = std::get<1>(elem);
 
                         // Wait the completion of f3 on previous partition.
                         finalitems.back().wait();

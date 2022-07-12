@@ -70,7 +70,7 @@ struct random_fill
 ////////////////////////////////////////////////////////////////////////////
 void test_unique_copy_sent()
 {
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<std::size_t> c(size), dest_res(size), dest_sol(size);
@@ -95,7 +95,7 @@ void test_unique_copy_sent()
 template <typename ExPolicy>
 void test_unique_copy_sent(ExPolicy policy)
 {
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<std::size_t> c(size), dest_res(size), dest_sol(size);
@@ -121,7 +121,7 @@ void test_unique_copy_sent(ExPolicy policy)
 template <typename DataType>
 void test_unique_copy(DataType)
 {
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), dest_res(size), dest_sol(size);
@@ -145,7 +145,7 @@ void test_unique_copy(ExPolicy policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), dest_res(size), dest_sol(size);
@@ -169,7 +169,7 @@ void test_unique_copy_async(ExPolicy policy, DataType)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    using pika::get;
+    using std::get;
 
     std::size_t const size = 10007;
     std::vector<DataType> c(size), dest_res(size), dest_sol(size);

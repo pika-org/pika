@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_DATAPAR)
-#include <pika/datastructures/tuple.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/executors/datapar/execution_policy.hpp>
 #include <pika/executors/execution_policy.hpp>
@@ -24,6 +23,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -327,7 +327,7 @@ namespace pika { namespace parallel { namespace util {
                     iterator_datapar_compatible<InIter1>::value &&
                     iterator_datapar_compatible<InIter2>::value &&
                     iterator_datapar_compatible<OutIter>::value,
-                pika::tuple<InIter1, InIter2, OutIter>>::type
+                std::tuple<InIter1, InIter2, OutIter>>::type
             call(InIter1 first1, std::size_t count, InIter2 first2,
                 OutIter dest, F&& f)
             {
@@ -356,7 +356,7 @@ namespace pika { namespace parallel { namespace util {
                     datapar_transform_loop_step::call1(f, first1, first2, dest);
                 }
 
-                return pika::make_tuple(
+                return std::make_tuple(
                     PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest));
             }
 
@@ -368,7 +368,7 @@ namespace pika { namespace parallel { namespace util {
                     !iterator_datapar_compatible<InIter1>::value ||
                     !iterator_datapar_compatible<InIter2>::value ||
                     !iterator_datapar_compatible<OutIter>::value,
-                pika::tuple<InIter1, InIter2, OutIter>>::type
+                std::tuple<InIter1, InIter2, OutIter>>::type
             call(InIter1 first1, std::size_t count, InIter2 first2,
                 OutIter dest, F&& f)
             {
@@ -383,7 +383,7 @@ namespace pika { namespace parallel { namespace util {
         typename OutIter, typename F>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
-        pika::tuple<InIter1, InIter2, OutIter>>::type
+        std::tuple<InIter1, InIter2, OutIter>>::type
     tag_invoke(pika::parallel::util::transform_binary_loop_n_t<ExPolicy>,
         InIter1 first1, std::size_t count, InIter2 first2, OutIter dest, F&& f)
     {
@@ -428,7 +428,7 @@ namespace pika { namespace parallel { namespace util {
                     PIKA_FORWARD(F, f));
 
                 return util::in_in_out_result<InIter1, InIter2, OutIter>{
-                    pika::get<0>(ret), pika::get<1>(ret), pika::get<2>(ret)};
+                    std::get<0>(ret), std::get<1>(ret), std::get<2>(ret)};
             }
 
             template <typename InIter1, typename InIter2, typename OutIter,
@@ -471,7 +471,7 @@ namespace pika { namespace parallel { namespace util {
                     first1, count, first2, dest, PIKA_FORWARD(F, f));
 
                 return util::in_in_out_result<InIter1, InIter2, OutIter>{
-                    pika::get<0>(ret), pika::get<1>(ret), pika::get<2>(ret)};
+                    std::get<0>(ret), std::get<1>(ret), std::get<2>(ret)};
             }
 
             template <typename InIter1, typename InIter2, typename OutIter,
@@ -537,7 +537,7 @@ namespace pika { namespace parallel { namespace util {
                     iterator_datapar_compatible<InIter1>::value &&
                     iterator_datapar_compatible<InIter2>::value &&
                     iterator_datapar_compatible<OutIter>::value,
-                pika::tuple<InIter1, InIter2, OutIter>>::type
+                std::tuple<InIter1, InIter2, OutIter>>::type
             call(InIter1 first1, std::size_t count, InIter2 first2,
                 OutIter dest, F&& f)
             {
@@ -569,7 +569,7 @@ namespace pika { namespace parallel { namespace util {
                         f, first1, first2, dest);
                 }
 
-                return pika::make_tuple(
+                return std::make_tuple(
                     PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest));
             }
 
@@ -581,7 +581,7 @@ namespace pika { namespace parallel { namespace util {
                     !iterator_datapar_compatible<InIter1>::value ||
                     !iterator_datapar_compatible<InIter2>::value ||
                     !iterator_datapar_compatible<OutIter>::value,
-                pika::tuple<InIter1, InIter2, OutIter>>::type
+                std::tuple<InIter1, InIter2, OutIter>>::type
             call(InIter1 first1, std::size_t count, InIter2 first2,
                 OutIter dest, F&& f)
             {
@@ -596,7 +596,7 @@ namespace pika { namespace parallel { namespace util {
         typename OutIter, typename F>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
-        pika::tuple<InIter1, InIter2, OutIter>>::type
+        std::tuple<InIter1, InIter2, OutIter>>::type
     tag_invoke(pika::parallel::util::transform_binary_loop_ind_n_t<ExPolicy>,
         InIter1 first1, std::size_t count, InIter2 first2, OutIter dest, F&& f)
     {
@@ -641,7 +641,7 @@ namespace pika { namespace parallel { namespace util {
                     PIKA_FORWARD(F, f));
 
                 return util::in_in_out_result<InIter1, InIter2, OutIter>{
-                    pika::get<0>(ret), pika::get<1>(ret), pika::get<2>(ret)};
+                    std::get<0>(ret), std::get<1>(ret), std::get<2>(ret)};
             }
 
             template <typename InIter1, typename InIter2, typename OutIter,
@@ -681,7 +681,7 @@ namespace pika { namespace parallel { namespace util {
                     first1, count, first2, dest, PIKA_FORWARD(F, f));
 
                 return util::in_in_out_result<InIter1, InIter2, OutIter>{
-                    pika::get<0>(ret), pika::get<1>(ret), pika::get<2>(ret)};
+                    std::get<0>(ret), std::get<1>(ret), std::get<2>(ret)};
             }
 
             template <typename InIter1, typename InIter2, typename OutIter,

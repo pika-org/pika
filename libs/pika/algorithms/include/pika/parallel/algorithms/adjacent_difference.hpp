@@ -228,7 +228,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 auto f1 = [op = PIKA_FORWARD(Op, op)](zip_iterator part_begin,
                               std::size_t part_size) mutable {
                     // VS2015RC bails out when op is captured by ref
-                    using pika::get;
+                    using std::get;
                     util::loop_n<std::decay_t<ExPolicy>>(
                         part_begin, part_size, [op](auto&& it) mutable {
                             get<2>(*it) =

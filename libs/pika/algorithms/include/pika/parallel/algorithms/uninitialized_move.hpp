@@ -300,7 +300,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                     pika::util::make_zip_iterator(first, dest), count,
                     [tok](zip_iterator t, std::size_t part_size) mutable
                     -> partition_result_type {
-                        using pika::get;
+                        using std::get;
                         auto iters = t.get_iterator_tuple();
                         FwdIter2 dest = get<1>(iters);
                         return std::make_pair(dest,

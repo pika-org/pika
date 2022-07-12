@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 #include <pika/affinity/affinity_data.hpp>
 #include <pika/assert.hpp>
-#include <pika/datastructures/tuple.hpp>
 #include <pika/ini/ini.hpp>
 #include <pika/resource_partitioner/partitioner.hpp>
 #include <pika/synchronization/spinlock.hpp>
@@ -22,6 +21,7 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace pika { namespace resource { namespace detail {
@@ -64,7 +64,7 @@ namespace pika { namespace resource { namespace detail {
         std::vector<threads::detail::mask_type> assigned_pus_;    // mask
 
         // pu index/exclusive/assigned
-        std::vector<pika::tuple<std::size_t, bool, bool>> assigned_pu_nums_;
+        std::vector<std::tuple<std::size_t, bool, bool>> assigned_pu_nums_;
 
         // counter for number of threads bound to this pool
         std::size_t num_threads_;

@@ -45,8 +45,8 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
                 return dest;
             }
 
-            using pika::get;
             using pika::util::make_zip_iterator;
+            using std::get;
             util::loop_n<std::decay_t<ExPolicy>>(
                 make_zip_iterator(first, prev, dest), count,
                 [op](auto&& it) mutable {
