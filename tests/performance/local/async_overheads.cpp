@@ -71,55 +71,57 @@ int pika_main(pika::program_options::variables_map& vm)
     if (vm.count("tasks"))
         num_tasks = vm["tasks"].as<std::size_t>();
 
-    double seqential_time_per_task = 0;
+    double sequential_time_per_task = 0;
 
     {
         std::vector<pika::future<void>> tasks;
         tasks.reserve(num_tasks);
 
-        std::uint64_t start = pika::chrono::high_resolution_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         for (std::size_t i = 0; i != num_tasks; ++i)
             tasks.push_back(pika::async(&test_func));
 
         pika::wait_all(tasks);
 
-        std::uint64_t end = pika::chrono::high_resolution_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
 
-        seqential_time_per_task =
-            static_cast<double>(end - start) / 1e9 / num_tasks;
+        sequential_time_per_task =
+            std::chrono::duration<double>(end - start).count() / num_tasks;
         std::cout << "Elapsed sequential time: "
-                  << static_cast<double>(end - start) / 1e9 << " [s], ("
-                  << seqential_time_per_task << " [s])" << std::endl;
+                  << std::chrono::duration<double>(end - start).count()
+                  << " [s], (" << sequential_time_per_task << " [s])"
+                  << std::endl;
         pika::util::print_cdash_timing(
-            "AsyncSequential", seqential_time_per_task);
+            "AsyncSequential", sequential_time_per_task);
     }
 
     double hierarchical_time_per_task = 0;
 
     {
-        std::uint64_t start = pika::chrono::high_resolution_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         pika::future<void> f = pika::async(&spawn_level, num_tasks);
         pika::wait_all(f);
 
-        std::uint64_t end = pika::chrono::high_resolution_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
 
         hierarchical_time_per_task =
-            static_cast<double>(end - start) / 1e9 / num_tasks;
+            std::chrono::duration<double>(end - start).count() / num_tasks;
         std::cout << "Elapsed hierarchical time: "
-                  << static_cast<double>(end - start) / 1e9 << " [s], ("
-                  << hierarchical_time_per_task << " [s])" << std::endl;
+                  << std::chrono::duration<double>(end - start).count()
+                  << " [s], (" << hierarchical_time_per_task << " [s])"
+                  << std::endl;
         pika::util::print_cdash_timing(
             "AsyncHierarchical", hierarchical_time_per_task);
     }
 
     std::cout << "Ratio (speedup): "
-              << seqential_time_per_task / hierarchical_time_per_task
+              << sequential_time_per_task / hierarchical_time_per_task
               << std::endl;
 
     pika::util::print_cdash_timing(
-        "AsyncSpeedup", seqential_time_per_task / hierarchical_time_per_task);
+        "AsyncSpeedup", sequential_time_per_task / hierarchical_time_per_task);
 
     return pika::finalize();
 }

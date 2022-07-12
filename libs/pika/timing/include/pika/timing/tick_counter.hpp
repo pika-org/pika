@@ -11,7 +11,7 @@
 
 #include <cstdint>
 
-namespace pika { namespace util {
+namespace pika::chrono::detail {
     ///////////////////////////////////////////////////////////////////////////
     //
     //  tick_counter - a timer
@@ -41,4 +41,4 @@ namespace pika { namespace util {
         std::uint64_t const start_time_;
         std::uint64_t& output_;
     };
-}}    // namespace pika::util
+}    // namespace pika::chrono::detail

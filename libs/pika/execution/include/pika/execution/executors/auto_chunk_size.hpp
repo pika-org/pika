@@ -73,8 +73,8 @@ namespace pika { namespace execution {
             // perform measurements only if necessary
             if (num_iters_for_timing_ > 0)
             {
-                using pika::chrono::high_resolution_clock;
-                std::uint64_t t = high_resolution_clock::now();
+                using namespace std::chrono;
+                auto t = high_resolution_clock::now();
 
                 // use executor to launch given function for measurements
                 std::size_t test_chunk_size =
@@ -83,12 +83,14 @@ namespace pika { namespace execution {
 
                 if (test_chunk_size != 0)
                 {
-                    t = (high_resolution_clock::now() - t) / test_chunk_size;
-                    if (t != 0 && min_time_ >= t)
+                    auto dur =
+                        (high_resolution_clock::now() - t) / test_chunk_size;
+                    if (dur.count() != 0 && min_time_ >= dur)
                     {
                         // return chunk size which will create the required
                         // amount of work
-                        return (std::min)(count, (std::size_t)(min_time_ / t));
+                        return (std::min)(
+                            count, (std::size_t)(min_time_ / dur));
                     }
                 }
             }
@@ -100,7 +102,7 @@ namespace pika { namespace execution {
     private:
         /// \cond NOINTERNAL
         // target time for on thread (nanoseconds)
-        std::uint64_t min_time_;
+        std::chrono::duration<unsigned long, std::nano> min_time_;
 
         // number of iteration to use for timing
         std::uint64_t num_iters_for_timing_;

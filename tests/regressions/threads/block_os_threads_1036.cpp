@@ -98,7 +98,7 @@ int pika_main()
 
         {
             double delay_sec = delay * 1e-6;
-            pika::chrono::high_resolution_timer td;
+            pika::chrono::detail::high_resolution_timer td;
 
             while (true)
             {

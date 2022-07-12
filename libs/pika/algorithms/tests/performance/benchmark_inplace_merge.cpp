@@ -53,19 +53,20 @@ template <typename OrgIter, typename BidirIter>
 double run_inplace_merge_benchmark_std(int test_count, OrgIter org_first,
     OrgIter org_last, BidirIter first, BidirIter middle, BidirIter last)
 {
-    std::uint64_t time = std::uint64_t(0);
+    using namespace std::chrono;
+    auto dur = duration<double>(0);
 
     for (int i = 0; i < test_count; ++i)
     {
         // Restore [first, last) with original data.
         pika::copy(pika::execution::par, org_first, org_last, first);
 
-        std::uint64_t elapsed = pika::chrono::high_resolution_clock::now();
+        auto start = high_resolution_clock::now();
         std::inplace_merge(first, middle, last);
-        time += pika::chrono::high_resolution_clock::now() - elapsed;
+        dur += high_resolution_clock::now() - start;
     }
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,19 +75,20 @@ double run_inplace_merge_benchmark_pika(int test_count, ExPolicy policy,
     OrgIter org_first, OrgIter org_last, BidirIter first, BidirIter middle,
     BidirIter last)
 {
-    std::uint64_t time = std::uint64_t(0);
+    using namespace std::chrono;
+    auto dur = duration<double>(0);
 
     for (int i = 0; i < test_count; ++i)
     {
         // Restore [first, last) with original data.
         pika::copy(pika::execution::par, org_first, org_last, first);
 
-        std::uint64_t elapsed = pika::chrono::high_resolution_clock::now();
+        auto start = high_resolution_clock::now();
         pika::inplace_merge(policy, first, middle, last);
-        time += pika::chrono::high_resolution_clock::now() - elapsed;
+        dur += high_resolution_clock::now() - start;
     }
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

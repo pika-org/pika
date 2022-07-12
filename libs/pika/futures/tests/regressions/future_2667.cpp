@@ -32,7 +32,7 @@ int pika_main()
             return pika::async([]() -> void { do_more_work(); });
         });
 
-    pika::chrono::high_resolution_timer t;
+    pika::chrono::detail::high_resolution_timer t;
 
     pika::future<void> fut2 = std::move(fut);
     fut2.get();

@@ -83,7 +83,7 @@ namespace jacobi_smp {
         std::shared_ptr<future_vector> deps_src(
             new future_vector(dependencies.size(), pika::make_ready_future()));
 
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         for (std::size_t iter = 0; iter < iterations; ++iter)
         {
             for (std::size_t block = 0; block < block_ranges.size(); ++block)
@@ -110,7 +110,7 @@ namespace jacobi_smp {
         pika::wait_all(*deps_dst);
         pika::wait_all(*deps_src);
 
-        double time_elapsed = t.elapsed();
+        double time_elapsed = t.elapsed<std::chrono::seconds>();
         std::cout << dst->size() << " "
                   << ((double(dst->size() * iterations) / 1e6) / time_elapsed)
                   << " MLUPS/s\n"

@@ -242,7 +242,7 @@ int pika_main()
     // longer than the spawn, and the wait should be long.
     {
         external_future_executor exec;
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         pika::future<void> f = pika::dataflow(exec, []() {
             // This represents an asynchronous operation which has an
             // out-of-band mechanism for signaling completion.
@@ -263,7 +263,7 @@ int pika_main()
         done = false;
 
         external_future_executor exec;
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         pika::future<int> f = pika::dataflow(exec, []() {
             // This represents an asynchronous operation which has an
             // out-of-band mechanism for signaling completion.
@@ -287,7 +287,7 @@ int pika_main()
         done = false;
 
         external_future_additional_argument_executor exec;
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         pika::future<void> f = pika::dataflow(exec, [](additional_argument) {
             // This represents an asynchronous operation which has an
             // out-of-band mechanism for signaling completion.
@@ -308,7 +308,7 @@ int pika_main()
         done = false;
 
         external_future_additional_argument_executor exec;
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         pika::future<int> f = pika::dataflow(exec, [](additional_argument) {
             // This represents an asynchronous operation which has an
             // out-of-band mechanism for signaling completion.

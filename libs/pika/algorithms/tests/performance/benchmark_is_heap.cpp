@@ -50,18 +50,19 @@ double run_is_heap_benchmark_std(int test_count, std::vector<int> const& v)
 {
     std::cout << "--- run_is_heap_benchmark_std ---" << std::endl;
     bool result = true;
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
         result = std::is_heap(std::begin(v), std::end(v));
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
     std::cout << "Is Heap? : " << result << std::endl;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,7 +70,8 @@ double run_is_heap_benchmark_seq(int test_count, std::vector<int> const& v)
 {
     std::cout << "--- run_is_heap_benchmark_seq ---" << std::endl;
     bool result = true;
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
@@ -77,11 +79,11 @@ double run_is_heap_benchmark_seq(int test_count, std::vector<int> const& v)
         result = pika::is_heap(seq, std::begin(v), std::end(v));
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
     std::cout << "Is Heap? : " << result << std::endl;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,7 +91,8 @@ double run_is_heap_benchmark_par(int test_count, std::vector<int> const& v)
 {
     std::cout << "--- run_is_heap_benchmark_par ---" << std::endl;
     bool result = true;
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
@@ -97,11 +100,11 @@ double run_is_heap_benchmark_par(int test_count, std::vector<int> const& v)
         result = pika::is_heap(par, std::begin(v), std::end(v));
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
     std::cout << "Is Heap? : " << result << std::endl;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -110,7 +113,8 @@ double run_is_heap_benchmark_par_unseq(
 {
     std::cout << "--- run_is_heap_benchmark_par_unseq ---" << std::endl;
     bool result = true;
-    std::uint64_t time = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto time = high_resolution_clock::now();
 
     for (int i = 0; i < test_count; ++i)
     {
@@ -118,11 +122,11 @@ double run_is_heap_benchmark_par_unseq(
         result = pika::is_heap(par_unseq, std::begin(v), std::end(v));
     }
 
-    time = pika::chrono::high_resolution_clock::now() - time;
+    duration<double> dur = high_resolution_clock::now() - time;
 
     std::cout << "Is Heap? : " << result << std::endl;
 
-    return (time * 1e-9) / test_count;
+    return dur.count() / test_count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

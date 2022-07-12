@@ -43,22 +43,20 @@ pika::threads::detail::topology& retrieve_topology()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-double mysecond()
-{
-    return pika::chrono::high_resolution_clock::now() * 1e-9;
-}
-
 int checktick()
 {
     static const std::size_t M = 20;
-    double timesfound[M];
+    using namespace std::chrono;
+    time_point<high_resolution_clock> timesfound[M];
 
     // Collect a sequence of M unique time values from the system.
     for (std::size_t i = 0; i < M; i++)
     {
-        double const t1 = mysecond();
-        double t2;
-        while (((t2 = mysecond()) - t1) < 1.0E-6)
+        auto const t1 = high_resolution_clock::now();
+        time_point<high_resolution_clock> t2;
+        while (
+            duration<double>((t2 = high_resolution_clock::now()) - t1).count() <
+            1.0E-6)
             ;
         timesfound[i] = t2;
     }
@@ -69,7 +67,9 @@ int checktick()
     int minDelta = 1000000;
     for (std::size_t i = 1; i < M; i++)
     {
-        int Delta = (int) (1.0E6 * (timesfound[i] - timesfound[i - 1]));
+        int Delta =
+            duration_cast<milliseconds>(timesfound[i] - timesfound[i - 1])
+                .count();
         minDelta = (std::min)(minDelta, (std::max)(Delta, 0));
     }
 
@@ -314,8 +314,9 @@ struct triad_step
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename Policy>
-std::vector<std::vector<double>> run_benchmark(std::size_t warmup_iterations,
-    std::size_t iterations, std::size_t size, Policy&& policy)
+std::vector<std::vector<std::chrono::duration<double>>> run_benchmark(
+    std::size_t warmup_iterations, std::size_t iterations, std::size_t size,
+    Policy&& policy)
 {
     // Allocate our data
     using vector_type = std::vector<STREAM_TYPE>;
@@ -330,10 +331,12 @@ std::vector<std::vector<double>> run_benchmark(std::size_t warmup_iterations,
     pika::fill(policy, c.begin(), c.end(), 0.0);
 
     // Check clock ticks ...
-    double t = mysecond();
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
     pika::transform(
         policy, a.begin(), a.end(), a.begin(), multiply_step<STREAM_TYPE>(2.0));
-    t = 1.0E6 * (mysecond() - t);
+    auto dur =
+        duration_cast<microseconds>(high_resolution_clock::now() - start);
 
     // Get initial value for system clock.
     int quantum = checktick();
@@ -359,8 +362,8 @@ std::vector<std::vector<double>> run_benchmark(std::size_t warmup_iterations,
     {
         // clang-format off
         std::cout << "Each test below will take on the order of "
-                  << (int) t << " microseconds.\n"
-                  << "   (= " << (int) (t / quantum) << " clock ticks)\n"
+                  << dur.count() << " microseconds.\n"
+                  << "   (= " << (int) (dur.count() / quantum) << " clock ticks)\n"
                   << "Increase the size of the arrays if this shows that\n"
                   << "you are not getting at least 20 clock ticks per test.\n"
                   << "-------------------------------------------------------------\n";
@@ -404,33 +407,39 @@ std::vector<std::vector<double>> run_benchmark(std::size_t warmup_iterations,
     pika::fill(policy, b.begin(), b.end(), 2.0);
     pika::fill(policy, c.begin(), c.end(), 0.0);
 
+    using namespace std::chrono;
+    time_point<high_resolution_clock> start_tmp;
     ///////////////////////////////////////////////////////////////////////////
     // Main timing loop
-    std::vector<std::vector<double>> timing(4, std::vector<double>(iterations));
+    std::vector<std::vector<duration<double>>> timing(
+        4, std::vector<duration<double>>(iterations));
     for (std::size_t iteration = 0; iteration != iterations; ++iteration)
     {
         // Copy
-        timing[0][iteration] = mysecond();
+        start_tmp = high_resolution_clock::now();
         pika::copy(policy, a.begin(), a.end(), c.begin());
-        timing[0][iteration] = mysecond() - timing[0][iteration];
+        timing[0][iteration] = high_resolution_clock::now() - start_tmp;
 
         // Scale
-        timing[1][iteration] = mysecond();
+        start_tmp = high_resolution_clock::now();
         pika::transform(policy, c.begin(), c.end(), b.begin(),
             multiply_step<STREAM_TYPE>(scalar));
-        timing[1][iteration] = mysecond() - timing[1][iteration];
+        timing[1][iteration] =
+            duration_cast<seconds>(high_resolution_clock::now() - start_tmp);
 
         // Add
-        timing[2][iteration] = mysecond();
+        start_tmp = high_resolution_clock::now();
         pika::ranges::transform(policy, a.begin(), a.end(), b.begin(), b.end(),
             c.begin(), add_step<STREAM_TYPE>());
-        timing[2][iteration] = mysecond() - timing[2][iteration];
+        timing[2][iteration] =
+            duration_cast<seconds>(high_resolution_clock::now() - start_tmp);
 
         // Triad
-        timing[3][iteration] = mysecond();
+        start_tmp = high_resolution_clock::now();
         pika::ranges::transform(policy, b.begin(), b.end(), c.begin(), c.end(),
             a.begin(), triad_step<STREAM_TYPE>(scalar));
-        timing[3][iteration] = mysecond() - timing[3][iteration];
+        timing[3][iteration] =
+            duration_cast<seconds>(high_resolution_clock::now() - start_tmp);
     }
 
     // Check Results ...
@@ -505,8 +514,9 @@ int pika_main(pika::program_options::variables_map& vm)
     }
     // clang-format on
 
-    double time_total = mysecond();
-    std::vector<std::vector<double>> timing;
+    using namespace std::chrono;
+    auto start_total = high_resolution_clock::now();
+    std::vector<std::vector<duration<double>>> timing;
 
     if (executor == 0)
     {
@@ -540,7 +550,7 @@ int pika_main(pika::program_options::variables_map& vm)
         PIKA_THROW_EXCEPTION(pika::commandline_option_error, "pika_main",
             "Invalid executor id given (0-4 allowed");
     }
-    time_total = mysecond() - time_total;
+    duration<double> dur_total = high_resolution_clock::now() - start_total;
 
     /* --- SUMMARY --- */
     // clang-format off
@@ -566,18 +576,18 @@ int pika_main(pika::program_options::variables_map& vm)
 
     for (std::size_t j = 0; j < num_stream_tests; j++)
     {
-        avgtime[j] = timing[j][0];
-        mintime[j] = timing[j][0];
-        maxtime[j] = timing[j][0];
+        avgtime[j] = timing[j][0].count();
+        mintime[j] = timing[j][0].count();
+        maxtime[j] = timing[j][0].count();
     }
 
     for (std::size_t iteration = 1; iteration != iterations; ++iteration)
     {
         for (std::size_t j = 0; j < num_stream_tests; j++)
         {
-            avgtime[j] = avgtime[j] + timing[j][iteration];
-            mintime[j] = (std::min)(mintime[j], timing[j][iteration]);
-            maxtime[j] = (std::max)(maxtime[j], timing[j][iteration]);
+            avgtime[j] += timing[j][iteration].count();
+            mintime[j] = (std::min)(mintime[j], timing[j][iteration].count());
+            maxtime[j] = (std::max)(maxtime[j], timing[j][iteration].count());
         }
     }
 
@@ -624,8 +634,9 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (!csv)
     {
-        std::cout << "\nTotal time: " << time_total
-                  << " (per iteration: " << time_total / iterations << ")\n";
+        std::cout << "\nTotal time (s): " << dur_total.count()
+                  << " (per iteration: " << dur_total.count() / iterations
+                  << ")\n";
     }
 
     if (!csv)

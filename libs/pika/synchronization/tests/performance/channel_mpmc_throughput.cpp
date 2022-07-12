@@ -60,22 +60,22 @@ inline void channel_set(pika::lcos::local::channel_mpmc<data>& c, data&& val)
 // Produce
 double thread_func_0(pika::lcos::local::channel_mpmc<data>& c)
 {
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     for (int i = 0; i != NUM_TESTS; ++i)
     {
         channel_set(c, data{i});
     }
 
-    std::uint64_t end = pika::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
 
-    return static_cast<double>(end - start) / 1e9;
+    return std::chrono::duration<double>(end - start).count();
 }
 
 // Consume
 double thread_func_1(pika::lcos::local::channel_mpmc<data>& c)
 {
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     for (int i = 0; i != NUM_TESTS; ++i)
     {
@@ -86,9 +86,9 @@ double thread_func_1(pika::lcos::local::channel_mpmc<data>& c)
         }
     }
 
-    std::uint64_t end = pika::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
 
-    return static_cast<double>(end - start) / 1e9;
+    return std::chrono::duration<double>(end - start).count();
 }
 
 int pika_main()

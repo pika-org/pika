@@ -152,7 +152,7 @@ int pika_main()
         std::size_t thread_num = 0;
         bool up = true;
         std::vector<pika::future<void>> fs;
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
         while (t.elapsed() < 2)
         {
             for (std::size_t i = 0;

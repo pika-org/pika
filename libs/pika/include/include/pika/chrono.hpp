@@ -6,6 +6,5 @@
 
 #pragma once
 
-#include <pika/timing/high_resolution_clock.hpp>
 #include <pika/timing/high_resolution_timer.hpp>
 #include <pika/timing/steady_clock.hpp>

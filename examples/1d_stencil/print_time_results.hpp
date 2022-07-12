@@ -16,7 +16,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 void print_time_results(std::uint32_t num_localities,
-    std::uint64_t num_os_threads, std::uint64_t elapsed, std::uint64_t nx,
+    std::uint64_t num_os_threads, double elapsed_seconds, std::uint64_t nx,
     std::uint64_t np, std::uint64_t nt, bool header)
 {
     if (header)
@@ -32,12 +32,12 @@ void print_time_results(std::uint32_t num_localities,
 
     pika::util::format_to(std::cout,
         "{:-6} {:-6} {:.14g}, {:-21} {:-21} {:-21}\n", locs_str, threads_str,
-        static_cast<double>(elapsed) / 1e9, nx_str, np_str, nt_str)
+        elapsed_seconds, nx_str, np_str, nt_str)
         << std::flush;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void print_time_results(std::uint64_t num_os_threads, std::uint64_t elapsed,
+void print_time_results(std::uint64_t num_os_threads, double elapsed_seconds,
     std::uint64_t nx, std::uint64_t np, std::uint64_t nt, bool header)
 {
     if (header)
@@ -51,11 +51,11 @@ void print_time_results(std::uint64_t num_os_threads, std::uint64_t elapsed,
     std::string const nt_str = pika::util::format("{} ", nt);
 
     pika::util::format_to(std::cout, "{:-21} {:.14g}, {:-21} {:-21} {:-21}\n",
-        threads_str, static_cast<double>(elapsed) / 1e9, nx_str, np_str, nt_str)
+        threads_str, elapsed_seconds, nx_str, np_str, nt_str)
         << std::flush;
 }
 
-void print_time_results(std::uint64_t num_os_threads, std::uint64_t elapsed,
+void print_time_results(std::uint64_t num_os_threads, double elapsed_seconds,
     std::uint64_t nx, std::uint64_t nt, bool header)
 {
     if (header)
@@ -68,6 +68,6 @@ void print_time_results(std::uint64_t num_os_threads, std::uint64_t elapsed,
     std::string const nt_str = pika::util::format("{} ", nt);
 
     pika::util::format_to(std::cout, "{:-21} {:10.12}, {:-21} {:-21}\n",
-        threads_str, static_cast<double>(elapsed) / 1e9, nx_str, nt_str)
+        threads_str, elapsed_seconds, nx_str, nt_str)
         << std::flush;
 }

@@ -174,7 +174,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
 
     // Perform warmup operation with cublas
     // note cublas is column major ordering : transpose the order
-    pika::chrono::high_resolution_timer t1;
+    pika::chrono::detail::high_resolution_timer t1;
     //
     std::cout << "calling CUBLAS...\n";
     auto gemm = ex::transfer_just(cuda_sched) |
@@ -190,14 +190,14 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     // wait until the operation completes
     tt::sync_wait(std::move(gemm));
 
-    double us1 = t1.elapsed_microseconds();
+    double us1 = t1.elapsed<std::chrono::microseconds>();
     std::cout << "warmup: elapsed_microseconds " << us1 << std::endl;
 
     // once the sender has been synchronized, the next call to
     // schedule/then_with_x will create a new event attached to a new sender so
     // we can reuse the same cuda scheduler stream if we want
 
-    pika::chrono::high_resolution_timer t2;
+    pika::chrono::detail::high_resolution_timer t2;
 
     // This loop is currently inefficient. Because of the type-erasure with
     // unique_any_sender the cuBLAS calls are not scheduled on the same stream
@@ -219,7 +219,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     auto gemms_finished_split = ex::split(std::move(gemms_finished));
 
     auto matrix_print_finished = ex::then(gemms_finished_split, [&]() {
-        double us2 = t2.elapsed_microseconds();
+        double us2 = t2.elapsed<std::chrono::microseconds>();
         std::cout << "actual: elapsed_microseconds " << us2 << " iterations "
                   << iterations << std::endl;
 
@@ -250,10 +250,10 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
             // allocate storage for the CPU result
             std::vector<T> reference(size_C);
 
-            pika::chrono::high_resolution_timer t3;
+            pika::chrono::detail::high_resolution_timer t3;
             matrixMulCPU<T>(reference.data(), h_A.data(), h_B.data(),
                 matrix_size.uiHA, matrix_size.uiWA, matrix_size.uiWB);
-            double us3 = t3.elapsed_microseconds();
+            double us3 = t3.elapsed<std::chrono::microseconds>();
             std::cout << "CPU elapsed_microseconds (1 iteration) " << us3
                       << std::endl;
 

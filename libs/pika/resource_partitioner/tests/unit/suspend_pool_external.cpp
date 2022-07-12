@@ -46,7 +46,7 @@ void test_scheduler(
     std::size_t const default_pool_threads =
         pika::resource::get_num_threads("default");
 
-    pika::chrono::high_resolution_timer t;
+    pika::chrono::detail::high_resolution_timer t;
 
     while (t.elapsed() < 2)
     {

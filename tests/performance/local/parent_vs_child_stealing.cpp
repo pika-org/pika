@@ -36,7 +36,7 @@ double measure_one(Policy policy)
     std::vector<pika::future<void>> threads;
     threads.reserve(iterations);
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     for (std::size_t i = 0; i != iterations; ++i)
     {
@@ -45,8 +45,8 @@ double measure_one(Policy policy)
 
     pika::wait_all(threads);
 
-    std::uint64_t stop = pika::chrono::high_resolution_clock::now();
-    return static_cast<double>(stop - start) / 1e9;
+    auto stop = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration<double>(stop - start).count();
 }
 
 template <typename Policy>

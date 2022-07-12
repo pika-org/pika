@@ -11,7 +11,7 @@
 
 #include <chrono>
 
-namespace pika { namespace chrono {
+namespace pika::chrono {
     using std::chrono::steady_clock;
 
     class steady_time_point
@@ -72,4 +72,4 @@ namespace pika { namespace chrono {
     private:
         value_type _rel_time;
     };
-}}    // namespace pika::chrono
+}    // namespace pika::chrono

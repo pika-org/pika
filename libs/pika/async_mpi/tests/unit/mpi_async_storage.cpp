@@ -198,7 +198,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
     //
     // Start main message sending loop
     //
-    pika::chrono::high_resolution_timer exec_timer;
+    pika::chrono::detail::high_resolution_timer exec_timer;
     std::uint64_t final_count = (std::numeric_limits<std::uint64_t>().max)();
     bool count_complete = false;
     // loop for allowed time : sending and receiving
@@ -364,7 +364,7 @@ int pika_main(pika::program_options::variables_map& vm)
     pika::util::runtime_configuration cfg = rt->get_config();
     mpi_env.init(nullptr, nullptr, cfg);
 
-    pika::chrono::high_resolution_timer timer_main;
+    pika::chrono::detail::high_resolution_timer timer_main;
     nws_deb<2>.debug(deb::str<>("PIKA main"));
     //
     std::string name = mpi_env.get_processor_name();

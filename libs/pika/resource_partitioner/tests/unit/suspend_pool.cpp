@@ -57,7 +57,7 @@ int pika_main()
 
     {
         // Suspend and resume pool with future
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
 
         while (t.elapsed() < 1)
         {
@@ -80,7 +80,7 @@ int pika_main()
     {
         // Suspend and resume pool with callback
         pika::lcos::local::counting_semaphore sem;
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
 
         while (t.elapsed() < 1)
         {
@@ -108,7 +108,7 @@ int pika_main()
 
     {
         // Suspend pool with some threads already suspended
-        pika::chrono::high_resolution_timer t;
+        pika::chrono::detail::high_resolution_timer t;
 
         while (t.elapsed() < 1)
         {

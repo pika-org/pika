@@ -85,8 +85,7 @@ void rnd_strings(std::vector<std::string>& V)
 // --------------------------------------------------------------------
 // check that the array is sorted correctly
 template <class IA, typename Compare>
-int verify_(
-    const std::vector<IA>& A, Compare comp, std::uint64_t elapsed, bool print)
+int verify_(const std::vector<IA>& A, Compare comp, double elapsed, bool print)
 {
     if (A.size() < 2)
     {
@@ -101,8 +100,7 @@ int verify_(
             if (comp((*it), temp))
             {
                 if (print)
-                    pika::util::format_to(
-                        std::cout, "fail {:8.6}", elapsed / 1e9)
+                    pika::util::format_to(std::cout, "fail {:8.6}", elapsed)
                         << A.size() << std::endl;
                 return 0;
             }
@@ -110,7 +108,7 @@ int verify_(
         }
     }
     if (print)
-        pika::util::format_to(std::cout, "OK {:8.6}", elapsed / 1e9)
+        pika::util::format_to(std::cout, "OK {:8.6}", elapsed)
             << A.size() << std::endl;
     return 1;
 }
@@ -201,12 +199,13 @@ void test_sort1(T)
     rnd_fill<T>(c, (std::numeric_limits<T>::min)(),
         (std::numeric_limits<T>::max)(), T(std::rand()));
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, blocking when seq, par, par_vec
     pika::ranges::sort(c);
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, std::less<T>(), elapsed, true) != 0);
+    bool is_sorted = (verify_(c, std::less<T>(), elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }
 
@@ -224,12 +223,13 @@ void test_sort1(ExPolicy&& policy, T)
     rnd_fill<T>(c, (std::numeric_limits<T>::min)(),
         (std::numeric_limits<T>::max)(), T(std::rand()));
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, blocking when seq, par, par_vec
     pika::ranges::sort(std::forward<ExPolicy>(policy), c);
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, std::less<T>(), elapsed, true) != 0);
+    bool is_sorted = (verify_(c, std::less<T>(), elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }
 
@@ -248,12 +248,13 @@ void test_sort1_comp(ExPolicy&& policy, T, Compare comp = Compare())
     rnd_fill<T>(c, (std::numeric_limits<T>::min)(),
         (std::numeric_limits<T>::max)(), T(std::rand()));
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, blocking when seq, par, par_vec
     pika::ranges::sort(std::forward<ExPolicy>(policy), c, comp);
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, comp, elapsed, true) != 0);
+    bool is_sorted = (verify_(c, comp, elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }
 
@@ -272,14 +273,15 @@ void test_sort1_async(ExPolicy&& policy, T, Compare comp = Compare())
     rnd_fill<T>(c, (std::numeric_limits<T>::min)(),
         (std::numeric_limits<T>::max)(), T(std::rand()));
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, non blocking
     pika::future<void> f =
         pika::ranges::sort(std::forward<ExPolicy>(policy), c, comp);
     f.get();
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, comp, elapsed, true) != 0);
+    bool is_sorted = (verify_(c, comp, elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }
 
@@ -644,12 +646,13 @@ void test_sort2(ExPolicy&& policy, T)
     std::vector<T> c(PIKA_SORT_TEST_SIZE);
     std::iota(std::begin(c), std::end(c), 0);
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, blocking when seq, par, par_vec
     pika::ranges::sort(std::forward<ExPolicy>(policy), c.begin(), c.end());
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, std::less<T>(), elapsed, true) != 0);
+    bool is_sorted = (verify_(c, std::less<T>(), elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }
 
@@ -666,13 +669,14 @@ void test_sort2_comp(ExPolicy&& policy, T, Compare comp = Compare())
     std::vector<T> c(PIKA_SORT_TEST_SIZE);
     std::iota(std::begin(c), std::end(c), 0);
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, blocking when seq, par, par_vec
     pika::ranges::sort(
         std::forward<ExPolicy>(policy), c.begin(), c.end(), comp);
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, comp, elapsed, true) != 0);
+    bool is_sorted = (verify_(c, comp, elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }
 
@@ -689,14 +693,15 @@ void test_sort2_async(ExPolicy&& policy, T, Compare comp = Compare())
     std::vector<T> c(PIKA_SORT_TEST_SIZE);
     std::iota(std::begin(c), std::end(c), T(0));
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, non blocking
     pika::future<void> f = pika::ranges::sort(
         std::forward<ExPolicy>(policy), c.begin(), c.end(), comp);
     f.get();
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, comp, elapsed, true) != 0);
+    bool is_sorted = (verify_(c, comp, elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }
 
@@ -715,12 +720,14 @@ void test_sort1(ExPolicy&& policy, const std::string&)
     std::vector<std::string> c;
     rnd_strings(c);
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, blocking when seq, par, par_vec
     pika::ranges::sort(std::forward<ExPolicy>(policy), c.begin(), c.end());
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, std::less<std::string>(), elapsed, true) != 0);
+    bool is_sorted =
+        (verify_(c, std::less<std::string>(), elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }
 
@@ -740,13 +747,14 @@ void test_sort1_comp(
     std::vector<std::string> c;
     rnd_strings(c);
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, blocking when seq, par, par_vec
     pika::ranges::sort(
         std::forward<ExPolicy>(policy), c.begin(), c.end(), comp);
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, comp, elapsed, true) != 0);
+    bool is_sorted = (verify_(c, comp, elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }
 
@@ -766,13 +774,14 @@ void test_sort1_async_string(
     std::vector<std::string> c;
     rnd_strings(c);
 
-    std::uint64_t t = pika::chrono::high_resolution_clock::now();
+    using namespace std::chrono;
+    auto t = high_resolution_clock::now();
     // sort, non blocking
     pika::future<void> f = pika::ranges::sort(
         std::forward<ExPolicy>(policy), c.begin(), c.end(), comp);
     f.get();
-    std::uint64_t elapsed = pika::chrono::high_resolution_clock::now() - t;
+    duration<double> elapsed = high_resolution_clock::now() - t;
 
-    bool is_sorted = (verify_(c, comp, elapsed, true) != 0);
+    bool is_sorted = (verify_(c, comp, elapsed.count(), true) != 0);
     PIKA_TEST(is_sorted);
 }

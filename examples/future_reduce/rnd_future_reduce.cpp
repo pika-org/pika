@@ -101,7 +101,7 @@ pika::future<int> test_reduce()
 //----------------------------------------------------------------------------
 int pika_main()
 {
-    pika::chrono::high_resolution_timer htimer;
+    pika::chrono::detail::high_resolution_timer htimer;
     // run N times and see if we get approximately the right amount of fails
     int count = 0;
     for (int i = 0; i < TEST_LOOPS; i++)
@@ -115,7 +115,8 @@ int pika_main()
     std::cout << "From " << TEST_LOOPS << " tests, we got "
               << "\n " << count << " passes"
               << "\n " << exp_pass << " expected \n"
-              << "\n " << htimer.elapsed() << " seconds \n"
+              << "\n " << htimer.elapsed<std::chrono::seconds>()
+              << " seconds \n"
               << std::flush;
     // Initiate shutdown of the runtime system.
     return pika::finalize();

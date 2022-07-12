@@ -88,28 +88,31 @@ namespace pika { namespace execution {
             // perform measurements only if necessary
             if (num_iters_for_timing_ > 0)
             {
-                using pika::chrono::high_resolution_clock;
-                std::uint64_t t = high_resolution_clock::now();
+                using namespace std::chrono;
+
+                auto t = steady_clock::now();
 
                 std::size_t test_chunk_size = f(num_iters_for_timing_);
                 if (test_chunk_size != 0)
                 {
-                    if (chunk_size_time_ == 0)
+                    duration<unsigned long, std::nano> dur;
+                    auto zero_duration = duration<unsigned long, std::nano>(0);
+                    if (chunk_size_time_ == zero_duration)
                     {
-                        t = (high_resolution_clock::now() - t) /
-                            test_chunk_size;
-                        chunk_size_time_ = t;
+                        dur = (steady_clock::now() - t) / test_chunk_size;
+                        chunk_size_time_ = dur;
                     }
                     else
                     {
-                        t = chunk_size_time_;
+                        dur = chunk_size_time_;
                     }
 
-                    if (t != 0 && min_time_ >= t)
+                    if (dur != zero_duration && min_time_ >= dur)
                     {
                         // return chunk size which will create the required
                         // amount of work
-                        return (std::min)(count, (std::size_t)(min_time_ / t));
+                        return (std::min)(
+                            count, (std::size_t)(min_time_ / dur));
                     }
                 }
             }
@@ -120,8 +123,8 @@ namespace pika { namespace execution {
 
     private:
         /// \cond NOINTERNAL
-        std::uint64_t chunk_size_time_;    // nanoseconds
-        std::uint64_t min_time_;           // nanoseconds
+        std::chrono::duration<unsigned long, std::nano> chunk_size_time_;
+        std::chrono::duration<unsigned long, std::nano> min_time_;
         // number of iteration to use for timing
         std::uint64_t num_iters_for_timing_;
         /// \endcond

@@ -15,6 +15,7 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <ratio>
 
 namespace pika { namespace execution_base {
     namespace detail {
@@ -157,7 +158,7 @@ namespace pika { namespace util {
             bool use_timeout = timeout >= duration_type(0.0);
 
             std::size_t count = 0;
-            pika::chrono::high_resolution_timer t;
+            pika::chrono::detail::high_resolution_timer t;
 
             if (allow_timed_suspension)
             {

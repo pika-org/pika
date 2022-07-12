@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 
     double suspend_time = 0;
     double resume_time = 0;
-    pika::chrono::high_resolution_timer timer;
+    pika::chrono::detail::high_resolution_timer timer;
 
     for (std::size_t i = 0; i < repetitions; ++i)
     {

@@ -10,6 +10,7 @@
 #include <pika/testing.hpp>
 #include <pika/tuple.hpp>
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -256,12 +257,12 @@ namespace pika { namespace experimental {
     }
 }}    // namespace pika::experimental
 
-std::uint64_t bench_stencil3_iterator_full()
+std::chrono::duration<double> bench_stencil3_iterator_full()
 {
     std::vector<int> values(partition_size);
     std::iota(std::begin(values), std::end(values), 0);
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     auto r = pika::experimental::make_stencil3_full_range(
         values.begin(), values.end(), &values.back(), &values.front());
@@ -275,7 +276,7 @@ std::uint64_t bench_stencil3_iterator_full()
         result += get<0>(val) + get<1>(val) + get<2>(val);
     });
 
-    return pika::chrono::high_resolution_clock::now() - start;
+    return std::chrono::high_resolution_clock::now() - start;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -328,12 +329,12 @@ namespace pika { namespace experimental {
     }
 }}    // namespace pika::experimental
 
-std::uint64_t bench_stencil3_iterator_v1()
+std::chrono::duration<double> bench_stencil3_iterator_v1()
 {
     std::vector<int> values(partition_size);
     std::iota(std::begin(values), std::end(values), 0);
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     auto r = pika::experimental::make_stencil3_range_v1(
         values.begin() + 1, values.end() - 1);
@@ -351,7 +352,7 @@ std::uint64_t bench_stencil3_iterator_v1()
     result += values[partition_size - 2] + values.back() + values.front();
     PIKA_UNUSED(result);
 
-    return pika::chrono::high_resolution_clock::now() - start;
+    return std::chrono::high_resolution_clock::now() - start;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -437,12 +438,12 @@ namespace pika { namespace experimental {
     }
 }}    // namespace pika::experimental
 
-std::uint64_t bench_stencil3_iterator_v2()
+std::chrono::duration<double> bench_stencil3_iterator_v2()
 {
     std::vector<int> values(partition_size);
     std::iota(std::begin(values), std::end(values), 0);
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     auto r = pika::experimental::make_stencil3_range_v2(
         values.begin() + 1, values.end() - 1);
@@ -460,16 +461,16 @@ std::uint64_t bench_stencil3_iterator_v2()
     result += values[partition_size - 2] + values.back() + values.front();
     PIKA_UNUSED(result);
 
-    return pika::chrono::high_resolution_clock::now() - start;
+    return std::chrono::high_resolution_clock::now() - start;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-std::uint64_t bench_stencil3_iterator_explicit()
+std::chrono::duration<double> bench_stencil3_iterator_explicit()
 {
     std::vector<int> values(partition_size);
     std::iota(std::begin(values), std::end(values), 0);
 
-    std::uint64_t start = pika::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     // handle all elements explicitly
     int result = values.back() + values.front() + values[1];
@@ -484,7 +485,7 @@ std::uint64_t bench_stencil3_iterator_explicit()
     result += values[partition_size - 2] + values.back() + values.front();
     PIKA_UNUSED(result);
 
-    return pika::chrono::high_resolution_clock::now() - start;
+    return std::chrono::high_resolution_clock::now() - start;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -508,43 +509,41 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         // first run full stencil3 tests
         {
-            std::uint64_t t = 0;
+            std::chrono::duration<double> t(0);
             for (int i = 0; i != test_count; ++i)
                 t += bench_stencil3_iterator_full();
-            std::cout << "full: " << (t * 1e-9) / test_count << std::endl;
+            std::cout << "full: " << t.count() / test_count << std::endl;
             pika::util::print_cdash_timing(
-                "Stencil3Full", (t * 1e-9) / test_count);
+                "Stencil3Full", t.count() / test_count);
         }
 
         // now run explicit (no-check) stencil3 tests
         {
-            std::uint64_t t = 0;
+            std::chrono::duration<double> t(0);
             for (int i = 0; i != test_count; ++i)
                 t += bench_stencil3_iterator_v1();
-            std::cout << "nocheck(v1): " << (t * 1e-9) / test_count
-                      << std::endl;
+            std::cout << "nocheck(v1): " << t.count() / test_count << std::endl;
             pika::util::print_cdash_timing(
-                "Stencil3NocheckV1", (t * 1e-9) / test_count);
+                "Stencil3NocheckV1", t.count() / test_count);
         }
 
         {
-            std::uint64_t t = 0;
+            std::chrono::duration<double> t(0);
             for (int i = 0; i != test_count; ++i)
                 t += bench_stencil3_iterator_v2();
-            std::cout << "nocheck(v2): " << (t * 1e-9) / test_count
-                      << std::endl;
+            std::cout << "nocheck(v2): " << t.count() / test_count << std::endl;
             pika::util::print_cdash_timing(
-                "Stencil3NocheckV2", (t * 1e-9) / test_count);
+                "Stencil3NocheckV2", t.count() / test_count);
         }
 
         // now run explicit tests
         {
-            std::uint64_t t = 0;
+            std::chrono::duration<double> t(0);
             for (int i = 0; i != test_count; ++i)
                 t += bench_stencil3_iterator_explicit();
-            std::cout << "explicit: " << (t * 1e-9) / test_count << std::endl;
+            std::cout << "explicit: " << t.count() / test_count << std::endl;
             pika::util::print_cdash_timing(
-                "Stencil3Explicit", (t * 1e-9) / test_count);
+                "Stencil3Explicit", t.count() / test_count);
         }
     }
 

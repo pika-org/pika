@@ -32,7 +32,6 @@
 #include <pika/thread_support/set_thread_name.hpp>
 #include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
-#include <pika/timing/high_resolution_clock.hpp>
 #include <pika/topology/topology.hpp>
 #include <pika/util/from_string.hpp>
 #include <pika/version.hpp>
@@ -42,6 +41,7 @@
 #endif
 
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <cstddef>
 #include <cstdint>
@@ -463,9 +463,11 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     namespace {
-        std::uint64_t& runtime_uptime()
+        std::chrono::time_point<std::chrono::high_resolution_clock>&
+        runtime_uptime()
         {
-            static std::uint64_t uptime = 0;
+            static std::chrono::time_point<std::chrono::high_resolution_clock>
+                uptime = std::chrono::high_resolution_clock::now();
             return uptime;
         }
     }    // namespace
@@ -477,22 +479,20 @@ namespace pika {
         PIKA_ASSERT(nullptr == threads::detail::thread_self::get_self());
 
         runtime_ = this;
-        runtime_uptime() = pika::chrono::high_resolution_clock::now();
+        runtime_uptime() = std::chrono::high_resolution_clock::now();
     }
 
     void runtime::deinit_global_data()
     {
         runtime*& runtime_ = get_runtime_ptr();
         PIKA_ASSERT(runtime_);
-        runtime_uptime() = 0;
         runtime_ = nullptr;
     }
 
     std::uint64_t runtime::get_system_uptime()
     {
-        std::int64_t diff = static_cast<std::int64_t>(
-                                pika::chrono::high_resolution_clock::now()) -
-            static_cast<std::int64_t>(runtime_uptime());
+        using std::chrono::high_resolution_clock;
+        auto diff = (high_resolution_clock::now() - runtime_uptime()).count();
         return diff < 0LL ? 0ULL : static_cast<std::uint64_t>(diff);
     }
 

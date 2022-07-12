@@ -36,7 +36,7 @@ using pika::program_options::value;
 using pika::program_options::variables_map;
 
 namespace compat = pika::compat;
-using pika::chrono::high_resolution_timer;
+using pika::chrono::detail::high_resolution_timer;
 
 ///////////////////////////////////////////////////////////////////////////////
 std::uint64_t threads = 1;

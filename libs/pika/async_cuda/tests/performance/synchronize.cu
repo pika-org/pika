@@ -31,7 +31,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
     // Warmup
     {
-        pika::chrono::high_resolution_timer timer;
+        pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
         {
             dummy<<<1, 1, 0, cuda_stream>>>();
@@ -44,7 +44,7 @@ int pika_main(pika::program_options::variables_map& vm)
     }
 
     {
-        pika::chrono::high_resolution_timer timer;
+        pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
         {
             dummy<<<1, 1, 0, cuda_stream>>>();
@@ -57,7 +57,7 @@ int pika_main(pika::program_options::variables_map& vm)
     }
 
     {
-        pika::chrono::high_resolution_timer timer;
+        pika::chrono::detail::high_resolution_timer timer;
 
         for (std::size_t i = 0; i < batch_iterations; ++i)
         {
@@ -87,7 +87,7 @@ int pika_main(pika::program_options::variables_map& vm)
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 
-        pika::chrono::high_resolution_timer timer;
+        pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
         {
             ex::schedule(sched) | cu::then_with_stream(f) | tt::sync_wait();
@@ -105,7 +105,7 @@ int pika_main(pika::program_options::variables_map& vm)
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 
-        pika::chrono::high_resolution_timer timer;
+        pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i < batch_iterations; ++i)
         {
             // We have to manually unroll this loop, because the type of the
@@ -136,7 +136,7 @@ int pika_main(pika::program_options::variables_map& vm)
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 
-        pika::chrono::high_resolution_timer timer;
+        pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i < batch_iterations; ++i)
         {
             // We have to manually unroll this loop, because the type of the
@@ -183,7 +183,7 @@ int pika_main(pika::program_options::variables_map& vm)
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 
-        pika::chrono::high_resolution_timer timer;
+        pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
         {
             ex::schedule(sched) | cu::then_with_stream(f) |
@@ -202,7 +202,7 @@ int pika_main(pika::program_options::variables_map& vm)
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 
-        pika::chrono::high_resolution_timer timer;
+        pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i < batch_iterations; ++i)
         {
             // We have to manually unroll this loop, because the type of the
