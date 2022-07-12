@@ -303,11 +303,10 @@ static void test_async_mixed_traversal()
     using container_t = std::vector<std::size_t>;
 
     // Test hierarchies where container and tuple like types are mixed
-    test_async_traversal_base<4U>(0U, std::make_tuple(container_t{1U, 2U}), 3U);
+    test_async_traversal_base<4U>(0U, make_tuple(container_t{1U, 2U}), 3U);
 
     test_async_traversal_base<4U>(
-        std::make_tuple(
-            0U, vector_of(not_accepted_tag{}), vector_of(vector_of(1U))),
+        make_tuple(0U, vector_of(not_accepted_tag{}), vector_of(vector_of(1U))),
         make_tuple(2U, 3U));
 
     test_async_traversal_base<4U>(

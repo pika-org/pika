@@ -15,7 +15,6 @@
 #include <cstddef>
 #include <iosfwd>
 #include <memory>
-#include <optional>
 #include <vector>
 
 namespace pika::cuda::experimental {

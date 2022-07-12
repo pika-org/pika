@@ -9,6 +9,3 @@
 
 #include <pika/config.hpp>
 #include <pika/program_options/config/defines.hpp>
-
-#include <any>
-#include <optional>
