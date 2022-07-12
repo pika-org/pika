@@ -234,8 +234,6 @@ namespace pika::execution::experimental {
                     }));
                 }
 
-                ~shared_state() {}
-
                 template <typename Receiver>
                 struct done_error_value_visitor
                 {
