@@ -113,6 +113,11 @@ namespace pika::cuda::experimental {
             cuda_scheduler_sender& operator=(
                 cuda_scheduler_sender const&) = delete;
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            using completion_signatures =
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_value_t()>;
+#else
             template <template <typename...> class Tuple,
                 template <typename...> class Variant>
             using value_types = Variant<Tuple<>>;
@@ -121,6 +126,7 @@ namespace pika::cuda::experimental {
             using error_types = Variant<>;
 
             static constexpr bool sends_done = false;
+#endif
 
             template <typename Receiver>
             friend operation_state<Receiver> tag_invoke(
