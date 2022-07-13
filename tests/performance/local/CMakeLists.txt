@@ -16,8 +16,6 @@ set(benchmarks
     future_overhead
     future_overhead_report
     heterogeneous_timed_task_spawn
-    tls_overhead
-    native_tls_overhead
     parent_vs_child_stealing
     print_heterogeneous_payloads
     resume_suspend
@@ -84,7 +82,6 @@ set(print_heterogeneous_payloads_FLAGS NOLIBS DEPENDENCIES
                                        ${boost_library_dependencies} pika
 )
 set(resume_suspend_FLAGS DEPENDENCIES pika_timing)
-set(native_tls_overhead_LIBRARIES pika_dependencies_boost)
 
 set(future_overhead_PARAMETERS THREADS 4)
 set(future_overhead_report_PARAMETERS THREADS 4)
@@ -102,8 +99,6 @@ set(print_heterogeneous_payloads_PARAMETERS NO_PIKA_MAIN)
 set(print_heterogeneous_payloads_PARAMETERS NO_PIKA_MAIN)
 set(skynet_PARAMETERS NO_PIKA_MAIN)
 set(timed_task_spawn_PARAMETERS NO_PIKA_MAIN)
-set(tls_overhead_PARAMETERS NO_PIKA_MAIN)
-set(native_tls_overhead_PARAMETERS NO_PIKA_MAIN)
 set(coroutines_call_overhead_PARAMETERS NO_PIKA_MAIN)
 
 foreach(benchmark ${benchmarks})
