@@ -253,7 +253,7 @@ int main()
     // Failure path
     {
         std::atomic<bool> set_error_called{false};
-        auto s = ex::when_all_vector(std::vector{error_typed_sender<double>{}});
+        auto s = ex::when_all_vector(std::vector{error_sender<double>{}});
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -264,7 +264,7 @@ int main()
     {
         std::atomic<bool> set_error_called{false};
         std::vector<ex::unique_any_sender<double>> senders;
-        senders.emplace_back(error_typed_sender<double>{});
+        senders.emplace_back(error_sender<double>{});
         senders.emplace_back(ex::just(42.0));
         senders.emplace_back(ex::just(43.0));
         senders.emplace_back(ex::just(44.0));
@@ -279,7 +279,7 @@ int main()
     {
         std::atomic<bool> set_error_called{false};
         std::vector<ex::unique_any_sender<double>> senders;
-        senders.emplace_back(error_typed_sender<double>{});
+        senders.emplace_back(error_sender<double>{});
         senders.emplace_back(ex::just(42.0));
         senders.emplace_back(ex::just(43.0));
         senders.emplace_back(ex::just(44.0));
@@ -294,7 +294,7 @@ int main()
     {
         std::atomic<bool> set_error_called{false};
         std::vector<ex::any_sender<double>> senders;
-        senders.emplace_back(error_typed_sender<double>{});
+        senders.emplace_back(error_sender<double>{});
         senders.emplace_back(ex::just(42.0));
         senders.emplace_back(ex::just(43.0));
         senders.emplace_back(ex::just(44.0));
@@ -309,7 +309,7 @@ int main()
     {
         std::atomic<bool> set_error_called{false};
         std::vector<ex::any_sender<double>> senders;
-        senders.emplace_back(error_typed_sender<double>{});
+        senders.emplace_back(error_sender<double>{});
         senders.emplace_back(ex::just(42.0));
         senders.emplace_back(ex::just(43.0));
         senders.emplace_back(ex::just(44.0));
