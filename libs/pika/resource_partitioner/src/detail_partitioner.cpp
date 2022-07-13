@@ -16,7 +16,6 @@
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/topology/topology.hpp>
-#include <pika/type_support/static.hpp>
 #include <pika/util/from_string.hpp>
 #include <pika/util/get_entry_as.hpp>
 

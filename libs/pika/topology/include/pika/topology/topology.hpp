@@ -14,7 +14,6 @@
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/topology/cpu_mask.hpp>
-#include <pika/type_support/static.hpp>
 
 #include <cstddef>
 #include <iosfwd>

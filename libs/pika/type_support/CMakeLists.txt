@@ -15,7 +15,6 @@ set(type_support_headers
     pika/type_support/lazy_conditional.hpp
     pika/type_support/lazy_enable_if.hpp
     pika/type_support/pack.hpp
-    pika/type_support/static.hpp
     pika/type_support/unwrap_ref.hpp
     pika/type_support/unused.hpp
     pika/type_support/void_guard.hpp
