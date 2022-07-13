@@ -228,6 +228,16 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
+    {
+        std::atomic<bool> set_error_called{false};
+        auto s = ex::when_all(const_reference_error_sender{}, ex::just(42));
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
     test_adl_isolation(ex::when_all(my_namespace::my_sender{}));
 
     return pika::util::report_errors();
