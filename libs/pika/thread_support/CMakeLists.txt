@@ -9,7 +9,6 @@ set(thread_support_headers
     pika/thread_support/atomic_count.hpp
     pika/thread_support/set_thread_name.hpp
     pika/thread_support/spinlock.hpp
-    pika/thread_support/thread_specific_ptr.hpp
     pika/thread_support/unlock_guard.hpp
 )
 
