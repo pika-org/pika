@@ -75,7 +75,12 @@ pika is configured using CMake variables. The most important variables are:
   platforms.
 
 Tests and examples are disabled by default and can be enabled with
-``PIKA_WITH_TESTS``, ``PIKA_WITH_TESTS_*``, and ``PIKA_WITH_EXAMPLES``.
+``PIKA_WITH_TESTS``, ``PIKA_WITH_TESTS_*``, and ``PIKA_WITH_EXAMPLES``. Note
+that reconfiguring pika with ``PIKA_WITH_TESTS=ON`` after the option has been
+off the individual subcategories of ``PIKA_WITH_TESTS_*`` must be also enabled
+explicitly. Use e.g. ``ccmake`` or ``CMakeCache.txt`` for a list of
+subcategories. The tests must be explicitly built before running them, e.g.
+with ```cmake --build . --target tests && ctest --output-on-failure``.
 
 Documentation
 =============
