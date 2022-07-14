@@ -114,7 +114,7 @@ void test_initial_state()
     }
     catch (pika::exception const& e)
     {
-        PIKA_TEST_EQ(e.get_error(), pika::no_state);
+        PIKA_TEST_EQ(e.get_error(), pika::error::no_state);
     }
     catch (...)
     {
@@ -150,7 +150,7 @@ void test_cannot_get_future_twice()
     }
     catch (pika::exception const& e)
     {
-        PIKA_TEST_EQ(e.get_error(), pika::future_already_retrieved);
+        PIKA_TEST_EQ(e.get_error(), pika::error::future_already_retrieved);
     }
     catch (...)
     {
@@ -247,7 +247,7 @@ void test_invoking_a_packaged_task_twice_throws()
     }
     catch (pika::exception const& e)
     {
-        PIKA_TEST_EQ(e.get_error(), pika::promise_already_satisfied);
+        PIKA_TEST_EQ(e.get_error(), pika::error::promise_already_satisfied);
     }
     catch (...)
     {
@@ -272,7 +272,7 @@ void test_cannot_get_future_twice_from_task()
     }
     catch (pika::exception const& e)
     {
-        PIKA_TEST_EQ(e.get_error(), pika::future_already_retrieved);
+        PIKA_TEST_EQ(e.get_error(), pika::error::future_already_retrieved);
     }
     catch (...)
     {
@@ -490,7 +490,7 @@ void test_packaged_task_can_be_moved()
     }
     catch (pika::exception const& e)
     {
-        PIKA_TEST_EQ(e.get_error(), pika::no_state);
+        PIKA_TEST_EQ(e.get_error(), pika::error::no_state);
     }
     catch (...)
     {
@@ -522,7 +522,7 @@ void test_destroying_a_promise_stores_broken_promise()
     }
     catch (pika::exception const& e)
     {
-        PIKA_TEST_EQ(e.get_error(), pika::broken_promise);
+        PIKA_TEST_EQ(e.get_error(), pika::error::broken_promise);
     }
     catch (...)
     {
@@ -548,7 +548,7 @@ void test_destroying_a_packaged_task_stores_broken_task()
     }
     catch (pika::exception const& e)
     {
-        PIKA_TEST_EQ(e.get_error(), pika::broken_promise);
+        PIKA_TEST_EQ(e.get_error(), pika::error::broken_promise);
     }
     catch (...)
     {

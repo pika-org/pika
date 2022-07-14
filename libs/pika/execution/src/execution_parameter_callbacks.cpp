@@ -34,7 +34,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         }
         else
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::parallel::execution::detail::get_os_thread_count",
                 "No fallback handler for get_os_thread_count is installed. "
                 "Please start the runtime if you haven't done so. If you "
@@ -66,7 +66,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         }
         else
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::parallel::execution::detail::get_pu_mask",
                 "No fallback handler for get_pu_mask is installed. Please "
                 "start the runtime if you haven't done so. If you intended "

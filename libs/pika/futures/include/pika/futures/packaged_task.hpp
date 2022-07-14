@@ -71,7 +71,7 @@ namespace pika { namespace lcos { namespace local {
         {
             if (function_.empty())
             {
-                PIKA_THROW_EXCEPTION(no_state,
+                PIKA_THROW_EXCEPTION(pika::error::no_state,
                     "packaged_task<Signature>::operator()",
                     "this packaged_task has no valid shared state");
                 return;
@@ -101,7 +101,7 @@ namespace pika { namespace lcos { namespace local {
         {
             if (function_.empty())
             {
-                PIKA_THROWS_IF(ec, no_state,
+                PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
                     "packaged_task<Signature>::get_future",
                     "this packaged_task has no valid shared state");
                 return pika::future<R>();
@@ -118,7 +118,8 @@ namespace pika { namespace lcos { namespace local {
         {
             if (function_.empty())
             {
-                PIKA_THROWS_IF(ec, no_state, "packaged_task<Signature>::reset",
+                PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
+                    "packaged_task<Signature>::reset",
                     "this packaged_task has no valid shared state");
                 return;
             }

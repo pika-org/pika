@@ -48,7 +48,7 @@ namespace pika { namespace lcos { namespace local {
         {
             PIKA_ITT_SYNC_CANCEL(this);
             l.unlock();
-            PIKA_THROWS_IF(ec, deadlock, description,
+            PIKA_THROWS_IF(ec, pika::error::deadlock, description,
                 "The calling thread already owns the mutex");
             return;
         }
@@ -103,7 +103,7 @@ namespace pika { namespace lcos { namespace local {
         if (PIKA_UNLIKELY(owner_id_ != self_id))
         {
             l.unlock();
-            PIKA_THROWS_IF(ec, lock_error, "mutex::unlock",
+            PIKA_THROWS_IF(ec, pika::error::lock_error, "mutex::unlock",
                 "The calling thread does not own the mutex");
             return;
         }

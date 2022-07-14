@@ -21,7 +21,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
     [[noreturn]] void throw_bad_polymorphic_executor()
     {
-        pika::throw_exception(bad_function_call,
+        pika::throw_exception(pika::error::bad_function_call,
             "empty polymorphic_executor object should not be used",
             "polymorphic_executor::operator()");
     }

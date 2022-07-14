@@ -14,7 +14,7 @@
 #include <string>
 #include <system_error>
 
-namespace pika { namespace detail {
+namespace pika::detail {
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     [[noreturn]] void throw_exception(error errcode, std::string const& msg,
         std::string const& func, std::string const& file, long line)
@@ -22,15 +22,16 @@ namespace pika { namespace detail {
     {
         std::filesystem::path p(file);
         pika::detail::throw_exception(
-            pika::exception(errcode, msg, pika::plain), func, p.string(), line);
+            pika::exception(errcode, msg, pika::throwmode::plain), func,
+            p.string(), line);
     }
 
     [[noreturn]] void rethrow_exception(
         exception const& e, std::string const& func)
     {
         pika::detail::throw_exception(
-            pika::exception(e.get_error(), e.what(), pika::rethrow), func,
-            pika::get_error_file_name(e), pika::get_error_line_number(e));
+            pika::exception(e.get_error(), e.what(), pika::throwmode::rethrow),
+            func, pika::get_error_file_name(e), pika::get_error_line_number(e));
     }
 
     std::exception_ptr get_exception(error errcode, std::string const& msg,
@@ -62,9 +63,9 @@ namespace pika { namespace detail {
         {
             ec = make_error_code(static_cast<pika::error>(errcode), msg,
                 func.c_str(), file.c_str(), line,
-                (ec.category() == pika::get_lightweight_pika_category()) ?
-                    pika::lightweight :
-                    pika::plain);
+                (ec.category() == get_lightweight_pika_category()) ?
+                    pika::throwmode::lightweight :
+                    pika::throwmode::plain);
         }
     }
 
@@ -80,9 +81,9 @@ namespace pika { namespace detail {
             ec = make_error_code(e.get_error(), e.what(), func.c_str(),
                 pika::get_error_file_name(e).c_str(),
                 pika::get_error_line_number(e),
-                (ec.category() == pika::get_lightweight_pika_category()) ?
-                    pika::lightweight_rethrow :
-                    pika::rethrow);
+                (ec.category() == get_lightweight_pika_category()) ?
+                    pika::throwmode::lightweight_rethrow :
+                    pika::throwmode::rethrow);
         }
     }
 
@@ -90,4 +91,4 @@ namespace pika { namespace detail {
     {
         throw pika::thread_interrupted();
     }
-}}    // namespace pika::detail
+}    // namespace pika::detail

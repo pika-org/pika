@@ -55,7 +55,7 @@ namespace pika {
                           // to take its address for comparison purposes.
 
     exception_list::exception_list()
-      : pika::exception(pika::success)
+      : pika::exception(pika::error::success)
       , mtx_()
     {
     }
@@ -68,7 +68,8 @@ namespace pika {
     }
 
     exception_list::exception_list(exception_list_type&& l)
-      : pika::exception(!l.empty() ? pika::get_error(l.front()) : success)
+      : pika::exception(
+            !l.empty() ? pika::get_error(l.front()) : pika::error::success)
       , exceptions_(PIKA_MOVE(l))
       , mtx_()
     {
@@ -115,7 +116,7 @@ namespace pika {
     {
         std::lock_guard<mutex_type> l(mtx_);
         if (exceptions_.empty())
-            return pika::no_success;
+            return pika::error::no_success;
         return pika::get_error(exceptions_.front());
     }
 

@@ -101,7 +101,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::interrupt_thread",
                 "null thread id encountered");
             return;
@@ -123,7 +123,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::interruption_point",
                 "null thread id encountered");
             return;
@@ -141,7 +141,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "pika::threads::detail::get_thread_interruption_enabled",
                 "null thread id encountered");
             return false;
@@ -158,7 +158,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "pika::threads::detail::get_thread_interruption_enabled",
                 "null thread id encountered");
             return false;
@@ -175,7 +175,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::get_thread_interruption_requested",
                 "null thread id encountered");
             return false;
@@ -192,7 +192,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::get_thread_data",
                 "null thread id encountered");
             return 0;
@@ -206,7 +206,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::set_thread_data",
                 "null thread id encountered");
             return 0;
@@ -238,7 +238,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::run_thread_exit_callbacks",
                 "null thread id encountered");
             return;
@@ -255,7 +255,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::add_thread_exit_callback",
                 "null thread id encountered");
             return false;
@@ -271,7 +271,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::add_thread_exit_callback",
                 "null thread id encountered");
             return;
@@ -293,7 +293,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::get_thread_backtrace",
                 "null thread id encountered");
             return nullptr;
@@ -316,7 +316,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::set_thread_backtrace",
                 "null thread id encountered");
             return nullptr;
@@ -333,7 +333,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::get_pool",
                 "null thread id encountered");
             return nullptr;
@@ -415,7 +415,7 @@ namespace pika::this_thread {
         // handle interrupt and abort
         if (statex == threads::detail::thread_restart_state::abort)
         {
-            PIKA_THROWS_IF(ec, yield_aborted, "suspend",
+            PIKA_THROWS_IF(ec, pika::error::yield_aborted, "suspend",
                 "thread({}, {}) aborted (yield returned wait_abort)",
                 id.noref(),
                 threads::detail::get_thread_description(id.noref()));
@@ -497,7 +497,7 @@ namespace pika::this_thread {
                 PIKA_ASSERT(
                     statex == threads::detail::thread_restart_state::abort ||
                     statex == threads::detail::thread_restart_state::signaled);
-                error_code ec1(lightweight);    // do not throw
+                error_code ec1(throwmode::lightweight);    // do not throw
                 pika::util::yield_while(
                     [&timer_started]() { return !timer_started.load(); },
                     "set_thread_state_timed");
@@ -516,7 +516,7 @@ namespace pika::this_thread {
         // handle interrupt and abort
         if (statex == threads::detail::thread_restart_state::abort)
         {
-            PIKA_THROWS_IF(ec, yield_aborted, "suspend_at",
+            PIKA_THROWS_IF(ec, pika::error::yield_aborted, "suspend_at",
                 "thread({}, {}) aborted (yield returned wait_abort)",
                 id.noref(),
                 threads::detail::get_thread_description(id.noref()));
@@ -554,8 +554,8 @@ namespace pika::this_thread {
         std::ptrdiff_t remaining_stack = get_available_stack_space();
         if (remaining_stack < 0)
         {
-            PIKA_THROW_EXCEPTION(
-                out_of_memory, "has_sufficient_stack_space", "Stack overflow");
+            PIKA_THROW_EXCEPTION(pika::error::out_of_memory,
+                "has_sufficient_stack_space", "Stack overflow");
         }
         bool sufficient_stack_space =
             std::size_t(remaining_stack) >= space_needed;

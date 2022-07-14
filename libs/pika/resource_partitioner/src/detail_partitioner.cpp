@@ -35,13 +35,13 @@ namespace pika { namespace resource { namespace detail {
     [[noreturn]] void throw_runtime_error(
         std::string const& func, std::string const& message)
     {
-        PIKA_THROW_EXCEPTION(invalid_status, func, message);
+        PIKA_THROW_EXCEPTION(pika::error::invalid_status, func, message);
     }
 
     [[noreturn]] void throw_invalid_argument(
         std::string const& func, std::string const& message)
     {
-        PIKA_THROW_EXCEPTION(bad_parameter, func, message);
+        PIKA_THROW_EXCEPTION(pika::error::bad_parameter, func, message);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -918,7 +918,8 @@ namespace pika { namespace resource { namespace detail {
     {
         if (!(mode_ & mode_allow_dynamic_pools))
         {
-            PIKA_THROW_EXCEPTION(bad_parameter, "partitioner::shrink_pool",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
+                "partitioner::shrink_pool",
                 "dynamic pools have not been enabled for the partitioner");
         }
 
@@ -946,7 +947,8 @@ namespace pika { namespace resource { namespace detail {
 
         if (!has_non_exclusive_pus)
         {
-            PIKA_THROW_EXCEPTION(bad_parameter, "partitioner::shrink_pool",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
+                "partitioner::shrink_pool",
                 "pool '{}' has no non-exclusive pus associated", pool_name);
         }
 
@@ -963,7 +965,8 @@ namespace pika { namespace resource { namespace detail {
     {
         if (!(mode_ & mode_allow_dynamic_pools))
         {
-            PIKA_THROW_EXCEPTION(bad_parameter, "partitioner::expand_pool",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
+                "partitioner::expand_pool",
                 "dynamic pools have not been enabled for the partitioner");
         }
 
@@ -991,7 +994,8 @@ namespace pika { namespace resource { namespace detail {
 
         if (!has_non_exclusive_pus)
         {
-            PIKA_THROW_EXCEPTION(bad_parameter, "partitioner::expand_pool",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
+                "partitioner::expand_pool",
                 "pool '{}' has no non-exclusive pus associated", pool_name);
         }
 

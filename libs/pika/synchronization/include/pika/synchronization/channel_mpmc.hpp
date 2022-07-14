@@ -178,7 +178,7 @@ namespace pika { namespace lcos { namespace local {
             if (closed_)
             {
                 l.unlock();
-                PIKA_THROW_EXCEPTION(pika::invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "pika::lcos::local::bounded_channel::close",
                     "attempting to close an already closed channel");
             }

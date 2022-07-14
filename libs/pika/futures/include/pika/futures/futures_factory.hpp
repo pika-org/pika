@@ -718,7 +718,7 @@ namespace pika { namespace lcos { namespace local {
         {
             if (!task_)
             {
-                PIKA_THROW_EXCEPTION(task_moved,
+                PIKA_THROW_EXCEPTION(pika::error::task_moved,
                     "futures_factory<Result()>::operator()",
                     "futures_factory invalid (has it been moved?)");
                 return;
@@ -742,7 +742,7 @@ namespace pika { namespace lcos { namespace local {
         {
             if (!task_)
             {
-                PIKA_THROW_EXCEPTION(task_moved,
+                PIKA_THROW_EXCEPTION(pika::error::task_moved,
                     "futures_factory<Result()>::apply()",
                     "futures_factory invalid (has it been moved?)");
                 return threads::detail::invalid_thread_id;
@@ -756,14 +756,14 @@ namespace pika { namespace lcos { namespace local {
         {
             if (!task_)
             {
-                PIKA_THROWS_IF(ec, task_moved,
+                PIKA_THROWS_IF(ec, pika::error::task_moved,
                     "futures_factory<Result()>::get_future",
                     "futures_factory invalid (has it been moved?)");
                 return pika::future<Result>();
             }
             if (future_obtained_)
             {
-                PIKA_THROWS_IF(ec, future_already_retrieved,
+                PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
                     "futures_factory<Result()>::get_future",
                     "future already has been retrieved from this factory");
                 return pika::future<Result>();
@@ -785,7 +785,7 @@ namespace pika { namespace lcos { namespace local {
         {
             if (!task_)
             {
-                PIKA_THROW_EXCEPTION(task_moved,
+                PIKA_THROW_EXCEPTION(pika::error::task_moved,
                     "futures_factory<Result()>::set_exception",
                     "futures_factory invalid (has it been moved?)");
                 return;

@@ -121,7 +121,7 @@ namespace pika { namespace lcos { namespace local {
                     {
                         l.unlock();
                         return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::invalid_status,
+                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
                                 "pika::lcos::local::channel::get",
                                 "this channel is empty and was closed"));
                     }
@@ -130,7 +130,7 @@ namespace pika { namespace lcos { namespace local {
                     {
                         l.unlock();
                         return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::invalid_status,
+                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
                                 "pika::lcos::local::channel::get",
                                 "this channel is empty and is not accessible "
                                 "by any other thread causing a deadlock"));
@@ -150,7 +150,7 @@ namespace pika { namespace lcos { namespace local {
                     {
                         l.unlock();
                         return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::invalid_status,
+                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
                                 "pika::lcos::local::channel::get",
                                 "this channel is closed and the requested value"
                                 "has not been received yet"));
@@ -185,7 +185,7 @@ namespace pika { namespace lcos { namespace local {
                 {
                     l.unlock();
                     return pika::make_exceptional_future<void>(
-                        PIKA_GET_EXCEPTION(pika::invalid_status,
+                        PIKA_GET_EXCEPTION(pika::error::invalid_status,
                             "pika::lcos::local::channel::set",
                             "attempting to write to a closed channel"));
                 }
@@ -204,7 +204,7 @@ namespace pika { namespace lcos { namespace local {
                 if (closed_)
                 {
                     l.unlock();
-                    PIKA_THROW_EXCEPTION(pika::invalid_status,
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                         "pika::lcos::local::channel::close",
                         "attempting to close an already closed channel");
                     return 0;
@@ -219,8 +219,9 @@ namespace pika { namespace lcos { namespace local {
 
                 {
                     util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
-                    e = PIKA_GET_EXCEPTION(pika::future_cancelled,
-                        pika::lightweight, "pika::lcos::local::close",
+                    e = PIKA_GET_EXCEPTION(pika::error::future_cancelled,
+                        pika::throwmode::lightweight,
+                        "pika::lcos::local::close",
                         "canceled waiting on this entry");
                 }
 
@@ -306,7 +307,7 @@ namespace pika { namespace lcos { namespace local {
                     {
                         l.unlock();
                         return pika::make_exceptional_future<void>(
-                            PIKA_GET_EXCEPTION(pika::invalid_status,
+                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
                                 "pika::lcos::local::detail::"
                                 "one_element_queue_async::push",
                                 "attempting to write to a busy queue"));
@@ -352,7 +353,7 @@ namespace pika { namespace lcos { namespace local {
                     {
                         l.unlock();
                         return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::invalid_status,
+                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
                                 "pika::lcos::local::detail::"
                                 "one_element_queue_async::pop",
                                 "attempting to read from an empty queue"));
@@ -424,7 +425,7 @@ namespace pika { namespace lcos { namespace local {
                     {
                         l.unlock();
                         return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::invalid_status,
+                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
                                 "pika::lcos::local::channel::get",
                                 "this channel is empty and was closed"));
                     }
@@ -433,7 +434,7 @@ namespace pika { namespace lcos { namespace local {
                     {
                         l.unlock();
                         return pika::make_exceptional_future<T>(
-                            PIKA_GET_EXCEPTION(pika::invalid_status,
+                            PIKA_GET_EXCEPTION(pika::error::invalid_status,
                                 "pika::lcos::local::channel::get",
                                 "this channel is empty and is not accessible "
                                 "by any other thread causing a deadlock"));
@@ -446,10 +447,11 @@ namespace pika { namespace lcos { namespace local {
                     // the requested item must be available, otherwise this
                     // would create a deadlock
                     l.unlock();
-                    return pika::make_exceptional_future<T>(PIKA_GET_EXCEPTION(
-                        pika::invalid_status, "pika::lcos::local::channel::get",
-                        "this channel is closed and the requested value"
-                        "has not been received yet"));
+                    return pika::make_exceptional_future<T>(
+                        PIKA_GET_EXCEPTION(pika::error::invalid_status,
+                            "pika::lcos::local::channel::get",
+                            "this channel is closed and the requested value"
+                            "has not been received yet"));
                 }
 
                 return f;
@@ -480,7 +482,7 @@ namespace pika { namespace lcos { namespace local {
                 {
                     l.unlock();
                     return pika::make_exceptional_future<void>(
-                        PIKA_GET_EXCEPTION(pika::invalid_status,
+                        PIKA_GET_EXCEPTION(pika::error::invalid_status,
                             "pika::lcos::local::channel::set",
                             "attempting to write to a closed channel"));
                 }
@@ -495,7 +497,7 @@ namespace pika { namespace lcos { namespace local {
                 if (closed_)
                 {
                     l.unlock();
-                    PIKA_THROW_EXCEPTION(pika::invalid_status,
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                         "pika::lcos::local::channel::close",
                         "attempting to close an already closed channel");
                     return 0;
@@ -513,9 +515,10 @@ namespace pika { namespace lcos { namespace local {
                 std::exception_ptr e;
                 {
                     util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
-                    e = std::exception_ptr(PIKA_GET_EXCEPTION(
-                        pika::future_cancelled, "pika::lcos::local::close",
-                        "canceled waiting on this entry"));
+                    e = std::exception_ptr(
+                        PIKA_GET_EXCEPTION(pika::error::future_cancelled,
+                            "pika::lcos::local::close",
+                            "canceled waiting on this entry"));
                 }
 
                 return buffer_.cancel(PIKA_MOVE(e), l);

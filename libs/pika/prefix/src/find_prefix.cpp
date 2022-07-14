@@ -57,7 +57,7 @@ namespace pika { namespace util {
         char exe_path[MAX_PATH + 1] = {'\0'};
         if (!GetModuleFileNameA(nullptr, exe_path, sizeof(exe_path)))
         {
-            PIKA_THROW_EXCEPTION(pika::dynamic_link_failure,
+            PIKA_THROW_EXCEPTION(pika::error::dynamic_link_failure,
                 "get_executable_filename",
                 "unable to find executable filename");
         }
@@ -133,7 +133,7 @@ namespace pika { namespace util {
             }
         }
 
-        PIKA_THROW_EXCEPTION(pika::dynamic_link_failure,
+        PIKA_THROW_EXCEPTION(pika::error::dynamic_link_failure,
             "get_executable_filename", "unable to find executable filename");
 
 #elif defined(__APPLE__)
@@ -144,7 +144,7 @@ namespace pika { namespace util {
 
         if (0 != _NSGetExecutablePath(exe_path, &len))
         {
-            PIKA_THROW_EXCEPTION(pika::dynamic_link_failure,
+            PIKA_THROW_EXCEPTION(pika::error::dynamic_link_failure,
                 "get_executable_filename",
                 "unable to find executable filename");
         }

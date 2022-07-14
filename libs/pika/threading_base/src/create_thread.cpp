@@ -34,8 +34,9 @@ namespace pika::threads::detail {
 
         default:
         {
-            PIKA_THROWS_IF(ec, bad_parameter, "threads::detail::create_thread",
-                "invalid initial state: {}", data.initial_state);
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                "threads::detail::create_thread", "invalid initial state: {}",
+                data.initial_state);
             return;
         }
         }
@@ -43,8 +44,8 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
         if (!data.description)
         {
-            PIKA_THROWS_IF(ec, bad_parameter, "threads::detail::create_thread",
-                "description is nullptr");
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                "threads::detail::create_thread", "description is nullptr");
             return;
         }
 #endif

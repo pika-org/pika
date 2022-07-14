@@ -386,7 +386,7 @@ namespace pika { namespace threads { namespace policies {
                 break;
             }
             default:
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "shared_priority_queue_scheduler::create_thread",
                     "Invalid schedule hint mode: {}",
                     static_cast<std::size_t>(data.schedulehint.mode));
@@ -813,7 +813,7 @@ namespace pika { namespace threads { namespace policies {
             }
 
             default:
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "shared_priority_queue_scheduler::schedule_thread",
                     "Invalid schedule hint mode: {}",
                     static_cast<std::size_t>(schedulehint.mode));
@@ -1266,7 +1266,7 @@ namespace pika { namespace threads { namespace policies {
         {
             if (thread_num > num_workers_)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "shared_priority_queue_scheduler::on_stop_thread",
                     "Invalid thread number: {}", std::to_string(thread_num));
             }
@@ -1278,7 +1278,7 @@ namespace pika { namespace threads { namespace policies {
         {
             if (thread_num > num_workers_)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "shared_priority_queue_scheduler::on_error",
                     "Invalid thread number: {}", std::to_string(thread_num));
             }
@@ -1288,7 +1288,7 @@ namespace pika { namespace threads { namespace policies {
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
         std::uint64_t get_creation_time(bool /* reset */) override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_creation_time",
                 "the shared_priority_scheduler does not support the "
                 "get_creation_time performance counter");
@@ -1296,7 +1296,7 @@ namespace pika { namespace threads { namespace policies {
         }
         std::uint64_t get_cleanup_time(bool /* reset */) override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_cleanup_time",
                 "the shared_priority_scheduler does not support the "
                 "get_cleanup_time performance counter");
@@ -1308,7 +1308,7 @@ namespace pika { namespace threads { namespace policies {
         std::int64_t get_num_pending_misses(
             std::size_t /* num */, bool /* reset */) override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_pending_misses",
                 "the shared_priority_scheduler does not support the "
                 "get_num_pending_misses performance counter");
@@ -1318,7 +1318,7 @@ namespace pika { namespace threads { namespace policies {
         std::int64_t get_num_pending_accesses(
             std::size_t /* num */, bool /* reset */) override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_pending_accesses",
                 "the shared_priority_scheduler does not support the "
                 "get_num_pending_accesses performance counter");
@@ -1328,7 +1328,7 @@ namespace pika { namespace threads { namespace policies {
         std::int64_t get_num_stolen_from_pending(
             std::size_t /* num */, bool /* reset */) override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_stolen_from_pending",
                 "the shared_priority_scheduler does not support the "
                 "get_num_stolen_from_pending performance counter");
@@ -1338,7 +1338,7 @@ namespace pika { namespace threads { namespace policies {
         std::int64_t get_num_stolen_to_pending(
             std::size_t /* num */, bool /* reset */) override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_creation_time",
                 "the shared_priority_scheduler does not support the "
                 "get_creation_time performance counter");
@@ -1348,7 +1348,7 @@ namespace pika { namespace threads { namespace policies {
         std::int64_t get_num_stolen_from_staged(
             std::size_t /* num */, bool /* reset */) override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_stolen_from_staged",
                 "the shared_priority_scheduler does not support the "
                 "get_num_stolen_from_staged performance counter");
@@ -1358,7 +1358,7 @@ namespace pika { namespace threads { namespace policies {
         std::int64_t get_num_stolen_to_staged(
             std::size_t /* num */, bool /* reset */) override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_num_stolen_to_staged",
                 "the shared_priority_scheduler does not support the "
                 "get_num_stolen_to_staged performance counter");
@@ -1370,7 +1370,7 @@ namespace pika { namespace threads { namespace policies {
         std::int64_t get_average_thread_wait_time(
             std::size_t /* num_thread */ = std::size_t(-1)) const override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_average_thread_wait_time",
                 "the shared_priority_scheduler does not support the "
                 "get_average_thread_wait_time performance counter");
@@ -1379,7 +1379,7 @@ namespace pika { namespace threads { namespace policies {
         std::int64_t get_average_task_wait_time(
             std::size_t /* num_thread */ = std::size_t(-1)) const override
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "shared_priority_scheduler::get_average_task_wait_time",
                 "the shared_priority_scheduler does not support the "
                 "get_average_task_wait_time performance counter");

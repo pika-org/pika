@@ -50,7 +50,7 @@ namespace pika::threads::detail {
         }
         else
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::threads::detail::get_self_or_default_pool",
                 "Attempting to register a thread outside the pika "
                 "runtime and no default pool handler is installed. "

@@ -43,7 +43,8 @@ namespace pika::threads::detail {
         thread_id_type id = self_.get_thread_id();
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROW_EXCEPTION(null_thread_id, "execution_agent::description",
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
+                "execution_agent::description",
                 "null thread id encountered (is this executed on a "
                 "pika-thread?)");
         }
@@ -149,7 +150,8 @@ namespace pika::threads::detail {
         thread_id_ref_type id = self_.get_thread_id();    // keep alive
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROW_EXCEPTION(null_thread_id, "execution_agent::do_yield",
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
+                "execution_agent::do_yield",
                 "null thread id encountered (is this executed on a "
                 "pika-thread?)");
         }
@@ -198,7 +200,7 @@ namespace pika::threads::detail {
         // handle interrupt and abort
         if (statex == thread_restart_state::abort)
         {
-            PIKA_THROW_EXCEPTION(yield_aborted, desc,
+            PIKA_THROW_EXCEPTION(pika::error::yield_aborted, desc,
                 "thread({}) aborted (yield returned wait_abort)",
                 description());
         }

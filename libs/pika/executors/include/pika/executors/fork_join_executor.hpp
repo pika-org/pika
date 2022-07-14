@@ -653,7 +653,7 @@ namespace pika { namespace execution { namespace experimental {
         {
             if (stacksize == execution::thread_stacksize::nostack)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "fork_join_executor::fork_join_executor",
                     "The fork_join_executor does not support using "
                     "thread_stacksize::nostack as the stacksize (stackful "

@@ -43,7 +43,8 @@ int start_func(pika::lcos::local::spinlock& mtx,
 
 void pika_thread_func()
 {
-    PIKA_THROW_EXCEPTION(pika::invalid_status, "pika_thread_func", "test");
+    PIKA_THROW_EXCEPTION(
+        pika::error::invalid_status, "pika_thread_func", "test");
 }
 
 int main(int argc, char** argv)

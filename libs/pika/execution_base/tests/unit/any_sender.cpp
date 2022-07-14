@@ -398,7 +398,7 @@ void test_any_sender(F&& f, Ts&&... ts)
         }
         catch (pika::exception const& e)
         {
-            PIKA_TEST_EQ(e.get_error(), pika::bad_function_call);
+            PIKA_TEST_EQ(e.get_error(), pika::error::bad_function_call);
         }
         catch (...)
         {
@@ -419,7 +419,7 @@ void test_any_sender(F&& f, Ts&&... ts)
         }
         catch (pika::exception const& e)
         {
-            PIKA_TEST_EQ(e.get_error(), pika::bad_function_call);
+            PIKA_TEST_EQ(e.get_error(), pika::error::bad_function_call);
         }
         catch (...)
         {
@@ -459,7 +459,7 @@ void test_unique_any_sender(F&& f, Ts&&... ts)
         }
         catch (pika::exception const& e)
         {
-            PIKA_TEST_EQ(e.get_error(), pika::bad_function_call);
+            PIKA_TEST_EQ(e.get_error(), pika::error::bad_function_call);
         }
         catch (...)
         {
@@ -519,7 +519,7 @@ void test_any_sender_set_error()
         }
         catch (pika::exception const& e)
         {
-            PIKA_TEST_EQ(e.get_error(), pika::bad_function_call);
+            PIKA_TEST_EQ(e.get_error(), pika::error::bad_function_call);
         }
         catch (...)
         {
@@ -540,7 +540,7 @@ void test_any_sender_set_error()
         }
         catch (pika::exception const& e)
         {
-            PIKA_TEST_EQ(e.get_error(), pika::bad_function_call);
+            PIKA_TEST_EQ(e.get_error(), pika::error::bad_function_call);
         }
         catch (...)
         {
@@ -578,7 +578,7 @@ void test_unique_any_sender_set_error()
         }
         catch (pika::exception const& e)
         {
-            PIKA_TEST_EQ(e.get_error(), pika::bad_function_call);
+            PIKA_TEST_EQ(e.get_error(), pika::error::bad_function_call);
         }
         catch (...)
         {

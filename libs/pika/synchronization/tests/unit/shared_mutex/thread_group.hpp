@@ -89,7 +89,7 @@ namespace test {
             {
                 if (is_thread_in(thrd))
                 {
-                    PIKA_THROW_EXCEPTION(pika::thread_resource_error,
+                    PIKA_THROW_EXCEPTION(pika::error::thread_resource_error,
                         "thread_group::add_thread",
                         "resource_deadlock_would_occur: trying to add a "
                         "duplicated thread");
@@ -115,7 +115,7 @@ namespace test {
         {
             if (is_this_thread_in())
             {
-                PIKA_THROW_EXCEPTION(pika::thread_resource_error,
+                PIKA_THROW_EXCEPTION(pika::error::thread_resource_error,
                     "thread_group::join_all",
                     "resource_deadlock_would_occur: trying joining itself");
                 return;

@@ -897,7 +897,7 @@ namespace pika { namespace threads { namespace policies {
                 default:
                 case execution::thread_priority::unknown:
                 {
-                    PIKA_THROW_EXCEPTION(bad_parameter,
+                    PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                         "local_priority_queue_scheduler::get_thread_count",
                         "unknown thread priority value "
                         "(execution::thread_priority::unknown)");
@@ -953,7 +953,7 @@ namespace pika { namespace threads { namespace policies {
             default:
             case execution::thread_priority::unknown:
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "local_priority_queue_scheduler::get_thread_count",
                     "unknown thread priority value "
                     "(execution::thread_priority::unknown)");

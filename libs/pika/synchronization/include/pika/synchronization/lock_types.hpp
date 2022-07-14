@@ -121,12 +121,12 @@ namespace pika { namespace lcos { namespace local {
         {
             if (m == nullptr)
             {
-                PIKA_THROW_EXCEPTION(
-                    lock_error, "mutex::unlock", "upgrade_lock has no mutex");
+                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
+                    "upgrade_lock has no mutex");
             }
             if (owns_lock())
             {
-                PIKA_THROW_EXCEPTION(lock_error, "mutex::unlock",
+                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
                     "upgrade_lock already owns the mutex");
             }
             m->lock_upgrade();
@@ -136,12 +136,12 @@ namespace pika { namespace lcos { namespace local {
         {
             if (m == nullptr)
             {
-                PIKA_THROW_EXCEPTION(
-                    lock_error, "mutex::unlock", "upgrade_lock has no mutex");
+                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
+                    "upgrade_lock has no mutex");
             }
             if (owns_lock())
             {
-                PIKA_THROW_EXCEPTION(lock_error, "mutex::unlock",
+                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
                     "upgrade_lock already owns the mutex");
             }
             is_locked = m->try_lock_upgrade();
@@ -151,12 +151,12 @@ namespace pika { namespace lcos { namespace local {
         {
             if (m == nullptr)
             {
-                PIKA_THROW_EXCEPTION(
-                    lock_error, "mutex::unlock", "upgrade_lock has no mutex");
+                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
+                    "upgrade_lock has no mutex");
             }
             if (!owns_lock())
             {
-                PIKA_THROW_EXCEPTION(lock_error, "mutex::unlock",
+                PIKA_THROW_EXCEPTION(pika::error::lock_error, "mutex::unlock",
                     "upgrade_lock doesn't own the mutex");
             }
             m->unlock_upgrade();

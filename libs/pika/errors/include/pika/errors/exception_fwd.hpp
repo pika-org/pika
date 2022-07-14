@@ -16,15 +16,13 @@ namespace pika {
     /// \cond NOINTERNAL
     // forward declaration
     class error_code;
-
     class PIKA_EXPORT exception;
-
     struct PIKA_EXPORT thread_interrupted;
     /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Encode error category for new error_code.
-    enum throwmode
+    enum class throwmode
     {
         plain = 0,
         rethrow = 1,

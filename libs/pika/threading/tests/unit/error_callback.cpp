@@ -24,7 +24,7 @@ bool on_thread_error(std::size_t, std::exception_ptr const&)
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    PIKA_THROW_EXCEPTION(pika::invalid_status, "test", "test");
+    PIKA_THROW_EXCEPTION(pika::error::invalid_status, "test", "test");
     return pika::finalize();
 }
 

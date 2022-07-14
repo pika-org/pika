@@ -93,7 +93,7 @@ namespace pika { namespace util {
         {
             if (tinfo.tid_ == tid)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "thread_mapper::register_thread",
                     "thread already registered");
             }

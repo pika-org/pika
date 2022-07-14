@@ -78,7 +78,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
             {
                 lock.unlock();
 
-                PIKA_THROWS_IF(ec, null_thread_id,
+                PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                     "condition_variable::notify_one",
                     "null thread id encountered");
                 return false;
@@ -126,7 +126,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
                     prepend_entries(lock, queue);
                     lock.unlock();
 
-                    PIKA_THROWS_IF(ec, null_thread_id,
+                    PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                         "condition_variable::notify_all",
                         "null thread id encountered");
                     return;

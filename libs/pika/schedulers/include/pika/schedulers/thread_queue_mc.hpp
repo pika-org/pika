@@ -176,7 +176,7 @@ namespace pika { namespace threads { namespace policies {
         // Return the number of existing threads with the given state.
         std::int64_t get_thread_count() const
         {
-            PIKA_THROW_EXCEPTION(bad_parameter, "get_thread_count",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "get_thread_count",
                 "use get_queue_length_staged/get_queue_length_pending");
             return 0;
         }
@@ -234,7 +234,7 @@ namespace pika { namespace threads { namespace policies {
             if (data.initial_state !=
                 threads::detail::thread_schedule_state::pending)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "thread_queue_mc::create_thread",
                     "staged tasks must have 'pending' as their initial state");
             }

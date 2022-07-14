@@ -39,11 +39,12 @@ namespace pika {
     /// \param e    The parameter \p e holds the pika::error code the new
     ///             exception should encapsulate.
     exception::exception(error e)
-      : std::system_error(make_error_code(e, plain))
+      : std::system_error(make_error_code(e, throwmode::plain))
     {
         PIKA_ASSERT(
-            (e >= success && e < last_error) || (e & system_error_flag));
-        if (e != success)
+            (e >= pika::error::success && e < pika::error::last_error) ||
+            (detail::error_code_has_system_error(static_cast<int>(e))));
+        if (e != pika::error::success)
         {
             LERR_(error).format("created exception: {}", this->what());
         }
@@ -75,11 +76,12 @@ namespace pika {
     ///               default) or to the category \a pika_category_rethrow
     ///               (if mode is \a rethrow).
     exception::exception(error e, char const* msg, throwmode mode)
-      : std::system_error(make_system_error_code(e, mode), msg)
+      : std::system_error(detail::make_system_error_code(e, mode), msg)
     {
         PIKA_ASSERT(
-            (e >= success && e < last_error) || (e & system_error_flag));
-        if (e != success)
+            (e >= pika::error::success && e < pika::error::last_error) ||
+            (detail::error_code_has_system_error(static_cast<int>(e))));
+        if (e != pika::error::success)
         {
             LERR_(error).format("created exception: {}", this->what());
         }
@@ -97,11 +99,12 @@ namespace pika {
     ///               default) or to the category \a pika_category_rethrow
     ///               (if mode is \a rethrow).
     exception::exception(error e, std::string const& msg, throwmode mode)
-      : std::system_error(make_system_error_code(e, mode), msg)
+      : std::system_error(detail::make_system_error_code(e, mode), msg)
     {
         PIKA_ASSERT(
-            (e >= success && e < last_error) || (e & system_error_flag));
-        if (e != success)
+            (e >= pika::error::success && e < pika::error::last_error) ||
+            (detail::error_code_has_system_error(static_cast<int>(e))));
+        if (e != pika::error::success)
         {
             LERR_(error).format("created exception: {}", this->what());
         }
@@ -137,19 +140,22 @@ namespace pika {
         return error_code(this->std::system_error::code().value(), *this);
     }
 
-    static custom_exception_info_handler_type custom_exception_info_handler;
+    namespace detail {
+        static custom_exception_info_handler_type custom_exception_info_handler;
 
-    void set_custom_exception_info_handler(custom_exception_info_handler_type f)
-    {
-        custom_exception_info_handler = f;
-    }
+        void set_custom_exception_info_handler(
+            custom_exception_info_handler_type f)
+        {
+            custom_exception_info_handler = f;
+        }
 
-    static pre_exception_handler_type pre_exception_handler;
+        static pre_exception_handler_type pre_exception_handler;
 
-    void set_pre_exception_handler(pre_exception_handler_type f)
-    {
-        pre_exception_handler = f;
-    }
+        void set_pre_exception_handler(pre_exception_handler_type f)
+        {
+            pre_exception_handler = f;
+        }
+    }    // namespace detail
 }    // namespace pika
 
 namespace pika { namespace detail {
@@ -391,7 +397,7 @@ namespace pika {
         }
         catch (pika::thread_interrupted const&)
         {
-            return pika::thread_cancelled;
+            return pika::error::thread_cancelled;
         }
         catch (pika::exception const& he)
         {
@@ -400,13 +406,14 @@ namespace pika {
         catch (std::system_error const& e)
         {
             int code = e.code().value();
-            if (code < success || code >= last_error)
-                code |= system_error_flag;
+            if (code < static_cast<int>(pika::error::success) ||
+                code >= static_cast<int>(pika::error::last_error))
+                code |= static_cast<int>(pika::error::system_error_flag);
             return static_cast<pika::error>(code);
         }
         catch (...)
         {
-            return unknown_error;
+            return pika::error::unknown_error;
         }
     }
 

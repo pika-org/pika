@@ -172,7 +172,8 @@ namespace pika::threads::detail {
         tid = syscall(SYS_gettid);
         if (setpriority(PRIO_PROCESS, tid, 19))
         {
-            PIKA_THROWS_IF(ec, no_success, "topology::reduce_thread_priority",
+            PIKA_THROWS_IF(ec, pika::error::no_success,
+                "topology::reduce_thread_priority",
                 "setpriority returned an error");
             return false;
         }
@@ -180,7 +181,8 @@ namespace pika::threads::detail {
 
         if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST))
         {
-            PIKA_THROWS_IF(ec, no_success, "topology::reduce_thread_priority",
+            PIKA_THROWS_IF(ec, pika::error::no_success,
+                "topology::reduce_thread_priority",
                 "SetThreadPriority returned an error");
             return false;
         }
@@ -206,7 +208,7 @@ namespace pika::threads::detail {
         int err = hwloc_topology_init(&topo);
         if (err != 0)
         {
-            PIKA_THROW_EXCEPTION(no_success, "topology::topology",
+            PIKA_THROW_EXCEPTION(pika::error::no_success, "topology::topology",
                 "Failed to init hwloc topology");
         }
 
@@ -219,7 +221,7 @@ namespace pika::threads::detail {
             topo, HWLOC_OBJ_CORE, HWLOC_TYPE_FILTER_KEEP_NONE);
         if (err != 0)
         {
-            PIKA_THROW_EXCEPTION(no_success, "topology::topology",
+            PIKA_THROW_EXCEPTION(pika::error::no_success, "topology::topology",
                 "Failed to set core filter for hwloc topology");
         }
 #endif
@@ -228,7 +230,7 @@ namespace pika::threads::detail {
         err = hwloc_topology_load(topo);
         if (err != 0)
         {
-            PIKA_THROW_EXCEPTION(no_success, "topology::topology",
+            PIKA_THROW_EXCEPTION(pika::error::no_success, "topology::topology",
                 "Failed to load hwloc topology");
         }
 
@@ -364,7 +366,7 @@ namespace pika::threads::detail {
             num_cores = hwloc_get_nbobjs_by_type(topo, HWLOC_OBJ_PU);
             if (num_cores <= 0)
             {
-                PIKA_THROWS_IF(ec, no_success,
+                PIKA_THROWS_IF(ec, pika::error::no_success,
                     "topology::hwloc_get_nobjs_by_type",
                     "Failed to get number of cores");
                 return std::size_t(-1);
@@ -411,7 +413,7 @@ namespace pika::threads::detail {
             return socket_affinity_masks_[num_pu];
         }
 
-        PIKA_THROWS_IF(ec, bad_parameter,
+        PIKA_THROWS_IF(ec, pika::error::bad_parameter,
             "pika::threads::detail::topology::get_socket_affinity_mask",
             "thread number {1} is out of range", num_thread);
         return empty_mask;
@@ -430,7 +432,7 @@ namespace pika::threads::detail {
             return numa_node_affinity_masks_[num_pu];
         }
 
-        PIKA_THROWS_IF(ec, bad_parameter,
+        PIKA_THROWS_IF(ec, pika::error::bad_parameter,
             "pika::threads::detail::topology::get_numa_node_affinity_mask",
             "thread number {1} is out of range", num_thread);
         return empty_mask;
@@ -449,7 +451,7 @@ namespace pika::threads::detail {
             return core_affinity_masks_[num_pu];
         }
 
-        PIKA_THROWS_IF(ec, bad_parameter,
+        PIKA_THROWS_IF(ec, pika::error::bad_parameter,
             "pika::threads::detail::topology::get_core_affinity_mask",
             "thread number {1} is out of range", num_thread);
         return empty_mask;
@@ -468,7 +470,7 @@ namespace pika::threads::detail {
             return thread_affinity_masks_[num_pu];
         }
 
-        PIKA_THROWS_IF(ec, bad_parameter,
+        PIKA_THROWS_IF(ec, pika::error::bad_parameter,
             "pika::threads::detail::topology::get_thread_affinity_mask",
             "thread number {1} is out of range", num_thread);
         return empty_mask;
@@ -510,7 +512,7 @@ namespace pika::threads::detail {
                     hwloc_bitmap_snprintf(buffer.get(), 1024, cpuset);
                     hwloc_bitmap_free(cpuset);
 
-                    PIKA_THROWS_IF(ec, kernel_error,
+                    PIKA_THROWS_IF(ec, pika::error::kernel_error,
                         "pika::threads::detail::topology::set_thread_affinity_"
                         "mask",
                         "failed to set thread affinity mask ({}) for cpuset {}",
@@ -583,7 +585,7 @@ namespace pika::threads::detail {
                 std::string errstr = std::strerror(errno);
 
                 lk.unlock();
-                PIKA_THROW_EXCEPTION(no_success,
+                PIKA_THROW_EXCEPTION(pika::error::no_success,
                     "topology::get_thread_affinity_mask_from_lva",
                     "failed calling 'hwloc_get_area_membind_nodeset', "
                     "reported error: {}",
@@ -741,7 +743,7 @@ namespace pika::threads::detail {
         int nobjs = hwloc_get_nbobjs_by_type(topo, HWLOC_OBJ_SOCKET);
         if (0 > nobjs)
         {
-            PIKA_THROW_EXCEPTION(kernel_error,
+            PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                 "pika::threads::detail::topology::get_number_of_sockets",
                 "hwloc_get_nbobjs_by_type failed");
             return std::size_t(nobjs);
@@ -754,7 +756,7 @@ namespace pika::threads::detail {
         int nobjs = hwloc_get_nbobjs_by_type(topo, HWLOC_OBJ_NUMANODE);
         if (0 > nobjs)
         {
-            PIKA_THROW_EXCEPTION(kernel_error,
+            PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                 "pika::threads::detail::topology::get_number_of_numa_nodes",
                 "hwloc_get_nbobjs_by_type failed");
             return std::size_t(nobjs);
@@ -769,7 +771,7 @@ namespace pika::threads::detail {
         // If num_cores is smaller 0, we have an error
         if (0 > nobjs)
         {
-            PIKA_THROW_EXCEPTION(kernel_error,
+            PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                 "pika::threads::detail::topology::get_number_of_cores",
                 "hwloc_get_nbobjs_by_type(HWLOC_OBJ_CORE) failed");
             return std::size_t(nobjs);
@@ -781,7 +783,7 @@ namespace pika::threads::detail {
             nobjs = hwloc_get_nbobjs_by_type(topo, HWLOC_OBJ_PU);
             if (0 > nobjs)
             {
-                PIKA_THROW_EXCEPTION(kernel_error,
+                PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                     "pika::threads::detail::topology::get_number_of_cores",
                     "hwloc_get_nbobjs_by_type(HWLOC_OBJ_PU) failed");
                 return std::size_t(nobjs);
@@ -792,7 +794,7 @@ namespace pika::threads::detail {
         // avoid division by zero, we should always have at least one core
         if (0 == nobjs)
         {
-            PIKA_THROW_EXCEPTION(kernel_error,
+            PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                 "pika::threads::detail::topology::get_number_of_cores",
                 "hwloc_get_nbobjs_by_type reports zero cores/pus");
             return std::size_t(nobjs);
@@ -971,7 +973,7 @@ namespace pika::threads::detail {
                 hwloc_get_obj_by_type(topo, HWLOC_OBJ_PU, unsigned(i));
             if (!obj)
             {
-                PIKA_THROW_EXCEPTION(kernel_error,
+                PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                     "pika::threads::detail::topology::print_affinity_mask",
                     "object not found");
                 return;
@@ -1020,7 +1022,7 @@ namespace pika::threads::detail {
             return machine_affinity_mask;
         }
 
-        PIKA_THROW_EXCEPTION(kernel_error,
+        PIKA_THROW_EXCEPTION(pika::error::kernel_error,
             "pika::threads::detail::topology::init_machine_affinity_mask",
             "failed to initialize machine affinity mask");
         return empty_mask;
@@ -1167,7 +1169,7 @@ namespace pika::threads::detail {
             // core
             if (num_cores <= 0)
             {
-                PIKA_THROW_EXCEPTION(kernel_error,
+                PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                     "pika::threads::detail::topology::init_thread_affinity_"
                     "mask",
                     "hwloc_get_nbobjs_by_type failed");
@@ -1244,7 +1246,7 @@ namespace pika::threads::detail {
             if (hwloc_get_cpubind(topo, cpuset, HWLOC_CPUBIND_THREAD))
             {
                 hwloc_bitmap_free(cpuset);
-                PIKA_THROWS_IF(ec, kernel_error,
+                PIKA_THROWS_IF(ec, pika::error::kernel_error,
                     "pika::threads::detail::topology::get_cpubind_mask",
                     "hwloc_get_cpubind failed");
                 return empty_mask;
@@ -1291,7 +1293,7 @@ namespace pika::threads::detail {
 #endif
             {
                 hwloc_bitmap_free(cpuset);
-                PIKA_THROWS_IF(ec, kernel_error,
+                PIKA_THROWS_IF(ec, pika::error::kernel_error,
                     "pika::threads::detail::topology::get_cpubind_mask",
                     "hwloc_get_cpubind failed");
                 return empty_mask;
@@ -1364,7 +1366,7 @@ namespace pika::threads::detail {
                 msg = "the action is not supported";
             if (errno == EXDEV)
                 msg = "the binding cannot be enforced";
-            PIKA_THROW_EXCEPTION(kernel_error,
+            PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                 "pika::threads::detail::topology::set_area_membind_nodeset",
                 "hwloc_set_area_membind_nodeset failed : {}", msg);
             return false;
@@ -1410,7 +1412,7 @@ namespace pika::threads::detail {
 #endif
             == -1)
         {
-            PIKA_THROW_EXCEPTION(kernel_error,
+            PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                 "pika::threads::detail::topology::get_area_membind_nodeset",
                 "hwloc_get_area_membind_nodeset failed");
             return bitmap_to_mask(ns, HWLOC_OBJ_MACHINE);
@@ -1441,7 +1443,7 @@ namespace pika::threads::detail {
             return 0;
 #else
             std::string msg(strerror(errno));
-            PIKA_THROW_EXCEPTION(kernel_error,
+            PIKA_THROW_EXCEPTION(pika::error::kernel_error,
                 "pika::threads::detail::topology::get_numa_domain",
                 "hwloc_get_area_memlocation failed {}", msg);
             return -1;

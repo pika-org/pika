@@ -39,7 +39,7 @@ namespace pika { namespace execution { namespace experimental {
 
                         if (!state)
                         {
-                            PIKA_THROW_EXCEPTION(no_state,
+                            PIKA_THROW_EXCEPTION(pika::error::no_state,
                                 "operation_state::start",
                                 "the future has no valid shared state");
                         }

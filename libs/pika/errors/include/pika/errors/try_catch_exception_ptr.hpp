@@ -11,7 +11,7 @@
 #include <exception>
 #include <utility>
 
-namespace pika { namespace detail {
+namespace pika::detail {
     /// Helper function for a try-catch block where what would normally go in
     /// the catch block should be called after the catch block. This is useful
     /// for situations where the catch-block may yield, since the catch block
@@ -41,4 +41,4 @@ namespace pika { namespace detail {
         }
         return c(PIKA_MOVE(ep));
     }
-}}    // namespace pika::detail
+}    // namespace pika::detail

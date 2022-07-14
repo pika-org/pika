@@ -25,7 +25,7 @@ void test_exception_from_continuation1()
     pika::future<void> f2 = f1.then([](pika::future<void>&& f1) {
         PIKA_TEST(f1.has_value());
         PIKA_THROW_EXCEPTION(
-            pika::invalid_status, "lambda", "testing exceptions");
+            pika::error::invalid_status, "lambda", "testing exceptions");
     });
 
     p.set_value();
@@ -54,8 +54,8 @@ void test_exception_from_continuation2()
                 f.get();    // rethrow, if has exception
 
                 ++exceptions_thrown;
-                PIKA_THROW_EXCEPTION(
-                    pika::invalid_status, "lambda", "testing exceptions");
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status, "lambda",
+                    "testing exceptions");
             }));
     }
 

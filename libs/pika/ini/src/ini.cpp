@@ -360,8 +360,9 @@ namespace pika { namespace util {
             if (name.empty())
                 name = "<root>";
 
-            PIKA_THROW_EXCEPTION(bad_parameter, "section::get_section",
-                "No such section ({}) in section: {}", sec_name, name);
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
+                "section::get_section", "No such section ({}) in section: {}",
+                sec_name, name);
             return nullptr;
         }
 
@@ -369,7 +370,7 @@ namespace pika { namespace util {
         if (it != sections_.end())
             return &((*it).second);
 
-        PIKA_THROW_EXCEPTION(bad_parameter, "section::get_section",
+        PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_section",
             "No such section ({}) in section: {}", sec_name, get_name());
         return nullptr;
     }
@@ -393,8 +394,9 @@ namespace pika { namespace util {
             if (name.empty())
                 name = "<root>";
 
-            PIKA_THROW_EXCEPTION(bad_parameter, "section::get_section",
-                "No such section ({}) in section: {}", sec_name, name);
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
+                "section::get_section", "No such section ({}) in section: {}",
+                sec_name, name);
             return nullptr;
         }
 
@@ -402,7 +404,7 @@ namespace pika { namespace util {
         if (it != sections_.end())
             return &((*it).second);
 
-        PIKA_THROW_EXCEPTION(bad_parameter, "section::get_section",
+        PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_section",
             "No such section ({}) in section: {}", sec_name, get_name());
         return nullptr;
     }
@@ -640,8 +642,9 @@ namespace pika { namespace util {
                 return (*cit).second.get_entry(sub_key);
             }
 
-            PIKA_THROW_EXCEPTION(bad_parameter, "section::get_entry",
-                "No such key ({}) in section: {}", key, get_name());
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
+                "section::get_entry", "No such key ({}) in section: {}", key,
+                get_name());
             return "";
         }
 
@@ -652,7 +655,7 @@ namespace pika { namespace util {
             return expand(l, (*cit).second.first);
         }
 
-        PIKA_THROW_EXCEPTION(bad_parameter, "section::get_entry",
+        PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "section::get_entry",
             "No such section ({}) in section: {}", key, get_name());
         return "";
     }
@@ -804,7 +807,7 @@ namespace pika { namespace util {
         if (!line.empty())
             msg += " (offending entry: " + line + ")";
 
-        PIKA_THROW_EXCEPTION(no_success, "section::line_msg", msg);
+        PIKA_THROW_EXCEPTION(pika::error::no_success, "section::line_msg", msg);
     }
 
     ///////////////////////////////////////////////////////////////////////////////

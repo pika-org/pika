@@ -276,7 +276,8 @@ namespace pika { namespace lcos { namespace detail {
 
                     if (!state)
                     {
-                        PIKA_THROW_EXCEPTION(no_state, "operation_state::start",
+                        PIKA_THROW_EXCEPTION(pika::error::no_state,
+                            "operation_state::start",
                             "the future has no valid shared state");
                     }
 
@@ -421,14 +422,14 @@ namespace pika { namespace lcos { namespace detail {
         {
             if (!shared_state_)
             {
-                PIKA_THROW_EXCEPTION(no_state,
+                PIKA_THROW_EXCEPTION(pika::error::no_state,
                     "future_base<R>::get_exception_ptr",
                     "this future has no valid shared state");
             }
 
             using result_type = typename shared_state_type::result_type;
 
-            error_code ec(lightweight);
+            error_code ec(throwmode::lightweight);
             lcos::detail::future_get_result<result_type>::call(
                 this->shared_state_, ec);
             if (!ec)
@@ -482,7 +483,8 @@ namespace pika { namespace lcos { namespace detail {
 
             if (!fut.shared_state_)
             {
-                PIKA_THROWS_IF(ec, no_state, "future_base<R>::then",
+                PIKA_THROWS_IF(ec, pika::error::no_state,
+                    "future_base<R>::then",
                     "this future has no valid shared state");
                 return result_type();
             }
@@ -502,7 +504,8 @@ namespace pika { namespace lcos { namespace detail {
 
             if (!fut.shared_state_)
             {
-                PIKA_THROWS_IF(ec, no_state, "future_base<R>::then",
+                PIKA_THROWS_IF(ec, pika::error::no_state,
+                    "future_base<R>::then",
                     "this future has no valid shared state");
                 return result_type();
             }
@@ -523,7 +526,8 @@ namespace pika { namespace lcos { namespace detail {
 
             if (!fut.shared_state_)
             {
-                PIKA_THROWS_IF(ec, no_state, "future_base<R>::then_alloc",
+                PIKA_THROWS_IF(ec, pika::error::no_state,
+                    "future_base<R>::then_alloc",
                     "this future has no valid shared state");
                 return result_type();
             }
@@ -537,7 +541,8 @@ namespace pika { namespace lcos { namespace detail {
         {
             if (!shared_state_)
             {
-                PIKA_THROWS_IF(ec, no_state, "future_base<R>::wait",
+                PIKA_THROWS_IF(ec, pika::error::no_state,
+                    "future_base<R>::wait",
                     "this future has no valid shared state");
                 return;
             }
@@ -561,7 +566,8 @@ namespace pika { namespace lcos { namespace detail {
         {
             if (!shared_state_)
             {
-                PIKA_THROWS_IF(ec, no_state, "future_base<R>::wait_until",
+                PIKA_THROWS_IF(ec, pika::error::no_state,
+                    "future_base<R>::wait_until",
                     "this future has no valid shared state");
                 return pika::future_status::uninitialized;
             }
@@ -772,7 +778,7 @@ namespace pika {
         {
             if (!this->shared_state_)
             {
-                PIKA_THROW_EXCEPTION(no_state, "future<R>::get",
+                PIKA_THROW_EXCEPTION(pika::error::no_state, "future<R>::get",
                     "this future has no valid shared state");
             }
 
@@ -792,7 +798,7 @@ namespace pika {
         {
             if (!this->shared_state_)
             {
-                PIKA_THROWS_IF(ec, no_state, "future<R>::get",
+                PIKA_THROWS_IF(ec, pika::error::no_state, "future<R>::get",
                     "this future has no valid shared state");
                 return lcos::detail::future_value<R>::get_default();
             }
@@ -1072,7 +1078,8 @@ namespace pika {
         {
             if (!this->shared_state_)
             {
-                PIKA_THROW_EXCEPTION(no_state, "shared_future<R>::get",
+                PIKA_THROW_EXCEPTION(pika::error::no_state,
+                    "shared_future<R>::get",
                     "this future has no valid shared state");
             }
 
@@ -1091,7 +1098,8 @@ namespace pika {
             using result_type = typename shared_state_type::result_type;
             if (!this->shared_state_)
             {
-                PIKA_THROWS_IF(ec, no_state, "shared_future<R>::get",
+                PIKA_THROWS_IF(ec, pika::error::no_state,
+                    "shared_future<R>::get",
                     "this future has no valid shared state");
                 static result_type res(
                     lcos::detail::future_value<R>::get_default());

@@ -27,10 +27,11 @@ namespace pika {
 
             std::string message(int value) const
             {
-                if (value >= success && value < last_error)
+                if (value >= static_cast<int>(pika::error::success) &&
+                    value < static_cast<int>(pika::error::last_error))
                     return std::string("pika(") + error_names[value] +
                         ")";    //-V108
-                if (value & system_error_flag)
+                if (error_code_has_system_error(value))
                     return std::string("pika(system_error)");
                 return "pika(unknown_error)";
             }
@@ -73,77 +74,91 @@ namespace pika {
         return pika_category_rethrow;
     }
 
-    std::error_category const& get_lightweight_pika_category()
-    {
-        static detail::lightweight_pika_category lightweight_pika_category;
-        return lightweight_pika_category;
-    }
-
-    std::error_category const& get_pika_category(throwmode mode)
-    {
-        switch (mode)
+    namespace detail {
+        std::error_category const& get_lightweight_pika_category()
         {
-        case rethrow:
-            return get_pika_rethrow_category();
-
-        case lightweight:
-        case lightweight_rethrow:
-            return get_lightweight_pika_category();
-
-        case plain:
-        default:
-            break;
+            static detail::lightweight_pika_category lightweight_pika_category;
+            return lightweight_pika_category;
         }
-        return get_pika_category();
-    }
+
+        std::error_category const& get_pika_category(throwmode mode)
+        {
+            switch (mode)
+            {
+            case throwmode::rethrow:
+                return get_pika_rethrow_category();
+
+            case throwmode::lightweight:
+            case throwmode::lightweight_rethrow:
+                return get_lightweight_pika_category();
+
+            case throwmode::plain:
+            default:
+                break;
+            }
+            return pika::get_pika_category();
+        }
+
+        bool throwmode_is_lightweight(throwmode mode)
+        {
+            return static_cast<int>(mode) &
+                static_cast<int>(throwmode::lightweight);
+        }
+    }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
     error_code::error_code(error e, throwmode mode)
-      : std::error_code(make_system_error_code(e, mode))
+      : std::error_code(detail::make_system_error_code(e, mode))
     {
-        if (e != success && e != no_success && !(mode & lightweight))
+        if (e != pika::error::success && e != pika::error::no_success &&
+            !(detail::throwmode_is_lightweight(mode)))
             exception_ = detail::get_exception(e, "", mode);
     }
 
     error_code::error_code(
         error e, char const* func, char const* file, long line, throwmode mode)
-      : std::error_code(make_system_error_code(e, mode))
+      : std::error_code(detail::make_system_error_code(e, mode))
     {
-        if (e != success && e != no_success && !(mode & lightweight))
+        if (e != pika::error::success && e != pika::error::no_success &&
+            !(detail::throwmode_is_lightweight(mode)))
         {
             exception_ = detail::get_exception(e, "", mode, func, file, line);
         }
     }
 
     error_code::error_code(error e, char const* msg, throwmode mode)
-      : std::error_code(make_system_error_code(e, mode))
+      : std::error_code(detail::make_system_error_code(e, mode))
     {
-        if (e != success && e != no_success && !(mode & lightweight))
+        if (e != pika::error::success && e != pika::error::no_success &&
+            !(detail::throwmode_is_lightweight(mode)))
             exception_ = detail::get_exception(e, msg, mode);
     }
 
     error_code::error_code(error e, char const* msg, char const* func,
         char const* file, long line, throwmode mode)
-      : std::error_code(make_system_error_code(e, mode))
+      : std::error_code(detail::make_system_error_code(e, mode))
     {
-        if (e != success && e != no_success && !(mode & lightweight))
+        if (e != pika::error::success && e != pika::error::no_success &&
+            !(detail::throwmode_is_lightweight(mode)))
         {
             exception_ = detail::get_exception(e, msg, mode, func, file, line);
         }
     }
 
     error_code::error_code(error e, std::string const& msg, throwmode mode)
-      : std::error_code(make_system_error_code(e, mode))
+      : std::error_code(detail::make_system_error_code(e, mode))
     {
-        if (e != success && e != no_success && !(mode & lightweight))
+        if (e != pika::error::success && e != pika::error::no_success &&
+            !(detail::throwmode_is_lightweight(mode)))
             exception_ = detail::get_exception(e, msg, mode);
     }
 
     error_code::error_code(error e, std::string const& msg, char const* func,
         char const* file, long line, throwmode mode)
-      : std::error_code(make_system_error_code(e, mode))
+      : std::error_code(detail::make_system_error_code(e, mode))
     {
-        if (e != success && e != no_success && !(mode & lightweight))
+        if (e != pika::error::success && e != pika::error::no_success &&
+            !(detail::throwmode_is_lightweight(mode)))
         {
             exception_ = detail::get_exception(e, msg, mode, func, file, line);
         }
@@ -156,7 +171,8 @@ namespace pika {
     }
 
     error_code::error_code(std::exception_ptr const& e)
-      : std::error_code(make_system_error_code(get_error(e), rethrow))
+      : std::error_code(
+            detail::make_system_error_code(get_error(e), throwmode::rethrow))
       , exception_(e)
     {
     }
@@ -180,11 +196,12 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     error_code::error_code(error_code const& rhs)
-      : std::error_code(rhs.value() == success ?
+      : std::error_code(
+            static_cast<pika::error>(rhs.value()) == pika::error::success ?
                 make_success_code(
-                    (category() == get_lightweight_pika_category()) ?
-                        pika::lightweight :
-                        pika::plain) :
+                    (category() == detail::get_lightweight_pika_category()) ?
+                        pika::throwmode::lightweight :
+                        pika::throwmode::plain) :
                 rhs)
       , exception_(rhs.exception_)
     {
@@ -195,13 +212,13 @@ namespace pika {
     {
         if (this != &rhs)
         {
-            if (rhs.value() == success)
+            if (static_cast<pika::error>(rhs.value()) == pika::error::success)
             {
                 // if the rhs is a success code, we maintain our throw mode
                 this->std::error_code::operator=(make_success_code(
-                    (category() == get_lightweight_pika_category()) ?
-                        pika::lightweight :
-                        pika::plain));
+                    (category() == detail::get_lightweight_pika_category()) ?
+                        pika::throwmode::lightweight :
+                        pika::throwmode::plain));
             }
             else
             {

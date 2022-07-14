@@ -42,7 +42,7 @@ namespace pika {
         ///
         /// \param e    The parameter \p e holds the pika::error code the new
         ///             exception should encapsulate.
-        explicit exception(error e = success);
+        explicit exception(error e = pika::error::success);
 
         /// Construct a pika::exception from a std#system_error.
         explicit exception(std::system_error const& e);
@@ -60,10 +60,10 @@ namespace pika {
         ///               exception should encapsulate.
         /// \param mode   The parameter \p mode specifies whether the returned
         ///               pika::error_code belongs to the error category
-        ///               \a pika_category (if mode is \a plain, this is the
-        ///               default) or to the category \a pika_category_rethrow
-        ///               (if mode is \a rethrow).
-        exception(error e, char const* msg, throwmode mode = plain);
+        ///               \a pika_category (if mode is \a throwmode::plain, this
+        ///               is the default) or to the category \a
+        ///               pika_category_rethrow (if mode is \a throwmode::rethrow).
+        exception(error e, char const* msg, throwmode mode = throwmode::plain);
 
         /// Construct a pika::exception from a \a pika::error and an error message.
         ///
@@ -73,10 +73,11 @@ namespace pika {
         ///               exception should encapsulate.
         /// \param mode   The parameter \p mode specifies whether the returned
         ///               pika::error_code belongs to the error category
-        ///               \a pika_category (if mode is \a plain, this is the
-        ///               default) or to the category \a pika_category_rethrow
-        ///               (if mode is \a rethrow).
-        exception(error e, std::string const& msg, throwmode mode = plain);
+        ///               \a pika_category (if mode is \a throwmode::plain, this
+        ///               is the default) or to the category \a
+        ///               pika_category_rethrow (if mode is \a throwmode::rethrow).
+        exception(
+            error e, std::string const& msg, throwmode mode = throwmode::plain);
 
         /// Destruct a pika::exception
         ///
@@ -96,22 +97,26 @@ namespace pika {
         ///
         /// \param mode   The parameter \p mode specifies whether the returned
         ///               pika::error_code belongs to the error category
-        ///               \a pika_category (if mode is \a plain, this is the
-        ///               default) or to the category \a pika_category_rethrow
-        ///               (if mode is \a rethrow).
-        error_code get_error_code(throwmode mode = plain) const noexcept;
+        ///               \a pika_category (if mode is \a throwmode::plain, this
+        ///               is the default) or to the category \a
+        ///               pika_category_rethrow (if mode is \a throwmode::rethrow).
+        error_code get_error_code(
+            throwmode mode = throwmode::plain) const noexcept;
     };
 
-    using custom_exception_info_handler_type =
-        std::function<pika::exception_info(
-            std::string const&, std::string const&, long, std::string const&)>;
+    namespace detail {
+        using custom_exception_info_handler_type =
+            std::function<pika::exception_info(std::string const&,
+                std::string const&, long, std::string const&)>;
 
-    PIKA_EXPORT void set_custom_exception_info_handler(
-        custom_exception_info_handler_type f);
+        PIKA_EXPORT void set_custom_exception_info_handler(
+            custom_exception_info_handler_type f);
 
-    using pre_exception_handler_type = std::function<void()>;
+        using pre_exception_handler_type = std::function<void()>;
 
-    PIKA_EXPORT void set_pre_exception_handler(pre_exception_handler_type f);
+        PIKA_EXPORT void set_pre_exception_handler(
+            pre_exception_handler_type f);
+    }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief A pika::thread_interrupted is the exception type used by pika to
@@ -351,7 +356,7 @@ namespace pika {
     inline std::string get_error_what(pika::error_code const& e)
     {
         // if this is a lightweight error_code, return canned response
-        if (e.category() == pika::get_lightweight_pika_category())
+        if (e.category() == detail::get_lightweight_pika_category())
             return e.message();
 
         return get_error_what<pika::error_code>(e);

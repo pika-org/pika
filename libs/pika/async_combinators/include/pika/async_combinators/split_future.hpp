@@ -225,7 +225,7 @@ namespace pika {
                         result_type* result = state->get_result();
                         if (i >= result->size())
                         {
-                            PIKA_THROW_EXCEPTION(length_error,
+                            PIKA_THROW_EXCEPTION(pika::error::length_error,
                                 "split_continuation::on_ready",
                                 "index out of bounds");
                         }

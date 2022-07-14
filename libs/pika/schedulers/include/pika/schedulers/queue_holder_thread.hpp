@@ -636,7 +636,7 @@ namespace pika { namespace threads { namespace policies {
                         &tid));
 
                 lk.unlock();
-                PIKA_THROW_EXCEPTION(pika::out_of_memory,
+                PIKA_THROW_EXCEPTION(pika::error::out_of_memory,
                     "queue_holder_thread::add_to_thread_map",
                     "Couldn't add new thread to the thread map {}", map_size);
             }
@@ -847,7 +847,7 @@ namespace pika { namespace threads { namespace policies {
             default:
             case execution::thread_priority::unknown:
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "queue_holder_thread::get_thread_count_staged",
                     "unknown thread priority value "
                     "(execution::thread_priority::unknown)");
@@ -899,7 +899,7 @@ namespace pika { namespace threads { namespace policies {
             default:
             case execution::thread_priority::unknown:
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "queue_holder_thread::get_thread_count_pending",
                     "unknown thread priority value "
                     "(execution::thread_priority::unknown)");
@@ -1005,7 +1005,7 @@ namespace pika { namespace threads { namespace policies {
             }
             else if (state == threads::detail::thread_schedule_state::staged)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "queue_holder_thread::iterate_threads",
                     "can't iterate over thread ids of staged threads");
                 return false;

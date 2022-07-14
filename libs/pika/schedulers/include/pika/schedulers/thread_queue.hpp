@@ -253,7 +253,7 @@ namespace pika { namespace threads { namespace policies {
                 {
                     --addfrom->new_tasks_count_.data_;
                     lk.unlock();
-                    PIKA_THROW_EXCEPTION(pika::out_of_memory,
+                    PIKA_THROW_EXCEPTION(pika::error::out_of_memory,
                         "thread_queue::add_new",
                         "Couldn't add new thread to the thread map");
                     return 0;
@@ -693,7 +693,7 @@ namespace pika { namespace threads { namespace policies {
                     if (PIKA_UNLIKELY(!p.second))
                     {
                         lk.unlock();
-                        PIKA_THROWS_IF(ec, pika::out_of_memory,
+                        PIKA_THROWS_IF(ec, pika::error::out_of_memory,
                             "thread_queue::create_thread",
                             "Couldn't add new thread to the map of threads");
                         return;
@@ -737,7 +737,7 @@ namespace pika { namespace threads { namespace policies {
             if (data.initial_state !=
                 threads::detail::thread_schedule_state::pending)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "thread_queue::create_thread",
                     "staged tasks must have 'pending' as their initial state");
             }
@@ -973,7 +973,7 @@ namespace pika { namespace threads { namespace policies {
             }
             else if (state == threads::detail::thread_schedule_state::staged)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "thread_queue::iterate_threads",
                     "can't iterate over thread ids of staged threads");
                 return false;

@@ -334,7 +334,7 @@ namespace pika {
 
         if (n > values.size())
         {
-            PIKA_THROW_EXCEPTION(pika::bad_parameter, "pika::wait_some",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "pika::wait_some",
                 "number of results to wait for is out of bounds");
             return;
         }
@@ -395,7 +395,7 @@ namespace pika {
 
         if (n > values.size())
         {
-            PIKA_THROW_EXCEPTION(pika::bad_parameter, "pika::wait_some",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "pika::wait_some",
                 "number of results to wait for is out of bounds");
             return;
         }
@@ -489,7 +489,7 @@ namespace pika {
     {
         if (n != 0)
         {
-            PIKA_THROW_EXCEPTION(pika::bad_parameter, "pika::wait_some",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "pika::wait_some",
                 "number of results to wait for is out of bounds");
         }
     }
@@ -505,7 +505,7 @@ namespace pika {
     {
         if (n != 1)
         {
-            PIKA_THROW_EXCEPTION(pika::bad_parameter, "pika::wait_some",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "pika::wait_some",
                 "number of results to wait for is out of bounds");
             return;
         }
@@ -525,7 +525,7 @@ namespace pika {
     {
         if (n != 1)
         {
-            PIKA_THROW_EXCEPTION(pika::bad_parameter, "pika::wait_some",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "pika::wait_some",
                 "number of results to wait for is out of bounds");
             return;
         }
@@ -551,7 +551,7 @@ namespace pika {
 
         if (n > sizeof...(Ts))
         {
-            PIKA_THROW_EXCEPTION(pika::bad_parameter, "pika::wait_some",
+            PIKA_THROW_EXCEPTION(pika::error::bad_parameter, "pika::wait_some",
                 "number of results to wait for is out of bounds");
             return;
         }

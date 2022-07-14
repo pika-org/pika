@@ -471,7 +471,7 @@ namespace pika::threads::detail {
             if (flag && !enabled_interrupt_)
             {
                 l.unlock();
-                PIKA_THROW_EXCEPTION(thread_not_interruptable,
+                PIKA_THROW_EXCEPTION(pika::error::thread_not_interruptable,
                     "thread_data::interrupt",
                     "interrupts are disabled for this thread");
                 return;
