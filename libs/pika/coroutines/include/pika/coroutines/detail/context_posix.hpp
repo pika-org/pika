@@ -143,7 +143,7 @@ namespace pika::threads::coroutines::detail::posix::ucontext {
         ctx->uc_stack.ss_size = size;
         ctx->uc_link = exitto;
 
-        using = void (*ctx_main)();
+        using ctx_main = void (*)();
         //makecontext can't fail.
         ::makecontext(ctx, (ctx_main) (startfunc), 1, startarg);
         return 0;
