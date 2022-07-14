@@ -70,7 +70,7 @@ namespace pika {
     {
         if (get_config_entry("pika.attach_debugger", "") == "exception")
         {
-            util::attach_debugger();
+            debug::detail::attach_debugger();
         }
 
         if (get_config_entry("pika.diagnostics_on_terminate", "1") == "1")
@@ -89,8 +89,8 @@ namespace pika {
                 std::size_t const trace_depth =
                     util::from_string<std::size_t>(get_config_entry(
                         "pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
-                std::cerr << "{stack-trace}: " << pika::util::trace(trace_depth)
-                          << "\n";
+                std::cerr << "{stack-trace}: "
+                          << pika::debug::detail::trace(trace_depth) << "\n";
             }
 #endif
 
@@ -143,7 +143,7 @@ namespace pika {
         if (signum != SIGINT &&
             get_config_entry("pika.attach_debugger", "") == "exception")
         {
-            util::attach_debugger();
+            debug::detail::attach_debugger();
         }
 
         if (get_config_entry("pika.diagnostics_on_terminate", "1") == "1")
@@ -164,8 +164,8 @@ namespace pika {
                 std::size_t const trace_depth =
                     util::from_string<std::size_t>(get_config_entry(
                         "pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
-                std::cerr << "{stack-trace}: " << pika::util::trace(trace_depth)
-                          << "\n";
+                std::cerr << "{stack-trace}: "
+                          << pika::debug::detail::trace(trace_depth) << "\n";
             }
 #endif
 

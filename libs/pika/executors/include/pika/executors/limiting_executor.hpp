@@ -30,7 +30,7 @@
 namespace pika { namespace execution { namespace experimental {
 
     // by convention the title is 7 chars (for alignment)
-    using print_on = pika::debug::enable_print<false>;
+    using print_on = pika::debug::detail::enable_print<false>;
     static constexpr print_on lim_debug("LIMEXEC");
 
     ///////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ namespace pika { namespace execution { namespace experimental {
             }
             ~on_exit()
             {
-                lim_debug.debug(pika::debug::str<>("Count Down"));
+                lim_debug.debug(pika::debug::detail::str<>("Count Down"));
                 executor_.count_down();
             }
             limiting_executor const& executor_;
@@ -79,9 +79,10 @@ namespace pika { namespace execution { namespace experimental {
                 limiting_.count_up();
                 if (exceeds_upper())
                 {
-                    lim_debug.debug(pika::debug::str<>("Exceeds_upper"));
+                    lim_debug.debug(
+                        pika::debug::detail::str<>("Exceeds_upper"));
                     pika::util::yield_while([&]() { return exceeds_lower(); });
-                    lim_debug.debug(pika::debug::str<>("Below_lower"));
+                    lim_debug.debug(pika::debug::detail::str<>("Below_lower"));
                 }
             }
 
@@ -128,14 +129,14 @@ namespace pika { namespace execution { namespace experimental {
             {
                 if (exceeds_upper(base))
                 {
-                    lim_debug.debug(pika::debug::str<>("Exceeds_upper"),
+                    lim_debug.debug(pika::debug::detail::str<>("Exceeds_upper"),
                         "in_flight",
-                        pika::debug::dec<4>(base.in_flight_estimate()));
+                        pika::debug::detail::dec<4>(base.in_flight_estimate()));
                     pika::util::yield_while(
                         [&]() { return exceeds_lower(base); });
-                    lim_debug.debug(pika::debug::str<>("Below_lower"),
+                    lim_debug.debug(pika::debug::detail::str<>("Below_lower"),
                         "in_flight",
-                        pika::debug::dec<4>(base.in_flight_estimate()));
+                        pika::debug::detail::dec<4>(base.in_flight_estimate()));
                 }
             }
 

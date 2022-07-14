@@ -69,11 +69,11 @@ namespace pika::cuda::experimental::detail {
                 if (cud_debug.is_enabled())
                 {
                     static auto poll_deb = cud_debug.make_timer(
-                        1, debug::str<>("Poll - lock failed"));
+                        1, debug::detail::str<>("Poll - lock failed"));
                     cud_debug.timed(poll_deb, "enqueued events",
-                        debug::dec<3>(get_number_of_enqueued_events()),
+                        debug::detail::dec<3>(get_number_of_enqueued_events()),
                         "active events",
-                        debug::dec<3>(get_number_of_active_events()));
+                        debug::detail::dec<3>(get_number_of_active_events()));
                 }
                 return polling_status::idle;
             }
@@ -81,11 +81,11 @@ namespace pika::cuda::experimental::detail {
             if (cud_debug.is_enabled())
             {
                 static auto poll_deb = cud_debug.make_timer(
-                    1, debug::str<>("Poll - lock success"));
+                    1, debug::detail::str<>("Poll - lock success"));
                 cud_debug.timed(poll_deb, "enqueued events",
-                    debug::dec<3>(get_number_of_enqueued_events()),
+                    debug::detail::dec<3>(get_number_of_enqueued_events()),
                     "active events",
-                    debug::dec<3>(get_number_of_active_events()));
+                    debug::detail::dec<3>(get_number_of_active_events()));
             }
 
             // Grab the handle to the event pool so we can return completed events
@@ -103,12 +103,15 @@ namespace pika::cuda::experimental::detail {
                             return false;
                         }
 
-                        cud_debug.debug(debug::str<>("set ready vector"),
-                            "event", debug::hex<8>(continuation.event),
+                        cud_debug.debug(
+                            debug::detail::str<>("set ready vector"), "event",
+                            debug::detail::hex<8>(continuation.event),
                             "enqueued events",
-                            debug::dec<3>(get_number_of_enqueued_events()),
+                            debug::detail::dec<3>(
+                                get_number_of_enqueued_events()),
                             "active events",
-                            debug::dec<3>(get_number_of_active_events()));
+                            debug::detail::dec<3>(
+                                get_number_of_active_events()));
                         continuation.f(status);
                         pool.push(PIKA_MOVE(continuation.event));
                         return true;
@@ -127,11 +130,12 @@ namespace pika::cuda::experimental::detail {
                 }
                 else
                 {
-                    cud_debug.debug(debug::str<>("set ready queue"), "event",
-                        debug::hex<8>(continuation.event), "enqueued events",
-                        debug::dec<3>(get_number_of_enqueued_events()),
+                    cud_debug.debug(debug::detail::str<>("set ready queue"),
+                        "event", debug::detail::hex<8>(continuation.event),
+                        "enqueued events",
+                        debug::detail::dec<3>(get_number_of_enqueued_events()),
                         "active events",
-                        debug::dec<3>(get_number_of_active_events()));
+                        debug::detail::dec<3>(get_number_of_active_events()));
                     continuation.f(status);
                     pool.push(PIKA_MOVE(continuation.event));
                 }
@@ -162,10 +166,11 @@ namespace pika::cuda::experimental::detail {
 
             event_callback_queue.enqueue(PIKA_MOVE(continuation));
 
-            cud_debug.debug(debug::str<>("event queued"), "event",
-                debug::hex<8>(continuation.event), "enqueued events",
-                debug::dec<3>(get_number_of_enqueued_events()), "active events",
-                debug::dec<3>(get_number_of_active_events()));
+            cud_debug.debug(debug::detail::str<>("event queued"), "event",
+                debug::detail::hex<8>(continuation.event), "enqueued events",
+                debug::detail::dec<3>(get_number_of_enqueued_events()),
+                "active events",
+                debug::detail::dec<3>(get_number_of_active_events()));
         }
 
         std::size_t get_work_count() const noexcept
@@ -192,11 +197,13 @@ namespace pika::cuda::experimental::detail {
             event_callback_vector.push_back(PIKA_MOVE(continuation));
             ++active_events_counter;
 
-            cud_debug.debug(
-                debug::str<>("event callback moved from queue to vector"),
-                "event", debug::hex<8>(continuation.event), "enqueued events",
-                debug::dec<3>(get_number_of_enqueued_events()), "active events",
-                debug::dec<3>(get_number_of_active_events()));
+            cud_debug.debug(debug::detail::str<>(
+                                "event callback moved from queue to vector"),
+                "event", debug::detail::hex<8>(continuation.event),
+                "enqueued events",
+                debug::detail::dec<3>(get_number_of_enqueued_events()),
+                "active events",
+                debug::detail::dec<3>(get_number_of_active_events()));
         }
 
         event_callback_queue_type event_callback_queue;
@@ -272,7 +279,7 @@ namespace pika::cuda::experimental::detail {
 #if defined(PIKA_DEBUG)
         ++get_register_polling_count();
 #endif
-        cud_debug.debug(debug::str<>("enable polling"));
+        cud_debug.debug(debug::detail::str<>("enable polling"));
         auto* sched = pool.get_scheduler();
         sched->set_cuda_polling_functions(
             &pika::cuda::experimental::detail::poll, &get_work_count);
@@ -289,7 +296,7 @@ namespace pika::cuda::experimental::detail {
                 "early.");
         }
 #endif
-        cud_debug.debug(debug::str<>("disable polling"));
+        cud_debug.debug(debug::detail::str<>("disable polling"));
         auto* sched = pool.get_scheduler();
         sched->clear_cuda_polling_function();
     }

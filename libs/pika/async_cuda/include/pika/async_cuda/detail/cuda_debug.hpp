@@ -12,6 +12,6 @@
 #include <pika/debugging/print.hpp>
 
 namespace pika::cuda::experimental::detail {
-    using print_on = debug::enable_print<false>;
+    using print_on = debug::detail::enable_print<false>;
     static constexpr print_on cud_debug("CUDA");
 }    // namespace pika::cuda::experimental::detail

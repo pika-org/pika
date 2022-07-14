@@ -108,12 +108,13 @@ namespace pika { namespace mpi { namespace experimental {
         {
             // clang-format off
             os << "R "
-               << debug::dec<3>(info.rank_) << "/" << debug::dec<3>(info.size_)
-               << " vector " << debug::dec<4>(info.active_request_vector_size_)
-               << " queued " << debug::dec<4>(info.request_queue_size_)
-               << " in-flight " << debug::dec<4>(info.in_flight_)
-               << " vec_cb " << debug::dec<3>(info.callback_vector_.size())
-               << " vec_rq " << debug::dec<3>(info.request_vector_.size());
+               << debug::detail::dec<3>(info.rank_) << "/"
+               << debug::detail::dec<3>(info.size_)
+               << " vector " << debug::detail::dec<4>(info.active_request_vector_size_)
+               << " queued " << debug::detail::dec<4>(info.request_queue_size_)
+               << " in-flight " << debug::detail::dec<4>(info.in_flight_)
+               << " vec_cb " << debug::detail::dec<3>(info.callback_vector_.size())
+               << " vec_rq " << debug::detail::dec<3>(info.request_vector_.size());
 
             // clang-format on
             return os;
@@ -156,7 +157,8 @@ namespace pika { namespace mpi { namespace experimental {
                 // badly formed env var
                 if (def == 0)
                     def = size_t(-1);    // unlimited
-                mpi_debug.debug(debug::str<>("throttling"), "default", def);
+                mpi_debug.debug(
+                    debug::detail::str<>("throttling"), "default", def);
             }
             return def;
         }
@@ -173,8 +175,8 @@ namespace pika { namespace mpi { namespace experimental {
 
             if constexpr (mpi_debug.is_enabled())
             {
-                mpi_debug.debug(debug::str<>("CB queued"), mpi_data_, "request",
-                    debug::hex<8>(req_callback.request));
+                mpi_debug.debug(debug::detail::str<>("CB queued"), mpi_data_,
+                    "request", debug::detail::hex<8>(req_callback.request));
             }
         }
 
@@ -194,12 +196,12 @@ namespace pika { namespace mpi { namespace experimental {
             if constexpr (mpi_debug.is_enabled())
             {
                 // clang-format off
-                mpi_debug.debug(debug::str<>("CB queue => vector"),
+                mpi_debug.debug(debug::detail::str<>("CB queue => vector"),
                     mpi_data_,
-                    "request", debug::hex<8>(req_callback.request),
-                    "callbacks", debug::dec<3>(mpi_data_.callback_vector_.size()),
-                    "requests", debug::dec<3>(mpi_data_.request_vector_.size()),
-                    "null", debug::dec<3>(get_num_null_requests_in_vector()));
+                    "request", debug::detail::hex<8>(req_callback.request),
+                    "callbacks", debug::detail::dec<3>(mpi_data_.callback_vector_.size()),
+                    "requests", debug::detail::dec<3>(mpi_data_.request_vector_.size()),
+                    "null", debug::detail::dec<3>(get_num_null_requests_in_vector()));
                 // clang-format on
             }
         }
@@ -225,7 +227,7 @@ namespace pika { namespace mpi { namespace experimental {
             int result = MPI_Test(&request, &flag, MPI_STATUS_IGNORE);
             if (flag)
             {
-                mpi_debug.debug(debug::str<>("eager poll"), "success");
+                mpi_debug.debug(debug::detail::str<>("eager poll"), "success");
                 PIKA_INVOKE(PIKA_MOVE(callback), result);
                 return;
             }
@@ -241,7 +243,7 @@ namespace pika { namespace mpi { namespace experimental {
         // function that converts an MPI error into an exception
         void pika_MPI_Handler(MPI_Comm*, int* errorcode, ...)
         {
-            mpi_debug.debug(debug::str<>("pika_MPI_Handler"));
+            mpi_debug.debug(debug::detail::str<>("pika_MPI_Handler"));
             PIKA_THROW_EXCEPTION(
                 invalid_status, "pika_MPI_Handler", error_message(*errorcode));
         }
@@ -287,7 +289,7 @@ namespace pika { namespace mpi { namespace experimental {
     // on any error instead of the default behavior of program termination
     void set_error_handler()
     {
-        mpi_debug.debug(debug::str<>("set_error_handler"));
+        mpi_debug.debug(debug::detail::str<>("set_error_handler"));
 
         MPI_Comm_create_errhandler(
             detail::pika_MPI_Handler, &detail::pika_mpi_errhandler);
@@ -343,8 +345,8 @@ namespace pika { namespace mpi { namespace experimental {
             if constexpr (mpi_debug.is_enabled())
             {
                 // for debugging, create a timer
-                static auto poll_deb =
-                    mpi_debug.make_timer(1, debug::str<>("Poll - lock failed"));
+                static auto poll_deb = mpi_debug.make_timer(
+                    1, debug::detail::str<>("Poll - lock failed"));
                 // output mpi debug info every N seconds
                 mpi_debug.timed(poll_deb, detail::mpi_data_);
             }
@@ -354,8 +356,8 @@ namespace pika { namespace mpi { namespace experimental {
         if constexpr (mpi_debug.is_enabled())
         {
             // for debugging, create a timer
-            static auto poll_deb =
-                mpi_debug.make_timer(1, debug::str<>("Poll - lock success"));
+            static auto poll_deb = mpi_debug.make_timer(
+                1, debug::detail::str<>("Poll - lock success"));
             // output mpi debug info every N seconds
             mpi_debug.timed(poll_deb, detail::mpi_data_);
         }
@@ -394,9 +396,9 @@ namespace pika { namespace mpi { namespace experimental {
         {
             // output a heartbeat every seconds
             static auto poll_deb =
-                mpi_debug.make_timer(1, debug::str<>("Poll - success"));
+                mpi_debug.make_timer(1, debug::detail::str<>("Poll - success"));
             mpi_debug.timed(poll_deb, detail::mpi_data_, "outcount", outcount,
-                debug::dec<4>(outcount));
+                debug::detail::dec<4>(outcount));
         }
 
         // for each completed request
@@ -406,9 +408,10 @@ namespace pika { namespace mpi { namespace experimental {
 
             if constexpr (mpi_debug.is_enabled())
             {
-                mpi_debug.debug(debug::str<>("MPI_Testsome (set)"),
+                mpi_debug.debug(debug::detail::str<>("MPI_Testsome (set)"),
                     detail::mpi_data_, "request",
-                    debug::hex<8>(detail::mpi_data_.request_vector_[index]));
+                    debug::detail::hex<8>(
+                        detail::mpi_data_.request_vector_[index]));
             }
 
             // decrement before invoking callback to avoid race
@@ -428,8 +431,8 @@ namespace pika { namespace mpi { namespace experimental {
             // wake any thread that is waiting for throttling
             if (inflight < detail::mpi_data_.throttling_limit_)
             {
-                mpi_debug.debug(debug::str<>("throttling"), "notify_one",
-                    "in_flight", debug::dec<4>(inflight));
+                mpi_debug.debug(debug::detail::str<>("throttling"),
+                    "notify_one", "in_flight", debug::detail::dec<4>(inflight));
                 detail::mpi_data_.throttling_cond_.notify_one();
             }
         }
@@ -453,7 +456,7 @@ namespace pika { namespace mpi { namespace experimental {
 #if defined(PIKA_DEBUG)
             ++get_register_polling_count();
 #endif
-            mpi_debug.debug(debug::str<>("enable polling"));
+            mpi_debug.debug(debug::detail::str<>("enable polling"));
             auto* sched = pool.get_scheduler();
             sched->set_mpi_polling_functions(
                 &pika::mpi::experimental::poll, &get_work_count);
@@ -482,7 +485,7 @@ namespace pika { namespace mpi { namespace experimental {
             }
 #endif
             if constexpr (mpi_debug.is_enabled())
-                mpi_debug.debug(debug::str<>("disable polling"));
+                mpi_debug.debug(debug::detail::str<>("disable polling"));
             auto* sched = pool.get_scheduler();
             sched->clear_mpi_polling_function();
         }
@@ -503,7 +506,8 @@ namespace pika { namespace mpi { namespace experimental {
                 nullptr, nullptr, required, minimal, provided);
             if (provided < MPI_THREAD_FUNNELED)
             {
-                mpi_debug.error(debug::str<>("pika::mpi::experimental::init"),
+                mpi_debug.error(
+                    debug::detail::str<>("pika::mpi::experimental::init"),
                     "init failed");
                 PIKA_THROW_EXCEPTION(invalid_status,
                     "pika::mpi::experimental::init",
@@ -527,8 +531,8 @@ namespace pika { namespace mpi { namespace experimental {
             }
         }
 
-        mpi_debug.debug(
-            debug::str<>("pika::mpi::experimental::init"), detail::mpi_data_);
+        mpi_debug.debug(debug::detail::str<>("pika::mpi::experimental::init"),
+            detail::mpi_data_);
 
         if (init_errorhandler)
         {
@@ -563,8 +567,8 @@ namespace pika { namespace mpi { namespace experimental {
         // clean up if we initialized mpi
         pika::util::mpi_environment::finalize();
 
-        mpi_debug.debug(debug::str<>("Clearing mode"), detail::mpi_data_,
-            "disable_user_polling");
+        mpi_debug.debug(debug::detail::str<>("Clearing mode"),
+            detail::mpi_data_, "disable_user_polling");
 
         if (pool_name.empty())
         {

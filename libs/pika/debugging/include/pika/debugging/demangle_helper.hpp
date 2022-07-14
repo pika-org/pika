@@ -16,7 +16,7 @@
 // --------------------------------------------------------------------
 // Always present regardless of compiler : used by serialization code
 // --------------------------------------------------------------------
-namespace pika { namespace util { namespace debug {
+namespace pika::debug::detail {
     template <typename T>
     struct demangle_helper
     {
@@ -25,7 +25,7 @@ namespace pika { namespace util { namespace debug {
             return typeid(T).name();
         }
     };
-}}}    // namespace pika::util::debug
+}    // namespace pika::debug::detail
 
 #if defined(__GNUG__)
 
@@ -36,7 +36,7 @@ namespace pika { namespace util { namespace debug {
 // --------------------------------------------------------------------
 // if available : demangle an arbitrary c++ type using gnu utility
 // --------------------------------------------------------------------
-namespace pika { namespace util { namespace debug {
+namespace pika::debug::detail {
     template <typename T>
     class cxxabi_demangle_helper
     {
@@ -56,20 +56,19 @@ namespace pika { namespace util { namespace debug {
     private:
         std::unique_ptr<char, void (*)(void*)> demangled_;
     };
-
-}}}    // namespace pika::util::debug
+}    // namespace pika::debug::detail
 
 #else
 
-namespace pika { namespace util { namespace debug {
+namespace pika::debug::detail {
     template <typename T>
     using cxxabi_demangle_helper = demangle_helper<T>;
-}}}    // namespace pika::util::debug
+}    // namespace pika::debug::detail
 
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util { namespace debug {
+namespace pika::debug::detail {
     template <typename T>
     struct type_id
     {
@@ -118,4 +117,4 @@ namespace pika { namespace util { namespace debug {
         std::string temp(cxx_type_id<T>::typeid_.type_id());
         return temp + delim + print_type<Args...>(delim);
     }
-}}}    // namespace pika::util::debug
+}    // namespace pika::debug::detail

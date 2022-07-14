@@ -18,7 +18,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::debug::detail {
     namespace stack_trace {
         PIKA_EXPORT std::size_t trace(void** addresses, std::size_t size);
         PIKA_EXPORT void write_symbols(
@@ -88,37 +88,34 @@ namespace pika { namespace util {
         std::vector<void*> frames_;
     };
 
-    namespace details {
-        class trace_manip
+    class trace_manip
+    {
+    public:
+        trace_manip(backtrace const* tr)
+          : tr_(tr)
         {
-        public:
-            trace_manip(backtrace const* tr)
-              : tr_(tr)
-            {
-            }
-            std::ostream& write(std::ostream& out) const
-            {
-                if (tr_)
-                    tr_->trace(out);
-                return out;
-            }
-
-        private:
-            backtrace const* tr_;
-        };
-
-        inline std::ostream& operator<<(
-            std::ostream& out, details::trace_manip const& t)
-        {
-            return t.write(out);
         }
-    }    // namespace details
+        std::ostream& write(std::ostream& out) const
+        {
+            if (tr_)
+                tr_->trace(out);
+            return out;
+        }
+
+    private:
+        backtrace const* tr_;
+    };
+
+    inline std::ostream& operator<<(std::ostream& out, trace_manip const& t)
+    {
+        return t.write(out);
+    }
 
     template <typename E>
-    inline details::trace_manip trace(E const& e)
+    inline trace_manip trace(E const& e)
     {
         backtrace const* tr = dynamic_cast<backtrace const*>(&e);
-        return details::trace_manip(tr);
+        return trace_manip(tr);
     }
 
     inline std::string trace(
@@ -126,4 +123,4 @@ namespace pika { namespace util {
     {
         return backtrace(frames_no).trace();
     }
-}}    // namespace pika::util
+}    // namespace pika::debug::detail

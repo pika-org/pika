@@ -378,7 +378,7 @@ namespace pika {
                 util::from_string<std::size_t>(get_config_entry(
                     "pika.trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH));
 
-            pika::util::backtrace bt(trace_depth);
+            pika::debug::detail::backtrace bt(trace_depth);
             std::string back_trace = bt.trace();
 
             std::string state_name("not running");

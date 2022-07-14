@@ -27,7 +27,7 @@ namespace pika { namespace util {
           : ignore_(false)
           , user_data_(nullptr)
 #ifdef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE
-          , backtrace_(pika::util::trace(trace_depth))
+          , backtrace_(pika::debug::detail::trace(trace_depth))
 #endif
         {
 #ifndef PIKA_HAVE_VERIFY_LOCKS_BACKTRACE

@@ -43,7 +43,8 @@
 #endif
 
 namespace pika {
-    static pika::debug::enable_print<QUEUE_HOLDER_NUMA_DEBUG> nq_deb("QH_NUMA");
+    static pika::debug::detail::enable_print<QUEUE_HOLDER_NUMA_DEBUG> nq_deb(
+        "QH_NUMA");
 }
 
 // ------------------------------------------------------------////////
@@ -108,13 +109,13 @@ namespace pika { namespace threads { namespace policies {
                         thrd, (stealing || (i > 0)), i == 0))
                 {
                     // clang-format off
-                    nq_deb.debug(debug::str<>("HP/BP get_next")
-                         , "D", debug::dec<2>(domain_)
-                         , "Q",  debug::dec<3>(q)
-                         , "Qidx",  debug::dec<3>(qidx)
+                    nq_deb.debug(debug::detail::str<>("HP/BP get_next")
+                         , "D", debug::detail::dec<2>(domain_)
+                         , "Q",  debug::detail::dec<3>(q)
+                         , "Qidx",  debug::detail::dec<3>(qidx)
                          , ((i==0 && !stealing) ? "taken" : "stolen from")
                          , typename ThreadQueue::queue_data_print(queues_[q])
-                         , debug::threadinfo<
+                         , debug::detail::threadinfo<
                                  threads::detail::thread_id_ref_type*>(&thrd));
                     // clang-format on
                     return true;
@@ -140,13 +141,14 @@ namespace pika { namespace threads { namespace policies {
                 // if we got a thread, return it, only allow stealing if i>0
                 if (queues_[q]->get_next_thread(thrd, (stealing || (i > 0))))
                 {
-                    nq_deb.debug(debug::str<>("get_next"), "D",
-                        debug::dec<2>(domain_), "Q", debug::dec<3>(q), "Qidx",
-                        debug::dec<3>(qidx),
+                    nq_deb.debug(debug::detail::str<>("get_next"), "D",
+                        debug::detail::dec<2>(domain_), "Q",
+                        debug::detail::dec<3>(q), "Qidx",
+                        debug::detail::dec<3>(qidx),
                         ((i == 0 && !stealing) ? "taken" : "stolen from"),
                         typename ThreadQueue::queue_data_print(queues_[q]),
-                        debug::threadinfo<threads::detail::thread_id_ref_type*>(
-                            &thrd));
+                        debug::detail::threadinfo<
+                            threads::detail::thread_id_ref_type*>(&thrd));
                     return true;
                 }
                 // if stealing disabled, do not check other queues
@@ -170,11 +172,11 @@ namespace pika { namespace threads { namespace policies {
                 if (added > 0)
                 {
                     // clang-format off
-                    nq_deb.debug(debug::str<>("HP/BP add_new")
-                        , "added", debug::dec<>(added)
-                        , "D", debug::dec<2>(domain_)
-                        , "Q",  debug::dec<3>(q)
-                        , "Qidx",  debug::dec<3>(qidx)
+                    nq_deb.debug(debug::detail::str<>("HP/BP add_new")
+                        , "added", debug::detail::dec<>(added)
+                        , "D", debug::detail::dec<2>(domain_)
+                        , "Q",  debug::detail::dec<3>(q)
+                        , "Qidx",  debug::detail::dec<3>(qidx)
                         , ((i==0 && !stealing) ? "taken" : "stolen from")
                         , typename ThreadQueue::queue_data_print(queues_[q]));
                     // clang-format on
@@ -201,11 +203,11 @@ namespace pika { namespace threads { namespace policies {
                 if (added > 0)
                 {
                     // clang-format off
-                    nq_deb.debug(debug::str<>("add_new")
-                         , "added", debug::dec<>(added)
-                         , "D", debug::dec<2>(domain_)
-                         , "Q",  debug::dec<3>(q)
-                         , "Qidx",  debug::dec<3>(qidx)
+                    nq_deb.debug(debug::detail::str<>("add_new")
+                         , "added", debug::detail::dec<>(added)
+                         , "D", debug::detail::dec<2>(domain_)
+                         , "Q",  debug::detail::dec<3>(q)
+                         , "Qidx",  debug::detail::dec<3>(qidx)
                          , ((i==0 && !stealing) ? "taken" : "stolen from")
                          , typename ThreadQueue::queue_data_print(queues_[q]));
                     // clang-format on

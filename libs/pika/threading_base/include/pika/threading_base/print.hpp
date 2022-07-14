@@ -14,7 +14,7 @@
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
-namespace pika { namespace debug {
+namespace pika::debug::detail {
     // ------------------------------------------------------------------
     // safely dump thread pointer/description
     // ------------------------------------------------------------------
@@ -81,5 +81,5 @@ namespace pika { namespace debug {
         PIKA_EXPORT friend std::ostream& operator<<(
             std::ostream& os, threadinfo const& d);
     };
-}}    // namespace pika::debug
+}    // namespace pika::debug::detail
 /// \endcond

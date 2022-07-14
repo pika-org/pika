@@ -24,7 +24,7 @@ namespace pika::threads::detail {
         PIKA_EXPORT ~reset_backtrace();
 
         thread_id_type id_;
-        std::unique_ptr<pika::util::backtrace> backtrace_;
+        std::unique_ptr<pika::debug::detail::backtrace> backtrace_;
 #ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         std::string full_backtrace_;
 #endif
