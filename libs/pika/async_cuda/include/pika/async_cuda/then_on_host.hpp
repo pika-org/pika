@@ -120,6 +120,27 @@ namespace pika::cuda::experimental {
             then_on_host_sender& operator=(
                 then_on_host_sender const&) = default;
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            template <typename... Ts>
+            struct invoke_result_helper
+            {
+                using result_type = std::decay_t<
+                    typename pika::util::invoke_result<F, Ts...>::type>;
+                using type =
+                    typename std::conditional<std::is_void<result_type>::value,
+                        pika::execution::experimental::set_value_t(),
+                        pika::execution::experimental::set_value_t(
+                            result_type)>::type;
+            };
+
+            using completion_signatures =
+                pika::execution::experimental::make_completion_signatures<S,
+                    pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::completion_signatures<
+                        pika::execution::experimental::set_error_t(
+                            std::exception_ptr)>,
+                    invoke_result_helper>;
+#else
             template <typename Tuple>
             struct invoke_result_helper;
 
@@ -149,6 +170,7 @@ namespace pika::cuda::experimental {
                     std::exception_ptr>>;
 
             static constexpr bool sends_done = false;
+#endif
 
             template <typename Receiver>
             friend auto tag_invoke(pika::execution::experimental::connect_t,

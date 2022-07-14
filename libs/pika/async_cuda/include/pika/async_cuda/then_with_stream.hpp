@@ -112,7 +112,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 set_value_event_callback_helper(
                     status, PIKA_MOVE(op_state.receiver));
             },
-            op_state.stream.value().get().get());
+            op_state.stream.value().get());
     }
 
     template <typename Result, typename OperationState>
@@ -126,7 +126,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                     PIKA_MOVE(op_state.receiver),
                     PIKA_MOVE(pika::detail::get<Result>(op_state.result)));
             },
-            op_state.stream.value().get().get());
+            op_state.stream.value().get());
     }
 
     template <typename Sender, typename F>
@@ -142,12 +142,22 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 std::add_lvalue_reference_t<std::decay_t<Ts>>...>;
         };
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+        static constexpr bool value =
+            pika::util::detail::change_pack_t<pika::util::all_of,
+                pika::util::detail::transform_t<
+                    pika::execution::experimental::value_types_of_t<Sender,
+                        pika::execution::experimental::detail::empty_env,
+                        pika::util::pack, pika::util::pack>,
+                    is_invocable_helper>>::value;
+#else
         static constexpr bool value = pika::util::detail::change_pack_t<
             pika::util::all_of,
             pika::util::detail::transform_t<
                 typename pika::execution::experimental::sender_traits<Sender>::
                     template value_types<pika::util::pack, pika::util::pack>,
                 is_invocable_helper>>::value;
+#endif
     };
 
     template <typename Sender, typename F>
@@ -180,6 +190,26 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         then_with_cuda_stream_sender& operator=(
             then_with_cuda_stream_sender const&) = default;
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+        template <typename... Ts>
+        struct invoke_result_helper
+        {
+            using result_type =
+                pika::util::invoke_result_t<F, cuda_stream const&,
+                    std::add_lvalue_reference_t<std::decay_t<Ts>>...>;
+            using type = std::conditional_t<std::is_void_v<result_type>,
+                pika::execution::experimental::set_value_t(),
+                pika::execution::experimental::set_value_t(result_type)>;
+        };
+
+        using completion_signatures =
+            pika::execution::experimental::make_completion_signatures<Sender,
+                pika::execution::experimental::detail::empty_env,
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_error_t(
+                        std::exception_ptr)>,
+                invoke_result_helper>;
+#else
         template <typename Tuple>
         struct invoke_result_helper;
 
@@ -209,6 +239,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
+#endif
 
         template <typename Receiver>
         struct operation_state
@@ -421,19 +452,28 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                     std::decay_t<Sender>, then_with_cuda_stream_receiver>;
             operation_state_type op_state;
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            using ts_type = pika::util::detail::prepend_t<
+                pika::execution::experimental::value_types_of_t<
+                    std::decay_t<Sender>,
+                    pika::execution::experimental::detail::empty_env,
+                    pika::tuple, pika::variant>,
+                pika::detail::monostate>;
+#else
             using ts_type = pika::util::detail::prepend_t<
                 typename pika::execution::experimental::sender_traits<
                     std::decay_t<Sender>>::template value_types<std::tuple,
                     pika::detail::variant>,
                 pika::detail::monostate>;
+#endif
             ts_type ts;
 
             // We store the return value of f in a variant. We know that
-            // value_types of the transform_mpi_sender contains packs of at most
-            // one element (the return value of f), so we only specialize
+            // value_types of the then_with_cuda_sender contains packs of at
+            // most one element (the return value of f), so we only specialize
             // result_types_helper for zero or one value. For empty packs we use
-            // pika::detail::monostate since we don't need to store anything in that
-            // case.
+            // pika::detail::monostate since we don't need to store anything in
+            // that case.
             //
             // All in all, we:
             // - transform one-element packs to the single element, and empty
@@ -455,6 +495,18 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             {
                 using type = pika::detail::monostate;
             };
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            using result_type = pika::util::detail::change_pack_t<
+                pika::detail::variant,
+                pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                    pika::util::detail::transform_t<
+                        pika::execution::experimental::value_types_of_t<
+                            then_with_cuda_stream_sender,
+                            pika::execution::experimental::detail::empty_env,
+                            pika::util::pack, pika::util::pack>,
+                        result_types_helper>,
+                    pika::detail::monostate>>>;
+#else
             using result_type =
                 pika::util::detail::change_pack_t<pika::detail::variant,
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
@@ -463,6 +515,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                                 pika::util::pack, pika::util::pack>,
                             result_types_helper>,
                         pika::detail::monostate>>>;
+#endif
             result_type result;
 
             template <typename Receiver_, typename F_, typename Sender_>

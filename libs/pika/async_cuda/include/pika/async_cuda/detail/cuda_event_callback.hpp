@@ -15,6 +15,7 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
@@ -26,7 +27,7 @@ namespace pika::cuda::experimental::detail {
         pika::util::unique_function<void(cudaError_t)>;
 
     PIKA_EXPORT void add_event_callback(
-        event_callback_function_type&& f, cudaStream_t stream);
+        event_callback_function_type&& f, cuda_stream const& stream);
 
     PIKA_EXPORT void register_polling(pika::threads::thread_pool_base& pool);
     PIKA_EXPORT void unregister_polling(pika::threads::thread_pool_base& pool);
