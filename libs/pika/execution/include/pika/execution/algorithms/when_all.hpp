@@ -200,8 +200,10 @@ namespace pika { namespace execution { namespace experimental {
 
             template <template <typename...> class Variant>
             using error_types = pika::util::detail::unique_concat_t<
-                typename pika::execution::experimental::sender_traits<
-                    Senders>::template error_types<Variant>...,
+                pika::util::detail::transform_t<
+                    typename pika::execution::experimental::sender_traits<
+                        Senders>::template error_types<Variant>,
+                    std::decay>...,
                 Variant<std::exception_ptr>>;
 
             static constexpr bool sends_done = false;

@@ -66,7 +66,7 @@ struct error_sender
 
     using completion_signatures =
         pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(),
+            pika::execution::experimental::set_value_t(Ts...),
             pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
     template <typename R>
@@ -91,6 +91,42 @@ struct error_sender
     template <typename R>
     friend operation_state<R> tag_invoke(
         pika::execution::experimental::connect_t, error_sender, R&& r)
+    {
+        return {std::forward<R>(r)};
+    }
+};
+
+struct const_reference_error_sender
+{
+    template <template <class...> class Tuple,
+        template <class...> class Variant>
+    using value_types = Variant<Tuple<>>;
+
+    template <template <class...> class Variant>
+    using error_types = Variant<std::exception_ptr const&>;
+
+    static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_error_t(std::exception_ptr&)>;
+
+    template <typename R>
+    struct operation_state
+    {
+        std::decay_t<R> r;
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
+        {
+            auto const e = std::make_exception_ptr(std::runtime_error("error"));
+            pika::execution::experimental::set_error(std::move(os.r), e);
+        }
+    };
+
+    template <typename R>
+    friend operation_state<R> tag_invoke(
+        pika::execution::experimental::connect_t, const_reference_error_sender,
+        R&& r)
     {
         return {std::forward<R>(r)};
     }
@@ -184,51 +220,6 @@ struct void_callback_helper
     void operator()(T&& t)
     {
         PIKA_INVOKE(std::move(f), std::forward<T>(t));
-    }
-};
-
-template <typename T>
-struct error_typed_sender
-{
-    template <template <class...> class Tuple,
-        template <class...> class Variant>
-    using value_types = Variant<Tuple<T>>;
-
-    template <template <class...> class Variant>
-    using error_types = Variant<std::exception_ptr>;
-
-    static constexpr bool sends_done = false;
-
-    using completion_signatures =
-        pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(T),
-            pika::execution::experimental::set_error_t(std::exception_ptr)>;
-
-    template <typename R>
-    struct operation_state
-    {
-        std::decay_t<R> r;
-
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state& os) noexcept
-        {
-            try
-            {
-                throw std::runtime_error("error");
-            }
-            catch (...)
-            {
-                pika::execution::experimental::set_error(
-                    std::move(os.r), std::current_exception());
-            }
-        };
-    };
-
-    template <typename R>
-    friend auto tag_invoke(
-        pika::execution::experimental::connect_t, error_typed_sender, R&& r)
-    {
-        return operation_state<R>{std::forward<R>(r)};
     }
 };
 

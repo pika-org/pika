@@ -200,7 +200,7 @@ int main()
     // Failure path
     {
         std::atomic<bool> set_error_called{false};
-        auto s = ex::when_all(error_typed_sender<double>{});
+        auto s = ex::when_all(error_sender<double>{});
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -210,7 +210,7 @@ int main()
 
     {
         std::atomic<bool> set_error_called{false};
-        auto s = ex::when_all(ex::just(42), error_typed_sender<double>{});
+        auto s = ex::when_all(ex::just(42), error_sender<double>{});
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));
@@ -220,7 +220,17 @@ int main()
 
     {
         std::atomic<bool> set_error_called{false};
-        auto s = ex::when_all(error_typed_sender<double>{}, ex::just(42));
+        auto s = ex::when_all(error_sender<double>{}, ex::just(42));
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        std::atomic<bool> set_error_called{false};
+        auto s = ex::when_all(const_reference_error_sender{}, ex::just(42));
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));
