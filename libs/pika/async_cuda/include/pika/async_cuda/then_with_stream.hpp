@@ -457,7 +457,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 pika::execution::experimental::value_types_of_t<
                     std::decay_t<Sender>,
                     pika::execution::experimental::detail::empty_env,
-                    pika::tuple, pika::variant>,
+                    std::tuple, pika::detail::variant>,
                 pika::detail::monostate>;
 #else
             using ts_type = pika::util::detail::prepend_t<
