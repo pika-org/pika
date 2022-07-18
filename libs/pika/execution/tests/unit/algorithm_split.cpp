@@ -77,6 +77,18 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+    {
+        std::atomic<bool> set_value_called{false};
+        int x = 42;
+        auto s1 = const_reference_sender<int>{x};
+        auto s2 = ex::split(std::move(s1));
+        auto f = [](auto& x) { PIKA_TEST_EQ(x, 42); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s2), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
     // operator| overload
     {
         std::atomic<bool> set_value_called{false};
@@ -116,6 +128,16 @@ int main()
     {
         std::atomic<bool> set_error_called{false};
         auto s = error_sender{} | ex::split() | ex::split() | ex::split();
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        std::atomic<bool> set_error_called{false};
+        auto s = ex::split(const_reference_error_sender{});
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));
