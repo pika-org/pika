@@ -755,7 +755,7 @@ namespace pika::detail {
             else
             {
                 if (option == "startup")
-                    util::attach_debugger();
+                    debug::detail::attach_debugger();
 
                 ini_config_.emplace_back("pika.attach_debugger!=" + option);
             }

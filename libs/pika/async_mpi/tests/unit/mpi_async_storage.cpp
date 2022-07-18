@@ -42,7 +42,8 @@ constexpr int debug_level = 0;
 
 // cppcheck-suppress ConfigurationNotChecked
 template <int Level>
-static pika::debug::print_threshold<Level, debug_level> nws_deb("STORAGE");
+static pika::debug::detail::print_threshold<Level, debug_level> nws_deb(
+    "STORAGE");
 
 //----------------------------------------------------------------------------
 //
@@ -58,7 +59,7 @@ static local_storage_type local_recv_storage;
 namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
-namespace deb = pika::debug;
+namespace deb = pika::debug::detail;
 
 //----------------------------------------------------------------------------
 // namespace aliases

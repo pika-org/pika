@@ -17,7 +17,7 @@ namespace pika { namespace util {
     {
         if (get_config_entry("pika.attach_debugger", "") == category)
         {
-            attach_debugger();
+            debug::detail::attach_debugger();
         }
     }
 }}    // namespace pika::util

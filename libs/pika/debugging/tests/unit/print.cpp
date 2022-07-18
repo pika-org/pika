@@ -20,9 +20,9 @@
 
 namespace pika {
     // this is an enabled debug object that should output messages
-    static pika::debug::enable_print<true> p_enabled("PRINT  ");
+    static pika::debug::detail::enable_print<true> p_enabled("PRINT  ");
     // this is disabled and we want it to have zero footprint
-    static pika::debug::enable_print<false> p_disabled("PRINT  ");
+    static pika::debug::detail::enable_print<false> p_disabled("PRINT  ");
 }    // namespace pika
 
 int increment(std::atomic<int>& counter)
@@ -37,7 +37,7 @@ int main()
     std::atomic<int> disabled_counter(0);
 
     using namespace pika;
-    using namespace pika::debug;
+    using namespace pika::debug::detail;
 
     // ---------------------------------------------------------
     // Test if normal debug messages trigger argument evaluation
@@ -87,9 +87,11 @@ int main()
     (void) var2;    // silenced unused var when optimized out
 
     p_enabled.debug("var 1",
-        pika::debug::dec<>(PIKA_DP_LAZY(p_enabled, enabled_counter += var1)));
+        pika::debug::detail::dec<>(
+            PIKA_DP_LAZY(p_enabled, enabled_counter += var1)));
     p_disabled.debug("var 2",
-        pika::debug::dec<>(PIKA_DP_LAZY(p_disabled, disabled_counter += var2)));
+        pika::debug::detail::dec<>(
+            PIKA_DP_LAZY(p_disabled, disabled_counter += var2)));
 
     PIKA_TEST_EQ(enabled_counter, 10);
     PIKA_TEST_EQ(disabled_counter, 0);
@@ -98,9 +100,11 @@ int main()
     p_disabled.set(var2, 5);
 
     p_enabled.debug("var 1",
-        pika::debug::dec<>(PIKA_DP_LAZY(p_enabled, enabled_counter += var1)));
+        pika::debug::detail::dec<>(
+            PIKA_DP_LAZY(p_enabled, enabled_counter += var1)));
     p_disabled.debug("var 2",
-        pika::debug::dec<>(PIKA_DP_LAZY(p_disabled, disabled_counter += var2)));
+        pika::debug::detail::dec<>(
+            PIKA_DP_LAZY(p_disabled, disabled_counter += var2)));
 
     PIKA_TEST_EQ(enabled_counter, 15);
     PIKA_TEST_EQ(disabled_counter, 0);
@@ -108,9 +112,9 @@ int main()
     // ---------------------------------------------------------
     // Test that timed log messages behave as expected
     static auto t_enabled =
-        p_enabled.make_timer(1, debug::str<>("Timed (enabled)"));
+        p_enabled.make_timer(1, debug::detail::str<>("Timed (enabled)"));
     static auto t_disabled =
-        p_disabled.make_timer(1, debug::str<>("Timed (disabled)"));
+        p_disabled.make_timer(1, debug::detail::str<>("Timed (disabled)"));
 
     // run a loop for 2 seconds with a timed print every 1 sec
     auto start = std::chrono::system_clock::now();
@@ -120,10 +124,11 @@ int main()
         2)
     {
         p_enabled.timed(t_enabled, "enabled",
-            debug::dec<3>(PIKA_DP_LAZY(p_enabled, ++enabled_counter)));
+            debug::detail::dec<3>(PIKA_DP_LAZY(p_enabled, ++enabled_counter)));
 
         p_disabled.timed(t_disabled, "disabled",
-            debug::dec<3>(PIKA_DP_LAZY(p_disabled, ++disabled_counter)));
+            debug::detail::dec<3>(
+                PIKA_DP_LAZY(p_disabled, ++disabled_counter)));
         end = std::chrono::system_clock::now();
     }
     PIKA_TEST_EQ(enabled_counter > 10, true);

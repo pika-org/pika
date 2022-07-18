@@ -91,7 +91,7 @@ struct test_async_executor
         using result_type =
             typename util::detail::invoke_deferred_result<F, Ts...>::type;
 
-        using namespace pika::util::debug;
+        using namespace pika::debug::detail;
         std::cout << "async_execute : Function    : " << print_type<F>()
                   << "\n";
         std::cout << "async_execute : Arguments   : "
@@ -118,7 +118,7 @@ struct test_async_executor
         using result_type = typename util::detail::invoke_deferred_result<F,
             Future, Ts...>::type;
 
-        using namespace pika::util::debug;
+        using namespace pika::debug::detail;
         std::cout << "then_execute : Function     : " << print_type<F>()
                   << "\n";
         std::cout << "then_execute : Predecessor  : " << print_type<Future>()
@@ -163,7 +163,7 @@ struct test_async_executor
         auto unwrapped_futures_tuple =
             util::map_pack(future_extract_value{}, predecessor_value);
 
-        using namespace pika::util::debug;
+        using namespace pika::debug::detail;
         std::cout << "when_all(fut) : Predecessor : "
                   << print_type<OuterFuture<std::tuple<InnerFutures...>>>()
                   << "\n";
@@ -209,7 +209,7 @@ struct test_async_executor
         auto unwrapped_futures_tuple =
             util::map_pack(future_extract_value{}, predecessor);
 
-        using namespace pika::util::debug;
+        using namespace pika::debug::detail;
         std::cout << "dataflow      : Predecessor : "
                   << print_type<std::tuple<InnerFutures...>>() << "\n";
         std::cout << "dataflow      : unwrapped   : "

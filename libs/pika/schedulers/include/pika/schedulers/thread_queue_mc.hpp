@@ -43,7 +43,7 @@
 #include <vector>
 
 namespace pika {
-    static pika::debug::enable_print<false> tqmc_deb("_TQ_MC_");
+    static pika::debug::detail::enable_print<false> tqmc_deb("_TQ_MC_");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,9 +79,10 @@ namespace pika { namespace threads { namespace policies {
         std::size_t add_new(
             std::int64_t add_count, thread_queue_type* addfrom, bool stealing)
         {
-            [[maybe_unused]] auto scp = tqmc_deb.scope(debug::ptr(this),
-                __func__, "from", debug::ptr(addfrom), "std::thread::id",
-                debug::hex<6>(holder_->owner_id_), stealing);
+            [[maybe_unused]] auto scp =
+                tqmc_deb.scope(debug::detail::ptr(this), __func__, "from",
+                    debug::detail::ptr(addfrom), "std::thread::id",
+                    debug::detail::hex<6>(holder_->owner_id_), stealing);
             PIKA_ASSERT(holder_->owner_id_ == std::this_thread::get_id());
 
             if (addfrom->new_tasks_count_.data_.load(
@@ -104,9 +105,10 @@ namespace pika { namespace threads { namespace policies {
                 // Decrement only after thread_map_count_ has been incremented
                 --addfrom->new_tasks_count_.data_;
 
-                tqmc_deb.debug(debug::str<>("add_new"), "stealing", stealing,
-                    debug::threadinfo<threads::detail::thread_id_ref_type*>(
-                        &tid));
+                tqmc_deb.debug(debug::detail::str<>("add_new"), "stealing",
+                    stealing,
+                    debug::detail::threadinfo<
+                        threads::detail::thread_id_ref_type*>(&tid));
 
                 // insert the thread into work-items queue assuming it is in
                 // pending state
@@ -139,9 +141,9 @@ namespace pika { namespace threads { namespace policies {
         void set_holder(queue_holder_thread<thread_queue_type>* holder)
         {
             holder_ = holder;
-            tqmc_deb.debug(debug::str<>("set_holder"), "D",
-                debug::dec<2>(holder_->domain_index_), "Q",
-                debug::dec<3>(queue_index_));
+            tqmc_deb.debug(debug::detail::str<>("set_holder"), "D",
+                debug::detail::dec<2>(holder_->domain_index_), "Q",
+                debug::detail::dec<3>(queue_index_));
         }
 
         // ----------------------------------------------------------------
@@ -254,7 +256,7 @@ namespace pika { namespace threads { namespace policies {
             bool other_end, bool check_new = false) PIKA_HOT
         {
             [[maybe_unused]] auto scp =
-                tqmc_deb.scope(debug::ptr(this), __func__);
+                tqmc_deb.scope(debug::detail::ptr(this), __func__);
             std::int64_t work_items_count_count =
                 work_items_count_.data_.load(std::memory_order_relaxed);
 
@@ -262,13 +264,14 @@ namespace pika { namespace threads { namespace policies {
             if (0 != work_items_count_count && work_items_.pop(thrd, other_end))
             {
                 --work_items_count_.data_;
-                tqmc_deb.debug(debug::str<>("get_next_thread"), "stealing",
-                    other_end, "D", debug::dec<2>(holder_->domain_index_), "Q",
-                    debug::dec<3>(queue_index_), "n",
-                    debug::dec<4>(new_tasks_count_.data_), "w",
-                    debug::dec<4>(work_items_count_.data_),
-                    debug::threadinfo<threads::detail::thread_id_ref_type*>(
-                        &thrd));
+                tqmc_deb.debug(debug::detail::str<>("get_next_thread"),
+                    "stealing", other_end, "D",
+                    debug::detail::dec<2>(holder_->domain_index_), "Q",
+                    debug::detail::dec<3>(queue_index_), "n",
+                    debug::detail::dec<4>(new_tasks_count_.data_), "w",
+                    debug::detail::dec<4>(work_items_count_.data_),
+                    debug::detail::threadinfo<
+                        threads::detail::thread_id_ref_type*>(&thrd));
                 return true;
             }
 
@@ -289,12 +292,13 @@ namespace pika { namespace threads { namespace policies {
             threads::detail::thread_id_ref_type thrd, bool other_end)
         {
             ++work_items_count_.data_;
-            tqmc_deb.debug(debug::str<>("schedule_work"), "stealing", other_end,
-                "D", debug::dec<2>(holder_->domain_index_), "Q",
-                debug::dec<3>(queue_index_), "n",
-                debug::dec<4>(new_tasks_count_.data_), "w",
-                debug::dec<4>(work_items_count_.data_),
-                debug::threadinfo<threads::detail::thread_id_ref_type*>(&thrd));
+            tqmc_deb.debug(debug::detail::str<>("schedule_work"), "stealing",
+                other_end, "D", debug::detail::dec<2>(holder_->domain_index_),
+                "Q", debug::detail::dec<3>(queue_index_), "n",
+                debug::detail::dec<4>(new_tasks_count_.data_), "w",
+                debug::detail::dec<4>(work_items_count_.data_),
+                debug::detail::threadinfo<threads::detail::thread_id_ref_type*>(
+                    &thrd));
             //
             work_items_.push(PIKA_MOVE(thrd), other_end);
 #ifdef DEBUG_QUEUE_EXTRA
@@ -320,21 +324,25 @@ namespace pika { namespace threads { namespace policies {
             work_items_type work_items_copy_;
             int x = 0;
             thread_description* thrd;
-            tqmc_deb.debug(debug::str<>("debug_queue"), "Pop work items");
+            tqmc_deb.debug(
+                debug::detail::str<>("debug_queue"), "Pop work items");
             while (q.pop(thrd))
             {
-                tqmc_deb.debug(debug::str<>("debug_queue"), x++,
-                    debug::threadinfo<threads::detail::thread_data*>(thrd));
+                tqmc_deb.debug(debug::detail::str<>("debug_queue"), x++,
+                    debug::detail::threadinfo<threads::detail::thread_data*>(
+                        thrd));
                 work_items_copy_.push(thrd);
             }
-            tqmc_deb.debug(debug::str<>("debug_queue"), "Push work items");
+            tqmc_deb.debug(
+                debug::detail::str<>("debug_queue"), "Push work items");
             while (work_items_copy_.pop(thrd))
             {
                 q.push(thrd);
-                tqmc_deb.debug(debug::str<>("debug_queue"), --x,
-                    debug::threadinfo<threads::detail::thread_data*>(thrd));
+                tqmc_deb.debug(debug::detail::str<>("debug_queue"), --x,
+                    debug::detail::threadinfo<threads::detail::thread_data*>(
+                        thrd));
             }
-            tqmc_deb.debug(debug::str<>("debug_queue"), "Finished");
+            tqmc_deb.debug(debug::detail::str<>("debug_queue"), "Finished");
         }
 #endif
 

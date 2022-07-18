@@ -84,7 +84,7 @@ namespace pika { namespace detail {
 #if defined(PIKA_HAVE_VERIFY_LOCKS)
     void registered_locks_error_handler()
     {
-        std::string back_trace = pika::util::trace(std::size_t(128));
+        std::string back_trace = pika::debug::detail::trace(std::size_t(128));
 
         // throw or log, depending on config options
         if (get_config_entry("pika.throw_on_held_lock", "1") == "0")

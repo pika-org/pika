@@ -18,7 +18,7 @@
 #include <Windows.h>
 #endif    // PIKA_WINDOWS
 
-namespace pika { namespace util {
+namespace pika::debug::detail {
     void attach_debugger()
     {
 #if defined(_POSIX_VERSION) && defined(PIKA_HAVE_UNISTD_H)
@@ -35,4 +35,4 @@ namespace pika { namespace util {
         DebugBreak();
 #endif
     }
-}}    // namespace pika::util
+}    // namespace pika::debug::detail

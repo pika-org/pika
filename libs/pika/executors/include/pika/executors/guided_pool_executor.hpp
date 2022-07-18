@@ -32,8 +32,8 @@
 
 namespace pika {
     // cppcheck-suppress ConfigurationNotChecked
-    static pika::debug::enable_print<GUIDED_POOL_EXECUTOR_DEBUG> gpx_deb(
-        "GP_EXEC");
+    static pika::debug::detail::enable_print<GUIDED_POOL_EXECUTOR_DEBUG>
+        gpx_deb("GP_EXEC");
 }    // namespace pika
 
 // --------------------------------------------------------------------
@@ -117,7 +117,7 @@ namespace pika { namespace parallel { namespace execution {
 #endif
 
                 gpx_deb.debug(
-                    debug::str<>("async_schedule"), "domain ", domain);
+                    debug::detail::str<>("async_schedule"), "domain ", domain);
 
                 // now we must forward the task+hint on to the correct dispatch function
                 using result_type =
@@ -128,8 +128,8 @@ namespace pika { namespace parallel { namespace execution {
                     pika::util::deferred_call(
                         PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
-                gpx_deb.debug(
-                    debug::str<>("triggering apply"), "domain ", domain);
+                gpx_deb.debug(debug::detail::str<>("triggering apply"),
+                    "domain ", domain);
                 if (hp_sync_ &&
                     executor_.priority_ ==
                         pika::execution::thread_priority::high)
@@ -183,7 +183,8 @@ namespace pika { namespace parallel { namespace execution {
                 int domain = numa_function_(predecessor_value, ts...);
 #endif
 
-                gpx_deb.debug(debug::str<>("then_schedule"), "domain ", domain);
+                gpx_deb.debug(
+                    debug::detail::str<>("then_schedule"), "domain ", domain);
 
                 // now we must forward the task+hint on to the correct dispatch function
                 using result_type =
@@ -305,13 +306,13 @@ namespace pika { namespace parallel { namespace execution {
                 typename pika::util::detail::invoke_deferred_result<F,
                     Ts...>::type;
 
-            gpx_deb.debug(debug::str<>("async execute"), "\n\t",
-                "Function    : ", pika::util::debug::print_type<F>(), "\n\t",
-                "Arguments   : ", pika::util::debug::print_type<Ts...>(" | "),
-                "\n\t",
-                "Result      : ", pika::util::debug::print_type<result_type>(),
-                "\n\t", "Numa Hint   : ",
-                pika::util::debug::print_type<pool_numa_hint<Tag>>());
+            gpx_deb.debug(debug::detail::str<>("async execute"), "\n\t",
+                "Function    : ", pika::debug::detail::print_type<F>(), "\n\t",
+                "Arguments   : ", pika::debug::detail::print_type<Ts...>(" | "),
+                "\n\t", "Result      : ",
+                pika::debug::detail::print_type<result_type>(), "\n\t",
+                "Numa Hint   : ",
+                pika::debug::detail::print_type<pool_numa_hint<Tag>>());
 
             // hold onto the function until all futures have become ready
             // by using a dataflow operation, then call the scheduling hint
@@ -338,18 +339,18 @@ namespace pika { namespace parallel { namespace execution {
                 typename pika::util::detail::invoke_deferred_result<F, Future,
                     Ts...>::type;
 
-            gpx_deb.debug(debug::str<>("then execute"), "\n\t",
-                "Function    : ", pika::util::debug::print_type<F>(), "\n\t",
-                "Predecessor  : ", pika::util::debug::print_type<Future>(),
+            gpx_deb.debug(debug::detail::str<>("then execute"), "\n\t",
+                "Function    : ", pika::debug::detail::print_type<F>(), "\n\t",
+                "Predecessor  : ", pika::debug::detail::print_type<Future>(),
                 "\n\t", "Future       : ",
-                pika::util::debug::print_type<typename pika::traits::
+                pika::debug::detail::print_type<typename pika::traits::
                         future_traits<Future>::result_type>(),
                 "\n\t",
-                "Arguments   : ", pika::util::debug::print_type<Ts...>(" | "),
-                "\n\t",
-                "Result      : ", pika::util::debug::print_type<result_type>(),
-                "\n\t", "Numa Hint   : ",
-                pika::util::debug::print_type<pool_numa_hint<Tag>>());
+                "Arguments   : ", pika::debug::detail::print_type<Ts...>(" | "),
+                "\n\t", "Result      : ",
+                pika::debug::detail::print_type<result_type>(), "\n\t",
+                "Numa Hint   : ",
+                pika::debug::detail::print_type<pool_numa_hint<Tag>>());
 
             // Note 1 : The Ts &&... args are not actually used in a continuation since
             // only the future becoming ready (predecessor) is actually passed onwards.
@@ -404,18 +405,18 @@ namespace pika { namespace parallel { namespace execution {
                     OuterFuture<std::tuple<InnerFutures...>>, Ts...>::type;
 
             // clang-format off
-            gpx_deb.debug(debug::str<>("when_all(fut) : Predecessor")
-                , pika::util::debug::print_type<
+            gpx_deb.debug(debug::detail::str<>("when_all(fut) : Predecessor")
+                , pika::debug::detail::print_type<
                        OuterFuture<std::tuple<InnerFutures...>>>()
                 , "\n"
                 , "when_all(fut) : unwrapped   : "
-                , pika::util::debug::print_type<decltype(unwrapped_futures_tuple)>(
+                , pika::debug::detail::print_type<decltype(unwrapped_futures_tuple)>(
                        " | ")
                 , "\n"
                 , "then_execute  : Arguments   : "
-                , pika::util::debug::print_type<Ts...>(" | ") , "\n"
+                , pika::debug::detail::print_type<Ts...>(" | ") , "\n"
                 , "when_all(fut) : Result      : "
-                , pika::util::debug::print_type<result_type>() , "\n"
+                , pika::debug::detail::print_type<result_type>() , "\n"
             );
             // clang-format on
 #endif
@@ -468,11 +469,11 @@ namespace pika { namespace parallel { namespace execution {
 
 #ifndef GUIDED_EXECUTOR_DEBUG
             // clang-format off
-            gpx_deb.debug(debug::str<>("dataflow      : Predecessor")
-                      , pika::util::debug::print_type<std::tuple<InnerFutures...>>()
+            gpx_deb.debug(debug::detail::str<>("dataflow      : Predecessor")
+                      , debug::detail::print_type<std::tuple<InnerFutures...>>()
                       , "\n"
                       , "dataflow      : unwrapped   : "
-                      , pika::util::debug::print_type<
+                      , pika::debug::detail::print_type<
 #ifdef GUIDED_POOL_EXECUTOR_FAKE_NOOP
                              int>(" | ")
 #else
@@ -480,7 +481,8 @@ namespace pika { namespace parallel { namespace execution {
 #endif
                       , "\n");
 
-            gpx_deb.debug(debug::str<>("dataflow hint"), debug::dec<>(domain));
+            gpx_deb.debug(debug::detail::str<>("dataflow hint"),
+                          debug::detail::dec<>(domain));
             // clang-format on
 #endif
 

@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <string>
 
-namespace pika { namespace util {
+namespace pika::debug::detail {
     class backtrace
     {
     };
@@ -25,6 +25,6 @@ namespace pika { namespace util {
     {
         return "";
     }
-}}    // namespace pika::util
+}    // namespace pika::debug::detail
 
 #endif

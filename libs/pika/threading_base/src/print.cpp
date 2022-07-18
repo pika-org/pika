@@ -13,7 +13,7 @@
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
-namespace pika { namespace debug {
+namespace pika::debug::detail {
 
     std::ostream& operator<<(
         std::ostream& os, threadinfo<threads::detail::thread_data*> const& d)
@@ -88,7 +88,7 @@ namespace pika { namespace debug {
             }
             os << hex<12, std::thread::id>(std::this_thread::get_id())
 #ifdef DEBUGGING_PRINT_LINUX
-               << " cpu " << debug::dec<3, int>(sched_getcpu()) << " ";
+               << " cpu " << debug::detail::dec<3, int>(sched_getcpu()) << " ";
 #else
                << " cpu "
                << "--- ";
@@ -99,7 +99,7 @@ namespace pika { namespace debug {
         {
             current_thread_print_helper()
             {
-                detail::register_print_info(&detail::print_thread_info);
+                debug::detail::register_print_info(&detail::print_thread_info);
             }
 
             static current_thread_print_helper helper_;
@@ -107,5 +107,5 @@ namespace pika { namespace debug {
 
         current_thread_print_helper current_thread_print_helper::helper_{};
     }    // namespace detail
-}}       // namespace pika::debug
+}    // namespace pika::debug::detail
 /// \endcond

@@ -15,8 +15,6 @@
 
 #include <pika/debugging/backtrace/backtrace.hpp>
 
-#include <boost/config.hpp>
-
 #if (defined(__linux) || defined(__APPLE__) || defined(__sun)) &&              \
     (!defined(__ANDROID__) || !defined(ANDROID))
 #define PIKA_HAVE_EXECINFO
@@ -64,7 +62,7 @@
 #include <winbase.h>
 #endif
 
-namespace pika { namespace util { namespace stack_trace {
+namespace pika::debug::detail::stack_trace {
 #if defined(PIKA_HAVE_EXECINFO) && defined(PIKA_HAVE_UNWIND)
     struct trace_data
     {
@@ -480,6 +478,6 @@ namespace pika { namespace util { namespace stack_trace {
     }
 
 #endif
-}}}    // namespace pika::util::stack_trace
+}    // namespace pika::debug::detail::stack_trace
 
 #endif

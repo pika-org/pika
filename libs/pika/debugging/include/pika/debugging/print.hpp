@@ -31,7 +31,7 @@
 // When the template parameter is false, the optimizer will
 // not produce code and so the impact is nil.
 //
-// static pika::debug::enable_print<true> spq_deb("SUBJECT");
+// static pika::debug::detail::enable_print<true> spq_deb("SUBJECT");
 //
 // Later in code you may print information using
 //
@@ -62,7 +62,7 @@
         printer.Expr;                                                          \
     };
 
-#define NS_DEBUG pika::debug
+#define NS_DEBUG pika::debug::detail
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
@@ -71,39 +71,36 @@ namespace NS_DEBUG {
     // ------------------------------------------------------------------
     // format as zero padded int
     // ------------------------------------------------------------------
-    namespace detail {
+    template <int Level, int Threshold>
+    struct check_level : std::integral_constant<bool, Level <= Threshold>
+    {
+    };
 
-        template <int Level, int Threshold>
-        struct check_level : std::integral_constant<bool, Level <= Threshold>
+    template <typename Int>
+    PIKA_EXPORT void print_dec(std::ostream& os, Int const& v, int n);
+
+    template <int N, typename T>
+    struct dec_impl
+    {
+        constexpr explicit dec_impl(T const& v)
+          : data_(v)
         {
-        };
+        }
 
-        template <typename Int>
-        PIKA_EXPORT void print_dec(std::ostream& os, Int const& v, int n);
+        T const& data_;
 
-        template <int N, typename T>
-        struct dec
+        friend std::ostream& operator<<(
+            std::ostream& os, dec_impl<N, T> const& d)
         {
-            constexpr dec(T const& v)
-              : data_(v)
-            {
-            }
-
-            T const& data_;
-
-            friend std::ostream& operator<<(
-                std::ostream& os, dec<N, T> const& d)
-            {
-                detail::print_dec(os, d.data_, N);
-                return os;
-            }
-        };
-    }    // namespace detail
+            print_dec(os, d.data_, N);
+            return os;
+        }
+    };
 
     template <int N = 2, typename T>
-    detail::dec<N, T> dec(T const& v)
+    dec_impl<N, T> dec(T const& v)
     {
-        return detail::dec<N, T>(v);
+        return dec_impl<N, T>(v);
     }
 
     // ------------------------------------------------------------------
@@ -123,102 +120,93 @@ namespace NS_DEBUG {
     // ------------------------------------------------------------------
     // format as zero padded hex
     // ------------------------------------------------------------------
-    namespace detail {
+    template <typename Int>
+    PIKA_EXPORT void print_hex(std::ostream& os, Int v, int n);
 
-        template <typename Int>
-        PIKA_EXPORT void print_hex(std::ostream& os, Int v, int n);
+    template <int N = 4, typename T = int, typename Enable = void>
+    struct hex_impl;
 
-        template <int N = 4, typename T = int, typename Enable = void>
-        struct hex;
-
-        template <int N, typename T>
-        struct hex<N, T,
-            typename std::enable_if<!std::is_pointer<T>::value>::type>
+    template <int N, typename T>
+    struct hex_impl<N, T,
+        typename std::enable_if<!std::is_pointer<T>::value>::type>
+    {
+        constexpr explicit hex_impl(T const& v)
+          : data_(v)
         {
-            constexpr hex(T const& v)
-              : data_(v)
-            {
-            }
+        }
 
-            T const& data_;
+        T const& data_;
 
-            friend std::ostream& operator<<(
-                std::ostream& os, hex<N, T> const& d)
-            {
-                detail::print_hex(os, d.data_, N);
-                return os;
-            }
-        };
-
-        template <typename Int>
-        PIKA_EXPORT void print_ptr(std::ostream& os, Int v, int n);
-
-        template <int N, typename T>
-        struct hex<N, T,
-            typename std::enable_if<std::is_pointer<T>::value>::type>
+        friend std::ostream& operator<<(
+            std::ostream& os, hex_impl<N, T> const& d)
         {
-            constexpr hex(T const& v)
-              : data_(v)
-            {
-            }
+            print_hex(os, d.data_, N);
+            return os;
+        }
+    };
 
-            T const& data_;
+    template <typename Int>
+    PIKA_EXPORT void print_ptr(std::ostream& os, Int v, int n);
 
-            friend std::ostream& operator<<(
-                std::ostream& os, hex<N, T> const& d)
-            {
-                detail::print_ptr(os, static_cast<void*>(d.data_), N);
-                return os;
-            }
-        };
-    }    // namespace detail
+    template <int N, typename T>
+    struct hex_impl<N, T,
+        typename std::enable_if<std::is_pointer<T>::value>::type>
+    {
+        constexpr explicit hex_impl(T const& v)
+          : data_(v)
+        {
+        }
+
+        T const& data_;
+
+        friend std::ostream& operator<<(
+            std::ostream& os, hex_impl<N, T> const& d)
+        {
+            print_ptr(os, static_cast<void*>(d.data_), N);
+            return os;
+        }
+    };
 
     template <int N = 4, typename T>
-    constexpr detail::hex<N, T> hex(T const& v)
+    constexpr hex_impl<N, T> hex(T const& v)
     {
-        return detail::hex<N, T>(v);
+        return hex_impl<N, T>(v);
     }
 
     // ------------------------------------------------------------------
     // format as binary bits
     // ------------------------------------------------------------------
-    namespace detail {
+    template <typename Int>
+    PIKA_EXPORT void print_bin(std::ostream& os, Int v, int n);
 
-        template <typename Int>
-        PIKA_EXPORT void print_bin(std::ostream& os, Int v, int n);
-
-        template <int N = 8, typename T = int>
-        struct bin
+    template <int N = 8, typename T = int>
+    struct bin_impl
+    {
+        constexpr explicit bin_impl(T const& v)
+          : data_(v)
         {
-            constexpr bin(T const& v)
-              : data_(v)
-            {
-            }
+        }
 
-            T const& data_;
+        T const& data_;
 
-            friend std::ostream& operator<<(
-                std::ostream& os, bin<N, T> const& d)
-            {
-                detail::print_bin(os, d.data_, N);
-                return os;
-            }
-        };
-    }    // namespace detail
+        friend std::ostream& operator<<(
+            std::ostream& os, bin_impl<N, T> const& d)
+        {
+            print_bin(os, d.data_, N);
+            return os;
+        }
+    };
 
     template <int N = 8, typename T>
-    constexpr detail::bin<N, T> bin(T const& v)
+    constexpr bin_impl<N, T> bin(T const& v)
     {
-        return detail::bin<N, T>(v);
+        return bin_impl<N, T>(v);
     }
 
     // ------------------------------------------------------------------
     // format as padded string
     // ------------------------------------------------------------------
-    namespace detail {
-
-        PIKA_EXPORT void print_str(std::ostream& os, char const* v, int n);
-    }
+    PIKA_EXPORT void print_str(std::ostream& os, char const* v, int n);
 
     template <int N = 20>
     struct str
@@ -232,7 +220,7 @@ namespace NS_DEBUG {
 
         friend std::ostream& operator<<(std::ostream& os, str<N> const& d)
         {
-            detail::print_str(os, d.data_, N);
+            print_str(os, d.data_, N);
             return os;
         }
     };
@@ -255,13 +243,11 @@ namespace NS_DEBUG {
     // ------------------------------------------------------------------
     // helper class for printing time since start
     // ------------------------------------------------------------------
-    namespace detail {
-        struct current_time_print_helper
-        {
-            PIKA_EXPORT friend std::ostream& operator<<(
-                std::ostream& os, current_time_print_helper const&);
-        };
-    }    // namespace detail
+    struct current_time_print_helper
+    {
+        PIKA_EXPORT friend std::ostream& operator<<(
+            std::ostream& os, current_time_print_helper const&);
+    };
 
     // ------------------------------------------------------------------
     // helper function for printing CRC32
@@ -284,90 +270,84 @@ namespace NS_DEBUG {
             std::ostream& os, mem_crc32 const& p);
     };
 
-    namespace detail {
+    template <typename TupleType, std::size_t... I>
+    void tuple_print(
+        std::ostream& os, TupleType const& t, std::index_sequence<I...>)
+    {
+        (..., (os << (I == 0 ? "" : " ") << std::get<I>(t)));
+    }
 
-        template <typename TupleType, std::size_t... I>
-        void tuple_print(
-            std::ostream& os, TupleType const& t, std::index_sequence<I...>)
-        {
-            (..., (os << (I == 0 ? "" : " ") << std::get<I>(t)));
-        }
+    template <typename... Args>
+    void tuple_print(std::ostream& os, const std::tuple<Args...>& t)
+    {
+        tuple_print(os, t, std::make_index_sequence<sizeof...(Args)>());
+    }
 
-        template <typename... Args>
-        void tuple_print(std::ostream& os, const std::tuple<Args...>& t)
-        {
-            tuple_print(os, t, std::make_index_sequence<sizeof...(Args)>());
-        }
-    }    // namespace detail
+    // ------------------------------------------------------------------
+    // helper class for printing time since start
+    // ------------------------------------------------------------------
+    struct hostname_print_helper
+    {
+        PIKA_EXPORT char const* get_hostname() const;
+        PIKA_EXPORT int guess_rank() const;
 
-    namespace detail {
+        PIKA_EXPORT friend std::ostream& operator<<(
+            std::ostream& os, hostname_print_helper const& h);
+    };
 
-        // ------------------------------------------------------------------
-        // helper class for printing time since start
-        // ------------------------------------------------------------------
-        struct hostname_print_helper
-        {
-            PIKA_EXPORT char const* get_hostname() const;
-            PIKA_EXPORT int guess_rank() const;
+    ///////////////////////////////////////////////////////////////////////
+    PIKA_EXPORT void register_print_info(void (*)(std::ostream&));
+    PIKA_EXPORT void generate_prefix(std::ostream& os);
 
-            PIKA_EXPORT friend std::ostream& operator<<(
-                std::ostream& os, hostname_print_helper const& h);
-        };
+    ///////////////////////////////////////////////////////////////////////
+    template <typename... Args>
+    void display(char const* prefix, Args const&... args)
+    {
+        // using a temp stream object with a single copy to cout at the end
+        // prevents multiple threads from injecting overlapping text
+        std::stringstream tempstream;
+        tempstream << prefix;
+        generate_prefix(tempstream);
+        ((tempstream << args << " "), ...);
+        tempstream << "\n";
+        std::cout << tempstream.str() << std::flush;
+    }
 
-        ///////////////////////////////////////////////////////////////////////
-        PIKA_EXPORT void register_print_info(void (*)(std::ostream&));
-        PIKA_EXPORT void generate_prefix(std::ostream& os);
+    template <typename... Args>
+    void debug_impl(Args const&... args)
+    {
+        display("<DEB> ", args...);
+    }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename... Args>
-        void display(char const* prefix, Args const&... args)
-        {
-            // using a temp stream object with a single copy to cout at the end
-            // prevents multiple threads from injecting overlapping text
-            std::stringstream tempstream;
-            tempstream << prefix;
-            generate_prefix(tempstream);
-            ((tempstream << args << " "), ...);
-            tempstream << "\n";
-            std::cout << tempstream.str() << std::flush;
-        }
+    template <typename... Args>
+    void warning_impl(Args const&... args)
+    {
+        display("<WAR> ", args...);
+    }
 
-        template <typename... Args>
-        void debug(Args const&... args)
-        {
-            display("<DEB> ", args...);
-        }
+    template <typename... Args>
+    void error_impl(Args const&... args)
+    {
+        display("<ERR> ", args...);
+    }
 
-        template <typename... Args>
-        void warning(Args const&... args)
-        {
-            display("<WAR> ", args...);
-        }
+    template <typename... Args>
+    void scope(Args const&... args)
+    {
+        display("<SCO> ", args...);
+    }
 
-        template <typename... Args>
-        void error(Args const&... args)
-        {
-            display("<ERR> ", args...);
-        }
+    template <typename... Args>
+    void trace_impl(Args const&... args)
+    {
+        display("<TRC> ", args...);
+    }
 
-        template <typename... Args>
-        void scope(Args const&... args)
-        {
-            display("<SCO> ", args...);
-        }
-
-        template <typename... Args>
-        void trace(Args const&... args)
-        {
-            display("<TRC> ", args...);
-        }
-
-        template <typename... Args>
-        void timed(Args const&... args)
-        {
-            display("<TIM> ", args...);
-        }
-    }    // namespace detail
+    template <typename... Args>
+    void timed_impl(Args const&... args)
+    {
+        display("<TIM> ", args...);
+    }
 
     template <typename... Args>
     struct scoped_var
@@ -383,16 +363,14 @@ namespace NS_DEBUG {
           , message_(args...)
         {
             std::stringstream tempstream;
-            detail::tuple_print(tempstream, message_);
+            tuple_print(tempstream, message_);
             buffered_msg = tempstream.str();
-            detail::display("<SCO> ", prefix_, debug::str<>(">> enter <<"),
-                tempstream.str());
+            display("<SCO> ", prefix_, str<>(">> enter <<"), tempstream.str());
         }
 
         ~scoped_var()
         {
-            detail::display(
-                "<SCO> ", prefix_, debug::str<>("<< leave >>"), buffered_msg);
+            display("<SCO> ", prefix_, str<>("<< leave >>"), buffered_msg);
         }
     };
 
@@ -451,7 +429,7 @@ namespace NS_DEBUG {
         friend std::ostream& operator<<(
             std::ostream& os, timed_var<Args...> const& ti)
         {
-            detail::tuple_print(os, ti.message_);
+            tuple_print(os, ti.message_);
             return os;
         }
     };
@@ -542,11 +520,9 @@ namespace NS_DEBUG {
         }
     };
 
-    namespace detail {
-        template <typename T>
-        PIKA_EXPORT void print_array(
-            std::string const& name, T const* data, std::size_t size);
-    }
+    template <typename T>
+    PIKA_EXPORT void print_array(
+        std::string const& name, T const* data, std::size_t size);
 
     // when true, debug statements produce valid output
     template <>
@@ -574,25 +550,25 @@ namespace NS_DEBUG {
         template <typename... Args>
         constexpr void debug(Args const&... args) const
         {
-            detail::debug(prefix_, args...);
+            debug_impl(prefix_, args...);
         }
 
         template <typename... Args>
         constexpr void warning(Args const&... args) const
         {
-            detail::warning(prefix_, args...);
+            warning_impl(prefix_, args...);
         }
 
         template <typename... Args>
         constexpr void trace(Args const&... args) const
         {
-            detail::trace(prefix_, args...);
+            trace_impl(prefix_, args...);
         }
 
         template <typename... Args>
         constexpr void error(Args const&... args) const
         {
-            detail::error(prefix_, args...);
+            error_impl(prefix_, args...);
         }
 
         template <typename... Args>
@@ -606,27 +582,27 @@ namespace NS_DEBUG {
         {
             if (init.trigger())
             {
-                detail::timed(prefix_, init, args...);
+                timed_impl(prefix_, init, args...);
             }
         }
 
         template <typename T>
         void array(std::string const& name, std::vector<T> const& v) const
         {
-            detail::print_array(name, v.data(), v.size());
+            print_array(name, v.data(), v.size());
         }
 
         template <typename T, std::size_t N>
         void array(std::string const& name, std::array<T, N> const& v) const
         {
-            detail::print_array(name, v.data(), N);
+            print_array(name, v.data(), N);
         }
 
         template <typename T>
         void array(
             std::string const& name, T const* data, std::size_t size) const
         {
-            detail::print_array(name, data, size);
+            print_array(name, data, size);
         }
 
         template <typename T, typename... Args>
@@ -656,14 +632,11 @@ namespace NS_DEBUG {
     };
 
     template <int Level, int Threshold>
-    struct print_threshold
-      : enable_print<detail::check_level<Level, Threshold>::value>
+    struct print_threshold : enable_print<check_level<Level, Threshold>::value>
     {
-        using base_type =
-            enable_print<detail::check_level<Level, Threshold>::value>;
+        using base_type = enable_print<check_level<Level, Threshold>::value>;
         // inherit constructor
         using base_type::base_type;
     };
-
 }    // namespace NS_DEBUG
 /// \endcond

@@ -8,10 +8,9 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <string>
 
-namespace pika { namespace util {
+namespace pika::debug::detail {
     /// Tries to break an attached debugger, if not supported a loop is
     /// invoked which gives enough time to attach a debugger manually.
     PIKA_EXPORT void attach_debugger();
-}}    // namespace pika::util
+}    // namespace pika::debug::detail

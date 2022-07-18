@@ -365,11 +365,12 @@ namespace pika::threads::detail {
             return nullptr;
         }
 #else
-        constexpr util::backtrace const* get_backtrace() const noexcept
+        constexpr debug::detail::backtrace const* get_backtrace() const noexcept
         {
             return nullptr;
         }
-        util::backtrace const* set_backtrace(util::backtrace const*) noexcept
+        debug::detail::backtrace const* set_backtrace(
+            debug::detail::backtrace const*) noexcept
         {
             return nullptr;
         }
@@ -394,19 +395,19 @@ namespace pika::threads::detail {
             return bt;
         }
 #else
-        util::backtrace const* get_backtrace() const noexcept
+        debug::detail::backtrace const* get_backtrace() const noexcept
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return backtrace_;
         }
-        util::backtrace const* set_backtrace(
-            util::backtrace const* value) noexcept
+        debug::detail::backtrace const* set_backtrace(
+            debug::detail::backtrace const* value) noexcept
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
 
-            util::backtrace const* bt = backtrace_;
+            debug::detail::backtrace const* bt = backtrace_;
             backtrace_ = value;
             return bt;
         }
@@ -601,7 +602,7 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         char const* backtrace_;
 #else
-        util::backtrace const* backtrace_;
+        debug::detail::backtrace const* backtrace_;
 #endif
 #endif
         ///////////////////////////////////////////////////////////////////////

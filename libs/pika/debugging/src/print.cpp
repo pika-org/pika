@@ -37,41 +37,38 @@ PIKA_EXPORT char** freebsd_environ = nullptr;
 
 // ------------------------------------------------------------
 /// \cond NODETAIL
-namespace pika { namespace debug {
+namespace NS_DEBUG {
 
     // ------------------------------------------------------------------
     // format as zero padded int
     // ------------------------------------------------------------------
-    namespace detail {
+    template <typename Int>
+    PIKA_EXPORT void print_dec(std::ostream& os, Int const& v, int N)
+    {
+        os << std::right << std::setfill('0') << std::setw(N) << std::noshowbase
+           << std::dec << v;
+    }
 
-        template <typename Int>
-        PIKA_EXPORT void print_dec(std::ostream& os, Int const& v, int N)
-        {
-            os << std::right << std::setfill('0') << std::setw(N)
-               << std::noshowbase << std::dec << v;
-        }
+    template PIKA_EXPORT void print_dec(std::ostream&, bool const&, int);
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, std::int16_t const&, int);
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, std::uint16_t const&, int);
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, std::int32_t const&, int);
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, std::uint32_t const&, int);
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, std::int64_t const&, int);
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, std::uint64_t const&, int);
 
-        template PIKA_EXPORT void print_dec(std::ostream&, bool const&, int);
-        template PIKA_EXPORT void print_dec(
-            std::ostream&, std::int16_t const&, int);
-        template PIKA_EXPORT void print_dec(
-            std::ostream&, std::uint16_t const&, int);
-        template PIKA_EXPORT void print_dec(
-            std::ostream&, std::int32_t const&, int);
-        template PIKA_EXPORT void print_dec(
-            std::ostream&, std::uint32_t const&, int);
-        template PIKA_EXPORT void print_dec(
-            std::ostream&, std::int64_t const&, int);
-        template PIKA_EXPORT void print_dec(
-            std::ostream&, std::uint64_t const&, int);
-
-        template PIKA_EXPORT void print_dec(
-            std::ostream&, std::atomic<int> const&, int);
-        template PIKA_EXPORT void print_dec(
-            std::ostream&, std::atomic<unsigned int> const&, int);
-        template PIKA_EXPORT void print_dec(
-            std::ostream&, std::atomic<unsigned long> const&, int);
-    }    // namespace detail
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, std::atomic<int> const&, int);
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, std::atomic<unsigned int> const&, int);
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, std::atomic<unsigned long> const&, int);
 
     // ------------------------------------------------------------------
     // format as pointer
@@ -96,73 +93,62 @@ namespace pika { namespace debug {
     // ------------------------------------------------------------------
     // format as zero padded hex
     // ------------------------------------------------------------------
-    namespace detail {
+    template <typename Int>
+    void print_hex(std::ostream& os, Int v, int N)
+    {
+        os << std::right << "0x" << std::setfill('0') << std::setw(N)
+           << std::noshowbase << std::hex << v;
+    }
 
-        template <typename Int>
-        void print_hex(std::ostream& os, Int v, int N)
-        {
-            os << std::right << "0x" << std::setfill('0') << std::setw(N)
-               << std::noshowbase << std::hex << v;
-        }
+    template PIKA_EXPORT void print_hex(std::ostream&, std::thread::id, int);
+    template PIKA_EXPORT void print_hex(std::ostream&, unsigned long, int);
+    template PIKA_EXPORT void print_hex(std::ostream&, long, int);
+    template PIKA_EXPORT void print_hex(std::ostream&, int, int);
+    template PIKA_EXPORT void print_hex(std::ostream&, unsigned int, int);
+    template PIKA_EXPORT void print_hex(std::ostream&, void*, int);
 
-        template PIKA_EXPORT void print_hex(
-            std::ostream&, std::thread::id, int);
-        template PIKA_EXPORT void print_hex(std::ostream&, unsigned long, int);
-        template PIKA_EXPORT void print_hex(std::ostream&, long, int);
-        template PIKA_EXPORT void print_hex(std::ostream&, int, int);
-        template PIKA_EXPORT void print_hex(std::ostream&, unsigned int, int);
-        template PIKA_EXPORT void print_hex(std::ostream&, void*, int);
+    template <typename Int>
+    void print_ptr(std::ostream& os, Int v, int N)
+    {
+        os << std::right << std::setw(N) << std::noshowbase << std::hex << v;
+    }
 
-        template <typename Int>
-        void print_ptr(std::ostream& os, Int v, int N)
-        {
-            os << std::right << std::setw(N) << std::noshowbase << std::hex
-               << v;
-        }
-
-        template PIKA_EXPORT void print_ptr(std::ostream&, void*, int);
-        template PIKA_EXPORT void print_ptr(std::ostream&, int, int);
-        template PIKA_EXPORT void print_ptr(std::ostream&, long, int);
-
-    }    // namespace detail
+    template PIKA_EXPORT void print_ptr(std::ostream&, void*, int);
+    template PIKA_EXPORT void print_ptr(std::ostream&, int, int);
+    template PIKA_EXPORT void print_ptr(std::ostream&, long, int);
 
     // ------------------------------------------------------------------
     // format as binary bits
     // ------------------------------------------------------------------
-    namespace detail {
+    template <typename Int>
+    PIKA_EXPORT void print_bin(std::ostream& os, Int v, int N)
+    {
+        char const* beg = reinterpret_cast<char const*>(&v);
+        char const* end = beg + sizeof(v);
 
-        template <typename Int>
-        PIKA_EXPORT void print_bin(std::ostream& os, Int v, int N)
+        N = (N + CHAR_BIT - 1) / CHAR_BIT;
+        while (beg != end && N-- > 0)
         {
-            char const* beg = reinterpret_cast<char const*>(&v);
-            char const* end = beg + sizeof(v);
-
-            N = (N + CHAR_BIT - 1) / CHAR_BIT;
-            while (beg != end && N-- > 0)
-            {
-                os << std::bitset<CHAR_BIT>(*beg++);
-            }
+            os << std::bitset<CHAR_BIT>(*beg++);
         }
+    }
 
-        template PIKA_EXPORT void print_bin(std::ostream&, unsigned char, int);
-        template PIKA_EXPORT void print_bin(std::ostream&, std::uint32_t, int);
-        template PIKA_EXPORT void print_bin(std::ostream&, std::uint64_t, int);
+    template PIKA_EXPORT void print_bin(std::ostream&, unsigned char, int);
+    template PIKA_EXPORT void print_bin(std::ostream&, std::uint32_t, int);
+    template PIKA_EXPORT void print_bin(std::ostream&, std::uint64_t, int);
 
 #if defined(__APPLE__)
-        // Explicit instantiation necessary to solve undefined symbol for MacOS
-        template PIKA_EXPORT void print_bin(std::ostream&, unsigned long, int);
+    // Explicit instantiation necessary to solve undefined symbol for MacOS
+    template PIKA_EXPORT void print_bin(std::ostream&, unsigned long, int);
 #endif
-    }    // namespace detail
 
     // ------------------------------------------------------------------
     // format as padded string
     // ------------------------------------------------------------------
-    namespace detail {
-        void print_str(std::ostream& os, char const* v, int N)
-        {
-            os << std::left << std::setfill(' ') << std::setw(N) << v;
-        }
-    }    // namespace detail
+    void print_str(std::ostream& os, char const* v, int N)
+    {
+        os << std::left << std::setfill(' ') << std::setw(N) << v;
+    }
 
     // ------------------------------------------------------------------
     // format as ip address
@@ -189,58 +175,50 @@ namespace pika { namespace debug {
     // ------------------------------------------------------------------
     // helper class for printing time since start
     // ------------------------------------------------------------------
-    namespace detail {
-        std::ostream& operator<<(
-            std::ostream& os, current_time_print_helper const&)
-        {
-            static std::chrono::steady_clock::time_point log_t_start =
-                std::chrono::steady_clock::now();
+    std::ostream& operator<<(std::ostream& os, current_time_print_helper const&)
+    {
+        static std::chrono::steady_clock::time_point log_t_start =
+            std::chrono::steady_clock::now();
 
-            auto now = std::chrono::steady_clock::now();
-            auto nowt = std::chrono::duration_cast<std::chrono::microseconds>(
-                now - log_t_start)
-                            .count();
+        auto now = std::chrono::steady_clock::now();
+        auto nowt = std::chrono::duration_cast<std::chrono::microseconds>(
+            now - log_t_start)
+                        .count();
 
-            os << debug::dec<10>(nowt) << " ";
-            return os;
-        }
-    }    // namespace detail
+        os << dec<10>(nowt) << " ";
+        return os;
+    }
 
     ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
+    std::function<void(std::ostream&)> print_info;
 
-        std::function<void(std::ostream&)> print_info;
+    void register_print_info(void (*printer)(std::ostream&))
+    {
+        print_info = printer;
+    }
 
-        void register_print_info(void (*printer)(std::ostream&))
+    void generate_prefix(std::ostream& os)
+    {
+        os << detail::current_time_print_helper();
+        if (print_info)
         {
-            print_info = printer;
+            print_info(os);
         }
-
-        void generate_prefix(std::ostream& os)
-        {
-            os << detail::current_time_print_helper();
-            if (print_info)
-            {
-                print_info(os);
-            }
-            os << detail::hostname_print_helper();
-        }
-    }    // namespace detail
+        os << detail::hostname_print_helper();
+    }
 
     // ------------------------------------------------------------------
     // helper function for printing short memory dump and crc32
     // useful for debugging corruptions in buffers during
     // rma or other transfers
     // ------------------------------------------------------------------
-    namespace detail {
-        std::uint32_t crc32(void const* ptr, std::size_t size)
-        {
-            boost::crc_32_type result;
-            result.process_bytes(ptr, size);
-            return result.checksum();
-            return 0;
-        }
-    }    // namespace detail
+    std::uint32_t crc32(void const* ptr, std::size_t size)
+    {
+        boost::crc_32_type result;
+        result.process_bytes(ptr, size);
+        return result.checksum();
+        return 0;
+    }
 
     mem_crc32::mem_crc32(void const* a, std::size_t len)
       : addr_(reinterpret_cast<const uint64_t*>(a))
@@ -253,89 +231,80 @@ namespace pika { namespace debug {
         std::uint64_t const* uintBuf =
             static_cast<std::uint64_t const*>(p.addr_);
         os << "Memory:";
-        os << " address " << pika::debug::ptr(p.addr_) << " length "
-           << pika::debug::hex<6>(p.len_)
-           << " CRC32:" << pika::debug::hex<8>(detail::crc32(p.addr_, p.len_))
-           << "\n";
+        os << " address " << ptr(p.addr_) << " length " << hex<6>(p.len_)
+           << " CRC32:" << hex<8>(detail::crc32(p.addr_, p.len_)) << "\n";
 
         for (std::size_t i = 0; i <
              (std::min)(size_t(std::ceil(static_cast<double>(p.len_) / 8.0)),
                  std::size_t(128));
              i++)
         {
-            os << pika::debug::hex<16>(*uintBuf++) << " ";
+            os << hex<16>(*uintBuf++) << " ";
         }
         return os;
     }
 
-    namespace detail {
-
-        // ------------------------------------------------------------------
-        // helper class for printing time since start
-        // ------------------------------------------------------------------
-        char const* hostname_print_helper::get_hostname() const
+    // ------------------------------------------------------------------
+    // helper class for printing time since start
+    // ------------------------------------------------------------------
+    char const* hostname_print_helper::get_hostname() const
+    {
+        static bool initialized = false;
+        static char hostname_[20] = {'\0'};
+        if (!initialized)
         {
-            static bool initialized = false;
-            static char hostname_[20] = {'\0'};
-            if (!initialized)
-            {
-                initialized = true;
+            initialized = true;
 #if !defined(__FreeBSD__)
-                gethostname(hostname_, std::size_t(12));
+            gethostname(hostname_, std::size_t(12));
 #endif
-                std::ostringstream temp;
-                temp << '(' << std::to_string(guess_rank()) << ')';
-                std::strcat(hostname_, temp.str().c_str());
-            }
-            return hostname_;
+            std::ostringstream temp;
+            temp << '(' << std::to_string(guess_rank()) << ')';
+            std::strcat(hostname_, temp.str().c_str());
         }
+        return hostname_;
+    }
 
-        int hostname_print_helper::guess_rank() const
-        {
+    int hostname_print_helper::guess_rank() const
+    {
 #if defined(__FreeBSD__)
-            char** env = freebsd_environ;
+        char** env = freebsd_environ;
 #else
-            char** env = environ;
+        char** env = environ;
 #endif
-            std::vector<std::string> env_strings{"_RANK=", "_NODEID="};
-            for (char** current = env; *current; current++)
+        std::vector<std::string> env_strings{"_RANK=", "_NODEID="};
+        for (char** current = env; *current; current++)
+        {
+            auto e = std::string(*current);
+            for (auto s : env_strings)
             {
-                auto e = std::string(*current);
-                for (auto s : env_strings)
+                auto pos = e.find(s);
+                if (pos != std::string::npos)
                 {
-                    auto pos = e.find(s);
-                    if (pos != std::string::npos)
-                    {
-                        //std::cout << "Got a rank string : " << e << std::endl;
-                        return std::stoi(e.substr(pos + s.size(), 5));
-                    }
+                    //std::cout << "Got a rank string : " << e << std::endl;
+                    return std::stoi(e.substr(pos + s.size(), 5));
                 }
             }
-            return -1;
         }
+        return -1;
+    }
 
-        std::ostream& operator<<(
-            std::ostream& os, hostname_print_helper const& h)
-        {
-            os << debug::str<13>(h.get_hostname()) << " ";
-            return os;
-        }
+    std::ostream& operator<<(std::ostream& os, hostname_print_helper const& h)
+    {
+        os << str<13>(h.get_hostname()) << " ";
+        return os;
+    }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename T>
-        PIKA_EXPORT void print_array(
-            std::string const& name, T const* data, std::size_t size)
-        {
-            std::cout << str<20>(name.c_str()) << ": {" << debug::dec<4>(size)
-                      << "} : ";
-            std::copy(
-                data, data + size, std::ostream_iterator<T>(std::cout, ", "));
-            std::cout << "\n";
-        }
+    ///////////////////////////////////////////////////////////////////////
+    template <typename T>
+    PIKA_EXPORT void print_array(
+        std::string const& name, T const* data, std::size_t size)
+    {
+        std::cout << str<20>(name.c_str()) << ": {" << dec<4>(size) << "} : ";
+        std::copy(data, data + size, std::ostream_iterator<T>(std::cout, ", "));
+        std::cout << "\n";
+    }
 
-        template PIKA_EXPORT void print_array(
-            std::string const&, std::size_t const*, std::size_t);
-
-    }    // namespace detail
-}}       // namespace pika::debug
+    template PIKA_EXPORT void print_array(
+        std::string const&, std::size_t const*, std::size_t);
+}    // namespace NS_DEBUG
 /// \endcond
