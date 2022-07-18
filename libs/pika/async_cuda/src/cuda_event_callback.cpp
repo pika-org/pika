@@ -143,7 +143,7 @@ namespace pika::cuda::experimental::detail {
         }
 
         void add_to_event_callback_queue(
-            event_callback_function_type&& f, cuda_stream const& stream)
+            event_callback_function_type&& f, cudaStream_t stream)
         {
             cudaEvent_t event;
             if (!cuda_event_pool::get_event_pool().pop(event))
@@ -151,7 +151,7 @@ namespace pika::cuda::experimental::detail {
                 PIKA_THROW_EXCEPTION(invalid_status,
                     "add_to_event_callback_queue", "could not get an event");
             }
-            check_cuda_error(cudaEventRecord(event, stream.get()));
+            check_cuda_error(cudaEventRecord(event, stream));
 
             event_callback continuation{event, PIKA_MOVE(f)};
 
@@ -221,11 +221,11 @@ namespace pika::cuda::experimental::detail {
                 polling_status::idle;
         }
 
-        void add_to_event_callback_queue(
-            event_callback_function_type&& f, cuda_stream const& stream)
+        void add_to_event_callback_queue(event_callback_function_type&& f,
+            cudaStream_t stream, pika::execution::thread_priority priority)
         {
             auto* queue = &np_queue;
-            if (stream.get_priority() >= pika::execution::thread_priority::high)
+            if (priority >= pika::execution::thread_priority::high)
             {
                 queue = &hp_queue;
             }
@@ -249,11 +249,17 @@ namespace pika::cuda::experimental::detail {
         return holder;
     }
 
+    void add_event_callback(event_callback_function_type&& f,
+        cudaStream_t stream, pika::execution::thread_priority priority)
+    {
+        get_cuda_event_queue_holder().add_to_event_callback_queue(
+            std::move(f), stream, priority);
+    }
+
     void add_event_callback(
         event_callback_function_type&& f, cuda_stream const& stream)
     {
-        get_cuda_event_queue_holder().add_to_event_callback_queue(
-            std::move(f), stream);
+        add_event_callback(std::move(f), stream.get(), stream.get_priority());
     }
 
     pika::threads::policies::detail::polling_status poll()
