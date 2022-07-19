@@ -31,9 +31,6 @@ auto tag_invoke(
 
 int main()
 {
-    // TODO: split doesn't have a default implementation in the reference
-    // implementation.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     // Success path
     {
         std::atomic<bool> set_value_called{false};
@@ -74,6 +71,18 @@ int main()
             ex::just(custom_type_non_default_constructible_non_copyable{42});
         auto s2 = ex::split(std::move(s1));
         auto f = [](auto& x) { PIKA_TEST_EQ(x.x, 42); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s2), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+    }
+
+    {
+        std::atomic<bool> set_value_called{false};
+        int x = 42;
+        auto s1 = const_reference_sender<int>{x};
+        auto s2 = ex::split(std::move(s1));
+        auto f = [](auto& x) { PIKA_TEST_EQ(x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s2), std::move(r));
         ex::start(os);
@@ -126,7 +135,20 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-    // Chained split calls do not create new shared states
+    {
+        std::atomic<bool> set_error_called{false};
+        auto s = ex::split(const_reference_error_sender{});
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    // Chained split calls do not create new shared states. This is an
+    // implementation detail of our own implementation. We can't test this for
+    // the reference implementation.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     {
         std::atomic<bool> receiver_set_value_called{false};
         auto s1 = ex::just() | ex::split();
@@ -154,6 +176,7 @@ int main()
         ex::start(os);
         PIKA_TEST(receiver_set_value_called);
     }
+#endif
 
     {
         auto s = ex::split(my_namespace::my_sender{});
@@ -164,7 +187,6 @@ int main()
         // the sender has been connected and started before being released.
         tt::sync_wait(std::move(s));
     }
-#endif
 
     return pika::util::report_errors();
 }

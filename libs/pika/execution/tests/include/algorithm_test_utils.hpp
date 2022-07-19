@@ -109,6 +109,7 @@ struct const_reference_error_sender
 
     using completion_signatures =
         pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(),
             pika::execution::experimental::set_error_t(std::exception_ptr&)>;
 
     template <typename R>

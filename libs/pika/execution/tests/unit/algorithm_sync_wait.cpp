@@ -61,6 +61,12 @@ int pika_main()
             42);
     }
 
+    {
+        int x = 42;
+        PIKA_TEST_EQ(
+            tt::sync_wait(ex::just(const_reference_sender<int>{x})).x, 42);
+    }
+
     // operator| overload
     {
         std::atomic<bool> start_called{false};
@@ -96,6 +102,21 @@ int pika_main()
         try
         {
             tt::sync_wait(error_sender{});
+            PIKA_TEST(false);
+        }
+        catch (std::runtime_error const& e)
+        {
+            PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
+            exception_thrown = true;
+        }
+        PIKA_TEST(exception_thrown);
+    }
+
+    {
+        bool exception_thrown = false;
+        try
+        {
+            tt::sync_wait(const_reference_error_sender{});
             PIKA_TEST(false);
         }
         catch (std::runtime_error const& e)
