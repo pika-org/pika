@@ -11,11 +11,11 @@ set -eux
 
 export configuration_name_with_build_type="${configuration_name}-${build_type,,}"
 
-source .jenkins/cscs-ault/slurm-constraint-${configuration_name}.sh
+source ".jenkins/cscs-ault/slurm-constraint-${configuration_name}.sh"
 
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request
-    export git_local_branch=$(echo ${GIT_BRANCH} | cut -f2 -d'/')
+    export git_local_branch=$(echo "${GIT_BRANCH}" | cut -f2 -d'/')
     job_name="jenkins-pika-${git_local_branch}-${configuration_name_with_build_type}"
 else
     job_name="jenkins-pika-${ghprbPullId}-${configuration_name_with_build_type}"
@@ -26,7 +26,7 @@ else
 fi
 
 # Clean up old artifacts
-rm -f ./${job_name}* ./*-Testing
+rm -f "./${job_name}*" ./*-Testing
 
 # Start the actual build
 set +e
@@ -43,14 +43,14 @@ sbatch \
 
 # Print slurm logs
 echo "= stdout =================================================="
-cat ${job_name}.out
+cat "${job_name}.out"
 
 echo "= stderr =================================================="
-cat ${job_name}.err
+cat "${job_name}.err"
 
 # Get build status
 status_file="${job_name}-ctest-status.txt"
-if [[ -f "${status_file}" && "$(cat ${status_file})" -eq "0" ]]; then
+if [[ -f "${status_file}" && $(cat "${status_file}") -eq "0" ]]; then
     github_commit_status="success"
 else
     github_commit_status="failure"
@@ -70,7 +70,7 @@ if [[ -z "${ghprbPullId:-}" ]]; then
         "jenkins/cscs-ault"
 else
     # Extract just the organization and repo names "org/repo" from the full URL
-    github_commit_repo="$(echo $ghprbPullLink | sed -n 's/https:\/\/github.com\/\(.*\)\/pull\/[0-9]*/\1/p')"
+    github_commit_repo=$(echo "$ghprbPullLink" | sed -n 's/https:\/\/github.com\/\(.*\)\/pull\/[0-9]*/\1/p')
 
     # Set GitHub status with CDash url
     .jenkins/common/set_github_status.sh \
@@ -84,4 +84,4 @@ else
 fi
 
 set -e
-exit $(cat ${status_file})
+exit $(cat "${status_file}")

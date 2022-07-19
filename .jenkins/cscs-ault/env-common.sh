@@ -5,16 +5,16 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 
-export SPACK_ROOT=/apps/ault/SSD/pika/spack
-export SPACK_USER_CONFIG_PATH=${SPACK_ROOT}/../spack-user-config
-export SPACK_USER_CACHE_PATH=${SCRATCH}/spack-user-cache-jenkins/pika-cache
-source ${SPACK_ROOT}/share/spack/setup-env.sh
+export SPACK_ROOT="/apps/ault/SSD/pika/spack"
+export SPACK_USER_CONFIG_PATH="${SPACK_ROOT}/../spack-user-config"
+export SPACK_USER_CACHE_PATH="${SCRATCH}/spack-user-cache-jenkins/pika-cache"
+source "${SPACK_ROOT}/share/spack/setup-env.sh"
 
 spack load ccache@4.5.1 %gcc@10.2.0
 
 export CMAKE_CXX_COMPILER_LAUNCHER=ccache
 export CMAKE_GENERATOR=Ninja
-export CCACHE_DIR=$SCRATCH/ccache/ccache-jenkins-pika
+export CCACHE_DIR="$SCRATCH/ccache/ccache-jenkins-pika"
 export CCACHE_MAXSIZE=100G
 export CCACHE_MAXFILES=50000
 export CCACHE_COMPILERCHECK="%compiler% -v"
