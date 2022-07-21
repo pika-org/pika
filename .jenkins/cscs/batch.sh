@@ -31,15 +31,16 @@ spack build-env ${spack_spec} -- ctest \
     -DCTEST_BINARY_DIRECTORY="${build_dir}"
 set -e
 
-# Copy the testing directory for saving as an artifact
-cp -r ${build_dir}/Testing ${orig_src_dir}/${configuration_name_with_build_type}-Testing
-
+ctest_exit_code=$? # /!\ Should be positioned right after the ctest command
 # Things went wrong by default
-ctest_exit_code=$?
 file_errors=1
 configure_errors=1
 build_errors=1
 test_errors=1
+
+# Copy the testing directory for saving as an artifact
+cp -r ${build_dir}/Testing ${orig_src_dir}/${configuration_name_with_build_type}-Testing
+
 if [[ -f "${build_dir}/Testing/TAG" ]]; then
     file_errors=0
     tag="$(head -n 1 ${build_dir}/Testing/TAG)"
