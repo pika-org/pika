@@ -22,9 +22,9 @@ unset CMAKE_GENERATOR
 unset SPACK_USER_CACHE_PATH
 
 for env in env-*.sh; do
-    source ${env}
+    source "${env}"
     echo "Installing dependencies for spec ${spack_spec}"
-    spack install --only dependencies ${spack_spec} &
+    spack install --only dependencies "${spack_spec}" &
 done
 
 wait
