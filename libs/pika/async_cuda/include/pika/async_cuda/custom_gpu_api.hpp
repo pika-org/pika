@@ -70,6 +70,7 @@
     #define cudaStreamGetFlags hipStreamGetFlags
     #define cudaStreamNonBlocking hipStreamNonBlocking
     #define cudaStreamSynchronize hipStreamSynchronize
+    #define cudaStreamQuery hipStreamQuery
     #define cudaSuccess hipSuccess
 
 #elif defined(PIKA_HAVE_CUDA)
