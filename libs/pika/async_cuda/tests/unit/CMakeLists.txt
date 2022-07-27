@@ -17,7 +17,11 @@ set(tests
 )
 
 set(cublas_matmul_PARAMETERS THREADS 4)
-set(cuda_sender_PARAMETERS THREADS 4)
+if(PIKA_WITH_HIP)
+  set(cuda_sender_PARAMETERS THREADS 1)
+else()
+  set(cuda_sender_PARAMETERS THREADS 4)
+endif()
 set(then_with_stream_PARAMETERS THREADS 4)
 set(then_with_stream_DEPENDENCIES pika_execution_test_utilities)
 
