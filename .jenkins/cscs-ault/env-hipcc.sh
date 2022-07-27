@@ -16,5 +16,6 @@ spack_spec="pika@main+rocm arch=${spack_arch} %${spack_compiler} malloc=system c
 
 configure_extra_options+=" -DCMAKE_BUILD_RPATH=$(spack location -i ${spack_compiler})/lib64"
 configure_extra_options+=" -DCMAKE_CXX_COMPILER=hipcc"
+configure_extra_options+=" \"-DCMAKE_CXX_FLAGS=--offload-arch=gfx900 --offload-arch=gfx906\""
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
