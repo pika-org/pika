@@ -59,10 +59,10 @@ namespace pika { namespace execution { namespace experimental {
 
             // Type of the potential errors returned from the predecessor sender
             template <template <typename...> class Variant>
-            using predecessor_error_types =
+            using predecessor_error_types = pika::util::detail::transform_t<
                 typename pika::execution::experimental::sender_traits<
-                    std::decay_t<PredecessorSender>>::
-                    template error_types<Variant>;
+                    PredecessorSender>::template error_types<Variant>,
+                std::decay>;
             static_assert(
                 !std::is_same<predecessor_error_types<pika::util::pack>,
                     pika::util::pack<>>::value,
@@ -210,7 +210,7 @@ namespace pika { namespace execution { namespace experimental {
                                 // TODO: receiver is moved before the visit, but
                                 // the invoke inside the visit may throw.
                                 r.op_state.predecessor_error
-                                    .template emplace<Error>(
+                                    .template emplace<std::decay_t<Error>>(
                                         PIKA_FORWARD(Error, error));
                                 pika::detail::visit(
                                     set_error_visitor{PIKA_MOVE(r.receiver),
