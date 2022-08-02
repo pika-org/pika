@@ -148,6 +148,16 @@ int main()
 
     {
         std::atomic<bool> set_error_called{false};
+        auto s = const_reference_error_sender{} | ex::ensure_started();
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        std::atomic<bool> set_error_called{false};
         auto s = error_sender{} | ex::ensure_started() | ex::ensure_started() |
             ex::ensure_started();
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
