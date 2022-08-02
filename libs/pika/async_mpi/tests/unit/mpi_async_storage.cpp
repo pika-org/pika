@@ -146,7 +146,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
 
     pika::scoped_annotation annotate("test_write");
     std::stringstream temp;
-    temp << deb::detail::hostname_print_helper();
+    temp << deb::hostname_print_helper();
     std::string name = temp.str() + "-test-write.prof";
     std::replace(name.begin(), name.end(), ':', '-');
 
