@@ -61,3 +61,6 @@ pika follows `Semantic Versioning <https://semver.org>`_.
 #. Change ``PIKA_VERSION_TAG`` in ``CMakeLists.txt`` back to ``-trunk``.
 
 #. Update spack (``https://github.com/spack/spack``).
+
+#. Close the milestone for this release and rename the tabs of the pika-planning
+   board.
