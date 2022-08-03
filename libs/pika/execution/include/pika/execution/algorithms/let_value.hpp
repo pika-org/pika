@@ -72,7 +72,7 @@ namespace pika { namespace execution { namespace experimental {
                     "a sender");
             };
 
-            // Type of the potential senders returned from the sender factor F
+            // Type of the potential senders returned from the sender factory F
             template <template <typename...> class Tuple,
                 template <typename...> class Variant>
             using successor_sender_types =
