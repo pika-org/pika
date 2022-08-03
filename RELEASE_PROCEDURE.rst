@@ -54,7 +54,7 @@ pika follows `Semantic Versioning <https://semver.org>`_.
    You'll need to set ``GITHUB_TOKEN`` or both ``GITHUB_USER`` and
    ``GITHUB_PASSWORD`` for the hub release command.
 
-#. Merge release branch into ``main``.
+#. Merge release branch into ``main`` (with --no-ff).
 
 #. Modify the release procedure if necessary.
 
