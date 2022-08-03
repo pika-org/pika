@@ -29,6 +29,10 @@ pika follows `Semantic Versioning <https://semver.org>`_.
 
 #. Update the minimum required versions if necessary.
 
+#. Check that projects dependent on pika are passing CI with pika main branch.
+   Check if there is no performance regressions due to the pika upgrade in
+   those projects.
+
 #. Repeat the following steps until satisfied with the release.
 
    #. Change ``PIKA_VERSION_TAG`` in ``CMakeLists.txt`` to ``-rcN``, where ``N``
