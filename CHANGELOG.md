@@ -4,6 +4,25 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.7.0 (2022-08-03)
+
+### New features
+
+- The CUDA polling now uses both normal and high priority queues based on the flags passed to the `cuda_stream`. ([#286](https://github.com/pika-org/pika/pull/286))
+- Eagerly check completion of the MPI requests and add throttling of MPI traffic to help prevent excessive message queues. ([#277](https://github.com/pika-org/pika/pull/277))
+- Eagerly check completion of CUDA kernels. ([#306](https://github.com/pika-org/pika/pull/306))
+
+### Breaking changes
+
+- Remove static and thread local storage emulation. ([#321](https://github.com/pika-org/pika/pull/321))
+- Moved internal functionality into the `detail` namespace. ([#209](https://github.com/pika-org/pika/pull/209), [#276](https://github.com/pika-org/pika/pull/276), [#324](https://github.com/pika-org/pika/pull/324))
+- Remove specialization for Intel KNL. ([#309](https://github.com/pika-org/pika/pull/309))
+
+### Bugfixes
+
+- Fix a compilation error with posix coroutines implementation. ([#314](https://github.com/pika-org/pika/pull/314))
+- Fix handling of reference values and errors types sent by predecessors to `when_all`, `split` and `sync_wait`. ([#285](https://github.com/pika-org/pika/pull/285), [#307](https://github.com/pika-org/pika/pull/307), [#320](https://github.com/pika-org/pika/pull/320))
+
 ## 0.6.0 (2022-07-06)
 
 ### New features
