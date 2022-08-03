@@ -79,7 +79,7 @@ int main()
         std::atomic<bool> set_value_called{false};
         int x = 42;
         auto s = ex::then(const_reference_sender<decltype(x)>{x},
-            [](auto i) { return i + 1; });    // generic lambda
+            [](int i) { return i + 1; });
         auto f = [](int x) { PIKA_TEST_EQ(x, 43); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
