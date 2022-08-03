@@ -34,7 +34,19 @@ namespace pika::detail {
     template <typename T>
     using empty_vtable_t = typename empty_vtable_type<T>::type;
 
-#if defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR)
+    // clang 14 attempts to promote all constexpr variables when compiling for
+    // accelerators (CUDA or HIP). In this case it errors out trying to make
+    // empty_vtable a device-side variable instead of leaving it as a host-only
+    // variable. We don't need empty_vtable on the device, so we simply fall
+    // back to the other implementation in those cases.
+    //
+    // See:
+    // - https://github.com/llvm/llvm-project/issues/53780
+    // - https://github.com/llvm/llvm-project/commit/73b22935a7a863679021598db6a45fcfb62cd321
+    // - https://reviews.llvm.org/D119615
+#if defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR) &&                     \
+    !(defined(PIKA_COMPUTE_CODE) && defined(PIKA_CLANG_VERSION) &&             \
+        (PIKA_CLANG_VERSION >= 140000) && (PIKA_CLANG_VERSION < 150000))
     template <typename T>
     inline constexpr empty_vtable_t<T> empty_vtable{};
 

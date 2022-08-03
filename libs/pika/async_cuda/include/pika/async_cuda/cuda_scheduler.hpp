@@ -88,6 +88,12 @@ namespace pika::cuda::experimental {
                 cuda_scheduler scheduler;
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
+                template <typename Receiver_>
+                operation_state(cuda_scheduler scheduler, Receiver_&& receiver)
+                  : scheduler(PIKA_MOVE(scheduler))
+                  , receiver(PIKA_FORWARD(Receiver_, receiver))
+                {
+                }
                 operation_state(operation_state&&) = delete;
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state&&) = delete;
@@ -148,7 +154,7 @@ namespace pika::cuda::experimental {
             friend cuda_scheduler tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<
                     pika::execution::experimental::set_value_t>,
-                cuda_scheduler_sender const& s)
+                cuda_scheduler_sender const& s) noexcept
             {
                 return s.scheduler;
             }

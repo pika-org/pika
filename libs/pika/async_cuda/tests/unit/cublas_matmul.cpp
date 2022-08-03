@@ -117,7 +117,9 @@ inline bool compare_L2_err(const float* reference, const float* data,
     return result;
 }
 
-constexpr auto cuda_memcpy_async = [](auto&&... ts) {
+constexpr auto cuda_memcpy_async =
+    [](auto&&... ts) -> decltype(cu::check_cuda_error(
+                         cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...))) {
     cu::check_cuda_error(cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...));
 };
 
@@ -126,7 +128,8 @@ constexpr auto cuda_memcpy_async = [](auto&&... ts) {
 // -------------------------------------------------------------------------
 template <typename T>
 void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
-    sMatrixSize& matrix_size, std::size_t /* device */, std::size_t iterations)
+    sMatrixSize& matrix_size, std::size_t /* device */,
+    [[maybe_unused]] std::size_t iterations)
 {
     using pika::execution::par;
 
@@ -197,6 +200,14 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     // schedule/then_with_x will create a new event attached to a new sender so
     // we can reuse the same cuda scheduler stream if we want
 
+    // See https://github.com/brycelelbach/wg21_p2300_std_execution/issues/466
+    // for details.
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+    std::cout
+        << "skipping remainder of test because the P2300 reference "
+           "implementation of split does not yet support move-only senders"
+        << std::endl;
+#else
     pika::chrono::detail::high_resolution_timer t2;
 
     // This loop is currently inefficient. Because of the type-erasure with
@@ -218,7 +229,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
 
     auto gemms_finished_split = ex::split(std::move(gemms_finished));
 
-    auto matrix_print_finished = ex::then(gemms_finished_split, [&]() {
+    auto matrix_print_finished = gemms_finished_split | ex::then([&]() {
         double us2 = t2.elapsed<std::chrono::microseconds>();
         std::cout << "actual: elapsed_microseconds " << us2 << " iterations "
                   << iterations << std::endl;
@@ -236,9 +247,10 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     });
 
     // when the matrix operations complete, copy the result to the host
-    auto copy_finished = ex::then(std::move(gemms_finished_split),
-        pika::bind_front(cuda_memcpy_async, h_CUBLAS.data(), d_C,
-            size_C * sizeof(T), cudaMemcpyDeviceToHost));
+    auto copy_finished = std::move(gemms_finished_split) |
+        ex::transfer(cuda_sched) |
+        cu::then_with_stream(pika::bind_front(cuda_memcpy_async,
+            h_CUBLAS.data(), d_C, size_C * sizeof(T), cudaMemcpyDeviceToHost));
 
     auto all_done = ex::when_all(std::move(matrix_print_finished),
                         std::move(copy_finished)) |
@@ -271,6 +283,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
         });
 
     tt::sync_wait(std::move(all_done));
+#endif
     ::pika::cuda::experimental::check_cuda_error(cudaFree(d_A));
     ::pika::cuda::experimental::check_cuda_error(cudaFree(d_B));
     ::pika::cuda::experimental::check_cuda_error(cudaFree(d_C));

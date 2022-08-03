@@ -178,6 +178,7 @@ struct cuda_memcpy_async
 {
     template <typename... Ts>
     auto operator()(Ts&&... ts)
+        -> decltype(cudaMemcpyAsync(std::forward<Ts>(ts)...))
     {
         return cudaMemcpyAsync(std::forward<Ts>(ts)...);
     }

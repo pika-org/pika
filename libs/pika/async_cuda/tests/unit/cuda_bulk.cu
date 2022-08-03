@@ -78,6 +78,8 @@ int hpx_main()
         }
     }
 
+    // The reference implementation does not support ranges as the shape
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     // Range
     for (element_type n : {1, 42, 10007})
     {
@@ -106,6 +108,7 @@ int hpx_main()
             PIKA_TEST_EQ(host_vector[i], i);
         }
     }
+#endif
 
     return pika::finalize();
 }

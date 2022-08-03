@@ -23,14 +23,26 @@
 namespace pika::cuda::experimental {
     namespace then_on_host_detail {
         template <typename Receiver, typename F>
-        struct then_on_host_receiver
+        struct then_on_host_receiver_impl
+        {
+            struct then_on_host_receiver_type;
+        };
+
+        template <typename Receiver, typename F>
+        using then_on_host_receiver =
+            typename then_on_host_receiver_impl<Receiver,
+                F>::then_on_host_receiver_type;
+
+        template <typename Receiver, typename F>
+        struct then_on_host_receiver_impl<Receiver,
+            F>::then_on_host_receiver_type
         {
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
             cuda_scheduler sched;
 
             template <typename Receiver_, typename F_>
-            then_on_host_receiver(
+            then_on_host_receiver_type(
                 Receiver_&& receiver, F_&& f, cuda_scheduler sched)
               : receiver(PIKA_FORWARD(Receiver_, receiver))
               , f(PIKA_FORWARD(F_, f))
@@ -38,29 +50,32 @@ namespace pika::cuda::experimental {
             {
             }
 
-            then_on_host_receiver(then_on_host_receiver&&) = default;
-            then_on_host_receiver& operator=(then_on_host_receiver&&) = default;
-            then_on_host_receiver(then_on_host_receiver const&) = delete;
-            then_on_host_receiver& operator=(
-                then_on_host_receiver const&) = delete;
+            then_on_host_receiver_type(then_on_host_receiver_type&&) = default;
+            then_on_host_receiver_type& operator=(
+                then_on_host_receiver_type&&) = default;
+            then_on_host_receiver_type(
+                then_on_host_receiver_type const&) = delete;
+            then_on_host_receiver_type& operator=(
+                then_on_host_receiver_type const&) = delete;
 
             template <typename Error>
             friend void tag_invoke(pika::execution::experimental::set_error_t,
-                then_on_host_receiver&& r, Error&& error) noexcept
+                then_on_host_receiver_type&& r, Error&& error) noexcept
             {
                 pika::execution::experimental::set_error(
                     PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
             }
 
             friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                then_on_host_receiver&& r) noexcept
+                then_on_host_receiver_type&& r) noexcept
             {
                 pika::execution::experimental::set_stopped(
                     PIKA_MOVE(r.receiver));
             }
 
             template <typename... Ts>
-            void set_value(Ts&&... ts) noexcept
+            friend void tag_invoke(pika::execution::experimental::set_value_t,
+                then_on_host_receiver_type&& r, Ts&&... ts) noexcept
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
@@ -70,12 +85,14 @@ namespace pika::cuda::experimental {
                         // Certain versions of GCC with optimizations fail on
                         // the move with an internal compiler error.
 #if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
-                            PIKA_INVOKE(std::move(f), PIKA_FORWARD(Ts, ts)...);
+                            PIKA_INVOKE(
+                                std::move(r.f), PIKA_FORWARD(Ts, ts)...);
 #else
-                            PIKA_INVOKE(PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
+                            PIKA_INVOKE(
+                                PIKA_MOVE(r.f), PIKA_FORWARD(Ts, ts)...);
 #endif
                             pika::execution::experimental::set_value(
-                                PIKA_MOVE(receiver));
+                                PIKA_MOVE(r.receiver));
                         }
                         else
                         {
@@ -83,59 +100,85 @@ namespace pika::cuda::experimental {
                         // the move with an internal compiler error.
 #if defined(PIKA_GCC_VERSION) && (PIKA_GCC_VERSION < 100000)
                             auto&& result = PIKA_INVOKE(
-                                std::move(f), PIKA_FORWARD(Ts, ts)...);
+                                std::move(r.f), PIKA_FORWARD(Ts, ts)...);
 #else
                             auto&& result = PIKA_INVOKE(
-                                PIKA_MOVE(f), PIKA_FORWARD(Ts, ts)...);
+                                PIKA_MOVE(r.f), PIKA_FORWARD(Ts, ts)...);
 #endif
                             pika::execution::experimental::set_value(
-                                PIKA_MOVE(receiver), PIKA_MOVE(result));
+                                PIKA_MOVE(r.receiver), PIKA_MOVE(result));
                         }
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            PIKA_MOVE(receiver), PIKA_MOVE(ep));
+                            PIKA_MOVE(r.receiver), PIKA_MOVE(ep));
                     });
+            }
+
+            friend constexpr pika::execution::experimental::detail::empty_env
+            tag_invoke(pika::execution::experimental::get_env_t,
+                then_on_host_receiver_type const&) noexcept
+            {
+                return {};
             }
         };
 
-        template <typename S, typename F>
-        struct then_on_host_sender
+        template <typename Sender, typename F>
+        struct then_on_host_sender_impl
         {
-            std::decay_t<S> s;
+            struct then_on_host_sender_type;
+        };
+
+        template <typename Sender, typename F>
+        using then_on_host_sender = typename then_on_host_sender_impl<Sender,
+            F>::then_on_host_sender_type;
+
+        template <typename Sender, typename F>
+        struct then_on_host_sender_impl<Sender, F>::then_on_host_sender_type
+        {
+            std::decay_t<Sender> sender;
             std::decay_t<F> f;
             cuda_scheduler sched;
 
-            template <typename S_, typename F_>
-            then_on_host_sender(S_&& s, F_&& f, cuda_scheduler sched)
-              : s(PIKA_FORWARD(S_, s))
+            template <typename Sender_, typename F_>
+            then_on_host_sender_type(
+                Sender_&& sender, F_&& f, cuda_scheduler sched)
+              : sender(PIKA_FORWARD(Sender_, sender))
               , f(PIKA_FORWARD(F_, f))
               , sched(PIKA_MOVE(sched))
             {
             }
 
-            then_on_host_sender(then_on_host_sender&&) = default;
-            then_on_host_sender& operator=(then_on_host_sender&&) = default;
-            then_on_host_sender(then_on_host_sender const&) = default;
-            then_on_host_sender& operator=(
-                then_on_host_sender const&) = default;
+            then_on_host_sender_type(then_on_host_sender_type&&) = default;
+            then_on_host_sender_type& operator=(
+                then_on_host_sender_type&&) = default;
+            then_on_host_sender_type(then_on_host_sender_type const&) = default;
+            then_on_host_sender_type& operator=(
+                then_on_host_sender_type const&) = default;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-            template <typename... Ts>
-            struct invoke_result_helper
+            template <typename T>
+            struct result_type_signature_helper
             {
-                using result_type = std::decay_t<
-                    typename pika::util::invoke_result<F, Ts...>::type>;
-                using type =
-                    typename std::conditional<std::is_void<result_type>::value,
-                        pika::execution::experimental::set_value_t(),
-                        pika::execution::experimental::set_value_t(
-                            result_type)>::type;
+                using type = pika::execution::experimental::set_value_t(T);
             };
 
+            template <>
+            struct result_type_signature_helper<void>
+            {
+                using type = pika::execution::experimental::set_value_t();
+            };
+
+            template <typename... Ts>
+            requires pika::is_invocable_v<F, Ts...>
+            using invoke_result_helper =
+                pika::execution::experimental::completion_signatures<
+                    typename result_type_signature_helper<
+                        pika::util::invoke_result_t<F, Ts...>>::type>;
+
             using completion_signatures =
-                pika::execution::experimental::make_completion_signatures<S,
-                    pika::execution::experimental::detail::empty_env,
+                pika::execution::experimental::make_completion_signatures<
+                    Sender, pika::execution::experimental::detail::empty_env,
                     pika::execution::experimental::completion_signatures<
                         pika::execution::experimental::set_error_t(
                             std::exception_ptr)>,
@@ -159,14 +202,14 @@ namespace pika::cuda::experimental {
             using value_types =
                 pika::util::detail::unique_t<pika::util::detail::transform_t<
                     typename pika::execution::experimental::sender_traits<
-                        S>::template value_types<Tuple, Variant>,
+                        Sender>::template value_types<Tuple, Variant>,
                     invoke_result_helper>>;
 
             template <template <typename...> class Variant>
             using error_types =
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
                     typename pika::execution::experimental::sender_traits<
-                        S>::template error_types<Variant>,
+                        Sender>::template error_types<Variant>,
                     std::exception_ptr>>;
 
             static constexpr bool sends_done = false;
@@ -174,9 +217,10 @@ namespace pika::cuda::experimental {
 
             template <typename Receiver>
             friend auto tag_invoke(pika::execution::experimental::connect_t,
-                then_on_host_sender&& s, Receiver&& receiver)
+                then_on_host_sender_type&& s, Receiver&& receiver)
             {
-                return pika::execution::experimental::connect(PIKA_MOVE(s.s),
+                return pika::execution::experimental::connect(
+                    PIKA_MOVE(s.sender),
                     then_on_host_receiver<Receiver, F>{
                         PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f),
                         PIKA_MOVE(s.sched)});
@@ -184,9 +228,9 @@ namespace pika::cuda::experimental {
 
             template <typename Receiver>
             friend auto tag_invoke(pika::execution::experimental::connect_t,
-                then_on_host_sender& s, Receiver&& receiver)
+                then_on_host_sender_type& s, Receiver&& receiver)
             {
-                return pika::execution::experimental::connect(s.s,
+                return pika::execution::experimental::connect(s.sender,
                     then_on_host_receiver<Receiver, F>{
                         PIKA_FORWARD(Receiver, receiver), s.f, s.sched});
             }
@@ -194,22 +238,11 @@ namespace pika::cuda::experimental {
             friend cuda_scheduler tag_invoke(
                 pika::execution::experimental::get_completion_scheduler_t<
                     pika::execution::experimental::set_value_t>,
-                then_on_host_sender const& s)
+                then_on_host_sender_type const& s) noexcept
             {
                 return s.sched;
             }
         };
-
-        // This should be a hidden friend in then_on_host_receiver. However,
-        // nvcc does not know how to compile it with some argument types
-        // ("error: no instance of overloaded function std::forward matches the
-        // argument list").
-        template <typename Receiver, typename F, typename... Ts>
-        void tag_invoke(pika::execution::experimental::set_value_t,
-            then_on_host_receiver<Receiver, F>&& receiver, Ts&&... ts)
-        {
-            receiver.set_value(PIKA_FORWARD(Ts, ts)...);
-        }
     }    // namespace then_on_host_detail
 
     // NOTE: This is not a customization of pika::execution::experimental::then.
@@ -225,21 +258,21 @@ namespace pika::cuda::experimental {
       : pika::functional::detail::tag_fallback<then_on_host_t>
     {
     private:
-        template <typename S, typename F>
+        template <typename Sender, typename F>
         friend PIKA_FORCEINLINE auto tag_fallback_invoke(
-            then_on_host_t, S&& s, F&& f)
+            then_on_host_t, Sender&& sender, F&& f)
         {
             auto completion_sched =
                 pika::execution::experimental::get_completion_scheduler<
-                    pika::execution::experimental::set_value_t>(s);
+                    pika::execution::experimental::set_value_t>(sender);
             static_assert(
                 std::is_same_v<std::decay_t<decltype(completion_sched)>,
                     cuda_scheduler>,
                 "then_on_host can only be used with senders whose "
                 "completion scheduler is cuda_scheduler");
 
-            return then_on_host_detail::then_on_host_sender<S, F>{
-                PIKA_FORWARD(S, s), PIKA_FORWARD(F, f),
+            return then_on_host_detail::then_on_host_sender<Sender, F>{
+                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f),
                 std::move(completion_sched)};
         }
 
