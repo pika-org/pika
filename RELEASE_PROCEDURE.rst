@@ -29,6 +29,10 @@ pika follows `Semantic Versioning <https://semver.org>`_.
 
 #. Update the minimum required versions if necessary.
 
+#. Check that projects dependent on pika are passing CI with pika main branch.
+   Check if there is no performance regressions due to the pika upgrade in
+   those projects.
+
 #. Repeat the following steps until satisfied with the release.
 
    #. Change ``PIKA_VERSION_TAG`` in ``CMakeLists.txt`` to ``-rcN``, where ``N``
@@ -50,10 +54,13 @@ pika follows `Semantic Versioning <https://semver.org>`_.
    You'll need to set ``GITHUB_TOKEN`` or both ``GITHUB_USER`` and
    ``GITHUB_PASSWORD`` for the hub release command.
 
-#. Merge release branch into ``main``.
+#. Merge release branch into ``main`` (with --no-ff).
 
 #. Modify the release procedure if necessary.
 
 #. Change ``PIKA_VERSION_TAG`` in ``CMakeLists.txt`` back to ``-trunk``.
 
 #. Update spack (``https://github.com/spack/spack``).
+
+#. Close the milestone for this release and rename the tabs of the pika-planning
+   board.
