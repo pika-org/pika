@@ -82,9 +82,8 @@ int main()
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        custom_sender{
-            start_called, connect_called, tag_invoke_overload_called} |
-            ex::start_detached();
+        ex::start_detached(custom_sender{
+            start_called, connect_called, tag_invoke_overload_called});
         PIKA_TEST(start_called);
         PIKA_TEST(connect_called);
         PIKA_TEST(!tag_invoke_overload_called);

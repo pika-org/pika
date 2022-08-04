@@ -14,7 +14,6 @@
 
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
-#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/detail/single_result.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
@@ -267,12 +266,6 @@ namespace pika::this_thread::experimental {
 
             state.wait();
             return state.get_value();
-        }
-
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(sync_wait_t)
-        {
-            return pika::execution::experimental::detail::partial_algorithm<
-                sync_wait_t>{};
         }
     } sync_wait{};
 }    // namespace pika::this_thread::experimental

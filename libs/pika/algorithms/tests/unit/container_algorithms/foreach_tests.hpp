@@ -348,8 +348,8 @@ void test_for_each_sender(ExPolicy&& p, IteratorTag)
     auto rng = pika::util::make_iterator_range(
         iterator(std::begin(c)), iterator(std::end(c)));
     auto f = [](std::size_t& v) { v = 42; };
-    auto result = ex::just(rng, f) |
-        pika::ranges::for_each(std::forward<ExPolicy>(p)) | tt::sync_wait();
+    auto result = tt::sync_wait(
+        ex::just(rng, f) | pika::ranges::for_each(std::forward<ExPolicy>(p)));
     PIKA_TEST(result == iterator(std::end(c)));
 
     // verify values
@@ -380,8 +380,8 @@ void test_for_each_exception_sender(ExPolicy p, IteratorTag)
     bool caught_exception = false;
     try
     {
-        ex::just(rng, f) | pika::ranges::for_each(std::forward<ExPolicy>(p)) |
-            tt::sync_wait();
+        tt::sync_wait(ex::just(rng, f) |
+            pika::ranges::for_each(std::forward<ExPolicy>(p)));
 
         PIKA_TEST(false);
     }
@@ -417,8 +417,8 @@ void test_for_each_bad_alloc_sender(ExPolicy p, IteratorTag)
     bool caught_exception = false;
     try
     {
-        ex::just(rng, f) | pika::ranges::for_each(std::forward<ExPolicy>(p)) |
-            tt::sync_wait();
+        tt::sync_wait(ex::just(rng, f) |
+            pika::ranges::for_each(std::forward<ExPolicy>(p)));
 
         PIKA_TEST(false);
     }
