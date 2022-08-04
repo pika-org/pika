@@ -106,6 +106,7 @@ namespace pika::cuda::experimental {
     void cusolver_handle::set_stream(cuda_stream const& stream)
     {
         check_cusolver_error(cusolverDnSetStream(handle, stream.get()));
+        this->stream = stream.get();
     }
 
     std::ostream& operator<<(std::ostream& os, cusolver_handle const& handle)
