@@ -136,6 +136,23 @@ int main()
         PIKA_TEST_EQ(set_value_count, 30);
     }
 
+    {
+        std::atomic<bool> set_value_called{false};
+        std::atomic<int> set_value_count{0};
+        int x = 42;
+        auto s = ex::bulk(ex::just(const_reference_sender<decltype(x)>{x}), 10,
+            [&](int n, auto&&) {
+                PIKA_TEST_EQ(n, set_value_count);
+                ++set_value_count;
+            });
+        auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+        PIKA_TEST_EQ(set_value_count, 10);
+    }
+
     // operator| overload
     {
         std::atomic<bool> set_value_called{false};
@@ -232,6 +249,16 @@ int main()
         PIKA_TEST(tag_invoke_overload_called);
         PIKA_TEST(custom_bulk_call_operator_called);
         PIKA_TEST_EQ(custom_bulk_call_count, 3);
+    }
+
+    {
+        std::atomic<bool> set_error_called{false};
+        auto s = ex::bulk(const_reference_error_sender{}, 0, [](int) {});
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_error_called);
     }
 
     test_adl_isolation(ex::bulk(ex::just(), 1, my_namespace::my_type{}));
