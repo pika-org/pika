@@ -29,6 +29,12 @@ jobs:
         repository: wolfpld/tracy
         ref: v0.8.2
         path: tracy
+    - name: Update apt repositories for ccache
+      run: apt update
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ccache-linux-tracy
     - name: Install Tracy
       shell: bash
       working-directory: tracy
@@ -43,6 +49,7 @@ jobs:
               . \
               -Bbuild \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DBUILD_SHARED_LIBS=ON \
               -DTRACY_TIMER_FALLBACK=ON
           cmake --build build --target install
@@ -59,6 +66,7 @@ jobs:
               . \
               -Bbuild \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
               -DPIKA_WITH_UNITY_BUILD=ON \
               -DPIKA_WITH_MALLOC=system \
