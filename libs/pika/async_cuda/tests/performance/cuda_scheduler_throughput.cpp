@@ -56,7 +56,9 @@ struct sMatrixSize
     unsigned int uiWA, uiHA, uiWB, uiHB, uiWC, uiHC;
 };
 
-constexpr auto cuda_memcpy_async = [](auto&&... ts) {
+constexpr auto cuda_memcpy_async =
+    [](auto&&... ts) -> decltype(cu::check_cuda_error(
+                         cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...))) {
     cu::check_cuda_error(cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...));
 };
 

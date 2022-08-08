@@ -12,6 +12,7 @@
 |github_actions_linux_sanitizers_status|
 |github_actions_macos_debug_status|
 |codacy|
+|codacy_coverage|
 
 ====
 pika
@@ -147,3 +148,7 @@ Pick your favourite meaning from the following:
 .. |codacy| image:: https://api.codacy.com/project/badge/Grade/e03f57f1c4cd40e7b514e552a723c125
      :target: https://www.codacy.com/gh/pika-org/pika
      :alt: Codacy
+
+.. |codacy_coverage| image:: https://api.codacy.com/project/badge/Coverage/e03f57f1c4cd40e7b514e552a723c125
+     :target: https://www.codacy.com/gh/pika-org/pika
+     :alt: Codacy coverage

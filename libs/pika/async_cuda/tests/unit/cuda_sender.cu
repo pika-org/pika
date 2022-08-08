@@ -23,11 +23,15 @@ namespace cu = pika::cuda::experimental;
 namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;
 
-constexpr auto cuda_launch_kernel = [](auto&&... ts) {
+constexpr auto cuda_launch_kernel =
+    [](auto&&... ts) -> decltype(cu::check_cuda_error(
+                         cudaLaunchKernel(std::forward<decltype(ts)>(ts)...))) {
     cu::check_cuda_error(cudaLaunchKernel(std::forward<decltype(ts)>(ts)...));
 };
 
-constexpr auto cuda_memcpy_async = [](auto&&... ts) {
+constexpr auto cuda_memcpy_async =
+    [](auto&&... ts) -> decltype(cu::check_cuda_error(
+                         cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...))) {
     cu::check_cuda_error(cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...));
 };
 
@@ -157,7 +161,7 @@ int pika_main(pika::program_options::variables_map& vm)
     // --------------------
     // test kernel launch<double> using apply and async
     double testd = 1.2345;
-    std::cout << "schedule : cuda kernel <double>  : " << testf << std::endl;
+    std::cout << "schedule : cuda kernel <double>  : " << testd << std::endl;
     tt::sync_wait(ex::transfer_just(cuda_sched, testd) |
         cu::then_with_stream(&cuda_trivial_kernel<double>));
 
