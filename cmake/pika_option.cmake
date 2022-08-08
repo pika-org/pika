@@ -5,60 +5,80 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+include(CMakeDependentOption)
 include(CMakeParseArguments)
 
 set(PIKA_OPTION_CATEGORIES "Generic" "Build Targets" "Thread Manager"
                            "Profiling" "Debugging"
 )
 
-function(pika_option option type description default)
+macro(pika_option option type description default)
   set(options ADVANCED)
+  set(one_value_args CATEGORY DEPENDS)
   set(multi_value_args STRINGS)
   cmake_parse_arguments(
     PIKA_OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
 
-  if(NOT DEFINED ${option})
-    set(${option}
-        ${default}
-        CACHE ${type} "${description}" FORCE
-    )
-    if(PIKA_OPTION_ADVANCED)
-      mark_as_advanced(${option})
+  if("${type}" STREQUAL "BOOL")
+    # Use regular CMake options for booleans
+    if(NOT PIKA_OPTION_DEPENDS)
+      option("${option}" "${description}" "${default}")
+    else()
+      cmake_dependent_option(
+        "${option}" "${description}" "${default}" "${PIKA_OPTION_DEPENDS}" OFF
+      )
     endif()
   else()
-    # make sure that dependent projects can overwrite any of the pika options
-    unset(${option} PARENT_SCOPE)
-
-    get_property(
-      _option_is_cache_property
-      CACHE "${option}"
-      PROPERTY TYPE
-      SET
-    )
-    if(NOT _option_is_cache_property)
+    if(PIKA_OPTION_DEPENDS)
+      message(
+        FATAL_ERROR
+          "pika_option DEPENDS keyword can only be used with BOOL options"
+      )
+    endif()
+    # Use custom cache variables for other types
+    if(NOT DEFINED ${option})
       set(${option}
           ${default}
           CACHE ${type} "${description}" FORCE
       )
-      if(PIKA_OPTION_ADVANCED)
-        mark_as_advanced(${option})
-      endif()
     else()
-      set_property(CACHE "${option}" PROPERTY HELPSTRING "${description}")
-      set_property(CACHE "${option}" PROPERTY TYPE "${type}")
+      get_property(
+        _option_is_cache_property
+        CACHE "${option}"
+        PROPERTY TYPE
+        SET
+      )
+      if(NOT _option_is_cache_property)
+        set(${option}
+            ${default}
+            CACHE ${type} "${description}" FORCE
+        )
+        if(PIKA_OPTION_ADVANCED)
+          mark_as_advanced(${option})
+        endif()
+      else()
+        set_property(CACHE "${option}" PROPERTY HELPSTRING "${description}")
+        set_property(CACHE "${option}" PROPERTY TYPE "${type}")
+      endif()
+    endif()
+
+    if(PIKA_OPTION_STRINGS)
+      if("${type}" STREQUAL "STRING")
+        set_property(
+          CACHE "${option}" PROPERTY STRINGS "${PIKA_OPTION_STRINGS}"
+        )
+      else()
+        message(
+          FATAL_ERROR
+            "pika_option(): STRINGS can only be used if type is STRING !"
+        )
+      endif()
     endif()
   endif()
 
-  if(PIKA_OPTION_STRINGS)
-    if("${type}" STREQUAL "STRING")
-      set_property(CACHE "${option}" PROPERTY STRINGS "${PIKA_OPTION_STRINGS}")
-    else()
-      message(
-        FATAL_ERROR
-          "pika_option(): STRINGS can only be used if type is STRING !"
-      )
-    endif()
+  if(PIKA_OPTION_ADVANCED)
+    mark_as_advanced(${option})
   endif()
 
   set_property(GLOBAL APPEND PROPERTY PIKA_MODULE_CONFIG_PIKA ${option})
@@ -71,59 +91,4 @@ function(pika_option option type description default)
       ${_category}
       CACHE INTERNAL ""
   )
-endfunction()
-
-# simplify setting an option in cache
-function(pika_set_option option)
-  set(options FORCE)
-  set(one_value_args VALUE TYPE HELPSTRING)
-  set(multi_value_args)
-  cmake_parse_arguments(
-    PIKA_SET_OPTION "${options}" "${one_value_args}" "${multi_value_args}"
-    ${ARGN}
-  )
-
-  if(NOT DEFINED ${option})
-    pika_error("attempting to set an undefined option: ${option}")
-  endif()
-
-  set(${option}_force)
-  if(PIKA_SET_OPTION_FORCE)
-    set(${option}_force FORCE)
-  endif()
-
-  if(PIKA_SET_OPTION_HELPSTRING)
-    set(${option}_description ${PIKA_SET_OPTION_HELPSTRING})
-  else()
-    get_property(
-      ${option}_description
-      CACHE "${option}"
-      PROPERTY HELPSTRING
-    )
-  endif()
-
-  if(PIKA_SET_OPTION_TYPE)
-    set(${option}_type ${PIKA_SET_OPTION_TYPE})
-  else()
-    get_property(
-      ${option}_type
-      CACHE "${option}"
-      PROPERTY TYPE
-    )
-  endif()
-
-  if(DEFINED PIKA_SET_OPTION_VALUE)
-    set(${option}_value ${PIKA_SET_OPTION_VALUE})
-  else()
-    get_property(
-      ${option}_value
-      CACHE "${option}"
-      PROPERTY VALUE
-    )
-  endif()
-
-  set(${option}
-      ${${option}_value}
-      CACHE ${${option}_type} "${${option}_description}" ${${option}_force}
-  )
-endfunction()
+endmacro()
