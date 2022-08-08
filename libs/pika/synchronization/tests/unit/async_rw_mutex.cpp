@@ -169,7 +169,7 @@ template <typename ReadWriteT, typename ReadT = ReadWriteT>
 void test_single_read_access(async_rw_mutex<ReadWriteT, ReadT> rwm)
 {
     std::atomic<bool> called{false};
-    rwm.read() | then([&](auto) { called = true; }) | sync_wait();
+    sync_wait(rwm.read() | then([&](auto) { called = true; }));
     PIKA_TEST(called);
 }
 
@@ -177,7 +177,7 @@ template <typename ReadWriteT, typename ReadT = ReadWriteT>
 void test_single_readwrite_access(async_rw_mutex<ReadWriteT, ReadT> rwm)
 {
     std::atomic<bool> called{false};
-    rwm.readwrite() | then([&](auto) { called = true; }) | sync_wait();
+    sync_wait(rwm.readwrite() | then([&](auto) { called = true; }));
     PIKA_TEST(called);
 }
 
@@ -188,7 +188,7 @@ void test_moved(async_rw_mutex<ReadWriteT, ReadT> rwm)
     // values alive
     auto rwm2 = std::move(rwm);
     std::atomic<bool> called{false};
-    rwm2.read() | then([&](auto) { called = true; }) | sync_wait();
+    sync_wait(rwm2.read() | then([&](auto) { called = true; }));
     PIKA_TEST(called);
 }
 
@@ -250,7 +250,7 @@ void test_multiple_accesses(
     submit_senders(exec, rw_senders);
 
     // The destructor does not block, so we block here manually
-    rwm.readwrite() | sync_wait();
+    sync_wait(rwm.readwrite());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

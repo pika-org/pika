@@ -375,7 +375,7 @@ int pika_main()
     {
         cudaStream_t first_stream{};
         cudaStream_t second_stream{};
-        ex::schedule(cu::cuda_scheduler{pool}) |
+        tt::sync_wait(ex::schedule(cu::cuda_scheduler{pool}) |
             cu::then_with_stream(
                 [&](cudaStream_t stream) { first_stream = stream; }) |
             cu::then_with_stream([&](cudaStream_t stream) {
@@ -394,8 +394,7 @@ int pika_main()
             }) |
             cu::then_with_stream([&](cudaStream_t stream) {
                 PIKA_TEST_EQ(stream, second_stream);
-            }) |
-            tt::sync_wait();
+            }));
     }
 
     {
@@ -414,14 +413,15 @@ int pika_main()
             cu::then_with_stream(increment{}) |
             cu::then_with_stream(increment{}) |
             cu::then_with_stream(increment{});
-        ex::when_all(ex::just(&p_h), std::move(s), ex::just(sizeof(type)),
-            ex::just(cudaMemcpyDeviceToHost)) |
+        tt::sync_wait(
+            ex::when_all(ex::just(&p_h), std::move(s), ex::just(sizeof(type)),
+                ex::just(cudaMemcpyDeviceToHost)) |
             ex::transfer(cu::cuda_scheduler{pool}) |
             cu::then_with_stream(cuda_memcpy_async{}) |
             ex::transfer(ex::thread_pool_scheduler{}) |
             ex::then(&cu::check_cuda_error) |
             ex::then([&p_h] { PIKA_TEST_EQ(p_h, 3); }) |
-            ex::transfer(ex::thread_pool_scheduler{}) | tt::sync_wait();
+            ex::transfer(ex::thread_pool_scheduler{}));
 
         cu::check_cuda_error(cudaFree(p));
     }

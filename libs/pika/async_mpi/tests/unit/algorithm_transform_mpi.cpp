@@ -138,8 +138,9 @@ int pika_main()
                 {
                     data = 42;
                 }
-                auto result = ex::just(&data, count, datatype, 0, comm) |
-                    mpi::transform_mpi(MPI_Ibcast) | tt::sync_wait();
+                auto result =
+                    tt::sync_wait(ex::just(&data, count, datatype, 0, comm) |
+                        mpi::transform_mpi(MPI_Ibcast));
                 if (rank != 0)
                 {
                     PIKA_TEST_EQ(data, 42);
@@ -156,10 +157,9 @@ int pika_main()
                 bool exception_thrown = false;
                 try
                 {
-                    mpi::transform_mpi(
+                    tt::sync_wait(mpi::transform_mpi(
                         error_sender<int*, int, MPI_Datatype, int, MPI_Comm>{},
-                        MPI_Ibcast) |
-                        tt::sync_wait();
+                        MPI_Ibcast));
                     PIKA_TEST(false);
                 }
                 catch (std::runtime_error const& e)
@@ -203,9 +203,8 @@ int pika_main()
                 bool exception_thrown = false;
                 try
                 {
-                    mpi::transform_mpi(
-                        ex::just(data, count, datatype, -1, comm), MPI_Ibcast) |
-                        tt::sync_wait();
+                    tt::sync_wait(mpi::transform_mpi(
+                        ex::just(data, count, datatype, -1, comm), MPI_Ibcast));
                     PIKA_TEST(false);
                 }
                 catch (std::runtime_error const& e)
@@ -228,9 +227,8 @@ int pika_main()
                 bool exception_thrown = false;
                 try
                 {
-                    mpi::transform_mpi(
-                        ex::just(data, count, datatype, -1, comm), MPI_Ibcast) |
-                        tt::sync_wait();
+                    tt::sync_wait(mpi::transform_mpi(
+                        ex::just(data, count, datatype, -1, comm), MPI_Ibcast));
                     PIKA_TEST(false);
                 }
                 catch (std::runtime_error const&)

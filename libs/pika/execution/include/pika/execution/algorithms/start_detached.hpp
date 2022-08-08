@@ -16,7 +16,6 @@
 #include <pika/allocator_support/traits/is_allocator.hpp>
 #include <pika/assert.hpp>
 #include <pika/concepts/concepts.hpp>
-#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
@@ -153,19 +152,6 @@ namespace pika { namespace execution { namespace experimental {
             new (p.get())
                 operation_state_type{PIKA_FORWARD(Sender, sender), alloc};
             PIKA_UNUSED(p.release());
-        }
-
-        // clang-format off
-        template <typename Allocator = pika::detail::internal_allocator<>,
-            PIKA_CONCEPT_REQUIRES_(
-                pika::detail::is_allocator_v<Allocator>
-            )>
-        // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            start_detached_t, Allocator const& allocator = Allocator{})
-        {
-            return detail::partial_algorithm<start_detached_t, Allocator>{
-                allocator};
         }
     } start_detached{};
 }}}    // namespace pika::execution::experimental

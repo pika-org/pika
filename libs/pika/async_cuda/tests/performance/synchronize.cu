@@ -90,7 +90,7 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
         {
-            ex::schedule(sched) | cu::then_with_stream(f) | tt::sync_wait();
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f));
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -111,17 +111,17 @@ int pika_main(pika::program_options::variables_map& vm)
             // We have to manually unroll this loop, because the type of the
             // sender changes for each additional then_with_stream call. The
             // number of unrolled calls must match batch_size above.
-            ex::schedule(sched) | cu::then_with_stream(f) |
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
-                cu::then_with_stream(f) | tt::sync_wait();
+                cu::then_with_stream(f));
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
-            ex::schedule(sched) | cu::then_with_stream(f) | tt::sync_wait();
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f));
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -145,7 +145,7 @@ int pika_main(pika::program_options::variables_map& vm)
             // intentionally insert dummy then([]{}) calls between the
             // then_with_stream calls to force synchronization between the
             // kernel launches.
-            ex::schedule(sched) | cu::then_with_stream(f) |
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
                 ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
                 ex::transfer(sched) | cu::then_with_stream(f) |
                 ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
@@ -163,12 +163,12 @@ int pika_main(pika::program_options::variables_map& vm)
                 ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
                 ex::transfer(sched) | cu::then_with_stream(f) |
                 ex::transfer(ex::thread_pool_scheduler{}) | ex::then([] {}) |
-                ex::transfer(sched) | cu::then_with_stream(f) | tt::sync_wait();
+                ex::transfer(sched) | cu::then_with_stream(f));
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
-            ex::schedule(sched) | cu::then_with_stream(f) | tt::sync_wait();
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f));
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -186,8 +186,8 @@ int pika_main(pika::program_options::variables_map& vm)
         pika::chrono::detail::high_resolution_timer timer;
         for (std::size_t i = 0; i != iterations; ++i)
         {
-            ex::schedule(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | tt::sync_wait();
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}));
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -208,19 +208,19 @@ int pika_main(pika::program_options::variables_map& vm)
             // We have to manually unroll this loop, because the type of the
             // sender changes for each additional then_with_stream call. The
             // number of unrolled calls must match batch_size above.
-            ex::schedule(sched) | cu::then_with_stream(f) |
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) | cu::then_with_stream(f) |
                 cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | tt::sync_wait();
+                ex::transfer(ex::thread_pool_scheduler{}));
         }
         // Do the remainder one-by-one
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
-            ex::schedule(sched) | cu::then_with_stream(f) |
-                ex::transfer(ex::thread_pool_scheduler{}) | tt::sync_wait();
+            tt::sync_wait(ex::schedule(sched) | cu::then_with_stream(f) |
+                ex::transfer(ex::thread_pool_scheduler{}));
         }
         double elapsed = timer.elapsed();
         std::cout
