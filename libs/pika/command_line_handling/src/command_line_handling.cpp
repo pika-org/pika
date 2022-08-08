@@ -455,8 +455,8 @@ namespace pika::detail {
 #if defined(__APPLE__)
             false;
 #else
-            !(cfgmap.get_value<int>("pika.ignore_process_mask", 0) > 0) ||
-            (vm.count("pika:ignore-process-mask") > 0);
+            !((cfgmap.get_value<int>("pika.ignore_process_mask", 0) > 0) ||
+                (vm.count("pika:ignore-process-mask") > 0));
 #endif
 
         ini_config.emplace_back(
