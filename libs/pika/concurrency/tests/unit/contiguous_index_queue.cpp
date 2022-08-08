@@ -137,7 +137,7 @@ void test_concurrent_worker(pop_mode m, std::size_t thread_index,
 void test_concurrent(pop_mode m)
 {
     std::uint32_t first = 33;
-    std::uint32_t last = 73210;
+    std::uint32_t last = 1372195;
     pika::concurrency::detail::contiguous_index_queue<> q{first, last};
 
     std::size_t const num_threads = pika::get_num_worker_threads();
