@@ -125,6 +125,7 @@ namespace pika { namespace util {
             "${PIKA_EXPECT_CONNECTING_LOCALITIES:0}",
 
             // add placeholders for keys to be added by command line handling
+            "ignore_process_mask = 0",
             "os_threads = cores",
             "cores = all",
             "localities = 1",
