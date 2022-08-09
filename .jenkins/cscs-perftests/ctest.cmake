@@ -16,14 +16,14 @@ set(CTEST_UPDATE_VERSION_ONLY "ON")
 set(CTEST_SUBMIT_RETRY_COUNT 5)
 set(CTEST_SUBMIT_RETRY_DELAY 60)
 
-if(NOT "$ENV{ghprbPullId}" STREQUAL "")
-  set(CTEST_BUILD_NAME "$ENV{ghprbPullId}-${CTEST_BUILD_CONFIGURATION_NAME}")
-  set(CTEST_TRACK "Experimental")
-else()
+if("$ENV{ghprbPullId}" STREQUAL "")
   set(CTEST_BUILD_NAME
       "$ENV{git_local_branch}-${CTEST_BUILD_CONFIGURATION_NAME}"
   )
   set(CTEST_TRACK "$ENV{git_local_branch}")
+else()
+  set(CTEST_BUILD_NAME "$ENV{ghprbPullId}-${CTEST_BUILD_CONFIGURATION_NAME}")
+  set(CTEST_TRACK "Experimental")
 endif()
 
 ctest_start(Experimental TRACK "${CTEST_TRACK}")

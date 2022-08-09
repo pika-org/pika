@@ -21,14 +21,14 @@ if(NOT processor_count EQUAL 0)
   set(test_args PARALLEL_LEVEL ${processor_count})
 endif()
 
-if(NOT "$ENV{ghprbPullId}" STREQUAL "")
-  set(CTEST_BUILD_NAME "$ENV{ghprbPullId}-${CTEST_BUILD_CONFIGURATION_NAME}")
-  set(CTEST_TRACK "Pull_Requests")
-else()
+if("$ENV{ghprbPullId}" STREQUAL "")
   set(CTEST_BUILD_NAME
       "$ENV{git_local_branch}-${CTEST_BUILD_CONFIGURATION_NAME}"
   )
   set(CTEST_TRACK "$ENV{git_local_branch}")
+else()
+  set(CTEST_BUILD_NAME "$ENV{ghprbPullId}-${CTEST_BUILD_CONFIGURATION_NAME}")
+  set(CTEST_TRACK "Pull_Requests")
 endif()
 
 set(CTEST_CONFIGURE_COMMAND "${CMAKE_COMMAND} ${CTEST_SOURCE_DIRECTORY}")
