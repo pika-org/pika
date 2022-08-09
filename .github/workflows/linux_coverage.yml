@@ -19,6 +19,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Update apt repositories for ccache
+      run: apt update
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ccache-linux-coverage
     - name: Configure
       shell: bash
       run: |
@@ -26,6 +32,7 @@ jobs:
               . \
               -Bbuild \
               -GNinja \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
               -DCMAKE_CXX_FLAGS="--coverage" \
               -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
