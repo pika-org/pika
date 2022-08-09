@@ -245,7 +245,7 @@ jobs:
           ctest \
             -j3 \
             --output-on-failure \
-            --timeout 120 \
+            --timeout 300 \
             --tests-regex tests.unit.modules.algorithms \
             --exclude-regex \
           "tests.unit.modules.algorithms.container_algorithms|\
