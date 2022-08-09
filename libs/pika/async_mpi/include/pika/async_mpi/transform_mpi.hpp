@@ -12,6 +12,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_mpi/mpi_polling.hpp>
+#include <pika/async_mpi/mpi_throttling.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
@@ -58,7 +59,7 @@ namespace pika::mpi::experimental {
                     set_value_request_callback_helper(
                         status, PIKA_MOVE(op_state.receiver));
                 },
-                request);
+                request, op_state.stream);
         }
 
         template <typename Result, typename OperationState>
@@ -74,7 +75,7 @@ namespace pika::mpi::experimental {
                         PIKA_MOVE(op_state.receiver),
                         PIKA_MOVE(std::get<Result>(op_state.result)));
                 },
-                request);
+                request, op_state.stream);
         }
 
         template <typename F, typename... Ts>
@@ -103,6 +104,7 @@ namespace pika::mpi::experimental {
         {
             std::decay_t<Sender> sender;
             std::decay_t<F> f;
+            stream_index stream;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
             template <typename T>
@@ -118,8 +120,8 @@ namespace pika::mpi::experimental {
             };
 
             template <typename... Ts>
-            requires is_mpi_request_invocable_v<F, Ts...>
-            using invoke_result_helper =
+            requires is_mpi_request_invocable_v<F,
+                Ts...> using invoke_result_helper =
                 pika::execution::experimental::completion_signatures<
                     typename result_type_signature_helper<
                         mpi_request_invoke_result_t<F, Ts...>>::type>;
@@ -170,6 +172,7 @@ namespace pika::mpi::experimental {
             {
                 std::decay_t<Receiver> receiver;
                 std::decay_t<F> f;
+                stream_index stream;
 
                 struct transform_mpi_receiver
                 {
@@ -213,7 +216,8 @@ namespace pika::mpi::experimental {
                                     mpi_request_invoke_result_t<F, Ts...>;
 
                                 // throttle if too many "in flight"
-                                detail::wait_for_throttling();
+                                detail::wait_for_throttling_snd(
+                                    r.op_state.stream);
 
                                 if constexpr (std::is_void_v<
                                                   invoke_result_type>)
@@ -341,9 +345,11 @@ namespace pika::mpi::experimental {
                 result_type result;
 
                 template <typename Receiver_, typename F_, typename Sender_>
-                operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender)
+                operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender,
+                    stream_index s)
                   : receiver(PIKA_FORWARD(Receiver_, receiver))
                   , f(PIKA_FORWARD(F_, f))
+                  , stream{s}
                   , op_state(pika::execution::experimental::connect(
                         PIKA_FORWARD(Sender_, sender),
                         transform_mpi_receiver{*this}))
@@ -364,7 +370,7 @@ namespace pika::mpi::experimental {
                 transform_mpi_sender_type& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
-                    PIKA_FORWARD(Receiver, receiver), s.f, s.sender);
+                    PIKA_FORWARD(Receiver, receiver), s.f, s.sender, s.stream);
             }
 
             template <typename Receiver>
@@ -374,7 +380,7 @@ namespace pika::mpi::experimental {
             {
                 return operation_state<Receiver>(
                     PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f),
-                    PIKA_MOVE(s.sender));
+                    PIKA_MOVE(s.sender), s.stream);
             }
         };
     }    // namespace transform_mpi_detail
@@ -383,6 +389,7 @@ namespace pika::mpi::experimental {
       : pika::functional::detail::tag_fallback<transform_mpi_t>
     {
     private:
+        // if the user did not specify an mpi stream
         template <typename Sender, typename F,
             PIKA_CONCEPT_REQUIRES_(
                 pika::execution::experimental::is_sender_v<Sender>)>
@@ -390,9 +397,25 @@ namespace pika::mpi::experimental {
             transform_mpi_t, Sender&& sender, F&& f)
         {
             return transform_mpi_detail::transform_mpi_sender<Sender, F>{
-                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f)};
+                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f),
+                mpi::experimental::default_stream};
         }
 
+        // if the user did specify an mpi stream
+        template <typename Sender, typename F,
+            PIKA_CONCEPT_REQUIRES_(
+                pika::execution::experimental::is_sender_v<Sender>)>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            transform_mpi_t, Sender&& sender, F&& f,
+            mpi::experimental::stream_index s)
+        {
+            return transform_mpi_detail::transform_mpi_sender<Sender, F>{
+                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
+        }
+
+        //
+        // tag invoke overloads for mpi_transform
+        //
         template <typename F>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             transform_mpi_t, F&& f)
@@ -400,5 +423,15 @@ namespace pika::mpi::experimental {
             return ::pika::execution::experimental::detail::partial_algorithm<
                 transform_mpi_t, F>{PIKA_FORWARD(F, f)};
         }
+
+        template <typename F>
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
+            transform_mpi_t, F&& f, mpi::experimental::stream_index s)
+        {
+            return ::pika::execution::experimental::detail::partial_algorithm<
+                transform_mpi_t, F, mpi::experimental::stream_index>{
+                PIKA_FORWARD(F, f), s};
+        }
+
     } transform_mpi{};
 }    // namespace pika::mpi::experimental

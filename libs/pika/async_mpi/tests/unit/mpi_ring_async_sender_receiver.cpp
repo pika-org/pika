@@ -82,11 +82,13 @@ int pika_main(pika::program_options::variables_map& vm)
 
     // if comm size < 2 this test should fail
     // it needs to run on N>2 ranks to be useful
-    PIKA_TEST_MSG(size > 1, "This test requires N>1 mpi ranks");
+    //PIKA_TEST_MSG(size > 1, "This test requires N>1 mpi ranks");
 
     const std::uint64_t iterations = vm["iterations"].as<std::uint64_t>();
     //
     output = vm.count("output") != 0;
+    auto throttling = vm["in-flight-limit"].as<std::uint32_t>();
+    mpi::detail::set_max_requests_in_flight(throttling);
 
     if (rank == 0 && output)
     {
@@ -96,12 +98,6 @@ int pika_main(pika::program_options::variables_map& vm)
     }
 
     {
-        size_t throttling = mpi::detail::get_max_requests_in_flight();
-        if (throttling == size_t(-1))
-        {
-            mpi::detail::set_max_requests_in_flight(512);
-        }
-
         // this needs to scope all uses of transform_mpi
         mpi::enable_user_polling enable_polling;
 
@@ -133,7 +129,7 @@ int pika_main(pika::program_options::variables_map& vm)
                 {
                     auto snd = ex::just(&tokens[tag], 1, MPI_INT, rank_from,
                                    tag, MPI_COMM_WORLD) |
-                        mpi::transform_mpi(MPI_Irecv) |
+                        mpi::transform_mpi(MPI_Irecv, mpi::receive_stream) |
                         ex::then([=, &tokens, &counter](int /*result*/) {
                             msg_recv(rank, size, rank_to, rank_from,
                                 tokens[tag], tag);
@@ -146,7 +142,7 @@ int pika_main(pika::program_options::variables_map& vm)
                 {
                     auto recv_snd = ex::just(&tokens[tag], 1, MPI_INT,
                                         rank_from, tag, MPI_COMM_WORLD) |
-                        mpi::transform_mpi(MPI_Irecv) |
+                        mpi::transform_mpi(MPI_Irecv, mpi::receive_stream) |
                         ex::then([=, &tokens](int /*result*/) {
                             msg_recv(rank, size, rank_to, rank_from,
                                 tokens[tag], tag);
@@ -158,7 +154,7 @@ int pika_main(pika::program_options::variables_map& vm)
                         ex::when_all(ex::just(&tokens[tag], 1, MPI_INT, rank_to,
                                          tag, MPI_COMM_WORLD),
                             std::move(recv_snd)) |
-                        mpi::transform_mpi(MPI_Isend) |
+                        mpi::transform_mpi(MPI_Isend, mpi::send_stream) |
                         ex::then([=, &tokens, &counter](int /*result*/) {
                             msg_send(rank, size, rank_to, rank_from,
                                 tokens[tag], tag);
@@ -173,7 +169,7 @@ int pika_main(pika::program_options::variables_map& vm)
                 {
                     auto snd0 = ex::just(&tokens[tag], 1, MPI_INT, rank_to, tag,
                                     MPI_COMM_WORLD) |
-                        mpi::transform_mpi(MPI_Isend) |
+                        mpi::transform_mpi(MPI_Isend, mpi::send_stream) |
                         ex::then([=, &tokens](int /*result*/) {
                             msg_send(rank, size, rank_to, rank_from,
                                 tokens[tag], tag);
@@ -188,12 +184,12 @@ int pika_main(pika::program_options::variables_map& vm)
             }
         }
 
-        auto tt = mpi::detail::get_num_requests_in_flight();
-        if (tt != 0)
-        {
-            std::cout << "Rank " << rank << " flight " << tt << " counter "
-                      << counter << std::endl;
-        }
+        //        auto tt = mpi::detail::get_num_requests_in_flight();
+        //        if (tt != 0)
+        //        {
+        //            std::cout << "Rank " << rank << " flight " << tt << " counter "
+        //                      << counter << std::endl;
+        //        }
         PIKA_ASSERT(mpi::detail::get_num_requests_in_flight() == 0);
         std::cout << "Rank " << rank << " reached end of test " << counter
                   << std::endl;
@@ -229,9 +225,14 @@ int main(int argc, char* argv[])
     cmdline.add_options()
         ("iterations",
             value<std::uint64_t>()->default_value(5000),
-            "number of iterations to test")
+            "number of iterations to test");
 
-        ("output", "display messages during test");
+    cmdline.add_options()("in-flight-limit",
+        pika::program_options::value<std::uint32_t>()->default_value(
+            mpi::detail::get_max_requests_in_flight(mpi::stream_index(-1))),
+        "Apply a limit to the number of messages in flight.");
+
+    cmdline.add_options()("output", "display messages during test");
     // clang-format on
 
     // Initialize and run pika.
