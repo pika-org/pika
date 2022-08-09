@@ -91,7 +91,7 @@ namespace pika { namespace program_options {
       : public value_semantic
     {
     private:    // base overrides
-        void parse(std::any& value_store,
+        PIKA_EXPORT void parse(std::any& value_store,
             const std::vector<std::string>& new_tokens,
             bool utf8) const override;
 
@@ -112,7 +112,7 @@ namespace pika { namespace program_options {
       : public value_semantic
     {
     private:    // base overrides
-        void parse(std::any& value_store,
+        PIKA_EXPORT void parse(std::any& value_store,
             const std::vector<std::string>& new_tokens,
             bool utf8) const override;
 
