@@ -22,14 +22,41 @@ if(NOT processor_count EQUAL 0)
 endif()
 
 if("$ENV{ghprbPullId}" STREQUAL "")
-  set(CTEST_BUILD_NAME
-      "$ENV{git_local_branch}-${CTEST_BUILD_CONFIGURATION_NAME}"
-  )
+  set(bors_branches "staging" "trying")
+
+  # Enable IN_LIST operator
+  cmake_policy(SET CMP0057 NEW)
+  if("$ENV{git_local_branch}" IN_LIST bors_branches)
+    set(CTEST_BUILD_NAME "$ENV{git_local_branch}")
+
+    # Make a string that contains only the PR numbers separated by dashes. The
+    # commit messages are assumed to be of the form:
+    #
+    # "Merge #1 #2 #3"
+    # "Try #1 #2 #3:"
+    #
+    # We strip leading and trailing non-numeric characters, and then replace all
+    # intermediate non-numeric characters by a single dash.
+    #
+    # The result is strings of the form:
+    #
+    # "1-2-3"
+    #
+    # which is then added to the CTest build name.
+    string(REGEX REPLACE "^[^0-9]+" "" pr_numbers_string "$ENV{git_commit_message}")
+    string(REGEX REPLACE "[^0-9]+$" "" pr_numbers_string "${pr_numbers_string}")
+    string(REGEX REPLACE "[^0-9]+" "-" pr_numbers_string "${pr_numbers_string}")
+    set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-${pr_numbers_string}")
+  else()
+    set(CTEST_BUILD_NAME "$ENV{git_local_branch}")
+  endif()
   set(CTEST_TRACK "$ENV{git_local_branch}")
 else()
-  set(CTEST_BUILD_NAME "$ENV{ghprbPullId}-${CTEST_BUILD_CONFIGURATION_NAME}")
+  set(CTEST_BUILD_NAME "$ENV{ghprbPullId}")
   set(CTEST_TRACK "Pull_Requests")
 endif()
+
+set(CTEST_BUILD_NAME "${CTEST_BUILD_NAME}-${CTEST_BUILD_CONFIGURATION_NAME}")
 
 set(CTEST_CONFIGURE_COMMAND "${CMAKE_COMMAND} ${CTEST_SOURCE_DIRECTORY}")
 set(CTEST_CONFIGURE_COMMAND
