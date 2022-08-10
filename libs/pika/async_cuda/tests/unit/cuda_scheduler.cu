@@ -80,7 +80,7 @@ int pika_main()
     {
         // This test initializes the thread_pool_scheduler with nullptr only to
         // avoid it trying to get a thread pool through the default thread pool
-        // handler which is not installed in this test (the HPX runtime is not
+        // handler which is not installed in this test (the pika runtime is not
         // started). The thread pool is never accessed.
         auto s = ex::schedule(sched) |
             cu::then_with_cublas(
