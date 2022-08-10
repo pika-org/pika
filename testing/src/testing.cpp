@@ -108,7 +108,13 @@ namespace pika { namespace util {
             detail::global_fixture.get_failures(counter_sanity);
         auto test_failures = detail::global_fixture.get_failures(counter_test);
 
-        if (sanity_failures == 0 && test_failures == 0)
+        if (sanity_tests == 0 && test_tests == 0)
+        {
+            pika::util::ios_flags_saver ifs(stream);
+            stream << "No tests run. Did you forget to add tests?" << std::endl;
+            return 1;
+        }
+        else if (sanity_failures == 0 && test_failures == 0)
         {
             pika::util::ios_flags_saver ifs(stream);
             stream << "All tests passed. Ran " << sanity_tests
