@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-int hpx_main()
+int pika_main()
 {
     namespace cu = pika::cuda::experimental;
     namespace ex = pika::execution::experimental;
@@ -115,5 +115,5 @@ int hpx_main()
 
 int main(int argc, char* argv[])
 {
-    return pika::init(hpx_main, argc, argv);
+    return pika::init(pika_main, argc, argv);
 }
