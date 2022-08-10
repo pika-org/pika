@@ -40,7 +40,9 @@ namespace pika { namespace util {
 
         private:
             std::ostream& stream_;
+            static std::atomic<std::size_t> sanity_tests_;
             static std::atomic<std::size_t> sanity_failures_;
+            static std::atomic<std::size_t> test_tests_;
             static std::atomic<std::size_t> test_failures_;
             mutex_type mutex_;
 
@@ -50,14 +52,18 @@ namespace pika { namespace util {
             {
             }
 
-            PIKA_EXPORT void increment(counter_type c);
+            PIKA_EXPORT void increment_tests(counter_type c);
+            PIKA_EXPORT void increment_failures(counter_type c);
 
-            PIKA_EXPORT std::size_t get(counter_type c) const;
+            PIKA_EXPORT std::size_t get_tests(counter_type c) const;
+            PIKA_EXPORT std::size_t get_failures(counter_type c) const;
 
             template <typename T>
             bool check_(char const* file, int line, char const* function,
                 counter_type c, T const& t, char const* msg)
             {
+                increment_tests(c);
+
                 if (!t)
                 {
                     std::lock_guard<mutex_type> l(mutex_);
@@ -65,7 +71,7 @@ namespace pika { namespace util {
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "'"
                             << std::endl;
-                    increment(c);
+                    increment_failures(c);
                     return false;
                 }
                 return true;
@@ -75,6 +81,8 @@ namespace pika { namespace util {
             bool check_equal(char const* file, int line, char const* function,
                 counter_type c, T const& t, U const& u, char const* msg)
             {
+                increment_tests(c);
+
                 if (!(t == u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
@@ -82,7 +90,7 @@ namespace pika { namespace util {
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "': "
                             << "'" << t << "' != '" << u << "'" << std::endl;
-                    increment(c);
+                    increment_failures(c);
                     return false;
                 }
                 return true;
@@ -93,6 +101,8 @@ namespace pika { namespace util {
                 char const* function, counter_type c, T const& t, U const& u,
                 char const* msg)
             {
+                increment_tests(c);
+
                 if (!(t != u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
@@ -100,7 +110,7 @@ namespace pika { namespace util {
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "': "
                             << "'" << t << "' != '" << u << "'" << std::endl;
-                    increment(c);
+                    increment_failures(c);
                     return false;
                 }
                 return true;
@@ -110,6 +120,8 @@ namespace pika { namespace util {
             bool check_less(char const* file, int line, char const* function,
                 counter_type c, T const& t, U const& u, char const* msg)
             {
+                increment_tests(c);
+
                 if (!(t < u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
@@ -117,7 +129,7 @@ namespace pika { namespace util {
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "': "
                             << "'" << t << "' >= '" << u << "'" << std::endl;
-                    increment(c);
+                    increment_failures(c);
                     return false;
                 }
                 return true;
@@ -128,6 +140,8 @@ namespace pika { namespace util {
                 char const* function, counter_type c, T const& t, U const& u,
                 char const* msg)
             {
+                increment_tests(c);
+
                 if (!(t <= u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
@@ -135,7 +149,7 @@ namespace pika { namespace util {
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "': "
                             << "'" << t << "' > '" << u << "'" << std::endl;
-                    increment(c);
+                    increment_failures(c);
                     return false;
                 }
                 return true;
@@ -146,6 +160,8 @@ namespace pika { namespace util {
                 counter_type c, T const& t, U const& u, V const& v,
                 char const* msg)
             {
+                increment_tests(c);
+
                 if (!(t >= u && t <= v))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
@@ -162,7 +178,7 @@ namespace pika { namespace util {
                                 << " failed in function '" << function << "': "
                                 << "'" << t << "' > '" << v << "'" << std::endl;
                     }
-                    increment(c);
+                    increment_failures(c);
                     return false;
                 }
                 return true;
