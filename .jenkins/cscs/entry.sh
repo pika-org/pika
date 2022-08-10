@@ -10,7 +10,7 @@
 set -eux
 
 # Clean up old artifacts
-rm -f ./jenkins-pika* ./*-Testing
+rm -rf ./jenkins-pika* ./*-Testing
 
 export configuration_name_with_build_type="${configuration_name}-${build_type,,}"
 

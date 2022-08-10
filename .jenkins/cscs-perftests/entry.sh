@@ -10,7 +10,7 @@
 set -eux
 
 # Clean up old artifacts
-rm -f ./jenkins-pika* ./*-Testing
+rm -rf ./jenkins-pika* ./*-Testing
 
 source ".jenkins/cscs-perftests/slurm-constraint-${configuration_name}.sh"
 
