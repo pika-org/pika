@@ -10,7 +10,7 @@
 set -eux
 
 # Clean up old artifacts
-rm -f ./jenkins-pika* ./*-Testing
+rm -rf ./jenkins-pika* ./*-Testing
 
 export configuration_name_with_build_type="${configuration_name}-${build_type,,}"
 
@@ -19,6 +19,9 @@ source ".jenkins/cscs/slurm-constraint-${configuration_name}.sh"
 if [[ -z "${ghprbPullId:-}" ]]; then
     # Set name of branch if not building a pull request
     export git_local_branch=$(echo ${GIT_BRANCH} | cut -f2 -d'/')
+    # Set first line of commit message to have better build names on staging and
+    # trying
+    export git_commit_message=$(git log --format=%B -n 1 HEAD | head -n1)
     job_name="jenkins-pika-${git_local_branch}-${configuration_name_with_build_type}"
 else
     job_name="jenkins-pika-${ghprbPullId}-${configuration_name_with_build_type}"
