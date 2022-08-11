@@ -47,7 +47,6 @@ int main()
         PIKA_TEST(let_error_callback_called);
     }
 
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     {
         std::atomic<bool> set_value_called{false};
         std::atomic<bool> let_error_callback_called{false};
@@ -64,7 +63,6 @@ int main()
         PIKA_TEST(set_value_called);
         PIKA_TEST(let_error_callback_called);
     }
-#endif
 
     {
         std::atomic<bool> set_value_called{false};
