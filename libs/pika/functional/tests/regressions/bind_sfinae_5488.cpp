@@ -7,7 +7,6 @@
 // #5488: pika::util::bind doesn't bounds-check placeholders
 
 #include <pika/modules/functional.hpp>
-#include <pika/testing.hpp>
 
 #include <type_traits>
 
@@ -28,5 +27,4 @@ void foo(int) {}
 int main()
 {
     test(pika::util::bind(foo, pika::util::placeholders::_1));
-    return pika::util::report_errors();
 }
