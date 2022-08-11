@@ -262,6 +262,9 @@ int main()
     }
 
     test_adl_isolation(ex::bulk(ex::just(), 1, my_namespace::my_type{}));
+#else
+    // No tests with the P2300 reference implementation
+    PIKA_TEST(true);
 #endif
 
     return pika::util::report_errors();

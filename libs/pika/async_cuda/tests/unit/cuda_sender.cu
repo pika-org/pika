@@ -126,6 +126,9 @@ void test_saxpy(pika::cuda::experimental::cuda_scheduler& cuda_sched)
                 max_error = (std::max)(max_error, abs(h_B[jdx] - 4.0f));
             }
             std::cout << "Max Error: " << max_error << std::endl;
+
+            // We must reach this point. Otherwise something has gone wrong.
+            PIKA_TEST(true);
         });
 
     // the sync_wait() is important because without it, this function returns
