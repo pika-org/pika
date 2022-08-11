@@ -12,7 +12,6 @@
 // For more information, see http://www.boost.org/
 
 #include <pika/functional/function.hpp>
-#include <pika/testing.hpp>
 
 void do_sum_avg(int values[], int n, int& sum, double& avg)
 {
@@ -27,6 +26,4 @@ int main()
     pika::util::function<void(int values[], int n, int& sum, double& avg)>
         sum_avg;
     sum_avg = &do_sum_avg;
-
-    return pika::util::report_errors();
 }
