@@ -78,12 +78,6 @@ const char* exec_name(pika::execution::parallel_executor const&)
     return "parallel_executor";
 }
 
-const char* exec_name(
-    pika::parallel::execution::parallel_executor_aggregated const&)
-{
-    return "parallel_executor_aggregated";
-}
-
 const char* exec_name(pika::execution::experimental::scheduler_executor<
     pika::execution::experimental::thread_pool_scheduler> const&)
 {
@@ -468,7 +462,6 @@ int pika_main(variables_map& vm)
             throw std::logic_error("error: count of 0 futures specified\n");
 
         pika::execution::parallel_executor par;
-        pika::parallel::execution::parallel_executor_aggregated par_agg;
         pika::execution::parallel_executor par_nostack(
             pika::execution::thread_priority::default_,
             pika::execution::thread_stacksize::nostack);
@@ -486,7 +479,6 @@ int pika_main(variables_map& vm)
                 function_futures_wait_all(count, csv, par);
                 function_futures_sliding_semaphore(count, csv, par);
                 function_futures_for_loop(count, csv, par);
-                function_futures_for_loop(count, csv, par_agg);
                 function_futures_for_loop(count, csv, sched_exec_tps);
                 function_futures_for_loop(
                     count, csv, par_nostack, "parallel_executor_nostack");

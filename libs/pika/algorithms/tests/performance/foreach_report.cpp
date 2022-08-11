@@ -11,7 +11,6 @@
 #include <pika/algorithm.hpp>
 #include <pika/chrono.hpp>
 #include <pika/execution.hpp>
-#include <pika/executors/parallel_executor_aggregated.hpp>
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
