@@ -7,7 +7,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_mpi/mpi_exception.hpp>
-#include <pika/async_mpi/mpi_future.hpp>
+#include <pika/async_mpi/mpi_polling.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/threading_base.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>

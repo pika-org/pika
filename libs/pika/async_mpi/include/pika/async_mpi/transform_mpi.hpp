@@ -11,7 +11,7 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/async_mpi/mpi_future.hpp>
+#include <pika/async_mpi/mpi_polling.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/datastructures/variant.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
