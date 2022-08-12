@@ -96,15 +96,14 @@ int pika_main(pika::program_options::variables_map& vm)
     }
 
     {
-        size_t throttling =
-            pika::mpi::experimental::get_max_requests_in_flight();
+        size_t throttling = mpi::detail::get_max_requests_in_flight();
         if (throttling == size_t(-1))
         {
-            pika::mpi::experimental::set_max_requests_in_flight(512);
+            mpi::detail::set_max_requests_in_flight(512);
         }
 
-        // this needs to scope all uses of pika::mpi::experimental::executor
-        pika::mpi::experimental::enable_user_polling enable_polling;
+        // this needs to scope all uses of transform_mpi
+        mpi::enable_user_polling enable_polling;
 
         // Ring send/recv around N ranks
         // Rank 0      : Send then Recv
@@ -189,13 +188,13 @@ int pika_main(pika::program_options::variables_map& vm)
             }
         }
 
-        auto tt = pika::mpi::experimental::get_num_requests_in_flight();
+        auto tt = mpi::detail::get_num_requests_in_flight();
         if (tt != 0)
         {
             std::cout << "Rank " << rank << " flight " << tt << " counter "
                       << counter << std::endl;
         }
-        PIKA_ASSERT(pika::mpi::experimental::get_num_requests_in_flight() == 0);
+        PIKA_ASSERT(mpi::detail::get_num_requests_in_flight() == 0);
         std::cout << "Rank " << rank << " reached end of test " << counter
                   << std::endl;
 

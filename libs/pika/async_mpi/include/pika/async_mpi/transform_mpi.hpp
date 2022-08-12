@@ -28,9 +28,8 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace mpi { namespace experimental {
+namespace pika::mpi::experimental {
     namespace detail {
-
         template <typename Receiver, typename... Ts>
         void set_value_request_callback_helper(
             int mpi_status, Receiver&& receiver, Ts&&... ts)
@@ -331,4 +330,4 @@ namespace pika { namespace mpi { namespace experimental {
                 transform_mpi_t, F>{PIKA_FORWARD(F, f)};
         }
     } transform_mpi{};
-}}}    // namespace pika::mpi::experimental
+}    // namespace pika::mpi::experimental

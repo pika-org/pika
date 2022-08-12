@@ -25,15 +25,12 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace mpi { namespace experimental {
-
-    // -----------------------------------------------------------------
-    // by convention the title is 7 chars (for alignment)
-    using print_on = pika::debug::detail::enable_print<false>;
-    static constexpr print_on mpi_debug("MPI_FUT");
-
-    // -----------------------------------------------------------------
+namespace pika::mpi::experimental {
     namespace detail {
+        // -----------------------------------------------------------------
+        // by convention the title is 7 chars (for alignment)
+        using print_on = pika::debug::detail::enable_print<false>;
+        static constexpr print_on mpi_debug("MPI_FUT");
 
         using request_callback_function_type =
             pika::util::unique_function<void(int)>;
@@ -42,61 +39,6 @@ namespace pika { namespace mpi { namespace experimental {
             request_callback_function_type&& f, MPI_Request req);
         PIKA_EXPORT void register_polling(pika::threads::thread_pool_base&);
         PIKA_EXPORT void unregister_polling(pika::threads::thread_pool_base&);
-
-        // -----------------------------------------------------------------
-        // An implementation of future_data for MPI
-        struct future_data : pika::lcos::detail::future_data<int>
-        {
-            PIKA_NON_COPYABLE(future_data);
-
-            using init_no_addref =
-                typename pika::lcos::detail::future_data<int>::init_no_addref;
-
-            // default empty constructor
-            future_data() = default;
-
-            // constructor that takes a request
-            future_data(init_no_addref no_addref, MPI_Request request)
-              : pika::lcos::detail::future_data<int>(no_addref)
-              , request_(request)
-            {
-                add_callback();
-            }
-
-            // constructor used for creation directly by invoke
-            future_data(init_no_addref no_addref)
-              : pika::lcos::detail::future_data<int>(no_addref)
-            {
-            }
-
-            // Used when the request was not available when constructing
-            // future_data
-            void add_callback()
-            {
-                add_request_callback(
-                    [fdp = pika::memory::intrusive_ptr<future_data>(this)](
-                        int status) {
-                        if (status == MPI_SUCCESS)
-                        {
-                            // mark the future as ready by setting the shared_state
-                            fdp->set_data(MPI_SUCCESS);
-                        }
-                        else
-                        {
-                            fdp->set_exception(
-                                std::make_exception_ptr(mpi_exception(status)));
-                        }
-                    },
-                    request_);
-            }
-
-            // The native MPI request handle owned by this future data
-            MPI_Request request_;
-        };
-
-        // -----------------------------------------------------------------
-        // intrusive pointer for future_data
-        using future_data_ptr = memory::intrusive_ptr<future_data>;
 
         // -----------------------------------------------------------------
         // an MPI error handling type that we can use to intercept
@@ -111,64 +53,35 @@ namespace pika { namespace mpi { namespace experimental {
         /// when necessary
         PIKA_EXPORT void wait_for_throttling();
 
-    }    // namespace detail
+        // -----------------------------------------------------------------
+        /// Set the number of messages above which throttling will be applied
+        /// when invoking an MPI function. If the number of messages in flight
+        /// exceeds the amount specified, then any thread attempting to invoke
+        /// and MPI function that generates an MPI_Request will be suspended.
+        /// This should be used with great caution as setting it too low can
+        /// cause deadlocks. The default value is size_t(-1) - i.e. unlimited
+        /// The value can be set using an environment variable as follows
+        /// PIKA_MPI_MSG_THROTTLE=512
+        /// but user code setting it will override any default or env value
+        /// This function returns the previous throttling threshold value
+        PIKA_EXPORT size_t set_max_requests_in_flight(size_t);
 
-    // -----------------------------------------------------------------
-    /// Set the number of messages above which throttling will be applied
-    /// when invoking an MPI function. If the number of messages in flight
-    /// exceeds the amount specified, then any thread attempting to invoke
-    /// and MPI function that generates an MPI_Request will be suspended.
-    /// This should be used with great caution as setting it too low can
-    /// cause deadlocks. The default value is size_t(-1) - i.e. unlimited
-    /// The value can be set using an environment variable as follows
-    /// PIKA_MPI_MSG_THROTTLE=512
-    /// but user code setting it will override any default or env value
-    /// This function returns the previous throttling threshold value
-    PIKA_EXPORT size_t set_max_requests_in_flight(size_t);
+        /// Query the current value of the throttling threshold
+        PIKA_EXPORT size_t get_max_requests_in_flight();
 
-    /// Query the current value of the throttling threshold
-    PIKA_EXPORT size_t get_max_requests_in_flight();
+        // -----------------------------------------------------------------
+        /// returns the number of mpi requests currently outstanding
+        PIKA_EXPORT size_t get_num_requests_in_flight();
 
-    // -----------------------------------------------------------------
-    /// returns the number of mpi requests currently outstanding
-    PIKA_EXPORT size_t get_num_requests_in_flight();
+        // -----------------------------------------------------------------
+        // set an error handler for communicators that will be called
+        // on any error instead of the default behavior of program termination
+        PIKA_EXPORT void set_error_handler();
 
-    // -----------------------------------------------------------------
-    // set an error handler for communicators that will be called
-    // on any error instead of the default behavior of program termination
-    PIKA_EXPORT void set_error_handler();
-
-    // -----------------------------------------------------------------
-    // return a future object from a user supplied MPI_Request
-    PIKA_EXPORT pika::future<void> get_future(MPI_Request request);
-
-    // -----------------------------------------------------------------
-    // Background progress function for MPI async operations
-    // Checks for completed MPI_Requests and sets ready state in waiting receivers
-    PIKA_EXPORT pika::threads::policies::detail::polling_status poll();
-
-    // -----------------------------------------------------------------
-    // return a future from an async call to MPI_Ixxx function
-    namespace detail {
-
-        template <typename F, typename... Ts>
-        pika::future<int> async(F f, Ts&&... ts)
-        {
-            // create a future data shared state
-            detail::future_data_ptr data =
-                new detail::future_data(detail::future_data::init_no_addref{});
-
-            // invoke the call to MPI_Ixxx, ignore the returned result for now
-            int result = f(PIKA_FORWARD(Ts, ts)..., &data->request_);
-            PIKA_UNUSED(result);
-
-            // Add callback after the request has been filled
-            data->add_callback();
-
-            // return a future bound to the shared state
-            using traits::future_access;
-            return future_access<pika::future<int>>::create(PIKA_MOVE(data));
-        }
+        // -----------------------------------------------------------------
+        // Background progress function for MPI async operations
+        // Checks for completed MPI_Requests and sets ready state in waiting receivers
+        PIKA_EXPORT pika::threads::policies::detail::polling_status poll();
     }    // namespace detail
 
     // initialize the pika::mpi background request handler
@@ -200,4 +113,4 @@ namespace pika { namespace mpi { namespace experimental {
     private:
         std::string pool_name_;
     };
-}}}    // namespace pika::mpi::experimental
+}    // namespace pika::mpi::experimental

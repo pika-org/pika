@@ -5,7 +5,6 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/execution.hpp>
-#include <pika/future.hpp>
 #include <pika/init.hpp>
 #include <pika/mpi.hpp>
 #include <pika/program_options.hpp>
@@ -318,7 +317,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
     //
     while ((sends_in_flight.load() + recvs_in_flight.load()) > 0)
     {
-        mpi::poll();
+        mpi::detail::poll();
         if (debug_timer.trigger())
             nws_deb<5>.debug(
                 "Rank ", rank, "counter", deb::dec<8>(messages_sent));
@@ -393,11 +392,10 @@ int pika_main(pika::program_options::variables_map& vm)
     options.warmup = false;
     options.final = false;
 
-    size_t throttling = pika::mpi::experimental::get_max_requests_in_flight();
+    size_t throttling = mpi::detail::get_max_requests_in_flight();
     if (throttling == size_t(-1))
     {
-        pika::mpi::experimental::set_max_requests_in_flight(
-            options.in_flight_limit);
+        mpi::detail::set_max_requests_in_flight(options.in_flight_limit);
     }
     else
     {

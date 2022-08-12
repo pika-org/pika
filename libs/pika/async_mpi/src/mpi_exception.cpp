@@ -25,7 +25,6 @@ namespace pika::mpi::experimental {
 
             return err_buff.get();
         }
-
     }    // namespace detail
 
     // -------------------------------------------------------------------------
