@@ -241,6 +241,9 @@ int pika_main()
         }
     }
 
+    test_adl_isolation(
+        mpi::transform_mpi(my_namespace::my_sender{}, [](MPI_Request) {}));
+
     return pika::finalize();
 }
 

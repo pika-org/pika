@@ -29,7 +29,7 @@
 #include <utility>
 
 namespace pika::mpi::experimental {
-    namespace detail {
+    namespace transform_mpi_detail {
         template <typename Receiver, typename... Ts>
         void set_value_request_callback_helper(
             int mpi_status, Receiver&& receiver, Ts&&... ts)
@@ -89,7 +89,17 @@ namespace pika::mpi::experimental {
                 MPI_Request*>>;
 
         template <typename Sender, typename F>
-        struct transform_mpi_sender
+        struct transform_mpi_sender_impl
+        {
+            struct transform_mpi_sender_type;
+        };
+
+        template <typename Sender, typename F>
+        using transform_mpi_sender = typename transform_mpi_sender_impl<Sender,
+            F>::transform_mpi_sender_type;
+
+        template <typename Sender, typename F>
+        struct transform_mpi_sender_impl<Sender, F>::transform_mpi_sender_type
         {
             std::decay_t<Sender> sender;
             std::decay_t<F> f;
@@ -173,7 +183,7 @@ namespace pika::mpi::experimental {
                                     mpi_request_invoke_result_t<F, Ts...>;
 
                                 // throttle if too many "in flight"
-                                wait_for_throttling();
+                                detail::wait_for_throttling();
 
                                 if constexpr (std::is_void_v<
                                                   invoke_result_type>)
@@ -262,8 +272,8 @@ namespace pika::mpi::experimental {
                     pika::detail::variant,
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
                         pika::util::detail::transform_t<
-                            transform_mpi_sender::value_types<pika::util::pack,
-                                pika::util::pack>,
+                            transform_mpi_sender_type::value_types<
+                                pika::util::pack, pika::util::pack>,
                             result_types_helper>,
                         pika::detail::monostate>>>;
 
@@ -290,7 +300,7 @@ namespace pika::mpi::experimental {
             template <typename Receiver>
             friend constexpr auto tag_invoke(
                 pika::execution::experimental::connect_t,
-                transform_mpi_sender& s, Receiver&& receiver)
+                transform_mpi_sender_type& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
                     PIKA_FORWARD(Receiver, receiver), s.f, s.sender);
@@ -299,14 +309,14 @@ namespace pika::mpi::experimental {
             template <typename Receiver>
             friend constexpr auto tag_invoke(
                 pika::execution::experimental::connect_t,
-                transform_mpi_sender&& s, Receiver&& receiver)
+                transform_mpi_sender_type&& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
                     PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.f),
                     PIKA_MOVE(s.sender));
             }
         };
-    }    // namespace detail
+    }    // namespace transform_mpi_detail
 
     inline constexpr struct transform_mpi_t final
       : pika::functional::detail::tag_fallback<transform_mpi_t>
@@ -318,7 +328,7 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             transform_mpi_t, Sender&& sender, F&& f)
         {
-            return detail::transform_mpi_sender<Sender, F>{
+            return transform_mpi_detail::transform_mpi_sender<Sender, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f)};
         }
 
