@@ -211,7 +211,7 @@ namespace pika::threads::detail {
         }
 
 #if HWLOC_API_VERSION >= 0x00020000
-#if defined(PIKA_TOPOLOGY_HAVE_ADDITIONAL_HWLOC_TESTING)
+#if defined(PIKA_HAVE_ADDITIONAL_HWLOC_TESTING)
         // Enable HWLOC filtering that makes it report no cores. This is purely
         // an option allowing to test whether things work properly on systems
         // that may not report cores in the topology at all (e.g. FreeBSD).
