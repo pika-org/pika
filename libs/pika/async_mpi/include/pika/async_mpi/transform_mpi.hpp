@@ -104,6 +104,35 @@ namespace pika::mpi::experimental {
             std::decay_t<Sender> sender;
             std::decay_t<F> f;
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+            template <typename T>
+            struct result_type_signature_helper
+            {
+                using type = pika::execution::experimental::set_value_t(T);
+            };
+
+            template <>
+            struct result_type_signature_helper<void>
+            {
+                using type = pika::execution::experimental::set_value_t();
+            };
+
+            template <typename... Ts>
+            requires is_mpi_request_invocable_v<F, Ts...>
+            using invoke_result_helper =
+                pika::execution::experimental::completion_signatures<
+                    typename result_type_signature_helper<
+                        mpi_request_invoke_result_t<F, Ts...>>::type>;
+
+            using completion_signatures =
+                pika::execution::experimental::make_completion_signatures<
+                    std::decay_t<Sender>,
+                    pika::execution::experimental::detail::empty_env,
+                    pika::execution::experimental::completion_signatures<
+                        pika::execution::experimental::set_error_t(
+                            std::exception_ptr)>,
+                    invoke_result_helper>;
+#else
             template <typename Tuple>
             struct invoke_result_helper;
 
@@ -134,6 +163,7 @@ namespace pika::mpi::experimental {
                     std::exception_ptr>>;
 
             static constexpr bool sends_done = false;
+#endif
 
             template <typename Receiver>
             struct operation_state
@@ -224,6 +254,14 @@ namespace pika::mpi::experimental {
                                     PIKA_MOVE(ep));
                             });
                     }
+
+                    friend constexpr pika::execution::experimental::detail::
+                        empty_env
+                        tag_invoke(pika::execution::experimental::get_env_t,
+                            transform_mpi_receiver const&) noexcept
+                    {
+                        return {};
+                    }
                 };
 
                 using operation_state_type =
@@ -231,11 +269,20 @@ namespace pika::mpi::experimental {
                         std::decay_t<Sender>, transform_mpi_receiver>;
                 operation_state_type op_state;
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+                using ts_type = pika::util::detail::prepend_t<
+                    pika::execution::experimental::value_types_of_t<
+                        std::decay_t<Sender>,
+                        pika::execution::experimental::detail::empty_env,
+                        std::tuple, pika::detail::variant>,
+                    pika::detail::monostate>;
+#else
                 using ts_type = pika::util::detail::prepend_t<
                     typename pika::execution::experimental::sender_traits<
                         std::decay_t<Sender>>::template value_types<std::tuple,
                         pika::detail::variant>,
                     pika::detail::monostate>;
+#endif
                 ts_type ts;
 
                 // We store the return value of f in a variant. We know that
@@ -267,7 +314,19 @@ namespace pika::mpi::experimental {
                 {
                     using type = pika::detail::monostate;
                 };
-
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+                using result_type = pika::util::detail::change_pack_t<
+                    pika::detail::variant,
+                    pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                        pika::util::detail::transform_t<
+                            pika::execution::experimental::value_types_of_t<
+                                transform_mpi_sender_type,
+                                pika::execution::experimental::detail::
+                                    empty_env,
+                                pika::util::pack, pika::util::pack>,
+                            result_types_helper>,
+                        pika::detail::monostate>>>;
+#else
                 using result_type = pika::util::detail::change_pack_t<
                     pika::detail::variant,
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
@@ -276,7 +335,7 @@ namespace pika::mpi::experimental {
                                 pika::util::pack, pika::util::pack>,
                             result_types_helper>,
                         pika::detail::monostate>>>;
-
+#endif
                 result_type result;
 
                 template <typename Receiver_, typename F_, typename Sender_>
