@@ -6,16 +6,9 @@
 
 # Note: PIKA_WITH_MPI is handled in the main CMakeLists.txt
 
-# if the user does not want mpi async futures, quit - the module will not be
-# enabled
+# if the user does not want support, quit - the module will not be enabled
 if(NOT ${PIKA_WITH_MPI})
   return()
-endif()
-
-# setup MPI, if necessary
-if(NOT TARGET Mpi::mpi)
-  include(pika_setup_mpi)
-  pika_setup_mpi()
 endif()
 
 # Default location is $PIKA_ROOT/libs/mpi/include
@@ -33,7 +26,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${mpi_sources}
   HEADERS ${async_mpi_headers}
-  DEPENDENCIES Mpi::mpi
+  DEPENDENCIES MPI::MPI_CXX
   MODULE_DEPENDENCIES
     pika_concurrency
     pika_errors

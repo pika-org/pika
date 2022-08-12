@@ -27,7 +27,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    DEPENDENCIES Mpi::mpi ${${test}_DEPENDENCIES}
+    DEPENDENCIES ${${test}_DEPENDENCIES}
     FOLDER "Tests/Unit/Modules/AsyncMPI"
   )
 
