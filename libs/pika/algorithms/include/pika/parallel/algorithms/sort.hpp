@@ -279,7 +279,7 @@ namespace std {
 }    // namespace std
 #endif
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
 
     ///////////////////////////////////////////////////////////////////////////
     // sort
@@ -481,7 +481,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}       // namespace pika::parallel
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -491,15 +491,15 @@ namespace pika {
     {
         // clang-format off
         template <typename RandomIt,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<RandomIt> &&
-                parallel::traits::is_projected<Proj, RandomIt>::value &&
-                parallel::traits::is_indirect_callable<
+                parallel::detail::is_projected<Proj, RandomIt>::value &&
+                parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Comp,
-                    parallel::traits::projected<Proj, RandomIt>,
-                    parallel::traits::projected<Proj, RandomIt>
+                    parallel::detail::projected<Proj, RandomIt>,
+                    parallel::detail::projected<Proj, RandomIt>
                 >::value
             )>
         // clang-format on
@@ -509,22 +509,22 @@ namespace pika {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires a random access iterator.");
 
-            pika::parallel::v1::detail::sort<RandomIt>().call(
-                pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
+            pika::parallel::detail::sort<RandomIt>().call(pika::execution::seq,
+                first, last, PIKA_FORWARD(Comp, comp),
                 PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename ExPolicy, typename RandomIt,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<RandomIt> &&
-                parallel::traits::is_projected<Proj, RandomIt>::value &&
-                parallel::traits::is_indirect_callable<ExPolicy, Comp,
-                    parallel::traits::projected<Proj, RandomIt>,
-                    parallel::traits::projected<Proj, RandomIt>
+                parallel::detail::is_projected<Proj, RandomIt>::value &&
+                parallel::detail::is_indirect_callable<ExPolicy, Comp,
+                    parallel::detail::projected<Proj, RandomIt>,
+                    parallel::detail::projected<Proj, RandomIt>
                 >::value
             )>
         // clang-format on
@@ -540,7 +540,7 @@ namespace pika {
                     ExPolicy>::type;
 
             return pika::util::detail::void_guard<result_type>(),
-                   pika::parallel::v1::detail::sort<RandomIt>().call(
+                   pika::parallel::detail::sort<RandomIt>().call(
                        PIKA_FORWARD(ExPolicy, policy), first, last,
                        PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
         }

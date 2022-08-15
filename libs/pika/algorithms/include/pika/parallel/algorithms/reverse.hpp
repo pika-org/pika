@@ -199,7 +199,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // reverse
     namespace detail {
@@ -316,7 +316,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -338,7 +338,7 @@ namespace pika {
                 (pika::traits::is_bidirectional_iterator<BidirIter>::value),
                 "Requires at least bidirectional iterator.");
 
-            pika::parallel::v1::detail::reverse<BidirIter>().call(
+            pika::parallel::detail::reverse<BidirIter>().call(
                 pika::execution::sequenced_policy{}, first, last);
         }
 
@@ -359,7 +359,7 @@ namespace pika {
                 "Requires at least bidirectional iterator.");
 
             return parallel::util::detail::algorithm_result<ExPolicy>::get(
-                pika::parallel::v1::detail::reverse<BidirIter>().call(
+                pika::parallel::detail::reverse<BidirIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last));
         }
     } reverse{};
@@ -388,7 +388,7 @@ namespace pika {
                 "Requires at least output iterator.");
 
             return parallel::util::get_second_element(
-                parallel::v1::detail::reverse_copy<
+                parallel::detail::reverse_copy<
                     pika::parallel::util::in_out_result<BidirIter, OutIter>>()
                     .call(pika::execution::sequenced_policy{}, first, last,
                         dest));
@@ -415,7 +415,7 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             return parallel::util::get_second_element(
-                parallel::v1::detail::reverse_copy<
+                parallel::detail::reverse_copy<
                     pika::parallel::util::in_out_result<BidirIter, FwdIter>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest));
         }

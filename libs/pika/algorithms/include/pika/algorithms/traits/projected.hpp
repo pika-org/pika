@@ -19,7 +19,7 @@
 #include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace traits {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename T, typename Enable = void>
     struct projected_iterator
@@ -33,109 +33,96 @@ namespace pika { namespace traits {
     {
         using type = typename std::decay_t<Iterator>::proxy_type;
     };
-}}    // namespace pika::traits
+}    // namespace pika::detail
 
-namespace pika { namespace parallel { namespace traits {
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        template <typename F, typename Iter, typename Enable = void>
-        struct projected_result_of;
-
-        template <typename Proj, typename Iter>
-        struct projected_result_of<Proj, Iter,
-            typename std::enable_if<
-                pika::traits::is_iterator<Iter>::value>::type>
-          : pika::util::detail::invoke_result<Proj,
-                typename std::iterator_traits<Iter>::reference>
-        {
-        };
-
-        template <typename Projected>
-        struct projected_result_of_indirect
-          : projected_result_of<typename Projected::projector_type,
-                typename Projected::iterator_type>
-        {
-        };
-
-#if defined(PIKA_HAVE_DATAPAR)
-        // This is being instantiated if a vector pack execution policy is used
-        // with a zip_iterator. In this case the function object is invoked
-        // with a tuple<datapar<T>...> instead of just a tuple<T...>
-        template <typename Proj, typename ValueType, typename Enable = void>
-        struct projected_result_of_vector_pack_
-          : pika::util::detail::invoke_result<Proj,
-                typename pika::parallel::traits::vector_pack_load<
-                    typename pika::parallel::traits::vector_pack_type<
-                        ValueType>::type,
-                    ValueType>::value_type&>
-        {
-        };
-
-        template <typename Projected, typename Enable = void>
-        struct projected_result_of_vector_pack;
-
-        template <typename Projected>
-        struct projected_result_of_vector_pack<Projected,
-            std::void_t<typename Projected::iterator_type>>
-          : projected_result_of_vector_pack_<typename Projected::projector_type,
-                typename std::iterator_traits<
-                    typename Projected::iterator_type>::value_type>
-        {
-        };
-#endif
-    }    // namespace detail
-
+namespace pika::parallel::detail {
     template <typename F, typename Iter, typename Enable = void>
-    struct projected_result_of
-      : detail::projected_result_of<std::decay_t<F>, std::decay_t<Iter>>
+    struct projected_result_of_impl;
+
+    template <typename Proj, typename Iter>
+    struct projected_result_of_impl<Proj, Iter,
+        typename std::enable_if<pika::traits::is_iterator<Iter>::value>::type>
+      : pika::util::detail::invoke_result<Proj,
+            typename std::iterator_traits<Iter>::reference>
     {
     };
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        template <typename F, typename Iter, typename Enable = void>
-        struct is_projected : std::false_type
-        {
-        };
+    template <typename Projected>
+    struct projected_result_of_indirect
+      : projected_result_of_impl<typename Projected::projector_type,
+            typename Projected::iterator_type>
+    {
+    };
 
-        // the given projection function is valid, if it can be invoked using
-        // the dereferenced iterator type and if the projection does not return
-        // void
+#if defined(PIKA_HAVE_DATAPAR)
+    // This is being instantiated if a vector pack execution policy is used
+    // with a zip_iterator. In this case the function object is invoked
+    // with a tuple<datapar<T>...> instead of just a tuple<T...>
+    template <typename Proj, typename ValueType, typename Enable = void>
+    struct projected_result_of_vector_pack_
+      : pika::util::detail::invoke_result<Proj,
+            typename pika::parallel::traits::vector_pack_load<
+                typename pika::parallel::traits::vector_pack_type<
+                    ValueType>::type,
+                ValueType>::value_type&>
+    {
+    };
 
-        // clang-format off
-        template <typename Proj, typename Iter>
-        struct is_projected<Proj, Iter,
-            typename std::enable_if<
-                pika::traits::is_iterator<Iter>::value &&
-                pika::detail::is_invocable<Proj,
-                    typename std::iterator_traits<Iter>::reference>::value
-             >::type>
-          : std::integral_constant<bool,
-                !std::is_void<typename pika::util::detail::invoke_result<Proj,
-                    typename std::iterator_traits<Iter>::reference>::type
-                >::value>
-        {
-        };
-        // clang-format on
+    template <typename Projected, typename Enable = void>
+    struct projected_result_of_vector_pack;
 
-        template <typename Projected, typename Enable = void>
-        struct is_projected_indirect : std::false_type
-        {
-        };
+    template <typename Projected>
+    struct projected_result_of_vector_pack<Projected,
+        std::void_t<typename Projected::iterator_type>>
+      : projected_result_of_vector_pack_<typename Projected::projector_type,
+            typename std::iterator_traits<
+                typename Projected::iterator_type>::value_type>
+    {
+    };
+#endif
 
-        template <typename Projected>
-        struct is_projected_indirect<Projected,
-            std::void_t<typename Projected::projector_type>>
-          : detail::is_projected<typename Projected::projector_type,
-                typename Projected::iterator_type>
-        {
-        };
-    }    // namespace detail
+    template <typename F, typename Iter, typename Enable = void>
+    struct projected_result_of
+      : projected_result_of_impl<std::decay_t<F>, std::decay_t<Iter>>
+    {
+    };
+
+    template <typename F, typename Iter, typename Enable = void>
+    struct is_projected_impl : std::false_type
+    {
+    };
+
+    // the given projection function is valid, if it can be invoked using
+    // the dereferenced iterator type and if the projection does not return
+    // void
+    template <typename Proj, typename Iter>
+    struct is_projected_impl<Proj, Iter,
+        typename std::enable_if<pika::traits::is_iterator<Iter>::value &&
+            pika::detail::is_invocable<Proj,
+                typename std::iterator_traits<Iter>::reference>::value>::type>
+      : std::integral_constant<bool,
+            !std::is_void<typename pika::util::detail::invoke_result<Proj,
+                typename std::iterator_traits<Iter>::reference>::type>::value>
+    {
+    };
+
+    template <typename Projected, typename Enable = void>
+    struct is_projected_indirect_impl : std::false_type
+    {
+    };
+
+    template <typename Projected>
+    struct is_projected_indirect_impl<Projected,
+        std::void_t<typename Projected::projector_type>>
+      : is_projected_impl<typename Projected::projector_type,
+            typename Projected::iterator_type>
+    {
+    };
 
     template <typename F, typename Iter, typename Enable = void>
     struct is_projected
-      : detail::is_projected<std::decay_t<F>,
-            typename pika::traits::projected_iterator<Iter>::type>
+      : is_projected_impl<std::decay_t<F>,
+            typename pika::detail::projected_iterator<Iter>::type>
     {
     };
 
@@ -151,11 +138,11 @@ namespace pika { namespace parallel { namespace traits {
     {
         using projector_type = std::decay_t<Proj>;
         using iterator_type =
-            typename pika::traits::projected_iterator<Iter>::type;
+            typename pika::detail::projected_iterator<Iter>::type;
     };
 
     template <typename Projected, typename Enable = void>
-    struct is_projected_indirect : detail::is_projected_indirect<Projected>
+    struct is_projected_indirect : is_projected_indirect_impl<Projected>
     {
     };
 
@@ -171,55 +158,55 @@ namespace pika { namespace parallel { namespace traits {
     {
     };
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        template <typename F, typename... Args>
-        struct is_indirect_callable_impl
-          : pika::detail::is_invocable<F, Args...>
-        {
-        };
+    template <typename F, typename... Args>
+    struct is_indirect_callable_impl_base
+      : pika::detail::is_invocable<F, Args...>
+    {
+    };
 
-        template <typename ExPolicy, typename F, typename ProjectedPack,
-            typename Enable = void>
-        struct is_indirect_callable : std::false_type
-        {
-        };
+    template <typename ExPolicy, typename F, typename ProjectedPack,
+        typename Enable = void>
+    struct is_indirect_callable_impl : std::false_type
+    {
+    };
 
-        template <typename ExPolicy, typename F, typename... Projected>
-        struct is_indirect_callable<ExPolicy, F,
-            pika::util::detail::pack<Projected...>,
-            std::enable_if_t<pika::util::detail::all_of_v<
-                                 is_projected_indirect<Projected>...> &&
-                (!pika::is_vectorpack_execution_policy<ExPolicy>::value ||
-                    !pika::util::detail::all_of_v<
-                        is_projected_zip_iterator<Projected>...>)>>
-          : is_indirect_callable_impl<F,
-                typename projected_result_of_indirect<Projected>::type...>
-        {
-        };
+    template <typename ExPolicy, typename F, typename... Projected>
+    struct is_indirect_callable_impl<ExPolicy, F,
+        pika::util::detail::pack<Projected...>,
+        typename std::enable_if<
+            pika::util::detail::all_of<
+                is_projected_indirect<Projected>...>::value &&
+            (!pika::is_vectorpack_execution_policy<ExPolicy>::value ||
+                !pika::util::detail::all_of<
+                    is_projected_zip_iterator<Projected>...>::value)>::type>
+      : is_indirect_callable_impl_base<F,
+            typename projected_result_of_indirect<Projected>::type...>
+    {
+    };
 
 #if defined(PIKA_HAVE_DATAPAR)
-        // Vector pack execution policies used with zip-iterators require
-        // special handling because zip_iterator<>::reference is not a real
-        // reference type.
-        template <typename ExPolicy, typename F, typename... Projected>
-        struct is_indirect_callable<ExPolicy, F,
-            pika::util::detail::pack<Projected...>,
-            std::enable_if_t<pika::util::detail::all_of_v<
-                                 is_projected_indirect<Projected>...> &&
-                pika::is_vectorpack_execution_policy<ExPolicy>::value &&
-                pika::util::detail::all_of_v<
-                    is_projected_zip_iterator<Projected>...>>>
-          : is_indirect_callable_impl<F,
-                typename projected_result_of_vector_pack<Projected>::type...>
-        {
-        };
+    // Vector pack execution policies used with zip-iterators require
+    // special handling because zip_iterator<>::reference is not a real
+    // reference type.
+    template <typename ExPolicy, typename F, typename... Projected>
+    struct is_indirect_callable_impl<ExPolicy, F,
+        pika::util::detail::pack<Projected...>,
+        typename std::enable_if<
+            pika::util::detail::all_of<
+                is_projected_indirect<Projected>...>::value &&
+            pika::is_vectorpack_execution_policy<ExPolicy>::value &&
+            pika::util::detail::all_of<
+                is_projected_zip_iterator<Projected>...>::value>::type>
+      : is_indirect_callable_impl_base<F,
+            typename projected_result_of_vector_pack<Projected>::type...>
+    {
+    };
 #endif
-    }    // namespace detail
 
     template <typename ExPolicy, typename F, typename... Projected>
     struct is_indirect_callable
-      : detail::is_indirect_callable<std::decay_t<ExPolicy>, std::decay_t<F>,
+      : detail::is_indirect_callable_impl<std::decay_t<ExPolicy>,
+            std::decay_t<F>,
             pika::util::detail::pack<std::decay_t<Projected>...>>
     {
     };
@@ -231,5 +218,4 @@ namespace pika { namespace parallel { namespace traits {
     template <typename ExPolicy, typename F, typename... Projected>
     inline constexpr bool is_indirect_callable_v =
         is_indirect_callable<ExPolicy, F, Projected...>::value;
-
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::detail

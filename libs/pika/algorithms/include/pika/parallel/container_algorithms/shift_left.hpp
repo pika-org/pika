@@ -223,7 +223,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::shift_left<FwdIter>().call(
+            return pika::parallel::detail::shift_left<FwdIter>().call(
                 pika::execution::seq, first, last, n);
         }
 
@@ -244,7 +244,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::shift_left<FwdIter>().call(
+            return pika::parallel::detail::shift_left<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, n);
         }
 
@@ -261,7 +261,7 @@ namespace pika { namespace ranges {
                               pika::traits::range_iterator_t<Rng>>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::shift_left<
+            return pika::parallel::detail::shift_left<
                 pika::traits::range_iterator_t<Rng>>()
                 .call(pika::execution::seq, std::begin(rng), std::end(rng), n);
         }
@@ -282,7 +282,7 @@ namespace pika { namespace ranges {
                               pika::traits::range_iterator_t<Rng>>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::shift_left<
+            return pika::parallel::detail::shift_left<
                 pika::traits::range_iterator_t<Rng>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng),
                     std::end(rng), n);

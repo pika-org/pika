@@ -16,7 +16,7 @@
 #include <tuple>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <int N, typename R, typename ZipIter>
     R get_iter(ZipIter&& zipiter)
@@ -120,4 +120,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
                 return get_iter_in_in_result(PIKA_MOVE(zipiter));
             });
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

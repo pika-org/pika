@@ -263,16 +263,16 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value &&
-                pika::parallel::traits::is_projected<Proj, FwdIter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj, FwdIter>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected<Proj, FwdIter>>::value
+                    pika::parallel::detail::projected<Proj, FwdIter>>::value
             )>
         // clang-format on
         friend bool tag_fallback_invoke(pika::ranges::is_partitioned_t,
             FwdIter first, Sent last, Pred&& pred, Proj&& proj = Proj())
         {
-            return pika::parallel::v1::detail::is_partitioned<FwdIter, Sent>()
+            return pika::parallel::detail::is_partitioned<FwdIter, Sent>()
                 .call(pika::execution::seq, first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
@@ -284,10 +284,10 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value &&
-                pika::parallel::traits::is_projected<Proj, FwdIter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj, FwdIter>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected<Proj, FwdIter>>::value
+                    pika::parallel::detail::projected<Proj, FwdIter>>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -295,7 +295,7 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(pika::ranges::is_partitioned_t, ExPolicy&& policy,
             FwdIter first, Sent last, Pred&& pred, Proj&& proj = Proj())
         {
-            return pika::parallel::v1::detail::is_partitioned<FwdIter, Sent>()
+            return pika::parallel::detail::is_partitioned<FwdIter, Sent>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
@@ -306,10 +306,10 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected_range<Proj, Rng>>::value
+                    pika::parallel::detail::projected_range<Proj, Rng>>::value
             )>
         // clang-format on
         friend bool tag_fallback_invoke(pika::ranges::is_partitioned_t,
@@ -318,7 +318,7 @@ namespace pika { namespace ranges {
             using iterator_type =
                 typename pika::traits::range_traits<Rng>::iterator_type;
 
-            return pika::parallel::v1::detail::is_partitioned<iterator_type,
+            return pika::parallel::detail::is_partitioned<iterator_type,
                 iterator_type>()
                 .call(pika::execution::seq, std::begin(rng), std::end(rng),
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
@@ -331,10 +331,10 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected_range<Proj, Rng>>::value
+                    pika::parallel::detail::projected_range<Proj, Rng>>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -345,7 +345,7 @@ namespace pika { namespace ranges {
             using iterator_type =
                 typename pika::traits::range_traits<Rng>::iterator_type;
 
-            return pika::parallel::v1::detail::is_partitioned<iterator_type,
+            return pika::parallel::detail::is_partitioned<iterator_type,
                 iterator_type>()
                 .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng),
                     std::end(rng), PIKA_FORWARD(Pred, pred),

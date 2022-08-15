@@ -270,7 +270,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     /////////////////////////////////////////////////////////////////////////////
     // remove_copy
     namespace detail {
@@ -387,7 +387,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -414,7 +414,7 @@ namespace pika {
             static_assert((pika::traits::is_output_iterator<InIter>::value),
                 "Required output iterator.");
 
-            auto&& res = pika::parallel::v1::detail::remove_copy_if<
+            auto&& res = pika::parallel::detail::remove_copy_if<
                 pika::parallel::util::in_out_result<InIter, OutIter>>()
                              .call(pika::execution::sequenced_policy{}, first,
                                  last, dest, PIKA_FORWARD(Pred, pred),
@@ -445,7 +445,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Required at least forward iterator.");
 
-            auto&& res = pika::parallel::v1::detail::remove_copy_if<
+            auto&& res = pika::parallel::detail::remove_copy_if<
                 pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                              .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                                  dest, PIKA_FORWARD(Pred, pred),

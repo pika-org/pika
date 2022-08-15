@@ -124,7 +124,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     template <typename Iter1, typename Iter2>
     using swap_ranges_result = pika::parallel::util::in_in_result<Iter1, Iter2>;
 
@@ -220,7 +220,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -243,7 +243,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::swap_ranges<FwdIter2>().call(
+            return pika::parallel::detail::swap_ranges<FwdIter2>().call(
                 pika::execution::seq, first1, last1, first2);
         }
 
@@ -265,7 +265,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::swap_ranges<FwdIter2>().call(
+            return pika::parallel::detail::swap_ranges<FwdIter2>().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2);
         }
     } swap_ranges{};

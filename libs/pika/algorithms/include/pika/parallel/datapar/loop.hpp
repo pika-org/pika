@@ -108,7 +108,7 @@ namespace pika { namespace parallel { namespace util {
                 using V = typename traits::vector_pack_type<value_type>::type;
 
                 return traits::vector_pack_size<V>::value <=
-                    (std::size_t) parallel::v1::detail::distance(first, last);
+                    (std::size_t) parallel::detail::distance(first, last);
             }
         };
 

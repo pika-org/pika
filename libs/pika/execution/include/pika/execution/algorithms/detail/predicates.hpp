@@ -20,7 +20,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika { namespace parallel { namespace detail {
     template <typename InputIterator, typename Distance>
     PIKA_HOST_DEVICE constexpr void advance_impl(
         InputIterator& i, Distance n, std::random_access_iterator_tag)
@@ -156,7 +156,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             Iter iter, Stride offset)
         {
 #if (defined(PIKA_HAVE_CUDA) && defined(__CUDACC__)) || defined(PIKA_HAVE_HIP)
-            pika::parallel::v1::detail::advance(iter, offset);
+            pika::parallel::detail::advance(iter, offset);
 #else
             std::advance(iter, offset);
 #endif
@@ -193,7 +193,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             Iter iter, Stride offset)
         {
 #if (defined(PIKA_HAVE_CUDA) && defined(__CUDACC__)) || defined(PIKA_HAVE_HIP)
-            pika::parallel::v1::detail::advance(iter, offset);
+            pika::parallel::detail::advance(iter, offset);
 #else
             std::advance(iter, offset);
 #endif
@@ -211,7 +211,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
                 offset = Stride(
                     max_count < std::size_t(offset) ? max_count : offset);
 #if (defined(PIKA_HAVE_CUDA) && defined(__CUDACC__)) || defined(PIKA_HAVE_HIP)
-                pika::parallel::v1::detail::advance(iter, offset);
+                pika::parallel::detail::advance(iter, offset);
 #else
                 std::advance(iter, offset);
 #endif
@@ -222,7 +222,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
                     // NVCC seems to have a bug with std::min...
                     max_count < negate(offset) ? max_count : negate(offset)));
 #if (defined(PIKA_HAVE_CUDA) && defined(__CUDACC__)) || defined(PIKA_HAVE_HIP)
-                pika::parallel::v1::detail::advance(iter, offset);
+                pika::parallel::detail::advance(iter, offset);
 #else
                 std::advance(iter, offset);
 #endif
@@ -239,7 +239,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             offset =
                 Stride(max_count < std::size_t(offset) ? max_count : offset);
 #if (defined(PIKA_HAVE_CUDA) && defined(__CUDACC__)) || defined(PIKA_HAVE_HIP)
-            pika::parallel::v1::detail::advance(iter, offset);
+            pika::parallel::detail::advance(iter, offset);
 #else
             std::advance(iter, offset);
 #endif
@@ -418,15 +418,13 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             return t1 / t2;
         }
     };
-}}}}    // namespace pika::parallel::v1::detail
+}}}    // namespace pika::parallel::detail
 
 namespace pika { namespace ranges {
-
-    ///////////////////////////////////////////////////////////////////////////
-    using equal_to = pika::parallel::v1::detail::equal_to;
-    using not_equal_to = pika::parallel::v1::detail::not_equal_to;
-    using less = pika::parallel::v1::detail::less;
-    using greater = pika::parallel::v1::detail::greater;
-    using greater_equal = pika::parallel::v1::detail::greater_equal;
-    using less_equal = pika::parallel::v1::detail::less_equal;
+    using equal_to = pika::parallel::detail::equal_to;
+    using not_equal_to = pika::parallel::detail::not_equal_to;
+    using less = pika::parallel::detail::less;
+    using greater = pika::parallel::detail::greater;
+    using greater_equal = pika::parallel::detail::greater_equal;
+    using less_equal = pika::parallel::detail::less_equal;
 }}    // namespace pika::ranges

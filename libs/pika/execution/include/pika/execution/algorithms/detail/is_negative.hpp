@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika { namespace parallel { namespace detail {
     // main template represents non-integral types (raises error)
     template <typename Size, typename Enable = void>
     struct is_negative_helper;
@@ -73,4 +73,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     {
         return is_negative_helper<T>::negate(val);
     }
-}}}}    // namespace pika::parallel::v1::detail
+}}}    // namespace pika::parallel::detail

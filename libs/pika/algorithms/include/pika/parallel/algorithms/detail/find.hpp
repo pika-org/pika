@@ -20,7 +20,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
 
     // provide implementation of std::find supporting iterators/sentinels
     template <typename ExPolicy>
@@ -254,4 +254,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             part_count, tok, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
     }
 #endif
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

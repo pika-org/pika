@@ -26,7 +26,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
     /// \cond NOINTERNAL
 
     ///////////////////////////////////////////////////////////////////////////
@@ -83,16 +83,16 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             // Use of pika::distance instead of std::distance to support
             // sentinels
             s_difference_type diff =
-                pika::parallel::v1::detail::distance(s_first, s_last);
+                pika::parallel::detail::distance(s_first, s_last);
             if (diff <= 0)
                 return result::get(PIKA_MOVE(first));
 
             difference_type count =
-                pika::parallel::v1::detail::distance(first, last);
+                pika::parallel::detail::distance(first, last);
             if (diff > count)
             {
                 std::advance(first,
-                    pika::parallel::v1::detail::distance(first, last) - 1);
+                    pika::parallel::detail::distance(first, last) - 1);
                 return result::get(PIKA_MOVE(first));
             }
 
@@ -149,7 +149,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
                     std::advance(first, search_res);
                 else
                     std::advance(first,
-                        pika::parallel::v1::detail::distance(first, last) - 1);
+                        pika::parallel::detail::distance(first, last) - 1);
 
                 return PIKA_MOVE(first);
             };
@@ -258,4 +258,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     };
 
     /// \endcond
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

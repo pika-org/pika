@@ -440,7 +440,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
                 "Requires at least forward iterator.");
 
-            return parallel::v1::detail::transform<
+            return parallel::detail::transform<
                 unary_transform_result<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
@@ -469,7 +469,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Requires at least forward iterator.");
 
-            return parallel::v1::detail::transform<
+            return parallel::detail::transform<
                 unary_transform_result<iterator_type, FwdIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng), dest, PIKA_FORWARD(F, f),
@@ -501,7 +501,7 @@ namespace pika { namespace ranges {
                     pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return parallel::v1::detail::transform_binary2<
+            return parallel::detail::transform_binary2<
                 binary_transform_result<FwdIter1, FwdIter2, FwdIter3>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                     last2, dest, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
@@ -538,7 +538,7 @@ namespace pika { namespace ranges {
                     pika::traits::is_forward_iterator<iterator_type2>::value,
                 "Requires at least forward iterator.");
 
-            return parallel::v1::detail::transform_binary2<
+            return parallel::detail::transform_binary2<
                 binary_transform_result<iterator_type1, iterator_type2,
                     FwdIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
@@ -564,7 +564,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<FwdIter1>::value,
                 "Requires at least input iterator.");
 
-            return parallel::v1::detail::transform<
+            return parallel::detail::transform<
                 unary_transform_result<FwdIter1, FwdIter2>>()
                 .call(pika::execution::seq, first, last, dest,
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
@@ -589,7 +589,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Requires at least input iterator.");
 
-            return parallel::v1::detail::transform<
+            return parallel::detail::transform<
                 unary_transform_result<iterator_type, FwdIter>>()
                 .call(pika::execution::seq, pika::util::begin(rng),
                     pika::util::end(rng), dest, PIKA_FORWARD(F, f),
@@ -618,7 +618,7 @@ namespace pika { namespace ranges {
                     pika::traits::is_input_iterator<FwdIter2>::value,
                 "Requires at least input iterator.");
 
-            return parallel::v1::detail::transform_binary2<
+            return parallel::detail::transform_binary2<
                 binary_transform_result<FwdIter1, FwdIter2, FwdIter3>>()
                 .call(pika::execution::seq, first1, last1, first2, last2, dest,
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
@@ -652,7 +652,7 @@ namespace pika { namespace ranges {
                     pika::traits::is_forward_iterator<iterator_type2>::value,
                 "Requires at least forward iterator.");
 
-            return parallel::v1::detail::transform_binary2<
+            return parallel::detail::transform_binary2<
                 binary_transform_result<iterator_type1, iterator_type2,
                     FwdIter>>()
                 .call(pika::execution::seq, pika::util::begin(rng1),

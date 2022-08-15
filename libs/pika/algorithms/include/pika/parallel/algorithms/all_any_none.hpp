@@ -252,8 +252,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
-
+namespace pika::parallel {
     ///////////////////////////////////////////////////////////////////////////
     // none_of
     namespace detail {
@@ -439,7 +438,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}    // namespace pika::parallel
 
 namespace pika {
 
@@ -464,7 +463,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::none_of().call(
+            return pika::parallel::detail::none_of().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
@@ -481,8 +480,8 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::none_of().call(
-                pika::execution::seq, first, last, PIKA_FORWARD(F, f),
+            return pika::parallel::detail::none_of().call(pika::execution::seq,
+                first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
     } none_of{};
@@ -508,7 +507,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::any_of().call(
+            return pika::parallel::detail::any_of().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
@@ -525,8 +524,8 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::any_of().call(
-                pika::execution::seq, first, last, PIKA_FORWARD(F, f),
+            return pika::parallel::detail::any_of().call(pika::execution::seq,
+                first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
     } any_of{};
@@ -552,7 +551,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::all_of().call(
+            return pika::parallel::detail::all_of().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity());
         }
@@ -569,8 +568,8 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::all_of().call(
-                pika::execution::seq, first, last, PIKA_FORWARD(F, f),
+            return pika::parallel::detail::all_of().call(pika::execution::seq,
+                first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
     } all_of{};

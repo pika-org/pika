@@ -387,7 +387,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     template <typename T>
     using minmax_element_result = pika::parallel::util::min_max_result<T>;
 
@@ -823,7 +823,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -837,7 +837,7 @@ namespace pika {
     {
         // clang-format off
         template <typename FwdIter,
-            typename F = pika::parallel::v1::detail::less,
+            typename F = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter>
             )>
@@ -848,14 +848,14 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::min_element<FwdIter>().call(
+            return pika::parallel::detail::min_element<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter,
-            typename F = pika::parallel::v1::detail::less,
+            typename F = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter>
@@ -869,7 +869,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::min_element<FwdIter>().call(
+            return pika::parallel::detail::min_element<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity());
         }
@@ -882,7 +882,7 @@ namespace pika {
     {
         // clang-format off
         template <typename FwdIter,
-            typename F = pika::parallel::v1::detail::less,
+            typename F = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter>
             )>
@@ -893,14 +893,14 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::max_element<FwdIter>().call(
+            return pika::parallel::detail::max_element<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter,
-            typename F = pika::parallel::v1::detail::less,
+            typename F = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter>
@@ -914,7 +914,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::max_element<FwdIter>().call(
+            return pika::parallel::detail::max_element<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity());
         }
@@ -927,7 +927,7 @@ namespace pika {
     {
         // clang-format off
         template <typename FwdIter,
-            typename F = pika::parallel::v1::detail::less,
+            typename F = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter>
             )>
@@ -938,14 +938,14 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::minmax_element<FwdIter>().call(
+            return pika::parallel::detail::minmax_element<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter,
-            typename F = pika::parallel::v1::detail::less,
+            typename F = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter>
@@ -959,7 +959,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::minmax_element<FwdIter>().call(
+            return pika::parallel::detail::minmax_element<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity());
         }

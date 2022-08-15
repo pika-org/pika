@@ -11,7 +11,7 @@
 
 #include <exception>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika { namespace parallel { namespace detail {
     exception_list_termination_handler_type&
     get_exception_list_termination_handler()
     {
@@ -34,4 +34,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
 
         std::terminate();
     }
-}}}}    // namespace pika::parallel::v1::detail
+}}}    // namespace pika::parallel::detail

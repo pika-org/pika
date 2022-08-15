@@ -50,7 +50,7 @@ namespace pika {
     ///           the function always returns true.
     ///
     template <typename FwdIter,
-        typename Pred = pika::parallel::v1::detail::less>
+        typename Pred = pika::parallel::detail::less>
     bool is_sorted(FwdIter first, FwdIter last, Pred&& pred = Pred());
 
     /// Determines if the range [first, last) is sorted. Uses pred to
@@ -111,7 +111,7 @@ namespace pika {
     ///           the function always returns true.
     ///
     template <typename ExPolicy, typename FwdIter,
-        typename Pred = pika::parallel::v1::detail::less>
+        typename Pred = pika::parallel::detail::less>
     typename pika::parallel::util::detail::algorithm_result<ExPolicy,
         bool>::type
     is_sorted(
@@ -155,7 +155,7 @@ namespace pika {
     ///           sequence is sorted, last is returned.
     ///
     template <typename FwdIter,
-        typename Pred = pika::parallel::v1::detail::less>
+        typename Pred = pika::parallel::detail::less>
     FwdIter is_sorted_until(FwdIter first, FwdIter last, Pred&& pred = Pred());
 
     /// Returns the first element in the range [first, last) that is not sorted.
@@ -216,7 +216,7 @@ namespace pika {
     ///           sequence is sorted, last is returned.
     ///
     template <typename ExPolicy, typename FwdIter,
-        typename Pred = pika::parallel::v1::detail::less>
+        typename Pred = pika::parallel::detail::less>
     typename pika::parallel::util::detail::algorithm_result<ExPolicy,
         FwdIter>::type
     is_sorted_until(
@@ -248,7 +248,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ////////////////////////////////////////////////////////////////////////////
     // is_sorted
     namespace detail {
@@ -427,7 +427,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     inline constexpr struct is_sorted_t final
@@ -435,7 +435,7 @@ namespace pika {
     {
     private:
         template <typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
@@ -449,14 +449,14 @@ namespace pika {
         friend bool tag_fallback_invoke(pika::is_sorted_t, FwdIter first,
             FwdIter last, Pred&& pred = Pred())
         {
-            return pika::parallel::v1::detail::is_sorted<FwdIter, FwdIter>()
+            return pika::parallel::detail::is_sorted<FwdIter, FwdIter>()
                 .call(pika::execution::seq, first, last,
                     PIKA_FORWARD(Pred, pred),
                     pika::parallel::util::projection_identity());
         }
 
         template <typename ExPolicy, typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
@@ -473,7 +473,7 @@ namespace pika {
         tag_fallback_invoke(pika::is_sorted_t, ExPolicy&& policy, FwdIter first,
             FwdIter last, Pred&& pred = Pred())
         {
-            return pika::parallel::v1::detail::is_sorted<FwdIter, FwdIter>()
+            return pika::parallel::detail::is_sorted<FwdIter, FwdIter>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred),
                     pika::parallel::util::projection_identity());
@@ -485,7 +485,7 @@ namespace pika {
     {
     private:
         template <typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
@@ -499,7 +499,7 @@ namespace pika {
         friend FwdIter tag_fallback_invoke(pika::is_sorted_until_t,
             FwdIter first, FwdIter last, Pred&& pred = Pred())
         {
-            return pika::parallel::v1::detail::is_sorted_until<FwdIter,
+            return pika::parallel::detail::is_sorted_until<FwdIter,
                 FwdIter>()
                 .call(pika::execution::seq, first, last,
                     PIKA_FORWARD(Pred, pred),
@@ -507,7 +507,7 @@ namespace pika {
         }
 
         template <typename ExPolicy, typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
@@ -524,7 +524,7 @@ namespace pika {
         tag_fallback_invoke(pika::is_sorted_until_t, ExPolicy&& policy,
             FwdIter first, FwdIter last, Pred&& pred = Pred())
         {
-            return pika::parallel::v1::detail::is_sorted_until<FwdIter,
+            return pika::parallel::detail::is_sorted_until<FwdIter,
                 FwdIter>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred),

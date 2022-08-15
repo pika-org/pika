@@ -135,7 +135,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
 
     ///////////////////////////////////////////////////////////////////////////
     // sort
@@ -457,7 +457,7 @@ namespace pika { namespace parallel { inline namespace v1 {
     template <typename Iter, typename Sent, typename Comp>
     Iter sequential_partial_sort(Iter first, Iter middle, Sent end, Comp&& comp)
     {
-        std::int64_t nelem = parallel::v1::detail::distance(first, end);
+        std::int64_t nelem = parallel::detail::distance(first, end);
         PIKA_ASSERT(nelem >= 0);
 
         std::int64_t nmid = middle - first;
@@ -492,7 +492,7 @@ namespace pika { namespace parallel { inline namespace v1 {
     pika::future<Iter> parallel_partial_sort(
         ExPolicy&& policy, Iter first, Iter middle, Sent end, Comp&& comp)
     {
-        std::int64_t nelem = parallel::v1::detail::distance(first, end);
+        std::int64_t nelem = parallel::detail::distance(first, end);
         PIKA_ASSERT(nelem >= 0);
 
         std::int64_t nmid = middle - first;
@@ -506,7 +506,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         }
 
-        std::uint32_t level = parallel::v1::detail::nbits64(nelem) * 2;
+        std::uint32_t level = parallel::detail::nbits64(nelem) * 2;
         return detail::parallel_partial_sort(PIKA_FORWARD(ExPolicy, policy),
             first, middle, first + nelem, level, PIKA_FORWARD(Comp, comp));
     }
@@ -556,7 +556,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         }
     };
-}}}    // namespace pika::parallel::v1
+}}    // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -566,7 +566,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter>::value &&
                 pika::detail::is_invocable_v<Comp,
@@ -583,7 +583,7 @@ namespace pika {
                 pika::traits::is_random_access_iterator<RandIter>::value,
                 "Requires at least random access iterator.");
 
-            return parallel::v1::partial_sort<RandIter>().call(
+            return parallel::partial_sort<RandIter>().call(
                 pika::execution::seq, first, middle, last,
                 PIKA_FORWARD(Comp, comp),
                 parallel::util::projection_identity());
@@ -591,7 +591,7 @@ namespace pika {
 
         // clang-format off
         template <typename ExPolicy, typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter>::value &&
@@ -615,7 +615,7 @@ namespace pika {
                 parallel::util::detail::algorithm_result<ExPolicy, RandIter>;
 
             return algorithm_result::get(
-                parallel::v1::partial_sort<RandIter>().call(
+                parallel::partial_sort<RandIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, middle, last,
                     PIKA_FORWARD(Comp, comp),
                     parallel::util::projection_identity()));

@@ -356,12 +356,12 @@ namespace pika { namespace ranges {
                 pika::traits::is_sentinel_for_v<Sent1, InIter> &&
                 pika::traits::is_iterator_v<RandIter> &&
                 pika::traits::is_sentinel_for_v<Sent2, RandIter> &&
-                parallel::traits::is_projected_v<Proj1, InIter> &&
-                parallel::traits::is_projected_v<Proj2, RandIter> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_v<Proj1, InIter> &&
+                parallel::detail::is_projected_v<Proj2, RandIter> &&
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Comp,
-                    parallel::traits::projected<Proj1, InIter>,
-                    parallel::traits::projected<Proj1, InIter>
+                    parallel::detail::projected<Proj1, InIter>,
+                    parallel::detail::projected<Proj1, InIter>
                 >
             )>
         // clang-format on
@@ -378,7 +378,7 @@ namespace pika { namespace ranges {
 
             using result_type = partial_sort_copy_result<InIter, RandIter>;
 
-            return pika::parallel::v1::detail::partial_sort_copy<result_type>()
+            return pika::parallel::detail::partial_sort_copy<result_type>()
                 .call(pika::execution::seq, first, last, r_first, r_last,
                     PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj1, proj1),
                     PIKA_FORWARD(Proj2, proj2));
@@ -396,12 +396,12 @@ namespace pika { namespace ranges {
                 pika::traits::is_sentinel_for_v<Sent1, FwdIter> &&
                 pika::traits::is_iterator_v<RandIter> &&
                 pika::traits::is_sentinel_for_v<Sent2, RandIter> &&
-                parallel::traits::is_projected_v<Proj1, FwdIter> &&
-                parallel::traits::is_projected_v<Proj2, RandIter> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_v<Proj1, FwdIter> &&
+                parallel::detail::is_projected_v<Proj2, RandIter> &&
+                parallel::detail::is_indirect_callable_v<
                     ExPolicy, Comp,
-                    parallel::traits::projected<Proj1, FwdIter>,
-                    parallel::traits::projected<Proj1, FwdIter>
+                    parallel::detail::projected<Proj1, FwdIter>,
+                    parallel::detail::projected<Proj1, FwdIter>
                 >
             )>
         // clang-format on
@@ -420,7 +420,7 @@ namespace pika { namespace ranges {
 
             using result_type = partial_sort_copy_result<FwdIter, RandIter>;
 
-            return pika::parallel::v1::detail::partial_sort_copy<result_type>()
+            return pika::parallel::detail::partial_sort_copy<result_type>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, r_first,
                     r_last, PIKA_FORWARD(Comp, comp),
                     PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
@@ -434,12 +434,12 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range_v<Rng1> &&
                 pika::traits::is_range_v<Rng2> &&
-                parallel::traits::is_projected_range_v<Proj1, Rng1> &&
-                parallel::traits::is_projected_range_v<Proj2, Rng2> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_range_v<Proj1, Rng1> &&
+                parallel::detail::is_projected_range_v<Proj2, Rng2> &&
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Compare,
-                    parallel::traits::projected_range<Proj1, Rng1>,
-                    parallel::traits::projected_range<Proj1, Rng1>
+                    parallel::detail::projected_range<Proj1, Rng1>,
+                    parallel::detail::projected_range<Proj1, Rng1>
                 >
             )>
         // clang-format on
@@ -461,7 +461,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type2>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::partial_sort_copy<result_type>()
+            return pika::parallel::detail::partial_sort_copy<result_type>()
                 .call(pika::execution::seq, pika::util::begin(rng1),
                     pika::util::end(rng1), pika::util::begin(rng2),
                     pika::util::end(rng2), PIKA_FORWARD(Compare, comp),
@@ -477,12 +477,12 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng1> &&
                 pika::traits::is_range_v<Rng2> &&
-                parallel::traits::is_projected_range_v<Proj1, Rng1> &&
-                parallel::traits::is_projected_range_v<Proj2, Rng2> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_range_v<Proj1, Rng1> &&
+                parallel::detail::is_projected_range_v<Proj2, Rng2> &&
+                parallel::detail::is_indirect_callable_v<
                     ExPolicy, Compare,
-                    parallel::traits::projected_range<Proj1, Rng1>,
-                    parallel::traits::projected_range<Proj1, Rng1>
+                    parallel::detail::projected_range<Proj1, Rng1>,
+                    parallel::detail::projected_range<Proj1, Rng1>
                 >
             )>
         // clang-format on
@@ -506,7 +506,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type2>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::partial_sort_copy<result_type>()
+            return pika::parallel::detail::partial_sort_copy<result_type>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
                     pika::util::end(rng1), pika::util::begin(rng2),
                     pika::util::end(rng2), PIKA_FORWARD(Compare, comp),

@@ -12,7 +12,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
 
     // Generic implementation for advancing a given iterator to its sentinel
     template <typename Iter, typename Sent>
@@ -36,5 +36,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             return first;
         }
     }
-
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

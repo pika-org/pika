@@ -140,7 +140,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // adjacent_find
     namespace detail {
@@ -225,7 +225,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     inline constexpr struct adjacent_find_t final
@@ -234,7 +234,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename InIter,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_input_iterator<InIter>::value
             )>
@@ -245,14 +245,14 @@ namespace pika {
             static_assert((pika::traits::is_input_iterator<InIter>::value),
                 "Requires at least input iterator.");
 
-            return parallel::v1::detail::adjacent_find<InIter, InIter>().call(
+            return parallel::detail::adjacent_find<InIter, InIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity{});
         }
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value
@@ -266,7 +266,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Requires at least a forward iterator");
 
-            return parallel::v1::detail::adjacent_find<FwdIter, FwdIter>().call(
+            return parallel::detail::adjacent_find<FwdIter, FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity{});

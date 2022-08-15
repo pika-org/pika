@@ -16,7 +16,7 @@
 #include <functional>
 #include <iterator>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
 
     // provide implementation of std::rotate supporting iterators/sentinels
     template <typename Iter, typename Sent>
@@ -52,4 +52,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         detail::advance(first, detail::distance(new_first, last));
         return {first, last};
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

@@ -256,7 +256,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
 
     ///////////////////////////////////////////////////////////////////////////
     // for_each_n
@@ -531,7 +531,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -561,7 +561,7 @@ namespace pika {
 
             if (first != last)
             {
-                pika::parallel::v1::detail::for_each<InIter>().call(
+                pika::parallel::detail::for_each<InIter>().call(
                     pika::execution::seq, first, last, f,
                     pika::parallel::util::projection_identity());
             }
@@ -592,7 +592,7 @@ namespace pika {
             }
 
             return pika::parallel::util::detail::algorithm_result<ExPolicy>::
-                get(pika::parallel::v1::detail::for_each<FwdIter>().call(
+                get(pika::parallel::detail::for_each<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(F, f),
                     pika::parallel::util::projection_identity()));
@@ -617,12 +617,12 @@ namespace pika {
                 "Requires at least input iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (parallel::v1::detail::is_negative(count))
+            if (parallel::detail::is_negative(count))
             {
                 return first;
             }
 
-            return pika::parallel::v1::detail::for_each_n<InIter>().call(
+            return pika::parallel::detail::for_each_n<InIter>().call(
                 pika::execution::seq, first, std::size_t(count),
                 PIKA_FORWARD(F, f), parallel::util::projection_identity());
         }
@@ -643,14 +643,14 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (parallel::v1::detail::is_negative(count))
+            if (parallel::detail::is_negative(count))
             {
                 using result =
                     parallel::util::detail::algorithm_result<ExPolicy, FwdIter>;
                 return result::get(PIKA_MOVE(first));
             }
 
-            return pika::parallel::v1::detail::for_each_n<FwdIter>().call(
+            return pika::parallel::detail::for_each_n<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
                 PIKA_FORWARD(F, f), parallel::util::projection_identity());
         }
@@ -661,10 +661,10 @@ namespace pika {
 namespace pika::detail {
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_address<
-        parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj>>
+        parallel::detail::for_each_iteration<ExPolicy, F, Proj>>
     {
         static constexpr std::size_t call(
-            parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj> const&
+            parallel::detail::for_each_iteration<ExPolicy, F, Proj> const&
                 f) noexcept
         {
             return get_function_address<std::decay_t<F>>::call(f.f_);
@@ -673,10 +673,10 @@ namespace pika::detail {
 
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_annotation<
-        parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj>>
+        parallel::detail::for_each_iteration<ExPolicy, F, Proj>>
     {
         static constexpr char const* call(
-            parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj> const&
+            parallel::detail::for_each_iteration<ExPolicy, F, Proj> const&
                 f) noexcept
         {
             return get_function_annotation<std::decay_t<F>>::call(f.f_);
@@ -686,10 +686,10 @@ namespace pika::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_annotation_itt<
-        parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj>>
+        parallel::detail::for_each_iteration<ExPolicy, F, Proj>>
     {
         static util::itt::string_handle call(
-            parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj> const&
+            parallel::detail::for_each_iteration<ExPolicy, F, Proj> const&
                 f) noexcept
         {
             return get_function_annotation_itt<std::decay_t<F>>::call(f.f_);

@@ -123,7 +123,7 @@ namespace pika { namespace parallel { namespace util {
                 InIter first, Sent last, OutIter dest)
             {
                 return copy_memmove(
-                    first, parallel::v1::detail::distance(first, last), dest);
+                    first, parallel::detail::distance(first, last), dest);
             }
         };
     }    // namespace detail
@@ -266,7 +266,7 @@ namespace pika { namespace parallel { namespace util {
                 InIter first, Sent last, OutIter dest)
             {
                 return copy_memmove(
-                    first, parallel::v1::detail::distance(first, last), dest);
+                    first, parallel::detail::distance(first, last), dest);
             }
         };
     }    // namespace detail

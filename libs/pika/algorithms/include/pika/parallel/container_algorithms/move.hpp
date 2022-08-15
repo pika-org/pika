@@ -166,8 +166,8 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(
             move_t, ExPolicy&& policy, Iter1 first, Sent1 last, Iter2 dest)
         {
-            return pika::parallel::v1::detail::transfer<
-                pika::parallel::v1::detail::move<Iter1, Iter2>>(
+            return pika::parallel::detail::transfer<
+                pika::parallel::detail::move<Iter1, Iter2>>(
                 PIKA_FORWARD(ExPolicy, policy), first, last, dest);
         }
 
@@ -187,8 +187,8 @@ namespace pika { namespace ranges {
             using iterator_type =
                 typename pika::traits::range_iterator<Rng>::type;
 
-            return pika::parallel::v1::detail::transfer<
-                pika::parallel::v1::detail::move<iterator_type, Iter2>>(
+            return pika::parallel::detail::transfer<
+                pika::parallel::detail::move<iterator_type, Iter2>>(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), dest);
         }
@@ -203,8 +203,8 @@ namespace pika { namespace ranges {
         friend move_result<Iter1, Iter2> tag_fallback_invoke(
             move_t, Iter1 first, Sent1 last, Iter2 dest)
         {
-            return pika::parallel::v1::detail::transfer<
-                pika::parallel::v1::detail::move<Iter1, Iter2>>(
+            return pika::parallel::detail::transfer<
+                pika::parallel::detail::move<Iter1, Iter2>>(
                 pika::execution::seq, first, last, dest);
         }
 
@@ -222,8 +222,8 @@ namespace pika { namespace ranges {
             using iterator_type =
                 typename pika::traits::range_iterator<Rng>::type;
 
-            return pika::parallel::v1::detail::transfer<
-                pika::parallel::v1::detail::move<iterator_type, Iter2>>(
+            return pika::parallel::detail::transfer<
+                pika::parallel::detail::move<iterator_type, Iter2>>(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), dest);
         }

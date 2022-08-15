@@ -179,7 +179,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // count
     namespace detail {
@@ -367,7 +367,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -396,7 +396,7 @@ namespace pika {
             using difference_type =
                 typename std::iterator_traits<FwdIter>::difference_type;
 
-            return pika::parallel::v1::detail::count<difference_type>().call(
+            return pika::parallel::detail::count<difference_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, value,
                 pika::parallel::util::projection_identity{});
         }
@@ -417,7 +417,7 @@ namespace pika {
             using difference_type =
                 typename std::iterator_traits<InIter>::difference_type;
 
-            return pika::parallel::v1::detail::count<difference_type>().call(
+            return pika::parallel::detail::count<difference_type>().call(
                 pika::execution::seq, first, last, value,
                 pika::parallel::util::projection_identity{});
         }
@@ -450,7 +450,7 @@ namespace pika {
             using difference_type =
                 typename std::iterator_traits<FwdIter>::difference_type;
 
-            return pika::parallel::v1::detail::count_if<difference_type>().call(
+            return pika::parallel::detail::count_if<difference_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
@@ -473,7 +473,7 @@ namespace pika {
             using difference_type =
                 typename std::iterator_traits<InIter>::difference_type;
 
-            return pika::parallel::v1::detail::count_if<difference_type>().call(
+            return pika::parallel::detail::count_if<difference_type>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }

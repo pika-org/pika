@@ -17,7 +17,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
 
     template <typename KeyIter, typename ValueIter>
     using sort_by_key_result = std::pair<KeyIter, ValueIter>;
@@ -144,4 +144,4 @@ namespace pika { namespace parallel { inline namespace v1 {
                 PIKA_FORWARD(Compare, comp), detail::extract_key()));
 #endif
     }
-}}}    // namespace pika::parallel::v1
+}}    // namespace pika::parallel::v1

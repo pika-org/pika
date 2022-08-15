@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <cstddef>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
     /// Return the iterator to the mid value of the three values
     /// passed as parameters
     ///
@@ -82,4 +82,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         std::iter_swap(first, itaux);
 #endif
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

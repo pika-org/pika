@@ -89,7 +89,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // move
     namespace detail {
@@ -158,7 +158,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}    // namespace pika::parallel::v1
+}}    // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -181,8 +181,8 @@ namespace pika {
             FwdIter1 last, FwdIter2 dest)
         {
             return pika::parallel::util::get_second_element(
-                pika::parallel::v1::detail::transfer<
-                    pika::parallel::v1::detail::move<FwdIter1, FwdIter2>>(
+                pika::parallel::detail::transfer<
+                    pika::parallel::detail::move<FwdIter1, FwdIter2>>(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest));
         }
 

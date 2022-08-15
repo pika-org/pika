@@ -45,7 +45,7 @@ namespace pika { namespace ranges {
     // clang-format on
     constexpr inline Iter next(Iter first, Sent bound)
     {
-        return pika::parallel::v1::detail::advance_to_sentinel(first, bound);
+        return pika::parallel::detail::advance_to_sentinel(first, bound);
     }
 
     template <typename Iter, typename Sent>
@@ -66,14 +66,14 @@ namespace pika { namespace ranges {
         typename std::iterator_traits<Iter>::difference_type n, Sent bound,
         std::true_type, std::true_type)
     {
-        if (pika::parallel::v1::detail::distance(first, bound) < size_t(n))
+        if (pika::parallel::detail::distance(first, bound) < size_t(n))
         {
-            return pika::parallel::v1::detail::advance_to_sentinel(
+            return pika::parallel::detail::advance_to_sentinel(
                 first, bound);
         }
         else
         {
-            pika::parallel::v1::detail::advance(first, n);
+            pika::parallel::detail::advance(first, n);
             return first;
         }
     }

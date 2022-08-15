@@ -222,7 +222,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::generate<iterator_type>().call(
+            return pika::parallel::detail::generate<iterator_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f));
         }
@@ -242,7 +242,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::generate<Iter>().call(
+            return pika::parallel::detail::generate<Iter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(F, f));
         }
@@ -263,7 +263,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::generate<iterator_type>().call(
+            return pika::parallel::detail::generate<iterator_type>().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f));
         }
@@ -280,7 +280,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::generate<Iter>().call(
+            return pika::parallel::detail::generate<Iter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f));
         }
     } generate{};
@@ -306,13 +306,13 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
 
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return pika::parallel::util::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 
-            return pika::parallel::v1::detail::generate_n<FwdIter>().call(
+            return pika::parallel::detail::generate_n<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
                 PIKA_FORWARD(F, f));
         }
@@ -329,12 +329,12 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
 
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return first;
             }
 
-            return pika::parallel::v1::detail::generate_n<FwdIter>().call(
+            return pika::parallel::detail::generate_n<FwdIter>().call(
                 pika::execution::seq, first, std::size_t(count),
                 PIKA_FORWARD(F, f));
         }

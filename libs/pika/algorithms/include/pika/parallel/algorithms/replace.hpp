@@ -489,7 +489,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // replace
     namespace detail {
@@ -767,7 +767,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -793,7 +793,7 @@ namespace pika {
             static_assert((pika::traits::is_input_iterator<Iter>::value),
                 "Required at least input iterator.");
 
-            pika::parallel::v1::detail::replace_if<Iter>().call(
+            pika::parallel::detail::replace_if<Iter>().call(
                 pika::execution::sequenced_policy{}, first, last,
                 PIKA_FORWARD(Pred, pred), new_value,
                 pika::parallel::util::projection_identity());
@@ -820,7 +820,7 @@ namespace pika {
                 "Required at least forward iterator.");
 
             return parallel::util::detail::algorithm_result<ExPolicy>::get(
-                pika::parallel::v1::detail::replace_if<FwdIter>().call(
+                pika::parallel::detail::replace_if<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred), new_value,
                     pika::parallel::util::projection_identity()));
@@ -908,7 +908,7 @@ namespace pika {
                 "Required at least output iterator.");
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::replace_copy_if<
+                pika::parallel::detail::replace_copy_if<
                     pika::parallel::util::in_out_result<InIter, OutIter>>()
                     .call(pika::execution::sequenced_policy{}, first, last,
                         dest, PIKA_FORWARD(Pred, pred), new_value,
@@ -941,7 +941,7 @@ namespace pika {
                 "Required at least forward iterator.");
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::replace_copy_if<
+                pika::parallel::detail::replace_copy_if<
                     pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                         PIKA_FORWARD(Pred, pred), new_value,

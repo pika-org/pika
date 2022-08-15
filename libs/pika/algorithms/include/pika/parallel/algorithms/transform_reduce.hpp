@@ -279,7 +279,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
 
     ///////////////////////////////////////////////////////////////////////////
     // transform_reduce
@@ -593,7 +593,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #include <pika/functional/traits/get_function_address.hpp>
@@ -601,11 +601,11 @@ namespace pika { namespace parallel { inline namespace v1 {
 
 namespace pika::detail {
     template <typename T, typename ExPolicy, typename Reduce, typename Convert>
-    struct get_function_address<parallel::v1::detail::
+    struct get_function_address<parallel::detail::
             transform_reduce_iteration<T, ExPolicy, Reduce, Convert>>
     {
         static constexpr char const* call(
-            parallel::v1::detail::transform_reduce_iteration<T, ExPolicy,
+            parallel::detail::transform_reduce_iteration<T, ExPolicy,
                 Reduce, Convert> const& f) noexcept
         {
             char const* reduce_name =
@@ -618,11 +618,11 @@ namespace pika::detail {
     };
 
     template <typename T, typename ExPolicy, typename Reduce, typename Convert>
-    struct get_function_annotation<parallel::v1::detail::
+    struct get_function_annotation<parallel::detail::
             transform_reduce_iteration<T, ExPolicy, Reduce, Convert>>
     {
         static constexpr char const* call(
-            parallel::v1::detail::transform_reduce_iteration<T, ExPolicy,
+            parallel::detail::transform_reduce_iteration<T, ExPolicy,
                 Reduce, Convert> const& f) noexcept
         {
             char const* reduce_name =
@@ -637,15 +637,15 @@ namespace pika::detail {
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename T, typename ExPolicy, typename Reduce, typename Convert>
-    struct get_function_annotation_itt<parallel::v1::detail::
+    struct get_function_annotation_itt<parallel::detail::
             transform_reduce_iteration<T, ExPolicy, Reduce, Convert>>
     {
         static util::itt::string_handle call(
-            parallel::v1::detail::transform_reduce_iteration<T, ExPolicy,
+            parallel::detail::transform_reduce_iteration<T, ExPolicy,
                 Reduce, Convert> const& f) noexcept
         {
             static util::itt::string_handle sh(get_function_annotation<
-                parallel::v1::detail::transform_reduce_iteration<T, ExPolicy,
+                parallel::detail::transform_reduce_iteration<T, ExPolicy,
                     Reduce, Convert>>::call(f));
 
             return sh;
@@ -690,7 +690,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce<T>().call(
+            return pika::parallel::detail::transform_reduce<T>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(T, init), PIKA_FORWARD(Reduce, red_op),
                 PIKA_FORWARD(Convert, conv_op));
@@ -719,7 +719,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce<T>().call(
+            return pika::parallel::detail::transform_reduce<T>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(T, init),
                 PIKA_FORWARD(Reduce, red_op), PIKA_FORWARD(Convert, conv_op));
         }
@@ -743,10 +743,10 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-                    PIKA_MOVE(init), pika::parallel::v1::detail::plus(),
-                    pika::parallel::v1::detail::multiplies());
+                    PIKA_MOVE(init), pika::parallel::detail::plus(),
+                    pika::parallel::detail::multiplies());
         }
 
         // clang-format off
@@ -764,10 +764,10 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(pika::execution::seq, first1, last1, first2,
-                    PIKA_MOVE(init), pika::parallel::v1::detail::plus(),
-                    pika::parallel::v1::detail::multiplies());
+                    PIKA_MOVE(init), pika::parallel::detail::plus(),
+                    pika::parallel::detail::multiplies());
         }
 
         // clang-format off
@@ -804,7 +804,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                     PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
                     PIKA_FORWARD(Convert, conv_op));
@@ -841,7 +841,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(pika::execution::seq, first1, last1, first2,
                     PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
                     PIKA_FORWARD(Convert, conv_op));

@@ -306,7 +306,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce<T>().call(
+            return pika::parallel::detail::transform_reduce<T>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(T, init), PIKA_FORWARD(Reduce, red_op),
                 PIKA_FORWARD(Convert, conv_op));
@@ -336,7 +336,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce<T>().call(
+            return pika::parallel::detail::transform_reduce<T>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(T, init),
                 PIKA_FORWARD(Reduce, red_op), PIKA_FORWARD(Convert, conv_op));
         }
@@ -360,10 +360,10 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, first2,
-                    PIKA_MOVE(init), pika::parallel::v1::detail::plus(),
-                    pika::parallel::v1::detail::multiplies());
+                    PIKA_MOVE(init), pika::parallel::detail::plus(),
+                    pika::parallel::detail::multiplies());
         }
 
         // clang-format off
@@ -381,10 +381,10 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(pika::execution::seq, first, last, first2,
-                    PIKA_MOVE(init), pika::parallel::v1::detail::plus(),
-                    pika::parallel::v1::detail::multiplies());
+                    PIKA_MOVE(init), pika::parallel::detail::plus(),
+                    pika::parallel::detail::multiplies());
         }
 
         // clang-format off
@@ -420,7 +420,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, first2,
                     PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
                     PIKA_FORWARD(Convert, conv_op));
@@ -456,7 +456,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(pika::execution::seq, first, last, first2,
                     PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
                     PIKA_FORWARD(Convert, conv_op));
@@ -494,7 +494,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce<T>().call(
+            return pika::parallel::detail::transform_reduce<T>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(T, init),
                 PIKA_FORWARD(Reduce, red_op), PIKA_FORWARD(Convert, conv_op));
@@ -526,7 +526,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce<T>().call(
+            return pika::parallel::detail::transform_reduce<T>().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(T, init),
                 PIKA_FORWARD(Reduce, red_op), PIKA_FORWARD(Convert, conv_op));
@@ -554,11 +554,11 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng), first2, PIKA_MOVE(init),
-                    pika::parallel::v1::detail::plus(),
-                    pika::parallel::v1::detail::multiplies());
+                    pika::parallel::detail::plus(),
+                    pika::parallel::detail::multiplies());
         }
 
         // clang-format off
@@ -579,11 +579,11 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(pika::execution::seq, pika::util::begin(rng),
                     pika::util::end(rng), first2, PIKA_MOVE(init),
-                    pika::parallel::v1::detail::plus(),
-                    pika::parallel::v1::detail::multiplies());
+                    pika::parallel::detail::plus(),
+                    pika::parallel::detail::multiplies());
         }
 
         // clang-format off
@@ -623,7 +623,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng), first2, PIKA_MOVE(init),
                     PIKA_FORWARD(Reduce, red_op),
@@ -663,7 +663,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::transform_reduce_binary<T>()
+            return pika::parallel::detail::transform_reduce_binary<T>()
                 .call(pika::execution::seq, pika::util::begin(rng),
                     pika::util::end(rng), first2, PIKA_MOVE(init),
                     PIKA_FORWARD(Reduce, red_op),

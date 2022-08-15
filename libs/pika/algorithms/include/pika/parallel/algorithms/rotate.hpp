@@ -201,7 +201,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // rotate
     namespace detail {
@@ -343,7 +343,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 // create new APIs, tag_fallback_invoke overloads.
 namespace pika {
@@ -365,7 +365,7 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::rotate<
+                pika::parallel::detail::rotate<
                     pika::parallel::util::in_out_result<FwdIter, FwdIter>>()
                     .call(pika::execution::seq, first, new_first, last));
         }
@@ -389,7 +389,7 @@ namespace pika {
                     !pika::traits::is_bidirectional_iterator_v<FwdIter>>;
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::rotate<
+                pika::parallel::detail::rotate<
                     pika::parallel::util::in_out_result<FwdIter, FwdIter>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first,
                         new_first, last));
@@ -418,7 +418,7 @@ namespace pika {
                 "Requires at least output iterator.");
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::rotate_copy<
+                pika::parallel::detail::rotate_copy<
                     pika::parallel::util::in_out_result<FwdIter, OutIter>>()
                     .call(pika::execution::seq, first, new_first, last,
                         dest_first));
@@ -448,7 +448,7 @@ namespace pika {
                     !pika::traits::is_forward_iterator_v<FwdIter1>>;
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::rotate_copy<
+                pika::parallel::detail::rotate_copy<
                     pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first,
                         new_first, last, dest_first));

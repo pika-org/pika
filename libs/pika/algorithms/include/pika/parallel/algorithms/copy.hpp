@@ -233,7 +233,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
 
     ///////////////////////////////////////////////////////////////////////////
     // copy
@@ -530,7 +530,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -554,8 +554,8 @@ namespace pika {
             FwdIter1 last, FwdIter2 dest)
         {
             return parallel::util::get_second_element(
-                parallel::v1::detail::transfer<
-                    parallel::v1::detail::copy_iter<FwdIter1, FwdIter2>>(
+                parallel::detail::transfer<
+                    parallel::detail::copy_iter<FwdIter1, FwdIter2>>(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest));
         }
 
@@ -570,8 +570,8 @@ namespace pika {
             pika::copy_t, FwdIter1 first, FwdIter1 last, FwdIter2 dest)
         {
             return parallel::util::get_second_element(
-                parallel::v1::detail::transfer<
-                    parallel::v1::detail::copy_iter<FwdIter1, FwdIter2>>(
+                parallel::detail::transfer<
+                    parallel::detail::copy_iter<FwdIter1, FwdIter2>>(
                     pika::execution::seq, first, last, dest));
         }
     } copy{};
@@ -604,14 +604,14 @@ namespace pika {
                 "Requires at least forward iterator or sequential execution.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return pika::parallel::util::detail::algorithm_result<ExPolicy,
                     FwdIter2>::get(PIKA_MOVE(dest));
             }
 
             return pika::parallel::util::get_second_element(
-                pika::parallel::v1::detail::copy_n<
+                pika::parallel::detail::copy_n<
                     pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first,
                         std::size_t(count), dest));
@@ -633,7 +633,7 @@ namespace pika {
                 "Requires at least output iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return pika::parallel::util::detail::algorithm_result<
                     pika::execution::sequenced_policy,
@@ -641,7 +641,7 @@ namespace pika {
             }
 
             return pika::parallel::util::get_second_element(
-                pika::parallel::v1::detail::copy_n<
+                pika::parallel::detail::copy_n<
                     pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call(
                         pika::execution::seq, first, std::size_t(count), dest));
@@ -679,7 +679,7 @@ namespace pika {
                 "Requires at least forward iterator or sequential execution.");
 
             return pika::parallel::util::get_second_element(
-                pika::parallel::v1::detail::copy_if<
+                pika::parallel::detail::copy_if<
                     pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                         PIKA_FORWARD(Pred, pred),
@@ -705,7 +705,7 @@ namespace pika {
                 "Requires at least output iterator.");
 
             return pika::parallel::util::get_second_element(
-                pika::parallel::v1::detail::copy_if<
+                pika::parallel::detail::copy_if<
                     pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call(pika::execution::seq, first, last, dest,
                         PIKA_FORWARD(Pred, pred),

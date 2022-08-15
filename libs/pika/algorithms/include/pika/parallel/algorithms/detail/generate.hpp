@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename Sent, typename F>
@@ -84,4 +84,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     }
 #endif
 
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

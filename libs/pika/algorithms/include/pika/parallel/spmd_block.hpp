@@ -28,6 +28,7 @@
 #include <utility>
 #include <vector>
 
+// TODO: Change namespace
 namespace pika { namespace lcos { namespace local {
     /// The class spmd_block defines an interface for launching
     /// multiple images while giving handles to each image to interact with
@@ -245,7 +246,7 @@ namespace pika { namespace lcos { namespace local {
     }
 }}}    // namespace pika::lcos::local
 
-namespace pika { namespace parallel { inline namespace v2 {
+namespace pika::parallel {
 
     /// The class spmd_block defines an interface for launching
     /// multiple images while giving handles to each image to interact with
@@ -286,4 +287,4 @@ namespace pika { namespace parallel { inline namespace v2 {
         pika::lcos::local::define_spmd_block(pika::execution::par, num_images,
             PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...);
     }
-}}}    // namespace pika::parallel::v2
+}    // namespace pika::parallel

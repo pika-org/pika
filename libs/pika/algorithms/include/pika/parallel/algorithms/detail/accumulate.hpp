@@ -11,7 +11,7 @@
 
 #include <functional>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
 
     // provide implementation of std::accumulate supporting iterators/sentinels
     template <typename Iter, typename Sent, typename T, typename F>
@@ -29,4 +29,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     {
         return accumulate(first, last, value, std::plus<T>());
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

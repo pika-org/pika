@@ -242,7 +242,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // transform_exclusive_scan
     namespace detail {
@@ -377,7 +377,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -414,7 +414,7 @@ namespace pika {
             using result_type = parallel::util::in_out_result<InIter, OutIter>;
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::transform_exclusive_scan<
+                pika::parallel::detail::transform_exclusive_scan<
                     result_type>()
                     .call(pika::execution::seq, first, last, dest,
                         PIKA_FORWARD(UnOp, unary_op), PIKA_MOVE(init),
@@ -454,7 +454,7 @@ namespace pika {
                 parallel::util::in_out_result<FwdIter1, FwdIter2>;
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::transform_exclusive_scan<
+                pika::parallel::detail::transform_exclusive_scan<
                     result_type>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                         PIKA_FORWARD(UnOp, unary_op), PIKA_MOVE(init),

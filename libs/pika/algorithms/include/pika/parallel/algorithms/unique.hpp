@@ -490,7 +490,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     /////////////////////////////////////////////////////////////////////////////
     // unique
     namespace detail {
@@ -885,7 +885,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -895,15 +895,15 @@ namespace pika {
     {
         // clang-format off
         template <typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter> &&
-                parallel::traits::is_projected<Proj, FwdIter>::value &&
-                parallel::traits::is_indirect_callable<
+                parallel::detail::is_projected<Proj, FwdIter>::value &&
+                parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    parallel::traits::projected<Proj, FwdIter>,
-                    parallel::traits::projected<Proj, FwdIter>>::value
+                    parallel::detail::projected<Proj, FwdIter>,
+                    parallel::detail::projected<Proj, FwdIter>>::value
             )>
         // clang-format on
         friend FwdIter tag_fallback_invoke(pika::unique_t, FwdIter first,
@@ -912,22 +912,22 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::unique<FwdIter>().call(
+            return pika::parallel::detail::unique<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
                 PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<FwdIter> &&
-                parallel::traits::is_projected<Proj, FwdIter>::value &&
-                parallel::traits::is_indirect_callable<ExPolicy, Pred,
-                    parallel::traits::projected<Proj, FwdIter>,
-                    parallel::traits::projected<Proj, FwdIter>>::value
+                parallel::detail::is_projected<Proj, FwdIter>::value &&
+                parallel::detail::is_indirect_callable<ExPolicy, Pred,
+                    parallel::detail::projected<Proj, FwdIter>,
+                    parallel::detail::projected<Proj, FwdIter>>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -938,7 +938,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::unique<FwdIter>().call(
+            return pika::parallel::detail::unique<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
@@ -951,15 +951,15 @@ namespace pika {
     {
         // clang-format off
         template <typename InIter, typename OutIter,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<InIter> &&
                 pika::traits::is_iterator_v<OutIter> &&
-                parallel::traits::is_indirect_callable<
+                parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    parallel::traits::projected<Proj, InIter>,
-                    parallel::traits::projected<Proj, InIter>>::value
+                    parallel::detail::projected<Proj, InIter>,
+                    parallel::detail::projected<Proj, InIter>>::value
             )>
         // clang-format on
         friend OutIter tag_fallback_invoke(pika::unique_copy_t, InIter first,
@@ -972,22 +972,22 @@ namespace pika {
             using result_type = parallel::util::in_out_result<InIter, OutIter>;
 
             return parallel::util::get_second_element<InIter, OutIter>(
-                pika::parallel::v1::detail::unique_copy<result_type>().call(
+                pika::parallel::detail::unique_copy<result_type>().call(
                     pika::execution::seq, first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
         }
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
-                parallel::traits::is_indirect_callable<ExPolicy, Pred,
-                    parallel::traits::projected<Proj, FwdIter1>,
-                    parallel::traits::projected<Proj, FwdIter1>>::value
+                parallel::detail::is_indirect_callable<ExPolicy, Pred,
+                    parallel::detail::projected<Proj, FwdIter1>,
+                    parallel::detail::projected<Proj, FwdIter1>>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -1003,7 +1003,7 @@ namespace pika {
                 parallel::util::in_out_result<FwdIter1, FwdIter2>;
 
             return parallel::util::get_second_element<FwdIter1, FwdIter2>(
-                pika::parallel::v1::detail::unique_copy<result_type>().call(
+                pika::parallel::detail::unique_copy<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
         }

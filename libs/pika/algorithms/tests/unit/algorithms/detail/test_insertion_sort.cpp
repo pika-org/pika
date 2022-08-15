@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-using pika::parallel::v1::detail::insertion_sort;
+using pika::parallel::detail::insertion_sort;
 
 void test01()
 {

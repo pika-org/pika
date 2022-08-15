@@ -91,7 +91,7 @@ void test_for_loop_reduction_min(ExPolicy&& policy)
 
     // verify values
     std::size_t minval2 = std::accumulate(std::begin(c), std::end(c), c[0],
-        pika::parallel::v1::detail::min_of<std::size_t>());
+        pika::parallel::detail::min_of<std::size_t>());
     PIKA_TEST_EQ(minval, minval2);
 }
 

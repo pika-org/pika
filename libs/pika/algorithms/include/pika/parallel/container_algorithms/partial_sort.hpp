@@ -286,11 +286,11 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<RandomIt> &&
                 pika::traits::is_sentinel_for_v<Sent, RandomIt> &&
-                parallel::traits::is_projected_v<Proj, RandomIt> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_v<Proj, RandomIt> &&
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Comp,
-                    parallel::traits::projected<Proj, RandomIt>,
-                    parallel::traits::projected<Proj, RandomIt>
+                    parallel::detail::projected<Proj, RandomIt>,
+                    parallel::detail::projected<Proj, RandomIt>
                 >
             )>
         // clang-format on
@@ -301,7 +301,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::partial_sort<RandomIt>().call(
+            return pika::parallel::partial_sort<RandomIt>().call(
                 pika::execution::seq, first, middle, last,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
         }
@@ -314,10 +314,10 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<RandomIt> &&
                 pika::traits::is_sentinel_for_v<Sent, RandomIt> &&
-                parallel::traits::is_projected_v<Proj, RandomIt> &&
-                parallel::traits::is_indirect_callable_v<ExPolicy, Comp,
-                    parallel::traits::projected<Proj, RandomIt>,
-                    parallel::traits::projected<Proj, RandomIt>
+                parallel::detail::is_projected_v<Proj, RandomIt> &&
+                parallel::detail::is_indirect_callable_v<ExPolicy, Comp,
+                    parallel::detail::projected<Proj, RandomIt>,
+                    parallel::detail::projected<Proj, RandomIt>
                 >
             )>
         // clang-format on
@@ -330,7 +330,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::partial_sort<RandomIt>().call(
+            return pika::parallel::partial_sort<RandomIt>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, middle, last,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
         }
@@ -341,11 +341,11 @@ namespace pika { namespace ranges {
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range_v<Rng> &&
-                parallel::traits::is_projected_range_v<Proj, Rng> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_range_v<Proj, Rng> &&
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Compare,
-                    parallel::traits::projected_range<Proj, Rng>,
-                    parallel::traits::projected_range<Proj, Rng>
+                    parallel::detail::projected_range<Proj, Rng>,
+                    parallel::detail::projected_range<Proj, Rng>
                 >
             )>
         // clang-format on
@@ -360,7 +360,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::partial_sort<iterator_type>().call(
+            return pika::parallel::partial_sort<iterator_type>().call(
                 pika::execution::seq, pika::util::begin(rng), middle,
                 pika::util::end(rng), PIKA_FORWARD(Compare, comp),
                 PIKA_FORWARD(Proj, proj));
@@ -373,10 +373,10 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&
-                parallel::traits::is_projected_range_v<Proj, Rng> &&
-                parallel::traits::is_indirect_callable_v<ExPolicy, Compare,
-                    parallel::traits::projected_range<Proj, Rng>,
-                    parallel::traits::projected_range<Proj, Rng>
+                parallel::detail::is_projected_range_v<Proj, Rng> &&
+                parallel::detail::is_indirect_callable_v<ExPolicy, Compare,
+                    parallel::detail::projected_range<Proj, Rng>,
+                    parallel::detail::projected_range<Proj, Rng>
                 >
             )>
         // clang-format on
@@ -392,7 +392,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::partial_sort<iterator_type>().call(
+            return pika::parallel::partial_sort<iterator_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng), middle,
                 pika::util::end(rng), PIKA_FORWARD(Compare, comp),
                 PIKA_FORWARD(Proj, proj));

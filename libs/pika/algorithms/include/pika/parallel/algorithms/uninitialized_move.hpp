@@ -218,7 +218,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // uninitialized_move
     namespace detail {
@@ -472,7 +472,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -496,7 +496,7 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::uninitialized_move<
+                pika::parallel::detail::uninitialized_move<
                     parallel::util::in_out_result<InIter, FwdIter>>()
                     .call(pika::execution::seq, first, last, dest));
         }
@@ -520,7 +520,7 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             return parallel::util::get_second_element(
-                pika::parallel::v1::detail::uninitialized_move<
+                pika::parallel::detail::uninitialized_move<
                     parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest));
         }
@@ -550,13 +550,13 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return std::pair<InIter, FwdIter>(first, dest);
             }
 
             return parallel::util::get_pair(
-                pika::parallel::v1::detail::uninitialized_move_n<
+                pika::parallel::detail::uninitialized_move_n<
                     parallel::util::in_out_result<InIter, FwdIter>>()
                     .call(
                         pika::execution::seq, first, std::size_t(count), dest));
@@ -581,7 +581,7 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return parallel::util::detail::algorithm_result<ExPolicy,
                     std::pair<FwdIter1, FwdIter2>>::get(std::pair<FwdIter1,
@@ -589,7 +589,7 @@ namespace pika {
             }
 
             return parallel::util::get_pair(
-                pika::parallel::v1::detail::uninitialized_move_n<
+                pika::parallel::detail::uninitialized_move_n<
                     parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first,
                         std::size_t(count), dest));

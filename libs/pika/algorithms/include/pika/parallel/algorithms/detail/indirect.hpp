@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
 
     /// \class less_ptr_no_null
     ///
@@ -106,4 +106,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             ++pos_in_vector;
         }
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

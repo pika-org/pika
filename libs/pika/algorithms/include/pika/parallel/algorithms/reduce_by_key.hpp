@@ -36,7 +36,7 @@
 #endif
 /// \endcond
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // reduce_by_key
     namespace detail {
@@ -210,7 +210,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             RanIter2 values_first, FwdIter1 keys_output, FwdIter2 values_output,
             Compare&& comp, Func&& func)
         {
-            using namespace pika::parallel::v1::detail;
+            using namespace pika::parallel::detail;
             using namespace pika::util;
 
             // we need to determine based on the keys what is the keystate for
@@ -397,7 +397,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                     util::in_out_result<FwdIter1, FwdIter2>>::
                     get(execution::async_execute(policy.executor(),
                         pika::util::detail::deferred_call(
-                            &pika::parallel::v1::detail::reduce_by_key_impl<
+                            &pika::parallel::detail::reduce_by_key_impl<
                                 ExPolicy&&, RanIter, RanIter2, FwdIter1,
                                 FwdIter2, Compare&&, Func&&>,
                             policy, key_first, key_last, values_first,
@@ -551,4 +551,4 @@ namespace pika { namespace parallel { inline namespace v1 {
             keys_output, values_output, PIKA_FORWARD(Compare, comp),
             PIKA_FORWARD(Func, func));
     }
-}}}    // namespace pika::parallel::v1
+}}    // namespace pika::parallel

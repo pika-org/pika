@@ -23,8 +23,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
+namespace pika::parallel::detail {
     template <typename Iterator>
     struct datapar_generate_helper
     {
@@ -125,5 +124,5 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         return datapar_generate_n::call(
             PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_FORWARD(F, f));
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail
 #endif

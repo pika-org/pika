@@ -78,7 +78,7 @@ void test_remove_copy(IteratorTag)
     std::vector<std::size_t> d(c.size() / 2);
     std::size_t middle_idx = std::rand() % (c.size() / 2);
     auto middle =
-        pika::parallel::v1::detail::next(std::begin(c.base()), middle_idx);
+        pika::parallel::detail::next(std::begin(c.base()), middle_idx);
     std::fill(std::begin(c.base()), middle, 1);
     std::fill(middle, std::end(c.base()), 2);
 
@@ -107,7 +107,7 @@ void test_remove_copy(ExPolicy policy, IteratorTag)
     std::vector<std::size_t> d(c.size() / 2);
     std::size_t middle_idx = std::rand() % (c.size() / 2);
     auto middle =
-        pika::parallel::v1::detail::next(std::begin(c.base()), middle_idx);
+        pika::parallel::detail::next(std::begin(c.base()), middle_idx);
     std::fill(std::begin(c.base()), middle, 1);
     std::fill(middle, std::end(c.base()), 2);
 
@@ -133,7 +133,7 @@ void test_remove_copy_async(ExPolicy p, IteratorTag)
     std::vector<std::size_t> d(c.size() / 2);
     std::size_t middle_idx = std::rand() % (c.size() / 2);
     auto middle =
-        pika::parallel::v1::detail::next(std::begin(c.base()), middle_idx);
+        pika::parallel::detail::next(std::begin(c.base()), middle_idx);
     std::fill(std::begin(c.base()), middle, 1);
     std::fill(middle, std::end(c.base()), 2);
 

@@ -198,7 +198,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     /////////////////////////////////////////////////////////////////////////////
     // merge
     namespace detail {
@@ -699,7 +699,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 
     // TODO: Support bidirectional iterator. (#2826)
     // For now, only support random access iterator.
-}}}    // namespace pika::parallel::v1
+}}    // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -711,7 +711,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename RandIter1, typename RandIter2,
-            typename RandIter3, typename Comp = pika::parallel::v1::detail::less,
+            typename RandIter3, typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter1>::value &&
@@ -744,7 +744,7 @@ namespace pika {
                     RandIter3>;
 
             return pika::parallel::util::get_third_element(
-                pika::parallel::v1::detail::merge<result_type>().call(
+                pika::parallel::detail::merge<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                     last2, dest, PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity(),
@@ -753,7 +753,7 @@ namespace pika {
 
         // clang-format off
         template <typename RandIter1, typename RandIter2, typename RandIter3,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter1>::value &&
                 pika::traits::is_iterator<RandIter2>::value &&
@@ -783,7 +783,7 @@ namespace pika {
                     RandIter3>;
 
             return pika::parallel::util::get_third_element(
-                pika::parallel::v1::detail::merge<result_type>().call(
+                pika::parallel::detail::merge<result_type>().call(
                     pika::execution::seq, first1, last1, first2, last2, dest,
                     PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity(),
@@ -799,7 +799,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter>::value &&
@@ -818,8 +818,8 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Required at least random access iterator.");
 
-            return pika::parallel::v1::detail::get_void_result(
-                pika::parallel::v1::detail::inplace_merge<RandIter>().call(
+            return pika::parallel::detail::get_void_result(
+                pika::parallel::detail::inplace_merge<RandIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, middle, last,
                     PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity()));
@@ -827,7 +827,7 @@ namespace pika {
 
         // clang-format off
         template <typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter>::value &&
                 pika::detail::is_invocable_v<Comp,
@@ -843,8 +843,8 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Required at least random access iterator.");
 
-            return pika::parallel::v1::detail::get_void_result(
-                pika::parallel::v1::detail::inplace_merge<RandIter>().call(
+            return pika::parallel::detail::get_void_result(
+                pika::parallel::detail::inplace_merge<RandIter>().call(
                     pika::execution::seq, first, middle, last,
                     PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity()));

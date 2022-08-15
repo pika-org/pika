@@ -201,7 +201,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
 
     ///////////////////////////////////////////////////////////////////////////
     // transform
@@ -700,16 +700,16 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 namespace pika::detail {
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_address<
-        parallel::v1::detail::transform_iteration<ExPolicy, F, Proj>>
+        parallel::detail::transform_iteration<ExPolicy, F, Proj>>
     {
         static constexpr std::size_t call(
-            parallel::v1::detail::transform_iteration<ExPolicy, F, Proj> const&
+            parallel::detail::transform_iteration<ExPolicy, F, Proj> const&
                 f) noexcept
         {
             return get_function_address<std::decay_t<F>>::call(f.f_);
@@ -718,10 +718,10 @@ namespace pika::detail {
 
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_annotation<
-        parallel::v1::detail::transform_iteration<ExPolicy, F, Proj>>
+        parallel::detail::transform_iteration<ExPolicy, F, Proj>>
     {
         static constexpr char const* call(
-            parallel::v1::detail::transform_iteration<ExPolicy, F, Proj> const&
+            parallel::detail::transform_iteration<ExPolicy, F, Proj> const&
                 f) noexcept
         {
             return get_function_annotation<std::decay_t<F>>::call(f.f_);
@@ -729,11 +729,11 @@ namespace pika::detail {
     };
 
     template <typename ExPolicy, typename F, typename Proj1, typename Proj2>
-    struct get_function_address<parallel::v1::detail::
+    struct get_function_address<parallel::detail::
             transform_binary_iteration<ExPolicy, F, Proj1, Proj2>>
     {
         static constexpr std::size_t call(
-            parallel::v1::detail::transform_binary_iteration<ExPolicy, F, Proj1,
+            parallel::detail::transform_binary_iteration<ExPolicy, F, Proj1,
                 Proj2> const& f) noexcept
         {
             return get_function_address<std::decay_t<F>>::call(f.f_);
@@ -741,11 +741,11 @@ namespace pika::detail {
     };
 
     template <typename ExPolicy, typename F, typename Proj1, typename Proj2>
-    struct get_function_annotation<parallel::v1::detail::
+    struct get_function_annotation<parallel::detail::
             transform_binary_iteration<ExPolicy, F, Proj1, Proj2>>
     {
         static constexpr char const* call(
-            parallel::v1::detail::transform_binary_iteration<ExPolicy, F, Proj1,
+            parallel::detail::transform_binary_iteration<ExPolicy, F, Proj1,
                 Proj2> const& f) noexcept
         {
             return get_function_annotation<std::decay_t<F>>::call(f.f_);
@@ -755,10 +755,10 @@ namespace pika::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_annotation_itt<
-        parallel::v1::detail::transform_iteration<ExPolicy, F, Proj>>
+        parallel::detail::transform_iteration<ExPolicy, F, Proj>>
     {
         static util::itt::string_handle call(
-            parallel::v1::detail::transform_iteration<ExPolicy, F, Proj> const&
+            parallel::detail::transform_iteration<ExPolicy, F, Proj> const&
                 f) noexcept
         {
             return get_function_annotation_itt<std::decay_t<F>>::call(f.f_);
@@ -766,11 +766,11 @@ namespace pika::detail {
     };
 
     template <typename ExPolicy, typename F, typename Proj1, typename Proj2>
-    struct get_function_annotation_itt<parallel::v1::detail::
+    struct get_function_annotation_itt<parallel::detail::
             transform_binary_iteration<ExPolicy, F, Proj1, Proj2>>
     {
         static util::itt::string_handle call(
-            parallel::v1::detail::transform_binary_iteration<ExPolicy, F, Proj1,
+            parallel::detail::transform_binary_iteration<ExPolicy, F, Proj1,
                 Proj2> const& f) noexcept
         {
             return get_function_annotation_itt<std::decay_t<F>>::call(f.f_);
@@ -802,7 +802,7 @@ namespace pika {
                 "Requires at least input iterator.");
 
             return parallel::util::get_second_element(
-                parallel::v1::detail::transform<
+                parallel::detail::transform<
                     pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call(pika::execution::seq, first, last, dest,
                         PIKA_FORWARD(F, f),
@@ -827,7 +827,7 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             return parallel::util::get_second_element(
-                parallel::v1::detail::transform<
+                parallel::detail::transform<
                     pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                         PIKA_FORWARD(F, f),
@@ -855,7 +855,7 @@ namespace pika {
                 FwdIter2, FwdIter3>;
 
             return parallel::util::get_third_element(
-                parallel::v1::detail::transform_binary<result_type>().call(
+                parallel::detail::transform_binary<result_type>().call(
                     pika::execution::seq, first1, last1, first2, dest,
                     PIKA_FORWARD(F, f), proj_id(), proj_id()));
         }
@@ -886,7 +886,7 @@ namespace pika {
                 FwdIter2, FwdIter3>;
 
             return parallel::util::get_third_element(
-                parallel::v1::detail::transform_binary<result_type>().call(
+                parallel::detail::transform_binary<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, dest,
                     PIKA_FORWARD(F, f), proj_id(), proj_id()));
         }

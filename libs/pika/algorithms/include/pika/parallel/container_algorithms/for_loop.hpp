@@ -753,8 +753,8 @@ namespace pika { namespace ranges {
                 "for_loop must be called with at least a function object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(
-                PIKA_FORWARD(ExPolicy, policy), first, last, 1,
+            return parallel::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
+                first, last, 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -773,8 +773,8 @@ namespace pika { namespace ranges {
                 "for_loop must be called with at least a function object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(pika::execution::seq, first,
-                last, 1, typename make_index_pack<sizeof...(Args) - 1>::type(),
+            return parallel::detail::for_loop(pika::execution::seq, first, last,
+                1, typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
 
@@ -793,9 +793,8 @@ namespace pika { namespace ranges {
                 "for_loop must be called with at least a function object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(
-                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), 1,
+            return parallel::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
+                pika::util::begin(rng), pika::util::end(rng), 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -813,7 +812,7 @@ namespace pika { namespace ranges {
                 "for_loop must be called with at least a function object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(pika::execution::seq,
+            return parallel::detail::for_loop(pika::execution::seq,
                 pika::util::begin(rng), pika::util::end(rng), 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
@@ -843,8 +842,8 @@ namespace pika { namespace ranges {
                 "object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(
-                PIKA_FORWARD(ExPolicy, policy), first, last, stride,
+            return parallel::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
+                first, last, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -865,9 +864,8 @@ namespace pika { namespace ranges {
                 "object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(pika::execution::seq, first,
-                last, stride,
-                typename make_index_pack<sizeof...(Args) - 1>::type(),
+            return parallel::detail::for_loop(pika::execution::seq, first, last,
+                stride, typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
 
@@ -888,9 +886,8 @@ namespace pika { namespace ranges {
                 "object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(
-                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                pika::util::end(rng), stride,
+            return parallel::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
+                pika::util::begin(rng), pika::util::end(rng), stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -910,7 +907,7 @@ namespace pika { namespace ranges {
                 "object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(pika::execution::seq,
+            return parallel::detail::for_loop(pika::execution::seq,
                 pika::util::begin(rng), pika::util::end(rng), stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);

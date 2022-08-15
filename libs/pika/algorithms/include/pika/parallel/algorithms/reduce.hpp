@@ -236,7 +236,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // reduce
     namespace detail {
@@ -289,7 +289,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -315,7 +315,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_MOVE(init),
                 PIKA_FORWARD(F, f));
         }
@@ -336,7 +336,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_MOVE(init),
                 std::plus<T>{});
         }
@@ -359,7 +359,7 @@ namespace pika {
             using value_type =
                 typename std::iterator_traits<FwdIter>::value_type;
 
-            return pika::parallel::v1::detail::reduce<value_type>().call(
+            return pika::parallel::detail::reduce<value_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, value_type{},
                 std::plus<value_type>{});
         }
@@ -377,7 +377,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<FwdIter>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 pika::execution::seq, first, last, PIKA_MOVE(init),
                 PIKA_FORWARD(F, f));
         }
@@ -395,7 +395,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<FwdIter>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 pika::execution::seq, first, last, PIKA_MOVE(init),
                 std::plus<T>{});
         }
@@ -415,7 +415,7 @@ namespace pika {
             using value_type =
                 typename std::iterator_traits<FwdIter>::value_type;
 
-            return pika::parallel::v1::detail::reduce<value_type>().call(
+            return pika::parallel::detail::reduce<value_type>().call(
                 pika::execution::seq, first, last, value_type{},
                 std::plus<value_type>());
         }

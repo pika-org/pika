@@ -169,11 +169,11 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<
+            typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
@@ -193,7 +193,7 @@ namespace pika { namespace ranges {
             using difference_type =
                 typename std::iterator_traits<iterator_type>::difference_type;
 
-            return pika::parallel::v1::detail::count<difference_type>().call(
+            return pika::parallel::detail::count<difference_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), value, PIKA_FORWARD(Proj, proj));
         }
@@ -201,7 +201,7 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<Iter,
+            typename T = typename pika::parallel::detail::projected<Iter,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
@@ -219,7 +219,7 @@ namespace pika { namespace ranges {
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
 
-            return pika::parallel::v1::detail::count<difference_type>().call(
+            return pika::parallel::detail::count<difference_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, value,
                 PIKA_FORWARD(Proj, proj));
         }
@@ -227,10 +227,10 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename Rng,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<
+            typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
@@ -250,7 +250,7 @@ namespace pika { namespace ranges {
             using difference_type =
                 typename std::iterator_traits<iterator_type>::difference_type;
 
-            return pika::parallel::v1::detail::count<difference_type>().call(
+            return pika::parallel::detail::count<difference_type>().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), value, PIKA_FORWARD(Proj, proj));
         }
@@ -258,7 +258,7 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename Iter, typename Sent,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<Iter,
+            typename T = typename pika::parallel::detail::projected<Iter,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_sentinel_for<Sent, Iter>::value
@@ -274,7 +274,7 @@ namespace pika { namespace ranges {
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
 
-            return pika::parallel::v1::detail::count<difference_type>().call(
+            return pika::parallel::detail::count<difference_type>().call(
                 pika::execution::seq, first, last, value,
                 PIKA_FORWARD(Proj, proj));
         }
@@ -292,9 +292,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, F,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -314,7 +314,7 @@ namespace pika { namespace ranges {
             using difference_type =
                 typename std::iterator_traits<iterator_type>::difference_type;
 
-            return pika::parallel::v1::detail::count_if<difference_type>().call(
+            return pika::parallel::detail::count_if<difference_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
@@ -326,9 +326,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                    pika::parallel::traits::projected<Proj, Iter>
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, F,
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -343,7 +343,7 @@ namespace pika { namespace ranges {
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
 
-            return pika::parallel::v1::detail::count_if<difference_type>().call(
+            return pika::parallel::detail::count_if<difference_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
         }
@@ -353,10 +353,10 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, F,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -376,7 +376,7 @@ namespace pika { namespace ranges {
             using difference_type =
                 typename std::iterator_traits<iterator_type>::difference_type;
 
-            return pika::parallel::v1::detail::count_if<difference_type>().call(
+            return pika::parallel::detail::count_if<difference_type>().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
@@ -387,10 +387,10 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, F,
-                    pika::parallel::traits::projected<Proj, Iter>
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -404,7 +404,7 @@ namespace pika { namespace ranges {
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
 
-            return pika::parallel::v1::detail::count_if<difference_type>().call(
+            return pika::parallel::detail::count_if<difference_type>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
         }

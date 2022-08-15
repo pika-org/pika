@@ -26,7 +26,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
     /// \cond NOINTERNAL
 
     ///////////////////////////////////////////////////////////////////////////
@@ -263,4 +263,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     }
 
     /// \endcond
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

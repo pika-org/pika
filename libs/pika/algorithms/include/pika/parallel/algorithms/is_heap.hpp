@@ -160,7 +160,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // is_heap
     namespace detail {
@@ -390,7 +390,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -402,7 +402,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter>::value &&
@@ -421,7 +421,7 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap<RandIter>().call(
+            return pika::parallel::detail::is_heap<RandIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp),
                 pika::parallel::util::projection_identity{});
@@ -429,7 +429,7 @@ namespace pika {
 
         // clang-format off
         template <typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter>::value &&
                 pika::detail::is_invocable_v<Comp,
@@ -445,7 +445,7 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap<RandIter>().call(
+            return pika::parallel::detail::is_heap<RandIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
                 pika::parallel::util::projection_identity{});
         }
@@ -459,7 +459,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter>::value &&
@@ -478,7 +478,7 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap_until<RandIter>().call(
+            return pika::parallel::detail::is_heap_until<RandIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp),
                 pika::parallel::util::projection_identity{});
@@ -486,7 +486,7 @@ namespace pika {
 
         // clang-format off
         template <typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter>::value &&
                 pika::detail::is_invocable_v<Comp,
@@ -502,7 +502,7 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap_until<RandIter>().call(
+            return pika::parallel::detail::is_heap_until<RandIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
                 pika::parallel::util::projection_identity{});
         }

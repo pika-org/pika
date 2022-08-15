@@ -126,7 +126,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ////////////////////////////////////////////////////////////////////////////
     // is_partitioned
     namespace detail {
@@ -231,7 +231,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     inline constexpr struct is_partitioned_t final
@@ -247,7 +247,7 @@ namespace pika {
         friend bool tag_fallback_invoke(
             pika::is_partitioned_t, FwdIter first, FwdIter last, Pred&& pred)
         {
-            return pika::parallel::v1::detail::is_partitioned<FwdIter,
+            return pika::parallel::detail::is_partitioned<FwdIter,
                 FwdIter>()
                 .call(pika::execution::seq, first, last,
                     PIKA_FORWARD(Pred, pred),
@@ -267,7 +267,7 @@ namespace pika {
         tag_fallback_invoke(pika::is_partitioned_t, ExPolicy&& policy,
             FwdIter first, FwdIter last, Pred&& pred)
         {
-            return pika::parallel::v1::detail::is_partitioned<FwdIter,
+            return pika::parallel::detail::is_partitioned<FwdIter,
                 FwdIter>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred),

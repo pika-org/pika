@@ -607,7 +607,7 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<I>::value &&
-                pika::parallel::traits::is_projected<Proj, I>::value &&
+                pika::parallel::detail::is_projected<Proj, I>::value &&
                 pika::traits::is_sentinel_for<Sent, I>::value &&
                 pika::traits::is_iterator<O>::value &&
                 pika::detail::is_invocable_v<Pred,
@@ -625,7 +625,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_output_iterator<O>::value),
                 "Required output iterator.");
 
-            return pika::parallel::v1::detail::remove_copy_if<
+            return pika::parallel::detail::remove_copy_if<
                 pika::parallel::util::in_out_result<I, O>>()
                 .call(pika::execution::seq, first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
@@ -636,7 +636,7 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value&&
-                pika::parallel::traits::is_projected_range<Proj,Rng>::value &&
+                pika::parallel::detail::is_projected_range<Proj,Rng>::value &&
                 pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<
                         typename pika::traits::range_iterator<Rng>::type
@@ -654,7 +654,7 @@ namespace pika { namespace ranges {
                     typename pika::traits::range_iterator<Rng>::type>::value),
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::remove_copy_if<
+            return pika::parallel::detail::remove_copy_if<
                 pika::parallel::util::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type, O>>()
                 .call(pika::execution::seq, pika::util::begin(rng),
@@ -670,7 +670,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_iterator<I>::value &&
                 pika::traits::is_sentinel_for<Sent, I>::value &&
                 pika::traits::is_iterator<O>::value &&
-                pika::parallel::traits::is_projected<Proj, I>::value &&
+                pika::parallel::detail::is_projected<Proj, I>::value &&
                 pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<I>::value_type
                 >
@@ -687,7 +687,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_forward_iterator<O>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::remove_copy_if<
+            return pika::parallel::detail::remove_copy_if<
                 pika::parallel::util::in_out_result<I, O>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
@@ -699,7 +699,7 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
                 pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<
                         typename pika::traits::range_iterator<Rng>::type
@@ -718,7 +718,7 @@ namespace pika { namespace ranges {
                     typename pika::traits::range_iterator<Rng>::type>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::remove_copy_if<
+            return pika::parallel::detail::remove_copy_if<
                 pika::parallel::util::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type, O>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
@@ -736,13 +736,13 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename I, typename Sent, typename O,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<I,
+            typename T = typename pika::parallel::detail::projected<I,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<I>::value &&
                 pika::traits::is_sentinel_for<Sent, I>::value &&
                 pika::traits::is_iterator<O>::value &&
-                pika::parallel::traits::is_projected<Proj, I>::value
+                pika::parallel::detail::is_projected<Proj, I>::value
             )>
         // clang-format on
         friend remove_copy_result<I, O> tag_fallback_invoke(
@@ -763,11 +763,11 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename Rng, typename O,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<
+            typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value
             )>
         // clang-format on
         friend remove_copy_result<
@@ -792,14 +792,14 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename I, typename Sent, typename O,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<I,
+            typename T = typename pika::parallel::detail::projected<I,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value&&
                 pika::traits::is_iterator<I>::value &&
                 pika::traits::is_sentinel_for<Sent, I>::value &&
                 pika::traits::is_iterator<O>::value &&
-                pika::parallel::traits::is_projected<Proj, I>::value
+                pika::parallel::detail::is_projected<Proj, I>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -821,12 +821,12 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng, typename O,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<
+            typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,

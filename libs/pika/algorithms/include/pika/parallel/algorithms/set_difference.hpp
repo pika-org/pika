@@ -128,7 +128,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // set_difference
     namespace detail {
@@ -252,7 +252,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -264,7 +264,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-            typename FwdIter3, typename Pred = pika::parallel::v1::detail::less,
+            typename FwdIter3, typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
@@ -300,7 +300,7 @@ namespace pika {
                 pika::parallel::util::in_out_result<FwdIter1, FwdIter3>;
 
             return pika::parallel::util::get_second_element(
-                pika::parallel::v1::detail::set_difference<result_type>().call2(
+                pika::parallel::detail::set_difference<result_type>().call2(
                     PIKA_FORWARD(ExPolicy, policy), is_seq(), first1, last1,
                     first2, last2, dest, PIKA_FORWARD(Pred, op),
                     pika::parallel::util::projection_identity(),
@@ -309,7 +309,7 @@ namespace pika {
 
         // clang-format off
         template <typename FwdIter1, typename FwdIter2, typename FwdIter3,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<FwdIter1>::value &&
                 pika::traits::is_iterator<FwdIter2>::value &&
@@ -335,7 +335,7 @@ namespace pika {
                 pika::parallel::util::in_out_result<FwdIter1, FwdIter3>;
 
             return pika::parallel::util::get_second_element(
-                pika::parallel::v1::detail::set_difference<result_type>().call(
+                pika::parallel::detail::set_difference<result_type>().call(
                     pika::execution::seq, first1, last1, first2, last2, dest,
                     PIKA_FORWARD(Pred, op),
                     pika::parallel::util::projection_identity(),

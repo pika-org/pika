@@ -421,7 +421,7 @@ namespace pika { namespace ranges {
                 "Requires at least forward iterator.");
 
             return pika::parallel::util::get_subrange<FwdIter, Sent>(
-                pika::parallel::v1::detail::rotate<
+                pika::parallel::detail::rotate<
                     parallel::util::in_out_result<FwdIter, Sent>>()
                     .call(pika::execution::seq, first, middle, last));
         }
@@ -447,7 +447,7 @@ namespace pika { namespace ranges {
                     !pika::traits::is_bidirectional_iterator_v<FwdIter>>;
 
             return pika::parallel::util::get_subrange<FwdIter, Sent>(
-                pika::parallel::v1::detail::rotate<
+                pika::parallel::detail::rotate<
                     parallel::util::in_out_result<FwdIter, Sent>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first,
                         middle, last));
@@ -465,7 +465,7 @@ namespace pika { namespace ranges {
             return pika::parallel::util::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::rotate<parallel::util::
+                pika::parallel::detail::rotate<parallel::util::
                         in_out_result<pika::traits::range_iterator_t<Rng>,
                             typename pika::traits::range_sentinel<Rng>::type>>()
                     .call(pika::execution::seq, pika::util::begin(rng), middle,
@@ -493,7 +493,7 @@ namespace pika { namespace ranges {
             return pika::parallel::util::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::rotate<parallel::util::
+                pika::parallel::detail::rotate<parallel::util::
                         in_out_result<pika::traits::range_iterator_t<Rng>,
                             typename pika::traits::range_sentinel<Rng>::type>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(),
@@ -527,7 +527,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_output_iterator_v<OutIter>),
                 "Requires at least output iterator.");
 
-            return pika::parallel::v1::detail::rotate_copy<
+            return pika::parallel::detail::rotate_copy<
                 rotate_copy_result<FwdIter, OutIter>>()
                 .call(pika::execution::seq, first, middle, last, dest_first);
         }
@@ -555,7 +555,7 @@ namespace pika { namespace ranges {
                 pika::is_sequenced_execution_policy_v<ExPolicy> ||
                     !pika::traits::is_bidirectional_iterator_v<FwdIter1>>;
 
-            return pika::parallel::v1::detail::rotate_copy<
+            return pika::parallel::detail::rotate_copy<
                 rotate_copy_result<FwdIter1, FwdIter2>>()
                 .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first, middle,
                     last, dest_first);
@@ -572,7 +572,7 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(pika::ranges::rotate_copy_t, Rng&& rng,
             pika::traits::range_iterator_t<Rng> middle, OutIter dest_first)
         {
-            return pika::parallel::v1::detail::rotate_copy<rotate_copy_result<
+            return pika::parallel::detail::rotate_copy<rotate_copy_result<
                 pika::traits::range_iterator_t<Rng>, OutIter>>()
                 .call(pika::execution::seq, pika::util::begin(rng), middle,
                     pika::util::end(rng), dest_first);
@@ -598,7 +598,7 @@ namespace pika { namespace ranges {
                     !pika::traits::is_bidirectional_iterator_v<
                         pika::traits::range_iterator_t<Rng>>>;
 
-            return pika::parallel::v1::detail::rotate_copy<rotate_copy_result<
+            return pika::parallel::detail::rotate_copy<rotate_copy_result<
                 pika::traits::range_iterator_t<Rng>, OutIter>>()
                 .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(),
                     pika::util::begin(rng), middle, pika::util::end(rng),

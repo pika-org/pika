@@ -152,7 +152,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // nth_element
     namespace detail {
@@ -289,15 +289,14 @@ namespace pika { namespace parallel { inline namespace v1 {
                         detail::pivot9(first, last_iter, pred);
 
                         partitionIter =
-                            pika::parallel::v1::detail::partition<RandomIt>()
-                                .call(
-                                    policy(pika::execution::non_task),
-                                    first + 1, last_iter,
-                                    [val = PIKA_INVOKE(proj, *first), &pred](
-                                        value_type const& elem) {
-                                        return PIKA_INVOKE(pred, elem, val);
-                                    },
-                                    proj);
+                            pika::parallel::detail::partition<RandomIt>().call(
+                                policy(pika::execution::non_task), first + 1,
+                                last_iter,
+                                [val = PIKA_INVOKE(proj, *first), &pred](
+                                    value_type const& elem) {
+                                    return PIKA_INVOKE(pred, elem, val);
+                                },
+                                proj);
 
                         --partitionIter;
                         // swap first element and partitionIter
@@ -339,7 +338,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}       // namespace pika::parallel
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -349,7 +348,7 @@ namespace pika {
     {
         // clang-format off
         template <typename RandomIt,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<RandomIt> &&
                 pika::detail::is_invocable_v<Pred,
@@ -364,7 +363,7 @@ namespace pika {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires at least random iterator.");
 
-            pika::parallel::v1::detail::nth_element<RandomIt>().call(
+            pika::parallel::detail::nth_element<RandomIt>().call(
                 pika::execution::seq, first, nth, last,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity{});
@@ -372,7 +371,7 @@ namespace pika {
 
         // clang-format off
         template <typename ExPolicy, typename RandomIt,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<RandomIt> &&
@@ -393,7 +392,7 @@ namespace pika {
                 pika::parallel::util::detail::algorithm_result_t<ExPolicy>;
 
             return pika::util::detail::void_guard<result_type>(),
-                   pika::parallel::v1::detail::nth_element<RandomIt>().call(
+                   pika::parallel::detail::nth_element<RandomIt>().call(
                        PIKA_FORWARD(ExPolicy, policy), first, nth, last,
                        PIKA_FORWARD(Pred, pred),
                        pika::parallel::util::projection_identity{});

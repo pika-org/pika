@@ -406,7 +406,7 @@ namespace pika { namespace ranges {
                 (pika::traits::is_bidirectional_iterator<Iter>::value),
                 "Required at least biderectional iterator.");
 
-            return parallel::v1::detail::reverse<Iter>().call(
+            return parallel::detail::reverse<Iter>().call(
                 pika::execution::sequenced_policy{}, first, sent);
         }
 
@@ -424,7 +424,7 @@ namespace pika { namespace ranges {
                     typename pika::traits::range_iterator<Rng>::type>::value),
                 "Required at least biderectional iterator.");
 
-            return parallel::v1::detail::reverse<
+            return parallel::detail::reverse<
                 typename pika::traits::range_iterator<Rng>::type>()
                 .call(pika::execution::sequenced_policy{},
                     pika::util::begin(rng), pika::util::end(rng));
@@ -447,7 +447,7 @@ namespace pika { namespace ranges {
                 (pika::traits::is_bidirectional_iterator<Iter>::value),
                 "Required at least biderectional iterator.");
 
-            return parallel::v1::detail::reverse<Iter>().call(
+            return parallel::detail::reverse<Iter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, sent);
         }
 
@@ -468,7 +468,7 @@ namespace pika { namespace ranges {
                     typename pika::traits::range_iterator<Rng>::type>::value),
                 "Required at least biderectional iterator.");
 
-            return parallel::v1::detail::reverse<
+            return parallel::detail::reverse<
                 typename pika::traits::range_iterator<Rng>::type>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng));
@@ -499,7 +499,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_output_iterator<OutIter>::value),
                 "Required at least output iterator.");
 
-            return parallel::v1::detail::reverse_copy<
+            return parallel::detail::reverse_copy<
                 pika::parallel::util::in_out_result<Iter, OutIter>>()
                 .call(pika::execution::sequenced_policy{}, first, last, result);
         }
@@ -524,7 +524,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_output_iterator<OutIter>::value),
                 "Required at least output iterator.");
 
-            return parallel::v1::detail::reverse_copy<
+            return parallel::detail::reverse_copy<
                 pika::parallel::util::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type,
                     OutIter>>()
@@ -553,7 +553,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            return parallel::v1::detail::reverse_copy<
+            return parallel::detail::reverse_copy<
                 pika::parallel::util::in_out_result<Iter, FwdIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, result);
         }
@@ -581,7 +581,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_output_iterator<OutIter>::value),
                 "Required at least output iterator.");
 
-            return parallel::v1::detail::reverse_copy<
+            return parallel::detail::reverse_copy<
                 pika::parallel::util::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type,
                     OutIter>>()

@@ -277,15 +277,15 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename FwdIter, typename Sent,
             typename Proj = pika::parallel::util::projection_identity,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value &&
-                pika::parallel::traits::is_projected<Proj, FwdIter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj, FwdIter>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected<Proj, FwdIter>,
-                    pika::parallel::traits::projected<Proj, FwdIter>
+                    pika::parallel::detail::projected<Proj, FwdIter>,
+                    pika::parallel::detail::projected<Proj, FwdIter>
                 >::value
             )>
         // clang-format on
@@ -293,7 +293,7 @@ namespace pika { namespace ranges {
             FwdIter first, Sent last, Pred&& pred = Pred(),
             Proj&& proj = Proj())
         {
-            return pika::parallel::v1::detail::adjacent_find<FwdIter, FwdIter>()
+            return pika::parallel::detail::adjacent_find<FwdIter, FwdIter>()
                 .call(pika::execution::seq, first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
@@ -301,16 +301,16 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename Proj = pika::parallel::util::projection_identity,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value &&
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value &&
-                pika::parallel::traits::is_projected<Proj, FwdIter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj, FwdIter>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     ExPolicy, Pred,
-                    pika::parallel::traits::projected<Proj, FwdIter>,
-                    pika::parallel::traits::projected<Proj, FwdIter>
+                    pika::parallel::detail::projected<Proj, FwdIter>,
+                    pika::parallel::detail::projected<Proj, FwdIter>
                 >::value
             )>
         // clang-format on
@@ -320,7 +320,7 @@ namespace pika { namespace ranges {
             FwdIter first, Sent last, Pred&& pred = Pred(),
             Proj&& proj = Proj())
         {
-            return pika::parallel::v1::detail::adjacent_find<FwdIter, FwdIter>()
+            return pika::parallel::detail::adjacent_find<FwdIter, FwdIter>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
@@ -328,14 +328,14 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename Rng,
             typename Proj = pika::parallel::util::projection_identity,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected_range<Proj, Rng>,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -350,7 +350,7 @@ namespace pika { namespace ranges {
                 (pika::traits::is_forward_iterator<iterator_type>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::adjacent_find<iterator_type,
+            return pika::parallel::detail::adjacent_find<iterator_type,
                 iterator_type>()
                 .call(pika::execution::seq, std::begin(rng), std::end(rng),
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
@@ -359,15 +359,15 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng,
             typename Proj = pika::parallel::util::projection_identity,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     ExPolicy, Pred,
-                    pika::parallel::traits::projected_range<Proj, Rng>,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -383,7 +383,7 @@ namespace pika { namespace ranges {
                 (pika::traits::is_forward_iterator<iterator_type>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::adjacent_find<iterator_type,
+            return pika::parallel::detail::adjacent_find<iterator_type,
                 iterator_type>()
                 .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng),
                     std::end(rng), PIKA_FORWARD(Pred, pred),

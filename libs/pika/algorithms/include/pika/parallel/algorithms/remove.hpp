@@ -240,7 +240,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     /////////////////////////////////////////////////////////////////////////////
     // remove_if
     namespace detail {
@@ -249,7 +249,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename Iter, typename Sent, typename Pred, typename Proj>
         Iter sequential_remove_if(Iter first, Sent last, Pred pred, Proj proj)
         {
-            first = pika::parallel::v1::detail::sequential_find_if<
+            first = pika::parallel::detail::sequential_find_if<
                 pika::execution::sequenced_policy>(first, last, pred, proj);
 
             if (first != last)
@@ -404,7 +404,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -427,7 +427,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::remove_if<FwdIter>().call(
+            return pika::parallel::detail::remove_if<FwdIter>().call(
                 pika::execution::sequenced_policy{}, first, last,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity());
@@ -451,7 +451,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::remove_if<FwdIter>().call(
+            return pika::parallel::detail::remove_if<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity());

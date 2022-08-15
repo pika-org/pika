@@ -116,7 +116,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // includes
     namespace detail {
@@ -300,7 +300,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -312,7 +312,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
@@ -333,7 +333,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::includes().call(
+            return pika::parallel::detail::includes().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
                 pika::parallel::util::projection_identity(),
@@ -342,7 +342,7 @@ namespace pika {
 
         // clang-format off
         template <typename FwdIter1, typename FwdIter2,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<FwdIter1>::value &&
                 pika::traits::is_iterator<FwdIter2>::value &&
@@ -360,7 +360,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::includes().call(
+            return pika::parallel::detail::includes().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
                 pika::parallel::util::projection_identity(),

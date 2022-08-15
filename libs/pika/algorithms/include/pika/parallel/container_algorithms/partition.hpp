@@ -928,10 +928,10 @@ namespace pika { namespace ranges {
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                parallel::traits::is_projected_range_v<Proj, Rng> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_range_v<Proj, Rng> &&
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Pred,
-                    parallel::traits::projected_range<Proj, Rng>>
+                    parallel::detail::projected_range<Proj, Rng>>
         )>
         // clang-format on
         friend subrange_t<pika::traits::range_iterator_t<Rng>>
@@ -946,7 +946,7 @@ namespace pika { namespace ranges {
             return pika::parallel::util::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::partition<iterator>().call(
+                pika::parallel::detail::partition<iterator>().call(
                     pika::execution::seq, pika::util::begin(rng),
                     pika::util::end(rng), PIKA_FORWARD(Pred, pred),
                     PIKA_FORWARD(Proj, proj)),
@@ -959,9 +959,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&
-                parallel::traits::is_projected_range_v<Proj, Rng> &&
-                parallel::traits::is_indirect_callable_v<ExPolicy, Pred,
-                    parallel::traits::projected_range<Proj, Rng>>
+                parallel::detail::is_projected_range_v<Proj, Rng> &&
+                parallel::detail::is_indirect_callable_v<ExPolicy, Pred,
+                    parallel::detail::projected_range<Proj, Rng>>
         )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -977,7 +977,7 @@ namespace pika { namespace ranges {
             return pika::parallel::util::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::partition<iterator>().call(
+                pika::parallel::detail::partition<iterator>().call(
                     PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng), PIKA_FORWARD(Pred, pred),
                     PIKA_FORWARD(Proj, proj)),
@@ -990,9 +990,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter> &&
                 pika::traits::is_sentinel_for_v<Sent, FwdIter> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Pred,
-                    parallel::traits::projected<Proj, FwdIter>>
+                    parallel::detail::projected<Proj, FwdIter>>
         )>
         // clang-format on
         friend subrange_t<FwdIter> tag_fallback_invoke(
@@ -1003,10 +1003,10 @@ namespace pika { namespace ranges {
                 "Requires at least forward iterator.");
 
             return pika::parallel::util::make_subrange<FwdIter, FwdIter>(
-                pika::parallel::v1::detail::partition<FwdIter>().call(
+                pika::parallel::detail::partition<FwdIter>().call(
                     pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
                     PIKA_FORWARD(Proj, proj)),
-                parallel::v1::detail::advance_to_sentinel(first, last));
+                parallel::detail::advance_to_sentinel(first, last));
         }
 
         // clang-format off
@@ -1017,8 +1017,8 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter> &&
                 pika::traits::is_sentinel_for_v<Sent, FwdIter> &&
-                parallel::traits::is_indirect_callable_v<ExPolicy, Pred,
-                    parallel::traits::projected<Proj, FwdIter>>
+                parallel::detail::is_indirect_callable_v<ExPolicy, Pred,
+                    parallel::detail::projected<Proj, FwdIter>>
         )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -1030,10 +1030,10 @@ namespace pika { namespace ranges {
                 "Requires at least forward iterator.");
 
             return pika::parallel::util::make_subrange<FwdIter, FwdIter>(
-                pika::parallel::v1::detail::partition<FwdIter>().call(
+                pika::parallel::detail::partition<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
-                parallel::v1::detail::advance_to_sentinel(first, last));
+                parallel::detail::advance_to_sentinel(first, last));
         }
     } partition{};
 
@@ -1046,10 +1046,10 @@ namespace pika { namespace ranges {
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                parallel::traits::is_projected_range_v<Proj, Rng> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_range_v<Proj, Rng> &&
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Pred,
-                    parallel::traits::projected_range<Proj, Rng>>
+                    parallel::detail::projected_range<Proj, Rng>>
             )>
         // clang-format on
         friend subrange_t<pika::traits::range_iterator_t<Rng>>
@@ -1064,7 +1064,7 @@ namespace pika { namespace ranges {
             return pika::parallel::util::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::stable_partition<iterator>().call2(
+                pika::parallel::detail::stable_partition<iterator>().call2(
                     pika::execution::seq, std::true_type{},
                     pika::util::begin(rng), pika::util::end(rng),
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
@@ -1077,9 +1077,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&
-                parallel::traits::is_projected_range_v<Proj, Rng> &&
-                parallel::traits::is_indirect_callable<ExPolicy, Pred,
-                    parallel::traits::projected_range<Proj, Rng>>::value
+                parallel::detail::is_projected_range_v<Proj, Rng> &&
+                parallel::detail::is_indirect_callable<ExPolicy, Pred,
+                    parallel::detail::projected_range<Proj, Rng>>::value
         )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -1099,7 +1099,7 @@ namespace pika { namespace ranges {
             return pika::parallel::util::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::stable_partition<iterator>().call2(
+                pika::parallel::detail::stable_partition<iterator>().call2(
                     PIKA_FORWARD(ExPolicy, policy), is_seq(),
                     pika::util::begin(rng), pika::util::end(rng),
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
@@ -1112,9 +1112,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<BidirIter> &&
                 pika::traits::is_sentinel_for_v<Sent, BidirIter> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Pred,
-                    parallel::traits::projected<Proj, BidirIter>>
+                    parallel::detail::projected<Proj, BidirIter>>
         )>
         // clang-format on
         friend subrange_t<BidirIter> tag_fallback_invoke(
@@ -1125,10 +1125,10 @@ namespace pika { namespace ranges {
                 "Requires at least bidirectional iterator.");
 
             return pika::parallel::util::make_subrange<BidirIter, BidirIter>(
-                pika::parallel::v1::detail::stable_partition<BidirIter>().call2(
+                pika::parallel::detail::stable_partition<BidirIter>().call2(
                     pika::execution::seq, std::true_type{}, first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
-                parallel::v1::detail::advance_to_sentinel(first, last));
+                parallel::detail::advance_to_sentinel(first, last));
         }
 
         // clang-format off
@@ -1139,8 +1139,8 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<BidirIter> &&
                 pika::traits::is_sentinel_for_v<Sent, BidirIter> &&
-                parallel::traits::is_indirect_callable_v<ExPolicy, Pred,
-                    parallel::traits::projected<Proj, BidirIter>>
+                parallel::detail::is_indirect_callable_v<ExPolicy, Pred,
+                    parallel::detail::projected<Proj, BidirIter>>
         )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -1155,10 +1155,10 @@ namespace pika { namespace ranges {
                 !pika::traits::is_random_access_iterator_v<BidirIter>>;
 
             return pika::parallel::util::make_subrange<BidirIter, BidirIter>(
-                pika::parallel::v1::detail::stable_partition<BidirIter>().call2(
+                pika::parallel::detail::stable_partition<BidirIter>().call2(
                     PIKA_FORWARD(ExPolicy, policy), is_seq(), first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
-                parallel::v1::detail::advance_to_sentinel(first, last));
+                parallel::detail::advance_to_sentinel(first, last));
         }
     } stable_partition{};
 
@@ -1174,10 +1174,10 @@ namespace pika { namespace ranges {
                 pika::traits::is_range_v<Rng> &&
                 pika::traits::is_iterator_v<OutIter2> &&
                 pika::traits::is_iterator_v<OutIter3> &&
-                parallel::traits::is_projected_range_v<Proj, Rng> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_range_v<Proj, Rng> &&
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Pred,
-                    parallel::traits::projected_range<Proj, Rng>>
+                    parallel::detail::projected_range<Proj, Rng>>
             )>
         // clang-format on
         friend partition_copy_result<pika::traits::range_iterator_t<Rng>,
@@ -1193,7 +1193,7 @@ namespace pika { namespace ranges {
                 "Requires at least input iterator.");
 
             return parallel::util::make_in_out_out_result(
-                parallel::v1::detail::partition_copy<result_type>().call(
+                parallel::detail::partition_copy<result_type>().call(
                     pika::execution::seq, pika::util::begin(rng),
                     pika::util::end(rng), dest_true, dest_false,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
@@ -1208,9 +1208,9 @@ namespace pika { namespace ranges {
                 pika::traits::is_range_v<Rng> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
                 pika::traits::is_iterator_v<FwdIter3> &&
-                parallel::traits::is_projected_range_v<Proj, Rng> &&
-                parallel::traits::is_indirect_callable_v<ExPolicy, Pred,
-                    parallel::traits::projected_range<Proj, Rng>>
+                parallel::detail::is_projected_range_v<Proj, Rng> &&
+                parallel::detail::is_indirect_callable_v<ExPolicy, Pred,
+                    parallel::detail::projected_range<Proj, Rng>>
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -1227,7 +1227,7 @@ namespace pika { namespace ranges {
                 "Requires at least forward iterator.");
 
             return parallel::util::make_in_out_out_result(
-                parallel::v1::detail::partition_copy<result_type>().call(
+                parallel::detail::partition_copy<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng), dest_true, dest_false,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
@@ -1242,10 +1242,10 @@ namespace pika { namespace ranges {
                 pika::traits::is_sentinel_for<Sent, InIter>::value &&
                 pika::traits::is_iterator_v<OutIter2> &&
                 pika::traits::is_iterator_v<OutIter3> &&
-                parallel::traits::is_projected_v<Proj, InIter> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_v<Proj, InIter> &&
+                parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Pred,
-                    parallel::traits::projected<Proj, InIter>>
+                    parallel::detail::projected<Proj, InIter>>
             )>
         // clang-format on
         friend partition_copy_result<InIter, OutIter2, OutIter3>
@@ -1259,7 +1259,7 @@ namespace pika { namespace ranges {
                 "Requires at least input iterator.");
 
             return parallel::util::make_in_out_out_result(
-                parallel::v1::detail::partition_copy<result_type>().call(
+                parallel::detail::partition_copy<result_type>().call(
                     pika::execution::seq, first, last, dest_true, dest_false,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
         }
@@ -1274,10 +1274,10 @@ namespace pika { namespace ranges {
                 pika::traits::is_sentinel_for_v<Sent, FwdIter> &&
                 pika::traits::is_iterator_v<OutIter2> &&
                 pika::traits::is_iterator_v<OutIter3> &&
-                parallel::traits::is_projected_v<Proj, FwdIter> &&
-                parallel::traits::is_indirect_callable_v<
+                parallel::detail::is_projected_v<Proj, FwdIter> &&
+                parallel::detail::is_indirect_callable_v<
                     ExPolicy, Pred,
-                    parallel::traits::projected<Proj, FwdIter>>
+                    parallel::detail::projected<Proj, FwdIter>>
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -1292,7 +1292,7 @@ namespace pika { namespace ranges {
                 "Requires at least forward iterator.");
 
             return parallel::util::make_in_out_out_result(
-                parallel::v1::detail::partition_copy<result_type>().call(
+                parallel::detail::partition_copy<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest_true,
                     dest_false, PIKA_FORWARD(Pred, pred),
                     PIKA_FORWARD(Proj, proj)));

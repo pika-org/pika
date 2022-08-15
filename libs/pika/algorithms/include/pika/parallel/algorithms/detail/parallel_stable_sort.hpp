@@ -26,7 +26,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
 
     static constexpr std::size_t stable_sort_limit_per_task = 1 << 16;
 
@@ -168,4 +168,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             stable_sort_limit_per_task, compare{});
     }
 
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

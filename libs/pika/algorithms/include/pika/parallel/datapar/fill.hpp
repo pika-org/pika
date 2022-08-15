@@ -19,9 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::detail {
     struct datapar_fill
     {
         template <typename ExPolicy, typename Iter, typename Sent, typename T>
@@ -72,5 +70,5 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         return datapar_fill_n::call(
             PIKA_FORWARD(ExPolicy, policy), first, count, value);
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail
 #endif

@@ -125,7 +125,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // shift_right
     namespace detail {
@@ -263,7 +263,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}       // namespace pika::parallel
 
 namespace pika {
 
@@ -284,7 +284,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::shift_right<FwdIter>().call(
+            return pika::parallel::detail::shift_right<FwdIter>().call(
                 pika::execution::seq, first, last, n);
         }
 
@@ -302,7 +302,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::shift_right<FwdIter>().call(
+            return pika::parallel::detail::shift_right<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, n);
         }
     } shift_right{};

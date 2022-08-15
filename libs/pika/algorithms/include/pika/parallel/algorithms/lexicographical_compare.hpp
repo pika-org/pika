@@ -179,7 +179,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // lexicographical_compare
     namespace detail {
@@ -291,7 +291,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -301,7 +301,7 @@ namespace pika {
     {
         // clang-format off
         template <typename InIter1, typename InIter2,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter1>::value &&
                 pika::traits::is_iterator<InIter2>::value &&
@@ -320,7 +320,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::lexicographical_compare().call(
+            return pika::parallel::detail::lexicographical_compare().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity{},
@@ -329,7 +329,7 @@ namespace pika {
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
@@ -351,7 +351,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::lexicographical_compare().call(
+            return pika::parallel::detail::lexicographical_compare().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity{},

@@ -273,19 +273,19 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             typename Proj1 = pika::parallel::util::projection_identity,
             typename Proj2 = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_sentinel_for<Sent1, Iter1>::value &&
-                pika::parallel::traits::is_projected<Proj1, Iter1>::value &&
+                pika::parallel::detail::is_projected<Proj1, Iter1>::value &&
                 pika::traits::is_sentinel_for<Sent2, Iter2>::value &&
-                pika::parallel::traits::is_projected<Proj2, Iter2>::value &&
+                pika::parallel::detail::is_projected<Proj2, Iter2>::value &&
                 pika::traits::is_iterator<Iter3>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, Pred,
-                    pika::parallel::traits::projected<Proj1, Iter1>,
-                    pika::parallel::traits::projected<Proj2, Iter2>
+                pika::parallel::detail::is_indirect_callable<ExPolicy, Pred,
+                    pika::parallel::detail::projected<Proj1, Iter1>,
+                    pika::parallel::detail::projected<Proj2, Iter2>
                 >::value
             )>
         // clang-format on
@@ -312,7 +312,7 @@ namespace pika { namespace ranges {
 
             using result_type = set_union_result<Iter1, Iter2, Iter3>;
 
-            return pika::parallel::v1::detail::set_union<result_type>().call2(
+            return pika::parallel::detail::set_union<result_type>().call2(
                 PIKA_FORWARD(ExPolicy, policy), is_seq(), first1, last1, first2,
                 last2, dest, PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
                 PIKA_FORWARD(Proj2, proj2));
@@ -320,19 +320,19 @@ namespace pika { namespace ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Rng1, typename Rng2, typename Iter3,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             typename Proj1 = pika::parallel::util::projection_identity,
             typename Proj2 = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng1>::value &&
-                pika::parallel::traits::is_projected_range<Proj1, Rng1>::value &&
+                pika::parallel::detail::is_projected_range<Proj1, Rng1>::value &&
                 pika::traits::is_range<Rng2>::value &&
-                pika::parallel::traits::is_projected_range<Proj2, Rng2>::value &&
+                pika::parallel::detail::is_projected_range<Proj2, Rng2>::value &&
                 pika::traits::is_iterator<Iter3>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, Pred,
-                    pika::parallel::traits::projected_range<Proj1, Rng1>,
-                    pika::parallel::traits::projected_range<Proj2, Rng2>
+                pika::parallel::detail::is_indirect_callable<ExPolicy, Pred,
+                    pika::parallel::detail::projected_range<Proj1, Rng1>,
+                    pika::parallel::detail::projected_range<Proj2, Rng2>
                 >::value
             )>
         // clang-format on
@@ -369,7 +369,7 @@ namespace pika { namespace ranges {
             using result_type =
                 set_union_result<iterator_type1, iterator_type2, Iter3>;
 
-            return pika::parallel::v1::detail::set_union<result_type>().call2(
+            return pika::parallel::detail::set_union<result_type>().call2(
                 PIKA_FORWARD(ExPolicy, policy), is_seq(),
                 pika::util::begin(rng1), pika::util::end(rng1),
                 pika::util::begin(rng2), pika::util::end(rng2), dest,
@@ -379,19 +379,19 @@ namespace pika { namespace ranges {
 
         // clang-format off
         template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
-            typename Iter3, typename Pred = pika::parallel::v1::detail::less,
+            typename Iter3, typename Pred = pika::parallel::detail::less,
             typename Proj1 = pika::parallel::util::projection_identity,
             typename Proj2 = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_sentinel_for<Sent1, Iter1>::value &&
-                pika::parallel::traits::is_projected<Proj1, Iter1>::value &&
+                pika::parallel::detail::is_projected<Proj1, Iter1>::value &&
                 pika::traits::is_sentinel_for<Sent2, Iter2>::value &&
-                pika::parallel::traits::is_projected<Proj2, Iter2>::value &&
+                pika::parallel::detail::is_projected<Proj2, Iter2>::value &&
                 pika::traits::is_iterator<Iter3>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected<Proj1, Iter1>,
-                    pika::parallel::traits::projected<Proj2, Iter2>
+                    pika::parallel::detail::projected<Proj1, Iter1>,
+                    pika::parallel::detail::projected<Proj2, Iter2>
                 >::value
             )>
         // clang-format on
@@ -409,7 +409,7 @@ namespace pika { namespace ranges {
 
             using result_type = set_union_result<Iter1, Iter2, Iter3>;
 
-            return pika::parallel::v1::detail::set_union<result_type>().call(
+            return pika::parallel::detail::set_union<result_type>().call(
                 pika::execution::seq, first1, last1, first2, last2, dest,
                 PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
                 PIKA_FORWARD(Proj2, proj2));
@@ -417,19 +417,19 @@ namespace pika { namespace ranges {
 
         // clang-format off
         template <typename Rng1, typename Rng2, typename Iter3,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             typename Proj1 = pika::parallel::util::projection_identity,
             typename Proj2 = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng1>::value &&
-                pika::parallel::traits::is_projected_range<Proj1, Rng1>::value &&
+                pika::parallel::detail::is_projected_range<Proj1, Rng1>::value &&
                 pika::traits::is_range<Rng2>::value &&
-                pika::parallel::traits::is_projected_range<Proj2, Rng2>::value &&
+                pika::parallel::detail::is_projected_range<Proj2, Rng2>::value &&
                 pika::traits::is_iterator<Iter3>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected_range<Proj1, Rng1>,
-                    pika::parallel::traits::projected_range<Proj2, Rng2>
+                    pika::parallel::detail::projected_range<Proj1, Rng1>,
+                    pika::parallel::detail::projected_range<Proj2, Rng2>
                 >::value
             )>
         // clang-format on
@@ -457,7 +457,7 @@ namespace pika { namespace ranges {
             using result_type =
                 set_union_result<iterator_type1, iterator_type2, Iter3>;
 
-            return pika::parallel::v1::detail::set_union<result_type>().call(
+            return pika::parallel::detail::set_union<result_type>().call(
                 pika::execution::seq, pika::util::begin(rng1),
                 pika::util::end(rng1), pika::util::begin(rng2),
                 pika::util::end(rng2), dest, PIKA_FORWARD(Pred, op),

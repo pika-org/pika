@@ -127,7 +127,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // fill
     namespace detail {
@@ -217,7 +217,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -248,7 +248,7 @@ namespace pika {
                     ExPolicy>::type;
 
             return pika::util::detail::void_guard<result_type>(),
-                   pika::parallel::v1::detail::fill<FwdIter>().call(
+                   pika::parallel::detail::fill<FwdIter>().call(
                        PIKA_FORWARD(ExPolicy, policy), first, last, value);
         }
 
@@ -265,7 +265,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Requires at least forward iterator.");
 
-            pika::parallel::v1::detail::fill<FwdIter>().call(
+            pika::parallel::detail::fill<FwdIter>().call(
                 pika::execution::seq, first, last, value);
         }
     } fill{};
@@ -293,13 +293,13 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return pika::parallel::util::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 
-            return pika::parallel::v1::detail::fill_n<FwdIter>().call(
+            return pika::parallel::detail::fill_n<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
                 value);
         }
@@ -318,12 +318,12 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return first;
             }
 
-            return pika::parallel::v1::detail::fill_n<FwdIter>().call(
+            return pika::parallel::detail::fill_n<FwdIter>().call(
                 pika::execution::seq, first, std::size_t(count), value);
         }
     } fill_n{};

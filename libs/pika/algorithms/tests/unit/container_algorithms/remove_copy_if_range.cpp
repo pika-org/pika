@@ -77,7 +77,7 @@ void test_remove_copy_if(IteratorTag)
     std::vector<int> d(c.size());
     std::size_t middle_idx = std::rand() % (c.size() / 2);
     auto middle =
-        pika::parallel::v1::detail::next(std::begin(c.base()), middle_idx);
+        pika::parallel::detail::next(std::begin(c.base()), middle_idx);
     std::iota(
         std::begin(c.base()), middle, static_cast<int>(std::rand() % c.size()));
     std::fill(middle, std::end(c.base()), -1);
@@ -114,7 +114,7 @@ void test_remove_copy_if(ExPolicy policy, IteratorTag)
     std::vector<int> d(c.size());
     std::size_t middle_idx = std::rand() % (c.size() / 2);
     auto middle =
-        pika::parallel::v1::detail::next(std::begin(c.base()), middle_idx);
+        pika::parallel::detail::next(std::begin(c.base()), middle_idx);
     std::iota(
         std::begin(c.base()), middle, static_cast<int>(std::rand() % c.size()));
     std::fill(middle, std::end(c.base()), -1);
@@ -149,7 +149,7 @@ void test_remove_copy_if_async(ExPolicy p, IteratorTag)
     std::vector<int> d(c.size());
     std::size_t middle_idx = std::rand() % (c.size() / 2);
     auto middle =
-        pika::parallel::v1::detail::next(std::begin(c.base()), middle_idx);
+        pika::parallel::detail::next(std::begin(c.base()), middle_idx);
     std::iota(
         std::begin(c.base()), middle, static_cast<int>(std::rand() % c.size()));
     std::fill(middle, std::end(c.base()), -1);
@@ -188,7 +188,7 @@ void test_remove_copy_if_outiter(ExPolicy policy, IteratorTag)
     std::vector<int> d(0);
     std::size_t middle_idx = std::rand() % (c.size() / 2);
     auto middle =
-        pika::parallel::v1::detail::next(std::begin(c.base()), middle_idx);
+        pika::parallel::detail::next(std::begin(c.base()), middle_idx);
     std::iota(
         std::begin(c.base()), middle, static_cast<int>(std::rand() % c.size()));
     std::fill(middle, std::end(c.base()), -1);
@@ -214,7 +214,7 @@ void test_remove_copy_if_outiter_async(ExPolicy p, IteratorTag)
     std::vector<int> d(0);
     std::size_t middle_idx = std::rand() % (c.size() / 2);
     auto middle =
-        pika::parallel::v1::detail::next(std::begin(c.base()), middle_idx);
+        pika::parallel::detail::next(std::begin(c.base()), middle_idx);
     std::iota(
         std::begin(c.base()), middle, static_cast<int>(std::rand() % c.size()));
     std::fill(middle, std::end(c.base()), -1);

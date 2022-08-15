@@ -248,9 +248,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, F,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -266,7 +266,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::none_of().call(
+            return pika::parallel::detail::none_of().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
@@ -279,9 +279,9 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<Iter>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                    pika::parallel::traits::projected<Proj, Iter>
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, F,
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -293,7 +293,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::none_of().call(
+            return pika::parallel::detail::none_of().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
         }
@@ -303,10 +303,10 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, F,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -319,7 +319,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::none_of().call(
+            return pika::parallel::detail::none_of().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
@@ -331,10 +331,10 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<Iter>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, F,
-                    pika::parallel::traits::projected<Proj, Iter>
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -344,7 +344,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::none_of().call(
+            return pika::parallel::detail::none_of().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
         }
@@ -362,9 +362,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, F,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -380,7 +380,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::any_of().call(
+            return pika::parallel::detail::any_of().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
@@ -393,9 +393,9 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<Iter>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                    pika::parallel::traits::projected<Proj, Iter>
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, F,
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -407,7 +407,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::any_of().call(
+            return pika::parallel::detail::any_of().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
         }
@@ -417,10 +417,10 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value&&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value&&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value&&
+                pika::parallel::detail::is_indirect_callable<
                 pika::execution::sequenced_policy, F,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -433,7 +433,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::any_of().call(
+            return pika::parallel::detail::any_of().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
@@ -445,10 +445,10 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<Iter>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_indirect_callable<
                 pika::execution::sequenced_policy, F,
-                    pika::parallel::traits::projected<Proj, Iter>
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -458,7 +458,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::any_of().call(
+            return pika::parallel::detail::any_of().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
         }
@@ -476,9 +476,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, F,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -494,7 +494,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::all_of().call(
+            return pika::parallel::detail::all_of().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
@@ -507,9 +507,9 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<Iter>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, F,
-                    pika::parallel::traits::projected<Proj, Iter>
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, F,
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -521,7 +521,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::all_of().call(
+            return pika::parallel::detail::all_of().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
         }
@@ -531,10 +531,10 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<
                 pika::execution::sequenced_policy, F,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -547,7 +547,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::all_of().call(
+            return pika::parallel::detail::all_of().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
@@ -559,10 +559,10 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<Iter>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_indirect_callable<
                 pika::execution::sequenced_policy, F,
-                    pika::parallel::traits::projected<Proj, Iter>
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -572,7 +572,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::all_of().call(
+            return pika::parallel::detail::all_of().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Proj, proj));
         }

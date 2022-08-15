@@ -160,7 +160,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // ends_with
     namespace detail {
@@ -185,7 +185,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 if (drop < 0)
                     return false;
 
-                return pika::parallel::v1::detail::equal_binary().call(
+                return pika::parallel::detail::equal_binary().call(
                     pika::execution::seq, std::next(PIKA_MOVE(first1), drop),
                     PIKA_MOVE(last1), PIKA_MOVE(first2), PIKA_MOVE(last2),
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
@@ -209,7 +209,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         false);
                 }
 
-                return pika::parallel::v1::detail::equal_binary().call(
+                return pika::parallel::detail::equal_binary().call(
                     PIKA_FORWARD(ExPolicy, policy),
                     std::next(PIKA_MOVE(first1), drop), PIKA_MOVE(last1),
                     PIKA_MOVE(first2), PIKA_MOVE(last2),
@@ -219,7 +219,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         };
         /// \endcond
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -231,7 +231,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename InIter1, typename InIter2,
-            typename Pred = pika::parallel::v1::detail::equal_to,
+            typename Pred = pika::parallel::detail::equal_to,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<InIter1> &&
                 pika::traits::is_iterator_v<InIter2> &&
@@ -250,7 +250,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator_v<InIter2>,
                 "Required at least input iterator.");
 
-            return pika::parallel::v1::detail::ends_with().call(
+            return pika::parallel::detail::ends_with().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred), parallel::util::projection_identity{},
                 parallel::util::projection_identity{});
@@ -281,7 +281,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::ends_with().call(
+            return pika::parallel::detail::ends_with().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred), parallel::util::projection_identity{},
                 parallel::util::projection_identity{});

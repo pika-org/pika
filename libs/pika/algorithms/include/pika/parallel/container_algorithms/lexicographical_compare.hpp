@@ -393,18 +393,18 @@ namespace pika { namespace ranges {
         template <typename InIter1, typename Sent1, typename InIter2, typename Sent2,
             typename Proj1 = pika::parallel::util::projection_identity,
             typename Proj2 = pika::parallel::util::projection_identity,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter1>::value &&
                 pika::traits::is_sentinel_for<Sent1, InIter1>::value &&
                 pika::traits::is_iterator<InIter2>::value &&
                 pika::traits::is_sentinel_for<Sent2, InIter2>::value &&
-                pika::parallel::traits::is_projected<Proj1, InIter1>::value &&
-                pika::parallel::traits::is_projected<Proj2, InIter2>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj1, InIter1>::value &&
+                pika::parallel::detail::is_projected<Proj2, InIter2>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected<Proj1, InIter1>,
-                    pika::parallel::traits::projected<Proj2, InIter2>
+                    pika::parallel::detail::projected<Proj1, InIter1>,
+                    pika::parallel::detail::projected<Proj2, InIter2>
                 >::value
             )>
         // clang-format on
@@ -418,7 +418,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<InIter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::lexicographical_compare().call(
+            return pika::parallel::detail::lexicographical_compare().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
                 PIKA_FORWARD(Proj2, proj2));
@@ -429,19 +429,19 @@ namespace pika { namespace ranges {
             typename FwdIter2, typename Sent2,
             typename Proj1 = pika::parallel::util::projection_identity,
             typename Proj2 = pika::parallel::util::projection_identity,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter1>::value &&
                 pika::traits::is_sentinel_for<Sent1, FwdIter1>::value &&
                 pika::traits::is_forward_iterator<FwdIter2>::value &&
                 pika::traits::is_sentinel_for<Sent2, FwdIter2>::value &&
-                pika::parallel::traits::is_projected<Proj1, FwdIter1>::value &&
-                pika::parallel::traits::is_projected<Proj2, FwdIter2>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected<Proj1, FwdIter1>::value &&
+                pika::parallel::detail::is_projected<Proj2, FwdIter2>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     ExPolicy, Pred,
-                    pika::parallel::traits::projected<Proj1, FwdIter1>,
-                    pika::parallel::traits::projected<Proj2, FwdIter2>
+                    pika::parallel::detail::projected<Proj1, FwdIter1>,
+                    pika::parallel::detail::projected<Proj2, FwdIter2>
                 >::value
             )>
         // clang-format on
@@ -457,7 +457,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::lexicographical_compare().call(
+            return pika::parallel::detail::lexicographical_compare().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
                 PIKA_FORWARD(Proj2, proj2));
@@ -467,16 +467,16 @@ namespace pika { namespace ranges {
         template <typename Rng1, typename Rng2,
             typename Proj1 = pika::parallel::util::projection_identity,
             typename Proj2 = pika::parallel::util::projection_identity,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng1>::value &&
                 pika::traits::is_range<Rng2>::value &&
-                pika::parallel::traits::is_projected_range<Proj1, Rng1>::value &&
-                pika::parallel::traits::is_projected_range<Proj2, Rng2>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj1, Rng1>::value &&
+                pika::parallel::detail::is_projected_range<Proj2, Rng2>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected_range<Proj1, Rng1>,
-                    pika::parallel::traits::projected_range<Proj2, Rng2>
+                    pika::parallel::detail::projected_range<Proj1, Rng1>,
+                    pika::parallel::detail::projected_range<Proj2, Rng2>
                 >::value
             )>
         // clang-format on
@@ -497,7 +497,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_input_iterator<iterator_type2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::lexicographical_compare().call(
+            return pika::parallel::detail::lexicographical_compare().call(
                 pika::execution::seq, std::begin(rng1), std::end(rng1),
                 std::begin(rng2), std::end(rng2), PIKA_FORWARD(Pred, pred),
                 PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
@@ -507,17 +507,17 @@ namespace pika { namespace ranges {
         template <typename ExPolicy, typename Rng1, typename Rng2,
             typename Proj1 = pika::parallel::util::projection_identity,
             typename Proj2 = pika::parallel::util::projection_identity,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng1>::value &&
                 pika::traits::is_range<Rng2>::value &&
-                pika::parallel::traits::is_projected_range<Proj1, Rng1>::value &&
-                pika::parallel::traits::is_projected_range<Proj2, Rng2>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj1, Rng1>::value &&
+                pika::parallel::detail::is_projected_range<Proj2, Rng2>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     ExPolicy, Pred,
-                    pika::parallel::traits::projected_range<Proj1, Rng1>,
-                    pika::parallel::traits::projected_range<Proj2, Rng2>
+                    pika::parallel::detail::projected_range<Proj1, Rng1>,
+                    pika::parallel::detail::projected_range<Proj2, Rng2>
                 >::value
             )>
         // clang-format on
@@ -540,7 +540,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::lexicographical_compare().call(
+            return pika::parallel::detail::lexicographical_compare().call(
                 PIKA_FORWARD(ExPolicy, policy), std::begin(rng1),
                 std::end(rng1), std::begin(rng2), std::end(rng2),
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),

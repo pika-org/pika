@@ -194,7 +194,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika { namespace parallel {
     ///////////////////////////////////////////////////////////////////////////
     // mismatch (binary)
     namespace detail {
@@ -430,7 +430,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         };
     }    // namespace detail
-}}}      // namespace pika::parallel::v1
+}}      // namespace pika::parallel::v1
 
 namespace pika {
 
@@ -463,8 +463,8 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::get_pair(
-                pika::parallel::v1::detail::mismatch_binary<
+            return pika::parallel::detail::get_pair(
+                pika::parallel::detail::mismatch_binary<
                     pika::parallel::util::in_in_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                         last2, PIKA_FORWARD(Pred, op),
@@ -490,11 +490,11 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::get_pair(
-                pika::parallel::v1::detail::mismatch_binary<
+            return pika::parallel::detail::get_pair(
+                pika::parallel::detail::mismatch_binary<
                     pika::parallel::util::in_in_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-                        last2, pika::parallel::v1::detail::equal_to{},
+                        last2, pika::parallel::detail::equal_to{},
                         pika::parallel::util::projection_identity{},
                         pika::parallel::util::projection_identity{}));
         }
@@ -522,7 +522,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::mismatch<
+            return pika::parallel::detail::mismatch<
                 std::pair<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                     PIKA_FORWARD(Pred, op));
@@ -546,10 +546,10 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::mismatch<
+            return pika::parallel::detail::mismatch<
                 std::pair<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-                    pika::parallel::v1::detail::equal_to{});
+                    pika::parallel::detail::equal_to{});
         }
 
         // clang-format off
@@ -573,8 +573,8 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::get_pair(
-                pika::parallel::v1::detail::mismatch_binary<
+            return pika::parallel::detail::get_pair(
+                pika::parallel::detail::mismatch_binary<
                     pika::parallel::util::in_in_result<FwdIter1, FwdIter2>>()
                     .call(pika::execution::seq, first1, last1, first2, last2,
                         PIKA_FORWARD(Pred, op),
@@ -597,11 +597,11 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::get_pair(
-                pika::parallel::v1::detail::mismatch_binary<
+            return pika::parallel::detail::get_pair(
+                pika::parallel::detail::mismatch_binary<
                     pika::parallel::util::in_in_result<FwdIter1, FwdIter2>>()
                     .call(pika::execution::seq, first1, last1, first2, last2,
-                        pika::parallel::v1::detail::equal_to{},
+                        pika::parallel::detail::equal_to{},
                         pika::parallel::util::projection_identity{},
                         pika::parallel::util::projection_identity{}));
         }
@@ -626,7 +626,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::mismatch<
+            return pika::parallel::detail::mismatch<
                 std::pair<FwdIter1, FwdIter2>>()
                 .call(pika::execution::seq, first1, last1, first2,
                     PIKA_FORWARD(Pred, op));
@@ -647,10 +647,10 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter2>),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::mismatch<
+            return pika::parallel::detail::mismatch<
                 std::pair<FwdIter1, FwdIter2>>()
                 .call(pika::execution::seq, first1, last1, first2,
-                    pika::parallel::v1::detail::equal_to{});
+                    pika::parallel::detail::equal_to{});
         }
 
     } mismatch{};

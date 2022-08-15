@@ -26,7 +26,7 @@
 #define NUMELEMS 500000
 #endif
 
-using namespace pika::parallel::v1::detail;
+using namespace pika::parallel::detail;
 using pika::execution::parallel_executor;
 using pika::parallel::util::range;
 
