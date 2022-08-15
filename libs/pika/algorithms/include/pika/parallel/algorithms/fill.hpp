@@ -107,7 +107,6 @@ namespace pika {
 #else    // DOXYGEN
 
 #include <pika/config.hpp>
-#include <pika/algorithms/traits/is_value_proxy.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
@@ -139,17 +138,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             std::decay_t<T> val_;
 
             template <typename U>
-            PIKA_HOST_DEVICE typename std::enable_if<
-                !pika::detail::is_value_proxy<U>::value>::type
-            operator()(U& u) const
-            {
-                u = val_;
-            }
-
-            template <typename U>
-            PIKA_HOST_DEVICE typename std::enable_if<
-                pika::detail::is_value_proxy<U>::value>::type
-            operator()(U u) const
+            PIKA_HOST_DEVICE void operator()(U& u) const
             {
                 u = val_;
             }

@@ -235,7 +235,6 @@ namespace pika {
 #else
 
 #include <pika/config.hpp>
-#include <pika/algorithms/traits/is_value_proxy.hpp>
 #include <pika/algorithms/traits/projected.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/detail/invoke.hpp>
@@ -276,15 +275,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using value_type = std::decay_t<
                     typename std::iterator_traits<Iter>::reference>;
-                if constexpr (pika::detail::is_value_proxy_v<value_type>)
-                {
-                    auto tmp = PIKA_INVOKE(proj_, *curr);
-                    PIKA_INVOKE(f_, tmp);
-                }
-                else
-                {
-                    PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr));
-                }
+                PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr));
             }
         };
 
@@ -310,15 +301,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using value_type = std::decay_t<
                     typename std::iterator_traits<Iter>::reference>;
-                if constexpr (pika::detail::is_value_proxy_v<value_type>)
-                {
-                    auto tmp = *curr;
-                    PIKA_INVOKE(f_, tmp);
-                }
-                else
-                {
-                    PIKA_INVOKE(f_, *curr);
-                }
+                PIKA_INVOKE(f_, *curr);
             }
         };
 
@@ -414,16 +397,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 using value_type = std::decay_t<
                     typename std::iterator_traits<Iter>::reference>;
-                if constexpr (pika::detail::is_value_proxy_v<value_type>)
-                {
-                    util::loop_n<execution_policy_type>(
-                        part_begin, part_size, invoke_projected<F>(f_));
-                }
-                else
-                {
-                    util::loop_n_ind<execution_policy_type>(
-                        part_begin, part_size, f_);
-                }
+                util::loop_n_ind<execution_policy_type>(
+                    part_begin, part_size, f_);
             }
         };
 

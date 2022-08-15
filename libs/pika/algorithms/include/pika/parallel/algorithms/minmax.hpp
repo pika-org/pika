@@ -371,7 +371,6 @@ namespace pika {
 #include <pika/parallel/util/detail/sender_util.hpp>
 #include <pika/parallel/util/result_types.hpp>
 
-#include <pika/algorithms/traits/is_value_proxy.hpp>
 #include <pika/algorithms/traits/projected.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
@@ -404,8 +403,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             if (count == 0 || count == 1)
                 return it;
 
-            using element_type = pika::detail::proxy_value_t<
-                typename std::iterator_traits<FwdIter>::value_type>;
+            using element_type =
+                typename std::iterator_traits<FwdIter>::value_type;
 
             auto smallest = it;
 
@@ -431,8 +430,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             // generically from the segmented algorithms
             template <typename ExPolicy, typename FwdIter, typename F,
                 typename Proj>
-            static constexpr pika::detail::proxy_value_t<
-                typename std::iterator_traits<FwdIter>::value_type>
+            static constexpr typename std::iterator_traits<FwdIter>::value_type
             sequential_minmax_element_ind(ExPolicy&&, FwdIter it,
                 std::size_t count, F const& f, Proj const& proj)
             {
@@ -443,9 +441,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
                 auto smallest = *it;
 
-                using element_type =
-                    pika::detail::proxy_value_t<typename std::iterator_traits<
-                        decltype(smallest)>::value_type>;
+                using element_type = typename std::iterator_traits<
+                    decltype(smallest)>::value_type;
 
                 element_type value = PIKA_INVOKE(proj, *smallest);
                 util::loop_n<std::decay_t<ExPolicy>>(
@@ -474,8 +471,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 if (first == last)
                     return first;
 
-                using element_type = pika::detail::proxy_value_t<
-                    typename std::iterator_traits<FwdIter>::value_type>;
+                using element_type =
+                    typename std::iterator_traits<FwdIter>::value_type;
 
                 auto smallest = first;
 
@@ -540,8 +537,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             if (count == 0 || count == 1)
                 return it;
 
-            using element_type = pika::detail::proxy_value_t<
-                typename std::iterator_traits<FwdIter>::value_type>;
+            using element_type =
+                typename std::iterator_traits<FwdIter>::value_type;
 
             auto largest = it;
 
@@ -578,9 +575,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
                 auto largest = *it;
 
-                using element_type =
-                    pika::detail::proxy_value_t<typename std::iterator_traits<
-                        decltype(largest)>::value_type>;
+                using element_type = typename std::iterator_traits<
+                    decltype(largest)>::value_type;
 
                 element_type value = PIKA_INVOKE(proj, *largest);
                 util::loop_n<std::decay_t<ExPolicy>>(
@@ -609,8 +605,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 if (first == last)
                     return first;
 
-                using element_type = pika::detail::proxy_value_t<
-                    typename std::iterator_traits<FwdIter>::value_type>;
+                using element_type =
+                    typename std::iterator_traits<FwdIter>::value_type;
 
                 auto largest = first;
 
@@ -677,8 +673,8 @@ namespace pika { namespace parallel { inline namespace v1 {
             if (count == 0 || count == 1)
                 return result;
 
-            using element_type = pika::detail::proxy_value_t<
-                typename std::iterator_traits<FwdIter>::value_type>;
+            using element_type =
+                typename std::iterator_traits<FwdIter>::value_type;
 
             element_type min_value = PIKA_INVOKE(proj, *it);
             element_type max_value = min_value;
@@ -719,8 +715,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 if (count == 1)
                     return *it;
 
-                using element_type = pika::detail::proxy_value_t<
-                    typename std::iterator_traits<Iter>::value_type>;
+                using element_type =
+                    typename std::iterator_traits<Iter>::value_type;
 
                 auto result = *it;
 
@@ -765,8 +761,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     return minmax_element_result<FwdIter>{min, max};
                 }
 
-                using element_type = pika::detail::proxy_value_t<
-                    typename std::iterator_traits<FwdIter>::value_type>;
+                using element_type =
+                    typename std::iterator_traits<FwdIter>::value_type;
 
                 element_type min_value = PIKA_INVOKE(proj, *min);
                 element_type max_value = PIKA_INVOKE(proj, *max);

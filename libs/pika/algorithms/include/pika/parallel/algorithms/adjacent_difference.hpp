@@ -151,7 +151,6 @@ namespace pika {
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/iterator_support/zip_iterator.hpp>
 
-#include <pika/algorithms/traits/is_value_proxy.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/detail/adjacent_difference.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
@@ -215,9 +214,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 difference_type count = detail::distance(first, last) - 1;
 
                 FwdIter1 prev = first;
-                pika::detail::proxy_value_t<
-                    typename std::iterator_traits<FwdIter1>::value_type>
-                    tmp = *first++;
+                typename std::iterator_traits<FwdIter1>::value_type tmp =
+                    *first++;
                 *dest++ = PIKA_MOVE(tmp);
 
                 if (count == 0)

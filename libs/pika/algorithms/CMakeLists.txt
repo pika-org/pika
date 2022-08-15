@@ -5,7 +5,6 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(algorithms_headers
-    pika/algorithms/traits/is_value_proxy.hpp
     pika/algorithms/traits/pointer_category.hpp
     pika/algorithms/traits/projected.hpp
     pika/algorithms/traits/projected_range.hpp
