@@ -248,9 +248,9 @@ namespace pika { namespace execution { namespace experimental {
         {
             F f;
 
-            void set_value() noexcept(noexcept(PIKA_INVOKE(f, )))
+            void set_value() noexcept(noexcept(f()))
             {
-                PIKA_INVOKE(f, );
+                f();
             }
 
             template <typename E_>
