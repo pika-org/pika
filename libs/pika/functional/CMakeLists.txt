@@ -22,7 +22,6 @@ set(functional_headers
     pika/functional/bind_front.hpp
     pika/functional/first_argument.hpp
     pika/functional/function.hpp
-    pika/functional/function_ref.hpp
     pika/functional/invoke.hpp
     pika/functional/invoke_fused.hpp
     pika/functional/one_shot.hpp

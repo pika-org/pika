@@ -21,7 +21,6 @@ set(function_tests
     function_arith
     function_bind_test
     function_object_size
-    function_ref
     function_ref_wrapper
     function_target
     function_test

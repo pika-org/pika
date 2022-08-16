@@ -15,7 +15,6 @@ This module provides function wrappers and helpers for managing functions and
 their arguments.
 
 * :cpp:class:`pika::util::function`
-* :cpp:class:`pika::util::function_ref`
 * :cpp:class:`pika::util::unique_function`
 * :cpp:func:`pika::util::bind`
 * :cpp:func:`pika::util::bind_back`
