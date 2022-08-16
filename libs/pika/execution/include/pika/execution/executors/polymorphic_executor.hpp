@@ -289,7 +289,8 @@ namespace pika { namespace parallel { namespace execution {
         template <typename R, typename... Ts>
         struct never_blocking_oneway_vtable<R(Ts...)>
         {
-            using post_function_type = pika::util::unique_function<R(Ts...)>;
+            using post_function_type =
+                pika::util::detail::unique_function<R(Ts...)>;
 
             // post
             template <typename T>
@@ -327,7 +328,7 @@ namespace pika { namespace parallel { namespace execution {
         struct oneway_vtable<R(Ts...)>
         {
             using sync_execute_function_type =
-                pika::util::unique_function<R(Ts...)>;
+                pika::util::detail::unique_function<R(Ts...)>;
 
             // sync_execute
             template <typename T>
@@ -368,9 +369,10 @@ namespace pika { namespace parallel { namespace execution {
         struct twoway_vtable<R(Ts...)>
         {
             using async_execute_function_type =
-                pika::util::unique_function<R(Ts...)>;
-            using then_execute_function_type = pika::util::unique_function<R(
-                pika::shared_future<void> const&, Ts...)>;
+                pika::util::detail::unique_function<R(Ts...)>;
+            using then_execute_function_type =
+                pika::util::detail::unique_function<R(
+                    pika::shared_future<void> const&, Ts...)>;
 
             // async_execute
             template <typename T>

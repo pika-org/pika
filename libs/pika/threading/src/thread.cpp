@@ -114,7 +114,7 @@ namespace pika {
     }
 
     threads::detail::thread_result_type thread::thread_function_nullary(
-        util::unique_function<void()> const& func)
+        util::detail::unique_function<void()> const& func)
     {
         try
         {
@@ -161,13 +161,13 @@ namespace pika {
         return pika::threads::detail::hardware_concurrency();
     }
 
-    void thread::start_thread(
-        threads::thread_pool_base* pool, util::unique_function<void()>&& func)
+    void thread::start_thread(threads::thread_pool_base* pool,
+        util::detail::unique_function<void()>&& func)
     {
         PIKA_ASSERT(pool);
 
         threads::detail::thread_init_data data(
-            util::one_shot(util::detail::bind(
+            util::detail::one_shot(util::detail::bind(
                 &thread::thread_function_nullary, PIKA_MOVE(func))),
             "thread::thread_function_nullary",
             execution::thread_priority::default_,

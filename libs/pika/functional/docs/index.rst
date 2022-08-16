@@ -15,14 +15,14 @@ This module provides function wrappers and helpers for managing functions and
 their arguments.
 
 * :cpp:class:`pika::util::detail::function`
-* :cpp:class:`pika::util::unique_function`
+* :cpp:class:`pika::util::detail::unique_function`
 * :cpp:func:`pika::util::detail::bind`
 * :cpp:func:`pika::util::detail::bind_back`
 * :cpp:func:`pika::util::detail::bind_front`
 * :cpp:func:`pika::util::detail::deferred_call`
 * :cpp:func:`pika::util::detail::invoke`
 * :cpp:func:`pika::util::detail::invoke_fused`
-* :cpp:func:`pika::util::one_shot`
+* :cpp:func:`pika::util::detail::one_shot`
 * :cpp:class:`pika::util::result_of`
 
 See the :ref:`API reference <modules_functional_api>` of the module for more

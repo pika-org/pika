@@ -406,8 +406,8 @@ namespace pika { namespace threads { namespace detail {
 
     struct scheduling_callbacks
     {
-        using callback_type = util::unique_function<void()>;
-        using background_callback_type = util::unique_function<bool()>;
+        using callback_type = util::detail::unique_function<void()>;
+        using background_callback_type = util::detail::unique_function<bool()>;
 
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         explicit scheduling_callbacks(callback_type&& outer,

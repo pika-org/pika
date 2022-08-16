@@ -78,7 +78,7 @@ namespace pika { namespace lcos { namespace detail {
         future_data_refcnt_base& operator=(future_data_refcnt_base&&) = delete;
 
     public:
-        using completed_callback_type = util::unique_function<void()>;
+        using completed_callback_type = util::detail::unique_function<void()>;
         using completed_callback_vector_type =
             pika::detail::small_vector<completed_callback_type, 1>;
 

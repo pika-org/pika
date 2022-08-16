@@ -18,8 +18,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::util::detail {
     template <typename Sig>
     class unique_function;
 
@@ -66,26 +65,26 @@ namespace pika::util {
         using base_type::reset;
         using base_type::target;
     };
-}    // namespace pika::util
+}    // namespace pika::util::detail
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {
     template <typename Sig>
-    struct get_function_address<util::unique_function<Sig>>
+    struct get_function_address<util::detail::unique_function<Sig>>
     {
         static constexpr std::size_t call(
-            util::unique_function<Sig> const& f) noexcept
+            util::detail::unique_function<Sig> const& f) noexcept
         {
             return f.get_function_address();
         }
     };
 
     template <typename Sig>
-    struct get_function_annotation<util::unique_function<Sig>>
+    struct get_function_annotation<util::detail::unique_function<Sig>>
     {
         static constexpr char const* call(
-            util::unique_function<Sig> const& f) noexcept
+            util::detail::unique_function<Sig> const& f) noexcept
         {
             return f.get_function_annotation();
         }
@@ -93,10 +92,10 @@ namespace pika::detail {
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename Sig>
-    struct get_function_annotation_itt<util::unique_function<Sig>>
+    struct get_function_annotation_itt<util::detail::unique_function<Sig>>
     {
         static util::itt::string_handle call(
-            util::unique_function<Sig> const& f) noexcept
+            util::detail::unique_function<Sig> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }

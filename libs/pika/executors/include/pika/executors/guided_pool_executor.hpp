@@ -597,8 +597,9 @@ namespace pika { namespace parallel { namespace execution {
                     typename pika::util::detail::invoke_deferred_result<F,
                         Future, Ts...>::type;
 
-                auto func = pika::util::one_shot(pika::util::detail::bind_back(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                auto func =
+                    pika::util::detail::one_shot(pika::util::detail::bind_back(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
                 typename pika::traits::detail::shared_state_ptr<
                     result_type>::type p =

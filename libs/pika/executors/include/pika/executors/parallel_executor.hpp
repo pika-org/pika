@@ -274,9 +274,10 @@ namespace pika { namespace execution {
                 typename pika::util::detail::invoke_deferred_result<F, Future,
                     Ts...>::type;
 
-            auto&& func = pika::util::one_shot(pika::util::detail::bind_back(
-                pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
-                PIKA_FORWARD(Ts, ts)...));
+            auto&& func =
+                pika::util::detail::one_shot(pika::util::detail::bind_back(
+                    pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
+                    PIKA_FORWARD(Ts, ts)...));
 
             typename pika::traits::detail::shared_state_ptr<result_type>::type
                 p = lcos::detail::make_continuation_alloc_nounwrap<result_type>(

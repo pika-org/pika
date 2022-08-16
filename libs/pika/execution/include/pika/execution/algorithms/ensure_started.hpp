@@ -168,7 +168,8 @@ namespace pika::execution::experimental {
                     error_type, value_type>
                     v;
 
-                using continuation_type = pika::util::unique_function<void()>;
+                using continuation_type =
+                    pika::util::detail::unique_function<void()>;
                 std::optional<continuation_type> continuation;
 
                 struct ensure_started_receiver

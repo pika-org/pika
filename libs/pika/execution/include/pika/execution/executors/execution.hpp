@@ -162,8 +162,9 @@ namespace pika { namespace parallel { namespace execution {
                     pika::util::detail::invoke_deferred_result_t<F, Future,
                         Ts...>;
 
-                auto func = pika::util::one_shot(pika::util::detail::bind_back(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                auto func =
+                    pika::util::detail::one_shot(pika::util::detail::bind_back(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
                 pika::traits::detail::shared_state_ptr_t<result_type> p =
                     lcos::detail::make_continuation_exec<result_type>(
@@ -385,8 +386,9 @@ namespace pika { namespace parallel { namespace execution {
                     pika::util::detail::invoke_deferred_result_t<F, Future,
                         Ts...>;
 
-                auto func = pika::util::one_shot(pika::util::detail::bind_back(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                auto func =
+                    pika::util::detail::one_shot(pika::util::detail::bind_back(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
                 pika::traits::detail::shared_state_ptr_t<result_type> p =
                     lcos::detail::make_continuation_exec<result_type>(

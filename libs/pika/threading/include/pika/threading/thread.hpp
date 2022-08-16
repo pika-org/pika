@@ -134,9 +134,9 @@ namespace pika {
             id_ = threads::detail::invalid_thread_id;
         }
         void start_thread(threads::thread_pool_base* pool,
-            util::unique_function<void()>&& func);
+            util::detail::unique_function<void()>&& func);
         static threads::detail::thread_result_type thread_function_nullary(
-            util::unique_function<void()> const& func);
+            util::detail::unique_function<void()> const& func);
 
         mutable mutex_type mtx_;
         threads::detail::thread_id_ref_type id_;
