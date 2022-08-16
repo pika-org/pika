@@ -25,7 +25,6 @@ set(functional_headers
     pika/functional/invoke.hpp
     pika/functional/invoke_fused.hpp
     pika/functional/one_shot.hpp
-    pika/functional/protect.hpp
     pika/functional/unique_function.hpp
     pika/functional/traits/get_function_address.hpp
     pika/functional/traits/get_function_annotation.hpp

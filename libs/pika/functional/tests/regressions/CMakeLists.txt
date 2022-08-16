@@ -5,7 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 # Function tests
-set(function_tests is_callable_1179 protect_with_nullary_pfo)
+set(function_tests is_callable_1179)
 
 foreach(test ${function_tests})
   set(sources ${test}.cpp)

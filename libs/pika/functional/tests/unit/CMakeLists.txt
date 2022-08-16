@@ -26,7 +26,6 @@ set(function_tests
     function_test
     is_invocable
     nothrow_swap
-    protect_test
     stateless_test
 )
 
