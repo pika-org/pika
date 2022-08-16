@@ -10,7 +10,6 @@
 #include <pika/algorithm.hpp>
 #include <pika/chrono.hpp>
 #include <pika/execution.hpp>
-#include <pika/executors/parallel_executor_aggregated.hpp>
 #include <pika/init.hpp>
 
 #include "foreach_scaling_helpers.hpp"
@@ -281,39 +280,7 @@ int pika_main(pika::program_options::variables_map& vm)
         double plain_time_for = averageout_plain_for(vector_size);
         double plain_time_for_iter = averageout_plain_for_iter(vector_size);
 
-        if (vm["executor"].as<std::string>() == "aggregated")
-        {
-            pika::parallel::execution::parallel_executor_aggregated par;
-
-            if (enable_all || vm.count("parallel_foreach"))
-            {
-                par_time_foreach =
-                    averageout_parallel_foreach(vector_size, par);
-            }
-            if (enable_all || vm.count("task_foreach"))
-            {
-                task_time_foreach = averageout_task_foreach(vector_size, par);
-            }
-            if (enable_all || vm.count("sequential_foreach"))
-            {
-                seq_time_foreach = averageout_sequential_foreach(vector_size);
-            }
-
-            if (enable_all || vm.count("parallel_forloop"))
-            {
-                par_time_forloop =
-                    averageout_parallel_forloop(vector_size, par);
-            }
-            if (enable_all || vm.count("task_forloop"))
-            {
-                task_time_forloop = averageout_task_forloop(vector_size, par);
-            }
-            if (enable_all || vm.count("sequential_forloop"))
-            {
-                seq_time_forloop = averageout_sequential_forloop(vector_size);
-            }
-        }
-        else if (vm["executor"].as<std::string>() == "forkjoin")
+        if (vm["executor"].as<std::string>() == "forkjoin")
         {
             pika::execution::experimental::fork_join_executor par;
 
@@ -413,8 +380,8 @@ int pika_main(pika::program_options::variables_map& vm)
         }
         else
         {
-            std::cerr << "unknown executor option (should be aggregated, "
-                         "forkjoin, scheduler or parallel (default)\n"
+            std::cerr << "unknown executor option (should be forkjoin, "
+                         "scheduler or parallel (default)\n"
                       << std::flush;
             return -1;
         }
@@ -538,8 +505,8 @@ int main(int argc, char* argv[])
             "number of overlapping task loops")
         ("csv_output", "print results in csv format")
         ("executor", value<std::string>()->default_value("parallel"),
-            "use specified executor (possible values: aggregated, "
-            "forkjoin, scheduler, or parallel (default)")
+            "use specified executor (possible values: forkjoin, "
+            "scheduler, or parallel (default)")
         ("disable_stealing", "disable thread stealing")
         ("fast_idle_mode", "enable fast idle mode")
 
