@@ -396,7 +396,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 return util::detail::algorithm_result<ExPolicy,
                     util::in_out_result<FwdIter1, FwdIter2>>::
                     get(execution::async_execute(policy.executor(),
-                        pika::util::deferred_call(
+                        pika::util::detail::deferred_call(
                             &pika::parallel::v1::detail::reduce_by_key_impl<
                                 ExPolicy&&, RanIter, RanIter2, FwdIter1,
                                 FwdIter2, Compare&&, Func&&>,

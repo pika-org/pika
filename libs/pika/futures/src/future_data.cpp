@@ -218,7 +218,7 @@ namespace pika { namespace lcos { namespace detail {
                 [&]() {
                     constexpr void (*p)(Callback &&) =
                         &future_data_base::run_on_completed;
-                    run_on_completed_on_new_thread(util::deferred_call(
+                    run_on_completed_on_new_thread(util::detail::deferred_call(
                         p, PIKA_FORWARD(Callback, on_completed)));
                 },
                 [&](std::exception_ptr ep) {

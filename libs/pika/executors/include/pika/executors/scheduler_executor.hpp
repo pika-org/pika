@@ -237,7 +237,7 @@ namespace pika { namespace execution { namespace experimental {
         void post(F&& f, Ts&&... ts)
         {
             start_detached(then(schedule(sched_),
-                pika::util::deferred_call(
+                pika::util::detail::deferred_call(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 
@@ -247,7 +247,7 @@ namespace pika { namespace execution { namespace experimental {
         {
             return pika::this_thread::experimental::sync_wait(
                 then(schedule(sched_),
-                    pika::util::deferred_call(
+                    pika::util::detail::deferred_call(
                         PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 
@@ -256,7 +256,7 @@ namespace pika { namespace execution { namespace experimental {
         decltype(auto) async_execute(F&& f, Ts&&... ts)
         {
             return make_future(then(schedule(sched_),
-                pika::util::deferred_call(
+                pika::util::detail::deferred_call(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 

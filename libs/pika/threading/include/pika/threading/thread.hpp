@@ -56,7 +56,7 @@ namespace pika {
             auto thrd_data = threads::detail::get_self_id_data();
             PIKA_ASSERT(thrd_data);
             start_thread(thrd_data->get_scheduler_base()->get_parent_pool(),
-                util::deferred_call(PIKA_FORWARD(F, f)));
+                util::detail::deferred_call(PIKA_FORWARD(F, f)));
         }
 
         template <typename F, typename... Ts>
@@ -65,21 +65,21 @@ namespace pika {
             auto thrd_data = threads::detail::get_self_id_data();
             PIKA_ASSERT(thrd_data);
             start_thread(thrd_data->get_scheduler_base()->get_parent_pool(),
-                util::deferred_call(
+                util::detail::deferred_call(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
         }
 
         template <typename F>
         thread(threads::thread_pool_base* pool, F&& f)
         {
-            start_thread(pool, util::deferred_call(PIKA_FORWARD(F, f)));
+            start_thread(pool, util::detail::deferred_call(PIKA_FORWARD(F, f)));
         }
 
         template <typename F, typename... Ts>
         thread(threads::thread_pool_base* pool, F&& f, Ts&&... vs)
         {
             start_thread(pool,
-                util::deferred_call(
+                util::detail::deferred_call(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...));
         }
 

@@ -60,7 +60,8 @@ namespace pika { namespace lcos { namespace detail {
 
         // Attach a continuation to this future which will
         // re-evaluate it and continue to the next argument (if any).
-        state->set_on_completed(util::deferred_call(PIKA_FORWARD(N, next)));
+        state->set_on_completed(
+            util::detail::deferred_call(PIKA_FORWARD(N, next)));
     }
 
     // Acquire a future range from the given begin and end iterator

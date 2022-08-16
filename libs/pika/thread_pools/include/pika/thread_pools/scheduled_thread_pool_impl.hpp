@@ -523,7 +523,7 @@ namespace pika { namespace threads { namespace detail {
 #endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
 
                 scheduling_callbacks callbacks(
-                    util::deferred_call(    //-V107
+                    util::detail::deferred_call(    //-V107
                         &policies::scheduler_base::idle_callback, sched_.get(),
                         thread_num),
                     nullptr, nullptr, max_background_threads_,
@@ -535,13 +535,16 @@ namespace pika { namespace threads { namespace detail {
                 {
 #if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
-                    callbacks.background_ = util::deferred_call(    //-V107
-                        network_background_callback_, global_thread_num,
-                        std::ref(counter_data.background_send_duration_),
-                        std::ref(counter_data.background_receive_duration_));
+                    callbacks.background_ =
+                        util::detail::deferred_call(    //-V107
+                            network_background_callback_, global_thread_num,
+                            std::ref(counter_data.background_send_duration_),
+                            std::ref(
+                                counter_data.background_receive_duration_));
 #else
-                    callbacks.background_ = util::deferred_call(    //-V107
-                        network_background_callback_, global_thread_num);
+                    callbacks.background_ =
+                        util::detail::deferred_call(    //-V107
+                            network_background_callback_, global_thread_num);
 #endif
                 }
 

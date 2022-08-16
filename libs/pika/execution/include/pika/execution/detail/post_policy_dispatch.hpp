@@ -37,7 +37,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         {
             threads::detail::thread_init_data data(
                 threads::detail::make_thread_function_nullary(
-                    pika::util::deferred_call(
+                    pika::util::detail::deferred_call(
                         PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(),
                 pika::execution::thread_schedule_hint(
@@ -121,7 +121,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
 
             threads::detail::thread_init_data data(
                 threads::detail::make_thread_function_nullary(
-                    pika::util::deferred_call(
+                    pika::util::detail::deferred_call(
                         PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(), policy.hint(), policy.stacksize(),
                 threads::detail::thread_schedule_state::pending);
@@ -152,7 +152,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
 
             threads::detail::thread_init_data data(
                 threads::detail::make_thread_function_nullary(
-                    pika::util::deferred_call(
+                    pika::util::detail::deferred_call(
                         PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)),
                 desc, policy.priority(), policy.hint(), policy.stacksize(),
                 threads::detail::thread_schedule_state::pending);

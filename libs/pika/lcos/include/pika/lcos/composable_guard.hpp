@@ -189,7 +189,7 @@ namespace pika { namespace lcos { namespace local {
     void run_guarded(guard& guard, F&& f, Args&&... args)
     {
         return run_guarded(guard,
-            detail::guard_function(util::deferred_call(
+            detail::guard_function(util::detail::deferred_call(
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...)));
     }
 
@@ -202,7 +202,7 @@ namespace pika { namespace lcos { namespace local {
     void run_guarded(guard_set& guards, F&& f, Args&&... args)
     {
         return run_guarded(guards,
-            detail::guard_function(util::deferred_call(
+            detail::guard_function(util::detail::deferred_call(
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...)));
     }
 }}}    // namespace pika::lcos::local

@@ -125,7 +125,7 @@ namespace pika { namespace parallel { namespace execution {
                         Ts...>::type;
 
                 lcos::local::futures_factory<result_type()> p(
-                    pika::util::deferred_call(
+                    pika::util::detail::deferred_call(
                         PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
                 gpx_deb.debug(debug::detail::str<>("triggering apply"),
@@ -192,7 +192,7 @@ namespace pika { namespace parallel { namespace execution {
                         Future, Ts...>::type;
 
                 lcos::local::futures_factory<result_type()> p(
-                    pika::util::deferred_call(PIKA_FORWARD(F, f),
+                    pika::util::detail::deferred_call(PIKA_FORWARD(F, f),
                         PIKA_FORWARD(Future, predecessor),
                         PIKA_FORWARD(Ts, ts)...));
 
@@ -488,7 +488,7 @@ namespace pika { namespace parallel { namespace execution {
 
             // forward the task execution on to the real internal executor
             lcos::local::futures_factory<result_type()> p(
-                pika::util::deferred_call(PIKA_FORWARD(F, f),
+                pika::util::detail::deferred_call(PIKA_FORWARD(F, f),
                     std::forward<std::tuple<InnerFutures...>>(predecessor)));
 
             if (hp_sync_ && priority_ == pika::execution::thread_priority::high)
@@ -569,7 +569,7 @@ namespace pika { namespace parallel { namespace execution {
                         Ts...>::type;
 
                 lcos::local::futures_factory<result_type()> p(
-                    pika::util::deferred_call(
+                    pika::util::detail::deferred_call(
                         PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
                 p.apply(guided_exec_.pool_, "guided async",

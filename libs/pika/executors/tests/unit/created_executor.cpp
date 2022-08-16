@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 
-using pika::util::deferred_call;
+using pika::util::detail::deferred_call;
 using iter = std::vector<int>::iterator;
 
 ////////////////////////////////////////////////////////////////////////////////

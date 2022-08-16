@@ -19,7 +19,7 @@ their arguments.
 * :cpp:func:`pika::util::detail::bind`
 * :cpp:func:`pika::util::detail::bind_back`
 * :cpp:func:`pika::util::detail::bind_front`
-* :cpp:func:`pika::util::deferred_call`
+* :cpp:func:`pika::util::detail::deferred_call`
 * :cpp:func:`pika::util::invoke`
 * :cpp:func:`pika::util::invoke_fused`
 * :cpp:func:`pika::util::one_shot`

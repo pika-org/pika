@@ -63,7 +63,7 @@ namespace pika { namespace detail {
     {
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(F&& f, Ts&&... ts)
         {

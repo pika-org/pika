@@ -43,8 +43,9 @@ namespace pika { namespace detail {
                     launch::sync, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
             }
 
-            lcos::local::futures_factory<result_type()> p(util::deferred_call(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(
+                util::detail::deferred_call(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
             if (pika::detail::has_async_policy(policy))
             {

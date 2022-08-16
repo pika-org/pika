@@ -144,7 +144,7 @@ int pika_main(variables_map& vm)
     {
         pika::threads::detail::thread_init_data data(
             pika::threads::detail::make_thread_function_nullary(
-                pika::util::deferred_call(&test_dummy_thread, futures)),
+                pika::util::detail::deferred_call(&test_dummy_thread, futures)),
             "test_dummy_thread");
         thread_id_ref_type thread_id = register_thread(data);
         PIKA_TEST_NEQ(thread_id, pika::threads::detail::invalid_thread_id);

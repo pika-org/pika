@@ -28,7 +28,7 @@ namespace pika { namespace detail {
     {
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static typename std::enable_if<
-            traits::detail::is_deferred_invocable<F, Ts...>::value, bool>::type
+            pika::detail::is_deferred_invocable<F, Ts...>::value, bool>::type
         call(F&& f, Ts&&... ts)
         {
             execution::parallel_executor exec;

@@ -246,10 +246,13 @@ namespace pika {
                         // execute_deferred might have made the future ready
                         if (!shared_state->is_ready())
                         {
-                            shared_state->set_on_completed(util::deferred_call(
-                                &detail::when_any<Sequence>::on_future_ready,
-                                when_.shared_from_this(), idx_,
-                                pika::execution_base::this_thread::agent()));
+                            shared_state->set_on_completed(
+                                util::detail::deferred_call(
+                                    &detail::when_any<
+                                        Sequence>::on_future_ready,
+                                    when_.shared_from_this(), idx_,
+                                    pika::execution_base::this_thread::
+                                        agent()));
                             ++idx_;
                             return;
                         }
