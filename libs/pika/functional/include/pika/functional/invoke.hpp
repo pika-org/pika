@@ -13,8 +13,7 @@
 
 #include <utility>
 
-namespace pika { namespace util {
-
+namespace pika::util {
 #define PIKA_INVOKE_R(R, F, ...)                                               \
     (::pika::util::void_guard<R>(), PIKA_INVOKE(F, __VA_ARGS__))
 
@@ -76,4 +75,4 @@ namespace pika { namespace util {
             }
         };
     }    // namespace functional
-}}       // namespace pika::util
+}    // namespace pika::util

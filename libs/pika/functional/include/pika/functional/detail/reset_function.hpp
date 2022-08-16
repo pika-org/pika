@@ -9,7 +9,7 @@
 #include <pika/functional/function.hpp>
 #include <pika/functional/unique_function.hpp>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     template <typename Sig>
     inline void reset_function(pika::util::function<Sig>& f)
     {
@@ -27,4 +27,4 @@ namespace pika { namespace util { namespace detail {
     {
         f = Function();
     }
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

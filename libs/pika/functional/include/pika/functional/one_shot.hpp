@@ -18,8 +18,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::util {
     namespace detail {
         template <typename F>
         class one_shot_wrapper    //-V690
@@ -108,7 +107,7 @@ namespace pika { namespace util {
 
         return result_type(PIKA_FORWARD(F, f));
     }
-}}    // namespace pika::util
+}    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {

@@ -23,7 +23,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util {
     namespace detail {
         template <std::size_t I>
         struct bind_eval_placeholder
@@ -214,7 +214,7 @@ namespace pika { namespace util {
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }
-}}    // namespace pika::util
+}    // namespace pika::util
 
 namespace pika::detail {
     template <typename F, typename... Ts>

@@ -20,9 +20,7 @@
 #include <type_traits>
 #include <utility>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace traits { namespace detail {
-
+namespace pika::traits::detail {
     template <typename F, typename... Ts>
     struct is_deferred_invocable
       : pika::is_invocable<util::decay_unwrap_t<F>, util::decay_unwrap_t<Ts>...>
@@ -32,13 +30,10 @@ namespace pika { namespace traits { namespace detail {
     template <typename F, typename... Ts>
     inline constexpr bool is_deferred_invocable_v =
         is_deferred_invocable<F, Ts...>::value;
+}    // namespace pika::traits::detail
 
-}}}    // namespace pika::traits::detail
-
-namespace pika { namespace util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::util {
     namespace detail {
-
         template <typename F, typename... Ts>
         struct invoke_deferred_result
           : util::invoke_result<util::decay_unwrap_t<F>,
@@ -143,7 +138,7 @@ namespace pika { namespace util {
 
         return PIKA_FORWARD(F, f);
     }
-}}    // namespace pika::util
+}    // namespace pika::util
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 ///////////////////////////////////////////////////////////////////////////////

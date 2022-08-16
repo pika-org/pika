@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util {
     namespace detail {
         template <typename F, typename Ts, typename... Us>
         struct invoke_bound_front_result;
@@ -165,7 +165,7 @@ namespace pika { namespace util {
     {
         return PIKA_FORWARD(F, f);
     }
-}}    // namespace pika::util
+}    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {

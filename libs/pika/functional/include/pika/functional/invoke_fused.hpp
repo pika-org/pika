@@ -17,8 +17,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::util {
     namespace detail {
         template <typename Tuple>
         struct fused_index_pack
@@ -137,4 +136,4 @@ namespace pika { namespace util {
         };
     }    // namespace functional
     /// \endcond
-}}    // namespace pika::util
+}    // namespace pika::util

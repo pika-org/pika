@@ -9,10 +9,8 @@
 #include <tuple>
 #include <type_traits>
 
-namespace pika { namespace util {
+namespace pika::util {
     namespace detail {
-
-        ///////////////////////////////////////////////////////////////////////
         template <typename Tuple>
         struct tuple_first_argument;
 
@@ -85,4 +83,4 @@ namespace pika { namespace util {
       : detail::lambda_first_argument<decltype(&F::operator())>
     {
     };
-}}    // namespace pika::util
+}    // namespace pika::util

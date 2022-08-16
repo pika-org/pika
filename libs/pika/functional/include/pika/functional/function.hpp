@@ -18,8 +18,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::util {
     template <typename Sig>
     class function;
 
@@ -67,7 +66,7 @@ namespace pika { namespace util {
         using base_type::reset;
         using base_type::target;
     };
-}}    // namespace pika::util
+}    // namespace pika::util
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 ///////////////////////////////////////////////////////////////////////////////

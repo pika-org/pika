@@ -25,7 +25,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     static const std::size_t function_storage_size = 3 * sizeof(void*);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -248,4 +248,4 @@ namespace pika { namespace util { namespace detail {
         using base_type::storage;
         using base_type::vptr;
     };
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

@@ -15,7 +15,7 @@
 
 #include <type_traits>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     struct function_base_vtable
       : vtable
       , copyable_vtable
@@ -80,4 +80,4 @@ namespace pika { namespace util { namespace detail {
 
     template <typename Sig>
     using unique_function_vtable = function_vtable<Sig, false>;
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

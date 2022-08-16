@@ -13,8 +13,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace pika { namespace util { namespace detail {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::util::detail {
     template <typename T>
     struct construct_vtable
     {
@@ -91,4 +90,4 @@ namespace pika { namespace util { namespace detail {
         {
         }
     };
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

@@ -19,7 +19,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     struct empty_function;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -112,4 +112,4 @@ namespace pika { namespace util { namespace detail {
         {
         }
     };
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail
