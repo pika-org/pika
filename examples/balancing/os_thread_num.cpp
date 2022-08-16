@@ -82,8 +82,8 @@ int pika_main(variables_map& vm)
             {
                 thread_init_data data(
                     pika::threads::detail::make_thread_function_nullary(
-                        pika::util::bind(&get_os_thread_num, std::ref(barr),
-                            std::ref(os_threads))),
+                        pika::util::detail::bind(&get_os_thread_num,
+                            std::ref(barr), std::ref(os_threads))),
                     "get_os_thread_num",
                     pika::execution::thread_priority::normal,
                     pika::execution::thread_schedule_hint(0));

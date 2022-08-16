@@ -43,24 +43,25 @@ int main()
     X x = {0};
     X* px = &x;
 
-    pika::util::bind(&X::m, placeholders::_1)(px) = 42;
+    pika::util::detail::bind(&X::m, placeholders::_1)(px) = 42;
 
     PIKA_TEST_EQ(x.m, 42);
 
-    pika::util::bind(&X::m, std::ref(x))() = 17041;
+    pika::util::detail::bind(&X::m, std::ref(x))() = 17041;
 
     PIKA_TEST_EQ(x.m, 17041);
 
     X const* pcx = &x;
 
-    PIKA_TEST_EQ(pika::util::bind(&X::m, placeholders::_1)(pcx), 17041L);
-    PIKA_TEST_EQ(pika::util::bind(&X::m, pcx)(), 17041L);
+    PIKA_TEST_EQ(
+        pika::util::detail::bind(&X::m, placeholders::_1)(pcx), 17041L);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, pcx)(), 17041L);
 
     Y y = {"test"};
     std::string v("test");
 
-    PIKA_TEST_EQ(pika::util::bind(&Y::m, &y)(), v);
-    PIKA_TEST_EQ(pika::util::bind(&Y::m, &y)(), v);
+    PIKA_TEST_EQ(pika::util::detail::bind(&Y::m, &y)(), v);
+    PIKA_TEST_EQ(pika::util::detail::bind(&Y::m, &y)(), v);
 
     return pika::util::report_errors();
 }

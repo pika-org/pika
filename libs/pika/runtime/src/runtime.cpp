@@ -1330,7 +1330,7 @@ namespace pika {
                 "pika thread";
 
         threads::detail::thread_init_data data(
-            util::bind(
+            util::detail::bind(
                 &runtime::run_helper, this, func, std::ref(result_), true),
             "run_helper", execution::thread_priority::normal,
             execution::thread_schedule_hint(0),
@@ -1421,8 +1421,8 @@ namespace pika {
         std::condition_variable cond;
         bool running = false;
 
-        std::thread t(util::bind(&runtime::wait_helper, this, std::ref(mtx),
-            std::ref(cond), std::ref(running)));
+        std::thread t(util::detail::bind(&runtime::wait_helper, this,
+            std::ref(mtx), std::ref(cond), std::ref(running)));
 
         // wait for the thread to run
         {
@@ -1467,8 +1467,8 @@ namespace pika {
             std::condition_variable cond;
             std::unique_lock<std::mutex> l(mtx);
 
-            std::thread t(util::bind(&runtime::stop_helper, this, blocking,
-                std::ref(cond), std::ref(mtx)));
+            std::thread t(util::detail::bind(&runtime::stop_helper, this,
+                blocking, std::ref(cond), std::ref(mtx)));
             cond.wait(l);
 
             t.join();
@@ -1675,13 +1675,13 @@ namespace pika {
         notification_policy_type notifier;
 
         notifier.add_on_start_thread_callback(
-            util::bind(&runtime::init_tss_helper, this, prefix, type, _1, _2,
-                _3, _4, false));
+            util::detail::bind(&runtime::init_tss_helper, this, prefix, type,
+                _1, _2, _3, _4, false));
         notifier.add_on_stop_thread_callback(
-            util::bind(&runtime::deinit_tss_helper, this, prefix, _1));
-        notifier.set_on_error_callback(
-            util::bind(static_cast<report_error_t>(&runtime::report_error),
-                this, _1, _2, true));
+            util::detail::bind(&runtime::deinit_tss_helper, this, prefix, _1));
+        notifier.set_on_error_callback(util::detail::bind(
+            static_cast<report_error_t>(&runtime::report_error), this, _1, _2,
+            true));
 
         return notifier;
     }

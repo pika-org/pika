@@ -85,7 +85,7 @@ void test_bulk_sync()
 
     executor exec;
     pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42);
+        exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42);
     pika::parallel::execution::bulk_sync_execute(exec, &bulk_test, v, tid, 42);
 }
 
@@ -104,7 +104,7 @@ void test_bulk_async()
     executor exec;
     std::vector<pika::shared_future<void>> futs =
         pika::parallel::execution::bulk_async_execute(
-            exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42);
+            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42);
     pika::when_all(futs).get();
 
     futs = pika::parallel::execution::bulk_async_execute(

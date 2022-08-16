@@ -19,8 +19,6 @@
 
 namespace pika {
     using pika::detail::is_bind_expression;
-    using pika::util::bind_back;
-    using pika::util::bind_front;
     using pika::util::function;
     using pika::util::invoke;
     using pika::util::invoke_fused;

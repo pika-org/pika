@@ -520,7 +520,7 @@ void test_wait_callback_with_timed_wait()
     pika::shared_future<int> fi = pi.get_future();
 
     pika::shared_future<void> fv =
-        fi.then(pika::util::bind(&do_nothing_callback, std::ref(pi)));
+        fi.then(pika::util::detail::bind(&do_nothing_callback, std::ref(pi)));
 
     int state = int(fv.wait_for(std::chrono::milliseconds(100)));
     PIKA_TEST_EQ(state, int(pika::future_status::timeout));

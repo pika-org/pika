@@ -232,7 +232,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 typename std::iterator_traits<Iter>::difference_type ret = 0;
                 util::loop_n<execution_policy_type>(part_begin, part_size,
-                    pika::util::bind_back(*this, std::ref(ret)));
+                    pika::util::detail::bind_back(*this, std::ref(ret)));
                 return ret;
             }
 
@@ -269,7 +269,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 typename std::iterator_traits<InIterB>::difference_type ret = 0;
 
                 util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    pika::util::bind_back(PIKA_MOVE(f1), std::ref(ret)));
+                    pika::util::detail::bind_back(
+                        PIKA_MOVE(f1), std::ref(ret)));
 
                 return ret;
             }
@@ -331,7 +332,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 typename std::iterator_traits<InIterB>::difference_type ret = 0;
 
                 util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    pika::util::bind_back(PIKA_MOVE(f1), std::ref(ret)));
+                    pika::util::detail::bind_back(
+                        PIKA_MOVE(f1), std::ref(ret)));
 
                 return ret;
             }

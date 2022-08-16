@@ -71,14 +71,14 @@ namespace pika { namespace threads {
 
         // Add callbacks local to threadmanager.
         notifier.add_on_start_thread_callback(
-            util::bind(&threadmanager::init_tss, this, _1));
+            util::detail::bind(&threadmanager::init_tss, this, _1));
         notifier.add_on_stop_thread_callback(
-            util::bind(&threadmanager::deinit_tss, this));
+            util::detail::bind(&threadmanager::deinit_tss, this));
 
         auto& rp = pika::resource::get_partitioner();
-        notifier.add_on_start_thread_callback(util::bind(
+        notifier.add_on_start_thread_callback(util::detail::bind(
             &resource::detail::partitioner::assign_pu, std::ref(rp), _3, _1));
-        notifier.add_on_stop_thread_callback(util::bind(
+        notifier.add_on_stop_thread_callback(util::detail::bind(
             &resource::detail::partitioner::unassign_pu, std::ref(rp), _3, _1));
     }
 

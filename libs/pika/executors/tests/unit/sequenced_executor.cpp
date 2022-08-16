@@ -82,7 +82,7 @@ void test_bulk_sync()
 
     pika::execution::sequenced_executor exec;
     pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42);
+        exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42);
     pika::parallel::execution::bulk_sync_execute(exec, &bulk_test, v, tid, 42);
 }
 
@@ -115,7 +115,7 @@ void test_bulk_then()
 
     executor exec;
     pika::parallel::execution::bulk_then_execute(
-        exec, pika::util::bind(&bulk_test_f, _1, _2, tid, _3), v, f, 42)
+        exec, pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), v, f, 42)
         .get();
     pika::parallel::execution::bulk_then_execute(
         exec, &bulk_test_f, v, f, tid, 42)
@@ -135,8 +135,9 @@ void test_bulk_async()
     using std::placeholders::_2;
 
     executor exec;
-    pika::when_all(pika::parallel::execution::bulk_async_execute(
-                       exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42))
+    pika::when_all(
+        pika::parallel::execution::bulk_async_execute(
+            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
                        exec, &bulk_test, v, tid, 42))

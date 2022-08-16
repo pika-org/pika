@@ -129,7 +129,7 @@ void test_bulk_sync_void(Executor&& exec)
     executed = false;
 
     pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&bulk_test, _1, _2), 107, 42);
+        exec, pika::util::detail::bind(&bulk_test, _1, _2), 107, 42);
 
     PIKA_TEST(executed);
 
@@ -149,7 +149,7 @@ void test_bulk_async_void(Executor&& exec)
     executed = false;
 
     auto result = pika::parallel::execution::bulk_async_execute(
-        exec, pika::util::bind(&bulk_test, _1, _2), 107, 42);
+        exec, pika::util::detail::bind(&bulk_test, _1, _2), 107, 42);
     pika::when_all(std::move(result)).get();
 
     PIKA_TEST(executed);
@@ -173,7 +173,7 @@ void test_bulk_async(Executor&& exec)
     int const n = 107;
 
     auto fut_result = pika::parallel::execution::bulk_async_execute(
-        exec, pika::util::bind(&bulk_test, _1, _2), n, 42);
+        exec, pika::util::detail::bind(&bulk_test, _1, _2), n, 42);
     auto result = pika::when_all(std::move(fut_result)).get();
 
     for (int i = 0; i < n; ++i)
@@ -222,8 +222,8 @@ void test_bulk_then(Executor&& exec)
     {
         executed = false;
 
-        auto result = pika::parallel::execution::bulk_then_execute(
-            exec, pika::util::bind(&bulk_test_f, _1, _2, _3), 107, f, 42)
+        auto result = pika::parallel::execution::bulk_then_execute(exec,
+            pika::util::detail::bind(&bulk_test_f, _1, _2, _3), 107, f, 42)
                           .get();
 
         PIKA_TEST(executed);
@@ -283,8 +283,8 @@ void test_bulk_then_void(Executor&& exec)
 
     executed = false;
 
-    pika::parallel::execution::bulk_then_execute(
-        exec, pika::util::bind(&bulk_test_f_void, _1, _2, _3), 107, f, 42)
+    pika::parallel::execution::bulk_then_execute(exec,
+        pika::util::detail::bind(&bulk_test_f_void, _1, _2, _3), 107, f, 42)
         .get();
 
     PIKA_TEST(executed);

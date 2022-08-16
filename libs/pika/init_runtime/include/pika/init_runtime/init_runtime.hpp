@@ -144,7 +144,7 @@ namespace pika {
         const char* const* argv, init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::bind_back(pika::detail::init_helper, f);
+            pika::util::detail::bind_back(pika::detail::init_helper, f);
         return detail::init_start_impl(
             PIKA_MOVE(main_f), argc, argv, params, true);
     }
@@ -153,7 +153,7 @@ namespace pika {
         init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::bind(f);
+            pika::util::detail::bind(f);
         return detail::init_start_impl(
             PIKA_MOVE(main_f), argc, argv, params, true);
     }
@@ -178,7 +178,7 @@ namespace pika {
         const char* const* argv, init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::bind_back(pika::detail::init_helper, f);
+            pika::util::detail::bind_back(pika::detail::init_helper, f);
         return 0 ==
             detail::init_start_impl(
                 PIKA_MOVE(main_f), argc, argv, params, false);
@@ -188,7 +188,7 @@ namespace pika {
         init_params const& params = init_params())
     {
         util::function<int(pika::program_options::variables_map&)> main_f =
-            pika::util::bind(f);
+            pika::util::detail::bind(f);
         return 0 ==
             detail::init_start_impl(
                 PIKA_MOVE(main_f), argc, argv, params, false);

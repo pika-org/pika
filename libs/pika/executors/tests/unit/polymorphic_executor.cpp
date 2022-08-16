@@ -81,7 +81,7 @@ void test_bulk_sync(executor const& exec)
 
     count = 0;
     pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&bulk_test, _1, _2), v, 42);
+        exec, pika::util::detail::bind(&bulk_test, _1, _2), v, 42);
     PIKA_TEST(count == v.size());
 
     count = 0;
@@ -99,8 +99,8 @@ void test_bulk_async(executor const& exec)
     using std::placeholders::_2;
 
     count = 0;
-    pika::when_all(pika::parallel::execution::bulk_async_execute(
-                       exec, pika::util::bind(&bulk_test, _1, _2), v, 42))
+    pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
+                       pika::util::detail::bind(&bulk_test, _1, _2), v, 42))
         .get();
     PIKA_TEST(count == v.size());
 
@@ -137,7 +137,7 @@ void test_bulk_then(executor const& exec)
 
     count = 0;
     pika::parallel::execution::bulk_then_execute(
-        exec, pika::util::bind(&bulk_test_f, _1, _2, _3), v, f, 42)
+        exec, pika::util::detail::bind(&bulk_test_f, _1, _2, _3), v, f, 42)
         .get();
     PIKA_TEST(count == v.size());
 

@@ -99,7 +99,7 @@ namespace jacobi_smp {
                 (*deps_dst)[block] =
                     pika::when_all(std::move(trigger))
                         .then(pika::launch::async,
-                            pika::util::bind(jacobi_kernel_wrap,
+                            pika::util::detail::bind(jacobi_kernel_wrap,
                                 block_ranges[block], std::cref(A),
                                 std::ref(*dst), std::cref(*src), std::cref(b)));
             }

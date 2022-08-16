@@ -117,7 +117,7 @@ void fibonacci_impl(std::shared_ptr<fibonacci_frame> const& frame_)
         frame->state_ = 1;
         if (!frame->result_.valid())
             frame->result_ = frame->result_promise_.get_future();
-        frame->lhs_.then(pika::util::bind(&fibonacci_impl, frame_));
+        frame->lhs_.then(pika::util::detail::bind(&fibonacci_impl, frame_));
         return;
     }
 
@@ -129,7 +129,7 @@ L1:
         frame->state_ = 2;
         if (!frame->result_.valid())
             frame->result_ = frame->result_promise_.get_future();
-        frame->rhs_.then(pika::util::bind(&fibonacci_impl, frame_));
+        frame->rhs_.then(pika::util::detail::bind(&fibonacci_impl, frame_));
         return;
     }
 

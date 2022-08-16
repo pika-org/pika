@@ -49,7 +49,7 @@ void test_bulk_sync(ExecutorArgs&&... args)
 
     fork_join_executor exec{std::forward<ExecutorArgs>(args)...};
     pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&bulk_test, _1, _2), v, 42);
+        exec, pika::util::detail::bind(&bulk_test, _1, _2), v, 42);
     PIKA_TEST_EQ(count.load(), n);
 
     pika::parallel::execution::bulk_sync_execute(exec, &bulk_test, v, 42);
@@ -70,8 +70,8 @@ void test_bulk_async(ExecutorArgs&&... args)
     using std::placeholders::_2;
 
     fork_join_executor exec{std::forward<ExecutorArgs>(args)...};
-    pika::when_all(pika::parallel::execution::bulk_async_execute(
-                       exec, pika::util::bind(&bulk_test, _1, _2), v, 42))
+    pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
+                       pika::util::detail::bind(&bulk_test, _1, _2), v, 42))
         .get();
     PIKA_TEST_EQ(count.load(), n);
 

@@ -21,136 +21,132 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::util {
-    namespace detail {
-        template <typename F, typename Ts, typename... Us>
-        struct invoke_bound_back_result;
+namespace pika::util::detail {
+    template <typename F, typename Ts, typename... Us>
+    struct invoke_bound_back_result;
 
-        template <typename F, typename... Ts, typename... Us>
-        struct invoke_bound_back_result<F, util::pack<Ts...>, Us...>
-          : util::invoke_result<F, Us..., Ts...>
+    template <typename F, typename... Ts, typename... Us>
+    struct invoke_bound_back_result<F, util::pack<Ts...>, Us...>
+      : util::invoke_result<F, Us..., Ts...>
+    {
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename F, typename Is, typename... Ts>
+    class bound_back;
+
+    template <typename F, std::size_t... Is, typename... Ts>
+    class bound_back<F, index_pack<Is...>, Ts...>
+    {
+    public:
+        template <typename F_, typename... Ts_,
+            typename = typename std::enable_if<
+                std::is_constructible<F, F_>::value>::type>
+        constexpr explicit bound_back(F_&& f, Ts_&&... vs)
+          : _f(PIKA_FORWARD(F_, f))
+          , _args(std::piecewise_construct, PIKA_FORWARD(Ts_, vs)...)
         {
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename F, typename Is, typename... Ts>
-        class bound_back;
-
-        template <typename F, std::size_t... Is, typename... Ts>
-        class bound_back<F, index_pack<Is...>, Ts...>
-        {
-        public:
-            template <typename F_, typename... Ts_,
-                typename = typename std::enable_if<
-                    std::is_constructible<F, F_>::value>::type>
-            constexpr explicit bound_back(F_&& f, Ts_&&... vs)
-              : _f(PIKA_FORWARD(F_, f))
-              , _args(std::piecewise_construct, PIKA_FORWARD(Ts_, vs)...)
-            {
-            }
+        }
 
 #if !defined(__NVCC__) && !defined(__CUDACC__)
-            bound_back(bound_back const&) = default;
-            bound_back(bound_back&&) = default;
+        bound_back(bound_back const&) = default;
+        bound_back(bound_back&&) = default;
 #else
-            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-            constexpr PIKA_HOST_DEVICE bound_back(bound_back const& other)
-              : _f(other._f)
-              , _args(other._args)
-            {
-            }
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+        constexpr PIKA_HOST_DEVICE bound_back(bound_back const& other)
+          : _f(other._f)
+          , _args(other._args)
+        {
+        }
 
-            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-            constexpr PIKA_HOST_DEVICE bound_back(bound_back&& other)
-              : _f(PIKA_MOVE(other._f))
-              , _args(PIKA_MOVE(other._args))
-            {
-            }
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+        constexpr PIKA_HOST_DEVICE bound_back(bound_back&& other)
+          : _f(PIKA_MOVE(other._f))
+          , _args(PIKA_MOVE(other._args))
+        {
+        }
 #endif
 
-            bound_back& operator=(bound_back const&) = delete;
+        bound_back& operator=(bound_back const&) = delete;
 
-            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-            template <typename... Us>
-            constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&,
-                util::pack<Ts&...>, Us&&...>::type
-            operator()(Us&&... vs) &
-            {
-                return PIKA_INVOKE(
-                    _f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
-            }
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+        template <typename... Us>
+        constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&,
+            util::pack<Ts&...>, Us&&...>::type
+        operator()(Us&&... vs) &
+        {
+            return PIKA_INVOKE(
+                _f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
+        }
 
-            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-            template <typename... Us>
-            constexpr PIKA_HOST_DEVICE
-                typename invoke_bound_back_result<F const&,
-                    util::pack<Ts const&...>, Us&&...>::type
-                operator()(Us&&... vs) const&
-            {
-                return PIKA_INVOKE(
-                    _f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
-            }
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+        template <typename... Us>
+        constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F const&,
+            util::pack<Ts const&...>, Us&&...>::type
+        operator()(Us&&... vs) const&
+        {
+            return PIKA_INVOKE(
+                _f, PIKA_FORWARD(Us, vs)..., _args.template get<Is>()...);
+        }
 
-            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-            template <typename... Us>
-            constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&&,
-                util::pack<Ts&&...>, Us&&...>::type
-            operator()(Us&&... vs) &&
-            {
-                return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)...,
-                    PIKA_MOVE(_args).template get<Is>()...);
-            }
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+        template <typename... Us>
+        constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&&,
+            util::pack<Ts&&...>, Us&&...>::type
+        operator()(Us&&... vs) &&
+        {
+            return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)...,
+                PIKA_MOVE(_args).template get<Is>()...);
+        }
 
-            PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-            template <typename... Us>
-            constexpr PIKA_HOST_DEVICE
-                typename invoke_bound_back_result<F const&&,
-                    util::pack<Ts const&&...>, Us&&...>::type
-                operator()(Us&&... vs) const&&
-            {
-                return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)...,
-                    PIKA_MOVE(_args).template get<Is>()...);
-            }
+        PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+        template <typename... Us>
+        constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F const&&,
+            util::pack<Ts const&&...>, Us&&...>::type
+        operator()(Us&&... vs) const&&
+        {
+            return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)...,
+                PIKA_MOVE(_args).template get<Is>()...);
+        }
 
-            constexpr std::size_t get_function_address() const
-            {
-                return pika::detail::get_function_address<F>::call(_f);
-            }
+        constexpr std::size_t get_function_address() const
+        {
+            return pika::detail::get_function_address<F>::call(_f);
+        }
 
-            constexpr char const* get_function_annotation() const
-            {
+        constexpr char const* get_function_annotation() const
+        {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-                return pika::detail::get_function_annotation<F>::call(_f);
+            return pika::detail::get_function_annotation<F>::call(_f);
 #else
-                return nullptr;
+            return nullptr;
 #endif
-            }
+        }
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-            util::itt::string_handle get_function_annotation_itt() const
-            {
+        util::itt::string_handle get_function_annotation_itt() const
+        {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-                return pika::detail::get_function_annotation_itt<F>::call(_f);
+            return pika::detail::get_function_annotation_itt<F>::call(_f);
 #else
-                static util::itt::string_handle sh("bound_back");
-                return sh;
+            static util::itt::string_handle sh("bound_back");
+            return sh;
 #endif
-            }
+        }
 #endif
 
-        private:
-            F _f;
-            util::detail::member_pack_for<Ts...> _args;
-        };
-    }    // namespace detail
+    private:
+        F _f;
+        util::detail::member_pack_for<Ts...> _args;
+    };
 
     template <typename F, typename... Ts>
-    constexpr detail::bound_back<typename std::decay<F>::type,
+    constexpr bound_back<typename std::decay<F>::type,
         typename util::make_index_pack<sizeof...(Ts)>::type,
         typename util::decay_unwrap<Ts>::type...>
     bind_back(F&& f, Ts&&... vs)
     {
-        using result_type = detail::bound_back<typename std::decay<F>::type,
+        using result_type = bound_back<typename std::decay<F>::type,
             typename util::make_index_pack<sizeof...(Ts)>::type,
             typename util::decay_unwrap<Ts>::type...>;
 
@@ -163,11 +159,9 @@ namespace pika::util {
     {
         return PIKA_FORWARD(F, f);
     }
-}    // namespace pika::util
+}    // namespace pika::util::detail
 
-///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {
-    ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
     template <typename F, typename... Ts>
     struct get_function_address<util::detail::bound_back<F, Ts...>>

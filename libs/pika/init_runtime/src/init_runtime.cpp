@@ -300,7 +300,7 @@ namespace pika {
 
             // Run this runtime instance using the given function f.
             if (!f.empty())
-                return rt.run(util::bind_front(f, vm));
+                return rt.run(util::detail::bind_front(f, vm));
 
             // Run this runtime instance without an pika_main
             return rt.run();
@@ -320,7 +320,7 @@ namespace pika {
             if (!f.empty())
             {
                 // Run this runtime instance using the given function f.
-                return rt.start(util::bind_front(f, vm));
+                return rt.start(util::detail::bind_front(f, vm));
             }
 
             // Run this runtime instance without an pika_main

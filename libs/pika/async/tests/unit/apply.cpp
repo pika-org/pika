@@ -60,8 +60,8 @@ int pika_main()
         using std::placeholders::_1;
 
         pika::apply(&increment, 1);
-        pika::apply(pika::util::bind(&increment, 1));
-        pika::apply(pika::util::bind(&increment, _1), 1);
+        pika::apply(pika::util::detail::bind(&increment, 1));
+        pika::apply(pika::util::detail::bind(&increment, _1), 1);
     }
 
     {
@@ -71,8 +71,8 @@ int pika_main()
         using std::placeholders::_1;
 
         pika::apply(&increment_with_future, f);
-        pika::apply(pika::util::bind(&increment_with_future, f));
-        pika::apply(pika::util::bind(&increment_with_future, _1), f);
+        pika::apply(pika::util::detail::bind(&increment_with_future, f));
+        pika::apply(pika::util::detail::bind(&increment_with_future, _1), f);
 
         p.set_value(1);
     }
@@ -81,8 +81,8 @@ int pika_main()
         using std::placeholders::_1;
 
         pika::apply(increment, 1);
-        pika::apply(pika::util::bind(increment, 1));
-        pika::apply(pika::util::bind(increment, _1), 1);
+        pika::apply(pika::util::detail::bind(increment, 1));
+        pika::apply(pika::util::detail::bind(increment, _1), 1);
     }
 
     {
@@ -91,8 +91,9 @@ int pika_main()
         using std::placeholders::_1;
 
         pika::apply(&increment_type::call, inc, 1);
-        pika::apply(pika::util::bind(&increment_type::call, inc, 1));
-        pika::apply(pika::util::bind(&increment_type::call, inc, _1), 1);
+        pika::apply(pika::util::detail::bind(&increment_type::call, inc, 1));
+        pika::apply(
+            pika::util::detail::bind(&increment_type::call, inc, _1), 1);
     }
 
     {
@@ -101,22 +102,22 @@ int pika_main()
         using std::placeholders::_1;
 
         pika::apply(obj, 1);
-        pika::apply(pika::util::bind(obj, 1));
-        pika::apply(pika::util::bind(obj, _1), 1);
+        pika::apply(pika::util::detail::bind(obj, 1));
+        pika::apply(pika::util::detail::bind(obj, _1), 1);
     }
 
     {
         using std::placeholders::_1;
 
         pika::apply(increment_lambda, 1);
-        pika::apply(pika::util::bind(increment_lambda, 1));
-        pika::apply(pika::util::bind(increment_lambda, _1), 1);
+        pika::apply(pika::util::detail::bind(increment_lambda, 1));
+        pika::apply(pika::util::detail::bind(increment_lambda, _1), 1);
     }
 
     pika::lcos::local::no_mutex result_mutex;
     std::unique_lock<pika::lcos::local::no_mutex> l(result_mutex);
     result_cv.wait_for(l, std::chrono::seconds(1),
-        pika::util::bind(
+        pika::util::detail::bind(
             std::equal_to<std::int32_t>(), std::ref(accumulator), 18));
 
     PIKA_TEST_EQ(accumulator.load(), 18);

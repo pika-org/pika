@@ -84,7 +84,7 @@ struct non_copyable_sender
             operation_state& os) noexcept
         {
             pika::util::invoke_fused(
-                pika::util::bind_front(
+                pika::util::detail::bind_front(
                     pika::execution::experimental::set_value, std::move(os.r)),
                 std::move(os.ts));
         };
@@ -145,7 +145,7 @@ struct sender
             operation_state& os) noexcept
         {
             pika::util::invoke_fused(
-                pika::util::bind_front(
+                pika::util::detail::bind_front(
                     pika::execution::experimental::set_value, std::move(os.r)),
                 std::move(os.ts));
         };

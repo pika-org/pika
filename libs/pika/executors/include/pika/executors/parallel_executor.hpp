@@ -274,7 +274,7 @@ namespace pika { namespace execution {
                 typename pika::util::detail::invoke_deferred_result<F, Future,
                     Ts...>::type;
 
-            auto&& func = pika::util::one_shot(pika::util::bind_back(
+            auto&& func = pika::util::one_shot(pika::util::detail::bind_back(
                 pika::annotated_function(PIKA_FORWARD(F, f), annotation_),
                 PIKA_FORWARD(Ts, ts)...));
 

@@ -177,7 +177,7 @@ namespace pika { namespace lcos { namespace local {
                 conditional_trigger c;
                 manage_condition cond(*this, c);
 
-                pika::future<void> f = cond.get_future(util::bind(
+                pika::future<void> f = cond.get_future(util::detail::bind(
                     &base_trigger::test_condition, this, generation_value));
 
                 {

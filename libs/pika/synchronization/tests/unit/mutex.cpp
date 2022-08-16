@@ -165,7 +165,7 @@ struct test_lock_times_out_if_other_thread_has_lock
             {
                 std::unique_lock<pika::lcos::local::mutex> lk(done_mutex);
                 PIKA_TEST(done_cond.wait_for(lk, std::chrono::seconds(2),
-                    pika::util::bind(&this_type::is_done, this)));
+                    pika::util::detail::bind(&this_type::is_done, this)));
                 PIKA_TEST(!locked);
             }
 

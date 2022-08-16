@@ -23,7 +23,7 @@ using pika::program_options::value;
 using pika::program_options::variables_map;
 
 using pika::dataflow;
-using pika::util::bind;
+using pika::util::detail::bind;
 
 using pika::async;
 using pika::future;

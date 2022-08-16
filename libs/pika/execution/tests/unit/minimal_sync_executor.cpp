@@ -137,8 +137,8 @@ void test_bulk_sync(Executor& exec)
     using std::placeholders::_2;
 
     std::vector<pika::thread::id> ids =
-        pika::parallel::execution::bulk_sync_execute(
-            exec, pika::util::bind(&sync_bulk_test, _1, tid, _2), v, 42);
+        pika::parallel::execution::bulk_sync_execute(exec,
+            pika::util::detail::bind(&sync_bulk_test, _1, tid, _2), v, 42);
     for (auto const& id : ids)
     {
         PIKA_TEST_EQ(id, pika::this_thread::get_id());
@@ -151,8 +151,8 @@ void test_bulk_sync(Executor& exec)
         PIKA_TEST_EQ(id, pika::this_thread::get_id());
     }
 
-    pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&sync_bulk_test_void, _1, tid, _2), v, 42);
+    pika::parallel::execution::bulk_sync_execute(exec,
+        pika::util::detail::bind(&sync_bulk_test_void, _1, tid, _2), v, 42);
     pika::parallel::execution::bulk_sync_execute(
         exec, &sync_bulk_test_void, v, tid, 42);
 }
@@ -168,16 +168,17 @@ void test_bulk_async(Executor& exec)
     using std::placeholders::_1;
     using std::placeholders::_2;
 
-    pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
-                       pika::util::bind(&sync_bulk_test, _1, tid, _2), v, 42))
+    pika::when_all(
+        pika::parallel::execution::bulk_async_execute(exec,
+            pika::util::detail::bind(&sync_bulk_test, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
                        exec, &sync_bulk_test, v, tid, 42))
         .get();
 
     pika::when_all(
-        pika::parallel::execution::bulk_async_execute(
-            exec, pika::util::bind(&sync_bulk_test_void, _1, tid, _2), v, 42))
+        pika::parallel::execution::bulk_async_execute(exec,
+            pika::util::detail::bind(&sync_bulk_test_void, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
                        exec, &sync_bulk_test_void, v, tid, 42))

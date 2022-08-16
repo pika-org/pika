@@ -69,7 +69,7 @@ namespace pika { namespace execution { namespace experimental {
                        t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&&... predecessor) mutable {
                 pika::util::invoke_fused(
-                    pika::util::bind_front(PIKA_FORWARD(F, f),
+                    pika::util::detail::bind_front(PIKA_FORWARD(F, f),
                         std::begin(rng)[i],
                         PIKA_FORWARD(decltype(predecessor), predecessor)...),
                     PIKA_MOVE(t));
@@ -83,7 +83,7 @@ namespace pika { namespace execution { namespace experimental {
                        t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&& predecessor, auto& v) mutable {
                 v[i] = pika::util::invoke_fused(
-                    pika::util::bind_front(PIKA_FORWARD(F, f),
+                    pika::util::detail::bind_front(PIKA_FORWARD(F, f),
                         std::begin(rng)[i],
                         PIKA_FORWARD(decltype(predecessor), predecessor)),
                     PIKA_MOVE(t));
@@ -267,7 +267,7 @@ namespace pika { namespace execution { namespace experimental {
                 keep_future(PIKA_FORWARD(Future, predecessor)), sched_);
 
             return make_future(then(PIKA_MOVE(predecessor_transfer_sched),
-                pika::util::bind_back(
+                pika::util::detail::bind_back(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)));
         }
 

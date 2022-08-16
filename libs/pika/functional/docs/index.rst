@@ -16,9 +16,9 @@ their arguments.
 
 * :cpp:class:`pika::util::function`
 * :cpp:class:`pika::util::unique_function`
-* :cpp:func:`pika::util::bind`
-* :cpp:func:`pika::util::bind_back`
-* :cpp:func:`pika::util::bind_front`
+* :cpp:func:`pika::util::detail::bind`
+* :cpp:func:`pika::util::detail::bind_back`
+* :cpp:func:`pika::util::detail::bind_front`
 * :cpp:func:`pika::util::deferred_call`
 * :cpp:func:`pika::util::invoke`
 * :cpp:func:`pika::util::invoke_fused`

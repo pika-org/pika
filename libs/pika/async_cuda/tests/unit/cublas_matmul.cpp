@@ -159,11 +159,11 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
         cudaMalloc((void**) &d_C, size_C * sizeof(T)));
 
     auto copy_A = ex::schedule(cuda_sched) |
-        cu::then_with_stream(pika::bind_front(cuda_memcpy_async, d_A,
-            h_A.data(), size_A * sizeof(T), cudaMemcpyHostToDevice));
+        cu::then_with_stream(pika::util::detail::bind_front(cuda_memcpy_async,
+            d_A, h_A.data(), size_A * sizeof(T), cudaMemcpyHostToDevice));
     auto copy_B = ex::schedule(cuda_sched) |
-        cu::then_with_stream(pika::bind_front(cuda_memcpy_async, d_B,
-            h_B.data(), size_B * sizeof(T), cudaMemcpyHostToDevice));
+        cu::then_with_stream(pika::util::detail::bind_front(cuda_memcpy_async,
+            d_B, h_B.data(), size_B * sizeof(T), cudaMemcpyHostToDevice));
     auto copy_AB =
         ex::when_all(std::move(copy_A), std::move(copy_B)) | ex::then([]() {
             std::cout << "The async host->device copy operations completed"
@@ -249,7 +249,7 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     // when the matrix operations complete, copy the result to the host
     auto copy_finished = std::move(gemms_finished_split) |
         ex::transfer(cuda_sched) |
-        cu::then_with_stream(pika::bind_front(cuda_memcpy_async,
+        cu::then_with_stream(pika::util::detail::bind_front(cuda_memcpy_async,
             h_CUBLAS.data(), d_C, size_C * sizeof(T), cudaMemcpyDeviceToHost));
 
     auto all_done = ex::when_all(std::move(matrix_print_finished),

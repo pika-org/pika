@@ -36,7 +36,7 @@ void test_bulk_sync(Executor& exec)
     using std::placeholders::_2;
 
     std::vector<int> results = pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&bulk_test, tid, _1, false, _2), v, 42);
+        exec, pika::util::detail::bind(&bulk_test, tid, _1, false, _2), v, 42);
 
     PIKA_TEST(
         std::equal(std::begin(results), std::end(results), std::begin(v)));
@@ -54,8 +54,8 @@ void test_bulk_async(Executor& exec)
     using std::placeholders::_2;
 
     std::vector<pika::future<int>> results =
-        pika::parallel::execution::bulk_async_execute(
-            exec, pika::util::bind(&bulk_test, tid, _1, true, _2), v, 42);
+        pika::parallel::execution::bulk_async_execute(exec,
+            pika::util::detail::bind(&bulk_test, tid, _1, true, _2), v, 42);
 
     PIKA_TEST(std::equal(std::begin(results), std::end(results), std::begin(v),
         [](pika::future<int>& lhs, const int& rhs) {

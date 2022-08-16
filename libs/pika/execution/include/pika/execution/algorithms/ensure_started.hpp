@@ -71,7 +71,7 @@ namespace pika::execution::experimental {
             void operator()(Ts&& ts)
             {
                 pika::util::invoke_fused(
-                    pika::util::bind_front(
+                    pika::util::detail::bind_front(
                         pika::execution::experimental::set_value,
                         PIKA_MOVE(receiver)),
                     PIKA_FORWARD(Ts, ts));

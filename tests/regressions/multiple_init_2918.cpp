@@ -25,17 +25,17 @@ int main(int argc, char* argv[])
 
     expected = "first";
     pika::util::function<int(int, char**)> callback1 =
-        pika::util::bind(&pika_init_test, expected, _1, _2);
+        pika::util::detail::bind(&pika_init_test, expected, _1, _2);
     pika::init(callback1, argc, argv);
 
     expected = "second";
     pika::util::function<int(int, char**)> callback2 =
-        pika::util::bind(&pika_init_test, expected, _1, _2);
+        pika::util::detail::bind(&pika_init_test, expected, _1, _2);
     pika::init(callback2, argc, argv);
 
     expected = "third";
     pika::util::function<int(int, char**)> callback3 =
-        pika::util::bind(&pika_init_test, expected, _1, _2);
+        pika::util::detail::bind(&pika_init_test, expected, _1, _2);
     pika::init(callback3, argc, argv);
 
     return 0;

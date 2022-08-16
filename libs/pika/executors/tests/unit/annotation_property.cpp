@@ -200,7 +200,7 @@ void test_bulk_sync()
             pika::execution::experimental::with_annotation, executor{}, desc);
 
         pika::parallel::execution::bulk_sync_execute(
-            exec, pika::util::bind(&bulk_test, _1, tid, _2), 107, 42);
+            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), 107, 42);
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
@@ -215,7 +215,7 @@ void test_bulk_sync()
 
         annotation.clear();
         pika::parallel::execution::bulk_sync_execute(
-            exec, pika::util::bind(&bulk_test, _1, tid, _2), 107, 42);
+            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), 107, 42);
         PIKA_TEST_EQ(annotation, desc);
 
         annotation.clear();
@@ -240,8 +240,9 @@ void test_bulk_async()
         auto exec = pika::experimental::prefer(
             pika::execution::experimental::with_annotation, executor{}, desc);
 
-        pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
-                           pika::util::bind(&bulk_test, _1, tid, _2), 107, 42))
+        pika::when_all(
+            pika::parallel::execution::bulk_async_execute(exec,
+                pika::util::detail::bind(&bulk_test, _1, tid, _2), 107, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
 
@@ -257,8 +258,9 @@ void test_bulk_async()
             pika::execution::experimental::with_annotation(executor{}, desc);
 
         annotation.clear();
-        pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
-                           pika::util::bind(&bulk_test, _1, tid, _2), 107, 42))
+        pika::when_all(
+            pika::parallel::execution::bulk_async_execute(exec,
+                pika::util::detail::bind(&bulk_test, _1, tid, _2), 107, 42))
             .get();
         PIKA_TEST_EQ(annotation, desc);
 
@@ -306,8 +308,8 @@ void test_bulk_then()
         auto exec = pika::experimental::prefer(
             pika::execution::experimental::with_annotation, executor{}, desc);
 
-        pika::parallel::execution::bulk_then_execute(
-            exec, pika::util::bind(&bulk_test_f, _1, _2, tid, _3), 107, f, 42)
+        pika::parallel::execution::bulk_then_execute(exec,
+            pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), 107, f, 42)
             .get();
         PIKA_TEST_EQ(annotation, desc);
 
@@ -323,8 +325,8 @@ void test_bulk_then()
             pika::execution::experimental::with_annotation(executor{}, desc);
 
         annotation.clear();
-        pika::parallel::execution::bulk_then_execute(
-            exec, pika::util::bind(&bulk_test_f, _1, _2, tid, _3), 107, f, 42)
+        pika::parallel::execution::bulk_then_execute(exec,
+            pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), 107, f, 42)
             .get();
         PIKA_TEST_EQ(annotation, desc);
 

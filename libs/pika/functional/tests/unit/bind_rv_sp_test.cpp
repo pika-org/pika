@@ -55,7 +55,9 @@ int main()
 {
     Y y;
 
-    PIKA_TEST_EQ(pika::util::bind(&X::f, pika::util::bind(&Y::f, &y))(), 42);
+    PIKA_TEST_EQ(
+        pika::util::detail::bind(&X::f, pika::util::detail::bind(&Y::f, &y))(),
+        42);
 
     return pika::util::report_errors();
 }

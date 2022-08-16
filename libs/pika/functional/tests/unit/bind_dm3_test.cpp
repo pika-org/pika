@@ -34,7 +34,8 @@ int main()
 
     pair_type pair(10, 20);
 
-    int const& x = pika::util::bind(&pair_type::first, placeholders::_1)(pair);
+    int const& x =
+        pika::util::detail::bind(&pair_type::first, placeholders::_1)(pair);
 
     PIKA_TEST_EQ(&pair.first, &x);
 
