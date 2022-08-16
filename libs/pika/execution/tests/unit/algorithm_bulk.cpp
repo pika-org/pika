@@ -253,7 +253,8 @@ int main()
 
     {
         std::atomic<bool> set_error_called{false};
-        auto s = ex::bulk(const_reference_error_sender{}, 0, [](int) {});
+        auto s = ex::bulk(
+            const_reference_error_sender{}, 10, [](int) { PIKA_TEST(false); });
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
             check_exception_ptr, set_error_called};
         auto os = ex::connect(std::move(s), std::move(r));

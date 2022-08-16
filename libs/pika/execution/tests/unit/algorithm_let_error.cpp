@@ -47,7 +47,6 @@ int main()
         PIKA_TEST(let_error_callback_called);
     }
 
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     {
         std::atomic<bool> set_value_called{false};
         std::atomic<bool> let_error_callback_called{false};
@@ -64,7 +63,6 @@ int main()
         PIKA_TEST(set_value_called);
         PIKA_TEST(let_error_callback_called);
     }
-#endif
 
     {
         std::atomic<bool> set_value_called{false};
@@ -168,6 +166,23 @@ int main()
         std::atomic<bool> set_value_called{false};
         std::atomic<bool> let_error_callback_called{false};
         auto s1 = ex::just(42);
+        auto s2 = ex::let_error(std::move(s1), [&](std::exception_ptr) {
+            PIKA_TEST(false);
+            return ex::just(43);
+        });
+        auto f = [](int x) { PIKA_TEST_EQ(x, 42); };
+        auto r = callback_receiver<void_callback_helper<decltype(f)>>{
+            void_callback_helper<decltype(f)>{f}, set_value_called};
+        auto os = ex::connect(std::move(s2), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_value_called);
+        PIKA_TEST(!let_error_callback_called);
+    }
+    {
+        std::atomic<bool> set_value_called{false};
+        std::atomic<bool> let_error_callback_called{false};
+        int x = 42;
+        auto s1 = const_reference_sender<decltype(x)>{x};
         auto s2 = ex::let_error(std::move(s1), [&](std::exception_ptr) {
             PIKA_TEST(false);
             return ex::just(43);
