@@ -13,8 +13,8 @@ filesystem
 
 This module provides a compatibility layer for the C++17 filesystem library. If
 the filesystem library is available this module will simply forward its contents
-into the ``pika::filesystem`` namespace. If the library is not available it will
-fall back to Boost.Filesystem instead.
+into the ``pika::detail::filesystem`` namespace. If the library is not available
+it will fall back to Boost.Filesystem instead.
 
 See the :ref:`API reference <modules_filesystem_api>` of the module for more
 details.

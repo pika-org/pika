@@ -48,5 +48,4 @@ namespace pika::detail::filesystem {
             return canonical(p, ec);
         }
     }
-
 }    // namespace pika::detail::filesystem
