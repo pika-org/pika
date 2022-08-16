@@ -23,7 +23,6 @@ their arguments.
 * :cpp:func:`pika::util::deferred_call`
 * :cpp:func:`pika::util::invoke`
 * :cpp:func:`pika::util::invoke_fused`
-* :cpp:func:`pika::util::mem_fn`
 * :cpp:func:`pika::util::one_shot`
 * :cpp:func:`pika::util::protect`
 * :cpp:class:`pika::util::result_of`

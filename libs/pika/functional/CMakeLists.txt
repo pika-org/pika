@@ -25,7 +25,6 @@ set(functional_headers
     pika/functional/function_ref.hpp
     pika/functional/invoke.hpp
     pika/functional/invoke_fused.hpp
-    pika/functional/mem_fn.hpp
     pika/functional/one_shot.hpp
     pika/functional/protect.hpp
     pika/functional/unique_function.hpp

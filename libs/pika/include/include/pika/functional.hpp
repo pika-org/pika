@@ -12,7 +12,6 @@
 #include <pika/functional/function.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/mem_fn.hpp>
 #include <pika/functional/traits/is_bind_expression.hpp>
 #include <pika/functional/traits/is_placeholder.hpp>
 #include <pika/functional/unique_function.hpp>
@@ -27,7 +26,6 @@ namespace pika {
     using pika::util::function;
     using pika::util::invoke;
     using pika::util::invoke_fused;
-    using pika::util::mem_fn;
     using pika::util::unique_function;
 
     namespace placeholders {

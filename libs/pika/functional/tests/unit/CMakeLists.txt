@@ -26,13 +26,6 @@ set(function_tests
     function_target
     function_test
     is_invocable
-    mem_fn_derived_test
-    mem_fn_dm_test
-    # mem_fn_eq_test
-    mem_fn_rv_test
-    mem_fn_test
-    mem_fn_unary_addr_test
-    mem_fn_void_test
     nothrow_swap
     protect_test
     stateless_test
