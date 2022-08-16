@@ -70,7 +70,7 @@ namespace pika {
             /// \param none
             constexpr std::size_t get_function_address() const
             {
-                return traits::get_function_address<fun_type>::call(f_);
+                return pika::detail::get_function_address<fun_type>::call(f_);
             }
 
             ///////////////////////////////////////////////////////////////////
@@ -140,10 +140,8 @@ namespace pika {
 #endif
 }    // namespace pika
 
-namespace pika::traits {
-
+namespace pika::detail {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-    ///////////////////////////////////////////////////////////////////////////
     template <typename F>
     struct get_function_address<pika::detail::annotated_function<F>>
     {
@@ -164,4 +162,4 @@ namespace pika::traits {
         }
     };
 #endif
-}    // namespace pika::traits
+}    // namespace pika::detail

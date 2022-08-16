@@ -89,13 +89,13 @@ namespace pika { namespace util {
 
             constexpr std::size_t get_function_address() const
             {
-                return traits::get_function_address<F>::call(_f);
+                return pika::detail::get_function_address<F>::call(_f);
             }
 
             constexpr char const* get_function_annotation() const
             {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-                return traits::get_function_annotation<F>::call(_f);
+                return pika::detail::get_function_annotation<F>::call(_f);
 #else
                 return nullptr;
 #endif
@@ -105,7 +105,7 @@ namespace pika { namespace util {
             util::itt::string_handle get_function_annotation_itt() const
             {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-                return traits::get_function_annotation_itt<F>::call(_f);
+                return pika::detail::get_function_annotation_itt<F>::call(_f);
 #else
                 static util::itt::string_handle sh("deferred");
                 return sh;

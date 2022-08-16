@@ -78,14 +78,16 @@ namespace pika::util::detail {
             F const& f, char const* altname = nullptr) noexcept
           : type_(data_type_description)
         {
-            char const* name = traits::get_function_annotation<F>::call(f);
+            char const* name =
+                pika::detail::get_function_annotation<F>::call(f);
 
             // If a name exists, use it, not the altname.
             if (name != nullptr)    // -V547
             {
                 altname = name;
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-                desc_itt_ = traits::get_function_annotation_itt<F>::call(f);
+                desc_itt_ =
+                    pika::detail::get_function_annotation_itt<F>::call(f);
 #endif
             }
 
@@ -97,7 +99,7 @@ namespace pika::util::detail {
             else
             {
                 type_ = data_type_address;
-                data_.addr_ = traits::get_function_address<F>::call(f);
+                data_.addr_ = pika::detail::get_function_address<F>::call(f);
             }
 #else
             init_from_alternative_name(altname);

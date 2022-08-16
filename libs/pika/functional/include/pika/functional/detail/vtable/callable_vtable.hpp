@@ -29,14 +29,16 @@ namespace pika { namespace util { namespace detail {
         template <typename T>
         PIKA_FORCEINLINE static std::size_t _get_function_address(void* f)
         {
-            return traits::get_function_address<T>::call(vtable::get<T>(f));
+            return pika::detail::get_function_address<T>::call(
+                vtable::get<T>(f));
         }
         std::size_t (*get_function_address)(void*);
 
         template <typename T>
         PIKA_FORCEINLINE static char const* _get_function_annotation(void* f)
         {
-            return traits::get_function_annotation<T>::call(vtable::get<T>(f));
+            return pika::detail::get_function_annotation<T>::call(
+                vtable::get<T>(f));
         }
         char const* (*get_function_annotation)(void*);
 
@@ -45,7 +47,7 @@ namespace pika { namespace util { namespace detail {
         PIKA_FORCEINLINE static util::itt::string_handle
         _get_function_annotation_itt(void* f)
         {
-            return traits::get_function_annotation_itt<T>::call(
+            return pika::detail::get_function_annotation_itt<T>::call(
                 vtable::get<T>(f));
         }
         util::itt::string_handle (*get_function_annotation_itt)(void*);

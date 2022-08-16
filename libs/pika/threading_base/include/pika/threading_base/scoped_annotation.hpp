@@ -58,7 +58,7 @@ namespace pika {
         template <typename F>
         explicit scoped_annotation(F&& f)
           : task_(thread_domain_,
-                pika::traits::get_function_annotation_itt<
+                pika::detail::get_function_annotation_itt<
                     std::decay_t<F>>::call(f))
         {
         }
@@ -87,7 +87,7 @@ namespace pika {
                 std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
         explicit scoped_annotation(F&& f)
         {
-            if (auto f_annotation = pika::traits::get_function_annotation<
+            if (auto f_annotation = pika::detail::get_function_annotation<
                     std::decay_t<F>>::call(f))
             {
                 annotation = f_annotation;

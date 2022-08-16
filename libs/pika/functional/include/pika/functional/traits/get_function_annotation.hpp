@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace pika { namespace traits {
+namespace pika::detail {
     // By default we don't know anything about the function's name
     template <typename F, typename Enable = void>
     struct get_function_annotation
@@ -35,4 +35,4 @@ namespace pika { namespace traits {
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail

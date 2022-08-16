@@ -34,7 +34,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 
-namespace pika { namespace traits {
+namespace pika::detail {
     template <typename Result, typename F>
     struct get_function_address<
         parallel::util::detail::partitioner_iteration<Result, F>>
@@ -75,5 +75,5 @@ namespace pika { namespace traits {
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail
 #endif

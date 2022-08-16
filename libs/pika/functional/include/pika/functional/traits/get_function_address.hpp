@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace pika { namespace traits {
+namespace pika::detail {
     // By default we return the address of the object which is used to invoke
     // the trait.
     template <typename F, typename Enable = void>
@@ -116,4 +116,4 @@ namespace pika { namespace traits {
         }
     };
     // clang-format on
-}}    // namespace pika::traits
+}    // namespace pika::detail

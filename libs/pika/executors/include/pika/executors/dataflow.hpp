@@ -46,10 +46,8 @@ namespace pika::detail {
 }
 // namespace pika::lcos::detail
 
-namespace pika { namespace traits {
+namespace pika::detail {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-    ///////////////////////////////////////////////////////////////////////////
-    // traits specialization to get annotation from dataflow_finalization
     template <typename Frame>
     struct get_function_annotation<pika::detail::dataflow_finalization<Frame>>
     {
@@ -58,13 +56,13 @@ namespace pika { namespace traits {
         static constexpr char const* call(
             pika::detail::dataflow_finalization<Frame> const& f) noexcept
         {
-            char const* annotation = pika::traits::get_function_annotation<
+            char const* annotation = pika::detail::get_function_annotation<
                 typename std::decay<function_type>::type>::call(f.this_->func_);
             return annotation;
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {
@@ -177,7 +175,7 @@ namespace pika::detail {
         using dataflow_type = dataflow_frame<Policy, Func, Futures>;
 
         friend struct dataflow_finalization<dataflow_type>;
-        friend struct traits::get_function_annotation<
+        friend struct pika::detail::get_function_annotation<
             dataflow_finalization<dataflow_type>>;
 
     private:
