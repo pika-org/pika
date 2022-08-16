@@ -16,7 +16,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace detail {
+namespace pika::detail {
     // This is a lighter-weight alternative to bind for use in parallel
     // algorithm overloads, where one needs to bind an execution policy to an
     // algorithm for use in execution::then. Typically used together with
@@ -121,4 +121,4 @@ namespace pika { namespace detail {
                 ExPolicy>{PIKA_FORWARD(ExPolicy, policy)};
         }
     };
-}}    // namespace pika::detail
+}    // namespace pika::detail

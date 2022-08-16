@@ -249,4 +249,4 @@ namespace pika { namespace parallel {
 
     // we're just reusing our existing implementation
     using pika::exception_list;
-}}    // namespace pika::parallel::v1
+}}    // namespace pika::parallel

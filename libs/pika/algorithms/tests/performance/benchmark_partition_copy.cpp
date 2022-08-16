@@ -79,8 +79,7 @@ double run_partition_copy_benchmark_pika(int test_count, ExPolicy policy,
     for (int i = 0; i < test_count; ++i)
     {
         using namespace pika::execution;
-        pika::parallel::partition_copy(
-            policy, first, last, dest_true, dest_false, pred);
+        pika::partition_copy(policy, first, last, dest_true, dest_false, pred);
     }
 
     duration<double> dur = high_resolution_clock::now() - time;

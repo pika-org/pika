@@ -234,8 +234,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::none_of
     inline constexpr struct none_of_t final
@@ -319,10 +318,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::detail::none_of().call(
-                pika::execution::seq, pika::util::begin(rng),
-                pika::util::end(rng), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::none_of().call(pika::execution::seq,
+                pika::util::begin(rng), pika::util::end(rng),
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -344,9 +342,8 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::detail::none_of().call(
-                pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::none_of().call(pika::execution::seq,
+                first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
         }
     } none_of{};
 
@@ -433,10 +430,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::detail::any_of().call(
-                pika::execution::seq, pika::util::begin(rng),
-                pika::util::end(rng), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::any_of().call(pika::execution::seq,
+                pika::util::begin(rng), pika::util::end(rng),
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -458,9 +454,8 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::detail::any_of().call(
-                pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::any_of().call(pika::execution::seq,
+                first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
         }
     } any_of{};
 
@@ -547,10 +542,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::detail::all_of().call(
-                pika::execution::seq, pika::util::begin(rng),
-                pika::util::end(rng), PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::all_of().call(pika::execution::seq,
+                pika::util::begin(rng), pika::util::end(rng),
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -572,12 +566,11 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<Iter>::value,
                 "Required at least input iterator.");
 
-            return pika::parallel::detail::all_of().call(
-                pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::all_of().call(pika::execution::seq,
+                first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
         }
     } all_of{};
 
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

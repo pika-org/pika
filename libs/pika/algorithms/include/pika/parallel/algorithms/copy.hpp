@@ -530,7 +530,7 @@ namespace pika { namespace parallel {
             }
         };
     }    // namespace detail
-}}      // namespace pika::parallel::v1
+}}       // namespace pika::parallel
 
 namespace pika {
 
@@ -712,7 +712,6 @@ namespace pika {
                         pika::parallel::util::projection_identity{}));
         }
     } copy_if{};
-
 }    // namespace pika
 
 #endif    // DOXYGEN

@@ -389,7 +389,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     template <typename I, typename F>
     using for_each_result = in_fun_result<I, F>;
 
@@ -570,5 +570,5 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
         }
     } for_each_n{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 #endif

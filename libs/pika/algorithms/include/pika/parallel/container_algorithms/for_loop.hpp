@@ -732,7 +732,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct for_loop_t final
       : pika::detail::tag_parallel_algorithm<for_loop_t>
     {
@@ -913,6 +913,6 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(Args, args)...);
         }
     } for_loop_strided{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

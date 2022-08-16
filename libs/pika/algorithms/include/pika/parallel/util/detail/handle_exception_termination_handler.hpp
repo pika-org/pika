@@ -9,7 +9,7 @@
 #include <pika/config.hpp>
 #include <pika/functional/function.hpp>
 
-namespace pika { namespace parallel { namespace util { namespace detail {
+namespace pika::parallel::util::detail {
     using parallel_exception_termination_handler_type =
         pika::util::detail::function<void()>;
 
@@ -17,4 +17,4 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         parallel_exception_termination_handler_type f);
 
     [[noreturn]] PIKA_EXPORT void parallel_exception_termination_handler();
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail

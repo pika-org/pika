@@ -27,7 +27,6 @@
 #include <vector>
 
 namespace pika::parallel::detail {
-
     static constexpr std::size_t stable_sort_limit_per_task = 1 << 16;
 
     /// \struct parallel_stable_sort
@@ -167,5 +166,4 @@ namespace pika::parallel::detail {
             pika::threads::detail::hardware_concurrency(),
             stable_sort_limit_per_task, compare{});
     }
-
 }    // namespace pika::parallel::detail

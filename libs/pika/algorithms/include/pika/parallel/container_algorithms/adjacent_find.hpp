@@ -269,7 +269,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct adjacent_find_t final
       : pika::detail::tag_parallel_algorithm<adjacent_find_t>
     {
@@ -390,6 +390,6 @@ namespace pika { namespace ranges {
                     PIKA_FORWARD(Proj, proj));
         }
     } adjacent_find{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

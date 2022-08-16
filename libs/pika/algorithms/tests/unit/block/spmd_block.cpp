@@ -20,8 +20,7 @@
 std::size_t num_images = 10;
 std::size_t iterations = 20;
 
-void bulk_test_function(
-    pika::parallel::spmd_block block, std::atomic<std::size_t>* c)
+void bulk_test_function(pika::spmd_block block, std::atomic<std::size_t>* c)
 {
     PIKA_TEST_EQ(block.get_num_images(), num_images);
     PIKA_TEST_EQ(block.this_image() < num_images, true);
@@ -92,8 +91,7 @@ int pika_main()
     using pika::execution::par;
     using pika::execution::task;
 
-    auto bulk_test = [](pika::parallel::spmd_block block,
-                         std::atomic<std::size_t>* c) {
+    auto bulk_test = [](pika::spmd_block block, std::atomic<std::size_t>* c) {
         bulk_test_function(std::move(block), c);
     };
 
@@ -104,15 +102,14 @@ int pika_main()
         c1[i] = c2[i] = c3[i] = (std::size_t) 0;
     }
 
-    pika::parallel::define_spmd_block(num_images, bulk_test, c1.data());
+    pika::define_spmd_block(num_images, bulk_test, c1.data());
 
-    std::vector<pika::future<void>> join = pika::parallel::define_spmd_block(
-        par(task), num_images, bulk_test, c2.data());
+    std::vector<pika::future<void>> join =
+        pika::define_spmd_block(par(task), num_images, bulk_test, c2.data());
 
     pika::wait_all(join);
 
-    pika::parallel::define_spmd_block(
-        num_images, bulk_test_function, c3.data());
+    pika::define_spmd_block(num_images, bulk_test_function, c3.data());
 
     return pika::finalize();
 }

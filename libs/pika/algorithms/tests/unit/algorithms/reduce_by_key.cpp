@@ -164,9 +164,9 @@ void test_reduce_by_key1(ExPolicy&& policy, Tkey, Tval, bool benchmark,
 
     pika::chrono::detail::high_resolution_timer t;
     // reduce_by_key, blocking when seq, par, par_vec
-    auto result = pika::parallel::reduce_by_key(std::forward<ExPolicy>(policy),
-        keys.begin(), keys.end(), values.begin(), keys.begin(), values.begin(),
-        op);
+    auto result =
+        pika::reduce_by_key(std::forward<ExPolicy>(policy), keys.begin(),
+            keys.end(), values.begin(), keys.begin(), values.begin(), op);
     double elapsed = t.elapsed();
 
     bool is_equal = std::equal(
@@ -265,7 +265,7 @@ void test_reduce_by_key_const(ExPolicy&& policy, Tkey, Tval, bool benchmark,
 
     pika::chrono::detail::high_resolution_timer t;
     // reduce_by_key, blocking when seq, par, par_vec
-    auto result = pika::parallel::reduce_by_key(std::forward<ExPolicy>(policy),
+    auto result = pika::reduce_by_key(std::forward<ExPolicy>(policy),
         const_keys.begin(), const_keys.end(), const_values.begin(),
         keys.begin(), values.begin(), op);
     double elapsed = t.elapsed();
@@ -363,9 +363,9 @@ void test_reduce_by_key_async(
 
     // reduce_by_key, blocking when seq, par, par_vec
     pika::chrono::detail::high_resolution_timer t;
-    auto fresult = pika::parallel::reduce_by_key(std::forward<ExPolicy>(policy),
-        keys.begin(), keys.end(), values.begin(), keys.begin(), values.begin(),
-        op);
+    auto fresult =
+        pika::reduce_by_key(std::forward<ExPolicy>(policy), keys.begin(),
+            keys.end(), values.begin(), keys.begin(), values.begin(), op);
     double async_seconds = t.elapsed();
     auto result = fresult.get();
     double sync_seconds = t.elapsed();

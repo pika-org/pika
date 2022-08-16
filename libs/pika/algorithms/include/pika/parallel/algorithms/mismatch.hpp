@@ -194,246 +194,237 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // mismatch (binary)
-    namespace detail {
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
+        typename F, typename Proj1, typename Proj2>
+    constexpr util::in_in_result<Iter1, Iter2> sequential_mismatch_binary(
+        Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, F&& f,
+        Proj1&& proj1, Proj2&& proj2)
+    {
+        while (first1 != last1 && first2 != last2 &&
+            PIKA_INVOKE(
+                f, PIKA_INVOKE(proj1, *first1), PIKA_INVOKE(proj2, *first2)))
+        {
+            (void) ++first1, ++first2;
+        }
+        return {first1, first2};
+    }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Iter1, typename Sent1, typename Iter2,
-            typename Sent2, typename F, typename Proj1, typename Proj2>
-        constexpr util::in_in_result<Iter1, Iter2> sequential_mismatch_binary(
+    template <typename IterPair>
+    struct mismatch_binary
+      : public detail::algorithm<mismatch_binary<IterPair>, IterPair>
+    {
+        mismatch_binary()
+          : mismatch_binary::algorithm("mismatch_binary")
+        {
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename F, typename Proj1,
+            typename Proj2>
+        static constexpr util::in_in_result<Iter1, Iter2> sequential(ExPolicy,
             Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, F&& f,
             Proj1&& proj1, Proj2&& proj2)
         {
-            while (first1 != last1 && first2 != last2 &&
-                PIKA_INVOKE(f, PIKA_INVOKE(proj1, *first1),
-                    PIKA_INVOKE(proj2, *first2)))
-            {
-                (void) ++first1, ++first2;
-            }
-            return {first1, first2};
+            return sequential_mismatch_binary(first1, last1, first2, last2,
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
         }
 
-        template <typename IterPair>
-        struct mismatch_binary
-          : public detail::algorithm<mismatch_binary<IterPair>, IterPair>
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename F, typename Proj1,
+            typename Proj2>
+        static util::detail::algorithm_result_t<ExPolicy,
+            util::in_in_result<Iter1, Iter2>>
+        parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
-            mismatch_binary()
-              : mismatch_binary::algorithm("mismatch_binary")
+            if (first1 == last1 || first2 == last2)
             {
+                return util::detail::algorithm_result<ExPolicy,
+                    util::in_in_result<Iter1, Iter2>>::
+                    get(util::in_in_result<Iter1, Iter2>{first1, first2});
             }
 
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename F, typename Proj1,
-                typename Proj2>
-            static constexpr util::in_in_result<Iter1, Iter2> sequential(
-                ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-                F&& f, Proj1&& proj1, Proj2&& proj2)
+            using difference_type1 =
+                typename std::iterator_traits<Iter1>::difference_type;
+            difference_type1 count1 = detail::distance(first1, last1);
+
+            // The specification of std::mismatch(_binary) states that if FwdIter1
+            // and FwdIter2 meet the requirements of RandomAccessIterator and
+            // last1 - first1 != last2 - first2 then no applications of the
+            // predicate p are made.
+            //
+            // We perform this check for any iterator type better than input
+            // iterators. This could turn into a QoI issue.
+            using difference_type2 =
+                typename std::iterator_traits<Iter2>::difference_type;
+            difference_type2 count2 = detail::distance(first2, last2);
+            if (count1 != count2)
             {
-                return sequential_mismatch_binary(first1, last1, first2, last2,
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
+                return util::detail::algorithm_result<ExPolicy,
+                    util::in_in_result<Iter1, Iter2>>::
+                    get(util::in_in_result<Iter1, Iter2>{first1, first2});
             }
 
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename F, typename Proj1,
-                typename Proj2>
-            static util::detail::algorithm_result_t<ExPolicy,
-                util::in_in_result<Iter1, Iter2>>
-            parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
-                Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
-            {
-                if (first1 == last1 || first2 == last2)
+            using zip_iterator = pika::util::zip_iterator<Iter1, Iter2>;
+            using reference = typename zip_iterator::reference;
+
+            util::cancellation_token<std::size_t> tok(count1);
+
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [tok, f = PIKA_FORWARD(F, f),
+                          proj1 = PIKA_FORWARD(Proj1, proj1),
+                          proj2 = PIKA_FORWARD(Proj2, proj2)](zip_iterator it,
+                          std::size_t part_count,
+                          std::size_t base_idx) mutable -> void {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_count, tok,
+                    [&f, &proj1, &proj2, &tok](
+                        reference t, std::size_t i) mutable -> void {
+                        if (!pika::util::detail::invoke(f,
+                                pika::util::detail::invoke(
+                                    proj1, std::get<0>(t)),
+                                pika::util::detail::invoke(
+                                    proj2, std::get<1>(t))))
+                        {
+                            tok.cancel(i);
+                        }
+                    });
+            };
+
+            auto f2 = [=](std::vector<pika::future<void>>&& data) mutable
+                -> util::in_in_result<Iter1, Iter2> {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
+                difference_type1 mismatched =
+                    static_cast<difference_type1>(tok.get_data());
+                if (mismatched != count1)
                 {
-                    return util::detail::algorithm_result<ExPolicy,
-                        util::in_in_result<Iter1, Iter2>>::
-                        get(util::in_in_result<Iter1, Iter2>{first1, first2});
+                    std::advance(first1, mismatched);
+                    std::advance(first2, mismatched);
                 }
-
-                using difference_type1 =
-                    typename std::iterator_traits<Iter1>::difference_type;
-                difference_type1 count1 = detail::distance(first1, last1);
-
-                // The specification of std::mismatch(_binary) states that if FwdIter1
-                // and FwdIter2 meet the requirements of RandomAccessIterator and
-                // last1 - first1 != last2 - first2 then no applications of the
-                // predicate p are made.
-                //
-                // We perform this check for any iterator type better than input
-                // iterators. This could turn into a QoI issue.
-                using difference_type2 =
-                    typename std::iterator_traits<Iter2>::difference_type;
-                difference_type2 count2 = detail::distance(first2, last2);
-                if (count1 != count2)
+                else
                 {
-                    return util::detail::algorithm_result<ExPolicy,
-                        util::in_in_result<Iter1, Iter2>>::
-                        get(util::in_in_result<Iter1, Iter2>{first1, first2});
+                    first1 = detail::advance_to_sentinel(first1, last1);
+                    first2 = detail::advance_to_sentinel(first2, last2);
                 }
+                return {first1, first2};
+            };
 
-                using zip_iterator = pika::util::zip_iterator<Iter1, Iter2>;
-                using reference = typename zip_iterator::reference;
-
-                util::cancellation_token<std::size_t> tok(count1);
-
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [tok, f = PIKA_FORWARD(F, f),
-                              proj1 = PIKA_FORWARD(Proj1, proj1),
-                              proj2 = PIKA_FORWARD(Proj2, proj2)](
-                              zip_iterator it, std::size_t part_count,
-                              std::size_t base_idx) mutable -> void {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_count, tok,
-                        [&f, &proj1, &proj2, &tok](
-                            reference t, std::size_t i) mutable -> void {
-                            if (!pika::util::detail::invoke(f,
-                                    pika::util::detail::invoke(
-                                        proj1, std::get<0>(t)),
-                                    pika::util::detail::invoke(
-                                        proj2, std::get<1>(t))))
-                            {
-                                tok.cancel(i);
-                            }
-                        });
-                };
-
-                auto f2 = [=](std::vector<pika::future<void>>&& data) mutable
-                    -> util::in_in_result<Iter1, Iter2> {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
-                    difference_type1 mismatched =
-                        static_cast<difference_type1>(tok.get_data());
-                    if (mismatched != count1)
-                    {
-                        std::advance(first1, mismatched);
-                        std::advance(first2, mismatched);
-                    }
-                    else
-                    {
-                        first1 = detail::advance_to_sentinel(first1, last1);
-                        first2 = detail::advance_to_sentinel(first2, last2);
-                    }
-                    return {first1, first2};
-                };
-
-                return util::partitioner<ExPolicy,
-                    util::in_in_result<Iter1, Iter2>,
-                    void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
-                    pika::util::make_zip_iterator(first1, first2), count1, 1,
-                    PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename I1, typename I2>
-        std::pair<I1, I2> get_pair(util::in_in_result<I1, I2>&& p)
-        {
-            return {p.in1, p.in2};
+            return util::partitioner<ExPolicy, util::in_in_result<Iter1, Iter2>,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
+                pika::util::make_zip_iterator(first1, first2), count1, 1,
+                PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
+    };
 
-        template <typename I1, typename I2>
-        pika::future<std::pair<I1, I2>> get_pair(
-            pika::future<util::in_in_result<I1, I2>>&& f)
-        {
-            return pika::make_future<std::pair<I1, I2>>(PIKA_MOVE(f),
-                [](util::in_in_result<I1, I2>&& p) -> std::pair<I1, I2> {
-                    return {PIKA_MOVE(p.in1), PIKA_MOVE(p.in2)};
-                });
-        }
-    }    // namespace detail
+    ///////////////////////////////////////////////////////////////////////
+    template <typename I1, typename I2>
+    std::pair<I1, I2> get_pair(util::in_in_result<I1, I2>&& p)
+    {
+        return {p.in1, p.in2};
+    }
+
+    template <typename I1, typename I2>
+    pika::future<std::pair<I1, I2>> get_pair(
+        pika::future<util::in_in_result<I1, I2>>&& f)
+    {
+        return pika::make_future<std::pair<I1, I2>>(PIKA_MOVE(f),
+            [](util::in_in_result<I1, I2>&& p) -> std::pair<I1, I2> {
+                return {PIKA_MOVE(p.in1), PIKA_MOVE(p.in2)};
+            });
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // mismatch
-    namespace detail {
-
-        template <typename IterPair>
-        struct mismatch : public detail::algorithm<mismatch<IterPair>, IterPair>
+    template <typename IterPair>
+    struct mismatch : public detail::algorithm<mismatch<IterPair>, IterPair>
+    {
+        mismatch()
+          : mismatch::algorithm("mismatch")
         {
-            mismatch()
-              : mismatch::algorithm("mismatch")
+        }
+
+        template <typename ExPolicy, typename InIter1, typename Sent,
+            typename InIter2, typename F>
+        static constexpr IterPair sequential(
+            ExPolicy, InIter1 first1, Sent last1, InIter2 first2, F&& f)
+        {
+            while (first1 != last1 && PIKA_INVOKE(f, *first1, *first2))
             {
+                ++first1, ++first2;
+            }
+            return std::make_pair(first1, first2);
+        }
+
+        template <typename ExPolicy, typename FwdIter1, typename Sent,
+            typename FwdIter2, typename F>
+        static util::detail::algorithm_result_t<ExPolicy, IterPair> parallel(
+            ExPolicy&& policy, FwdIter1 first1, Sent last1, FwdIter2 first2,
+            F&& f)
+        {
+            if (first1 == last1)
+            {
+                return util::detail::algorithm_result<ExPolicy, IterPair>::get(
+                    std::make_pair(first1, first2));
             }
 
-            template <typename ExPolicy, typename InIter1, typename Sent,
-                typename InIter2, typename F>
-            static constexpr IterPair sequential(
-                ExPolicy, InIter1 first1, Sent last1, InIter2 first2, F&& f)
-            {
-                while (first1 != last1 && PIKA_INVOKE(f, *first1, *first2))
-                {
-                    ++first1, ++first2;
-                }
+            using difference_type =
+                typename std::iterator_traits<FwdIter1>::difference_type;
+            difference_type count = detail::distance(first1, last1);
+
+            using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
+            using reference = typename zip_iterator::reference;
+
+            util::cancellation_token<std::size_t> tok(count);
+
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [tok, f = PIKA_FORWARD(F, f)](zip_iterator it,
+                          std::size_t part_count,
+                          std::size_t base_idx) mutable -> void {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_count, tok,
+                    [&f, &tok](reference t, std::size_t i) mutable -> void {
+                        if (!pika::util::detail::invoke(
+                                f, std::get<0>(t), std::get<1>(t)))
+                        {
+                            tok.cancel(i);
+                        }
+                    });
+            };
+
+            auto f2 = [=](std::vector<pika::future<void>>&& data) mutable
+                -> std::pair<FwdIter1, FwdIter2> {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
+                difference_type mismatched =
+                    static_cast<difference_type>(tok.get_data());
+                if (mismatched != count)
+                    std::advance(first1, mismatched);
+                else
+                    first1 = detail::advance_to_sentinel(first1, last1);
+
+                std::advance(first2, mismatched);
                 return std::make_pair(first1, first2);
-            }
+            };
 
-            template <typename ExPolicy, typename FwdIter1, typename Sent,
-                typename FwdIter2, typename F>
-            static util::detail::algorithm_result_t<ExPolicy, IterPair>
-            parallel(ExPolicy&& policy, FwdIter1 first1, Sent last1,
-                FwdIter2 first2, F&& f)
-            {
-                if (first1 == last1)
-                {
-                    return util::detail::algorithm_result<ExPolicy,
-                        IterPair>::get(std::make_pair(first1, first2));
-                }
-
-                using difference_type =
-                    typename std::iterator_traits<FwdIter1>::difference_type;
-                difference_type count = detail::distance(first1, last1);
-
-                using zip_iterator =
-                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
-                using reference = typename zip_iterator::reference;
-
-                util::cancellation_token<std::size_t> tok(count);
-
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [tok, f = PIKA_FORWARD(F, f)](zip_iterator it,
-                              std::size_t part_count,
-                              std::size_t base_idx) mutable -> void {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_count, tok,
-                        [&f, &tok](reference t, std::size_t i) mutable -> void {
-                            if (!pika::util::detail::invoke(
-                                    f, std::get<0>(t), std::get<1>(t)))
-                            {
-                                tok.cancel(i);
-                            }
-                        });
-                };
-
-                auto f2 = [=](std::vector<pika::future<void>>&& data) mutable
-                    -> std::pair<FwdIter1, FwdIter2> {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
-                    difference_type mismatched =
-                        static_cast<difference_type>(tok.get_data());
-                    if (mismatched != count)
-                        std::advance(first1, mismatched);
-                    else
-                        first1 = detail::advance_to_sentinel(first1, last1);
-
-                    std::advance(first2, mismatched);
-                    return std::make_pair(first1, first2);
-                };
-
-                return util::partitioner<ExPolicy, IterPair,
-                    void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
-                    pika::util::make_zip_iterator(first1, first2), count, 1,
-                    PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+            return util::partitioner<ExPolicy, IterPair, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy),
+                pika::util::make_zip_iterator(first1, first2), count, 1,
+                PIKA_MOVE(f1), PIKA_MOVE(f2));
+        }
+    };
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::mismatch
     inline constexpr struct mismatch_t final

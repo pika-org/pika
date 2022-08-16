@@ -16,8 +16,6 @@
 #include <iterator>
 
 namespace pika::parallel::detail {
-
-    ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename Sent, typename T, typename F,
         typename Proj, typename CancelToken>
     Iter lower_bound(

@@ -236,63 +236,60 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // reduce
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename T>
-        struct reduce : public detail::algorithm<reduce<T>, T>
+    /// \cond NOINTERNAL
+    template <typename T>
+    struct reduce : public detail::algorithm<reduce<T>, T>
+    {
+        reduce()
+          : reduce::algorithm("reduce")
         {
-            reduce()
-              : reduce::algorithm("reduce")
+        }
+
+        template <typename ExPolicy, typename InIterB, typename InIterE,
+            typename T_, typename Reduce>
+        static T sequential(
+            ExPolicy, InIterB first, InIterE last, T_&& init, Reduce&& r)
+        {
+            return detail::accumulate(
+                first, last, PIKA_FORWARD(T_, init), PIKA_FORWARD(Reduce, r));
+        }
+
+        template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
+            typename T_, typename Reduce>
+        static typename util::detail::algorithm_result<ExPolicy, T>::type
+        parallel(ExPolicy&& policy, FwdIterB first, FwdIterE last, T_&& init,
+            Reduce&& r)
+        {
+            if (first == last)
             {
+                return util::detail::algorithm_result<ExPolicy, T>::get(
+                    PIKA_FORWARD(T_, init));
             }
 
-            template <typename ExPolicy, typename InIterB, typename InIterE,
-                typename T_, typename Reduce>
-            static T sequential(
-                ExPolicy, InIterB first, InIterE last, T_&& init, Reduce&& r)
-            {
-                return detail::accumulate(first, last, PIKA_FORWARD(T_, init),
-                    PIKA_FORWARD(Reduce, r));
-            }
+            auto f1 = [r](FwdIterB part_begin, std::size_t part_size) -> T {
+                T val = *part_begin;
+                return util::accumulate_n(
+                    ++part_begin, --part_size, PIKA_MOVE(val), r);
+            };
 
-            template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
-                typename T_, typename Reduce>
-            static typename util::detail::algorithm_result<ExPolicy, T>::type
-            parallel(ExPolicy&& policy, FwdIterB first, FwdIterE last,
-                T_&& init, Reduce&& r)
-            {
-                if (first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy, T>::get(
-                        PIKA_FORWARD(T_, init));
-                }
-
-                auto f1 = [r](FwdIterB part_begin, std::size_t part_size) -> T {
-                    T val = *part_begin;
-                    return util::accumulate_n(
-                        ++part_begin, --part_size, PIKA_MOVE(val), r);
-                };
-
-                return util::partitioner<ExPolicy, T>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    pika::unwrapping([init = PIKA_FORWARD(T_, init),
-                                         r = PIKA_FORWARD(Reduce, r)](
-                                         std::vector<T>&& results) -> T {
-                        return util::accumulate_n(pika::util::begin(results),
-                            pika::util::size(results), init, r);
-                    }));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+            return util::partitioner<ExPolicy, T>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                pika::unwrapping([init = PIKA_FORWARD(T_, init),
+                                     r = PIKA_FORWARD(Reduce, r)](
+                                     std::vector<T>&& results) -> T {
+                    return util::accumulate_n(pika::util::begin(results),
+                        pika::util::size(results), init, r);
+                }));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::reduce
     inline constexpr struct reduce_t final

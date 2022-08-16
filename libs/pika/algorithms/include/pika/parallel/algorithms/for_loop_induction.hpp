@@ -17,8 +17,8 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::parallel {
-    namespace detail {
+namespace pika {
+    namespace parallel::detail {
         /// \cond NOINTERNAL
 
         ///////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ namespace pika::parallel {
         };
 
         /// \endcond
-    }    // namespace detail
+    }    // namespace parallel::detail
 
     /// The function template returns an induction object of unspecified type
     /// having a value type and encapsulating an initial value \a value of that
@@ -213,18 +213,19 @@ namespace pika::parallel {
     ///          object.
     ///
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::induction_stride_helper<T> induction(
-        T&& value, std::size_t stride)
+    PIKA_FORCEINLINE constexpr parallel::detail::induction_stride_helper<T>
+    induction(T&& value, std::size_t stride)
     {
-        return detail::induction_stride_helper<T>(
+        return parallel::detail::induction_stride_helper<T>(
             PIKA_FORWARD(T, value), stride);
     }
 
     /// \cond NOINTERNAL
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::induction_helper<T> induction(T&& value)
+    PIKA_FORCEINLINE constexpr parallel::detail::induction_helper<T> induction(
+        T&& value)
     {
-        return detail::induction_helper<T>(PIKA_FORWARD(T, value));
+        return parallel::detail::induction_helper<T>(PIKA_FORWARD(T, value));
     }
     /// \endcond
-}    // namespace pika::parallel
+}    // namespace pika

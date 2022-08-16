@@ -12,7 +12,6 @@
 #include <functional>
 
 namespace pika::parallel::detail {
-
     // provide implementation of std::accumulate supporting iterators/sentinels
     template <typename Iter, typename Sent, typename T, typename F>
     inline constexpr T accumulate(Iter first, Sent last, T value, F&& reduce_op)

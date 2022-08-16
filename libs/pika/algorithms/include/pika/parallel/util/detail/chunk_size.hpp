@@ -24,9 +24,7 @@
 #include <utility>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util { namespace detail {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util::detail {
     template <typename F, typename Future, typename FwdIter>
     // requires traits::is_future<Future>
     void add_ready_future(
@@ -391,4 +389,4 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 
         return shape;
     }
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail

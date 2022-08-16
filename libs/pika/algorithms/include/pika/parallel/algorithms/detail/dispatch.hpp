@@ -26,9 +26,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::parallel::detail{
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::detail {
     template <typename Result>
     struct local_algorithm_result
     {

@@ -380,7 +380,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     /// `reverse_copy_result` is equivalent to
     /// `pika::parallel::util::in_out_result`
     template <typename I, typename O>
@@ -589,7 +589,6 @@ namespace pika { namespace ranges {
                     pika::util::end(rng), result);
         }
     } reverse_copy{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

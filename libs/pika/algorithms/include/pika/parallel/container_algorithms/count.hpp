@@ -158,8 +158,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::count
     inline constexpr struct count_t final
@@ -410,5 +409,5 @@ namespace pika { namespace ranges {
         }
     } count_if{};
 
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 #endif    // DOXYGEN

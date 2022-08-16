@@ -205,7 +205,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct shift_left_t final
       : pika::functional::detail::tag_fallback<shift_left_t>
     {
@@ -288,6 +288,6 @@ namespace pika { namespace ranges {
                     std::end(rng), n);
         }
     } shift_left{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

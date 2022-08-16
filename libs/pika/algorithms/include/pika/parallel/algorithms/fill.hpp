@@ -127,100 +127,90 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // fill
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename T>
-        struct fill_iteration
+    /// \cond NOINTERNAL
+    template <typename T>
+    struct fill_iteration
+    {
+        std::decay_t<T> val_;
+
+        template <typename U>
+        PIKA_HOST_DEVICE void operator()(U& u) const
         {
-            std::decay_t<T> val_;
+            u = val_;
+        }
+    };
 
-            template <typename U>
-            PIKA_HOST_DEVICE void operator()(U& u) const
-            {
-                u = val_;
-            }
-        };
-
-        template <typename Iter>
-        struct fill : public detail::algorithm<fill<Iter>, Iter>
+    template <typename Iter>
+    struct fill : public detail::algorithm<fill<Iter>, Iter>
+    {
+        fill()
+          : fill::algorithm("fill")
         {
-            fill()
-              : fill::algorithm("fill")
+        }
+
+        template <typename ExPolicy, typename InIter, typename Sent, typename T>
+        PIKA_HOST_DEVICE static InIter sequential(
+            ExPolicy&& policy, InIter first, Sent last, T const& val)
+        {
+            return detail::sequential_fill(
+                PIKA_FORWARD(ExPolicy, policy), first, last, val);
+        }
+
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename T>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, T const& val)
+        {
+            if (first == last)
             {
+                return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
+                    PIKA_MOVE(first));
             }
 
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename T>
-            PIKA_HOST_DEVICE static InIter sequential(
-                ExPolicy&& policy, InIter first, Sent last, T const& val)
-            {
-                return detail::sequential_fill(
-                    PIKA_FORWARD(ExPolicy, policy), first, last, val);
-            }
-
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename T>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(
-                    ExPolicy&& policy, FwdIter first, Sent last, T const& val)
-            {
-                if (first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy,
-                        FwdIter>::get(PIKA_MOVE(first));
-                }
-
-                return for_each_n<FwdIter>().call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), fill_iteration<T>{val},
-                    util::projection_identity());
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return for_each_n<FwdIter>().call(PIKA_FORWARD(ExPolicy, policy),
+                first, detail::distance(first, last), fill_iteration<T>{val},
+                util::projection_identity());
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // fill_n
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename FwdIter>
-        struct fill_n : public detail::algorithm<fill_n<FwdIter>, FwdIter>
+    /// \cond NOINTERNAL
+    template <typename FwdIter>
+    struct fill_n : public detail::algorithm<fill_n<FwdIter>, FwdIter>
+    {
+        fill_n()
+          : fill_n::algorithm("fill_n")
         {
-            fill_n()
-              : fill_n::algorithm("fill_n")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename InIter, typename T>
-            static InIter sequential(ExPolicy&& policy, InIter first,
-                std::size_t count, T const& val)
-            {
-                return detail::sequential_fill_n(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, val);
-            }
+        template <typename ExPolicy, typename InIter, typename T>
+        static InIter sequential(
+            ExPolicy&& policy, InIter first, std::size_t count, T const& val)
+        {
+            return detail::sequential_fill_n(
+                PIKA_FORWARD(ExPolicy, policy), first, count, val);
+        }
 
-            template <typename ExPolicy, typename T>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, std::size_t count,
-                    T const& val)
-            {
-                return for_each_n<FwdIter>().call(
-                    PIKA_FORWARD(ExPolicy, policy), first, count,
-                    [val](auto& v) -> void { v = val; },
-                    util::projection_identity());
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+        template <typename ExPolicy, typename T>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(
+            ExPolicy&& policy, FwdIter first, std::size_t count, T const& val)
+        {
+            return for_each_n<FwdIter>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, count,
+                [val](auto& v) -> void { v = val; },
+                util::projection_identity());
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::fill
     inline constexpr struct fill_t final
@@ -327,7 +317,6 @@ namespace pika {
                 pika::execution::seq, first, std::size_t(count), value);
         }
     } fill_n{};
-
 }    // namespace pika
 
 #endif    // DOXYGEN

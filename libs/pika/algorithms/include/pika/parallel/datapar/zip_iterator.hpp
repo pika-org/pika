@@ -27,9 +27,7 @@
 #include <tuple>
 #include <type_traits>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util { namespace detail {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util::detail {
     template <typename... Iter>
     struct is_data_aligned_impl<pika::util::zip_iterator<Iter...>>
     {
@@ -60,11 +58,9 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             typename std::iterator_traits<Iter>::value_type>...>
     {
     };
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace traits {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::traits {
     namespace detail {
         template <typename Tuple, typename... Iter, std::size_t... Is>
         Tuple aligned_pack(pika::util::zip_iterator<Iter...> const& iter,
@@ -160,6 +156,6 @@ namespace pika { namespace parallel { namespace traits {
                 pika::util::detail::make_index_pack<sizeof...(Iter)>());
         }
     };
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits
 
 #endif

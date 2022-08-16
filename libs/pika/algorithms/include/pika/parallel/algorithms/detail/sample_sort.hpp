@@ -34,7 +34,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::parallel::detail {
-
     static constexpr std::uint32_t sample_sort_limit_per_task = (1 << 16);
 
     /// \struct sample_sort
@@ -445,5 +444,4 @@ namespace pika::parallel::detail {
             (value_type*) nullptr, std::size_t(0),
             std::size_t(sample_sort_limit_per_task));
     }
-
 }    // namespace pika::parallel::detail

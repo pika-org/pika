@@ -400,7 +400,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::rotate
     inline constexpr struct rotate_t final
@@ -465,9 +465,9 @@ namespace pika { namespace ranges {
             return pika::parallel::util::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::detail::rotate<parallel::util::
-                        in_out_result<pika::traits::range_iterator_t<Rng>,
-                            typename pika::traits::range_sentinel<Rng>::type>>()
+                pika::parallel::detail::rotate<parallel::util::in_out_result<
+                    pika::traits::range_iterator_t<Rng>,
+                    typename pika::traits::range_sentinel<Rng>::type>>()
                     .call(pika::execution::seq, pika::util::begin(rng), middle,
                         pika::util::end(rng)));
         }
@@ -493,9 +493,9 @@ namespace pika { namespace ranges {
             return pika::parallel::util::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::detail::rotate<parallel::util::
-                        in_out_result<pika::traits::range_iterator_t<Rng>,
-                            typename pika::traits::range_sentinel<Rng>::type>>()
+                pika::parallel::detail::rotate<parallel::util::in_out_result<
+                    pika::traits::range_iterator_t<Rng>,
+                    typename pika::traits::range_sentinel<Rng>::type>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(),
                         pika::util::begin(rng), middle, pika::util::end(rng)));
         }
@@ -605,7 +605,6 @@ namespace pika { namespace ranges {
                     dest_first);
         }
     } rotate_copy{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    //DOXYGEN

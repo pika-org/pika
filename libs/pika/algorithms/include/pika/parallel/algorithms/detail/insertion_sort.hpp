@@ -13,7 +13,6 @@
 #include <utility>
 
 namespace pika::parallel::detail {
-
     /// @brief : Insertion sort algorithm
     /// @param [in] first: iterator to the first element of the range
     /// @param [in] last : iterator to the next element of the last in the range

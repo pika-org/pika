@@ -797,8 +797,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     /// `minmax_element_result` is equivalent to
     /// `pika::parallel::util::min_max_result`
     template <typename T>
@@ -1170,6 +1169,6 @@ namespace pika { namespace ranges {
                     PIKA_FORWARD(Proj, proj));
         }
     } minmax_element{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

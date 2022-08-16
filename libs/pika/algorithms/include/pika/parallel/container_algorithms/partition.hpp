@@ -914,8 +914,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I, typename O1, typename O2>
     using partition_copy_result = parallel::util::in_out_out_result<I, O1, O2>;
 
@@ -1298,6 +1297,6 @@ namespace pika { namespace ranges {
                     PIKA_FORWARD(Proj, proj)));
         }
     } partition_copy{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

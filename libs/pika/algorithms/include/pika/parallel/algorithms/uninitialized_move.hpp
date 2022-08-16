@@ -218,261 +218,243 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // uninitialized_move
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
+    ///////////////////////////////////////////////////////////////////////
+    template <typename InIter1, typename FwdIter2, typename Cond>
+    util::in_out_result<InIter1, FwdIter2> sequential_uninitialized_move(
+        InIter1 first, FwdIter2 dest, Cond cond)
+    {
+        using value_type = typename std::iterator_traits<FwdIter2>::value_type;
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename InIter1, typename FwdIter2, typename Cond>
-        util::in_out_result<InIter1, FwdIter2> sequential_uninitialized_move(
-            InIter1 first, FwdIter2 dest, Cond cond)
+        FwdIter2 current = dest;
+        try
         {
-            using value_type =
-                typename std::iterator_traits<FwdIter2>::value_type;
+            for (/* */; PIKA_INVOKE(cond, first, current);
+                 (void) ++first, ++current)
+            {
+                ::new (std::addressof(*current)) value_type(PIKA_MOVE(*first));
+            }
+            return util::in_out_result<InIter1, FwdIter2>{first, current};
+        }
+        catch (...)
+        {
+            for (/* */; dest != current; ++dest)
+            {
+                (*dest).~value_type();
+            }
+            throw;
+        }
+    }
 
-            FwdIter2 current = dest;
-            try
-            {
-                for (/* */; PIKA_INVOKE(cond, first, current);
-                     (void) ++first, ++current)
-                {
-                    ::new (std::addressof(*current))
-                        value_type(PIKA_MOVE(*first));
-                }
-                return util::in_out_result<InIter1, FwdIter2>{first, current};
-            }
-            catch (...)
-            {
-                for (/* */; dest != current; ++dest)
-                {
-                    (*dest).~value_type();
-                }
-                throw;
-            }
+    ///////////////////////////////////////////////////////////////////////
+    template <typename InIter1, typename InIter2>
+    util::in_out_result<InIter1, InIter2> sequential_uninitialized_move_n(
+        InIter1 first, std::size_t count, InIter2 dest,
+        util::cancellation_token<util::detail::no_data>& tok)
+    {
+        using value_type = typename std::iterator_traits<InIter2>::value_type;
+
+        return util::in_out_result<InIter1, InIter2>{std::next(first, count),
+            util::loop_with_cleanup_n_with_token(
+                first, count, dest, tok,
+                [](InIter1 it, InIter2 dest) -> void {
+                    ::new (std::addressof(*dest)) value_type(PIKA_MOVE(*it));
+                },
+                [](InIter2 dest) -> void { (*dest).~value_type(); })};
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename ExPolicy, typename Iter, typename FwdIter2>
+    typename util::detail::algorithm_result<ExPolicy,
+        util::in_out_result<Iter, FwdIter2>>::type
+    parallel_sequential_uninitialized_move_n(
+        ExPolicy&& policy, Iter first, std::size_t count, FwdIter2 dest)
+    {
+        if (count == 0)
+        {
+            return util::detail::algorithm_result<ExPolicy,
+                util::in_out_result<Iter, FwdIter2>>::
+                get(util::in_out_result<Iter, FwdIter2>{first, dest});
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename InIter1, typename InIter2>
-        util::in_out_result<InIter1, InIter2> sequential_uninitialized_move_n(
-            InIter1 first, std::size_t count, InIter2 dest,
-            util::cancellation_token<util::detail::no_data>& tok)
-        {
-            using value_type =
-                typename std::iterator_traits<InIter2>::value_type;
+        using zip_iterator = pika::util::zip_iterator<Iter, FwdIter2>;
+        using partition_result_type = std::pair<FwdIter2, FwdIter2>;
+        using value_type = typename std::iterator_traits<FwdIter2>::value_type;
 
-            return util::in_out_result<InIter1, InIter2>{
-                std::next(first, count),
-                util::loop_with_cleanup_n_with_token(
-                    first, count, dest, tok,
-                    [](InIter1 it, InIter2 dest) -> void {
-                        ::new (std::addressof(*dest))
-                            value_type(PIKA_MOVE(*it));
-                    },
-                    [](InIter2 dest) -> void { (*dest).~value_type(); })};
+        util::cancellation_token<util::detail::no_data> tok;
+        return util::partitioner_with_cleanup<ExPolicy,
+            util::in_out_result<Iter, FwdIter2>, partition_result_type>::
+            call(
+                PIKA_FORWARD(ExPolicy, policy),
+                pika::util::make_zip_iterator(first, dest), count,
+                [tok](zip_iterator t,
+                    std::size_t part_size) mutable -> partition_result_type {
+                    using std::get;
+                    auto iters = t.get_iterator_tuple();
+                    FwdIter2 dest = get<1>(iters);
+                    return std::make_pair(dest,
+                        util::get_second_element(
+                            sequential_uninitialized_move_n(
+                                get<0>(iters), part_size, dest, tok)));
+                },
+                // finalize, called once if no error occurred
+                [first, dest, count](
+                    std::vector<pika::future<partition_result_type>>&&
+                        data) mutable -> util::in_out_result<Iter, FwdIter2> {
+                    // make sure iterators embedded in function object that is
+                    // attached to futures are invalidated
+                    data.clear();
+
+                    std::advance(first, count);
+                    std::advance(dest, count);
+                    return util::in_out_result<Iter, FwdIter2>{first, dest};
+                },
+                // cleanup function, called for each partition which
+                // didn't fail, but only if at least one failed
+                [](partition_result_type&& r) -> void {
+                    while (r.first != r.second)
+                    {
+                        (*r.first).~value_type();
+                        ++r.first;
+                    }
+                });
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename IterPair>
+    struct uninitialized_move
+      : public detail::algorithm<uninitialized_move<IterPair>, IterPair>
+    {
+        uninitialized_move()
+          : uninitialized_move::algorithm("uninitialized_move")
+        {
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename ExPolicy, typename Iter, typename FwdIter2>
-        typename util::detail::algorithm_result<ExPolicy,
+        template <typename ExPolicy, typename InIter1, typename Sent,
+            typename FwdIter2>
+        static util::in_out_result<InIter1, FwdIter2> sequential(
+            ExPolicy, InIter1 first, Sent last, FwdIter2 dest)
+        {
+            return sequential_uninitialized_move(
+                first, dest, [last](InIter1 first, FwdIter2) -> bool {
+                    return first != last;
+                });
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename FwdIter2>
+        static typename util::detail::algorithm_result<ExPolicy,
             util::in_out_result<Iter, FwdIter2>>::type
-        parallel_sequential_uninitialized_move_n(
-            ExPolicy&& policy, Iter first, std::size_t count, FwdIter2 dest)
+        parallel(ExPolicy&& policy, Iter first, Sent last, FwdIter2 dest)
         {
-            if (count == 0)
-            {
-                return util::detail::algorithm_result<ExPolicy,
-                    util::in_out_result<Iter, FwdIter2>>::
-                    get(util::in_out_result<Iter, FwdIter2>{first, dest});
-            }
-
-            using zip_iterator = pika::util::zip_iterator<Iter, FwdIter2>;
-            using partition_result_type = std::pair<FwdIter2, FwdIter2>;
-            using value_type =
-                typename std::iterator_traits<FwdIter2>::value_type;
-
-            util::cancellation_token<util::detail::no_data> tok;
-            return util::partitioner_with_cleanup<ExPolicy,
-                util::in_out_result<Iter, FwdIter2>, partition_result_type>::
-                call(
-                    PIKA_FORWARD(ExPolicy, policy),
-                    pika::util::make_zip_iterator(first, dest), count,
-                    [tok](zip_iterator t, std::size_t part_size) mutable
-                    -> partition_result_type {
-                        using std::get;
-                        auto iters = t.get_iterator_tuple();
-                        FwdIter2 dest = get<1>(iters);
-                        return std::make_pair(dest,
-                            util::get_second_element(
-                                sequential_uninitialized_move_n(
-                                    get<0>(iters), part_size, dest, tok)));
-                    },
-                    // finalize, called once if no error occurred
-                    [first, dest, count](
-                        std::vector<pika::future<partition_result_type>>&&
-                            data) mutable
-                    -> util::in_out_result<Iter, FwdIter2> {
-                        // make sure iterators embedded in function object that is
-                        // attached to futures are invalidated
-                        data.clear();
-
-                        std::advance(first, count);
-                        std::advance(dest, count);
-                        return util::in_out_result<Iter, FwdIter2>{first, dest};
-                    },
-                    // cleanup function, called for each partition which
-                    // didn't fail, but only if at least one failed
-                    [](partition_result_type&& r) -> void {
-                        while (r.first != r.second)
-                        {
-                            (*r.first).~value_type();
-                            ++r.first;
-                        }
-                    });
+            return parallel_sequential_uninitialized_move_n(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), dest);
         }
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename IterPair>
-        struct uninitialized_move
-          : public detail::algorithm<uninitialized_move<IterPair>, IterPair>
-        {
-            uninitialized_move()
-              : uninitialized_move::algorithm("uninitialized_move")
-            {
-            }
-
-            template <typename ExPolicy, typename InIter1, typename Sent,
-                typename FwdIter2>
-            static util::in_out_result<InIter1, FwdIter2> sequential(
-                ExPolicy, InIter1 first, Sent last, FwdIter2 dest)
-            {
-                return sequential_uninitialized_move(
-                    first, dest, [last](InIter1 first, FwdIter2) -> bool {
-                        return first != last;
-                    });
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename FwdIter2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<Iter, FwdIter2>>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, FwdIter2 dest)
-            {
-                return parallel_sequential_uninitialized_move_n(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), dest);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+    };
+    /// \endcond
 
     /////////////////////////////////////////////////////////////////////////////
     // uninitialized_move_sent
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename IterPair>
-        struct uninitialized_move_sent
-          : public detail::algorithm<uninitialized_move_sent<IterPair>,
-                IterPair>
+    /// \cond NOINTERNAL
+    template <typename IterPair>
+    struct uninitialized_move_sent
+      : public detail::algorithm<uninitialized_move_sent<IterPair>, IterPair>
+    {
+        uninitialized_move_sent()
+          : uninitialized_move_sent::algorithm("uninitialized_move_sent")
         {
-            uninitialized_move_sent()
-              : uninitialized_move_sent::algorithm("uninitialized_move_sent")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename InIter1, typename Sent1,
-                typename FwdIter2, typename Sent2>
-            static util::in_out_result<InIter1, FwdIter2> sequential(ExPolicy,
-                InIter1 first, Sent1 last, FwdIter2 dest, Sent2 last_d)
-            {
-                return sequential_uninitialized_move(first, dest,
-                    [last, last_d](InIter1 first, FwdIter2 current) -> bool {
-                        return !(first == last || current == last_d);
-                    });
-            }
+        template <typename ExPolicy, typename InIter1, typename Sent1,
+            typename FwdIter2, typename Sent2>
+        static util::in_out_result<InIter1, FwdIter2> sequential(
+            ExPolicy, InIter1 first, Sent1 last, FwdIter2 dest, Sent2 last_d)
+        {
+            return sequential_uninitialized_move(first, dest,
+                [last, last_d](InIter1 first, FwdIter2 current) -> bool {
+                    return !(first == last || current == last_d);
+                });
+        }
 
-            template <typename ExPolicy, typename Iter, typename Sent1,
-                typename FwdIter2, typename Sent2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<Iter, FwdIter2>>::type
-            parallel(ExPolicy&& policy, Iter first, Sent1 last, FwdIter2 dest,
-                Sent2 last_d)
-            {
-                std::size_t dist1 = detail::distance(first, last);
-                std::size_t dist2 = detail::distance(dest, last_d);
-                std::size_t dist = dist1 <= dist2 ? dist1 : dist2;
+        template <typename ExPolicy, typename Iter, typename Sent1,
+            typename FwdIter2, typename Sent2>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<Iter, FwdIter2>>::type
+        parallel(ExPolicy&& policy, Iter first, Sent1 last, FwdIter2 dest,
+            Sent2 last_d)
+        {
+            std::size_t dist1 = detail::distance(first, last);
+            std::size_t dist2 = detail::distance(dest, last_d);
+            std::size_t dist = dist1 <= dist2 ? dist1 : dist2;
 
-                return parallel_sequential_uninitialized_move_n(
-                    PIKA_FORWARD(ExPolicy, policy), first, dist, dest);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return parallel_sequential_uninitialized_move_n(
+                PIKA_FORWARD(ExPolicy, policy), first, dist, dest);
+        }
+    };
+    /// \endcond
 
     /////////////////////////////////////////////////////////////////////////////
     // uninitialized_move_n
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // provide our own implementation of std::uninitialized_move_n as some
-        // versions of MSVC horribly fail at compiling it for some types T
-        template <typename InIter1, typename InIter2>
-        util::in_out_result<InIter1, InIter2> std_uninitialized_move_n(
-            InIter1 first, std::size_t count, InIter2 d_first)
+    // provide our own implementation of std::uninitialized_move_n as some
+    // versions of MSVC horribly fail at compiling it for some types T
+    template <typename InIter1, typename InIter2>
+    util::in_out_result<InIter1, InIter2> std_uninitialized_move_n(
+        InIter1 first, std::size_t count, InIter2 d_first)
+    {
+        using value_type = typename std::iterator_traits<InIter2>::value_type;
+
+        InIter2 current = d_first;
+        try
         {
-            using value_type =
-                typename std::iterator_traits<InIter2>::value_type;
+            for (/* */; count != 0; ++first, (void) ++current, --count)
+            {
+                ::new (std::addressof(*current)) value_type(PIKA_MOVE(*first));
+            }
+            return util::in_out_result<InIter1, InIter2>{first, current};
+        }
+        catch (...)
+        {
+            for (/* */; d_first != current; ++d_first)
+            {
+                (*d_first).~value_type();
+            }
+            throw;
+        }
+    }
 
-            InIter2 current = d_first;
-            try
-            {
-                for (/* */; count != 0; ++first, (void) ++current, --count)
-                {
-                    ::new (std::addressof(*current))
-                        value_type(PIKA_MOVE(*first));
-                }
-                return util::in_out_result<InIter1, InIter2>{first, current};
-            }
-            catch (...)
-            {
-                for (/* */; d_first != current; ++d_first)
-                {
-                    (*d_first).~value_type();
-                }
-                throw;
-            }
+    template <typename IterPair>
+    struct uninitialized_move_n
+      : public detail::algorithm<uninitialized_move_n<IterPair>, IterPair>
+    {
+        uninitialized_move_n()
+          : uninitialized_move_n::algorithm("uninitialized_move_n")
+        {
         }
 
-        template <typename IterPair>
-        struct uninitialized_move_n
-          : public detail::algorithm<uninitialized_move_n<IterPair>, IterPair>
+        template <typename ExPolicy, typename InIter1, typename InIter2>
+        static IterPair sequential(
+            ExPolicy, InIter1 first, std::size_t count, InIter2 dest)
         {
-            uninitialized_move_n()
-              : uninitialized_move_n::algorithm("uninitialized_move_n")
-            {
-            }
+            return std_uninitialized_move_n(first, count, dest);
+        }
 
-            template <typename ExPolicy, typename InIter1, typename InIter2>
-            static IterPair sequential(
-                ExPolicy, InIter1 first, std::size_t count, InIter2 dest)
-            {
-                return std_uninitialized_move_n(first, count, dest);
-            }
-
-            template <typename ExPolicy, typename Iter, typename FwdIter2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                IterPair>::type
-            parallel(
-                ExPolicy&& policy, Iter first, std::size_t count, FwdIter2 dest)
-            {
-                return parallel_sequential_uninitialized_move_n(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, dest);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+        template <typename ExPolicy, typename Iter, typename FwdIter2>
+        static typename util::detail::algorithm_result<ExPolicy, IterPair>::type
+        parallel(
+            ExPolicy&& policy, Iter first, std::size_t count, FwdIter2 dest)
+        {
+            return parallel_sequential_uninitialized_move_n(
+                PIKA_FORWARD(ExPolicy, policy), first, count, dest);
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

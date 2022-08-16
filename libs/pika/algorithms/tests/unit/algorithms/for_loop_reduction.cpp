@@ -37,7 +37,7 @@ void test_for_loop_reduction_plus(ExPolicy&& policy, IteratorTag)
 
     std::size_t sum = 0;
     pika::for_loop(std::forward<ExPolicy>(policy), iterator(std::begin(c)),
-        iterator(std::end(c)), pika::parallel::reduction_plus(sum),
+        iterator(std::end(c)), pika::reduction_plus(sum),
         [](iterator it, std::size_t& sum) { sum += *it; });
 
     // verify values
@@ -60,7 +60,7 @@ void test_for_loop_reduction_multiplies(ExPolicy&& policy, IteratorTag)
 
     std::size_t prod = 0;
     pika::for_loop(std::forward<ExPolicy>(policy), iterator(std::begin(c)),
-        iterator(std::end(c)), pika::parallel::reduction_multiplies(prod),
+        iterator(std::end(c)), pika::reduction_multiplies(prod),
         [](iterator it, std::size_t& prod) { prod *= *it; });
 
     // verify values
@@ -84,7 +84,7 @@ void test_for_loop_reduction_min(ExPolicy&& policy, IteratorTag)
     std::size_t minval = c[0];
 
     pika::for_loop(std::forward<ExPolicy>(policy), iterator(std::begin(c)),
-        iterator(std::end(c)), pika::parallel::reduction_min(minval),
+        iterator(std::end(c)), pika::reduction_min(minval),
         [](iterator it, std::size_t& minval) {
             minval = (std::min)(minval, *it);
         });
@@ -132,7 +132,7 @@ void test_for_loop_reduction_bit_and_idx(ExPolicy&& policy)
 
     std::size_t bits = ~std::size_t(0);
     pika::for_loop(std::forward<ExPolicy>(policy), 0, c.size(),
-        pika::parallel::reduction_bit_and(bits),
+        pika::reduction_bit_and(bits),
         [&c](std::size_t i, std::size_t& bits) { bits &= c[i]; });
 
     // verify values
@@ -152,7 +152,7 @@ void test_for_loop_reduction_bit_or_idx(ExPolicy&& policy)
 
     std::size_t bits = 0;
     pika::for_loop(std::forward<ExPolicy>(policy), 0, c.size(),
-        pika::parallel::reduction_bit_or(bits),
+        pika::reduction_bit_or(bits),
         [&c](std::size_t i, std::size_t& bits) { bits |= c[i]; });
 
     // verify values

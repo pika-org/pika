@@ -1080,8 +1080,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     /// `replace_copy_if_result` is equivalent to
     /// `pika::parallel::util::in_out_result`
     template <typename I, typename O>
@@ -1629,6 +1628,6 @@ namespace pika { namespace ranges {
                 new_value, PIKA_FORWARD(Proj, proj));
         }
     } replace_copy{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

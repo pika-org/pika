@@ -31,6 +31,6 @@ namespace pika::execution {
 
     template <typename Executor, typename Parameters>
     struct par_simd_task_policy_shim;
-}    // namespace pika::execution::v1
+}    // namespace pika::execution
 
 #endif

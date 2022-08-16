@@ -31,10 +31,8 @@
 #endif
 #endif
 
-namespace pika { namespace parallel { namespace util {
-
+namespace pika::parallel::util {
     namespace prefetching {
-
         template <typename Itr, typename... Ts>
         class prefetching_iterator
         {
@@ -589,4 +587,4 @@ namespace pika { namespace parallel { namespace util {
             }
         };
     }    // namespace detail
-}}}      // namespace pika::parallel::util
+}    // namespace pika::parallel::util

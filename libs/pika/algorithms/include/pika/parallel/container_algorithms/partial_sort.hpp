@@ -272,7 +272,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::partial_sort
     inline constexpr struct partial_sort_t final
@@ -301,7 +301,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::partial_sort<RandomIt>().call(
+            return pika::parallel::detail::partial_sort<RandomIt>().call(
                 pika::execution::seq, first, middle, last,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
         }
@@ -330,7 +330,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::partial_sort<RandomIt>().call(
+            return pika::parallel::detail::partial_sort<RandomIt>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, middle, last,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
         }
@@ -360,7 +360,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::partial_sort<iterator_type>().call(
+            return pika::parallel::detail::partial_sort<iterator_type>().call(
                 pika::execution::seq, pika::util::begin(rng), middle,
                 pika::util::end(rng), PIKA_FORWARD(Compare, comp),
                 PIKA_FORWARD(Proj, proj));
@@ -392,12 +392,12 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::partial_sort<iterator_type>().call(
+            return pika::parallel::detail::partial_sort<iterator_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng), middle,
                 pika::util::end(rng), PIKA_FORWARD(Compare, comp),
                 PIKA_FORWARD(Proj, proj));
         }
     } partial_sort{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

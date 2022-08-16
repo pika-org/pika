@@ -196,198 +196,190 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel ::detail {
     ///////////////////////////////////////////////////////////////////////////
     // equal (binary)
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // Our own version of the C++14 equal (_binary).
-        template <typename InIter1, typename Sent1, typename InIter2,
-            typename Sent2, typename F, typename Proj1, typename Proj2>
-        bool sequential_equal_binary(InIter1 first1, Sent1 last1,
-            InIter2 first2, Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
+    // Our own version of the C++14 equal (_binary).
+    template <typename InIter1, typename Sent1, typename InIter2,
+        typename Sent2, typename F, typename Proj1, typename Proj2>
+    bool sequential_equal_binary(InIter1 first1, Sent1 last1, InIter2 first2,
+        Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
+    {
+        for (/* */; first1 != last1 && first2 != last2;
+             (void) ++first1, ++first2)
         {
-            for (/* */; first1 != last1 && first2 != last2;
-                 (void) ++first1, ++first2)
-            {
-                if (!PIKA_INVOKE(f, PIKA_INVOKE(proj1, *first1),
-                        PIKA_INVOKE(proj2, *first2)))
-                    return false;
-            }
-            return first1 == last1 && first2 == last2;
+            if (!PIKA_INVOKE(f, PIKA_INVOKE(proj1, *first1),
+                    PIKA_INVOKE(proj2, *first2)))
+                return false;
+        }
+        return first1 == last1 && first2 == last2;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    struct equal_binary : public detail::algorithm<equal_binary, bool>
+    {
+        equal_binary()
+          : equal_binary::algorithm("equal_binary")
+        {
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        struct equal_binary : public detail::algorithm<equal_binary, bool>
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename F, typename Proj1,
+            typename Proj2>
+        static bool sequential(ExPolicy, Iter1 first1, Sent1 last1,
+            Iter2 first2, Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
-            equal_binary()
-              : equal_binary::algorithm("equal_binary")
+            return sequential_equal_binary(first1, last1, first2, last2,
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename F, typename Proj1,
+            typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
+        {
+            using difference_type1 =
+                typename std::iterator_traits<Iter1>::difference_type;
+            using difference_type2 =
+                typename std::iterator_traits<Iter2>::difference_type;
+
+            if (first1 == last1)
             {
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    first2 == last2);
             }
 
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename F, typename Proj1,
-                typename Proj2>
-            static bool sequential(ExPolicy, Iter1 first1, Sent1 last1,
-                Iter2 first2, Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
+            if (first2 == last2)
             {
-                return sequential_equal_binary(first1, last1, first2, last2,
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    false);
             }
 
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename F, typename Proj1,
-                typename Proj2>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
-                Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
+            difference_type1 count1 = detail::distance(first1, last1);
+
+            // The specification of std::equal(_binary) states that if FwdIter1
+            // and FwdIter2 meet the requirements of RandomAccessIterator and
+            // last1 - first1 != last2 - first2 then no applications of the
+            // predicate p are made.
+            //
+            // We perform this check for any iterator type better than input
+            // iterators. This could turn into a QoI issue.
+            difference_type2 count2 = detail::distance(first2, last2);
+            if (count1 != count2)
             {
-                using difference_type1 =
-                    typename std::iterator_traits<Iter1>::difference_type;
-                using difference_type2 =
-                    typename std::iterator_traits<Iter2>::difference_type;
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    false);
+            }
 
-                if (first1 == last1)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        first2 == last2);
-                }
+            using zip_iterator = pika::util::zip_iterator<Iter1, Iter2>;
+            using reference = typename zip_iterator::reference;
 
-                if (first2 == last2)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        false);
-                }
+            util::cancellation_token<> tok;
 
-                difference_type1 count1 = detail::distance(first1, last1);
-
-                // The specification of std::equal(_binary) states that if FwdIter1
-                // and FwdIter2 meet the requirements of RandomAccessIterator and
-                // last1 - first1 != last2 - first2 then no applications of the
-                // predicate p are made.
-                //
-                // We perform this check for any iterator type better than input
-                // iterators. This could turn into a QoI issue.
-                difference_type2 count2 = detail::distance(first2, last2);
-                if (count1 != count2)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        false);
-                }
-
-                using zip_iterator = pika::util::zip_iterator<Iter1, Iter2>;
-                using reference = typename zip_iterator::reference;
-
-                util::cancellation_token<> tok;
-
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [tok, f = PIKA_FORWARD(F, f),
-                              proj1 = PIKA_FORWARD(Proj1, proj1),
-                              proj2 = PIKA_FORWARD(Proj2, proj2)](
-                              zip_iterator it,
-                              std::size_t part_count) mutable -> bool {
-                    util::loop_n<std::decay_t<ExPolicy>>(it, part_count, tok,
-                        [&f, &proj1, &proj2, &tok](zip_iterator const& curr) {
-                            reference t = *curr;
-                            if (!pika::util::detail::invoke(f,
-                                    pika::util::detail::invoke(
-                                        proj1, std::get<0>(t)),
-                                    pika::util::detail::invoke(
-                                        proj2, std::get<1>(t))))
-                            {
-                                tok.cancel();
-                            }
-                        });
-                    return !tok.was_cancelled();
-                };
-
-                return util::partitioner<ExPolicy, bool>::call(
-                    PIKA_FORWARD(ExPolicy, policy),
-                    pika::util::make_zip_iterator(first1, first2), count1,
-                    PIKA_MOVE(f1),
-                    [](std::vector<pika::future<bool>>&& results) -> bool {
-                        return std::all_of(pika::util::begin(results),
-                            pika::util::end(results),
-                            [](pika::future<bool>& val) { return val.get(); });
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [tok, f = PIKA_FORWARD(F, f),
+                          proj1 = PIKA_FORWARD(Proj1, proj1),
+                          proj2 = PIKA_FORWARD(Proj2, proj2)](zip_iterator it,
+                          std::size_t part_count) mutable -> bool {
+                util::loop_n<std::decay_t<ExPolicy>>(it, part_count, tok,
+                    [&f, &proj1, &proj2, &tok](zip_iterator const& curr) {
+                        reference t = *curr;
+                        if (!pika::util::detail::invoke(f,
+                                pika::util::detail::invoke(
+                                    proj1, std::get<0>(t)),
+                                pika::util::detail::invoke(
+                                    proj2, std::get<1>(t))))
+                        {
+                            tok.cancel();
+                        }
                     });
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+                return !tok.was_cancelled();
+            };
+
+            return util::partitioner<ExPolicy, bool>::call(
+                PIKA_FORWARD(ExPolicy, policy),
+                pika::util::make_zip_iterator(first1, first2), count1,
+                PIKA_MOVE(f1),
+                [](std::vector<pika::future<bool>>&& results) -> bool {
+                    return std::all_of(pika::util::begin(results),
+                        pika::util::end(results),
+                        [](pika::future<bool>& val) { return val.get(); });
+                });
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // equal
-    namespace detail {
-        /// \cond NOINTERNAL
-        struct equal : public detail::algorithm<equal, bool>
+    /// \cond NOINTERNAL
+    struct equal : public detail::algorithm<equal, bool>
+    {
+        equal()
+          : equal::algorithm("equal")
         {
-            equal()
-              : equal::algorithm("equal")
+        }
+
+        template <typename ExPolicy, typename InIter1, typename InIter2,
+            typename F>
+        static bool sequential(
+            ExPolicy, InIter1 first1, InIter1 last1, InIter2 first2, F&& f)
+        {
+            return std::equal(first1, last1, first2, PIKA_FORWARD(F, f));
+        }
+
+        template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
+            typename F>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
+            FwdIter2 first2, F&& f)
+        {
+            if (first1 == last1)
             {
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    true);
             }
 
-            template <typename ExPolicy, typename InIter1, typename InIter2,
-                typename F>
-            static bool sequential(
-                ExPolicy, InIter1 first1, InIter1 last1, InIter2 first2, F&& f)
-            {
-                return std::equal(first1, last1, first2, PIKA_FORWARD(F, f));
-            }
+            using difference_type =
+                typename std::iterator_traits<FwdIter1>::difference_type;
+            difference_type count = std::distance(first1, last1);
 
-            template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-                typename F>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
-                FwdIter2 first2, F&& f)
-            {
-                if (first1 == last1)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        true);
-                }
+            using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
+            using reference = typename zip_iterator::reference;
 
-                using difference_type =
-                    typename std::iterator_traits<FwdIter1>::difference_type;
-                difference_type count = std::distance(first1, last1);
-
-                using zip_iterator =
-                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
-                using reference = typename zip_iterator::reference;
-
-                util::cancellation_token<> tok;
-                auto f1 = [f, tok](zip_iterator it,
-                              std::size_t part_count) mutable -> bool {
-                    util::loop_n<std::decay_t<ExPolicy>>(it, part_count, tok,
-                        [&f, &tok](zip_iterator const& curr) mutable -> void {
-                            reference t = *curr;
-                            if (!PIKA_INVOKE(f, std::get<0>(t), std::get<1>(t)))
-                            {
-                                tok.cancel();
-                            }
-                        });
-                    return !tok.was_cancelled();
-                };
-
-                return util::partitioner<ExPolicy, bool>::call(
-                    PIKA_FORWARD(ExPolicy, policy),
-                    pika::util::make_zip_iterator(first1, first2), count,
-                    PIKA_MOVE(f1),
-                    [](std::vector<pika::future<bool>>&& results) {
-                        return std::all_of(pika::util::begin(results),
-                            pika::util::end(results),
-                            [](pika::future<bool>& val) { return val.get(); });
+            util::cancellation_token<> tok;
+            auto f1 = [f, tok](zip_iterator it,
+                          std::size_t part_count) mutable -> bool {
+                util::loop_n<std::decay_t<ExPolicy>>(it, part_count, tok,
+                    [&f, &tok](zip_iterator const& curr) mutable -> void {
+                        reference t = *curr;
+                        if (!PIKA_INVOKE(f, std::get<0>(t), std::get<1>(t)))
+                        {
+                            tok.cancel();
+                        }
                     });
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+                return !tok.was_cancelled();
+            };
+
+            return util::partitioner<ExPolicy, bool>::call(
+                PIKA_FORWARD(ExPolicy, policy),
+                pika::util::make_zip_iterator(first1, first2), count,
+                PIKA_MOVE(f1), [](std::vector<pika::future<bool>>&& results) {
+                    return std::all_of(pika::util::begin(results),
+                        pika::util::end(results),
+                        [](pika::future<bool>& val) { return val.get(); });
+                });
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::equal
     inline constexpr struct equal_t final
@@ -567,9 +559,8 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::detail::equal().call(
-                pika::execution::seq, first1, last1, first2,
-                PIKA_FORWARD(Pred, op));
+            return pika::parallel::detail::equal().call(pika::execution::seq,
+                first1, last1, first2, PIKA_FORWARD(Pred, op));
         }
 
         // clang-format off
@@ -587,9 +578,8 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::detail::equal().call(
-                pika::execution::seq, first1, last1, first2,
-                pika::parallel::detail::equal_to{});
+            return pika::parallel::detail::equal().call(pika::execution::seq,
+                first1, last1, first2, pika::parallel::detail::equal_to{});
         }
     } equal{};
 }    // namespace pika

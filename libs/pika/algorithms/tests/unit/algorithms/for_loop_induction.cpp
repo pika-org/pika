@@ -37,7 +37,7 @@ void test_for_loop_induction(ExPolicy&& policy, IteratorTag)
     std::iota(std::begin(c), std::end(c), gen());
 
     pika::for_loop(std::forward<ExPolicy>(policy), iterator(std::begin(c)),
-        iterator(std::end(c)), pika::parallel::induction(0),
+        iterator(std::end(c)), pika::induction(0),
         [&d](iterator it, std::size_t i) {
             *it = 42;
             d[i] = 42;
@@ -68,8 +68,7 @@ void test_for_loop_induction_stride(ExPolicy&& policy, IteratorTag)
     std::iota(std::begin(c), std::end(c), gen());
 
     pika::for_loop(std::forward<ExPolicy>(policy), iterator(std::begin(c)),
-        iterator(std::end(c)), pika::parallel::induction(0),
-        pika::parallel::induction(0, 2),
+        iterator(std::end(c)), pika::induction(0), pika::induction(0, 2),
         [&d](iterator it, std::size_t i, std::size_t j) {
             *it = 42;
             d[i] = 42;
@@ -103,7 +102,7 @@ void test_for_loop_induction_life_out(ExPolicy&& policy, IteratorTag)
     std::size_t curr = 0;
 
     pika::for_loop(std::forward<ExPolicy>(policy), iterator(std::begin(c)),
-        iterator(std::end(c)), pika::parallel::induction(curr),
+        iterator(std::end(c)), pika::induction(curr),
         [&d](iterator it, std::size_t i) {
             *it = 42;
             d[i] = 42;
@@ -138,8 +137,8 @@ void test_for_loop_induction_stride_life_out(ExPolicy&& policy, IteratorTag)
     std::size_t curr2 = 0;
 
     pika::for_loop(std::forward<ExPolicy>(policy), iterator(std::begin(c)),
-        iterator(std::end(c)), pika::parallel::induction(curr1),
-        pika::parallel::induction(curr2, 2),
+        iterator(std::end(c)), pika::induction(curr1),
+        pika::induction(curr2, 2),
         [&d](iterator it, std::size_t i, std::size_t j) {
             *it = 42;
             d[i] = 42;
@@ -199,7 +198,7 @@ void test_for_loop_induction_idx(ExPolicy&& policy)
     std::iota(std::begin(c), std::end(c), gen());
 
     pika::for_loop(std::forward<ExPolicy>(policy), 0, c.size(),
-        pika::parallel::induction(0), [&c](std::size_t i, std::size_t j) {
+        pika::induction(0), [&c](std::size_t i, std::size_t j) {
             c[i] = 42;
             PIKA_TEST_EQ(i, j);
         });
@@ -223,7 +222,7 @@ void test_for_loop_induction_stride_idx(ExPolicy&& policy)
     std::iota(std::begin(c), std::end(c), gen());
 
     pika::for_loop(std::forward<ExPolicy>(policy), 0, c.size(),
-        pika::parallel::induction(0), pika::parallel::induction(0, 2),
+        pika::induction(0), pika::induction(0, 2),
         [&c](std::size_t i, std::size_t j, std::size_t k) {
             c[i] = 42;
             PIKA_TEST_EQ(i, j);

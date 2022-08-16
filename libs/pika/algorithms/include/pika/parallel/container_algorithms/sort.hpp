@@ -282,7 +282,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::sort
     inline constexpr struct sort_t final
@@ -410,6 +410,6 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(Proj, proj));
         }
     } sort{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

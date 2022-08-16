@@ -20,9 +20,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace util {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     namespace detail {
         template <typename Category, typename Enable = void>
         struct copy_helper;
@@ -334,4 +332,4 @@ namespace pika { namespace parallel { namespace util {
                 std::decay_t<OutIter>>;
         return detail::move_n_helper<category>::call(first, count, dest);
     }
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

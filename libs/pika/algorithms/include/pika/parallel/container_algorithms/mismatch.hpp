@@ -227,8 +227,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter1, typename Iter2>
     using mismatch_result = pika::parallel::util::in_in_result<Iter1, Iter2>;
@@ -310,11 +309,11 @@ namespace pika { namespace ranges {
                 typename pika::traits::range_traits<Rng1>::iterator_type,
                 typename pika::traits::range_traits<Rng2>::iterator_type>;
 
-            return pika::parallel::detail::mismatch_binary<result_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
-                    pika::util::end(rng1), pika::util::begin(rng2),
-                    pika::util::end(rng2), PIKA_FORWARD(Pred, op),
-                    PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::detail::mismatch_binary<result_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
+                pika::util::end(rng1), pika::util::begin(rng2),
+                pika::util::end(rng2), PIKA_FORWARD(Pred, op),
+                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
         }
 
         // clang-format off
@@ -385,14 +384,14 @@ namespace pika { namespace ranges {
                 typename pika::traits::range_traits<Rng1>::iterator_type,
                 typename pika::traits::range_traits<Rng2>::iterator_type>;
 
-            return pika::parallel::detail::mismatch_binary<result_type>()
-                .call(pika::execution::seq, pika::util::begin(rng1),
-                    pika::util::end(rng1), pika::util::begin(rng2),
-                    pika::util::end(rng2), PIKA_FORWARD(Pred, op),
-                    PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::detail::mismatch_binary<result_type>().call(
+                pika::execution::seq, pika::util::begin(rng1),
+                pika::util::end(rng1), pika::util::begin(rng2),
+                pika::util::end(rng2), PIKA_FORWARD(Pred, op),
+                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
         }
 
     } mismatch{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

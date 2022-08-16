@@ -201,485 +201,462 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel {
-
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // transform
-    namespace detail {
+    /// \cond NOINTERNAL
+    template <typename F, typename Proj>
+    struct transform_projected
+    {
+        std::decay_t<F>& f_;
+        std::decay_t<Proj>& proj_;
 
-        /// \cond NOINTERNAL
-        template <typename F, typename Proj>
-        struct transform_projected
+        PIKA_HOST_DEVICE constexpr transform_projected(
+            F& f, Proj& proj) noexcept
+          : f_(f)
+          , proj_(proj)
         {
-            std::decay_t<F>& f_;
-            std::decay_t<Proj>& proj_;
+        }
 
-            PIKA_HOST_DEVICE constexpr transform_projected(
-                F& f, Proj& proj) noexcept
-              : f_(f)
-              , proj_(proj)
-            {
-            }
-
-            template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Iter curr)
-                -> decltype(PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr)))
-            {
-                return PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr));
-            }
-        };
-
-        template <typename F>
-        struct transform_projected<F, util::projection_identity>
+        template <typename Iter>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Iter curr)
+            -> decltype(PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr)))
         {
-            std::decay_t<F>& f_;
+            return PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr));
+        }
+    };
 
-            PIKA_HOST_DEVICE constexpr transform_projected(
-                F& f, util::projection_identity) noexcept
-              : f_(f)
-            {
-            }
+    template <typename F>
+    struct transform_projected<F, util::projection_identity>
+    {
+        std::decay_t<F>& f_;
 
-            template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Iter curr) -> decltype(PIKA_INVOKE(f_, *curr))
-            {
-                return PIKA_INVOKE(f_, *curr);
-            }
-        };
-
-        template <typename ExPolicy, typename F, typename Proj>
-        struct transform_iteration
+        PIKA_HOST_DEVICE constexpr transform_projected(
+            F& f, util::projection_identity) noexcept
+          : f_(f)
         {
-            using execution_policy_type = std::decay_t<ExPolicy>;
-            using fun_type = std::decay_t<F>;
-            using proj_type = std::decay_t<Proj>;
+        }
 
-            fun_type f_;
-            proj_type proj_;
+        template <typename Iter>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(Iter curr)
+            -> decltype(PIKA_INVOKE(f_, *curr))
+        {
+            return PIKA_INVOKE(f_, *curr);
+        }
+    };
 
-            template <typename F_, typename Proj_>
-            PIKA_HOST_DEVICE transform_iteration(F_&& f, Proj_&& proj)
-              : f_(PIKA_FORWARD(F_, f))
-              , proj_(PIKA_FORWARD(Proj_, proj))
-            {
-            }
+    template <typename ExPolicy, typename F, typename Proj>
+    struct transform_iteration
+    {
+        using execution_policy_type = std::decay_t<ExPolicy>;
+        using fun_type = std::decay_t<F>;
+        using proj_type = std::decay_t<Proj>;
+
+        fun_type f_;
+        proj_type proj_;
+
+        template <typename F_, typename Proj_>
+        PIKA_HOST_DEVICE transform_iteration(F_&& f, Proj_&& proj)
+          : f_(PIKA_FORWARD(F_, f))
+          , proj_(PIKA_FORWARD(Proj_, proj))
+        {
+        }
 
 #if !defined(__NVCC__) && !defined(__CUDACC__)
-            transform_iteration(transform_iteration const&) = default;
-            transform_iteration(transform_iteration&&) = default;
+        transform_iteration(transform_iteration const&) = default;
+        transform_iteration(transform_iteration&&) = default;
 #else
-            PIKA_HOST_DEVICE transform_iteration(transform_iteration const& rhs)
-              : f_(rhs.f_)
-              , proj_(rhs.proj_)
-            {
-            }
-
-            PIKA_HOST_DEVICE transform_iteration(transform_iteration&& rhs)
-              : f_(PIKA_MOVE(rhs.f_))
-              , proj_(PIKA_MOVE(rhs.proj_))
-            {
-            }
-#endif
-            transform_iteration& operator=(
-                transform_iteration const&) = default;
-            transform_iteration& operator=(transform_iteration&&) = default;
-
-            template <typename Iter, typename F_ = fun_type>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE
-                std::pair<typename std::tuple_element<0,
-                              typename Iter::iterator_tuple_type>::type,
-                    typename std::tuple_element<1,
-                        typename Iter::iterator_tuple_type>::type>
-                operator()(Iter part_begin, std::size_t part_size, std::size_t)
-            {
-                auto iters = part_begin.get_iterator_tuple();
-                return util::transform_loop_n<execution_policy_type>(
-                    std::get<0>(iters), part_size, std::get<1>(iters),
-                    transform_projected<F, Proj>(f_, proj_));
-            }
-        };
-
-        template <typename ExPolicy, typename F>
-        struct transform_iteration<ExPolicy, F, util::projection_identity>
+        PIKA_HOST_DEVICE transform_iteration(transform_iteration const& rhs)
+          : f_(rhs.f_)
+          , proj_(rhs.proj_)
         {
-            using execution_policy_type = std::decay_t<ExPolicy>;
-            using fun_type = std::decay_t<F>;
+        }
 
-            fun_type f_;
+        PIKA_HOST_DEVICE transform_iteration(transform_iteration&& rhs)
+          : f_(PIKA_MOVE(rhs.f_))
+          , proj_(PIKA_MOVE(rhs.proj_))
+        {
+        }
+#endif
+        transform_iteration& operator=(transform_iteration const&) = default;
+        transform_iteration& operator=(transform_iteration&&) = default;
 
-            template <typename F_>
-            PIKA_HOST_DEVICE transform_iteration(
-                F_&& f, util::projection_identity)
-              : f_(PIKA_FORWARD(F_, f))
-            {
-            }
+        template <typename Iter, typename F_ = fun_type>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE
+            std::pair<typename std::tuple_element<0,
+                          typename Iter::iterator_tuple_type>::type,
+                typename std::tuple_element<1,
+                    typename Iter::iterator_tuple_type>::type>
+            operator()(Iter part_begin, std::size_t part_size, std::size_t)
+        {
+            auto iters = part_begin.get_iterator_tuple();
+            return util::transform_loop_n<execution_policy_type>(
+                std::get<0>(iters), part_size, std::get<1>(iters),
+                transform_projected<F, Proj>(f_, proj_));
+        }
+    };
+
+    template <typename ExPolicy, typename F>
+    struct transform_iteration<ExPolicy, F, util::projection_identity>
+    {
+        using execution_policy_type = std::decay_t<ExPolicy>;
+        using fun_type = std::decay_t<F>;
+
+        fun_type f_;
+
+        template <typename F_>
+        PIKA_HOST_DEVICE transform_iteration(F_&& f, util::projection_identity)
+          : f_(PIKA_FORWARD(F_, f))
+        {
+        }
 
 #if !defined(__NVCC__) && !defined(__CUDACC__)
-            transform_iteration(transform_iteration const&) = default;
-            transform_iteration(transform_iteration&&) = default;
+        transform_iteration(transform_iteration const&) = default;
+        transform_iteration(transform_iteration&&) = default;
 #else
-            PIKA_HOST_DEVICE transform_iteration(transform_iteration const& rhs)
-              : f_(rhs.f_)
-            {
-            }
-
-            PIKA_HOST_DEVICE transform_iteration(transform_iteration&& rhs)
-              : f_(PIKA_MOVE(rhs.f_))
-            {
-            }
-#endif
-            transform_iteration& operator=(
-                transform_iteration const&) = default;
-            transform_iteration& operator=(transform_iteration&&) = default;
-
-            template <typename Iter, typename F_ = fun_type>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE
-                std::pair<typename std::tuple_element<0,
-                              typename Iter::iterator_tuple_type>::type,
-                    typename std::tuple_element<1,
-                        typename Iter::iterator_tuple_type>::type>
-                operator()(Iter part_begin, std::size_t part_size, std::size_t)
-            {
-                auto iters = part_begin.get_iterator_tuple();
-                return util::transform_loop_n_ind<execution_policy_type>(
-                    std::get<0>(iters), part_size, std::get<1>(iters), f_);
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename IterPair>
-        struct transform
-          : public detail::algorithm<transform<IterPair>, IterPair>
+        PIKA_HOST_DEVICE transform_iteration(transform_iteration const& rhs)
+          : f_(rhs.f_)
         {
-            transform()
-              : transform::algorithm("transform")
+        }
+
+        PIKA_HOST_DEVICE transform_iteration(transform_iteration&& rhs)
+          : f_(PIKA_MOVE(rhs.f_))
+        {
+        }
+#endif
+        transform_iteration& operator=(transform_iteration const&) = default;
+        transform_iteration& operator=(transform_iteration&&) = default;
+
+        template <typename Iter, typename F_ = fun_type>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE
+            std::pair<typename std::tuple_element<0,
+                          typename Iter::iterator_tuple_type>::type,
+                typename std::tuple_element<1,
+                    typename Iter::iterator_tuple_type>::type>
+            operator()(Iter part_begin, std::size_t part_size, std::size_t)
+        {
+            auto iters = part_begin.get_iterator_tuple();
+            return util::transform_loop_n_ind<execution_policy_type>(
+                std::get<0>(iters), part_size, std::get<1>(iters), f_);
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename IterPair>
+    struct transform : public detail::algorithm<transform<IterPair>, IterPair>
+    {
+        transform()
+          : transform::algorithm("transform")
+        {
+        }
+
+        // sequential execution with non-trivial projection
+        template <typename ExPolicy, typename InIterB, typename InIterE,
+            typename OutIter, typename F, typename Proj>
+        PIKA_HOST_DEVICE static util::in_out_result<InIterB, OutIter>
+        sequential(ExPolicy&& policy, InIterB first, InIterE last, OutIter dest,
+            F&& f, Proj&& proj)
+        {
+            return util::transform_loop(PIKA_FORWARD(ExPolicy, policy), first,
+                last, dest, transform_projected<F, Proj>(f, proj));
+        }
+
+        // sequential execution without projection
+        template <typename ExPolicy, typename InIterB, typename InIterE,
+            typename OutIter, typename F>
+        PIKA_HOST_DEVICE static util::in_out_result<InIterB, OutIter>
+        sequential(ExPolicy&& policy, InIterB first, InIterE last, OutIter dest,
+            F&& f, util::projection_identity)
+        {
+            return util::transform_loop_ind(PIKA_FORWARD(ExPolicy, policy),
+                first, last, dest, PIKA_FORWARD(F, f));
+        }
+
+        template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
+            typename FwdIter2, typename F, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<FwdIter1B, FwdIter2>>::type
+        parallel(ExPolicy&& policy, FwdIter1B first, FwdIter1E last,
+            FwdIter2 dest, F&& f, Proj&& proj)
+        {
+            if (first != last)
             {
+                auto f1 = transform_iteration<ExPolicy, F, Proj>(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
+
+                return util::detail::get_in_out_result(
+                    util::foreach_partitioner<ExPolicy>::call(
+                        PIKA_FORWARD(ExPolicy, policy),
+                        pika::util::make_zip_iterator(first, dest),
+                        detail::distance(first, last), PIKA_MOVE(f1),
+                        util::projection_identity()));
             }
 
-            // sequential execution with non-trivial projection
-            template <typename ExPolicy, typename InIterB, typename InIterE,
-                typename OutIter, typename F, typename Proj>
-            PIKA_HOST_DEVICE static util::in_out_result<InIterB, OutIter>
-            sequential(ExPolicy&& policy, InIterB first, InIterE last,
-                OutIter dest, F&& f, Proj&& proj)
-            {
-                return util::transform_loop(PIKA_FORWARD(ExPolicy, policy),
-                    first, last, dest, transform_projected<F, Proj>(f, proj));
-            }
+            using result_type = util::in_out_result<FwdIter1B, FwdIter2>;
 
-            // sequential execution without projection
-            template <typename ExPolicy, typename InIterB, typename InIterE,
-                typename OutIter, typename F>
-            PIKA_HOST_DEVICE static util::in_out_result<InIterB, OutIter>
-            sequential(ExPolicy&& policy, InIterB first, InIterE last,
-                OutIter dest, F&& f, util::projection_identity)
-            {
-                return util::transform_loop_ind(PIKA_FORWARD(ExPolicy, policy),
-                    first, last, dest, PIKA_FORWARD(F, f));
-            }
-
-            template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
-                typename FwdIter2, typename F, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter1B, FwdIter2>>::type
-            parallel(ExPolicy&& policy, FwdIter1B first, FwdIter1E last,
-                FwdIter2 dest, F&& f, Proj&& proj)
-            {
-                if (first != last)
-                {
-                    auto f1 = transform_iteration<ExPolicy, F, Proj>(
-                        PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-
-                    return util::detail::get_in_out_result(
-                        util::foreach_partitioner<ExPolicy>::call(
-                            PIKA_FORWARD(ExPolicy, policy),
-                            pika::util::make_zip_iterator(first, dest),
-                            detail::distance(first, last), PIKA_MOVE(f1),
-                            util::projection_identity()));
-                }
-
-                using result_type = util::in_out_result<FwdIter1B, FwdIter2>;
-
-                return util::detail::algorithm_result<ExPolicy,
-                    result_type>::get(result_type{
-                    PIKA_MOVE(first), PIKA_MOVE(dest)});
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return util::detail::algorithm_result<ExPolicy, result_type>::get(
+                result_type{PIKA_MOVE(first), PIKA_MOVE(dest)});
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // transform binary predicate
-    namespace detail {
+    /// \cond NOINTERNAL
+    template <typename F, typename Proj1, typename Proj2>
+    struct transform_binary_projected
+    {
+        std::decay_t<F>& f_;
+        std::decay_t<Proj1>& proj1_;
+        std::decay_t<Proj2>& proj2_;
 
-        /// \cond NOINTERNAL
-        template <typename F, typename Proj1, typename Proj2>
-        struct transform_binary_projected
+        template <typename Iter1, typename Iter2>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE auto operator()(
+            Iter1 curr1, Iter2 curr2)
         {
-            std::decay_t<F>& f_;
-            std::decay_t<Proj1>& proj1_;
-            std::decay_t<Proj2>& proj2_;
+            return PIKA_INVOKE(
+                f_, PIKA_INVOKE(proj1_, *curr1), PIKA_INVOKE(proj2_, *curr2));
+        }
+    };
 
-            template <typename Iter1, typename Iter2>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE auto operator()(
-                Iter1 curr1, Iter2 curr2)
-            {
-                return PIKA_INVOKE(f_, PIKA_INVOKE(proj1_, *curr1),
-                    PIKA_INVOKE(proj2_, *curr2));
-            }
-        };
+    template <typename ExPolicy, typename F, typename Proj1, typename Proj2>
+    struct transform_binary_iteration
+    {
+        using execution_policy_type = std::decay_t<ExPolicy>;
+        using fun_type = std::decay_t<F>;
+        using proj1_type = std::decay_t<Proj1>;
+        using proj2_type = std::decay_t<Proj2>;
 
-        template <typename ExPolicy, typename F, typename Proj1, typename Proj2>
-        struct transform_binary_iteration
+        fun_type f_;
+        proj1_type proj1_;
+        proj2_type proj2_;
+
+        template <typename F_, typename Proj1_, typename Proj2_>
+        PIKA_HOST_DEVICE transform_binary_iteration(
+            F_&& f, Proj1_&& proj1, Proj2_&& proj2)
+          : f_(PIKA_FORWARD(F_, f))
+          , proj1_(PIKA_FORWARD(Proj1_, proj1))
+          , proj2_(PIKA_FORWARD(Proj2_, proj2))
         {
-            using execution_policy_type = std::decay_t<ExPolicy>;
-            using fun_type = std::decay_t<F>;
-            using proj1_type = std::decay_t<Proj1>;
-            using proj2_type = std::decay_t<Proj2>;
-
-            fun_type f_;
-            proj1_type proj1_;
-            proj2_type proj2_;
-
-            template <typename F_, typename Proj1_, typename Proj2_>
-            PIKA_HOST_DEVICE transform_binary_iteration(
-                F_&& f, Proj1_&& proj1, Proj2_&& proj2)
-              : f_(PIKA_FORWARD(F_, f))
-              , proj1_(PIKA_FORWARD(Proj1_, proj1))
-              , proj2_(PIKA_FORWARD(Proj2_, proj2))
-            {
-            }
+        }
 
 #if !defined(__NVCC__) && !defined(__CUDACC__)
-            transform_binary_iteration(
-                transform_binary_iteration const&) = default;
-            transform_binary_iteration(transform_binary_iteration&&) = default;
+        transform_binary_iteration(transform_binary_iteration const&) = default;
+        transform_binary_iteration(transform_binary_iteration&&) = default;
 #else
-            PIKA_HOST_DEVICE
-            transform_binary_iteration(transform_binary_iteration const& rhs)
-              : f_(rhs.f_)
-              , proj1_(rhs.proj1_)
-              , proj2_(rhs.proj2_)
-            {
-            }
-
-            PIKA_HOST_DEVICE
-            transform_binary_iteration(transform_binary_iteration&& rhs)
-              : f_(PIKA_MOVE(rhs.f_))
-              , proj1_(PIKA_MOVE(rhs.proj1_))
-              , proj2_(PIKA_MOVE(rhs.proj2_))
-            {
-            }
-#endif
-            transform_binary_iteration& operator=(
-                transform_binary_iteration const&) = default;
-            transform_binary_iteration& operator=(
-                transform_binary_iteration&&) = default;
-
-            template <typename Iter, typename F_ = fun_type>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE
-                std::tuple<typename std::tuple_element<0,
-                               typename Iter::iterator_tuple_type>::type,
-                    typename std::tuple_element<1,
-                        typename Iter::iterator_tuple_type>::type,
-                    typename std::tuple_element<2,
-                        typename Iter::iterator_tuple_type>::type>
-                operator()(Iter part_begin, std::size_t part_size, std::size_t)
-            {
-                auto iters = part_begin.get_iterator_tuple();
-                return util::transform_binary_loop_n<execution_policy_type>(
-                    std::get<0>(iters), part_size, std::get<1>(iters),
-                    std::get<2>(iters),
-                    transform_binary_projected<F_, Proj1, Proj2>{
-                        f_, proj1_, proj2_});
-            }
-        };
-
-        template <typename ExPolicy, typename F>
-        struct transform_binary_iteration<ExPolicy, F,
-            util::projection_identity, util::projection_identity>
+        PIKA_HOST_DEVICE
+        transform_binary_iteration(transform_binary_iteration const& rhs)
+          : f_(rhs.f_)
+          , proj1_(rhs.proj1_)
+          , proj2_(rhs.proj2_)
         {
-            using execution_policy_type = std::decay_t<ExPolicy>;
-            using fun_type = std::decay_t<F>;
+        }
 
-            fun_type f_;
+        PIKA_HOST_DEVICE
+        transform_binary_iteration(transform_binary_iteration&& rhs)
+          : f_(PIKA_MOVE(rhs.f_))
+          , proj1_(PIKA_MOVE(rhs.proj1_))
+          , proj2_(PIKA_MOVE(rhs.proj2_))
+        {
+        }
+#endif
+        transform_binary_iteration& operator=(
+            transform_binary_iteration const&) = default;
+        transform_binary_iteration& operator=(
+            transform_binary_iteration&&) = default;
 
-            template <typename F_>
-            PIKA_HOST_DEVICE transform_binary_iteration(
-                F_&& f, util::projection_identity, util::projection_identity)
-              : f_(PIKA_FORWARD(F_, f))
-            {
-            }
+        template <typename Iter, typename F_ = fun_type>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE
+            std::tuple<typename std::tuple_element<0,
+                           typename Iter::iterator_tuple_type>::type,
+                typename std::tuple_element<1,
+                    typename Iter::iterator_tuple_type>::type,
+                typename std::tuple_element<2,
+                    typename Iter::iterator_tuple_type>::type>
+            operator()(Iter part_begin, std::size_t part_size, std::size_t)
+        {
+            auto iters = part_begin.get_iterator_tuple();
+            return util::transform_binary_loop_n<execution_policy_type>(
+                std::get<0>(iters), part_size, std::get<1>(iters),
+                std::get<2>(iters),
+                transform_binary_projected<F_, Proj1, Proj2>{
+                    f_, proj1_, proj2_});
+        }
+    };
+
+    template <typename ExPolicy, typename F>
+    struct transform_binary_iteration<ExPolicy, F, util::projection_identity,
+        util::projection_identity>
+    {
+        using execution_policy_type = std::decay_t<ExPolicy>;
+        using fun_type = std::decay_t<F>;
+
+        fun_type f_;
+
+        template <typename F_>
+        PIKA_HOST_DEVICE transform_binary_iteration(
+            F_&& f, util::projection_identity, util::projection_identity)
+          : f_(PIKA_FORWARD(F_, f))
+        {
+        }
 
 #if !defined(__NVCC__) && !defined(__CUDACC__)
-            transform_binary_iteration(
-                transform_binary_iteration const&) = default;
-            transform_binary_iteration(transform_binary_iteration&&) = default;
+        transform_binary_iteration(transform_binary_iteration const&) = default;
+        transform_binary_iteration(transform_binary_iteration&&) = default;
 #else
-            PIKA_HOST_DEVICE
-            transform_binary_iteration(transform_binary_iteration const& rhs)
-              : f_(rhs.f_)
-            {
-            }
-
-            PIKA_HOST_DEVICE
-            transform_binary_iteration(transform_binary_iteration&& rhs)
-              : f_(PIKA_MOVE(rhs.f_))
-            {
-            }
-#endif
-            transform_binary_iteration& operator=(
-                transform_binary_iteration const&) = default;
-            transform_binary_iteration& operator=(
-                transform_binary_iteration&&) = default;
-
-            template <typename Iter, typename F_ = fun_type>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE
-                std::tuple<typename std::tuple_element<0,
-                               typename Iter::iterator_tuple_type>::type,
-                    typename std::tuple_element<1,
-                        typename Iter::iterator_tuple_type>::type,
-                    typename std::tuple_element<2,
-                        typename Iter::iterator_tuple_type>::type>
-                operator()(Iter part_begin, std::size_t part_size, std::size_t)
-            {
-                auto iters = part_begin.get_iterator_tuple();
-                return util::transform_binary_loop_ind_n<execution_policy_type>(
-                    std::get<0>(iters), part_size, std::get<1>(iters),
-                    std::get<2>(iters), f_);
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename IterTuple>
-        struct transform_binary
-          : public detail::algorithm<transform_binary<IterTuple>, IterTuple>
+        PIKA_HOST_DEVICE
+        transform_binary_iteration(transform_binary_iteration const& rhs)
+          : f_(rhs.f_)
         {
-            transform_binary()
-              : transform_binary::algorithm("transform_binary")
+        }
+
+        PIKA_HOST_DEVICE
+        transform_binary_iteration(transform_binary_iteration&& rhs)
+          : f_(PIKA_MOVE(rhs.f_))
+        {
+        }
+#endif
+        transform_binary_iteration& operator=(
+            transform_binary_iteration const&) = default;
+        transform_binary_iteration& operator=(
+            transform_binary_iteration&&) = default;
+
+        template <typename Iter, typename F_ = fun_type>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE
+            std::tuple<typename std::tuple_element<0,
+                           typename Iter::iterator_tuple_type>::type,
+                typename std::tuple_element<1,
+                    typename Iter::iterator_tuple_type>::type,
+                typename std::tuple_element<2,
+                    typename Iter::iterator_tuple_type>::type>
+            operator()(Iter part_begin, std::size_t part_size, std::size_t)
+        {
+            auto iters = part_begin.get_iterator_tuple();
+            return util::transform_binary_loop_ind_n<execution_policy_type>(
+                std::get<0>(iters), part_size, std::get<1>(iters),
+                std::get<2>(iters), f_);
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename IterTuple>
+    struct transform_binary
+      : public detail::algorithm<transform_binary<IterTuple>, IterTuple>
+    {
+        transform_binary()
+          : transform_binary::algorithm("transform_binary")
+        {
+        }
+
+        // sequential execution with non-trivial projection
+        template <typename ExPolicy, typename InIter1, typename InIter2,
+            typename OutIter, typename F, typename Proj1, typename Proj2>
+        static util::in_in_out_result<InIter1, InIter2, OutIter> sequential(
+            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+            OutIter dest, F&& f, Proj1&& proj1, Proj2&& proj2)
+        {
+            return util::transform_binary_loop<ExPolicy>(first1, last1, first2,
+                dest,
+                transform_binary_projected<F, Proj1, Proj2>{f, proj1, proj2});
+        }
+
+        // sequential execution without projection
+        template <typename ExPolicy, typename InIter1, typename InIter2,
+            typename OutIter, typename F>
+        static util::in_in_out_result<InIter1, InIter2, OutIter> sequential(
+            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+            OutIter dest, F&& f, util::projection_identity,
+            util::projection_identity)
+        {
+            return util::transform_binary_loop_ind<ExPolicy>(
+                first1, last1, first2, dest, f);
+        }
+
+        template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
+            typename FwdIter2, typename FwdIter3, typename F, typename Proj1,
+            typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_in_out_result<FwdIter1B, FwdIter2, FwdIter3>>::type
+        parallel(ExPolicy&& policy, FwdIter1B first1, FwdIter1E last1,
+            FwdIter2 first2, FwdIter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2)
+        {
+            if (first1 != last1)
             {
+                auto f1 = transform_binary_iteration<ExPolicy, F, Proj1, Proj2>(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
+                    PIKA_FORWARD(Proj2, proj2));
+
+                return util::detail::get_in_in_out_result(
+                    util::foreach_partitioner<ExPolicy>::call(
+                        PIKA_FORWARD(ExPolicy, policy),
+                        pika::util::make_zip_iterator(first1, first2, dest),
+                        detail::distance(first1, last1), PIKA_MOVE(f1),
+                        util::projection_identity()));
             }
 
-            // sequential execution with non-trivial projection
-            template <typename ExPolicy, typename InIter1, typename InIter2,
-                typename OutIter, typename F, typename Proj1, typename Proj2>
-            static util::in_in_out_result<InIter1, InIter2, OutIter> sequential(
-                ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
-                OutIter dest, F&& f, Proj1&& proj1, Proj2&& proj2)
-            {
-                return util::transform_binary_loop<ExPolicy>(first1, last1,
-                    first2, dest,
-                    transform_binary_projected<F, Proj1, Proj2>{
-                        f, proj1, proj2});
-            }
+            using result_type =
+                util::in_in_out_result<FwdIter1B, FwdIter2, FwdIter3>;
 
-            // sequential execution without projection
-            template <typename ExPolicy, typename InIter1, typename InIter2,
-                typename OutIter, typename F>
-            static util::in_in_out_result<InIter1, InIter2, OutIter> sequential(
-                ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
-                OutIter dest, F&& f, util::projection_identity,
-                util::projection_identity)
-            {
-                return util::transform_binary_loop_ind<ExPolicy>(
-                    first1, last1, first2, dest, f);
-            }
-
-            template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
-                typename FwdIter2, typename FwdIter3, typename F,
-                typename Proj1, typename Proj2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_in_out_result<FwdIter1B, FwdIter2, FwdIter3>>::type
-            parallel(ExPolicy&& policy, FwdIter1B first1, FwdIter1E last1,
-                FwdIter2 first2, FwdIter3 dest, F&& f, Proj1&& proj1,
-                Proj2&& proj2)
-            {
-                if (first1 != last1)
-                {
-                    auto f1 =
-                        transform_binary_iteration<ExPolicy, F, Proj1, Proj2>(
-                            PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
-                            PIKA_FORWARD(Proj2, proj2));
-
-                    return util::detail::get_in_in_out_result(
-                        util::foreach_partitioner<ExPolicy>::call(
-                            PIKA_FORWARD(ExPolicy, policy),
-                            pika::util::make_zip_iterator(first1, first2, dest),
-                            detail::distance(first1, last1), PIKA_MOVE(f1),
-                            util::projection_identity()));
-                }
-
-                using result_type =
-                    util::in_in_out_result<FwdIter1B, FwdIter2, FwdIter3>;
-
-                return util::detail::algorithm_result<ExPolicy,
-                    result_type>::get(result_type{
+            return util::detail::algorithm_result<ExPolicy, result_type>::get(
+                result_type{
                     PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)});
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // transform binary predicate
-    namespace detail {
-
-        /// \cond NOINTERNAL
-        template <typename IterTuple>
-        struct transform_binary2
-          : public detail::algorithm<transform_binary2<IterTuple>, IterTuple>
+    /// \cond NOINTERNAL
+    template <typename IterTuple>
+    struct transform_binary2
+      : public detail::algorithm<transform_binary2<IterTuple>, IterTuple>
+    {
+        transform_binary2()
+          : transform_binary2::algorithm("transform_binary")
         {
-            transform_binary2()
-              : transform_binary2::algorithm("transform_binary")
-            {
-            }
+        }
 
-            // sequential execution with non-trivial projection
-            template <typename ExPolicy, typename InIter1, typename InIter2,
-                typename OutIter, typename F, typename Proj1, typename Proj2>
-            static util::in_in_out_result<InIter1, InIter2, OutIter> sequential(
-                ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
-                InIter2 last2, OutIter dest, F&& f, Proj1&& proj1,
-                Proj2&& proj2)
-            {
-                return util::transform_binary_loop<ExPolicy>(first1, last1,
-                    first2, last2, dest,
-                    transform_binary_projected<F, Proj1, Proj2>{
-                        f, proj1, proj2});
-            }
+        // sequential execution with non-trivial projection
+        template <typename ExPolicy, typename InIter1, typename InIter2,
+            typename OutIter, typename F, typename Proj1, typename Proj2>
+        static util::in_in_out_result<InIter1, InIter2, OutIter> sequential(
+            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+            InIter2 last2, OutIter dest, F&& f, Proj1&& proj1, Proj2&& proj2)
+        {
+            return util::transform_binary_loop<ExPolicy>(first1, last1, first2,
+                last2, dest,
+                transform_binary_projected<F, Proj1, Proj2>{f, proj1, proj2});
+        }
 
-            // sequential execution without projection
-            template <typename ExPolicy, typename InIter1, typename InIter2,
-                typename OutIter, typename F>
-            static util::in_in_out_result<InIter1, InIter2, OutIter> sequential(
-                ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
-                InIter2 last2, OutIter dest, F&& f, util::projection_identity,
-                util::projection_identity)
-            {
-                return util::transform_binary_loop_ind<ExPolicy>(
-                    first1, last1, first2, last2, dest, f);
-            }
+        // sequential execution without projection
+        template <typename ExPolicy, typename InIter1, typename InIter2,
+            typename OutIter, typename F>
+        static util::in_in_out_result<InIter1, InIter2, OutIter> sequential(
+            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+            InIter2 last2, OutIter dest, F&& f, util::projection_identity,
+            util::projection_identity)
+        {
+            return util::transform_binary_loop_ind<ExPolicy>(
+                first1, last1, first2, last2, dest, f);
+        }
 
-            template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
-                typename FwdIter2B, typename FwdIter2E, typename FwdIter3,
-                typename F, typename Proj1, typename Proj2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_in_out_result<FwdIter1B, FwdIter2B, FwdIter3>>::type
-            parallel(ExPolicy&& policy, FwdIter1B first1, FwdIter1E last1,
-                FwdIter2B first2, FwdIter2E last2, FwdIter3 dest, F&& f,
-                Proj1&& proj1, Proj2&& proj2)
+        template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
+            typename FwdIter2B, typename FwdIter2E, typename FwdIter3,
+            typename F, typename Proj1, typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_in_out_result<FwdIter1B, FwdIter2B, FwdIter3>>::type
+        parallel(ExPolicy&& policy, FwdIter1B first1, FwdIter1E last1,
+            FwdIter2B first2, FwdIter2E last2, FwdIter3 dest, F&& f,
+            Proj1&& proj1, Proj2&& proj2)
+        {
+            if (first1 != last1 && first2 != last2)
             {
-                if (first1 != last1 && first2 != last2)
-                {
-                    auto f1 =
-                        transform_binary_iteration<ExPolicy, F, Proj1, Proj2>(
-                            PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
-                            PIKA_FORWARD(Proj2, proj2));
+                auto f1 = transform_binary_iteration<ExPolicy, F, Proj1, Proj2>(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
+                    PIKA_FORWARD(Proj2, proj2));
 
-                    // different versions of clang-format do different things
-                    // clang-format off
+                // different versions of clang-format do different things
+                // clang-format off
                     return util::detail::get_in_in_out_result(
                         util::foreach_partitioner<ExPolicy>::call(
                             PIKA_FORWARD(ExPolicy, policy),
@@ -687,20 +664,19 @@ namespace pika { namespace parallel {
                             (std::min) (detail::distance(first1, last1),
                                 detail::distance(first2, last2)),
                             PIKA_MOVE(f1), util::projection_identity()));
-                    // clang-format on
-                }
-
-                using result_type =
-                    util::in_in_out_result<FwdIter1B, FwdIter2B, FwdIter3>;
-
-                return util::detail::algorithm_result<ExPolicy,
-                    result_type>::get(result_type{
-                    PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)});
+                // clang-format on
             }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+
+            using result_type =
+                util::in_in_out_result<FwdIter1B, FwdIter2B, FwdIter3>;
+
+            return util::detail::algorithm_result<ExPolicy, result_type>::get(
+                result_type{
+                    PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)});
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 namespace pika::detail {
@@ -729,8 +705,8 @@ namespace pika::detail {
     };
 
     template <typename ExPolicy, typename F, typename Proj1, typename Proj2>
-    struct get_function_address<parallel::detail::
-            transform_binary_iteration<ExPolicy, F, Proj1, Proj2>>
+    struct get_function_address<
+        parallel::detail::transform_binary_iteration<ExPolicy, F, Proj1, Proj2>>
     {
         static constexpr std::size_t call(
             parallel::detail::transform_binary_iteration<ExPolicy, F, Proj1,
@@ -741,8 +717,8 @@ namespace pika::detail {
     };
 
     template <typename ExPolicy, typename F, typename Proj1, typename Proj2>
-    struct get_function_annotation<parallel::detail::
-            transform_binary_iteration<ExPolicy, F, Proj1, Proj2>>
+    struct get_function_annotation<
+        parallel::detail::transform_binary_iteration<ExPolicy, F, Proj1, Proj2>>
     {
         static constexpr char const* call(
             parallel::detail::transform_binary_iteration<ExPolicy, F, Proj1,
@@ -766,8 +742,8 @@ namespace pika::detail {
     };
 
     template <typename ExPolicy, typename F, typename Proj1, typename Proj2>
-    struct get_function_annotation_itt<parallel::detail::
-            transform_binary_iteration<ExPolicy, F, Proj1, Proj2>>
+    struct get_function_annotation_itt<
+        parallel::detail::transform_binary_iteration<ExPolicy, F, Proj1, Proj2>>
     {
         static util::itt::string_handle call(
             parallel::detail::transform_binary_iteration<ExPolicy, F, Proj1,

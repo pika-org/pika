@@ -141,8 +141,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I, typename O>
     using move_result = parallel::util::in_out_result<I, O>;
 
@@ -228,6 +227,5 @@ namespace pika { namespace ranges {
                 pika::util::end(rng), dest);
         }
     } move{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 #endif    // DOXYGEN

@@ -138,8 +138,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::make_heap
     inline constexpr struct make_heap_t final
@@ -378,6 +377,6 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(Proj, proj));
         }
     } make_heap{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

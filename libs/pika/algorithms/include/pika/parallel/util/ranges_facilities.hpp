@@ -18,9 +18,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace ranges {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::ranges {
     // clang-format off
     template <typename Iter,
         PIKA_CONCEPT_REQUIRES_(
@@ -68,8 +66,7 @@ namespace pika { namespace ranges {
     {
         if (pika::parallel::detail::distance(first, bound) < size_t(n))
         {
-            return pika::parallel::detail::advance_to_sentinel(
-                first, bound);
+            return pika::parallel::detail::advance_to_sentinel(first, bound);
         }
         else
         {
@@ -93,5 +90,4 @@ namespace pika { namespace ranges {
             typename pika::traits::is_sized_sentinel_for<Sent, Iter>{},
             typename pika::traits::is_random_access_iterator<Iter>{});
     }
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges

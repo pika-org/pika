@@ -26,8 +26,7 @@
 
 #if defined(DOXYGEN)
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     /// Searches the range [first, last) for any elements in the range [s_first, s_last).
     /// Uses a provided predicate to compare elements.
     ///
@@ -691,13 +690,11 @@ namespace pika { namespace ranges {
         typename pika::traits::range_iterator<Rng1>::type>::type
     search_n(ExPolicy&& policy, Rng1&& rng1, std::size_t count, Rng2&& rng2,
         Pred&& op = Pred(), Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #else
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     inline constexpr struct search_t final
       : pika::detail::tag_parallel_algorithm<search_t>
     {
@@ -863,10 +860,10 @@ namespace pika { namespace ranges {
             Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
             Proj2&& proj2 = Proj2())
         {
-            return pika::parallel::detail::search_n<FwdIter, FwdIter>()
-                .call(pika::execution::seq, first, count, s_first, s_last,
-                    PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::detail::search_n<FwdIter, FwdIter>().call(
+                pika::execution::seq, first, count, s_first, s_last,
+                PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
         }
 
         // clang-format off
@@ -895,10 +892,10 @@ namespace pika { namespace ranges {
             Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
             Proj2&& proj2 = Proj2())
         {
-            return pika::parallel::detail::search_n<FwdIter, FwdIter>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, count, s_first,
-                    s_last, PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::detail::search_n<FwdIter, FwdIter>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, count, s_first, s_last,
+                PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
         }
 
         // clang-format off
@@ -927,8 +924,7 @@ namespace pika { namespace ranges {
                 typename pika::traits::range_iterator<Rng1>::type;
             using sent_type = typename pika::traits::range_sentinel<Rng1>::type;
 
-            return pika::parallel::detail::search_n<fwditer_type,
-                sent_type>()
+            return pika::parallel::detail::search_n<fwditer_type, sent_type>()
                 .call(pika::execution::seq, pika::util::begin(rng1), count,
                     pika::util::begin(rng2), pika::util::end(rng2),
                     PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
@@ -962,8 +958,7 @@ namespace pika { namespace ranges {
                 typename pika::traits::range_iterator<Rng1>::type;
             using sent_type = typename pika::traits::range_sentinel<Rng1>::type;
 
-            return pika::parallel::detail::search_n<fwditer_type,
-                sent_type>()
+            return pika::parallel::detail::search_n<fwditer_type, sent_type>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
                     count, pika::util::begin(rng2), pika::util::end(rng2),
                     PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
@@ -971,6 +966,5 @@ namespace pika { namespace ranges {
         }
 
     } search_n{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 #endif

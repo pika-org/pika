@@ -282,7 +282,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::stable_sort
     inline constexpr struct stable_sort_t final
@@ -370,10 +370,10 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::detail::stable_sort<iterator_type>()
-                .call(pika::execution::seq, pika::util::begin(rng),
-                    pika::util::end(rng), PIKA_FORWARD(Compare, comp),
-                    PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::stable_sort<iterator_type>().call(
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Compare, comp),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -402,12 +402,12 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires a random access iterator.");
 
-            return pika::parallel::detail::stable_sort<iterator_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                    pika::util::end(rng), PIKA_FORWARD(Compare, comp),
-                    PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::stable_sort<iterator_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Compare, comp),
+                PIKA_FORWARD(Proj, proj));
         }
     } stable_sort{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

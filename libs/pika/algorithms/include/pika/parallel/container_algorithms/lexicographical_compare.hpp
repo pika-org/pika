@@ -384,7 +384,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct lexicographical_compare_t final
       : pika::detail::tag_parallel_algorithm<lexicographical_compare_t>
     {
@@ -547,6 +547,6 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(Proj2, proj2));
         }
     } lexicographical_compare{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

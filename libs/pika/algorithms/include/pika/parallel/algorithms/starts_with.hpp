@@ -113,7 +113,6 @@ namespace pika::parallel::detail {
 }    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::starts_with
     inline constexpr struct starts_with_t final
@@ -186,5 +185,4 @@ namespace pika {
                 PIKA_FORWARD(Proj2, proj2));
         }
     } starts_with{};
-
 }    // namespace pika

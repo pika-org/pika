@@ -333,7 +333,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct uninitialized_move_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_move_t>
     {
@@ -512,6 +512,6 @@ namespace pika { namespace ranges {
                     count <= d ? count : d, first2);
         }
     } uninitialized_move_n{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

@@ -36,12 +36,10 @@
 #endif
 /// \endcond
 
-namespace pika { namespace parallel {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika {
     // reduce_by_key
     namespace detail {
         /// \cond NOINTERNAL
-
         // -------------------------------------------------------------------
         // simple iterator helper object for access to prev/next items
         // -------------------------------------------------------------------
@@ -169,22 +167,23 @@ namespace pika { namespace parallel {
         // Zip iterator has 3 iterators inside
         // Iter1, key type : Iter2, value type : Iter3, state type
         template <typename ZIter, typename iKey, typename iVal>
-        util::in_out_result<iKey, iVal> make_pair_result(
+        parallel::util::in_out_result<iKey, iVal> make_pair_result(
             ZIter zipiter, iKey key_start, iVal val_start)
         {
             // the iterator we want is 'second' part of pair type (from copy_if)
             auto t = zipiter.out.get_iterator_tuple();
             iKey key_end = std::get<0>(t);
-            return util::in_out_result<iKey, iVal>{key_end,
+            return parallel::util::in_out_result<iKey, iVal>{key_end,
                 std::next(val_start, std::distance(key_start, key_end))};
         }
 
         // async version that returns future<pair> from future<zip_iterator<blah>>
         template <typename ZIter, typename iKey, typename iVal>
-        pika::future<util::in_out_result<iKey, iVal>> make_pair_result(
+        pika::future<parallel::util::in_out_result<iKey, iVal>>
+        make_pair_result(
             pika::future<ZIter>&& ziter, iKey key_start, iVal val_start)
         {
-            using result_type = util::in_out_result<iKey, iVal>;
+            using result_type = parallel::util::in_out_result<iKey, iVal>;
 
             return pika::make_future<result_type>(
                 PIKA_MOVE(ziter), [=](ZIter zipiter) {
@@ -205,10 +204,10 @@ namespace pika { namespace parallel {
         template <typename ExPolicy, typename RanIter, typename RanIter2,
             typename FwdIter1, typename FwdIter2, typename Compare,
             typename Func>
-        static util::in_out_result<FwdIter1, FwdIter2> reduce_by_key_impl(
-            ExPolicy&& policy, RanIter key_first, RanIter key_last,
-            RanIter2 values_first, FwdIter1 keys_output, FwdIter2 values_output,
-            Compare&& comp, Func&& func)
+        static parallel::util::in_out_result<FwdIter1, FwdIter2>
+        reduce_by_key_impl(ExPolicy&& policy, RanIter key_first,
+            RanIter key_last, RanIter2 values_first, FwdIter1 keys_output,
+            FwdIter2 values_output, Compare&& comp, Func&& func)
         {
             using namespace pika::parallel::detail;
             using namespace pika::util;
@@ -219,8 +218,8 @@ namespace pika { namespace parallel {
             std::vector<reduce_key_series_states> key_state;
             using keystate_iter_type =
                 std::vector<reduce_key_series_states>::iterator;
-            using reducebykey_iter = detail::reduce_stencil_iterator<RanIter,
-                reduce_stencil_transformer>;
+            using reducebykey_iter =
+                reduce_stencil_iterator<RanIter, reduce_stencil_transformer>;
             using element_type =
                 typename std::iterator_traits<RanIter>::reference;
             using zip_ref = typename zip_iterator<reducebykey_iter,
@@ -364,8 +363,9 @@ namespace pika { namespace parallel {
         // reduce_by_key wrapper struct
         template <typename FwdIter1, typename FwdIter2>
         struct reduce_by_key
-          : public detail::algorithm<reduce_by_key<FwdIter1, FwdIter2>,
-                util::in_out_result<FwdIter1, FwdIter2>>
+          : public parallel::detail::algorithm<
+                reduce_by_key<FwdIter1, FwdIter2>,
+                parallel::util::in_out_result<FwdIter1, FwdIter2>>
         {
             reduce_by_key()
               : reduce_by_key::algorithm("reduce_by_key")
@@ -374,7 +374,7 @@ namespace pika { namespace parallel {
 
             template <typename ExPolicy, typename RanIter, typename RanIter2,
                 typename Compare, typename Func>
-            static util::in_out_result<FwdIter1, FwdIter2> sequential(
+            static parallel::util::in_out_result<FwdIter1, FwdIter2> sequential(
                 ExPolicy&& policy, RanIter key_first, RanIter key_last,
                 RanIter2 values_first, FwdIter1 keys_output,
                 FwdIter2 values_output, Compare&& comp, Func&& func)
@@ -387,19 +387,18 @@ namespace pika { namespace parallel {
 
             template <typename ExPolicy, typename RanIter, typename RanIter2,
                 typename Compare, typename Func>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter1, FwdIter2>>::type
+            static typename parallel::util::detail::algorithm_result<ExPolicy,
+                parallel::util::in_out_result<FwdIter1, FwdIter2>>::type
             parallel(ExPolicy&& policy, RanIter key_first, RanIter key_last,
                 RanIter2 values_first, FwdIter1 keys_output,
                 FwdIter2 values_output, Compare&& comp, Func&& func)
             {
-                return util::detail::algorithm_result<ExPolicy,
-                    util::in_out_result<FwdIter1, FwdIter2>>::
-                    get(execution::async_execute(policy.executor(),
+                return parallel::util::detail::algorithm_result<ExPolicy,
+                    parallel::util::in_out_result<FwdIter1, FwdIter2>>::
+                    get(parallel::execution::async_execute(policy.executor(),
                         pika::util::detail::deferred_call(
-                            &pika::parallel::detail::reduce_by_key_impl<
-                                ExPolicy&&, RanIter, RanIter2, FwdIter1,
-                                FwdIter2, Compare&&, Func&&>,
+                            &reduce_by_key_impl<ExPolicy&&, RanIter, RanIter2,
+                                FwdIter1, FwdIter2, Compare&&, Func&&>,
                             policy, key_first, key_last, values_first,
                             keys_output, values_output,
                             PIKA_FORWARD(Compare, comp),
@@ -520,14 +519,14 @@ namespace pika { namespace parallel {
                     pika::traits::is_iterator<RanIter2>::value&&
                         pika::traits::is_iterator<FwdIter1>::value&&
                             pika::traits::is_iterator<FwdIter2>::value)>
-    typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<FwdIter1, FwdIter2>>::type
+    typename parallel::util::detail::algorithm_result<ExPolicy,
+        parallel::util::in_out_result<FwdIter1, FwdIter2>>::type
     reduce_by_key(ExPolicy&& policy, RanIter key_first, RanIter key_last,
         RanIter2 values_first, FwdIter1 keys_output, FwdIter2 values_output,
         Compare&& comp = Compare(), Func&& func = Func())
     {
-        using result = util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<FwdIter1, FwdIter2>>;
+        using result = parallel::util::detail::algorithm_result<ExPolicy,
+            parallel::util::in_out_result<FwdIter1, FwdIter2>>;
 
         static_assert(
             (pika::traits::is_random_access_iterator<RanIter>::value) &&
@@ -542,8 +541,9 @@ namespace pika { namespace parallel {
         {    // we only have a single key/value so that is our output
             *keys_output = *key_first;
             *values_output = *values_first;
-            return result::get(util::in_out_result<FwdIter1, FwdIter2>{
-                keys_output, values_output});
+            return result::get(
+                parallel::util::in_out_result<FwdIter1, FwdIter2>{
+                    keys_output, values_output});
         }
 
         return detail::reduce_by_key<FwdIter1, FwdIter2>().call(
@@ -551,4 +551,4 @@ namespace pika { namespace parallel {
             keys_output, values_output, PIKA_FORWARD(Compare, comp),
             PIKA_FORWARD(Func, func));
     }
-}}    // namespace pika::parallel
+}    // namespace pika

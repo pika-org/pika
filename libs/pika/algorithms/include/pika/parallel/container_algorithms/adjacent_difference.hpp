@@ -268,8 +268,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     inline constexpr struct adjacent_difference_t final
       : pika::detail::tag_parallel_algorithm<adjacent_difference_t>
     {
@@ -290,8 +289,8 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(pika::execution::seq, first, last, dest, std::minus<>());
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                pika::execution::seq, first, last, dest, std::minus<>());
         }
 
         // clang-format off
@@ -310,9 +309,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(pika::execution::seq, pika::util::begin(rng),
-                    pika::util::end(rng), dest, std::minus<>());
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), dest, std::minus<>());
         }
 
         // clang-format off
@@ -335,9 +334,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                    std::minus<>());
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                std::minus<>());
         }
 
         // clang-format off
@@ -359,9 +358,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                    pika::util::end(rng), dest, std::minus<>());
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+                pika::util::end(rng), dest, std::minus<>());
         }
 
         // clang-format off
@@ -381,9 +380,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(pika::execution::sequenced_policy{}, first, last, dest,
-                    PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                pika::execution::sequenced_policy{}, first, last, dest,
+                PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -402,9 +401,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(pika::execution::seq, pika::util::begin(rng),
-                    pika::util::end(rng), dest, PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), dest, PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -428,9 +427,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                    PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -453,11 +452,11 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                    pika::util::end(rng), dest, PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+                pika::util::end(rng), dest, PIKA_FORWARD(Op, op));
         }
     } adjacent_difference{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

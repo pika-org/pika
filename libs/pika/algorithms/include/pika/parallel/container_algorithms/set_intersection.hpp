@@ -259,8 +259,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I1, typename I2, typename O>
     using set_intersection_result = parallel::util::in_in_out_result<I1, I2, O>;
 
@@ -410,10 +409,10 @@ namespace pika { namespace ranges {
 
             using result_type = set_intersection_result<Iter1, Iter2, Iter3>;
 
-            return pika::parallel::detail::set_intersection<result_type>()
-                .call(pika::execution::seq, first1, last1, first2, last2, dest,
-                    PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::detail::set_intersection<result_type>().call(
+                pika::execution::seq, first1, last1, first2, last2, dest,
+                PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
         }
 
         // clang-format off
@@ -458,14 +457,13 @@ namespace pika { namespace ranges {
             using result_type =
                 set_intersection_result<iterator_type1, iterator_type2, Iter3>;
 
-            return pika::parallel::detail::set_intersection<result_type>()
-                .call(pika::execution::seq, pika::util::begin(rng1),
-                    pika::util::end(rng1), pika::util::begin(rng2),
-                    pika::util::end(rng2), dest, PIKA_FORWARD(Pred, op),
-                    PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::detail::set_intersection<result_type>().call(
+                pika::execution::seq, pika::util::begin(rng1),
+                pika::util::end(rng1), pika::util::begin(rng2),
+                pika::util::end(rng2), dest, PIKA_FORWARD(Pred, op),
+                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
         }
     } set_intersection{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

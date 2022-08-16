@@ -364,8 +364,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I, typename O>
     using copy_result = parallel::util::in_out_result<I, O>;
 
@@ -671,6 +670,5 @@ namespace pika { namespace ranges {
         }
 
     } copy_if{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 #endif    // DOXYGEN

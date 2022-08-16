@@ -29,9 +29,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::execution::experimental {
     class task_group
     {
     public:
@@ -117,4 +115,4 @@ namespace pika { namespace execution { namespace experimental {
         pika::exception_list errors_;
         std::atomic<bool> has_arrived_;
     };
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental

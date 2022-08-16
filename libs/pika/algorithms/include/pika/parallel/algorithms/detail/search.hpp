@@ -28,7 +28,6 @@
 
 namespace pika::parallel::detail {
     /// \cond NOINTERNAL
-
     ///////////////////////////////////////////////////////////////////////////
     // search
     template <typename FwdIter, typename Sent>
@@ -91,8 +90,8 @@ namespace pika::parallel::detail {
                 pika::parallel::detail::distance(first, last);
             if (diff > count)
             {
-                std::advance(first,
-                    pika::parallel::detail::distance(first, last) - 1);
+                std::advance(
+                    first, pika::parallel::detail::distance(first, last) - 1);
                 return result::get(PIKA_MOVE(first));
             }
 
@@ -256,6 +255,5 @@ namespace pika::parallel::detail {
                 first, count - (diff - 1), 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
-
     /// \endcond
 }    // namespace pika::parallel::detail

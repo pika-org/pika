@@ -298,7 +298,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct nth_element_t final
       : pika::detail::tag_parallel_algorithm<nth_element_t>
     {
@@ -384,9 +384,9 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires at least random access iterator.");
 
-            return pika::parallel::detail::nth_element<iterator_type>()
-                .call(pika::execution::seq, std::begin(rng), nth, std::end(rng),
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::nth_element<iterator_type>().call(
+                pika::execution::seq, std::begin(rng), nth, std::end(rng),
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -416,12 +416,12 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires at least random access iterator.");
 
-            return pika::parallel::detail::nth_element<iterator_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng), nth,
-                    std::end(rng), PIKA_FORWARD(Pred, pred),
-                    PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::nth_element<iterator_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), std::begin(rng), nth,
+                std::end(rng), PIKA_FORWARD(Pred, pred),
+                PIKA_FORWARD(Proj, proj));
         }
     } nth_element{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

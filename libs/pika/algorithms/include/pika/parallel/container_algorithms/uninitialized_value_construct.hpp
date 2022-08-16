@@ -273,7 +273,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct uninitialized_value_construct_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_value_construct_t>
     {
@@ -408,6 +408,6 @@ namespace pika { namespace ranges {
                 .call(PIKA_FORWARD(ExPolicy, policy), first, count);
         }
     } uninitialized_value_construct_n{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

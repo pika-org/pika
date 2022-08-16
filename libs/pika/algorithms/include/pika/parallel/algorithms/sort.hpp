@@ -279,49 +279,60 @@ namespace std {
 }    // namespace std
 #endif
 
-namespace pika { namespace parallel {
-
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // sort
-    namespace detail {
+    /// \cond NOINTERNAL
+    static const std::size_t sort_limit_per_task = 65536ul;
 
-        /// \cond NOINTERNAL
-        static const std::size_t sort_limit_per_task = 65536ul;
-
-        /// \brief this function is the work assigned to each thread in the
-        ///        parallel process
-        /// \exception
-        /// \return
-        /// \remarks
-        template <typename ExPolicy, typename RandomIt, typename Comp>
-        pika::future<RandomIt> sort_thread(ExPolicy&& policy, RandomIt first,
-            RandomIt last, Comp comp, std::size_t chunk_size)
+    /// \brief this function is the work assigned to each thread in the
+    ///        parallel process
+    /// \exception
+    /// \return
+    /// \remarks
+    template <typename ExPolicy, typename RandomIt, typename Comp>
+    pika::future<RandomIt> sort_thread(ExPolicy&& policy, RandomIt first,
+        RandomIt last, Comp comp, std::size_t chunk_size)
+    {
+        std::ptrdiff_t N = last - first;
+        if (std::size_t(N) <= chunk_size)
         {
-            std::ptrdiff_t N = last - first;
-            if (std::size_t(N) <= chunk_size)
-            {
-                return execution::async_execute(policy.executor(),
-                    [first, last, comp = PIKA_MOVE(comp)]() -> RandomIt {
-                        std::sort(first, last, comp);
-                        return last;
-                    });
-            }
+            return execution::async_execute(policy.executor(),
+                [first, last, comp = PIKA_MOVE(comp)]() -> RandomIt {
+                    std::sort(first, last, comp);
+                    return last;
+                });
+        }
 
-            // check if sorted
-            if (detail::is_sorted_sequential(first, last, comp))
-            {
-                return pika::make_ready_future(last);
-            }
+        // check if sorted
+        if (detail::is_sorted_sequential(first, last, comp))
+        {
+            return pika::make_ready_future(last);
+        }
 
-            // pivot selections
-            pivot9(first, last, comp);
+        // pivot selections
+        pivot9(first, last, comp);
 
-            using reference =
-                typename std::iterator_traits<RandomIt>::reference;
+        using reference = typename std::iterator_traits<RandomIt>::reference;
 
-            reference val = *first;
-            RandomIt c_first = first + 1, c_last = last - 1;
+        reference val = *first;
+        RandomIt c_first = first + 1, c_last = last - 1;
 
+        while (comp(*c_first, val))
+        {
+            ++c_first;
+        }
+        while (comp(val, *c_last))
+        {
+            --c_last;
+        }
+        while (c_first < c_last)
+        {
+#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
+            std::ranges::iter_swap(c_first++, c_last--);
+#else
+            std::iter_swap(c_first++, c_last--);
+#endif
             while (comp(*c_first, val))
             {
                 ++c_first;
@@ -330,158 +341,141 @@ namespace pika { namespace parallel {
             {
                 --c_last;
             }
-            while (c_first < c_last)
-            {
-#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
-                std::ranges::iter_swap(c_first++, c_last--);
-#else
-                std::iter_swap(c_first++, c_last--);
-#endif
-                while (comp(*c_first, val))
-                {
-                    ++c_first;
-                }
-                while (comp(val, *c_last))
-                {
-                    --c_last;
-                }
-            }
-
-#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
-            std::ranges::iter_swap(first, c_last);
-#else
-            std::iter_swap(first, c_last);
-#endif
-
-            // spawn tasks for each sub section
-            pika::future<RandomIt> left = execution::async_execute(
-                policy.executor(), &sort_thread<ExPolicy, RandomIt, Comp>,
-                policy, first, c_last, comp, chunk_size);
-
-            pika::future<RandomIt> right = execution::async_execute(
-                policy.executor(), &sort_thread<ExPolicy, RandomIt, Comp>,
-                policy, c_first, last, comp, chunk_size);
-
-            return pika::dataflow(
-                [last](pika::future<RandomIt>&& left,
-                    pika::future<RandomIt>&& right) -> RandomIt {
-                    if (left.has_exception() || right.has_exception())
-                    {
-                        std::list<std::exception_ptr> errors;
-                        if (left.has_exception())
-                            errors.push_back(left.get_exception_ptr());
-                        if (right.has_exception())
-                            errors.push_back(right.get_exception_ptr());
-
-                        throw exception_list(PIKA_MOVE(errors));
-                    }
-                    return last;
-                },
-                PIKA_MOVE(left), PIKA_MOVE(right));
         }
 
-        /// \param [in] first   iterator to the first element to sort
-        /// \param [in] last    iterator to the next element after the last
-        /// \param [in] comp    object for to Comp
-        /// \exception
-        /// \return
-        /// \remarks
-        template <typename ExPolicy, typename RandomIt, typename Comp>
-        pika::future<RandomIt> parallel_sort_async(
-            ExPolicy&& policy, RandomIt first, RandomIt last, Comp&& comp)
+#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
+        std::ranges::iter_swap(first, c_last);
+#else
+        std::iter_swap(first, c_last);
+#endif
+
+        // spawn tasks for each sub section
+        pika::future<RandomIt> left = execution::async_execute(
+            policy.executor(), &sort_thread<ExPolicy, RandomIt, Comp>, policy,
+            first, c_last, comp, chunk_size);
+
+        pika::future<RandomIt> right = execution::async_execute(
+            policy.executor(), &sort_thread<ExPolicy, RandomIt, Comp>, policy,
+            c_first, last, comp, chunk_size);
+
+        return pika::dataflow(
+            [last](pika::future<RandomIt>&& left,
+                pika::future<RandomIt>&& right) -> RandomIt {
+                if (left.has_exception() || right.has_exception())
+                {
+                    std::list<std::exception_ptr> errors;
+                    if (left.has_exception())
+                        errors.push_back(left.get_exception_ptr());
+                    if (right.has_exception())
+                        errors.push_back(right.get_exception_ptr());
+
+                    throw exception_list(PIKA_MOVE(errors));
+                }
+                return last;
+            },
+            PIKA_MOVE(left), PIKA_MOVE(right));
+    }
+
+    /// \param [in] first   iterator to the first element to sort
+    /// \param [in] last    iterator to the next element after the last
+    /// \param [in] comp    object for to Comp
+    /// \exception
+    /// \return
+    /// \remarks
+    template <typename ExPolicy, typename RandomIt, typename Comp>
+    pika::future<RandomIt> parallel_sort_async(
+        ExPolicy&& policy, RandomIt first, RandomIt last, Comp&& comp)
+    {
+        // number of elements to sort
+        std::size_t count = last - first;
+
+        // figure out the chunk size to use
+        std::size_t const cores = execution::processing_units_count(
+            policy.parameters(), policy.executor());
+
+        std::size_t max_chunks = execution::maximal_number_of_chunks(
+            policy.parameters(), policy.executor(), cores, count);
+
+        std::size_t chunk_size = execution::get_chunk_size(
+            policy.parameters(), policy.executor(),
+            [](std::size_t) { return 0; }, cores, count);
+
+        util::detail::adjust_chunk_size_and_max_chunks(
+            cores, count, max_chunks, chunk_size);
+
+        // we should not get smaller than our sort_limit_per_task
+        chunk_size = (std::max)(chunk_size, sort_limit_per_task);
+
+        std::ptrdiff_t N = last - first;
+        PIKA_ASSERT(N >= 0);
+
+        if (std::size_t(N) < chunk_size)
         {
-            // number of elements to sort
-            std::size_t count = last - first;
-
-            // figure out the chunk size to use
-            std::size_t const cores = execution::processing_units_count(
-                policy.parameters(), policy.executor());
-
-            std::size_t max_chunks = execution::maximal_number_of_chunks(
-                policy.parameters(), policy.executor(), cores, count);
-
-            std::size_t chunk_size = execution::get_chunk_size(
-                policy.parameters(), policy.executor(),
-                [](std::size_t) { return 0; }, cores, count);
-
-            util::detail::adjust_chunk_size_and_max_chunks(
-                cores, count, max_chunks, chunk_size);
-
-            // we should not get smaller than our sort_limit_per_task
-            chunk_size = (std::max)(chunk_size, sort_limit_per_task);
-
-            std::ptrdiff_t N = last - first;
-            PIKA_ASSERT(N >= 0);
-
-            if (std::size_t(N) < chunk_size)
-            {
-                std::sort(first, last, comp);
-                return pika::make_ready_future(last);
-            }
-
-            // check if already sorted
-            if (detail::is_sorted_sequential(first, last, comp))
-            {
-                return pika::make_ready_future(last);
-            }
-
-            return execution::async_execute(policy.executor(),
-                &sort_thread<std::decay_t<ExPolicy>, RandomIt, Comp>,
-                PIKA_FORWARD(ExPolicy, policy), first, last,
-                PIKA_FORWARD(Comp, comp), chunk_size);
+            std::sort(first, last, comp);
+            return pika::make_ready_future(last);
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        // sort
-        template <typename RandomIt>
-        struct sort : public detail::algorithm<sort<RandomIt>, RandomIt>
+        // check if already sorted
+        if (detail::is_sorted_sequential(first, last, comp))
         {
-            sort()
-              : sort::algorithm("sort")
-            {
-            }
+            return pika::make_ready_future(last);
+        }
 
-            template <typename ExPolicy, typename Sent, typename Comp,
-                typename Proj>
-            static RandomIt sequential(
-                ExPolicy, RandomIt first, Sent last, Comp&& comp, Proj&& proj)
-            {
-                auto last_iter = detail::advance_to_sentinel(first, last);
-                std::sort(first, last_iter,
-                    util::compare_projected<Comp&, Proj&>(comp, proj));
-                return last_iter;
-            }
+        return execution::async_execute(policy.executor(),
+            &sort_thread<std::decay_t<ExPolicy>, RandomIt, Comp>,
+            PIKA_FORWARD(ExPolicy, policy), first, last,
+            PIKA_FORWARD(Comp, comp), chunk_size);
+    }
 
-            template <typename ExPolicy, typename Sent, typename Comp,
-                typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                RandomIt>::type
-            parallel(ExPolicy&& policy, RandomIt first, Sent last_s,
-                Comp&& comp, Proj&& proj)
-            {
-                auto last = detail::advance_to_sentinel(first, last_s);
-                using algorithm_result =
-                    util::detail::algorithm_result<ExPolicy, RandomIt>;
+    ///////////////////////////////////////////////////////////////////////
+    // sort
+    template <typename RandomIt>
+    struct sort : public detail::algorithm<sort<RandomIt>, RandomIt>
+    {
+        sort()
+          : sort::algorithm("sort")
+        {
+        }
 
-                try
-                {
-                    // call the sort routine and return the right type,
-                    // depending on execution policy
-                    return algorithm_result::get(parallel_sort_async(
-                        PIKA_FORWARD(ExPolicy, policy), first, last,
-                        util::compare_projected<Comp&, Proj&>(comp, proj)));
-                }
-                catch (...)
-                {
-                    return algorithm_result::get(
-                        detail::handle_exception<ExPolicy, RandomIt>::call(
-                            std::current_exception()));
-                }
+        template <typename ExPolicy, typename Sent, typename Comp,
+            typename Proj>
+        static RandomIt sequential(
+            ExPolicy, RandomIt first, Sent last, Comp&& comp, Proj&& proj)
+        {
+            auto last_iter = detail::advance_to_sentinel(first, last);
+            std::sort(first, last_iter,
+                util::compare_projected<Comp&, Proj&>(comp, proj));
+            return last_iter;
+        }
+
+        template <typename ExPolicy, typename Sent, typename Comp,
+            typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, RandomIt>::type
+        parallel(ExPolicy&& policy, RandomIt first, Sent last_s, Comp&& comp,
+            Proj&& proj)
+        {
+            auto last = detail::advance_to_sentinel(first, last_s);
+            using algorithm_result =
+                util::detail::algorithm_result<ExPolicy, RandomIt>;
+
+            try
+            {
+                // call the sort routine and return the right type,
+                // depending on execution policy
+                return algorithm_result::get(parallel_sort_async(
+                    PIKA_FORWARD(ExPolicy, policy), first, last,
+                    util::compare_projected<Comp&, Proj&>(comp, proj)));
             }
-        };
-        /// \endcond
-    }    // namespace detail
-}}       // namespace pika::parallel
+            catch (...)
+            {
+                return algorithm_result::get(
+                    detail::handle_exception<ExPolicy, RandomIt>::call(
+                        std::current_exception()));
+            }
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

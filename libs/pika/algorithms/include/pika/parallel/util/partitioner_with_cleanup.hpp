@@ -33,9 +33,7 @@
 #include <utility>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
         // The static partitioner with cleanup spawns several chunks of
@@ -208,4 +206,4 @@ namespace pika { namespace parallel { namespace util {
             Result>
     {
     };
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

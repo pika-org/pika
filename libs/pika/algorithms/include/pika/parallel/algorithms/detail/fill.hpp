@@ -15,8 +15,6 @@
 #include <utility>
 
 namespace pika::parallel::detail {
-
-    ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename Sent, typename T>
     constexpr Iter sequential_fill_helper(Iter first, Sent last, T const& value)
     {
@@ -83,5 +81,4 @@ namespace pika::parallel::detail {
             PIKA_FORWARD(ExPolicy, policy), first, count, value);
     }
 #endif
-
 }    // namespace pika::parallel::detail

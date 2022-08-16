@@ -36,9 +36,7 @@
 #include <utility>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     namespace detail {
         template <typename Result, typename ExPolicy, typename FwdIter,
             typename F>
@@ -454,4 +452,4 @@ namespace pika { namespace parallel { namespace util {
             detail::task_static_partitioner>::template apply<R, Result>
     {
     };
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

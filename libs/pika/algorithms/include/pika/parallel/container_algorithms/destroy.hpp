@@ -125,8 +125,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::destroy
     inline constexpr struct destroy_t final
@@ -265,6 +264,6 @@ namespace pika { namespace ranges {
                 pika::execution::seq, first, std::size_t(count));
         }
     } destroy_n{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

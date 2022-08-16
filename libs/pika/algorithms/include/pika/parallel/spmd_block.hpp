@@ -28,8 +28,7 @@
 #include <utility>
 #include <vector>
 
-// TODO: Change namespace
-namespace pika { namespace lcos { namespace local {
+namespace pika {
     /// The class spmd_block defines an interface for launching
     /// multiple images while giving handles to each image to interact with
     /// the remaining images. The \a define_spmd_block function templates create
@@ -166,6 +165,77 @@ namespace pika { namespace lcos { namespace local {
                 PIKA_INVOKE(f_, PIKA_MOVE(block), PIKA_FORWARD(Ts, ts)...);
             }
         };
+
+        // Asynchronous version
+        template <typename ExPolicy, typename F, typename... Args,
+            typename = typename std::enable_if<
+                pika::is_async_execution_policy<ExPolicy>::value>::type>
+        std::vector<pika::future<void>> define_spmd_block(
+            ExPolicy&& policy, std::size_t num_images, F&& f, Args&&... args)
+        {
+            static_assert(pika::is_async_execution_policy<ExPolicy>::value,
+                "pika::is_async_execution_policy<ExPolicy>::value");
+
+            using ftype = std::decay_t<F>;
+            using first_type = typename pika::util::first_argument<ftype>::type;
+
+            using barrier_type = pika::lcos::local::barrier;
+            using table_type =
+                std::map<std::set<std::size_t>, std::shared_ptr<barrier_type>>;
+            using mutex_type = pika::lcos::local::mutex;
+
+            static_assert(std::is_same<spmd_block, first_type>::value,
+                "define_spmd_block() needs a function or lambda that "
+                "has at least a local spmd_block as 1st argument");
+
+            std::shared_ptr<barrier_type> barrier =
+                std::make_shared<barrier_type>(num_images);
+            std::shared_ptr<table_type> barriers =
+                std::make_shared<table_type>();
+            std::shared_ptr<mutex_type> mtx = std::make_shared<mutex_type>();
+
+            return pika::parallel::execution::bulk_async_execute(
+                policy.executor(),
+                detail::spmd_block_helper<F>{
+                    barrier, barriers, mtx, PIKA_FORWARD(F, f), num_images},
+                pika::detail::irange(std::size_t(0), num_images),
+                PIKA_FORWARD(Args, args)...);
+        }
+
+        // Synchronous version
+        template <typename ExPolicy, typename F, typename... Args,
+            typename = typename std::enable_if<
+                !pika::is_async_execution_policy<ExPolicy>::value>::type>
+        void define_spmd_block(
+            ExPolicy&& policy, std::size_t num_images, F&& f, Args&&... args)
+        {
+            static_assert(pika::is_execution_policy<ExPolicy>::value,
+                "pika::is_execution_policy<ExPolicy>::value");
+
+            using ftype = std::decay_t<F>;
+            using first_type = typename pika::util::first_argument<ftype>::type;
+
+            using barrier_type = pika::lcos::local::barrier;
+            using table_type =
+                std::map<std::set<std::size_t>, std::shared_ptr<barrier_type>>;
+            using mutex_type = pika::lcos::local::mutex;
+
+            static_assert(std::is_same<spmd_block, first_type>::value,
+                "define_spmd_block() needs a lambda that "
+                "has at least a spmd_block as 1st argument");
+
+            std::shared_ptr<barrier_type> barrier =
+                std::make_shared<barrier_type>(num_images);
+            std::shared_ptr<table_type> barriers =
+                std::make_shared<table_type>();
+            std::shared_ptr<mutex_type> mtx = std::make_shared<mutex_type>();
+
+            pika::parallel::execution::bulk_sync_execute(policy.executor(),
+                detail::spmd_block_helper<F>{
+                    barrier, barriers, mtx, PIKA_FORWARD(F, f), num_images},
+                pika::detail::irange(std::size_t(0), num_images),
+                PIKA_FORWARD(Args, args)...);
+        }
     }    // namespace detail
 
     // Asynchronous version
@@ -175,116 +245,25 @@ namespace pika { namespace lcos { namespace local {
     std::vector<pika::future<void>> define_spmd_block(
         ExPolicy&& policy, std::size_t num_images, F&& f, Args&&... args)
     {
-        static_assert(pika::is_async_execution_policy<ExPolicy>::value,
-            "pika::is_async_execution_policy<ExPolicy>::value");
-
-        using ftype = std::decay_t<F>;
-        using first_type =
-            typename pika::util::detail::first_argument<ftype>::type;
-
-        using barrier_type = pika::lcos::local::barrier;
-        using table_type =
-            std::map<std::set<std::size_t>, std::shared_ptr<barrier_type>>;
-        using mutex_type = pika::lcos::local::mutex;
-
-        static_assert(std::is_same<spmd_block, first_type>::value,
-            "define_spmd_block() needs a function or lambda that "
-            "has at least a local spmd_block as 1st argument");
-
-        std::shared_ptr<barrier_type> barrier =
-            std::make_shared<barrier_type>(num_images);
-        std::shared_ptr<table_type> barriers = std::make_shared<table_type>();
-        std::shared_ptr<mutex_type> mtx = std::make_shared<mutex_type>();
-
-        return pika::parallel::execution::bulk_async_execute(policy.executor(),
-            detail::spmd_block_helper<F>{
-                barrier, barriers, mtx, PIKA_FORWARD(F, f), num_images},
-            pika::detail::irange(std::size_t(0), num_images),
-            PIKA_FORWARD(Args, args)...);
-    }
-
-    // Synchronous version
-    template <typename ExPolicy, typename F, typename... Args,
-        typename = typename std::enable_if<
-            !pika::is_async_execution_policy<ExPolicy>::value>::type>
-    void define_spmd_block(
-        ExPolicy&& policy, std::size_t num_images, F&& f, Args&&... args)
-    {
-        static_assert(pika::is_execution_policy<ExPolicy>::value,
-            "pika::is_execution_policy<ExPolicy>::value");
-
-        using ftype = std::decay_t<F>;
-        using first_type =
-            typename pika::util::detail::first_argument<ftype>::type;
-
-        using barrier_type = pika::lcos::local::barrier;
-        using table_type =
-            std::map<std::set<std::size_t>, std::shared_ptr<barrier_type>>;
-        using mutex_type = pika::lcos::local::mutex;
-
-        static_assert(std::is_same<spmd_block, first_type>::value,
-            "define_spmd_block() needs a lambda that "
-            "has at least a spmd_block as 1st argument");
-
-        std::shared_ptr<barrier_type> barrier =
-            std::make_shared<barrier_type>(num_images);
-        std::shared_ptr<table_type> barriers = std::make_shared<table_type>();
-        std::shared_ptr<mutex_type> mtx = std::make_shared<mutex_type>();
-
-        pika::parallel::execution::bulk_sync_execute(policy.executor(),
-            detail::spmd_block_helper<F>{
-                barrier, barriers, mtx, PIKA_FORWARD(F, f), num_images},
-            pika::detail::irange(std::size_t(0), num_images),
-            PIKA_FORWARD(Args, args)...);
-    }
-
-    template <typename F, typename... Args>
-    void define_spmd_block(std::size_t num_images, F&& f, Args&&... args)
-    {
-        define_spmd_block(pika::execution::par, num_images, PIKA_FORWARD(F, f),
-            PIKA_FORWARD(Args, args)...);
-    }
-}}}    // namespace pika::lcos::local
-
-namespace pika::parallel {
-
-    /// The class spmd_block defines an interface for launching
-    /// multiple images while giving handles to each image to interact with
-    /// the remaining images. The \a define_spmd_block function templates create
-    /// multiple images of a user-defined function (or lambda) and launches them
-    /// in a possibly separate thread. A temporary spmd block object is created
-    /// and diffused to each image. The constraint for the function (or lambda)
-    /// given to the define_spmd_block function is to accept a spmd_block as
-    /// first parameter.
-    using spmd_block = pika::lcos::local::spmd_block;
-
-    // Asynchronous version
-    template <typename ExPolicy, typename F, typename... Args,
-        typename = typename std::enable_if<
-            pika::is_async_execution_policy<ExPolicy>::value>::type>
-    std::vector<pika::future<void>> define_spmd_block(
-        ExPolicy&& policy, std::size_t num_images, F&& f, Args&&... args)
-    {
-        return pika::lcos::local::define_spmd_block(
-            PIKA_FORWARD(ExPolicy, policy), num_images, PIKA_FORWARD(F, f),
-            PIKA_FORWARD(Args, args)...);
-    }
-
-    // Synchronous version
-    template <typename ExPolicy, typename F, typename... Args,
-        typename = typename std::enable_if<
-            !pika::is_async_execution_policy<ExPolicy>::value>::type>
-    void define_spmd_block(
-        ExPolicy&& policy, std::size_t num_images, F&& f, Args&&... args)
-    {
-        pika::lcos::local::define_spmd_block(PIKA_FORWARD(ExPolicy, policy),
+        return detail::define_spmd_block(PIKA_FORWARD(ExPolicy, policy),
             num_images, PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...);
     }
 
+    // Synchronous version
+    template <typename ExPolicy, typename F, typename... Args,
+        typename = typename std::enable_if<
+            !pika::is_async_execution_policy<ExPolicy>::value>::type>
+    void define_spmd_block(
+        ExPolicy&& policy, std::size_t num_images, F&& f, Args&&... args)
+    {
+        detail::define_spmd_block(PIKA_FORWARD(ExPolicy, policy), num_images,
+            PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...);
+    }
+
     template <typename F, typename... Args>
     void define_spmd_block(std::size_t num_images, F&& f, Args&&... args)
     {
-        pika::lcos::local::define_spmd_block(pika::execution::par, num_images,
+        detail::define_spmd_block(pika::execution::par, num_images,
             PIKA_FORWARD(F, f), PIKA_FORWARD(Args, args)...);
     }
-}    // namespace pika::parallel
+}    // namespace pika

@@ -18,7 +18,6 @@
 #include <vector>
 
 namespace pika::parallel::detail {
-
     /// \class less_ptr_no_null
     ///
     /// \remarks this is the comparison object for pointers. Receive a object

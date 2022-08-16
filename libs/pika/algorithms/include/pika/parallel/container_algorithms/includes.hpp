@@ -222,8 +222,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::includes
     inline constexpr struct includes_t final
@@ -291,10 +290,9 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_forward_iterator<Iter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::detail::includes().call(
-                pika::execution::seq, first1, last1, first2, last2,
-                PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-                PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::detail::includes().call(pika::execution::seq,
+                first1, last1, first2, last2, PIKA_FORWARD(Pred, op),
+                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
         }
 
         // clang-format off
@@ -372,13 +370,13 @@ namespace pika { namespace ranges {
                 (pika::traits::is_forward_iterator<iterator_type2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::detail::includes().call(
-                pika::execution::seq, pika::util::begin(rng1),
-                pika::util::end(rng1), pika::util::begin(rng2),
-                pika::util::end(rng2), PIKA_FORWARD(Pred, op),
-                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
+            return pika::parallel::detail::includes().call(pika::execution::seq,
+                pika::util::begin(rng1), pika::util::end(rng1),
+                pika::util::begin(rng2), pika::util::end(rng2),
+                PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
         }
     } includes{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

@@ -252,196 +252,185 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika::parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // none_of
-    namespace detail {
-        /// \cond NOINTERNAL
-        struct none_of : public detail::algorithm<none_of, bool>
+    /// \cond NOINTERNAL
+    struct none_of : public detail::algorithm<none_of, bool>
+    {
+        none_of()
+          : none_of::algorithm("none_of")
         {
-            none_of()
-              : none_of::algorithm("none_of")
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent, typename F,
+            typename Proj>
+        static bool sequential(
+            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
+        {
+            return detail::sequential_find_if<ExPolicy>(first, last,
+                       util::invoke_projected<F, Proj>(PIKA_FORWARD(F, f),
+                           PIKA_FORWARD(Proj, proj))) == last;
+        }
+
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(
+            ExPolicy&& policy, FwdIter first, Sent last, F&& op, Proj&& proj)
+        {
+            if (first == last)
             {
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    true);
             }
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename F, typename Proj>
-            static bool sequential(
-                ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
-            {
-                return detail::sequential_find_if<ExPolicy>(first, last,
-                           util::invoke_projected<F, Proj>(PIKA_FORWARD(F, f),
-                               PIKA_FORWARD(Proj, proj))) == last;
-            }
+            util::cancellation_token<> tok;
+            auto f1 = [op = PIKA_FORWARD(F, op), tok,
+                          proj = PIKA_FORWARD(Proj, proj)](FwdIter part_begin,
+                          std::size_t part_count) mutable -> bool {
+                detail::sequential_find_if<std::decay_t<ExPolicy>>(part_begin,
+                    part_count, tok, PIKA_FORWARD(F, op),
+                    PIKA_FORWARD(Proj, proj));
 
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, FwdIter first, Sent last, F&& op,
-                Proj&& proj)
-            {
-                if (first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        true);
-                }
+                return !tok.was_cancelled();
+            };
 
-                util::cancellation_token<> tok;
-                auto f1 = [op = PIKA_FORWARD(F, op), tok,
-                              proj = PIKA_FORWARD(Proj, proj)](
-                              FwdIter part_begin,
-                              std::size_t part_count) mutable -> bool {
-                    detail::sequential_find_if<std::decay_t<ExPolicy>>(
-                        part_begin, part_count, tok, PIKA_FORWARD(F, op),
-                        PIKA_FORWARD(Proj, proj));
-
-                    return !tok.was_cancelled();
-                };
-
-                return util::partitioner<ExPolicy, bool>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    [](std::vector<pika::future<bool>>&& results) {
-                        return detail::sequential_find_if_not<
-                                   pika::execution::sequenced_policy>(
-                                   pika::util::begin(results),
-                                   pika::util::end(results),
-                                   [](pika::future<bool>& val) {
-                                       return val.get();
-                                   }) == pika::util::end(results);
-                    });
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return util::partitioner<ExPolicy, bool>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                [](std::vector<pika::future<bool>>&& results) {
+                    return detail::sequential_find_if_not<
+                               pika::execution::sequenced_policy>(
+                               pika::util::begin(results),
+                               pika::util::end(results),
+                               [](pika::future<bool>& val) {
+                                   return val.get();
+                               }) == pika::util::end(results);
+                });
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // any_of
-    namespace detail {
-        /// \cond NOINTERNAL
-        struct any_of : public detail::algorithm<any_of, bool>
+    /// \cond NOINTERNAL
+    struct any_of : public detail::algorithm<any_of, bool>
+    {
+        any_of()
+          : any_of::algorithm("any_of")
         {
-            any_of()
-              : any_of::algorithm("any_of")
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent, typename F,
+            typename Proj>
+        static bool sequential(
+            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
+        {
+            return detail::sequential_find_if<ExPolicy>(first, last,
+                       util::invoke_projected<F, Proj>(PIKA_FORWARD(F, f),
+                           PIKA_FORWARD(Proj, proj))) != last;
+        }
+
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(
+            ExPolicy&& policy, FwdIter first, Sent last, F&& op, Proj&& proj)
+        {
+            if (first == last)
             {
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    false);
             }
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename F, typename Proj>
-            static bool sequential(
-                ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
-            {
-                return detail::sequential_find_if<ExPolicy>(first, last,
-                           util::invoke_projected<F, Proj>(PIKA_FORWARD(F, f),
-                               PIKA_FORWARD(Proj, proj))) != last;
-            }
+            util::cancellation_token<> tok;
+            auto f1 = [op = PIKA_FORWARD(F, op), tok,
+                          proj = PIKA_FORWARD(Proj, proj)](FwdIter part_begin,
+                          std::size_t part_count) mutable -> bool {
+                detail::sequential_find_if<std::decay_t<ExPolicy>>(part_begin,
+                    part_count, tok, PIKA_FORWARD(F, op),
+                    PIKA_FORWARD(Proj, proj));
 
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, FwdIter first, Sent last, F&& op,
-                Proj&& proj)
-            {
-                if (first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        false);
-                }
+                return tok.was_cancelled();
+            };
 
-                util::cancellation_token<> tok;
-                auto f1 = [op = PIKA_FORWARD(F, op), tok,
-                              proj = PIKA_FORWARD(Proj, proj)](
-                              FwdIter part_begin,
-                              std::size_t part_count) mutable -> bool {
-                    detail::sequential_find_if<std::decay_t<ExPolicy>>(
-                        part_begin, part_count, tok, PIKA_FORWARD(F, op),
-                        PIKA_FORWARD(Proj, proj));
-
-                    return tok.was_cancelled();
-                };
-
-                return util::partitioner<ExPolicy, bool>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    [](std::vector<pika::future<bool>>&& results) {
-                        return detail::sequential_find_if<
-                                   pika::execution::sequenced_policy>(
-                                   pika::util::begin(results),
-                                   pika::util::end(results),
-                                   [](pika::future<bool>& val) {
-                                       return val.get();
-                                   }) != pika::util::end(results);
-                    });
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return util::partitioner<ExPolicy, bool>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                [](std::vector<pika::future<bool>>&& results) {
+                    return detail::sequential_find_if<
+                               pika::execution::sequenced_policy>(
+                               pika::util::begin(results),
+                               pika::util::end(results),
+                               [](pika::future<bool>& val) {
+                                   return val.get();
+                               }) != pika::util::end(results);
+                });
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // all_of
-    namespace detail {
-        /// \cond NOINTERNAL
-        struct all_of : public detail::algorithm<all_of, bool>
+    /// \cond NOINTERNAL
+    struct all_of : public detail::algorithm<all_of, bool>
+    {
+        all_of()
+          : all_of::algorithm("all_of")
         {
-            all_of()
-              : all_of::algorithm("all_of")
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent, typename F,
+            typename Proj>
+        static bool sequential(
+            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
+        {
+            return detail::sequential_find_if_not<ExPolicy>(first, last,
+                       PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj)) == last;
+        }
+
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(
+            ExPolicy&& policy, FwdIter first, Sent last, F&& op, Proj&& proj)
+        {
+            if (first == last)
             {
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    true);
             }
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename F, typename Proj>
-            static bool sequential(
-                ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
-            {
-                return detail::sequential_find_if_not<ExPolicy>(first, last,
-                           PIKA_FORWARD(F, f),
-                           PIKA_FORWARD(Proj, proj)) == last;
-            }
+            util::cancellation_token<> tok;
+            auto f1 = [op = PIKA_FORWARD(F, op), tok,
+                          proj = PIKA_FORWARD(Proj, proj)](FwdIter part_begin,
+                          std::size_t part_count) mutable -> bool {
+                detail::sequential_find_if_not<std::decay_t<ExPolicy>>(
+                    part_begin, part_count, tok, PIKA_FORWARD(F, op),
+                    PIKA_FORWARD(Proj, proj));
 
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, FwdIter first, Sent last, F&& op,
-                Proj&& proj)
-            {
-                if (first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        true);
-                }
+                return !tok.was_cancelled();
+            };
 
-                util::cancellation_token<> tok;
-                auto f1 = [op = PIKA_FORWARD(F, op), tok,
-                              proj = PIKA_FORWARD(Proj, proj)](
-                              FwdIter part_begin,
-                              std::size_t part_count) mutable -> bool {
-                    detail::sequential_find_if_not<std::decay_t<ExPolicy>>(
-                        part_begin, part_count, tok, PIKA_FORWARD(F, op),
-                        PIKA_FORWARD(Proj, proj));
-
-                    return !tok.was_cancelled();
-                };
-
-                return util::partitioner<ExPolicy, bool>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    [](std::vector<pika::future<bool>>&& results) {
-                        return detail::sequential_find_if_not<
-                                   pika::execution::sequenced_policy>(
-                                   pika::util::begin(results),
-                                   pika::util::end(results),
-                                   [](pika::future<bool>& val) {
-                                       return val.get();
-                                   }) == pika::util::end(results);
-                    });
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}    // namespace pika::parallel
+            return util::partitioner<ExPolicy, bool>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                [](std::vector<pika::future<bool>>&& results) {
+                    return detail::sequential_find_if_not<
+                               pika::execution::sequenced_policy>(
+                               pika::util::begin(results),
+                               pika::util::end(results),
+                               [](pika::future<bool>& val) {
+                                   return val.get();
+                               }) == pika::util::end(results);
+                });
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::none_of
     inline constexpr struct none_of_t final
@@ -573,7 +562,6 @@ namespace pika {
                 pika::parallel::util::projection_identity{});
         }
     } all_of{};
-
 }    // namespace pika
 
 #endif    // DOXYGEN

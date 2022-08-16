@@ -14,9 +14,7 @@
 
 #include <utility>
 
-namespace pika { namespace parallel { namespace util {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     template <typename Compare, typename... Proj>
     struct compare_projected;
 
@@ -150,4 +148,4 @@ namespace pika { namespace parallel { namespace util {
 
         Compare comp_;
     };
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

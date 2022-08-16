@@ -17,7 +17,6 @@
 #include <utility>
 
 namespace pika::parallel::detail {
-    ///////////////////////////////////////////////////////////////////////////
     template <int N, typename R, typename ZipIter>
     R get_iter(ZipIter&& zipiter)
     {

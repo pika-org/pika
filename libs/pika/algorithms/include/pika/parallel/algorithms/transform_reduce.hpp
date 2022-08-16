@@ -279,211 +279,267 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
-
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // transform_reduce
-    namespace detail {
+    ///////////////////////////////////////////////////////////////////////
+    template <typename T, typename ExPolicy, typename Reduce, typename Convert>
+    struct transform_reduce_iteration
+    {
+        using execution_policy_type = std::decay_t<ExPolicy>;
+        using reduce_type = std::decay_t<Reduce>;
+        using convert_type = std::decay_t<Convert>;
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename T, typename ExPolicy, typename Reduce,
-            typename Convert>
-        struct transform_reduce_iteration
+        reduce_type reduce_;
+        convert_type convert_;
+
+        template <typename Reduce_, typename Convert_>
+        PIKA_HOST_DEVICE transform_reduce_iteration(
+            Reduce_&& reduce, Convert_&& convert)
+          : reduce_(PIKA_FORWARD(Reduce_, reduce))
+          , convert_(PIKA_FORWARD(Convert_, convert))
         {
-            using execution_policy_type = std::decay_t<ExPolicy>;
-            using reduce_type = std::decay_t<Reduce>;
-            using convert_type = std::decay_t<Convert>;
-
-            reduce_type reduce_;
-            convert_type convert_;
-
-            template <typename Reduce_, typename Convert_>
-            PIKA_HOST_DEVICE transform_reduce_iteration(
-                Reduce_&& reduce, Convert_&& convert)
-              : reduce_(PIKA_FORWARD(Reduce_, reduce))
-              , convert_(PIKA_FORWARD(Convert_, convert))
-            {
-            }
+        }
 
 #if !defined(__NVCC__) && !defined(__CUDACC__)
-            transform_reduce_iteration(
-                transform_reduce_iteration const&) = default;
-            transform_reduce_iteration(transform_reduce_iteration&&) = default;
+        transform_reduce_iteration(transform_reduce_iteration const&) = default;
+        transform_reduce_iteration(transform_reduce_iteration&&) = default;
 #else
-            PIKA_HOST_DEVICE transform_reduce_iteration(
-                transform_reduce_iteration const& rhs)
-              : reduce_(rhs.reduce_)
-              , convert_(rhs.convert_)
-            {
-            }
+        PIKA_HOST_DEVICE transform_reduce_iteration(
+            transform_reduce_iteration const& rhs)
+          : reduce_(rhs.reduce_)
+          , convert_(rhs.convert_)
+        {
+        }
 
-            PIKA_HOST_DEVICE transform_reduce_iteration(
-                transform_reduce_iteration&& rhs)
-              : reduce_(PIKA_MOVE(rhs.reduce_))
-              , convert_(PIKA_MOVE(rhs.convert_))
-            {
-            }
+        PIKA_HOST_DEVICE transform_reduce_iteration(
+            transform_reduce_iteration&& rhs)
+          : reduce_(PIKA_MOVE(rhs.reduce_))
+          , convert_(PIKA_MOVE(rhs.convert_))
+        {
+        }
 #endif
 
-            transform_reduce_iteration& operator=(
-                transform_reduce_iteration const&) = default;
-            transform_reduce_iteration& operator=(
-                transform_reduce_iteration&&) = default;
+        transform_reduce_iteration& operator=(
+            transform_reduce_iteration const&) = default;
+        transform_reduce_iteration& operator=(
+            transform_reduce_iteration&&) = default;
 
-            template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE T operator()(
-                Iter part_begin, std::size_t part_size)
-            {
-                using reference =
-                    typename std::iterator_traits<Iter>::reference;
-
-                T val = PIKA_INVOKE(convert_, *part_begin);
-                return util::accumulate_n(++part_begin, --part_size,
-                    PIKA_MOVE(val),
-                    [PIKA_CXX20_CAPTURE_THIS(=)](
-                        T const& res, reference next) mutable -> T {
-                        return PIKA_INVOKE(
-                            reduce_, res, PIKA_INVOKE(convert_, next));
-                    });
-            }
-        };
-
-        template <typename T>
-        struct transform_reduce
-          : public detail::algorithm<transform_reduce<T>, T>
+        template <typename Iter>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE T operator()(
+            Iter part_begin, std::size_t part_size)
         {
-            transform_reduce()
-              : transform_reduce::algorithm("transform_reduce")
+            using reference = typename std::iterator_traits<Iter>::reference;
+
+            T val = PIKA_INVOKE(convert_, *part_begin);
+            return util::accumulate_n(++part_begin, --part_size, PIKA_MOVE(val),
+                [PIKA_CXX20_CAPTURE_THIS(=)](
+                    T const& res, reference next) mutable -> T {
+                    return PIKA_INVOKE(
+                        reduce_, res, PIKA_INVOKE(convert_, next));
+                });
+        }
+    };
+
+    template <typename T>
+    struct transform_reduce : public detail::algorithm<transform_reduce<T>, T>
+    {
+        transform_reduce()
+          : transform_reduce::algorithm("transform_reduce")
+        {
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent, typename T_,
+            typename Reduce, typename Convert>
+        static T sequential(ExPolicy, Iter first, Sent last, T_&& init,
+            Reduce&& r, Convert&& conv)
+        {
+            using value_type = typename std::iterator_traits<Iter>::value_type;
+
+            return detail::accumulate(first, last, PIKA_FORWARD(T_, init),
+                [&r, &conv](T const& res, value_type const& next) -> T {
+                    return PIKA_INVOKE(r, res, PIKA_INVOKE(conv, next));
+                });
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent, typename T_,
+            typename Reduce, typename Convert>
+        static typename util::detail::algorithm_result<ExPolicy, T>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, T_&& init,
+            Reduce&& r, Convert&& conv)
+        {
+            if (first == last)
             {
+                T init_ = init;
+                return util::detail::algorithm_result<ExPolicy, T>::get(
+                    PIKA_MOVE(init_));
             }
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename T_, typename Reduce, typename Convert>
-            static T sequential(ExPolicy, Iter first, Sent last, T_&& init,
-                Reduce&& r, Convert&& conv)
-            {
-                using value_type =
-                    typename std::iterator_traits<Iter>::value_type;
+            auto f1 = transform_reduce_iteration<T, ExPolicy, Reduce, Convert>(
+                PIKA_FORWARD(Reduce, r), PIKA_FORWARD(Convert, conv));
 
-                return detail::accumulate(first, last, PIKA_FORWARD(T_, init),
-                    [&r, &conv](T const& res, value_type const& next) -> T {
-                        return PIKA_INVOKE(r, res, PIKA_INVOKE(conv, next));
-                    });
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename T_, typename Reduce, typename Convert>
-            static typename util::detail::algorithm_result<ExPolicy, T>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, T_&& init,
-                Reduce&& r, Convert&& conv)
-            {
-                if (first == last)
-                {
-                    T init_ = init;
-                    return util::detail::algorithm_result<ExPolicy, T>::get(
-                        PIKA_MOVE(init_));
-                }
-
-                auto f1 =
-                    transform_reduce_iteration<T, ExPolicy, Reduce, Convert>(
-                        PIKA_FORWARD(Reduce, r), PIKA_FORWARD(Convert, conv));
-
-                return util::partitioner<ExPolicy, T>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    pika::unwrapping(
-                        [init = PIKA_FORWARD(T_, init),
-                            r = PIKA_FORWARD(Reduce, r)](
-                            std::vector<T>&& results) mutable -> T {
-                            return util::accumulate_n(
-                                pika::util::begin(results),
-                                pika::util::size(results), init, r);
-                        }));
-            }
-        };
-    }    // namespace detail
+            return util::partitioner<ExPolicy, T>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                pika::unwrapping([init = PIKA_FORWARD(T_, init),
+                                     r = PIKA_FORWARD(Reduce, r)](
+                                     std::vector<T>&& results) mutable -> T {
+                    return util::accumulate_n(pika::util::begin(results),
+                        pika::util::size(results), init, r);
+                }));
+        }
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     // transform_reduce_binary
-    namespace detail {
+    template <typename F>
+    struct transform_reduce_binary_indirect
+    {
+        F f_;
 
-        template <typename F>
-        struct transform_reduce_binary_indirect
+        template <typename Iter1, typename Iter2>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
+            Iter1 it1, Iter2 it2) -> decltype(PIKA_INVOKE(f_, *it1, *it2))
         {
-            F f_;
+            return PIKA_INVOKE(f_, *it1, *it2);
+        }
+    };
 
-            template <typename Iter1, typename Iter2>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Iter1 it1, Iter2 it2) -> decltype(PIKA_INVOKE(f_, *it1, *it2))
-            {
-                return PIKA_INVOKE(f_, *it1, *it2);
-            }
-        };
+    template <typename Op1, typename Op2, typename T>
+    struct transform_reduce_binary_partition
+    {
+        using value_type = std::decay_t<T>;
 
-        template <typename Op1, typename Op2, typename T>
-        struct transform_reduce_binary_partition
+        Op1 op1_;
+        Op2 op2_;
+        value_type& part_sum_;
+
+        template <typename Iter1, typename Iter2>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
+            Iter1 it1, Iter2 it2)
         {
-            using value_type = std::decay_t<T>;
+            part_sum_ =
+                PIKA_INVOKE(op1_, part_sum_, PIKA_INVOKE(op2_, *it1, *it2));
+        }
+    };
 
-            Op1 op1_;
-            Op2 op2_;
-            value_type& part_sum_;
-
-            template <typename Iter1, typename Iter2>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                Iter1 it1, Iter2 it2)
-            {
-                part_sum_ =
-                    PIKA_INVOKE(op1_, part_sum_, PIKA_INVOKE(op2_, *it1, *it2));
-            }
-        };
-
-        template <typename T>
-        struct transform_reduce_binary
-          : public detail::algorithm<transform_reduce_binary<T>, T>
+    template <typename T>
+    struct transform_reduce_binary
+      : public detail::algorithm<transform_reduce_binary<T>, T>
+    {
+        transform_reduce_binary()
+          : transform_reduce_binary::algorithm("transform_reduce_binary")
         {
-            transform_reduce_binary()
-              : transform_reduce_binary::algorithm("transform_reduce_binary")
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Iter2, typename T_, typename Op1, typename Op2>
+        static T sequential(ExPolicy&& /* policy */, Iter first1, Sent last1,
+            Iter2 first2, T_ init, Op1&& op1, Op2&& op2)
+        {
+            if (first1 == last1)
             {
+                return init;
             }
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Iter2, typename T_, typename Op1, typename Op2>
-            static T sequential(ExPolicy&& /* policy */, Iter first1,
-                Sent last1, Iter2 first2, T_ init, Op1&& op1, Op2&& op2)
+            // check whether we should apply vectorization
+            if (!util::loop_optimization<ExPolicy>(first1, last1))
             {
-                if (first1 == last1)
+                util::loop2<ExPolicy>(std::false_type(), first1, last1, first2,
+                    transform_reduce_binary_partition<Op1, Op2, T>{
+                        PIKA_FORWARD(Op1, op1), PIKA_FORWARD(Op2, op2), init});
+                return init;
+            }
+
+            // loop_step properly advances the iterators
+            auto part_sum = util::loop_step<ExPolicy>(std::true_type(),
+                transform_reduce_binary_indirect<Op2>{op2}, first1, first2);
+
+            std::pair<Iter, Iter2> p = util::loop2<ExPolicy>(std::true_type(),
+                first1, last1, first2,
+                transform_reduce_binary_partition<Op1, Op2, decltype(part_sum)>{
+                    op1, op2, part_sum});
+
+            // this is to support vectorization, it will call op1 for each
+            // of the elements of a value-pack
+            auto result = util::detail::accumulate_values<ExPolicy>(
+                [&op1](T const& sum, T&& val) -> T {
+                    return PIKA_INVOKE(op1, sum, val);
+                },
+                PIKA_MOVE(part_sum), PIKA_MOVE(init));
+
+            // the vectorization might not cover all of the sequences,
+            // handle the remainder directly
+            if (p.first != last1)
+            {
+                util::loop2<ExPolicy>(std::false_type(), p.first, last1,
+                    p.second,
+                    transform_reduce_binary_partition<Op1, Op2,
+                        decltype(result)>{PIKA_FORWARD(Op1, op1),
+                        PIKA_FORWARD(Op2, op2), result});
+            }
+
+            return util::detail::extract_value<ExPolicy>(result);
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Iter2, typename T_, typename Op1, typename Op2>
+        static typename util::detail::algorithm_result<ExPolicy, T>::type
+        parallel(ExPolicy&& policy, Iter first1, Sent last1, Iter2 first2,
+            T_&& init, Op1&& op1, Op2&& op2)
+        {
+            using result = util::detail::algorithm_result<ExPolicy, T>;
+            using zip_iterator = pika::util::zip_iterator<Iter, Iter2>;
+            using difference_type =
+                typename std::iterator_traits<Iter>::difference_type;
+
+            if (first1 == last1)
+            {
+                return result::get(PIKA_FORWARD(T_, init));
+            }
+
+            difference_type count = detail::distance(first1, last1);
+
+            auto f1 = [op1, op2 = PIKA_FORWARD(Op2, op2)](
+                          zip_iterator part_begin,
+                          std::size_t part_size) mutable -> T {
+                auto iters = part_begin.get_iterator_tuple();
+                Iter it1 = std::get<0>(iters);
+                Iter2 it2 = std::get<1>(iters);
+
+                Iter last1 = it1;
+                std::advance(last1, part_size);
+
+                if (!util::loop_optimization<ExPolicy>(it1, last1))
                 {
-                    return init;
-                }
+                    // loop_step properly advances the iterators
+                    auto result = util::loop_step<ExPolicy>(std::false_type(),
+                        transform_reduce_binary_indirect<Op2>{op2}, it1, it2);
 
-                // check whether we should apply vectorization
-                if (!util::loop_optimization<ExPolicy>(first1, last1))
-                {
-                    util::loop2<ExPolicy>(std::false_type(), first1, last1,
-                        first2,
-                        transform_reduce_binary_partition<Op1, Op2, T>{
-                            PIKA_FORWARD(Op1, op1), PIKA_FORWARD(Op2, op2),
-                            init});
-                    return init;
+                    util::loop2<ExPolicy>(std::false_type(), it1, last1, it2,
+                        transform_reduce_binary_partition<Op1, Op2,
+                            decltype(result)>{PIKA_FORWARD(Op1, op1),
+                            PIKA_FORWARD(Op2, op2), result});
+
+                    return util::detail::extract_value<ExPolicy>(result);
                 }
 
                 // loop_step properly advances the iterators
                 auto part_sum = util::loop_step<ExPolicy>(std::true_type(),
-                    transform_reduce_binary_indirect<Op2>{op2}, first1, first2);
+                    transform_reduce_binary_indirect<Op2>{op2}, it1, it2);
 
-                std::pair<Iter, Iter2> p = util::loop2<ExPolicy>(
-                    std::true_type(), first1, last1, first2,
-                    transform_reduce_binary_partition<Op1, Op2,
-                        decltype(part_sum)>{op1, op2, part_sum});
+                std::pair<Iter, Iter2> p =
+                    util::loop2<ExPolicy>(std::true_type(), it1, last1, it2,
+                        transform_reduce_binary_partition<Op1, Op2,
+                            decltype(part_sum)>{op1, op2, part_sum});
 
-                // this is to support vectorization, it will call op1 for each
-                // of the elements of a value-pack
+                // this is to support vectorization, it will call op1
+                // for each of the elements of a value-pack
                 auto result = util::detail::accumulate_values<ExPolicy>(
                     [&op1](T const& sum, T&& val) -> T {
                         return PIKA_INVOKE(op1, sum, val);
                     },
-                    PIKA_MOVE(part_sum), PIKA_MOVE(init));
+                    part_sum);
 
                 // the vectorization might not cover all of the sequences,
                 // handle the remainder directly
@@ -497,103 +553,25 @@ namespace pika { namespace parallel {
                 }
 
                 return util::detail::extract_value<ExPolicy>(result);
-            }
+            };
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Iter2, typename T_, typename Op1, typename Op2>
-            static typename util::detail::algorithm_result<ExPolicy, T>::type
-            parallel(ExPolicy&& policy, Iter first1, Sent last1, Iter2 first2,
-                T_&& init, Op1&& op1, Op2&& op2)
-            {
-                using result = util::detail::algorithm_result<ExPolicy, T>;
-                using zip_iterator = pika::util::zip_iterator<Iter, Iter2>;
-                using difference_type =
-                    typename std::iterator_traits<Iter>::difference_type;
+            using pika::util::make_zip_iterator;
 
-                if (first1 == last1)
-                {
-                    return result::get(PIKA_FORWARD(T_, init));
-                }
-
-                difference_type count = detail::distance(first1, last1);
-
-                auto f1 = [op1, op2 = PIKA_FORWARD(Op2, op2)](
-                              zip_iterator part_begin,
-                              std::size_t part_size) mutable -> T {
-                    auto iters = part_begin.get_iterator_tuple();
-                    Iter it1 = std::get<0>(iters);
-                    Iter2 it2 = std::get<1>(iters);
-
-                    Iter last1 = it1;
-                    std::advance(last1, part_size);
-
-                    if (!util::loop_optimization<ExPolicy>(it1, last1))
+            return util::partitioner<ExPolicy, T>::call(
+                PIKA_FORWARD(ExPolicy, policy),
+                make_zip_iterator(first1, first2), count, PIKA_MOVE(f1),
+                [init = PIKA_FORWARD(T_, init), op1 = PIKA_FORWARD(Op1, op1)](
+                    std::vector<pika::future<T>>&& results) mutable -> T {
+                    T ret = PIKA_MOVE(init);
+                    for (auto&& fut : results)
                     {
-                        // loop_step properly advances the iterators
-                        auto result =
-                            util::loop_step<ExPolicy>(std::false_type(),
-                                transform_reduce_binary_indirect<Op2>{op2}, it1,
-                                it2);
-
-                        util::loop2<ExPolicy>(std::false_type(), it1, last1,
-                            it2,
-                            transform_reduce_binary_partition<Op1, Op2,
-                                decltype(result)>{PIKA_FORWARD(Op1, op1),
-                                PIKA_FORWARD(Op2, op2), result});
-
-                        return util::detail::extract_value<ExPolicy>(result);
+                        ret = PIKA_INVOKE(op1, PIKA_MOVE(ret), fut.get());
                     }
-
-                    // loop_step properly advances the iterators
-                    auto part_sum = util::loop_step<ExPolicy>(std::true_type(),
-                        transform_reduce_binary_indirect<Op2>{op2}, it1, it2);
-
-                    std::pair<Iter, Iter2> p =
-                        util::loop2<ExPolicy>(std::true_type(), it1, last1, it2,
-                            transform_reduce_binary_partition<Op1, Op2,
-                                decltype(part_sum)>{op1, op2, part_sum});
-
-                    // this is to support vectorization, it will call op1
-                    // for each of the elements of a value-pack
-                    auto result = util::detail::accumulate_values<ExPolicy>(
-                        [&op1](T const& sum, T&& val) -> T {
-                            return PIKA_INVOKE(op1, sum, val);
-                        },
-                        part_sum);
-
-                    // the vectorization might not cover all of the sequences,
-                    // handle the remainder directly
-                    if (p.first != last1)
-                    {
-                        util::loop2<ExPolicy>(std::false_type(), p.first, last1,
-                            p.second,
-                            transform_reduce_binary_partition<Op1, Op2,
-                                decltype(result)>{PIKA_FORWARD(Op1, op1),
-                                PIKA_FORWARD(Op2, op2), result});
-                    }
-
-                    return util::detail::extract_value<ExPolicy>(result);
-                };
-
-                using pika::util::make_zip_iterator;
-
-                return util::partitioner<ExPolicy, T>::call(
-                    PIKA_FORWARD(ExPolicy, policy),
-                    make_zip_iterator(first1, first2), count, PIKA_MOVE(f1),
-                    [init = PIKA_FORWARD(T_, init),
-                        op1 = PIKA_FORWARD(Op1, op1)](
-                        std::vector<pika::future<T>>&& results) mutable -> T {
-                        T ret = PIKA_MOVE(init);
-                        for (auto&& fut : results)
-                        {
-                            ret = PIKA_INVOKE(op1, PIKA_MOVE(ret), fut.get());
-                        }
-                        return ret;
-                    });
-            }
-        };
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+                    return ret;
+                });
+        }
+    };
+}    // namespace pika::parallel::detail
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #include <pika/functional/traits/get_function_address.hpp>
@@ -601,12 +579,12 @@ namespace pika { namespace parallel {
 
 namespace pika::detail {
     template <typename T, typename ExPolicy, typename Reduce, typename Convert>
-    struct get_function_address<parallel::detail::
-            transform_reduce_iteration<T, ExPolicy, Reduce, Convert>>
+    struct get_function_address<parallel::detail::transform_reduce_iteration<T,
+        ExPolicy, Reduce, Convert>>
     {
         static constexpr char const* call(
-            parallel::detail::transform_reduce_iteration<T, ExPolicy,
-                Reduce, Convert> const& f) noexcept
+            parallel::detail::transform_reduce_iteration<T, ExPolicy, Reduce,
+                Convert> const& f) noexcept
         {
             char const* reduce_name =
                 get_function_address<std::decay_t<Reduce>>::call(f.reduce_);
@@ -618,12 +596,12 @@ namespace pika::detail {
     };
 
     template <typename T, typename ExPolicy, typename Reduce, typename Convert>
-    struct get_function_annotation<parallel::detail::
-            transform_reduce_iteration<T, ExPolicy, Reduce, Convert>>
+    struct get_function_annotation<parallel::detail::transform_reduce_iteration<
+        T, ExPolicy, Reduce, Convert>>
     {
         static constexpr char const* call(
-            parallel::detail::transform_reduce_iteration<T, ExPolicy,
-                Reduce, Convert> const& f) noexcept
+            parallel::detail::transform_reduce_iteration<T, ExPolicy, Reduce,
+                Convert> const& f) noexcept
         {
             char const* reduce_name =
                 get_function_annotation<std::decay_t<Reduce>>::call(f.reduce_);
@@ -641,8 +619,8 @@ namespace pika::detail {
             transform_reduce_iteration<T, ExPolicy, Reduce, Convert>>
     {
         static util::itt::string_handle call(
-            parallel::detail::transform_reduce_iteration<T, ExPolicy,
-                Reduce, Convert> const& f) noexcept
+            parallel::detail::transform_reduce_iteration<T, ExPolicy, Reduce,
+                Convert> const& f) noexcept
         {
             static util::itt::string_handle sh(get_function_annotation<
                 parallel::detail::transform_reduce_iteration<T, ExPolicy,
@@ -656,7 +634,6 @@ namespace pika::detail {
 #endif
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::transform_reduce
     inline constexpr struct transform_reduce_t final
@@ -743,10 +720,10 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::detail::transform_reduce_binary<T>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-                    PIKA_MOVE(init), pika::parallel::detail::plus(),
-                    pika::parallel::detail::multiplies());
+            return pika::parallel::detail::transform_reduce_binary<T>().call(
+                PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
+                PIKA_MOVE(init), pika::parallel::detail::plus(),
+                pika::parallel::detail::multiplies());
         }
 
         // clang-format off
@@ -764,10 +741,10 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::detail::transform_reduce_binary<T>()
-                .call(pika::execution::seq, first1, last1, first2,
-                    PIKA_MOVE(init), pika::parallel::detail::plus(),
-                    pika::parallel::detail::multiplies());
+            return pika::parallel::detail::transform_reduce_binary<T>().call(
+                pika::execution::seq, first1, last1, first2, PIKA_MOVE(init),
+                pika::parallel::detail::plus(),
+                pika::parallel::detail::multiplies());
         }
 
         // clang-format off
@@ -804,10 +781,10 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::detail::transform_reduce_binary<T>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-                    PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
-                    PIKA_FORWARD(Convert, conv_op));
+            return pika::parallel::detail::transform_reduce_binary<T>().call(
+                PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
+                PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
+                PIKA_FORWARD(Convert, conv_op));
         }
 
         // clang-format off
@@ -841,10 +818,9 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::detail::transform_reduce_binary<T>()
-                .call(pika::execution::seq, first1, last1, first2,
-                    PIKA_MOVE(init), PIKA_FORWARD(Reduce, red_op),
-                    PIKA_FORWARD(Convert, conv_op));
+            return pika::parallel::detail::transform_reduce_binary<T>().call(
+                pika::execution::seq, first1, last1, first2, PIKA_MOVE(init),
+                PIKA_FORWARD(Reduce, red_op), PIKA_FORWARD(Convert, conv_op));
         }
     } transform_reduce{};
 }    // namespace pika

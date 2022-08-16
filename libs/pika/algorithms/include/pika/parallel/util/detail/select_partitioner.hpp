@@ -12,8 +12,7 @@
 
 #include <pika/executors/execution_policy.hpp>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util { namespace detail {
+namespace pika::parallel::util::detail {
     template <typename ExPolicy, template <typename...> class Partitioner,
         template <typename...> class TaskPartitioner>
     struct select_partitioner
@@ -56,4 +55,4 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             TaskPartitioner<pika::execution::par_simd_task_policy, Args...>;
     };
 #endif
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail

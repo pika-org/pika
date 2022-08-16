@@ -406,8 +406,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I, typename O>
     using unary_transform_result = parallel::util::in_out_result<I, O>;
 
@@ -538,9 +537,8 @@ namespace pika { namespace ranges {
                     pika::traits::is_forward_iterator<iterator_type2>::value,
                 "Requires at least forward iterator.");
 
-            return parallel::detail::transform_binary2<
-                binary_transform_result<iterator_type1, iterator_type2,
-                    FwdIter>>()
+            return parallel::detail::transform_binary2<binary_transform_result<
+                iterator_type1, iterator_type2, FwdIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng1),
                     pika::util::end(rng1), pika::util::begin(rng2),
                     pika::util::end(rng2), dest, PIKA_FORWARD(F, f),
@@ -652,9 +650,8 @@ namespace pika { namespace ranges {
                     pika::traits::is_forward_iterator<iterator_type2>::value,
                 "Requires at least forward iterator.");
 
-            return parallel::detail::transform_binary2<
-                binary_transform_result<iterator_type1, iterator_type2,
-                    FwdIter>>()
+            return parallel::detail::transform_binary2<binary_transform_result<
+                iterator_type1, iterator_type2, FwdIter>>()
                 .call(pika::execution::seq, pika::util::begin(rng1),
                     pika::util::end(rng1), pika::util::begin(rng2),
                     pika::util::end(rng2), dest, PIKA_FORWARD(F, f),
@@ -662,6 +659,6 @@ namespace pika { namespace ranges {
         }
 
     } transform{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

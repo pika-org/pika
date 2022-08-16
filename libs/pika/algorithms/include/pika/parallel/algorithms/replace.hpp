@@ -489,285 +489,270 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // replace
-    namespace detail {
-        /// \cond NOINTERNAL
-
-        // sequential replace
-        template <typename InIter, typename T1, typename T2, typename Proj>
-        inline InIter sequential_replace(InIter first, InIter last,
-            T1 const& old_value, T2 const& new_value, Proj&& proj)
+    /// \cond NOINTERNAL
+    // sequential replace
+    template <typename InIter, typename T1, typename T2, typename Proj>
+    inline InIter sequential_replace(InIter first, InIter last,
+        T1 const& old_value, T2 const& new_value, Proj&& proj)
+    {
+        for (/* */; first != last; ++first)
         {
-            for (/* */; first != last; ++first)
+            if (PIKA_INVOKE(proj, *first) == old_value)
             {
-                if (PIKA_INVOKE(proj, *first) == old_value)
-                {
-                    *first = new_value;
-                }
+                *first = new_value;
             }
-            return first;
+        }
+        return first;
+    }
+
+    template <typename Iter>
+    struct replace : public detail::algorithm<replace<Iter>, Iter>
+    {
+        replace()
+          : replace::algorithm("replace")
+        {
         }
 
-        template <typename Iter>
-        struct replace : public detail::algorithm<replace<Iter>, Iter>
+        template <typename ExPolicy, typename InIter, typename T1, typename T2,
+            typename Proj>
+        static InIter sequential(ExPolicy, InIter first, InIter last,
+            T1 const& old_value, T2 const& new_value, Proj&& proj)
         {
-            replace()
-              : replace::algorithm("replace")
-            {
-            }
+            return sequential_replace(
+                first, last, old_value, new_value, PIKA_FORWARD(Proj, proj));
+        }
 
-            template <typename ExPolicy, typename InIter, typename T1,
-                typename T2, typename Proj>
-            static InIter sequential(ExPolicy, InIter first, InIter last,
-                T1 const& old_value, T2 const& new_value, Proj&& proj)
-            {
-                return sequential_replace(first, last, old_value, new_value,
-                    PIKA_FORWARD(Proj, proj));
-            }
+        template <typename ExPolicy, typename FwdIter, typename T1, typename T2,
+            typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, FwdIter last,
+            T1 const& old_value, T2 const& new_value, Proj&& proj)
+        {
+            using type = typename std::iterator_traits<FwdIter>::value_type;
 
-            template <typename ExPolicy, typename FwdIter, typename T1,
-                typename T2, typename Proj>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, FwdIter last,
-                    T1 const& old_value, T2 const& new_value, Proj&& proj)
-            {
-                using type = typename std::iterator_traits<FwdIter>::value_type;
-
-                return for_each_n<FwdIter>().call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    std::distance(first, last),
-                    [old_value, new_value, proj = PIKA_FORWARD(Proj, proj)](
-                        type& t) -> void {
-                        if (PIKA_INVOKE(proj, t) == old_value)
-                        {
-                            t = new_value;
-                        }
-                    },
-                    util::projection_identity());
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return for_each_n<FwdIter>().call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                std::distance(first, last),
+                [old_value, new_value, proj = PIKA_FORWARD(Proj, proj)](
+                    type& t) -> void {
+                    if (PIKA_INVOKE(proj, t) == old_value)
+                    {
+                        t = new_value;
+                    }
+                },
+                util::projection_identity());
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // replace_if
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // sequential replace_if
-        template <typename InIter, typename Sent, typename F, typename T,
-            typename Proj>
-        inline InIter sequential_replace_if(
-            InIter first, Sent sent, F&& f, T const& new_value, Proj&& proj)
+    // sequential replace_if
+    template <typename InIter, typename Sent, typename F, typename T,
+        typename Proj>
+    inline InIter sequential_replace_if(
+        InIter first, Sent sent, F&& f, T const& new_value, Proj&& proj)
+    {
+        for (/* */; first != sent; ++first)
         {
-            for (/* */; first != sent; ++first)
+            if (PIKA_INVOKE(f, PIKA_INVOKE(proj, *first)))
             {
-                if (PIKA_INVOKE(f, PIKA_INVOKE(proj, *first)))
-                {
-                    *first = new_value;
-                }
+                *first = new_value;
             }
-            return first;
+        }
+        return first;
+    }
+
+    template <typename Iter>
+    struct replace_if : public detail::algorithm<replace_if<Iter>, Iter>
+    {
+        replace_if()
+          : replace_if::algorithm("replace_if")
+        {
         }
 
-        template <typename Iter>
-        struct replace_if : public detail::algorithm<replace_if<Iter>, Iter>
+        template <typename ExPolicy, typename InIter, typename Sent, typename F,
+            typename T, typename Proj>
+        static InIter sequential(ExPolicy, InIter first, Sent last, F&& f,
+            T const& new_value, Proj&& proj)
         {
-            replace_if()
-              : replace_if::algorithm("replace_if")
-            {
-            }
+            return sequential_replace_if(first, last, PIKA_FORWARD(F, f),
+                new_value, PIKA_FORWARD(Proj, proj));
+        }
 
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename F, typename T, typename Proj>
-            static InIter sequential(ExPolicy, InIter first, Sent last, F&& f,
-                T const& new_value, Proj&& proj)
-            {
-                return sequential_replace_if(first, last, PIKA_FORWARD(F, f),
-                    new_value, PIKA_FORWARD(Proj, proj));
-            }
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename T, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, F&& f,
+            T const& new_value, Proj&& proj)
+        {
+            using type = typename std::iterator_traits<FwdIter>::value_type;
 
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename T, typename Proj>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, Sent last, F&& f,
-                    T const& new_value, Proj&& proj)
-            {
-                using type = typename std::iterator_traits<FwdIter>::value_type;
-
-                return for_each_n<FwdIter>().call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last),
-                    [new_value, f = PIKA_FORWARD(F, f),
-                        proj = PIKA_FORWARD(Proj, proj)](
-                        type& t) mutable -> void {
-                        if (PIKA_INVOKE(f, PIKA_INVOKE(proj, t)))
-                        {
-                            t = new_value;
-                        }
-                    },
-                    util::projection_identity());
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return for_each_n<FwdIter>().call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last),
+                [new_value, f = PIKA_FORWARD(F, f),
+                    proj = PIKA_FORWARD(Proj, proj)](type& t) mutable -> void {
+                    if (PIKA_INVOKE(f, PIKA_INVOKE(proj, t)))
+                    {
+                        t = new_value;
+                    }
+                },
+                util::projection_identity());
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // replace_copy
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // sequential replace_copy
-        template <typename InIter, typename Sent, typename OutIter, typename T,
-            typename Proj>
-        inline util::in_out_result<InIter, OutIter> sequential_replace_copy(
+    // sequential replace_copy
+    template <typename InIter, typename Sent, typename OutIter, typename T,
+        typename Proj>
+    inline util::in_out_result<InIter, OutIter> sequential_replace_copy(
+        InIter first, Sent sent, OutIter dest, T const& old_value,
+        T const& new_value, Proj&& proj)
+    {
+        for (/* */; first != sent; ++first)
+        {
+            if (PIKA_INVOKE(proj, *first) == old_value)
+                *dest++ = new_value;
+            else
+                *dest++ = *first;
+        }
+        return util::in_out_result<InIter, OutIter>(first, dest);
+    }
+
+    template <typename IterPair>
+    struct replace_copy
+      : public detail::algorithm<replace_copy<IterPair>, IterPair>
+    {
+        replace_copy()
+          : replace_copy::algorithm("replace_copy")
+        {
+        }
+
+        template <typename ExPolicy, typename InIter, typename Sent,
+            typename OutIter, typename T, typename Proj>
+        static util::in_out_result<InIter, OutIter> sequential(ExPolicy,
             InIter first, Sent sent, OutIter dest, T const& old_value,
             T const& new_value, Proj&& proj)
         {
-            for (/* */; first != sent; ++first)
-            {
-                if (PIKA_INVOKE(proj, *first) == old_value)
-                    *dest++ = new_value;
-                else
-                    *dest++ = *first;
-            }
-            return util::in_out_result<InIter, OutIter>(first, dest);
+            return sequential_replace_copy(first, sent, dest, old_value,
+                new_value, PIKA_FORWARD(Proj, proj));
         }
 
-        template <typename IterPair>
-        struct replace_copy
-          : public detail::algorithm<replace_copy<IterPair>, IterPair>
+        template <typename ExPolicy, typename FwdIter1, typename Sent,
+            typename FwdIter2, typename T, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<FwdIter1, FwdIter2>>::type
+        parallel(ExPolicy&& policy, FwdIter1 first, Sent sent, FwdIter2 dest,
+            T const& old_value, T const& new_value, Proj&& proj)
         {
-            replace_copy()
-              : replace_copy::algorithm("replace_copy")
-            {
-            }
+            using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
+            using reference = typename zip_iterator::reference;
 
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename OutIter, typename T, typename Proj>
-            static util::in_out_result<InIter, OutIter> sequential(ExPolicy,
-                InIter first, Sent sent, OutIter dest, T const& old_value,
-                T const& new_value, Proj&& proj)
-            {
-                return sequential_replace_copy(first, sent, dest, old_value,
-                    new_value, PIKA_FORWARD(Proj, proj));
-            }
-
-            template <typename ExPolicy, typename FwdIter1, typename Sent,
-                typename FwdIter2, typename T, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter1, FwdIter2>>::type
-            parallel(ExPolicy&& policy, FwdIter1 first, Sent sent,
-                FwdIter2 dest, T const& old_value, T const& new_value,
-                Proj&& proj)
-            {
-                using zip_iterator =
-                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
-                using reference = typename zip_iterator::reference;
-
-                return util::detail::get_in_out_result(
-                    for_each_n<zip_iterator>().call(
-                        PIKA_FORWARD(ExPolicy, policy),
-                        pika::util::make_zip_iterator(first, dest),
-                        detail::distance(first, sent),
-                        [old_value, new_value, proj = PIKA_FORWARD(Proj, proj)](
-                            reference t) -> void {
-                            using std::get;
-                            if (PIKA_INVOKE(proj, get<0>(t)) == old_value)
-                                get<1>(t) = new_value;
-                            else
-                                get<1>(t) = get<0>(t);    //-V573
-                        },
-                        util::projection_identity()));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return util::detail::get_in_out_result(
+                for_each_n<zip_iterator>().call(
+                    PIKA_FORWARD(ExPolicy, policy),
+                    pika::util::make_zip_iterator(first, dest),
+                    detail::distance(first, sent),
+                    [old_value, new_value, proj = PIKA_FORWARD(Proj, proj)](
+                        reference t) -> void {
+                        using std::get;
+                        if (PIKA_INVOKE(proj, get<0>(t)) == old_value)
+                            get<1>(t) = new_value;
+                        else
+                            get<1>(t) = get<0>(t);    //-V573
+                    },
+                    util::projection_identity()));
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // replace_copy_if
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // sequential replace_copy_if
-        template <typename InIter, typename Sent, typename OutIter, typename F,
-            typename T, typename Proj>
-        inline util::in_out_result<InIter, OutIter> sequential_replace_copy_if(
+    // sequential replace_copy_if
+    template <typename InIter, typename Sent, typename OutIter, typename F,
+        typename T, typename Proj>
+    inline util::in_out_result<InIter, OutIter> sequential_replace_copy_if(
+        InIter first, Sent sent, OutIter dest, F&& f, T const& new_value,
+        Proj&& proj)
+    {
+        for (/* */; first != sent; ++first)
+        {
+            if (PIKA_INVOKE(f, PIKA_INVOKE(proj, *first)))
+            {
+                *dest++ = new_value;
+            }
+            else
+            {
+                *dest++ = *first;
+            }
+        }
+        return util::in_out_result<InIter, OutIter>{first, dest};
+    }
+
+    template <typename IterPair>
+    struct replace_copy_if
+      : public detail::algorithm<replace_copy_if<IterPair>, IterPair>
+    {
+        replace_copy_if()
+          : replace_copy_if::algorithm("replace_copy_if")
+        {
+        }
+
+        template <typename ExPolicy, typename InIter, typename Sent,
+            typename OutIter, typename F, typename T, typename Proj>
+        static util::in_out_result<InIter, OutIter> sequential(ExPolicy,
             InIter first, Sent sent, OutIter dest, F&& f, T const& new_value,
             Proj&& proj)
         {
-            for (/* */; first != sent; ++first)
-            {
-                if (PIKA_INVOKE(f, PIKA_INVOKE(proj, *first)))
-                {
-                    *dest++ = new_value;
-                }
-                else
-                {
-                    *dest++ = *first;
-                }
-            }
-            return util::in_out_result<InIter, OutIter>{first, dest};
+            return sequential_replace_copy_if(first, sent, dest,
+                PIKA_FORWARD(F, f), new_value, PIKA_FORWARD(Proj, proj));
         }
 
-        template <typename IterPair>
-        struct replace_copy_if
-          : public detail::algorithm<replace_copy_if<IterPair>, IterPair>
+        template <typename ExPolicy, typename FwdIter1, typename Sent,
+            typename FwdIter2, typename F, typename T, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<FwdIter1, FwdIter2>>::type
+        parallel(ExPolicy&& policy, FwdIter1 first, Sent sent, FwdIter2 dest,
+            F&& f, T const& new_value, Proj&& proj)
         {
-            replace_copy_if()
-              : replace_copy_if::algorithm("replace_copy_if")
-            {
-            }
+            using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
+            using reference = typename zip_iterator::reference;
 
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename OutIter, typename F, typename T, typename Proj>
-            static util::in_out_result<InIter, OutIter> sequential(ExPolicy,
-                InIter first, Sent sent, OutIter dest, F&& f,
-                T const& new_value, Proj&& proj)
-            {
-                return sequential_replace_copy_if(first, sent, dest,
-                    PIKA_FORWARD(F, f), new_value, PIKA_FORWARD(Proj, proj));
-            }
-
-            template <typename ExPolicy, typename FwdIter1, typename Sent,
-                typename FwdIter2, typename F, typename T, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter1, FwdIter2>>::type
-            parallel(ExPolicy&& policy, FwdIter1 first, Sent sent,
-                FwdIter2 dest, F&& f, T const& new_value, Proj&& proj)
-            {
-                using zip_iterator =
-                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
-                using reference = typename zip_iterator::reference;
-
-                return util::detail::get_in_out_result(
-                    for_each_n<zip_iterator>().call(
-                        PIKA_FORWARD(ExPolicy, policy),
-                        pika::util::make_zip_iterator(first, dest),
-                        detail::distance(first, sent),
-                        [new_value, f = PIKA_FORWARD(F, f),
-                            proj = PIKA_FORWARD(Proj, proj)](
-                            reference t) mutable -> void {
-                            using std::get;
-                            if (PIKA_INVOKE(f, PIKA_INVOKE(proj, get<0>(t))))
-                            {
-                                get<1>(t) = new_value;
-                            }
-                            else
-                            {
-                                get<1>(t) = get<0>(t);    //-V573
-                            }
-                        },
-                        util::projection_identity()));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+            return util::detail::get_in_out_result(
+                for_each_n<zip_iterator>().call(
+                    PIKA_FORWARD(ExPolicy, policy),
+                    pika::util::make_zip_iterator(first, dest),
+                    detail::distance(first, sent),
+                    [new_value, f = PIKA_FORWARD(F, f),
+                        proj = PIKA_FORWARD(Proj, proj)](
+                        reference t) mutable -> void {
+                        using std::get;
+                        if (PIKA_INVOKE(f, PIKA_INVOKE(proj, get<0>(t))))
+                        {
+                            get<1>(t) = new_value;
+                        }
+                        else
+                        {
+                            get<1>(t) = get<0>(t);    //-V573
+                        }
+                    },
+                    util::projection_identity()));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

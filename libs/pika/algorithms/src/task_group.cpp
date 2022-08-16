@@ -13,8 +13,6 @@
 #include <exception>
 
 namespace pika::execution::experimental {
-
-    ///////////////////////////////////////////////////////////////////////////
     task_group::on_exit::on_exit(task_group& tg)
       : latch_(&tg.latch_)
     {
@@ -85,5 +83,4 @@ namespace pika::execution::experimental {
     {
         errors_.add(PIKA_MOVE(p));
     }
-
 }    // namespace pika::execution::experimental

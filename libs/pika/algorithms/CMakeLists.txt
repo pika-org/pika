@@ -172,7 +172,6 @@ set(algorithms_headers
     pika/parallel/util/detail/chunk_size_iterator.hpp
     pika/parallel/util/detail/handle_exception_termination_handler.hpp
     pika/parallel/util/detail/handle_local_exceptions.hpp
-    pika/parallel/util/detail/handle_remote_exceptions.hpp
     pika/parallel/util/detail/partitioner_iteration.hpp
     pika/parallel/util/detail/scoped_executor_parameters.hpp
     pika/parallel/util/detail/sender_util.hpp

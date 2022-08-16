@@ -450,189 +450,185 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // inclusive_scan
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        ///////////////////////////////////////////////////////////////////////
-        // Our own version of the sequential inclusive_scan.
-        template <typename InIter, typename Sent, typename OutIter, typename T,
-            typename Op>
-        static constexpr util::in_out_result<InIter, OutIter>
-        sequential_inclusive_scan(
-            InIter first, Sent last, OutIter dest, T init, Op&& op)
+    ///////////////////////////////////////////////////////////////////////
+    // Our own version of the sequential inclusive_scan.
+    template <typename InIter, typename Sent, typename OutIter, typename T,
+        typename Op>
+    static constexpr util::in_out_result<InIter, OutIter>
+    sequential_inclusive_scan(
+        InIter first, Sent last, OutIter dest, T init, Op&& op)
+    {
+        for (/* */; first != last; (void) ++first, ++dest)
         {
-            for (/* */; first != last; (void) ++first, ++dest)
-            {
-                init = PIKA_INVOKE(op, init, *first);
-                *dest = init;
-            }
-            return util::in_out_result<InIter, OutIter>{first, dest};
+            init = PIKA_INVOKE(op, init, *first);
+            *dest = init;
+        }
+        return util::in_out_result<InIter, OutIter>{first, dest};
+    }
+
+    template <typename InIter, typename Sent, typename OutIter, typename Op>
+    static constexpr util::in_out_result<InIter, OutIter>
+    sequential_inclusive_scan_noinit(
+        InIter first, Sent last, OutIter dest, Op&& op)
+    {
+        if (first != last)
+        {
+            auto init = *first;
+            *dest++ = init;
+            return sequential_inclusive_scan(
+                ++first, last, dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
+        }
+        return util::in_out_result<InIter, OutIter>{first, dest};
+    }
+
+    template <typename InIter, typename OutIter, typename T, typename Op>
+    static constexpr T sequential_inclusive_scan_n(
+        InIter first, std::size_t count, OutIter dest, T init, Op&& op)
+    {
+        for (/* */; count-- != 0; (void) ++first, ++dest)
+        {
+            init = PIKA_INVOKE(op, init, *first);
+            *dest = init;
+        }
+        return init;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename IterPair>
+    struct inclusive_scan
+      : public detail::algorithm<inclusive_scan<IterPair>, IterPair>
+    {
+        inclusive_scan()
+          : inclusive_scan::algorithm("inclusive_scan")
+        {
         }
 
-        template <typename InIter, typename Sent, typename OutIter, typename Op>
-        static constexpr util::in_out_result<InIter, OutIter>
-        sequential_inclusive_scan_noinit(
-            InIter first, Sent last, OutIter dest, Op&& op)
+        template <typename ExPolicy, typename InIter, typename Sent,
+            typename OutIter, typename T, typename Op>
+        static constexpr util::in_out_result<InIter, OutIter> sequential(
+            ExPolicy, InIter first, Sent last, OutIter dest, T const& init,
+            Op&& op)
+        {
+            return sequential_inclusive_scan(
+                first, last, dest, init, PIKA_FORWARD(Op, op));
+        }
+
+        template <typename ExPolicy, typename InIter, typename Sent,
+            typename OutIter, typename Op>
+        static constexpr util::in_out_result<InIter, OutIter> sequential(
+            ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
+        {
+            return sequential_inclusive_scan_noinit(
+                first, last, dest, PIKA_FORWARD(Op, op));
+        }
+
+        template <typename ExPolicy, typename FwdIter1, typename Sent,
+            typename FwdIter2, typename T, typename Op>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<FwdIter1, FwdIter2>>::type
+        parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
+            T init, Op&& op)
+        {
+            using result = util::detail::algorithm_result<ExPolicy,
+                util::in_out_result<FwdIter1, FwdIter2>>;
+            using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
+            using difference_type =
+                typename std::iterator_traits<FwdIter1>::difference_type;
+
+            if (first == last)
+                return result::get(
+                    util::in_out_result<FwdIter1, FwdIter2>{first, dest});
+
+            FwdIter1 last_iter = first;
+            difference_type count =
+                detail::advance_and_get_distance(last_iter, last);
+
+            FwdIter2 final_dest = dest;
+            std::advance(final_dest, count);
+
+            // The overall scan algorithm is performed by executing 3
+            // steps. The first calculates the scan results for each
+            // partition. The second accumulates the result from left to
+            // right to be used by the third step--which operates on the
+            // same partitions the first step operated on.
+
+            using pika::util::make_zip_iterator;
+            using std::get;
+
+            auto f3 = [op](zip_iterator part_begin, std::size_t part_size,
+                          T val) mutable -> void {
+                FwdIter2 dst = get<1>(part_begin.get_iterator_tuple());
+
+                // MSVC 2015 fails if op is captured by reference
+                util::loop_n<std::decay_t<ExPolicy>>(
+                    dst, part_size, [=, &val](FwdIter2 it) mutable -> void {
+                        *it = PIKA_INVOKE(op, val, *it);
+                    });
+            };
+
+            return util::scan_partitioner<ExPolicy,
+                util::in_out_result<FwdIter1, FwdIter2>, T>::
+                call(
+                    PIKA_FORWARD(ExPolicy, policy),
+                    make_zip_iterator(first, dest), count, init,
+                    // step 1 performs first part of scan algorithm
+                    [op, last](
+                        zip_iterator part_begin, std::size_t part_size) -> T {
+                        T part_init = get<0>(*part_begin);
+                        get<1>(*part_begin++) = part_init;
+
+                        auto iters = part_begin.get_iterator_tuple();
+                        if (get<0>(iters) != last)
+                        {
+                            return sequential_inclusive_scan_n(get<0>(iters),
+                                part_size - 1, get<1>(iters), part_init, op);
+                        }
+                        return part_init;
+                    },
+                    // step 2 propagates the partition results from left
+                    // to right
+                    op,
+                    // step 3 runs final accumulation on each partition
+                    PIKA_MOVE(f3),
+                    // step 4 use this return value
+                    [last_iter, final_dest](std::vector<T>&&,
+                        std::vector<pika::future<void>>&& data) {
+                        // make sure iterators embedded in function object that is
+                        // attached to futures are invalidated
+                        data.clear();
+                        return util::in_out_result<FwdIter1, FwdIter2>{
+                            last_iter, final_dest};
+                    });
+        }
+
+        template <typename ExPolicy, typename FwdIter1, typename Sent,
+            typename FwdIter2, typename Op>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<FwdIter1, FwdIter2>>::type
+        parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
+            Op&& op)
         {
             if (first != last)
             {
                 auto init = *first;
                 *dest++ = init;
-                return sequential_inclusive_scan(
-                    ++first, last, dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
+                return parallel(PIKA_FORWARD(ExPolicy, policy), ++first, last,
+                    dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
             }
-            return util::in_out_result<InIter, OutIter>{first, dest};
+
+            using result = util::detail::algorithm_result<ExPolicy,
+                util::in_out_result<FwdIter1, FwdIter2>>;
+            return result::get(
+                util::in_out_result<FwdIter1, FwdIter2>{first, dest});
         }
-
-        template <typename InIter, typename OutIter, typename T, typename Op>
-        static constexpr T sequential_inclusive_scan_n(
-            InIter first, std::size_t count, OutIter dest, T init, Op&& op)
-        {
-            for (/* */; count-- != 0; (void) ++first, ++dest)
-            {
-                init = PIKA_INVOKE(op, init, *first);
-                *dest = init;
-            }
-            return init;
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename IterPair>
-        struct inclusive_scan
-          : public detail::algorithm<inclusive_scan<IterPair>, IterPair>
-        {
-            inclusive_scan()
-              : inclusive_scan::algorithm("inclusive_scan")
-            {
-            }
-
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename OutIter, typename T, typename Op>
-            static constexpr util::in_out_result<InIter, OutIter> sequential(
-                ExPolicy, InIter first, Sent last, OutIter dest, T const& init,
-                Op&& op)
-            {
-                return sequential_inclusive_scan(
-                    first, last, dest, init, PIKA_FORWARD(Op, op));
-            }
-
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename OutIter, typename Op>
-            static constexpr util::in_out_result<InIter, OutIter> sequential(
-                ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
-            {
-                return sequential_inclusive_scan_noinit(
-                    first, last, dest, PIKA_FORWARD(Op, op));
-            }
-
-            template <typename ExPolicy, typename FwdIter1, typename Sent,
-                typename FwdIter2, typename T, typename Op>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter1, FwdIter2>>::type
-            parallel(ExPolicy&& policy, FwdIter1 first, Sent last,
-                FwdIter2 dest, T init, Op&& op)
-            {
-                using result = util::detail::algorithm_result<ExPolicy,
-                    util::in_out_result<FwdIter1, FwdIter2>>;
-                using zip_iterator =
-                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
-                using difference_type =
-                    typename std::iterator_traits<FwdIter1>::difference_type;
-
-                if (first == last)
-                    return result::get(
-                        util::in_out_result<FwdIter1, FwdIter2>{first, dest});
-
-                FwdIter1 last_iter = first;
-                difference_type count =
-                    detail::advance_and_get_distance(last_iter, last);
-
-                FwdIter2 final_dest = dest;
-                std::advance(final_dest, count);
-
-                // The overall scan algorithm is performed by executing 3
-                // steps. The first calculates the scan results for each
-                // partition. The second accumulates the result from left to
-                // right to be used by the third step--which operates on the
-                // same partitions the first step operated on.
-
-                using pika::util::make_zip_iterator;
-                using std::get;
-
-                auto f3 = [op](zip_iterator part_begin, std::size_t part_size,
-                              T val) mutable -> void {
-                    FwdIter2 dst = get<1>(part_begin.get_iterator_tuple());
-
-                    // MSVC 2015 fails if op is captured by reference
-                    util::loop_n<std::decay_t<ExPolicy>>(
-                        dst, part_size, [=, &val](FwdIter2 it) mutable -> void {
-                            *it = PIKA_INVOKE(op, val, *it);
-                        });
-                };
-
-                return util::scan_partitioner<ExPolicy,
-                    util::in_out_result<FwdIter1, FwdIter2>, T>::
-                    call(
-                        PIKA_FORWARD(ExPolicy, policy),
-                        make_zip_iterator(first, dest), count, init,
-                        // step 1 performs first part of scan algorithm
-                        [op, last](zip_iterator part_begin,
-                            std::size_t part_size) -> T {
-                            T part_init = get<0>(*part_begin);
-                            get<1>(*part_begin++) = part_init;
-
-                            auto iters = part_begin.get_iterator_tuple();
-                            if (get<0>(iters) != last)
-                            {
-                                return sequential_inclusive_scan_n(
-                                    get<0>(iters), part_size - 1, get<1>(iters),
-                                    part_init, op);
-                            }
-                            return part_init;
-                        },
-                        // step 2 propagates the partition results from left
-                        // to right
-                        op,
-                        // step 3 runs final accumulation on each partition
-                        PIKA_MOVE(f3),
-                        // step 4 use this return value
-                        [last_iter, final_dest](std::vector<T>&&,
-                            std::vector<pika::future<void>>&& data) {
-                            // make sure iterators embedded in function object that is
-                            // attached to futures are invalidated
-                            data.clear();
-                            return util::in_out_result<FwdIter1, FwdIter2>{
-                                last_iter, final_dest};
-                        });
-            }
-
-            template <typename ExPolicy, typename FwdIter1, typename Sent,
-                typename FwdIter2, typename Op>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter1, FwdIter2>>::type
-            parallel(ExPolicy&& policy, FwdIter1 first, Sent last,
-                FwdIter2 dest, Op&& op)
-            {
-                if (first != last)
-                {
-                    auto init = *first;
-                    *dest++ = init;
-                    return parallel(PIKA_FORWARD(ExPolicy, policy), ++first,
-                        last, dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
-                }
-
-                using result = util::detail::algorithm_result<ExPolicy,
-                    util::in_out_result<FwdIter1, FwdIter2>>;
-                return result::get(
-                    util::in_out_result<FwdIter1, FwdIter2>{first, dest});
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

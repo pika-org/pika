@@ -302,8 +302,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::is_heap
     inline constexpr struct is_heap_t final
@@ -457,10 +456,10 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<iterator_type>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::detail::is_heap_until<iterator_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                    pika::util::end(rng), PIKA_FORWARD(Comp, comp),
-                    PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::is_heap_until<iterator_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Comp, comp),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -515,10 +514,10 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<iterator_type>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::detail::is_heap_until<iterator_type>()
-                .call(pika::execution::seq, pika::util::begin(rng),
-                    pika::util::end(rng), PIKA_FORWARD(Comp, comp),
-                    PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::is_heap_until<iterator_type>().call(
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Comp, comp),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -546,7 +545,6 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(Proj, proj));
         }
     } is_heap_until{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    //DOXYGEN

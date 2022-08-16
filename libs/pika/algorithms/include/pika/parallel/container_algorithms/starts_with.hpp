@@ -287,8 +287,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::copy
     inline constexpr struct starts_with_t final
@@ -452,7 +451,6 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
         }
     } starts_with{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

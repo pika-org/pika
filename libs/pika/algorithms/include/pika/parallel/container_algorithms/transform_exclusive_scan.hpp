@@ -434,8 +434,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I, typename O>
     using transform_exclusive_scan_result = parallel::util::in_out_result<I, O>;
 
@@ -597,6 +596,6 @@ namespace pika { namespace ranges {
                     PIKA_MOVE(init), PIKA_FORWARD(BinOp, binary_op));
         }
     } transform_exclusive_scan{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

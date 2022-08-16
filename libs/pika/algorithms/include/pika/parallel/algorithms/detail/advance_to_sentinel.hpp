@@ -13,7 +13,6 @@
 #include <type_traits>
 
 namespace pika::parallel::detail {
-
     // Generic implementation for advancing a given iterator to its sentinel
     template <typename Iter, typename Sent>
     constexpr inline Iter advance_to_sentinel(Iter first, Sent last)

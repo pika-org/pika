@@ -603,8 +603,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     template <typename I, typename S>
     using subrange_t = pika::util::iterator_range<I, S>;
@@ -876,6 +875,6 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(Proj, proj));
         }
     } unique_copy{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

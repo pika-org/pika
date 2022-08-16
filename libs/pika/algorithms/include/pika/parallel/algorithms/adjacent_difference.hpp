@@ -169,92 +169,86 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // adjacent_difference
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename Iter>
-        struct adjacent_difference
-          : public detail::algorithm<adjacent_difference<Iter>, Iter>
+    /// \cond NOINTERNAL
+    template <typename Iter>
+    struct adjacent_difference
+      : public detail::algorithm<adjacent_difference<Iter>, Iter>
+    {
+        adjacent_difference()
+          : adjacent_difference::algorithm("adjacent_difference")
         {
-            adjacent_difference()
-              : adjacent_difference::algorithm("adjacent_difference")
+        }
+
+        template <typename ExPolicy, typename InIter, typename Sent,
+            typename OutIter, typename Op>
+        static OutIter sequential(
+            ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
+        {
+            return sequential_adjacent_difference<ExPolicy>(
+                first, last, dest, PIKA_FORWARD(Op, op));
+        }
+
+        template <typename ExPolicy, typename FwdIter1, typename Sent,
+            typename FwdIter2, typename Op>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
+        parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
+            Op&& op)
+        {
+            using zip_iterator =
+                pika::util::zip_iterator<FwdIter1, FwdIter1, FwdIter2>;
+            using result = util::detail::algorithm_result<ExPolicy, FwdIter2>;
+            using difference_type =
+                typename std::iterator_traits<FwdIter1>::difference_type;
+
+            if (first == last)
             {
+                return result::get(PIKA_MOVE(dest));
             }
 
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename OutIter, typename Op>
-            static OutIter sequential(
-                ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
+            difference_type count = detail::distance(first, last) - 1;
+
+            FwdIter1 prev = first;
+            typename std::iterator_traits<FwdIter1>::value_type tmp = *first++;
+            *dest++ = PIKA_MOVE(tmp);
+
+            if (count == 0)
             {
-                return sequential_adjacent_difference<ExPolicy>(
-                    first, last, dest, PIKA_FORWARD(Op, op));
+                return result::get(PIKA_MOVE(dest));
             }
 
-            template <typename ExPolicy, typename FwdIter1, typename Sent,
-                typename FwdIter2, typename Op>
-            static typename util::detail::algorithm_result<ExPolicy,
-                FwdIter2>::type
-            parallel(ExPolicy&& policy, FwdIter1 first, Sent last,
-                FwdIter2 dest, Op&& op)
-            {
-                using zip_iterator =
-                    pika::util::zip_iterator<FwdIter1, FwdIter1, FwdIter2>;
-                using result =
-                    util::detail::algorithm_result<ExPolicy, FwdIter2>;
-                using difference_type =
-                    typename std::iterator_traits<FwdIter1>::difference_type;
+            auto f1 = [op = PIKA_FORWARD(Op, op)](zip_iterator part_begin,
+                          std::size_t part_size) mutable {
+                // VS2015RC bails out when op is captured by ref
+                using std::get;
+                util::loop_n<std::decay_t<ExPolicy>>(
+                    part_begin, part_size, [op](auto&& it) mutable {
+                        get<2>(*it) = PIKA_INVOKE(op, get<0>(*it), get<1>(*it));
+                    });
+            };
 
-                if (first == last)
-                {
-                    return result::get(PIKA_MOVE(dest));
-                }
+            auto f2 = [dest, count](
+                          std::vector<pika::future<void>>&& data) mutable
+                -> FwdIter2 {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
+                std::advance(dest, count);
+                return dest;
+            };
 
-                difference_type count = detail::distance(first, last) - 1;
+            using pika::util::make_zip_iterator;
+            return util::partitioner<ExPolicy, FwdIter2, void>::call(
+                PIKA_FORWARD(ExPolicy, policy),
+                make_zip_iterator(first, prev, dest), count, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
 
-                FwdIter1 prev = first;
-                typename std::iterator_traits<FwdIter1>::value_type tmp =
-                    *first++;
-                *dest++ = PIKA_MOVE(tmp);
-
-                if (count == 0)
-                {
-                    return result::get(PIKA_MOVE(dest));
-                }
-
-                auto f1 = [op = PIKA_FORWARD(Op, op)](zip_iterator part_begin,
-                              std::size_t part_size) mutable {
-                    // VS2015RC bails out when op is captured by ref
-                    using std::get;
-                    util::loop_n<std::decay_t<ExPolicy>>(
-                        part_begin, part_size, [op](auto&& it) mutable {
-                            get<2>(*it) =
-                                PIKA_INVOKE(op, get<0>(*it), get<1>(*it));
-                        });
-                };
-
-                auto f2 = [dest, count](
-                              std::vector<pika::future<void>>&& data) mutable
-                    -> FwdIter2 {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
-                    std::advance(dest, count);
-                    return dest;
-                };
-
-                using pika::util::make_zip_iterator;
-                return util::partitioner<ExPolicy, FwdIter2, void>::call(
-                    PIKA_FORWARD(ExPolicy, policy),
-                    make_zip_iterator(first, prev, dest), count, PIKA_MOVE(f1),
-                    PIKA_MOVE(f2));
-            }
-        };
-
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -278,9 +272,9 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(pika::execution::sequenced_policy{}, first, last, dest,
-                    std::minus<>());
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                pika::execution::sequenced_policy{}, first, last, dest,
+                std::minus<>());
         }
 
         // clang-format off
@@ -301,9 +295,9 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                    std::minus<>());
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                std::minus<>());
         }
 
         // clang-format off
@@ -321,9 +315,9 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(pika::execution::sequenced_policy{}, first, last, dest,
-                    PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                pika::execution::sequenced_policy{}, first, last, dest,
+                PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -344,9 +338,9 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::adjacent_difference<FwdIter2>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                    PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::adjacent_difference<FwdIter2>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                PIKA_FORWARD(Op, op));
         }
 
     } adjacent_difference{};

@@ -503,7 +503,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct is_sorted_t final
       : pika::detail::tag_parallel_algorithm<is_sorted_t>
     {
@@ -559,8 +559,7 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
-        template <typename Rng,
-            typename Pred = pika::parallel::detail::less,
+        template <typename Rng, typename Pred = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
@@ -668,8 +667,7 @@ namespace pika { namespace ranges {
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
-        template <typename Rng,
-            typename Pred = pika::parallel::detail::less,
+        template <typename Rng, typename Pred = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
@@ -722,6 +720,6 @@ namespace pika { namespace ranges {
                     PIKA_FORWARD(Proj, proj));
         }
     } is_sorted_until{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

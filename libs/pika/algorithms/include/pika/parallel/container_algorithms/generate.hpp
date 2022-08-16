@@ -196,8 +196,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::generate
     inline constexpr struct generate_t final
@@ -339,5 +338,5 @@ namespace pika { namespace ranges {
                 PIKA_FORWARD(F, f));
         }
     } generate_n{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 #endif    // DOXYGEN

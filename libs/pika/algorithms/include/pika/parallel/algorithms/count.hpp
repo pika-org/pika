@@ -179,198 +179,183 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel ::detail {
     ///////////////////////////////////////////////////////////////////////////
     // count
-    namespace detail {
+    /// \cond NOINTERNAL
+    template <typename ExPolicy, typename Op, typename Proj>
+    struct count_iteration
+    {
+        using execution_policy_type = std::decay_t<ExPolicy>;
+        using proj_type = std::decay_t<Proj>;
+        using op_type = std::decay_t<Op>;
 
-        /// \cond NOINTERNAL
-        template <typename ExPolicy, typename Op, typename Proj>
-        struct count_iteration
+        op_type op_;
+        proj_type proj_;
+
+        template <typename Op_, typename Proj_,
+            typename U = typename std::enable_if<
+                !std::is_same<std::decay_t<Op_>, count_iteration>::value>::type>
+        PIKA_HOST_DEVICE count_iteration(Op_&& op, Proj_&& proj)
+          : op_(PIKA_FORWARD(Op_, op))
+          , proj_(PIKA_FORWARD(Proj_, proj))
         {
-            using execution_policy_type = std::decay_t<ExPolicy>;
-            using proj_type = std::decay_t<Proj>;
-            using op_type = std::decay_t<Op>;
-
-            op_type op_;
-            proj_type proj_;
-
-            template <typename Op_, typename Proj_,
-                typename U = typename std::enable_if<!std::is_same<
-                    std::decay_t<Op_>, count_iteration>::value>::type>
-            PIKA_HOST_DEVICE count_iteration(Op_&& op, Proj_&& proj)
-              : op_(PIKA_FORWARD(Op_, op))
-              , proj_(PIKA_FORWARD(Proj_, proj))
-            {
-            }
+        }
 
 #if !defined(__NVCC__) && !defined(__CUDACC__)
-            count_iteration(count_iteration const&) = default;
-            count_iteration(count_iteration&&) = default;
+        count_iteration(count_iteration const&) = default;
+        count_iteration(count_iteration&&) = default;
 #else
-            PIKA_HOST_DEVICE count_iteration(count_iteration const& rhs)
-              : op_(rhs.op_)
-              , proj_(rhs.proj_)
-            {
-            }
+        PIKA_HOST_DEVICE count_iteration(count_iteration const& rhs)
+          : op_(rhs.op_)
+          , proj_(rhs.proj_)
+        {
+        }
 
-            PIKA_HOST_DEVICE count_iteration(count_iteration&& rhs)
-              : op_(PIKA_MOVE(rhs.op_))
-              , proj_(PIKA_MOVE(rhs.proj_))
-            {
-            }
+        PIKA_HOST_DEVICE count_iteration(count_iteration&& rhs)
+          : op_(PIKA_MOVE(rhs.op_))
+          , proj_(PIKA_MOVE(rhs.proj_))
+        {
+        }
 #endif
 
-            count_iteration& operator=(count_iteration const&) = default;
-            count_iteration& operator=(count_iteration&&) = default;
+        count_iteration& operator=(count_iteration const&) = default;
+        count_iteration& operator=(count_iteration&&) = default;
 
-            template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr
-                typename std::iterator_traits<Iter>::difference_type
-                operator()(Iter part_begin, std::size_t part_size)
-            {
-                typename std::iterator_traits<Iter>::difference_type ret = 0;
-                util::loop_n<execution_policy_type>(part_begin, part_size,
-                    pika::util::detail::bind_back(*this, std::ref(ret)));
-                return ret;
-            }
-
-            template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                Iter curr,
-                typename std::iterator_traits<Iter>::difference_type& ret)
-            {
-                ret += traits::count_bits(
-                    PIKA_INVOKE(op_, PIKA_INVOKE(proj_, *curr)));
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Value>
-        struct count : public detail::algorithm<count<Value>, Value>
+        template <typename Iter>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr
+            typename std::iterator_traits<Iter>::difference_type
+            operator()(Iter part_begin, std::size_t part_size)
         {
-            using difference_type = Value;
+            typename std::iterator_traits<Iter>::difference_type ret = 0;
+            util::loop_n<execution_policy_type>(part_begin, part_size,
+                pika::util::detail::bind_back(*this, std::ref(ret)));
+            return ret;
+        }
 
-            count()
-              : count::algorithm("count")
+        template <typename Iter>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(Iter curr,
+            typename std::iterator_traits<Iter>::difference_type& ret)
+        {
+            ret +=
+                traits::count_bits(PIKA_INVOKE(op_, PIKA_INVOKE(proj_, *curr)));
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Value>
+    struct count : public detail::algorithm<count<Value>, Value>
+    {
+        using difference_type = Value;
+
+        count()
+          : count::algorithm("count")
+        {
+        }
+
+        template <typename ExPolicy, typename InIterB, typename InIterE,
+            typename T, typename Proj>
+        static difference_type sequential(ExPolicy&& policy, InIterB first,
+            InIterE last, T const& value, Proj&& proj)
+        {
+            auto f1 = count_iteration<ExPolicy, detail::compare_to<T>, Proj>(
+                detail::compare_to<T>(value), PIKA_FORWARD(Proj, proj));
+
+            typename std::iterator_traits<InIterB>::difference_type ret = 0;
+
+            util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
+                pika::util::detail::bind_back(PIKA_MOVE(f1), std::ref(ret)));
+
+            return ret;
+        }
+
+        template <typename ExPolicy, typename IterB, typename IterE, typename T,
+            typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy,
+            difference_type>::type
+        parallel(ExPolicy&& policy, IterB first, IterE last, T const& value,
+            Proj&& proj)
+        {
+            if (first == last)
             {
+                return util::detail::algorithm_result<ExPolicy,
+                    difference_type>::get(0);
             }
 
-            template <typename ExPolicy, typename InIterB, typename InIterE,
-                typename T, typename Proj>
-            static difference_type sequential(ExPolicy&& policy, InIterB first,
-                InIterE last, T const& value, Proj&& proj)
-            {
-                auto f1 =
-                    count_iteration<ExPolicy, detail::compare_to<T>, Proj>(
-                        detail::compare_to<T>(value), PIKA_FORWARD(Proj, proj));
+            auto f1 = count_iteration<ExPolicy, detail::compare_to<T>, Proj>(
+                detail::compare_to<T>(value), PIKA_FORWARD(Proj, proj));
 
-                typename std::iterator_traits<InIterB>::difference_type ret = 0;
-
-                util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    pika::util::detail::bind_back(
-                        PIKA_MOVE(f1), std::ref(ret)));
-
-                return ret;
-            }
-
-            template <typename ExPolicy, typename IterB, typename IterE,
-                typename T, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                difference_type>::type
-            parallel(ExPolicy&& policy, IterB first, IterE last, T const& value,
-                Proj&& proj)
-            {
-                if (first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy,
-                        difference_type>::get(0);
-                }
-
-                auto f1 =
-                    count_iteration<ExPolicy, detail::compare_to<T>, Proj>(
-                        detail::compare_to<T>(value), PIKA_FORWARD(Proj, proj));
-
-                return util::partitioner<ExPolicy, difference_type>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    pika::unwrapping(
-                        [](std::vector<difference_type>&& results) {
-                            return util::accumulate_n(
-                                pika::util::begin(results),
-                                pika::util::size(results), difference_type(0),
-                                std::plus<difference_type>());
-                        }));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return util::partitioner<ExPolicy, difference_type>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                pika::unwrapping([](std::vector<difference_type>&& results) {
+                    return util::accumulate_n(pika::util::begin(results),
+                        pika::util::size(results), difference_type(0),
+                        std::plus<difference_type>());
+                }));
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // count_if
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename Value>
-        struct count_if : public detail::algorithm<count_if<Value>, Value>
+    /// \cond NOINTERNAL
+    template <typename Value>
+    struct count_if : public detail::algorithm<count_if<Value>, Value>
+    {
+        using difference_type = Value;
+
+        count_if()
+          : count_if::algorithm("count_if")
         {
-            using difference_type = Value;
+        }
 
-            count_if()
-              : count_if::algorithm("count_if")
+        template <typename ExPolicy, typename InIterB, typename InIterE,
+            typename Pred, typename Proj>
+        static difference_type sequential(ExPolicy&& policy, InIterB first,
+            InIterE last, Pred&& op, Proj&& proj)
+        {
+            auto f1 = count_iteration<ExPolicy, Pred, Proj>(
+                op, PIKA_FORWARD(Proj, proj));
+
+            typename std::iterator_traits<InIterB>::difference_type ret = 0;
+
+            util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
+                pika::util::detail::bind_back(PIKA_MOVE(f1), std::ref(ret)));
+
+            return ret;
+        }
+
+        template <typename ExPolicy, typename IterB, typename IterE,
+            typename Pred, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy,
+            difference_type>::type
+        parallel(
+            ExPolicy&& policy, IterB first, IterE last, Pred&& op, Proj&& proj)
+        {
+            if (first == last)
             {
+                return util::detail::algorithm_result<ExPolicy,
+                    difference_type>::get(0);
             }
 
-            template <typename ExPolicy, typename InIterB, typename InIterE,
-                typename Pred, typename Proj>
-            static difference_type sequential(ExPolicy&& policy, InIterB first,
-                InIterE last, Pred&& op, Proj&& proj)
-            {
-                auto f1 = count_iteration<ExPolicy, Pred, Proj>(
-                    op, PIKA_FORWARD(Proj, proj));
+            auto f1 = count_iteration<ExPolicy, Pred, Proj>(
+                op, PIKA_FORWARD(Proj, proj));
 
-                typename std::iterator_traits<InIterB>::difference_type ret = 0;
-
-                util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    pika::util::detail::bind_back(
-                        PIKA_MOVE(f1), std::ref(ret)));
-
-                return ret;
-            }
-
-            template <typename ExPolicy, typename IterB, typename IterE,
-                typename Pred, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                difference_type>::type
-            parallel(ExPolicy&& policy, IterB first, IterE last, Pred&& op,
-                Proj&& proj)
-            {
-                if (first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy,
-                        difference_type>::get(0);
-                }
-
-                auto f1 = count_iteration<ExPolicy, Pred, Proj>(
-                    op, PIKA_FORWARD(Proj, proj));
-
-                return util::partitioner<ExPolicy, difference_type>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    pika::unwrapping(
-                        [](std::vector<difference_type>&& results) {
-                            return util::accumulate_n(
-                                pika::util::begin(results),
-                                pika::util::size(results), difference_type(0),
-                                std::plus<difference_type>());
-                        }));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+            return util::partitioner<ExPolicy, difference_type>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                pika::unwrapping([](std::vector<difference_type>&& results) {
+                    return util::accumulate_n(pika::util::begin(results),
+                        pika::util::size(results), difference_type(0),
+                        std::plus<difference_type>());
+                }));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::count
     inline constexpr struct count_t final
@@ -478,7 +463,6 @@ namespace pika {
                 pika::parallel::util::projection_identity{});
         }
     } count_if{};
-
 }    // namespace pika
 
 #endif    // DOXYGEN

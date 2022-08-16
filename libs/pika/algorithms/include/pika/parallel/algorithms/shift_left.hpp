@@ -125,107 +125,95 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // shift_left
-    namespace detail {
-        template <typename ExPolicy, typename FwdIter, typename Sent>
-        pika::future<FwdIter> shift_left_helper(
-            ExPolicy policy, FwdIter first, Sent last, FwdIter new_first)
-        {
-            using non_seq = std::false_type;
-            auto p = pika::execution::parallel_task_policy()
-                         .on(policy.executor())
-                         .with(policy.parameters());
+    template <typename ExPolicy, typename FwdIter, typename Sent>
+    pika::future<FwdIter> shift_left_helper(
+        ExPolicy policy, FwdIter first, Sent last, FwdIter new_first)
+    {
+        using non_seq = std::false_type;
+        auto p = pika::execution::parallel_task_policy()
+                     .on(policy.executor())
+                     .with(policy.parameters());
 
-            detail::reverse<FwdIter> r;
-            return dataflow(
-                [=](pika::future<FwdIter>&& f1) mutable
-                -> pika::future<FwdIter> {
-                    f1.get();
+        detail::reverse<FwdIter> r;
+        return dataflow(
+            [=](pika::future<FwdIter>&& f1) mutable -> pika::future<FwdIter> {
+                f1.get();
 
-                    pika::future<FwdIter> f =
-                        r.call2(p, non_seq(), first, last);
-                    return f.then(
-                        [=](pika::future<FwdIter>&& f) mutable -> FwdIter {
-                            f.get();
-                            std::advance(
-                                first, detail::distance(new_first, last));
-                            return first;
-                        });
-                },
-                r.call2(p, non_seq(), new_first, last));
-        }
+                pika::future<FwdIter> f = r.call2(p, non_seq(), first, last);
+                return f.then(
+                    [=](pika::future<FwdIter>&& f) mutable -> FwdIter {
+                        f.get();
+                        std::advance(first, detail::distance(new_first, last));
+                        return first;
+                    });
+            },
+            r.call2(p, non_seq(), new_first, last));
+    }
 
-        /* Sequential shift_left implementation inspired
+    /* Sequential shift_left implementation inspired
         from https://github.com/danra/shift_proposal */
 
-        template <typename FwdIter, typename Sent, typename Size>
-        static constexpr FwdIter sequential_shift_left(
-            FwdIter first, Sent last, Size n, std::size_t dist)
-        {
-            auto mid = std::next(first, n);
+    template <typename FwdIter, typename Sent, typename Size>
+    static constexpr FwdIter sequential_shift_left(
+        FwdIter first, Sent last, Size n, std::size_t dist)
+    {
+        auto mid = std::next(first, n);
 
-            if constexpr (pika::traits::is_random_access_iterator_v<FwdIter>)
-            {
-                return parallel::util::get_second_element(
-                    util::move_n(mid, dist - n, PIKA_MOVE(first)));
-            }
-            else
-            {
-                return parallel::util::get_second_element(util::move(
-                    PIKA_MOVE(mid), PIKA_MOVE(last), PIKA_MOVE(first)));
-            }
+        if constexpr (pika::traits::is_random_access_iterator_v<FwdIter>)
+        {
+            return parallel::util::get_second_element(
+                util::move_n(mid, dist - n, PIKA_MOVE(first)));
+        }
+        else
+        {
+            return parallel::util::get_second_element(
+                util::move(PIKA_MOVE(mid), PIKA_MOVE(last), PIKA_MOVE(first)));
+        }
+    }
+
+    template <typename FwdIter2>
+    struct shift_left : public detail::algorithm<shift_left<FwdIter2>, FwdIter2>
+    {
+        shift_left()
+          : shift_left::algorithm("shift_left")
+        {
         }
 
-        template <typename FwdIter2>
-        struct shift_left
-          : public detail::algorithm<shift_left<FwdIter2>, FwdIter2>
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename Size>
+        static FwdIter sequential(ExPolicy, FwdIter first, Sent last, Size n)
         {
-            shift_left()
-              : shift_left::algorithm("shift_left")
+            auto dist = static_cast<std::size_t>(detail::distance(first, last));
+            if (n <= 0 || static_cast<std::size_t>(n) >= dist)
             {
+                return first;
             }
 
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename Size>
-            static FwdIter sequential(
-                ExPolicy, FwdIter first, Sent last, Size n)
-            {
-                auto dist =
-                    static_cast<std::size_t>(detail::distance(first, last));
-                if (n <= 0 || static_cast<std::size_t>(n) >= dist)
-                {
-                    return first;
-                }
+            return detail::sequential_shift_left(first, last, n, dist);
+        }
 
-                return detail::sequential_shift_left(first, last, n, dist);
+        template <typename ExPolicy, typename Sent, typename Size>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
+        parallel(ExPolicy&& policy, FwdIter2 first, Sent last, Size n)
+        {
+            auto dist = static_cast<std::size_t>(detail::distance(first, last));
+            if (n <= 0 || static_cast<std::size_t>(n) >= dist)
+            {
+                return parallel::util::detail::algorithm_result<ExPolicy,
+                    FwdIter2>::get(PIKA_MOVE(first));
             }
 
-            template <typename ExPolicy, typename Sent, typename Size>
-            static typename util::detail::algorithm_result<ExPolicy,
-                FwdIter2>::type
-            parallel(ExPolicy&& policy, FwdIter2 first, Sent last, Size n)
-            {
-                auto dist =
-                    static_cast<std::size_t>(detail::distance(first, last));
-                if (n <= 0 || static_cast<std::size_t>(n) >= dist)
-                {
-                    return parallel::util::detail::algorithm_result<ExPolicy,
-                        FwdIter2>::get(PIKA_MOVE(first));
-                }
-
-                return util::detail::algorithm_result<ExPolicy, FwdIter2>::get(
-                    shift_left_helper(
-                        policy, first, last, std::next(first, n)));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+            return util::detail::algorithm_result<ExPolicy, FwdIter2>::get(
+                shift_left_helper(policy, first, last, std::next(first, n)));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::shift_left
     inline constexpr struct shift_left_t final

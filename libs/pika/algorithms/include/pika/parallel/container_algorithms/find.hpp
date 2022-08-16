@@ -536,8 +536,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::find
     inline constexpr struct find_t final
@@ -1163,6 +1162,6 @@ namespace pika { namespace ranges {
         }
 
     } find_first_of{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

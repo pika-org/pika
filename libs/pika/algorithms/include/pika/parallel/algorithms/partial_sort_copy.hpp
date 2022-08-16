@@ -242,9 +242,10 @@ namespace pika::parallel::detail {
             }
             else
             {
-                parallel::partial_sort<vec_iter_t>().call(pika::execution::seq,
-                    aux.begin(), aux.begin() + nmin, aux.end(),
-                    PIKA_MOVE(proj_comp), util::projection_identity{});
+                parallel::detail::partial_sort<vec_iter_t>().call(
+                    pika::execution::seq, aux.begin(), aux.begin() + nmin,
+                    aux.end(), PIKA_MOVE(proj_comp),
+                    util::projection_identity{});
             }
 
             detail::copy<util::in_out_result<vec_iter_t, RandIter>>().call(
@@ -319,7 +320,7 @@ namespace pika::parallel::detail {
                 else
                 {
                     //
-                    pika::parallel::partial_sort<vec_iter_t>().call(
+                    pika::parallel::detail::partial_sort<vec_iter_t>().call(
                         policy(pika::execution::non_task), aux.begin(),
                         aux.begin() + nmin, aux.end(), PIKA_MOVE(proj_comp),
                         util::projection_identity{});

@@ -589,8 +589,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I, typename O>
     using remove_copy_result = pika::parallel::util::in_out_result<I, O>;
 
@@ -850,6 +849,6 @@ namespace pika { namespace ranges {
         }
 
     } remove_copy{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

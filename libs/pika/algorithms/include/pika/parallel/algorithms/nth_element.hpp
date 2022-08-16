@@ -152,193 +152,189 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // nth_element
-    namespace detail {
+    ///////////////////////////////////////////////////////////////////////
+    ///
+    /// \brief : The element placed in the nth position is exactly the
+    ///          element that would occur in this position if the range
+    ///          was fully sorted. All of the elements before this new nth
+    ///          element are less than or equal to the elements after the
+    ///          new nth element.
+    ///
+    /// \param first : iterator to the first element
+    /// \param nth : iterator defining the sort partition point
+    /// \param end : iterator to the element after the last in the range
+    /// \param level : level of depth in the call from the root
+    /// \param comp : object for to Compare elements
+    /// \param proj : projection
+    ///
+    template <class RandomIt, typename Compare, typename Proj>
+    static constexpr void nth_element_seq(RandomIt first, RandomIt nth,
+        RandomIt end, std::uint32_t level, Compare&& comp, Proj&& proj)
+    {
+        std::uint32_t const nmin_sort = 24;
+        auto nelem = end - first;
 
-        ///////////////////////////////////////////////////////////////////////
-        ///
-        /// \brief : The element placed in the nth position is exactly the
-        ///          element that would occur in this position if the range
-        ///          was fully sorted. All of the elements before this new nth
-        ///          element are less than or equal to the elements after the
-        ///          new nth element.
-        ///
-        /// \param first : iterator to the first element
-        /// \param nth : iterator defining the sort partition point
-        /// \param end : iterator to the element after the last in the range
-        /// \param level : level of depth in the call from the root
-        /// \param comp : object for to Compare elements
-        /// \param proj : projection
-        ///
-        template <class RandomIt, typename Compare, typename Proj>
-        static constexpr void nth_element_seq(RandomIt first, RandomIt nth,
-            RandomIt end, std::uint32_t level, Compare&& comp, Proj&& proj)
+        // Check  the special conditions
+        if (nth == first)
         {
-            std::uint32_t const nmin_sort = 24;
-            auto nelem = end - first;
+            RandomIt it = detail::min_element<RandomIt>().call(
+                pika::execution::seq, first, end, PIKA_FORWARD(Compare, comp),
+                PIKA_FORWARD(Proj, proj));
 
-            // Check  the special conditions
-            if (nth == first)
+            if (it != first)
             {
-                RandomIt it = detail::min_element<RandomIt>().call(
-                    pika::execution::seq, first, end,
-                    PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
-
-                if (it != first)
-                {
 #if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
-                    std::ranges::iter_swap(it, first);
+                std::ranges::iter_swap(it, first);
 #else
-                    std::iter_swap(it, first);
+                std::iter_swap(it, first);
 #endif
-                }
-
-                return;
-            };
-
-            if (nelem < nmin_sort)
-            {
-                detail::sort<RandomIt>().call(pika::execution::seq, first, end,
-                    PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
-                return;
             }
-            if (level == 0)
-            {
-                std::make_heap(first, end, comp);
-                std::sort_heap(first, nth, comp);
-                return;
-            };
-
-            // Filter the range and check which part contains the nth element
-            RandomIt c_last = filter(first, end, comp);
-
-            if (c_last == nth)
-                return;
-
-            if (nth < c_last)
-                nth_element_seq(first, nth, c_last, level - 1,
-                    PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
-            else
-                nth_element_seq(c_last + 1, nth, end, level - 1,
-                    PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
 
             return;
+        };
+
+        if (nelem < nmin_sort)
+        {
+            detail::sort<RandomIt>().call(pika::execution::seq, first, end,
+                PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
+            return;
+        }
+        if (level == 0)
+        {
+            std::make_heap(first, end, comp);
+            std::sort_heap(first, nth, comp);
+            return;
+        };
+
+        // Filter the range and check which part contains the nth element
+        RandomIt c_last = filter(first, end, comp);
+
+        if (c_last == nth)
+            return;
+
+        if (nth < c_last)
+            nth_element_seq(first, nth, c_last, level - 1,
+                PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
+        else
+            nth_element_seq(c_last + 1, nth, end, level - 1,
+                PIKA_FORWARD(Compare, comp), PIKA_FORWARD(Proj, proj));
+
+        return;
+    }
+
+    template <typename Iter>
+    struct nth_element : public detail::algorithm<nth_element<Iter>, Iter>
+    {
+        nth_element()
+          : nth_element::algorithm("nth_element")
+        {
         }
 
-        template <typename Iter>
-        struct nth_element : public detail::algorithm<nth_element<Iter>, Iter>
+        template <typename ExPolicy, typename RandomIt, typename Sent,
+            typename Pred, typename Proj>
+        static RandomIt sequential(ExPolicy, RandomIt first, RandomIt nth,
+            Sent last, Pred&& pred, Proj&& proj)
         {
-            nth_element()
-              : nth_element::algorithm("nth_element")
+            auto end = detail::advance_to_sentinel(first, last);
+
+            auto nelem = end - first;
+            if (nelem == 0)
+                return first;
+            PIKA_ASSERT(nelem >= 0 && (nth - first + 1) > 0 &&
+                (nth - first + 1) <= nelem);
+
+            uint32_t level = detail::nbits64(nelem) * 2;
+            detail::nth_element_seq(first, nth, end, level,
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
+
+            return end;
+        }
+
+        template <typename ExPolicy, typename RandomIt, typename Sent,
+            typename Pred, typename Proj>
+        static util::detail::algorithm_result_t<ExPolicy, RandomIt> parallel(
+            ExPolicy&& policy, RandomIt first, RandomIt nth, Sent last,
+            Pred&& pred, Proj&& proj)
+        {
+            using value_type =
+                typename std::iterator_traits<RandomIt>::value_type;
+
+            RandomIt partitionIter, return_last;
+
+            if (first == last)
             {
+                return util::detail::algorithm_result<ExPolicy, RandomIt>::get(
+                    PIKA_MOVE(first));
             }
 
-            template <typename ExPolicy, typename RandomIt, typename Sent,
-                typename Pred, typename Proj>
-            static RandomIt sequential(ExPolicy, RandomIt first, RandomIt nth,
-                Sent last, Pred&& pred, Proj&& proj)
+            if (nth == last)
             {
-                auto end = detail::advance_to_sentinel(first, last);
-
-                auto nelem = end - first;
-                if (nelem == 0)
-                    return first;
-                PIKA_ASSERT(nelem >= 0 && (nth - first + 1) > 0 &&
-                    (nth - first + 1) <= nelem);
-
-                uint32_t level = detail::nbits64(nelem) * 2;
-                detail::nth_element_seq(first, nth, end, level,
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
-
-                return end;
+                return util::detail::algorithm_result<ExPolicy, RandomIt>::get(
+                    PIKA_MOVE(nth));
             }
 
-            template <typename ExPolicy, typename RandomIt, typename Sent,
-                typename Pred, typename Proj>
-            static util::detail::algorithm_result_t<ExPolicy, RandomIt>
-            parallel(ExPolicy&& policy, RandomIt first, RandomIt nth, Sent last,
-                Pred&& pred, Proj&& proj)
+            try
             {
-                using value_type =
-                    typename std::iterator_traits<RandomIt>::value_type;
+                RandomIt last_iter = detail::advance_to_sentinel(first, last);
+                return_last = last_iter;
 
-                RandomIt partitionIter, return_last;
-
-                if (first == last)
+                while (first != last_iter)
                 {
-                    return util::detail::algorithm_result<ExPolicy,
-                        RandomIt>::get(PIKA_MOVE(first));
-                }
+                    detail::pivot9(first, last_iter, pred);
 
-                if (nth == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy,
-                        RandomIt>::get(PIKA_MOVE(nth));
-                }
+                    partitionIter =
+                        pika::parallel::detail::partition<RandomIt>().call(
+                            policy(pika::execution::non_task), first + 1,
+                            last_iter,
+                            [val = PIKA_INVOKE(proj, *first), &pred](
+                                value_type const& elem) {
+                                return PIKA_INVOKE(pred, elem, val);
+                            },
+                            proj);
 
-                try
-                {
-                    RandomIt last_iter =
-                        detail::advance_to_sentinel(first, last);
-                    return_last = last_iter;
-
-                    while (first != last_iter)
-                    {
-                        detail::pivot9(first, last_iter, pred);
-
-                        partitionIter =
-                            pika::parallel::detail::partition<RandomIt>().call(
-                                policy(pika::execution::non_task), first + 1,
-                                last_iter,
-                                [val = PIKA_INVOKE(proj, *first), &pred](
-                                    value_type const& elem) {
-                                    return PIKA_INVOKE(pred, elem, val);
-                                },
-                                proj);
-
-                        --partitionIter;
-                        // swap first element and partitionIter
-                        // (ending element of first group)
+                    --partitionIter;
+                    // swap first element and partitionIter
+                    // (ending element of first group)
 #if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
-                        std::ranges::iter_swap(first, partitionIter);
+                    std::ranges::iter_swap(first, partitionIter);
 #else
-                        std::iter_swap(first, partitionIter);
+                    std::iter_swap(first, partitionIter);
 #endif
 
-                        // if nth element < partitioned index,
-                        // it lies in [first, partitionIter)
-                        if (partitionIter < nth)
-                        {
-                            first = partitionIter + 1;
-                        }
-                        // else it lies in [partitionIter + 1, last)
-                        else if (partitionIter > nth)
-                        {
-                            last_iter = partitionIter;
-                        }
-                        // partitionIter == nth
-                        else
-                        {
-                            break;
-                        }
+                    // if nth element < partitioned index,
+                    // it lies in [first, partitionIter)
+                    if (partitionIter < nth)
+                    {
+                        first = partitionIter + 1;
+                    }
+                    // else it lies in [partitionIter + 1, last)
+                    else if (partitionIter > nth)
+                    {
+                        last_iter = partitionIter;
+                    }
+                    // partitionIter == nth
+                    else
+                    {
+                        break;
                     }
                 }
-                catch (...)
-                {
-                    return util::detail::algorithm_result<ExPolicy,
-                        RandomIt>::get(detail::handle_exception<ExPolicy,
-                        RandomIt>::call(std::current_exception()));
-                }
-
-                return util::detail::algorithm_result<ExPolicy, RandomIt>::get(
-                    PIKA_MOVE(return_last));
             }
-        };
-        /// \endcond
-    }    // namespace detail
-}}       // namespace pika::parallel
+            catch (...)
+            {
+                return util::detail::algorithm_result<ExPolicy, RandomIt>::get(
+                    detail::handle_exception<ExPolicy, RandomIt>::call(
+                        std::current_exception()));
+            }
+
+            return util::detail::algorithm_result<ExPolicy, RandomIt>::get(
+                PIKA_MOVE(return_last));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

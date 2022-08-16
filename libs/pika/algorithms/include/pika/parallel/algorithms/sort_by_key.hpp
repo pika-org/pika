@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/sort.hpp>
 #include <pika/parallel/util/zip_iterator.hpp>
 
@@ -17,14 +18,13 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel {
-
+namespace pika {
     template <typename KeyIter, typename ValueIter>
     using sort_by_key_result = std::pair<KeyIter, ValueIter>;
 
     ///////////////////////////////////////////////////////////////////////////
     // sort
-    namespace detail {
+    namespace parallel::detail {
         /// \cond NOINTERNAL
         struct extract_key
         {
@@ -36,7 +36,7 @@ namespace pika { namespace parallel {
             }
         };
         /// \endcond
-    }    // namespace detail
+    }    // namespace parallel::detail
 
     //-----------------------------------------------------------------------------
     /// Sorts one range of data using keys supplied in another range.
@@ -114,8 +114,8 @@ namespace pika { namespace parallel {
     //-----------------------------------------------------------------------------
 
     template <typename ExPolicy, typename KeyIter, typename ValueIter,
-        typename Compare = detail::less>
-    util::detail::algorithm_result_t<ExPolicy,
+        typename Compare = parallel::detail::less>
+    parallel::util::detail::algorithm_result_t<ExPolicy,
         sort_by_key_result<KeyIter, ValueIter>>
     sort_by_key([[maybe_unused]] ExPolicy&& policy,
         [[maybe_unused]] KeyIter key_first, [[maybe_unused]] KeyIter key_last,
@@ -141,7 +141,7 @@ namespace pika { namespace parallel {
             detail::sort<iterator_type>().call(PIKA_FORWARD(ExPolicy, policy),
                 pika::util::make_zip_iterator(key_first, value_first),
                 pika::util::make_zip_iterator(key_last, value_last),
-                PIKA_FORWARD(Compare, comp), detail::extract_key()));
+                PIKA_FORWARD(Compare, comp), parallel::detail::extract_key()));
 #endif
     }
-}}    // namespace pika::parallel::v1
+}    // namespace pika

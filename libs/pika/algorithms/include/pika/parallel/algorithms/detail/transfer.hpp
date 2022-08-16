@@ -68,14 +68,14 @@ namespace pika::parallel::detail {
     //           transferred.
     //
     // clang-format off
-        template <typename Algo, typename ExPolicy, typename FwdIter1,
-            typename Sent1, typename FwdIter2,
-            PIKA_CONCEPT_REQUIRES_(
-                pika::is_execution_policy<ExPolicy>::value &&
-                pika::traits::is_iterator<FwdIter1>::value &&
-                pika::traits::is_sentinel_for<Sent1, FwdIter1>::value &&
-                pika::traits::is_iterator<FwdIter2>::value
-            )>
+    template <typename Algo, typename ExPolicy, typename FwdIter1,
+        typename Sent1, typename FwdIter2,
+        PIKA_CONCEPT_REQUIRES_(
+            pika::is_execution_policy<ExPolicy>::value &&
+            pika::traits::is_iterator<FwdIter1>::value &&
+            pika::traits::is_sentinel_for<Sent1, FwdIter1>::value &&
+            pika::traits::is_iterator<FwdIter2>::value
+        )>
     // clang-format on
     typename util::detail::algorithm_result<ExPolicy,
         util::in_out_result<FwdIter1, FwdIter2>>::type

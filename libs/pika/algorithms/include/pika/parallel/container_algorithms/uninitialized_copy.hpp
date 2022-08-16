@@ -325,7 +325,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct uninitialized_copy_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_copy_t>
     {
@@ -504,6 +504,6 @@ namespace pika { namespace ranges {
                     count <= d ? count : d, first2);
         }
     } uninitialized_copy_n{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

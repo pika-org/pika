@@ -425,8 +425,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::reduce
     inline constexpr struct reduce_t final
@@ -693,6 +692,6 @@ namespace pika { namespace ranges {
                 pika::util::end(rng), value_type{}, std::plus<value_type>{});
         }
     } reduce{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

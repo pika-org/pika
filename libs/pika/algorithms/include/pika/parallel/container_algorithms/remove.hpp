@@ -484,7 +484,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::remove_if
     inline constexpr struct remove_if_t final
@@ -729,6 +729,6 @@ namespace pika { namespace ranges {
         }
 
     } remove{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

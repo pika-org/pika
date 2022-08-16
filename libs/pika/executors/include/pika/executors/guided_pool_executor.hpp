@@ -319,8 +319,8 @@ namespace pika { namespace parallel { namespace execution {
             // before passing the task onwards to the real executor
             return dataflow(launch::sync,
                 detail::pre_execution_async_domain_schedule<
-                    typename std::decay<typename std::remove_pointer<
-                        decltype(this)>::type>::type,
+                    std::decay_t<
+                        typename std::remove_pointer<decltype(this)>::type>,
                     pool_numa_hint<Tag>>{*this, hint_, hp_sync_},
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }

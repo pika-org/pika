@@ -20,7 +20,6 @@
 #include <utility>
 
 namespace pika::parallel::detail {
-
     template <typename ExPolicy>
     struct sequential_adjacent_difference_t
       : pika::functional::detail::tag_fallback<
@@ -63,5 +62,4 @@ namespace pika::parallel::detail {
             first, last, dest, PIKA_FORWARD(Op, op));
     }
 #endif
-
 }    // namespace pika::parallel::detail

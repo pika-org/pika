@@ -251,7 +251,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct is_partitioned_t final
       : pika::detail::tag_parallel_algorithm<is_partitioned_t>
     {
@@ -272,9 +272,9 @@ namespace pika { namespace ranges {
         friend bool tag_fallback_invoke(pika::ranges::is_partitioned_t,
             FwdIter first, Sent last, Pred&& pred, Proj&& proj = Proj())
         {
-            return pika::parallel::detail::is_partitioned<FwdIter, Sent>()
-                .call(pika::execution::seq, first, last,
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::is_partitioned<FwdIter, Sent>().call(
+                pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -295,9 +295,9 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(pika::ranges::is_partitioned_t, ExPolicy&& policy,
             FwdIter first, Sent last, Pred&& pred, Proj&& proj = Proj())
         {
-            return pika::parallel::detail::is_partitioned<FwdIter, Sent>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::is_partitioned<FwdIter, Sent>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last,
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
@@ -352,6 +352,6 @@ namespace pika { namespace ranges {
                     PIKA_FORWARD(Proj, proj));
         }
     } is_partitioned{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

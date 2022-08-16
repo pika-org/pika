@@ -214,16 +214,200 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // uninitialized_copy
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
+    ///////////////////////////////////////////////////////////////////////
+    template <typename InIter1, typename FwdIter2, typename Cond>
+    util::in_out_result<InIter1, FwdIter2> sequential_uninitialized_copy(
+        InIter1 first, FwdIter2 dest, Cond cond)
+    {
+        using value_type = typename std::iterator_traits<FwdIter2>::value_type;
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename InIter1, typename FwdIter2, typename Cond>
-        util::in_out_result<InIter1, FwdIter2> sequential_uninitialized_copy(
-            InIter1 first, FwdIter2 dest, Cond cond)
+        FwdIter2 current = dest;
+        try
+        {
+            for (/* */; cond(first, current); (void) ++first, ++current)
+            {
+                ::new (std::addressof(*current)) value_type(*first);
+            }
+            return util::in_out_result<InIter1, FwdIter2>{first, current};
+        }
+        catch (...)
+        {
+            for (/* */; dest != current; ++dest)
+            {
+                (*dest).~value_type();
+            }
+            throw;
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename InIter1, typename InIter2>
+    util::in_out_result<InIter1, InIter2> sequential_uninitialized_copy_n(
+        InIter1 first, std::size_t count, InIter2 dest,
+        util::cancellation_token<util::detail::no_data>& tok)
+    {
+        using value_type = typename std::iterator_traits<InIter2>::value_type;
+
+        return {std::next(first, count),
+            util::loop_with_cleanup_n_with_token(
+                first, count, dest, tok,
+                [](InIter1 it, InIter2 dest) -> void {
+                    ::new (std::addressof(*dest)) value_type(*it);
+                },
+                [](InIter2 dest) -> void { (*dest).~value_type(); })};
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename ExPolicy, typename Iter, typename FwdIter2>
+    typename util::detail::algorithm_result<ExPolicy,
+        util::in_out_result<Iter, FwdIter2>>::type
+    parallel_sequential_uninitialized_copy_n(
+        ExPolicy&& policy, Iter first, std::size_t count, FwdIter2 dest)
+    {
+        if (count == 0)
+        {
+            return util::detail::algorithm_result<ExPolicy,
+                util::in_out_result<Iter, FwdIter2>>::
+                get(util::in_out_result<Iter, FwdIter2>{first, dest});
+        }
+
+        using zip_iterator = pika::util::zip_iterator<Iter, FwdIter2>;
+        using partition_result_type = std::pair<FwdIter2, FwdIter2>;
+        using value_type = typename std::iterator_traits<FwdIter2>::value_type;
+
+        util::cancellation_token<util::detail::no_data> tok;
+
+        return util::partitioner_with_cleanup<ExPolicy,
+            util::in_out_result<Iter, FwdIter2>, partition_result_type>::
+            call(
+                PIKA_FORWARD(ExPolicy, policy),
+                pika::util::make_zip_iterator(first, dest), count,
+                [tok](zip_iterator t,
+                    std::size_t part_size) mutable -> partition_result_type {
+                    using std::get;
+                    auto iters = t.get_iterator_tuple();
+                    FwdIter2 dest = get<1>(iters);
+                    return std::make_pair(dest,
+                        util::get_second_element(
+                            sequential_uninitialized_copy_n(
+                                get<0>(iters), part_size, dest, tok)));
+                },
+                // finalize, called once if no error occurred
+                [dest, first, count](
+                    std::vector<pika::future<partition_result_type>>&&
+                        data) mutable -> util::in_out_result<Iter, FwdIter2> {
+                    // make sure iterators embedded in function object that is
+                    // attached to futures are invalidated
+                    data.clear();
+
+                    std::advance(first, count);
+                    std::advance(dest, count);
+                    return util::in_out_result<Iter, FwdIter2>{first, dest};
+                },
+                // cleanup function, called for each partition which
+                // didn't fail, but only if at least one failed
+                [](partition_result_type&& r) -> void {
+                    while (r.first != r.second)
+                    {
+                        (*r.first).~value_type();
+                        ++r.first;
+                    }
+                });
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename IterPair>
+    struct uninitialized_copy
+      : public detail::algorithm<uninitialized_copy<IterPair>, IterPair>
+    {
+        uninitialized_copy()
+          : uninitialized_copy::algorithm("uninitialized_copy")
+        {
+        }
+
+        template <typename ExPolicy, typename InIter1, typename Sent,
+            typename FwdIter2>
+        static util::in_out_result<InIter1, FwdIter2> sequential(
+            ExPolicy, InIter1 first, Sent last, FwdIter2 dest)
+        {
+            return sequential_uninitialized_copy(
+                first, dest, [last](InIter1 first, FwdIter2) -> bool {
+                    return first != last;
+                });
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename FwdIter2>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<Iter, FwdIter2>>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, FwdIter2 dest)
+        {
+            return parallel_sequential_uninitialized_copy_n(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), dest);
+        }
+    };
+    /// \endcond
+
+    /////////////////////////////////////////////////////////////////////////////
+    // uninitialized_copy_sent
+    /// \cond NOINTERNAL
+    template <typename IterPair>
+    struct uninitialized_copy_sent
+      : public detail::algorithm<uninitialized_copy_sent<IterPair>, IterPair>
+    {
+        uninitialized_copy_sent()
+          : uninitialized_copy_sent::algorithm("uninitialized_copy_sent")
+        {
+        }
+
+        template <typename ExPolicy, typename InIter1, typename Sent1,
+            typename FwdIter2, typename Sent2>
+        static util::in_out_result<InIter1, FwdIter2> sequential(
+            ExPolicy, InIter1 first, Sent1 last, FwdIter2 dest, Sent2 last_d)
+        {
+            return sequential_uninitialized_copy(first, dest,
+                [last, last_d](InIter1 first, FwdIter2 current) -> bool {
+                    return !(first == last || current == last_d);
+                });
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent1,
+            typename FwdIter2, typename Sent2>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<Iter, FwdIter2>>::type
+        parallel(ExPolicy&& policy, Iter first, Sent1 last, FwdIter2 dest,
+            Sent2 last_d)
+        {
+            std::size_t dist1 = detail::distance(first, last);
+            std::size_t dist2 = detail::distance(dest, last_d);
+            std::size_t dist = dist1 <= dist2 ? dist1 : dist2;
+
+            return parallel_sequential_uninitialized_copy_n(
+                PIKA_FORWARD(ExPolicy, policy), first, dist, dest);
+        }
+    };
+    /// \endcond
+
+    /////////////////////////////////////////////////////////////////////////////
+    // uninitialized_copy_n
+    /// \cond NOINTERNAL
+    template <typename IterPair>
+    struct uninitialized_copy_n
+      : public detail::algorithm<uninitialized_copy_n<IterPair>, IterPair>
+    {
+        uninitialized_copy_n()
+          : uninitialized_copy_n::algorithm("uninitialized_copy_n")
+        {
+        }
+
+        template <typename ExPolicy, typename InIter, typename FwdIter2>
+        static util::in_out_result<InIter, FwdIter2> sequential(
+            ExPolicy, InIter first, std::size_t count, FwdIter2 dest)
         {
             using value_type =
                 typename std::iterator_traits<FwdIter2>::value_type;
@@ -231,11 +415,11 @@ namespace pika { namespace parallel {
             FwdIter2 current = dest;
             try
             {
-                for (/* */; cond(first, current); (void) ++first, ++current)
+                for (/* */; count > 0; ++first, (void) ++current, --count)
                 {
                     ::new (std::addressof(*current)) value_type(*first);
                 }
-                return util::in_out_result<InIter1, FwdIter2>{first, current};
+                return util::in_out_result<InIter, FwdIter2>{first, current};
             }
             catch (...)
             {
@@ -247,215 +431,18 @@ namespace pika { namespace parallel {
             }
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename InIter1, typename InIter2>
-        util::in_out_result<InIter1, InIter2> sequential_uninitialized_copy_n(
-            InIter1 first, std::size_t count, InIter2 dest,
-            util::cancellation_token<util::detail::no_data>& tok)
-        {
-            using value_type =
-                typename std::iterator_traits<InIter2>::value_type;
-
-            return {std::next(first, count),
-                util::loop_with_cleanup_n_with_token(
-                    first, count, dest, tok,
-                    [](InIter1 it, InIter2 dest) -> void {
-                        ::new (std::addressof(*dest)) value_type(*it);
-                    },
-                    [](InIter2 dest) -> void { (*dest).~value_type(); })};
-        }
-
-        ///////////////////////////////////////////////////////////////////////
         template <typename ExPolicy, typename Iter, typename FwdIter2>
-        typename util::detail::algorithm_result<ExPolicy,
+        static typename util::detail::algorithm_result<ExPolicy,
             util::in_out_result<Iter, FwdIter2>>::type
-        parallel_sequential_uninitialized_copy_n(
+        parallel(
             ExPolicy&& policy, Iter first, std::size_t count, FwdIter2 dest)
         {
-            if (count == 0)
-            {
-                return util::detail::algorithm_result<ExPolicy,
-                    util::in_out_result<Iter, FwdIter2>>::
-                    get(util::in_out_result<Iter, FwdIter2>{first, dest});
-            }
-
-            using zip_iterator = pika::util::zip_iterator<Iter, FwdIter2>;
-            using partition_result_type = std::pair<FwdIter2, FwdIter2>;
-            using value_type =
-                typename std::iterator_traits<FwdIter2>::value_type;
-
-            util::cancellation_token<util::detail::no_data> tok;
-
-            return util::partitioner_with_cleanup<ExPolicy,
-                util::in_out_result<Iter, FwdIter2>, partition_result_type>::
-                call(
-                    PIKA_FORWARD(ExPolicy, policy),
-                    pika::util::make_zip_iterator(first, dest), count,
-                    [tok](zip_iterator t, std::size_t part_size) mutable
-                    -> partition_result_type {
-                        using std::get;
-                        auto iters = t.get_iterator_tuple();
-                        FwdIter2 dest = get<1>(iters);
-                        return std::make_pair(dest,
-                            util::get_second_element(
-                                sequential_uninitialized_copy_n(
-                                    get<0>(iters), part_size, dest, tok)));
-                    },
-                    // finalize, called once if no error occurred
-                    [dest, first, count](
-                        std::vector<pika::future<partition_result_type>>&&
-                            data) mutable
-                    -> util::in_out_result<Iter, FwdIter2> {
-                        // make sure iterators embedded in function object that is
-                        // attached to futures are invalidated
-                        data.clear();
-
-                        std::advance(first, count);
-                        std::advance(dest, count);
-                        return util::in_out_result<Iter, FwdIter2>{first, dest};
-                    },
-                    // cleanup function, called for each partition which
-                    // didn't fail, but only if at least one failed
-                    [](partition_result_type&& r) -> void {
-                        while (r.first != r.second)
-                        {
-                            (*r.first).~value_type();
-                            ++r.first;
-                        }
-                    });
+            return parallel_sequential_uninitialized_copy_n(
+                PIKA_FORWARD(ExPolicy, policy), first, count, dest);
         }
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename IterPair>
-        struct uninitialized_copy
-          : public detail::algorithm<uninitialized_copy<IterPair>, IterPair>
-        {
-            uninitialized_copy()
-              : uninitialized_copy::algorithm("uninitialized_copy")
-            {
-            }
-
-            template <typename ExPolicy, typename InIter1, typename Sent,
-                typename FwdIter2>
-            static util::in_out_result<InIter1, FwdIter2> sequential(
-                ExPolicy, InIter1 first, Sent last, FwdIter2 dest)
-            {
-                return sequential_uninitialized_copy(
-                    first, dest, [last](InIter1 first, FwdIter2) -> bool {
-                        return first != last;
-                    });
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename FwdIter2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<Iter, FwdIter2>>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, FwdIter2 dest)
-            {
-                return parallel_sequential_uninitialized_copy_n(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), dest);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-
-    /////////////////////////////////////////////////////////////////////////////
-    // uninitialized_copy_sent
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename IterPair>
-        struct uninitialized_copy_sent
-          : public detail::algorithm<uninitialized_copy_sent<IterPair>,
-                IterPair>
-        {
-            uninitialized_copy_sent()
-              : uninitialized_copy_sent::algorithm("uninitialized_copy_sent")
-            {
-            }
-
-            template <typename ExPolicy, typename InIter1, typename Sent1,
-                typename FwdIter2, typename Sent2>
-            static util::in_out_result<InIter1, FwdIter2> sequential(ExPolicy,
-                InIter1 first, Sent1 last, FwdIter2 dest, Sent2 last_d)
-            {
-                return sequential_uninitialized_copy(first, dest,
-                    [last, last_d](InIter1 first, FwdIter2 current) -> bool {
-                        return !(first == last || current == last_d);
-                    });
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent1,
-                typename FwdIter2, typename Sent2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<Iter, FwdIter2>>::type
-            parallel(ExPolicy&& policy, Iter first, Sent1 last, FwdIter2 dest,
-                Sent2 last_d)
-            {
-                std::size_t dist1 = detail::distance(first, last);
-                std::size_t dist2 = detail::distance(dest, last_d);
-                std::size_t dist = dist1 <= dist2 ? dist1 : dist2;
-
-                return parallel_sequential_uninitialized_copy_n(
-                    PIKA_FORWARD(ExPolicy, policy), first, dist, dest);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-
-    /////////////////////////////////////////////////////////////////////////////
-    // uninitialized_copy_n
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename IterPair>
-        struct uninitialized_copy_n
-          : public detail::algorithm<uninitialized_copy_n<IterPair>, IterPair>
-        {
-            uninitialized_copy_n()
-              : uninitialized_copy_n::algorithm("uninitialized_copy_n")
-            {
-            }
-
-            template <typename ExPolicy, typename InIter, typename FwdIter2>
-            static util::in_out_result<InIter, FwdIter2> sequential(
-                ExPolicy, InIter first, std::size_t count, FwdIter2 dest)
-            {
-                using value_type =
-                    typename std::iterator_traits<FwdIter2>::value_type;
-
-                FwdIter2 current = dest;
-                try
-                {
-                    for (/* */; count > 0; ++first, (void) ++current, --count)
-                    {
-                        ::new (std::addressof(*current)) value_type(*first);
-                    }
-                    return util::in_out_result<InIter, FwdIter2>{
-                        first, current};
-                }
-                catch (...)
-                {
-                    for (/* */; dest != current; ++dest)
-                    {
-                        (*dest).~value_type();
-                    }
-                    throw;
-                }
-            }
-
-            template <typename ExPolicy, typename Iter, typename FwdIter2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<Iter, FwdIter2>>::type
-            parallel(
-                ExPolicy&& policy, Iter first, std::size_t count, FwdIter2 dest)
-            {
-                return parallel_sequential_uninitialized_copy_n(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, dest);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////

@@ -13,7 +13,7 @@
 #include <functional>
 #include <memory>
 
-namespace pika { namespace parallel { namespace util {
+namespace pika::parallel::util {
     namespace detail {
         struct no_data
         {
@@ -85,4 +85,4 @@ namespace pika { namespace parallel { namespace util {
             was_cancelled_->store(true, std::memory_order_relaxed);
         }
     };
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

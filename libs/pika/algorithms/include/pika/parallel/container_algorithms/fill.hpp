@@ -116,8 +116,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::fill
     inline constexpr struct fill_t final
@@ -331,7 +330,6 @@ namespace pika { namespace ranges {
                 pika::execution::seq, first, std::size_t(count), value);
         }
     } fill_n{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

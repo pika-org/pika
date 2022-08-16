@@ -266,8 +266,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I1, typename I2, typename O>
     using set_symmetric_difference_result =
         parallel::util::in_in_out_result<I1, I2, O>;
@@ -480,7 +479,6 @@ namespace pika { namespace ranges {
                     PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
         }
     } set_symmetric_difference{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

@@ -19,8 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { namespace util {
-
+namespace pika::parallel::util {
     /// \struct range
     /// \brief this represent a range between two iterators
     /// \tparam Iter type of parameters of the range
@@ -322,4 +321,4 @@ namespace pika { namespace parallel { namespace util {
             util::half_merge(rbuf, rx2, rbx, cmp);
         }
     }
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

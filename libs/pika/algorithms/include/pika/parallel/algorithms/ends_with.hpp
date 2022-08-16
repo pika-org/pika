@@ -160,69 +160,65 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // ends_with
-    namespace detail {
-        /// \cond NOINTERNAL
-        struct ends_with : public detail::algorithm<ends_with, bool>
+    /// \cond NOINTERNAL
+    struct ends_with : public detail::algorithm<ends_with, bool>
+    {
+        ends_with()
+          : ends_with::algorithm("ends_with")
         {
-            ends_with()
-              : ends_with::algorithm("ends_with")
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename Pred, typename Proj1,
+            typename Proj2>
+        static bool sequential(ExPolicy, Iter1 first1, Sent1 last1,
+            Iter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
+            Proj2&& proj2)
+        {
+            const auto drop = detail::distance(first1, last1) -
+                detail::distance(first2, last2);
+
+            if (drop < 0)
+                return false;
+
+            return pika::parallel::detail::equal_binary().call(
+                pika::execution::seq, std::next(PIKA_MOVE(first1), drop),
+                PIKA_MOVE(last1), PIKA_MOVE(first2), PIKA_MOVE(last2),
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
+        }
+
+        template <typename ExPolicy, typename FwdIter1, typename Sent1,
+            typename FwdIter2, typename Sent2, typename Pred, typename Proj1,
+            typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
+            FwdIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
+            Proj2&& proj2)
+        {
+            const auto drop = detail::distance(first1, last1) -
+                detail::distance(first2, last2);
+
+            if (drop < 0)
             {
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    false);
             }
 
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename Pred, typename Proj1,
-                typename Proj2>
-            static bool sequential(ExPolicy, Iter1 first1, Sent1 last1,
-                Iter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-                Proj2&& proj2)
-            {
-                const auto drop = detail::distance(first1, last1) -
-                    detail::distance(first2, last2);
-
-                if (drop < 0)
-                    return false;
-
-                return pika::parallel::detail::equal_binary().call(
-                    pika::execution::seq, std::next(PIKA_MOVE(first1), drop),
-                    PIKA_MOVE(last1), PIKA_MOVE(first2), PIKA_MOVE(last2),
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
-            }
-
-            template <typename ExPolicy, typename FwdIter1, typename Sent1,
-                typename FwdIter2, typename Sent2, typename Pred,
-                typename Proj1, typename Proj2>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
-                FwdIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-                Proj2&& proj2)
-            {
-                const auto drop = detail::distance(first1, last1) -
-                    detail::distance(first2, last2);
-
-                if (drop < 0)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        false);
-                }
-
-                return pika::parallel::detail::equal_binary().call(
-                    PIKA_FORWARD(ExPolicy, policy),
-                    std::next(PIKA_MOVE(first1), drop), PIKA_MOVE(last1),
-                    PIKA_MOVE(first2), PIKA_MOVE(last2),
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+            return pika::parallel::detail::equal_binary().call(
+                PIKA_FORWARD(ExPolicy, policy),
+                std::next(PIKA_MOVE(first1), drop), PIKA_MOVE(last1),
+                PIKA_MOVE(first2), PIKA_MOVE(last2), PIKA_FORWARD(Pred, pred),
+                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ends_with
     inline constexpr struct ends_with_t final
@@ -287,7 +283,6 @@ namespace pika {
                 parallel::util::projection_identity{});
         }
     } ends_with{};
-
 }    // namespace pika
 
 #endif    // DOXYGEN

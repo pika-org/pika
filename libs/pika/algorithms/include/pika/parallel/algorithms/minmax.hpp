@@ -387,30 +387,95 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel {
+namespace pika::parallel::detail {
     template <typename T>
     using minmax_element_result = pika::parallel::util::min_max_result<T>;
 
     ///////////////////////////////////////////////////////////////////////////
     // min_element
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
+    template <typename ExPolicy, typename FwdIter, typename F, typename Proj>
+    constexpr FwdIter sequential_min_element(
+        ExPolicy&&, FwdIter it, std::size_t count, F const& f, Proj const& proj)
+    {
+        if (count == 0 || count == 1)
+            return it;
+
+        using element_type = typename std::iterator_traits<FwdIter>::value_type;
+
+        auto smallest = it;
+
+        element_type value = PIKA_INVOKE(proj, *smallest);
+        util::loop_n<std::decay_t<ExPolicy>>(
+            ++it, count - 1, [&](FwdIter const& curr) -> void {
+                element_type curr_value = PIKA_INVOKE(proj, *curr);
+                if (PIKA_INVOKE(f, curr_value, value))
+                {
+                    smallest = curr;
+                    value = PIKA_MOVE(curr_value);
+                }
+            });
+
+        return smallest;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Iter>
+    struct min_element : public detail::algorithm<min_element<Iter>, Iter>
+    {
+        // this has to be a member of the algorithm type as we access this
+        // generically from the segmented algorithms
         template <typename ExPolicy, typename FwdIter, typename F,
             typename Proj>
-        constexpr FwdIter sequential_min_element(ExPolicy&&, FwdIter it,
-            std::size_t count, F const& f, Proj const& proj)
+        static constexpr typename std::iterator_traits<FwdIter>::value_type
+        sequential_minmax_element_ind(ExPolicy&&, FwdIter it, std::size_t count,
+            F const& f, Proj const& proj)
         {
-            if (count == 0 || count == 1)
-                return it;
+            PIKA_ASSERT(count != 0);
+
+            if (count == 1)
+                return *it;
+
+            auto smallest = *it;
 
             using element_type =
-                typename std::iterator_traits<FwdIter>::value_type;
-
-            auto smallest = it;
+                typename std::iterator_traits<decltype(smallest)>::value_type;
 
             element_type value = PIKA_INVOKE(proj, *smallest);
             util::loop_n<std::decay_t<ExPolicy>>(
                 ++it, count - 1, [&](FwdIter const& curr) -> void {
+                    element_type curr_value = PIKA_INVOKE(proj, **curr);
+                    if (PIKA_INVOKE(f, curr_value, value))
+                    {
+                        smallest = *curr;
+                        value = PIKA_MOVE(curr_value);
+                    }
+                });
+
+            return smallest;
+        }
+
+        min_element()
+          : min_element::algorithm("min_element")
+        {
+        }
+
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename Proj>
+        static FwdIter sequential(
+            ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
+        {
+            if (first == last)
+                return first;
+
+            using element_type =
+                typename std::iterator_traits<FwdIter>::value_type;
+
+            auto smallest = first;
+
+            element_type value = PIKA_INVOKE(proj, *smallest);
+            util::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
+                [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, *curr);
                     if (PIKA_INVOKE(f, curr_value, value))
                     {
@@ -422,129 +487,123 @@ namespace pika { namespace parallel {
             return smallest;
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Iter>
-        struct min_element : public detail::algorithm<min_element<Iter>, Iter>
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(
+            ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
         {
-            // this has to be a member of the algorithm type as we access this
-            // generically from the segmented algorithms
-            template <typename ExPolicy, typename FwdIter, typename F,
-                typename Proj>
-            static constexpr typename std::iterator_traits<FwdIter>::value_type
-            sequential_minmax_element_ind(ExPolicy&&, FwdIter it,
-                std::size_t count, F const& f, Proj const& proj)
+            if (first == last)
             {
-                PIKA_ASSERT(count != 0);
-
-                if (count == 1)
-                    return *it;
-
-                auto smallest = *it;
-
-                using element_type = typename std::iterator_traits<
-                    decltype(smallest)>::value_type;
-
-                element_type value = PIKA_INVOKE(proj, *smallest);
-                util::loop_n<std::decay_t<ExPolicy>>(
-                    ++it, count - 1, [&](FwdIter const& curr) -> void {
-                        element_type curr_value = PIKA_INVOKE(proj, **curr);
-                        if (PIKA_INVOKE(f, curr_value, value))
-                        {
-                            smallest = *curr;
-                            value = PIKA_MOVE(curr_value);
-                        }
-                    });
-
-                return smallest;
+                return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
+                    PIKA_MOVE(first));
             }
 
-            min_element()
-              : min_element::algorithm("min_element")
-            {
-            }
+            auto f1 = [f, proj, policy](
+                          FwdIter it, std::size_t part_count) -> FwdIter {
+                return sequential_min_element(policy, it, part_count, f, proj);
+            };
+            auto f2 = [policy, f = PIKA_FORWARD(F, f),
+                          proj = PIKA_FORWARD(Proj, proj)](
+                          std::vector<FwdIter>&& positions) -> FwdIter {
+                return min_element::sequential_minmax_element_ind(
+                    policy, positions.begin(), positions.size(), f, proj);
+            };
 
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename Proj>
-            static FwdIter sequential(
-                ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
-            {
-                if (first == last)
-                    return first;
+            return util::partitioner<ExPolicy, FwdIter, FwdIter>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                pika::unwrapping(PIKA_MOVE(f2)));
+        }
+    };
 
-                using element_type =
-                    typename std::iterator_traits<FwdIter>::value_type;
-
-                auto smallest = first;
-
-                element_type value = PIKA_INVOKE(proj, *smallest);
-                util::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
-                    [&](FwdIter const& curr) -> void {
-                        element_type curr_value = PIKA_INVOKE(proj, *curr);
-                        if (PIKA_INVOKE(f, curr_value, value))
-                        {
-                            smallest = curr;
-                            value = PIKA_MOVE(curr_value);
-                        }
-                    });
-
-                return smallest;
-            }
-
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename Proj>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, Sent last, F&& f,
-                    Proj&& proj)
-            {
-                if (first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy,
-                        FwdIter>::get(PIKA_MOVE(first));
-                }
-
-                auto f1 = [f, proj, policy](
-                              FwdIter it, std::size_t part_count) -> FwdIter {
-                    return sequential_min_element(
-                        policy, it, part_count, f, proj);
-                };
-                auto f2 = [policy, f = PIKA_FORWARD(F, f),
-                              proj = PIKA_FORWARD(Proj, proj)](
-                              std::vector<FwdIter>&& positions) -> FwdIter {
-                    return min_element::sequential_minmax_element_ind(
-                        policy, positions.begin(), positions.size(), f, proj);
-                };
-
-                return util::partitioner<ExPolicy, FwdIter, FwdIter>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    pika::unwrapping(PIKA_MOVE(f2)));
-            }
-        };
-
-        /// \endcond
-    }    // namespace detail
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // max_element
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
+    template <typename ExPolicy, typename FwdIter, typename F, typename Proj>
+    constexpr FwdIter sequential_max_element(
+        ExPolicy&&, FwdIter it, std::size_t count, F const& f, Proj const& proj)
+    {
+        if (count == 0 || count == 1)
+            return it;
+
+        using element_type = typename std::iterator_traits<FwdIter>::value_type;
+
+        auto largest = it;
+
+        element_type value = PIKA_INVOKE(proj, *largest);
+        util::loop_n<std::decay_t<ExPolicy>>(
+            ++it, count - 1, [&](FwdIter const& curr) -> void {
+                element_type curr_value = PIKA_INVOKE(proj, *curr);
+                if (!PIKA_INVOKE(f, curr_value, value))
+                {
+                    largest = curr;
+                    value = PIKA_MOVE(curr_value);
+                }
+            });
+
+        return largest;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Iter>
+    struct max_element : public detail::algorithm<max_element<Iter>, Iter>
+    {
+        // this has to be a member of the algorithm type as we access this
+        // generically from the segmented algorithms
         template <typename ExPolicy, typename FwdIter, typename F,
             typename Proj>
-        constexpr FwdIter sequential_max_element(ExPolicy&&, FwdIter it,
-            std::size_t count, F const& f, Proj const& proj)
+        static constexpr typename std::iterator_traits<FwdIter>::value_type
+        sequential_minmax_element_ind(ExPolicy&&, FwdIter it, std::size_t count,
+            F const& f, Proj const& proj)
         {
-            if (count == 0 || count == 1)
-                return it;
+            PIKA_ASSERT(count != 0);
+
+            if (count == 1)
+                return *it;
+
+            auto largest = *it;
 
             using element_type =
-                typename std::iterator_traits<FwdIter>::value_type;
-
-            auto largest = it;
+                typename std::iterator_traits<decltype(largest)>::value_type;
 
             element_type value = PIKA_INVOKE(proj, *largest);
             util::loop_n<std::decay_t<ExPolicy>>(
                 ++it, count - 1, [&](FwdIter const& curr) -> void {
+                    element_type curr_value = PIKA_INVOKE(proj, **curr);
+                    if (!PIKA_INVOKE(f, curr_value, value))
+                    {
+                        largest = *curr;
+                        value = PIKA_MOVE(curr_value);
+                    }
+                });
+
+            return largest;
+        }
+
+        max_element()
+          : max_element::algorithm("max_element")
+        {
+        }
+
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename Proj>
+        static FwdIter sequential(
+            ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
+        {
+            if (first == last)
+                return first;
+
+            using element_type =
+                typename std::iterator_traits<FwdIter>::value_type;
+
+            auto largest = first;
+
+            element_type value = PIKA_INVOKE(proj, *largest);
+            util::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
+                [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, *curr);
                     if (!PIKA_INVOKE(f, curr_value, value))
                     {
@@ -556,277 +615,198 @@ namespace pika { namespace parallel {
             return largest;
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Iter>
-        struct max_element : public detail::algorithm<max_element<Iter>, Iter>
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(
+            ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
         {
-            // this has to be a member of the algorithm type as we access this
-            // generically from the segmented algorithms
-            template <typename ExPolicy, typename FwdIter, typename F,
-                typename Proj>
-            static constexpr typename std::iterator_traits<FwdIter>::value_type
-            sequential_minmax_element_ind(ExPolicy&&, FwdIter it,
-                std::size_t count, F const& f, Proj const& proj)
+            if (first == last)
             {
-                PIKA_ASSERT(count != 0);
-
-                if (count == 1)
-                    return *it;
-
-                auto largest = *it;
-
-                using element_type = typename std::iterator_traits<
-                    decltype(largest)>::value_type;
-
-                element_type value = PIKA_INVOKE(proj, *largest);
-                util::loop_n<std::decay_t<ExPolicy>>(
-                    ++it, count - 1, [&](FwdIter const& curr) -> void {
-                        element_type curr_value = PIKA_INVOKE(proj, **curr);
-                        if (!PIKA_INVOKE(f, curr_value, value))
-                        {
-                            largest = *curr;
-                            value = PIKA_MOVE(curr_value);
-                        }
-                    });
-
-                return largest;
+                return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
+                    PIKA_MOVE(first));
             }
 
-            max_element()
-              : max_element::algorithm("max_element")
-            {
-            }
+            auto f1 = [f, proj, policy](
+                          FwdIter it, std::size_t part_count) -> FwdIter {
+                return sequential_max_element(policy, it, part_count, f, proj);
+            };
+            auto f2 = [policy, f = PIKA_FORWARD(F, f),
+                          proj = PIKA_FORWARD(Proj, proj)](
+                          std::vector<FwdIter>&& positions) -> FwdIter {
+                return max_element::sequential_minmax_element_ind(
+                    policy, positions.begin(), positions.size(), f, proj);
+            };
 
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename Proj>
-            static FwdIter sequential(
-                ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
-            {
-                if (first == last)
-                    return first;
+            return util::partitioner<ExPolicy, FwdIter, FwdIter>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                pika::unwrapping(PIKA_MOVE(f2)));
+        }
+    };
 
-                using element_type =
-                    typename std::iterator_traits<FwdIter>::value_type;
-
-                auto largest = first;
-
-                element_type value = PIKA_INVOKE(proj, *largest);
-                util::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
-                    [&](FwdIter const& curr) -> void {
-                        element_type curr_value = PIKA_INVOKE(proj, *curr);
-                        if (!PIKA_INVOKE(f, curr_value, value))
-                        {
-                            largest = curr;
-                            value = PIKA_MOVE(curr_value);
-                        }
-                    });
-
-                return largest;
-            }
-
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename Proj>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, Sent last, F&& f,
-                    Proj&& proj)
-            {
-                if (first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy,
-                        FwdIter>::get(PIKA_MOVE(first));
-                }
-
-                auto f1 = [f, proj, policy](
-                              FwdIter it, std::size_t part_count) -> FwdIter {
-                    return sequential_max_element(
-                        policy, it, part_count, f, proj);
-                };
-                auto f2 = [policy, f = PIKA_FORWARD(F, f),
-                              proj = PIKA_FORWARD(Proj, proj)](
-                              std::vector<FwdIter>&& positions) -> FwdIter {
-                    return max_element::sequential_minmax_element_ind(
-                        policy, positions.begin(), positions.size(), f, proj);
-                };
-
-                return util::partitioner<ExPolicy, FwdIter, FwdIter>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    pika::unwrapping(PIKA_MOVE(f2)));
-            }
-        };
-
-        /// \endcond
-    }    // namespace detail
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // minmax_element
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename ExPolicy, typename FwdIter, typename F,
-            typename Proj>
-        minmax_element_result<FwdIter> sequential_minmax_element(ExPolicy&&,
-            FwdIter it, std::size_t count, F const& f, Proj const& proj)
-        {
-            minmax_element_result<FwdIter> result = {it, it};
+    /// \cond NOINTERNAL
+    template <typename ExPolicy, typename FwdIter, typename F, typename Proj>
+    minmax_element_result<FwdIter> sequential_minmax_element(
+        ExPolicy&&, FwdIter it, std::size_t count, F const& f, Proj const& proj)
+    {
+        minmax_element_result<FwdIter> result = {it, it};
 
-            if (count == 0 || count == 1)
-                return result;
+        if (count == 0 || count == 1)
+            return result;
+
+        using element_type = typename std::iterator_traits<FwdIter>::value_type;
+
+        element_type min_value = PIKA_INVOKE(proj, *it);
+        element_type max_value = min_value;
+        util::loop_n<std::decay_t<ExPolicy>>(
+            ++it, count - 1, [&](FwdIter const& curr) -> void {
+                element_type curr_value = PIKA_INVOKE(proj, *curr);
+                if (PIKA_INVOKE(f, curr_value, min_value))
+                {
+                    result.min = curr;
+                    min_value = curr_value;
+                }
+
+                if (!PIKA_INVOKE(f, curr_value, max_value))
+                {
+                    result.max = curr;
+                    max_value = PIKA_MOVE(curr_value);
+                }
+            });
+
+        return result;
+    }
+
+    template <typename Iter>
+    struct minmax_element
+      : public detail::algorithm<minmax_element<Iter>,
+            minmax_element_result<Iter>>
+    {
+        // this has to be a member of the algorithm type as we access this
+        // generically from the segmented algorithms
+        template <typename ExPolicy, typename PairIter, typename F,
+            typename Proj>
+        static typename std::iterator_traits<PairIter>::value_type
+        sequential_minmax_element_ind(ExPolicy&&, PairIter it,
+            std::size_t count, F const& f, Proj const& proj)
+        {
+            PIKA_ASSERT(count != 0);
+
+            if (count == 1)
+                return *it;
 
             using element_type =
-                typename std::iterator_traits<FwdIter>::value_type;
+                typename std::iterator_traits<Iter>::value_type;
 
-            element_type min_value = PIKA_INVOKE(proj, *it);
-            element_type max_value = min_value;
+            auto result = *it;
+
+            element_type min_value = PIKA_INVOKE(proj, *result.min);
+            element_type max_value = PIKA_INVOKE(proj, *result.max);
             util::loop_n<std::decay_t<ExPolicy>>(
-                ++it, count - 1, [&](FwdIter const& curr) -> void {
-                    element_type curr_value = PIKA_INVOKE(proj, *curr);
-                    if (PIKA_INVOKE(f, curr_value, min_value))
+                ++it, count - 1, [&](PairIter const& curr) -> void {
+                    element_type curr_min_value = PIKA_INVOKE(proj, *curr->min);
+                    if (PIKA_INVOKE(f, curr_min_value, min_value))
                     {
-                        result.min = curr;
-                        min_value = curr_value;
+                        result.min = curr->min;
+                        min_value = PIKA_MOVE(curr_min_value);
                     }
 
-                    if (!PIKA_INVOKE(f, curr_value, max_value))
+                    element_type curr_max_value = PIKA_INVOKE(proj, *curr->max);
+                    if (!PIKA_INVOKE(f, curr_max_value, max_value))
                     {
-                        result.max = curr;
-                        max_value = PIKA_MOVE(curr_value);
+                        result.max = curr->max;
+                        max_value = PIKA_MOVE(curr_max_value);
                     }
                 });
 
             return result;
         }
 
-        template <typename Iter>
-        struct minmax_element
-          : public detail::algorithm<minmax_element<Iter>,
-                minmax_element_result<Iter>>
+        minmax_element()
+          : minmax_element::algorithm("minmax_element")
         {
-            // this has to be a member of the algorithm type as we access this
-            // generically from the segmented algorithms
-            template <typename ExPolicy, typename PairIter, typename F,
-                typename Proj>
-            static typename std::iterator_traits<PairIter>::value_type
-            sequential_minmax_element_ind(ExPolicy&&, PairIter it,
-                std::size_t count, F const& f, Proj const& proj)
+        }
+
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename Proj>
+        static minmax_element_result<FwdIter> sequential(
+            ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
+        {
+            auto min = first, max = first;
+
+            if (first == last || ++first == last)
             {
-                PIKA_ASSERT(count != 0);
-
-                if (count == 1)
-                    return *it;
-
-                using element_type =
-                    typename std::iterator_traits<Iter>::value_type;
-
-                auto result = *it;
-
-                element_type min_value = PIKA_INVOKE(proj, *result.min);
-                element_type max_value = PIKA_INVOKE(proj, *result.max);
-                util::loop_n<std::decay_t<ExPolicy>>(
-                    ++it, count - 1, [&](PairIter const& curr) -> void {
-                        element_type curr_min_value =
-                            PIKA_INVOKE(proj, *curr->min);
-                        if (PIKA_INVOKE(f, curr_min_value, min_value))
-                        {
-                            result.min = curr->min;
-                            min_value = PIKA_MOVE(curr_min_value);
-                        }
-
-                        element_type curr_max_value =
-                            PIKA_INVOKE(proj, *curr->max);
-                        if (!PIKA_INVOKE(f, curr_max_value, max_value))
-                        {
-                            result.max = curr->max;
-                            max_value = PIKA_MOVE(curr_max_value);
-                        }
-                    });
-
-                return result;
-            }
-
-            minmax_element()
-              : minmax_element::algorithm("minmax_element")
-            {
-            }
-
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename Proj>
-            static minmax_element_result<FwdIter> sequential(
-                ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
-            {
-                auto min = first, max = first;
-
-                if (first == last || ++first == last)
-                {
-                    return minmax_element_result<FwdIter>{min, max};
-                }
-
-                using element_type =
-                    typename std::iterator_traits<FwdIter>::value_type;
-
-                element_type min_value = PIKA_INVOKE(proj, *min);
-                element_type max_value = PIKA_INVOKE(proj, *max);
-                util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    [&](FwdIter const& curr) -> void {
-                        element_type curr_value = PIKA_INVOKE(proj, *curr);
-                        if (PIKA_INVOKE(f, curr_value, min_value))
-                        {
-                            min = curr;
-                            min_value = curr_value;
-                        }
-
-                        if (!PIKA_INVOKE(f, curr_value, max_value))
-                        {
-                            max = curr;
-                            max_value = PIKA_MOVE(curr_value);
-                        }
-                    });
-
                 return minmax_element_result<FwdIter>{min, max};
             }
 
-            template <typename ExPolicy, typename FwdIter, typename Sent,
-                typename F, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                minmax_element_result<FwdIter>>::type
-            parallel(
-                ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
+            using element_type =
+                typename std::iterator_traits<FwdIter>::value_type;
+
+            element_type min_value = PIKA_INVOKE(proj, *min);
+            element_type max_value = PIKA_INVOKE(proj, *max);
+            util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
+                [&](FwdIter const& curr) -> void {
+                    element_type curr_value = PIKA_INVOKE(proj, *curr);
+                    if (PIKA_INVOKE(f, curr_value, min_value))
+                    {
+                        min = curr;
+                        min_value = curr_value;
+                    }
+
+                    if (!PIKA_INVOKE(f, curr_value, max_value))
+                    {
+                        max = curr;
+                        max_value = PIKA_MOVE(curr_value);
+                    }
+                });
+
+            return minmax_element_result<FwdIter>{min, max};
+        }
+
+        template <typename ExPolicy, typename FwdIter, typename Sent,
+            typename F, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy,
+            minmax_element_result<FwdIter>>::type
+        parallel(
+            ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
+        {
+            using result_type = minmax_element_result<FwdIter>;
+
+            result_type result = {first, first};
+            if (first == last || ++first == last)
             {
-                using result_type = minmax_element_result<FwdIter>;
-
-                result_type result = {first, first};
-                if (first == last || ++first == last)
-                {
-                    return util::detail::algorithm_result<ExPolicy,
-                        result_type>::get(PIKA_MOVE(result));
-                }
-
-                auto f1 = [f, proj, policy](FwdIter it, std::size_t part_count)
-                    -> minmax_element_result<FwdIter> {
-                    return sequential_minmax_element(
-                        policy, it, part_count, f, proj);
-                };
-                auto f2 =
-                    [policy, f = PIKA_FORWARD(F, f),
-                        proj = PIKA_FORWARD(Proj, proj)](
-                        std::vector<result_type>&& positions) -> result_type {
-                    return minmax_element::sequential_minmax_element_ind(
-                        policy, positions.begin(), positions.size(), f, proj);
-                };
-
-                return util::partitioner<ExPolicy, result_type,
-                    result_type>::call(PIKA_FORWARD(ExPolicy, policy),
-                    result.min, detail::distance(result.min, last),
-                    PIKA_MOVE(f1), pika::unwrapping(PIKA_MOVE(f2)));
+                return util::detail::algorithm_result<ExPolicy,
+                    result_type>::get(PIKA_MOVE(result));
             }
-        };
 
-        /// \endcond
-    }    // namespace detail
-}}      // namespace pika::parallel::v1
+            auto f1 =
+                [f, proj, policy](FwdIter it,
+                    std::size_t part_count) -> minmax_element_result<FwdIter> {
+                return sequential_minmax_element(
+                    policy, it, part_count, f, proj);
+            };
+            auto f2 = [policy, f = PIKA_FORWARD(F, f),
+                          proj = PIKA_FORWARD(Proj, proj)](
+                          std::vector<result_type>&& positions) -> result_type {
+                return minmax_element::sequential_minmax_element_ind(
+                    policy, positions.begin(), positions.size(), f, proj);
+            };
+
+            return util::partitioner<ExPolicy, result_type, result_type>::call(
+                PIKA_FORWARD(ExPolicy, policy), result.min,
+                detail::distance(result.min, last), PIKA_MOVE(f1),
+                pika::unwrapping(PIKA_MOVE(f2)));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     template <typename T>
     using minmax_element_result = pika::parallel::util::min_max_result<T>;
 

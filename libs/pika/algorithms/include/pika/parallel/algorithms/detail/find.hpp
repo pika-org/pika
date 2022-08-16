@@ -21,7 +21,6 @@
 #include <utility>
 
 namespace pika::parallel::detail {
-
     // provide implementation of std::find supporting iterators/sentinels
     template <typename ExPolicy>
     struct sequential_find_t
