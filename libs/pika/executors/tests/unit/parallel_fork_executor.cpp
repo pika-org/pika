@@ -81,8 +81,8 @@ void test_bulk_sync()
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executor exec(pika::launch::fork);
     pika::parallel::execution::bulk_sync_execute(
@@ -99,8 +99,8 @@ void test_bulk_async()
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executor exec(pika::launch::fork);
     pika::when_all(pika::parallel::execution::bulk_async_execute(
@@ -132,9 +132,9 @@ void test_bulk_then()
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
-    using pika::util::placeholders::_3;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
 
     pika::shared_future<void> f = pika::make_ready_future();
 

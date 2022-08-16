@@ -137,7 +137,7 @@ namespace pika::detail {
 
     template <typename Policy, typename F, typename Args>
     struct dataflow_return
-      : detail::dataflow_return_impl<traits::is_action<F>::value, Policy, F,
+      : detail::dataflow_return_impl<detail::is_action<F>::value, Policy, F,
             Args>
     {
     };
@@ -471,16 +471,16 @@ namespace pika::detail {
             typename... Ts>
         PIKA_FORCEINLINE static auto call(Allocator const& alloc, P&& p, F&& f,
             typename std::enable_if<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 Id>::type const& id,
             Ts&&... ts)
             -> decltype(dataflow_dispatch_impl<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 Policy>::call(alloc, PIKA_FORWARD(P, p), PIKA_FORWARD(F, f), id,
                 PIKA_FORWARD(Ts, ts)...))
         {
             return dataflow_dispatch_impl<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 Policy>::call(alloc, PIKA_FORWARD(P, p), PIKA_FORWARD(F, f), id,
                 PIKA_FORWARD(Ts, ts)...);
         }
@@ -512,7 +512,7 @@ namespace pika::detail {
     {
         template <typename Allocator, typename F, typename... Ts,
             typename Enable = typename std::enable_if<
-                !traits::is_action<typename std::decay<F>::type>::value>::type>
+                !detail::is_action<typename std::decay<F>::type>::value>::type>
         PIKA_FORCEINLINE static auto call(Allocator const& alloc, F&& f,
             Ts&&... ts) -> decltype(dataflow_dispatch<launch>::call(alloc,
             launch::async, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
@@ -532,12 +532,12 @@ namespace pika::detail {
         PIKA_FORCEINLINE static auto call(
             Allocator const& alloc, F&& f, Ts&&... ts)
             -> decltype(dataflow_dispatch_impl<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 launch>::call(alloc, launch::async, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...))
         {
             return dataflow_dispatch_impl<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 launch>::call(alloc, launch::async, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...);
         }

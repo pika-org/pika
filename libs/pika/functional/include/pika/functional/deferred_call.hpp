@@ -147,7 +147,7 @@ namespace pika { namespace util {
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace traits {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
     struct get_function_address<util::detail::deferred<F, Ts...>>
@@ -181,5 +181,5 @@ namespace pika { namespace traits {
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail
 #endif

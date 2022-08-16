@@ -26,5 +26,5 @@ void foo(int) {}
 
 int main()
 {
-    test(pika::util::bind(foo, pika::util::placeholders::_1));
+    test(pika::util::bind(foo, std::placeholders::_1));
 }

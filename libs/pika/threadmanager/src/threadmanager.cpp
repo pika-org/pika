@@ -66,8 +66,8 @@ namespace pika { namespace threads {
       , notifier_(notifier)
       , network_background_callback_(network_background_callback)
     {
-        using util::placeholders::_1;
-        using util::placeholders::_3;
+        using std::placeholders::_1;
+        using std::placeholders::_3;
 
         // Add callbacks local to threadmanager.
         notifier.add_on_start_thread_callback(

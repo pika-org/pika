@@ -30,7 +30,6 @@ set(functional_headers
     pika/functional/traits/get_function_annotation.hpp
     pika/functional/traits/is_action.hpp
     pika/functional/traits/is_bind_expression.hpp
-    pika/functional/traits/is_placeholder.hpp
 )
 
 # Default location is $PIKA_ROOT/libs/functional/src
@@ -45,7 +44,6 @@ pika_add_module(
     "pika/functional/traits/get_function_annotation.hpp"
     "pika/functional/traits/is_action.hpp"
     "pika/functional/traits/is_bind_expression.hpp"
-    "pika/functional/traits/is_placeholder.hpp"
   SOURCES ${functional_sources}
   HEADERS ${functional_headers}
   MODULE_DEPENDENCIES

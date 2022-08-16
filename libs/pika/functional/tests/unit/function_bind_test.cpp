@@ -25,8 +25,8 @@ static unsigned func_impl(int arg1, bool arg2, double arg3)
 
 int main(int, char*[])
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     pika::util::function<unsigned(bool, double)> f1 =
         pika::util::bind(func_impl, 15, _1, _2);

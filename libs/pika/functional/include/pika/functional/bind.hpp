@@ -16,7 +16,6 @@
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 #include <pika/functional/traits/is_bind_expression.hpp>
-#include <pika/functional/traits/is_placeholder.hpp>
 #include <pika/type_support/decay.hpp>
 #include <pika/type_support/pack.hpp>
 
@@ -25,13 +24,7 @@
 #include <utility>
 
 namespace pika { namespace util {
-    namespace placeholders {
-        using namespace std::placeholders;
-    }    // namespace placeholders
-
-    ///////////////////////////////////////////////////////////////////////////
     namespace detail {
-
         template <std::size_t I>
         struct bind_eval_placeholder
         {
@@ -58,16 +51,15 @@ namespace pika { namespace util {
 
         template <typename T, std::size_t NumUs, typename TD>
         struct bind_eval<T, NumUs, TD,
-            std::enable_if_t<traits::is_placeholder_v<TD> != 0 &&
-                (traits::is_placeholder_v<TD> <= NumUs)>>
-          : bind_eval_placeholder<(std::size_t) traits::is_placeholder_v<TD> -
-                1>
+            std::enable_if_t<std::is_placeholder_v<TD> != 0 &&
+                (std::is_placeholder_v<TD> <= NumUs)>>
+          : bind_eval_placeholder<(std::size_t) std::is_placeholder_v<TD> - 1>
         {
         };
 
         template <typename T, std::size_t NumUs, typename TD>
         struct bind_eval<T, NumUs, TD,
-            std::enable_if_t<traits::is_bind_expression_v<TD>>>
+            std::enable_if_t<pika::detail::is_bind_expression_v<TD>>>
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename... Us>
@@ -224,10 +216,7 @@ namespace pika { namespace util {
     }
 }}    // namespace pika::util
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace traits {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::detail {
     template <typename F, typename... Ts>
     struct is_bind_expression<util::detail::bound<F, Ts...>> : std::true_type
     {
@@ -268,4 +257,4 @@ namespace pika { namespace traits {
     };
 #endif
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail

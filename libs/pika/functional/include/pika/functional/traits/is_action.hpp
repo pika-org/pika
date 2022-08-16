@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-namespace pika { namespace traits {
+namespace pika::detail {
     template <typename Action, typename Enable = void>
     struct is_action : std::false_type
     {
@@ -25,4 +25,4 @@ namespace pika { namespace traits {
 
     template <typename T>
     inline constexpr bool is_bound_action_v = false;
-}}    // namespace pika::traits
+}    // namespace pika::detail

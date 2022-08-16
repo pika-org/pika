@@ -13,22 +13,16 @@
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/functional/traits/is_bind_expression.hpp>
-#include <pika/functional/traits/is_placeholder.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/scoped_annotation.hpp>
 
 namespace pika {
-    using pika::traits::is_bind_expression;
-    using pika::traits::is_placeholder;
+    using pika::detail::is_bind_expression;
     using pika::util::bind_back;
     using pika::util::bind_front;
     using pika::util::function;
     using pika::util::invoke;
     using pika::util::invoke_fused;
     using pika::util::unique_function;
-
-    namespace placeholders {
-        using namespace pika::util::placeholders;
-    }
 }    // namespace pika

@@ -20,8 +20,8 @@ int pika_init_test(std::string s, int, char**)
 
 int main(int argc, char* argv[])
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     expected = "first";
     pika::util::function<int(int, char**)> callback1 =

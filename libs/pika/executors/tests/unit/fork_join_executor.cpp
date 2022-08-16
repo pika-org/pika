@@ -44,8 +44,8 @@ void test_bulk_sync(ExecutorArgs&&... args)
     std::vector<int> v(n);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     fork_join_executor exec{std::forward<ExecutorArgs>(args)...};
     pika::parallel::execution::bulk_sync_execute(
@@ -66,8 +66,8 @@ void test_bulk_async(ExecutorArgs&&... args)
     std::vector<int> v(n);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     fork_join_executor exec{std::forward<ExecutorArgs>(args)...};
     pika::when_all(pika::parallel::execution::bulk_async_execute(

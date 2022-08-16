@@ -61,7 +61,7 @@ void test_apply_with_executor(Executor& exec)
     accumulator.store(0);
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, &increment, 1);
         pika::apply(exec, pika::util::bind(&increment, 1));
@@ -74,7 +74,7 @@ void test_apply_with_executor(Executor& exec)
 
         p.set_value(1);
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, &increment_with_future, f);
         pika::apply(exec, pika::util::bind(&increment_with_future, f));
@@ -82,7 +82,7 @@ void test_apply_with_executor(Executor& exec)
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, increment, 1);
         pika::apply(exec, pika::util::bind(increment, 1));
@@ -92,7 +92,7 @@ void test_apply_with_executor(Executor& exec)
     {
         increment_type inc;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, &increment_type::call, inc, 1);
         pika::apply(exec, pika::util::bind(&increment_type::call, inc, 1));
@@ -102,7 +102,7 @@ void test_apply_with_executor(Executor& exec)
     {
         increment_function_object obj;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, obj, 1);
         pika::apply(exec, pika::util::bind(obj, 1));
@@ -110,7 +110,7 @@ void test_apply_with_executor(Executor& exec)
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, increment_lambda, 1);
         pika::apply(exec, pika::util::bind(increment_lambda, 1));

@@ -683,7 +683,7 @@ namespace pika {
 }    // namespace pika
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-namespace pika { namespace traits {
+namespace pika::detail {
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_address<
         parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj>>
@@ -721,6 +721,6 @@ namespace pika { namespace traits {
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail
 #endif
 #endif

@@ -87,7 +87,7 @@ int pika_main()
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::future<std::int32_t> f1 =
             pika::async(pika::util::bind(&increment, 42));
@@ -130,7 +130,7 @@ int pika_main()
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::future<std::int32_t> f1 =
             pika::async(pika::util::bind(increment, 42));
@@ -174,7 +174,7 @@ int pika_main()
         pika::future<std::int32_t> f1 = pika::async(pika::util::bind(mult, 42));
         PIKA_TEST_EQ(f1.get(), 84);
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::future<std::int32_t> f2 =
             pika::async(pika::launch::all, pika::util::bind(mult, 42));
@@ -221,7 +221,7 @@ int pika_main()
     {
         decrement dec;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::future<std::int32_t> f1 =
             pika::async(pika::util::bind(&decrement::call, dec, 42));
@@ -250,7 +250,7 @@ int pika_main()
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         auto policy1 =
             pika::launch::select([]() { return pika::launch::sync; });

@@ -20,14 +20,13 @@
 #endif
 
 #include <pika/functional/bind.hpp>
-
-namespace placeholders = pika::util::placeholders;
+#include <pika/testing.hpp>
 
 #include <functional>
 #include <iostream>
 #include <string>
 
-#include <pika/testing.hpp>
+namespace placeholders = std::placeholders;
 
 struct X
 {

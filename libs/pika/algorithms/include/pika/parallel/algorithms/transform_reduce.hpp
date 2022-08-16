@@ -599,7 +599,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 
-namespace pika { namespace traits {
+namespace pika::detail {
     template <typename T, typename ExPolicy, typename Reduce, typename Convert>
     struct get_function_address<parallel::v1::detail::
             transform_reduce_iteration<T, ExPolicy, Reduce, Convert>>
@@ -654,7 +654,7 @@ namespace pika { namespace traits {
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail
 #endif
 
 namespace pika {

@@ -191,8 +191,8 @@ void test_bulk_sync()
 
     pika::thread::id tid = pika::this_thread::get_id();
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     std::string desc("test_bulk_sync");
     {
@@ -232,8 +232,8 @@ void test_bulk_async()
 
     pika::thread::id tid = pika::this_thread::get_id();
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     std::string desc("test_bulk_async");
     {
@@ -295,9 +295,9 @@ void test_bulk_then()
 
     pika::thread::id tid = pika::this_thread::get_id();
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
-    using pika::util::placeholders::_3;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
 
     pika::shared_future<void> f = pika::make_ready_future();
 

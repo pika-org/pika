@@ -45,7 +45,7 @@ struct pika_driver : htts2::driver
         init_args.cfg = cfg;
         init_args.desc_cmdline = desc;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::init(
             std::function<int(pika::program_options::variables_map&)>(
@@ -101,7 +101,7 @@ private:
 
         for (std::uint64_t i = 0; i < this->tasks_; ++i)
         {
-            using pika::util::placeholders::_1;
+            using std::placeholders::_1;
             pika::threads::detail::thread_init_data data(
                 pika::util::bind(
                     &pika_driver::payload_thread_function, std::ref(*this), _1),

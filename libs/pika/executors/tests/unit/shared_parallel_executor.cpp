@@ -80,8 +80,8 @@ void test_bulk_sync()
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executor exec;
     pika::parallel::execution::bulk_sync_execute(
@@ -98,8 +98,8 @@ void test_bulk_async()
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executor exec;
     std::vector<pika::shared_future<void>> futs =

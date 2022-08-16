@@ -123,8 +123,8 @@ int bulk_test(int seq, int passed_through)    //-V813
 template <typename Executor>
 void test_bulk_sync_void(Executor&& exec)
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executed = false;
 
@@ -143,8 +143,8 @@ void test_bulk_sync_void(Executor&& exec)
 template <typename Executor>
 void test_bulk_async_void(Executor&& exec)
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executed = false;
 
@@ -166,8 +166,8 @@ void test_bulk_async_void(Executor&& exec)
 template <typename Executor>
 void test_bulk_async(Executor&& exec)
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executed = false;
     int const n = 107;
@@ -213,9 +213,9 @@ int bulk_test_f(int seq, pika::shared_future<void> f,
 template <typename Executor>
 void test_bulk_then(Executor&& exec)
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
-    using pika::util::placeholders::_3;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
 
     pika::shared_future<void> f = pika::make_ready_future();
 
@@ -275,9 +275,9 @@ void bulk_test_f_void(int seq, pika::shared_future<void> f,
 template <typename Executor>
 void test_bulk_then_void(Executor&& exec)
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
-    using pika::util::placeholders::_3;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
 
     pika::shared_future<void> f = pika::make_ready_future();
 

@@ -81,7 +81,7 @@ void test_async_with_executor(Executor& exec)
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::future<std::int32_t> f1 =
             pika::async(exec, pika::util::bind(&increment, 42));
@@ -114,7 +114,7 @@ void test_async_with_executor(Executor& exec)
             pika::async(exec, pika::util::bind(mult, 42));
         PIKA_TEST_EQ(f1.get(), 84);
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::future<std::int32_t> f2 =
             pika::async(exec, pika::util::bind(mult, _1), 42);
@@ -142,7 +142,7 @@ void test_async_with_executor(Executor& exec)
     {
         decrement dec;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::future<std::int32_t> f1 =
             pika::async(exec, pika::util::bind(&decrement::call, dec, 42));

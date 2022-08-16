@@ -57,7 +57,7 @@ auto increment_lambda = [](std::int32_t i) { accumulator += i; };
 int pika_main()
 {
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(&increment, 1);
         pika::apply(pika::util::bind(&increment, 1));
@@ -68,7 +68,7 @@ int pika_main()
         pika::lcos::local::promise<std::int32_t> p;
         pika::shared_future<std::int32_t> f = p.get_future();
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(&increment_with_future, f);
         pika::apply(pika::util::bind(&increment_with_future, f));
@@ -78,7 +78,7 @@ int pika_main()
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(increment, 1);
         pika::apply(pika::util::bind(increment, 1));
@@ -88,7 +88,7 @@ int pika_main()
     {
         increment_type inc;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(&increment_type::call, inc, 1);
         pika::apply(pika::util::bind(&increment_type::call, inc, 1));
@@ -98,7 +98,7 @@ int pika_main()
     {
         increment_function_object obj;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(obj, 1);
         pika::apply(pika::util::bind(obj, 1));
@@ -106,7 +106,7 @@ int pika_main()
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(increment_lambda, 1);
         pika::apply(pika::util::bind(increment_lambda, 1));

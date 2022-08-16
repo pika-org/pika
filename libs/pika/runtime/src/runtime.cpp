@@ -1667,10 +1667,10 @@ namespace pika {
         using report_error_t =
             bool (runtime::*)(std::size_t, std::exception_ptr const&, bool);
 
-        using util::placeholders::_1;
-        using util::placeholders::_2;
-        using util::placeholders::_3;
-        using util::placeholders::_4;
+        using std::placeholders::_1;
+        using std::placeholders::_2;
+        using std::placeholders::_3;
+        using std::placeholders::_4;
 
         notification_policy_type notifier;
 

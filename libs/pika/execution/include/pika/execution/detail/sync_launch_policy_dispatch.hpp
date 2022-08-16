@@ -26,7 +26,7 @@ namespace pika { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Action>
     struct sync_launch_policy_dispatch<Action,
-        std::enable_if_t<!traits::is_action_v<Action>>>
+        std::enable_if_t<!detail::is_action_v<Action>>>
     {
         // general case execute on separate thread (except launch::sync)
         template <typename F, typename... Ts>

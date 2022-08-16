@@ -166,7 +166,7 @@ namespace pika { namespace util {
 }}    // namespace pika::util
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace traits {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
     template <typename F, typename... Ts>
@@ -202,4 +202,4 @@ namespace pika { namespace traits {
     };
 #endif
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail

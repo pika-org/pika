@@ -70,7 +70,7 @@ namespace pika { namespace util {
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace traits {
+namespace pika::detail {
     template <typename Sig>
     struct get_function_address<util::unique_function<Sig>>
     {
@@ -102,5 +102,5 @@ namespace pika { namespace traits {
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail
 #endif
