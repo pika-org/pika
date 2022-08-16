@@ -285,14 +285,14 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                     typename std::iterator_traits<Iter>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                   typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                   typename pika::util::detail::invoke_result<Convert,
                        typename std::iterator_traits<Iter>::value_type
                    >::type,
-                   typename pika::util::invoke_result<Convert,
+                   typename pika::util::detail::invoke_result<Convert,
                        typename std::iterator_traits<Iter>::value_type
                    >::type
                 >
@@ -317,14 +317,14 @@ namespace pika { namespace ranges {
             typename Convert,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                    typename std::iterator_traits<Iter>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                   typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                   typename pika::util::detail::invoke_result<Convert,
                        typename std::iterator_traits<Iter>::value_type
                    >::type,
-                   typename pika::util::invoke_result<Convert,
+                   typename pika::util::detail::invoke_result<Convert,
                        typename std::iterator_traits<Iter>::value_type
                    >::type
                 >
@@ -394,16 +394,16 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
                 pika::traits::is_iterator<Iter2>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                     typename std::iterator_traits<Iter>::value_type,
                     typename std::iterator_traits<Iter2>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                    typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename std::iterator_traits<Iter>::value_type,
                         typename std::iterator_traits<Iter2>::value_type
                     >::type,
-                    typename pika::util::invoke_result<Convert,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename std::iterator_traits<Iter>::value_type,
                         typename std::iterator_traits<Iter2>::value_type
                     >::type
@@ -432,16 +432,16 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
                 pika::traits::is_iterator<Iter2>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                     typename std::iterator_traits<Iter>::value_type,
                     typename std::iterator_traits<Iter2>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                    typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename std::iterator_traits<Iter>::value_type,
                         typename std::iterator_traits<Iter2>::value_type
                     >::type,
-                    typename pika::util::invoke_result<Convert,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename std::iterator_traits<Iter>::value_type,
                         typename std::iterator_traits<Iter2>::value_type
                     >::type
@@ -469,14 +469,14 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                     typename pika::traits::range_traits<Rng>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                    typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename pika::traits::range_traits<Rng>::value_type
                     >::type,
-                    typename pika::util::invoke_result<Convert,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename pika::traits::range_traits<Rng>::value_type
                     >::type
                 >
@@ -504,14 +504,14 @@ namespace pika { namespace ranges {
         template <typename Rng, typename T, typename Reduce, typename Convert,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                     typename pika::traits::range_traits<Rng>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                    typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename pika::traits::range_traits<Rng>::value_type
                     >::type,
-                    typename pika::util::invoke_result<Convert,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename pika::traits::range_traits<Rng>::value_type
                     >::type
                 >
@@ -593,16 +593,16 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
                 pika::traits::is_iterator<Iter2>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                     typename pika::traits::range_traits<Rng>::value_type,
                     typename std::iterator_traits<Iter2>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                    typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename pika::traits::range_traits<Rng>::value_type,
                         typename std::iterator_traits<Iter2>::value_type
                     >::type,
-                    typename pika::util::invoke_result<Convert,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename pika::traits::range_traits<Rng>::value_type,
                         typename std::iterator_traits<Iter2>::value_type
                     >::type
@@ -636,16 +636,16 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 pika::traits::is_iterator<Iter2>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                     typename pika::traits::range_traits<Rng>::value_type,
                     typename std::iterator_traits<Iter2>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                    typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename pika::traits::range_traits<Rng>::value_type,
                         typename std::iterator_traits<Iter2>::value_type
                     >::type,
-                    typename pika::util::invoke_result<Convert,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename pika::traits::range_traits<Rng>::value_typee,
                         typename std::iterator_traits<Iter2>::value_type
                     >::type

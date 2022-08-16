@@ -23,7 +23,8 @@
 namespace pika::detail {
     template <typename F, typename... Ts>
     struct is_deferred_invocable
-      : pika::is_invocable<util::decay_unwrap_t<F>, util::decay_unwrap_t<Ts>...>
+      : pika::detail::is_invocable<util::decay_unwrap_t<F>,
+            util::decay_unwrap_t<Ts>...>
     {
     };
 
@@ -35,7 +36,7 @@ namespace pika::detail {
 namespace pika::util::detail {
     template <typename F, typename... Ts>
     struct invoke_deferred_result
-      : util::invoke_result<util::decay_unwrap_t<F>,
+      : util::detail::invoke_result<util::decay_unwrap_t<F>,
             util::decay_unwrap_t<Ts>...>
     {
     };
@@ -74,8 +75,9 @@ namespace pika::util::detail {
         deferred& operator=(deferred const&) = delete;
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE util::invoke_result_t<F, Ts...>
-        operator()()
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE
+            util::detail::invoke_result_t<F, Ts...>
+            operator()()
         {
             return PIKA_INVOKE(
                 PIKA_MOVE(_f), PIKA_MOVE(_args).template get<Is>()...);

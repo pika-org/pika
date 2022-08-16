@@ -79,7 +79,7 @@ namespace pika::cuda::experimental {
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        if constexpr (std::is_void_v<pika::util::
+                        if constexpr (std::is_void_v<pika::util::detail::
                                               invoke_result_t<F, Ts...>>)
                         {
                         // Certain versions of GCC with optimizations fail on
@@ -170,11 +170,11 @@ namespace pika::cuda::experimental {
             };
 
             template <typename... Ts>
-            requires pika::is_invocable_v<F, Ts...>
+            requires pika::detail::is_invocable_v<F, Ts...>
             using invoke_result_helper =
                 pika::execution::experimental::completion_signatures<
                     typename result_type_signature_helper<
-                        pika::util::invoke_result_t<F, Ts...>>::type>;
+                        pika::util::detail::invoke_result_t<F, Ts...>>::type>;
 
             using completion_signatures =
                 pika::execution::experimental::make_completion_signatures<
@@ -191,7 +191,7 @@ namespace pika::cuda::experimental {
             struct invoke_result_helper<Tuple<Ts...>>
             {
                 using result_type =
-                    typename pika::util::invoke_result<F, Ts...>::type;
+                    typename pika::util::detail::invoke_result<F, Ts...>::type;
                 using type =
                     typename std::conditional<std::is_void<result_type>::value,
                         Tuple<>, Tuple<result_type>>::type;

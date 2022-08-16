@@ -27,7 +27,7 @@ namespace pika::util::detail {
 
     template <typename F, typename... Ts, typename... Us>
     struct invoke_bound_back_result<F, util::pack<Ts...>, Us...>
-      : util::invoke_result<F, Us..., Ts...>
+      : util::detail::invoke_result<F, Us..., Ts...>
     {
     };
 

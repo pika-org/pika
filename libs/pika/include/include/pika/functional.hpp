@@ -19,8 +19,8 @@
 
 namespace pika {
     using pika::detail::is_bind_expression;
-    using pika::util::invoke;
-    using pika::util::invoke_fused;
     using pika::util::unique_function;
     using pika::util::detail::function;
+    using pika::util::detail::invoke;
+    using pika::util::detail::invoke_fused;
 }    // namespace pika

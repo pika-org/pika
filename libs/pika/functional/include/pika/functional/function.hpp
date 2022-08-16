@@ -41,8 +41,8 @@ namespace pika::util::detail {
         template <typename F, typename FD = typename std::decay<F>::type,
             typename Enable1 = typename std::enable_if<
                 !std::is_same<FD, function>::value>::type,
-            typename Enable2 =
-                typename std::enable_if<is_invocable_r_v<R, FD&, Ts...>>::type>
+            typename Enable2 = typename std::enable_if<
+                pika::detail::is_invocable_r_v<R, FD&, Ts...>>::type>
         function(F&& f)
         {
             assign(PIKA_FORWARD(F, f));
@@ -52,8 +52,8 @@ namespace pika::util::detail {
         template <typename F, typename FD = typename std::decay<F>::type,
             typename Enable1 = typename std::enable_if<
                 !std::is_same<FD, function>::value>::type,
-            typename Enable2 =
-                typename std::enable_if<is_invocable_r_v<R, FD&, Ts...>>::type>
+            typename Enable2 = typename std::enable_if<
+                pika::detail::is_invocable_r_v<R, FD&, Ts...>>::type>
         function& operator=(F&& f)
         {
             assign(PIKA_FORWARD(F, f));

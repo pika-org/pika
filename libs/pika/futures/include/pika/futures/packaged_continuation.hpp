@@ -72,10 +72,11 @@ namespace pika { namespace lcos { namespace detail {
 
     template <typename Func, typename Future, typename Continuation>
     std::enable_if_t<!traits::detail::is_unique_future<
-        util::invoke_result_t<Func, Future>>::value>
+        util::detail::invoke_result_t<Func, Future>>::value>
     invoke_continuation(Func& func, Future&& future, Continuation& cont)
     {
-        using is_void = std::is_void<util::invoke_result_t<Func, Future>>;
+        using is_void =
+            std::is_void<util::detail::invoke_result_t<Func, Future>>;
 
         pika::scoped_annotation annotate(func);
         invoke_continuation_nounwrap(
@@ -84,12 +85,13 @@ namespace pika { namespace lcos { namespace detail {
 
     template <typename Func, typename Future, typename Continuation>
     std::enable_if_t<traits::detail::is_unique_future<
-        util::invoke_result_t<Func, Future>>::value>
+        util::detail::invoke_result_t<Func, Future>>::value>
     invoke_continuation(Func& func, Future&& future, Continuation& cont)
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
-                using inner_future = util::invoke_result_t<Func, Future>;
+                using inner_future =
+                    util::detail::invoke_result_t<Func, Future>;
                 using inner_shared_state_ptr =
                     traits::detail::shared_state_ptr_for_t<inner_future>;
 
@@ -193,7 +195,8 @@ namespace pika { namespace lcos { namespace detail {
         void run_impl_nounwrap(
             traits::detail::shared_state_ptr_for_t<Future>&& f)
         {
-            using is_void = std::is_void<util::invoke_result_t<F, Future>>;
+            using is_void =
+                std::is_void<util::detail::invoke_result_t<F, Future>>;
 
             Future future = traits::future_access<Future>::create(PIKA_MOVE(f));
             invoke_continuation_nounwrap(
@@ -255,7 +258,8 @@ namespace pika { namespace lcos { namespace detail {
         void async_impl_nounwrap(
             traits::detail::shared_state_ptr_for_t<Future>&& f)
         {
-            using is_void = std::is_void<util::invoke_result_t<F, Future>>;
+            using is_void =
+                std::is_void<util::detail::invoke_result_t<F, Future>>;
 
             reset_id r(*this);
 

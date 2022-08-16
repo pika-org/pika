@@ -478,8 +478,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                     // MSVC complains if proj is captured by ref below
                     util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
                         [&pred, proj, &curr](zip_iterator it) mutable -> void {
-                            bool f = pika::util::invoke(
-                                pred, pika::util::invoke(proj, get<0>(*it)));
+                            bool f = pika::util::detail::invoke(pred,
+                                pika::util::detail::invoke(proj, get<0>(*it)));
 
                             if ((get<1>(*it) = f))
                                 ++curr;
@@ -661,7 +661,7 @@ namespace pika {
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<FwdIter1>::value_type
                 >
             )>
@@ -691,7 +691,7 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<FwdIter1>::value_type
                 >
             )>

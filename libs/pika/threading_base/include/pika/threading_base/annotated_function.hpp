@@ -57,7 +57,8 @@ namespace pika {
             }
 
             template <typename... Ts>
-            pika::util::invoke_result_t<fun_type, Ts...> operator()(Ts&&... ts)
+            pika::util::detail::invoke_result_t<fun_type, Ts...> operator()(
+                Ts&&... ts)
             {
                 scoped_annotation annotate(get_function_annotation());
                 return PIKA_INVOKE(f_, PIKA_FORWARD(Ts, ts)...);

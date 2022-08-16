@@ -66,7 +66,7 @@ namespace pika { namespace execution { namespace experimental {
             template <typename Ts>
             void operator()(Ts const& ts)
             {
-                pika::util::invoke_fused(
+                pika::util::detail::invoke_fused(
                     pika::util::detail::bind_front(
                         pika::execution::experimental::set_value,
                         PIKA_MOVE(receiver)),

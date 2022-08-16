@@ -392,12 +392,12 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<InIter> &&
                 pika::traits::is_iterator_v<OutIter> &&
-                pika::is_invocable_v<UnOp,
+                pika::detail::is_invocable_v<UnOp,
                     typename std::iterator_traits<InIter>::value_type> &&
-                pika::is_invocable_v<BinOp,
-                    typename pika::util::invoke_result_t<UnOp,
+                pika::detail::is_invocable_v<BinOp,
+                    typename pika::util::detail::invoke_result_t<UnOp,
                         typename std::iterator_traits<InIter>::value_type>,
-                    typename pika::util::invoke_result_t<UnOp,
+                    typename pika::util::detail::invoke_result_t<UnOp,
                         typename std::iterator_traits<InIter>::value_type>
                 >
             )>
@@ -429,12 +429,12 @@ namespace pika {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
-                pika::is_invocable_v<UnOp,
+                pika::detail::is_invocable_v<UnOp,
                     typename std::iterator_traits<FwdIter1>::value_type> &&
-                pika::is_invocable_v<BinOp,
-                    typename pika::util::invoke_result_t<UnOp,
+                pika::detail::is_invocable_v<BinOp,
+                    typename pika::util::detail::invoke_result_t<UnOp,
                         typename std::iterator_traits<FwdIter1>::value_type>,
-                    typename pika::util::invoke_result_t<UnOp,
+                    typename pika::util::detail::invoke_result_t<UnOp,
                         typename std::iterator_traits<FwdIter1>::value_type>
                 >
             )>

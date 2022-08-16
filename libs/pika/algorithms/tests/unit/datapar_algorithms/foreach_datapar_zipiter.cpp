@@ -72,7 +72,7 @@ void for_each_zipiter_test(ExPolicy&& policy, IteratorTag)
 //                pika::parallel::util::projection_identity,
 //                decltype(begin)>
 //        >::value,
-//        pika::is_invocable_v<
+//        pika::detail::is_invocable_v<
 //            set_42, typename std::iterator_traits<decltype(begin)>::value_type&,
 //            typename pika::parallel::traits::detail::projected_result_of_indirect<
 //            pika::parallel::traits::projected<

@@ -114,8 +114,6 @@ namespace pika::functional::detail {
 #include <utility>
 
 namespace pika::functional::detail {
-
-    ///////////////////////////////////////////////////////////////////////////
     namespace tag_override_invoke_t_ns {
 
         // poison pill
@@ -161,7 +159,7 @@ namespace pika::functional::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
-    using is_tag_override_invocable = pika::is_invocable<
+    using is_tag_override_invocable = pika::detail::is_invocable<
         decltype(tag_override_invoke_ns::tag_override_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
@@ -211,16 +209,14 @@ namespace pika::functional::detail {
         is_nothrow_tag_override_invocable<Tag, Args...>::value;
 
     template <typename Tag, typename... Args>
-    using tag_override_invoke_result = pika::util::invoke_result<
+    using tag_override_invoke_result = pika::util::detail::invoke_result<
         decltype(tag_override_invoke_ns::tag_override_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
     using tag_override_invoke_result_t =
         typename tag_override_invoke_result<Tag, Args...>::type;
 
-    ///////////////////////////////////////////////////////////////////////////////
     namespace tag_base_ns {
-
         // poison pill
         void tag_override_invoke();
 
@@ -342,7 +338,6 @@ namespace pika::functional::detail {
     }    // namespace tag_base_ns
 
     inline namespace tag_invoke_base_ns {
-
         template <typename Tag>
         using tag_priority = tag_base_ns::tag_priority<Tag>;
 
@@ -351,7 +346,6 @@ namespace pika::functional::detail {
     }    // namespace tag_invoke_base_ns
 
     inline namespace tag_override_invoke_f_ns {
-
         using tag_override_invoke_ns::tag_override_invoke;
     }    // namespace tag_override_invoke_f_ns
 }    // namespace pika::functional::detail

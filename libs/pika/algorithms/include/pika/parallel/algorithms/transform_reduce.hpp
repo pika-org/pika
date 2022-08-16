@@ -671,13 +671,13 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                    typename std::iterator_traits<FwdIter>::value_type> &&
-                pika::is_invocable_v<Reduce,
-                   typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                   typename pika::util::detail::invoke_result<Convert,
                        typename std::iterator_traits<FwdIter>::value_type
                    >::type,
-                   typename pika::util::invoke_result<Convert,
+                   typename pika::util::detail::invoke_result<Convert,
                        typename std::iterator_traits<FwdIter>::value_type
                    >::type
                 >
@@ -703,13 +703,13 @@ namespace pika {
             typename Convert,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                    typename std::iterator_traits<InIter>::value_type> &&
-                pika::is_invocable_v<Reduce,
-                   typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                   typename pika::util::detail::invoke_result<Convert,
                        typename std::iterator_traits<InIter>::value_type
                    >::type,
-                   typename pika::util::invoke_result<Convert,
+                   typename pika::util::detail::invoke_result<Convert,
                        typename std::iterator_traits<InIter>::value_type
                    >::type
                 >
@@ -779,16 +779,16 @@ namespace pika {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
                 pika::traits::is_iterator<FwdIter2>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                     typename std::iterator_traits<FwdIter1>::value_type,
                     typename std::iterator_traits<FwdIter2>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                    typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename std::iterator_traits<FwdIter1>::value_type,
                         typename std::iterator_traits<FwdIter2>::value_type
                     >::type,
-                    typename pika::util::invoke_result<Convert,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename std::iterator_traits<FwdIter1>::value_type,
                         typename std::iterator_traits<FwdIter2>::value_type
                     >::type
@@ -818,16 +818,16 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter1>::value &&
                 pika::traits::is_iterator<InIter2>::value &&
-                pika::is_invocable_v<Convert,
+                pika::detail::is_invocable_v<Convert,
                     typename std::iterator_traits<InIter1>::value_type,
                     typename std::iterator_traits<InIter2>::value_type
                 > &&
-                pika::is_invocable_v<Reduce,
-                    typename pika::util::invoke_result<Convert,
+                pika::detail::is_invocable_v<Reduce,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename std::iterator_traits<InIter1>::value_type,
                         typename std::iterator_traits<InIter2>::value_type
                     >::type,
-                    typename pika::util::invoke_result<Convert,
+                    typename pika::util::detail::invoke_result<Convert,
                         typename std::iterator_traits<InIter1>::value_type,
                         typename std::iterator_traits<InIter2>::value_type
                     >::type

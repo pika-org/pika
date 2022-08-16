@@ -37,7 +37,7 @@ namespace pika { namespace experimental {
             -> std::enable_if_t<
                     !pika::functional::is_tag_invocable_v<
                         prefer_t, Tag, T0, Tn...> &&
-                    !pika::is_invocable_v<Tag, T0, Tn...>,
+                    !pika::detail::is_invocable_v<Tag, T0, Tn...>,
                     decltype(PIKA_FORWARD(T0, t0))>
         // clang-format on
         {

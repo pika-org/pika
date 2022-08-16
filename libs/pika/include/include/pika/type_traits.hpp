@@ -12,5 +12,5 @@
 #include <pika/functional/traits/is_invocable.hpp>
 
 namespace pika {
-    using pika::util::invoke_result;
+    using pika::util::detail::invoke_result;
 }    // namespace pika

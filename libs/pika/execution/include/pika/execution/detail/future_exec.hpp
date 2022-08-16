@@ -58,7 +58,7 @@ namespace pika { namespace lcos { namespace detail {
                 typename pika::traits::future_then_result<Future,
                     F>::result_type;
             using continuation_result_type =
-                pika::util::invoke_result_t<F, Future>;
+                pika::util::detail::invoke_result_t<F, Future>;
 
             pika::traits::detail::shared_state_ptr_t<result_type> p =
                 detail::make_continuation_alloc<continuation_result_type>(
@@ -78,7 +78,7 @@ namespace pika { namespace lcos { namespace detail {
                 typename pika::traits::future_then_result<Future,
                     F>::result_type;
             using continuation_result_type =
-                pika::util::invoke_result_t<F, Future>;
+                pika::util::detail::invoke_result_t<F, Future>;
 
             pika::traits::detail::shared_state_ptr_t<result_type> p =
                 detail::make_continuation_alloc<continuation_result_type>(alloc,

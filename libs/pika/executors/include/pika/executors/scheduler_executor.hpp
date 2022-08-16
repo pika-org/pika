@@ -68,7 +68,7 @@ namespace pika { namespace execution { namespace experimental {
             return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
                        t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&&... predecessor) mutable {
-                pika::util::invoke_fused(
+                pika::util::detail::invoke_fused(
                     pika::util::detail::bind_front(PIKA_FORWARD(F, f),
                         std::begin(rng)[i],
                         PIKA_FORWARD(decltype(predecessor), predecessor)...),
@@ -82,7 +82,7 @@ namespace pika { namespace execution { namespace experimental {
             return [f = PIKA_FORWARD(F, f), rng = PIKA_FORWARD(Rng, rng),
                        t = std::make_tuple(PIKA_FORWARD(Ts, ts)...)](
                        auto i, auto&& predecessor, auto& v) mutable {
-                v[i] = pika::util::invoke_fused(
+                v[i] = pika::util::detail::invoke_fused(
                     pika::util::detail::bind_front(PIKA_FORWARD(F, f),
                         std::begin(rng)[i],
                         PIKA_FORWARD(decltype(predecessor), predecessor)),
@@ -134,8 +134,8 @@ namespace pika { namespace execution { namespace experimental {
             return *this;
         }
 
-        template <typename Enable =
-                      std::enable_if_t<pika::is_invocable_v<with_priority_t,
+        template <typename Enable = std::enable_if_t<
+                      pika::detail::is_invocable_v<with_priority_t,
                           BaseScheduler, pika::execution::thread_priority>>>
         friend scheduler_executor tag_invoke(
             pika::execution::experimental::with_priority_t,
@@ -145,8 +145,9 @@ namespace pika { namespace execution { namespace experimental {
             return scheduler_executor(with_priority(exec.sched_, priority));
         }
 
-        template <typename Enable = std::enable_if_t<
-                      pika::is_invocable_v<get_priority_t, BaseScheduler>>>
+        template <
+            typename Enable = std::enable_if_t<
+                pika::detail::is_invocable_v<get_priority_t, BaseScheduler>>>
         friend pika::execution::thread_priority tag_invoke(
             pika::execution::experimental::get_priority_t,
             scheduler_executor const& exec)
@@ -154,8 +155,8 @@ namespace pika { namespace execution { namespace experimental {
             return get_priority(exec.sched_);
         }
 
-        template <typename Enable =
-                      std::enable_if_t<pika::is_invocable_v<with_stacksize_t,
+        template <typename Enable = std::enable_if_t<
+                      pika::detail::is_invocable_v<with_stacksize_t,
                           BaseScheduler, pika::execution::thread_stacksize>>>
         friend scheduler_executor tag_invoke(
             pika::execution::experimental::with_stacksize_t,
@@ -165,8 +166,9 @@ namespace pika { namespace execution { namespace experimental {
             return scheduler_executor(with_stacksize(exec.sched_, stacksize));
         }
 
-        template <typename Enable = std::enable_if_t<
-                      pika::is_invocable_v<get_stacksize_t, BaseScheduler>>>
+        template <
+            typename Enable = std::enable_if_t<
+                pika::detail::is_invocable_v<get_stacksize_t, BaseScheduler>>>
         friend pika::execution::thread_stacksize tag_invoke(
             pika::execution::experimental::get_stacksize_t,
             scheduler_executor const& exec)
@@ -174,9 +176,9 @@ namespace pika { namespace execution { namespace experimental {
             return get_stacksize(exec.sched_);
         }
 
-        template <
-            typename Enable = std::enable_if_t<pika::is_invocable_v<with_hint_t,
-                BaseScheduler, pika::execution::thread_schedule_hint>>>
+        template <typename Enable = std::enable_if_t<
+                      pika::detail::is_invocable_v<with_hint_t, BaseScheduler,
+                          pika::execution::thread_schedule_hint>>>
         friend scheduler_executor tag_invoke(
             pika::execution::experimental::with_hint_t,
             scheduler_executor const& exec,
@@ -186,7 +188,7 @@ namespace pika { namespace execution { namespace experimental {
         }
 
         template <typename Enable = std::enable_if_t<
-                      pika::is_invocable_v<get_hint_t, BaseScheduler>>>
+                      pika::detail::is_invocable_v<get_hint_t, BaseScheduler>>>
         friend pika::execution::thread_schedule_hint tag_invoke(
             pika::execution::experimental::get_hint_t,
             scheduler_executor const& exec)
@@ -194,8 +196,9 @@ namespace pika { namespace execution { namespace experimental {
             return get_hint(exec.sched_);
         }
 
-        template <typename Enable = std::enable_if_t<pika::is_invocable_v<
-                      with_annotation_t, BaseScheduler, char const*>>>
+        template <
+            typename Enable = std::enable_if_t<pika::detail::is_invocable_v<
+                with_annotation_t, BaseScheduler, char const*>>>
         friend scheduler_executor tag_invoke(
             pika::execution::experimental::with_annotation_t,
             scheduler_executor const& exec, char const* annotation)
@@ -203,8 +206,9 @@ namespace pika { namespace execution { namespace experimental {
             return scheduler_executor(with_annotation(exec.sched_, annotation));
         }
 
-        template <typename Enable = std::enable_if_t<pika::is_invocable_v<
-                      with_annotation_t, BaseScheduler, std::string>>>
+        template <
+            typename Enable = std::enable_if_t<pika::detail::is_invocable_v<
+                with_annotation_t, BaseScheduler, std::string>>>
         friend scheduler_executor tag_invoke(
             pika::execution::experimental::with_annotation_t,
             scheduler_executor const& exec, std::string annotation)
@@ -212,8 +216,9 @@ namespace pika { namespace execution { namespace experimental {
             return scheduler_executor(with_annotation(exec.sched_, annotation));
         }
 
-        template <typename Enable = std::enable_if_t<
-                      pika::is_invocable_v<get_annotation_t, BaseScheduler>>>
+        template <
+            typename Enable = std::enable_if_t<
+                pika::detail::is_invocable_v<get_annotation_t, BaseScheduler>>>
         friend char const* tag_invoke(
             pika::execution::experimental::get_annotation_t,
             scheduler_executor const& exec)

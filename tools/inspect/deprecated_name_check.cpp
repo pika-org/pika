@@ -98,7 +98,7 @@ namespace boost { namespace inspect {
         {"((\\bpika::\\b)?\\btraits\\s*::\\bis_callable\\b)",
             "\\2is_invocable[_r]"},
         {"((\\bpika::\\b)?\\butil\\s*::\\bresult_of\\b)",
-            "\\2util::invoke_result"},
+            "\\2util::detail::invoke_result"},
         {"((\\bpika::\\b)?\\butil\\s*::\\bdecay\\b)", "std::decay"},
         {"((\\bpika::\\b)?\\butil\\s*::\\bdecay_t\\b)", "std::decay_t"},
         {"((\\bpika::\\b)?\\butil\\s*::\\bvoid\\b)", "std::void"},

@@ -60,8 +60,9 @@ namespace pika { namespace execution { namespace experimental {
                 typename pika::execution::experimental::sender_traits<
                     Sender>::template error_types<Variant>;
 
-            using scheduler_sender_type = typename pika::util::invoke_result<
-                pika::execution::experimental::schedule_t, Scheduler>::type;
+            using scheduler_sender_type =
+                typename pika::util::detail::invoke_result<
+                    pika::execution::experimental::schedule_t, Scheduler>::type;
             template <template <typename...> class Variant>
             using scheduler_sender_error_types =
                 typename pika::execution::experimental::sender_traits<
@@ -139,7 +140,7 @@ namespace pika { namespace execution { namespace experimental {
                 sender_operation_state_type sender_os;
 
                 using scheduler_operation_state_type =
-                    connect_result_t<typename pika::util::invoke_result<
+                    connect_result_t<typename pika::util::detail::invoke_result<
                                          schedule_t, Scheduler>::type,
                         scheduler_sender_receiver>;
                 std::optional<scheduler_operation_state_type>
@@ -294,7 +295,7 @@ namespace pika { namespace execution { namespace experimental {
                             std::decay_t<Ts>, pika::detail::monostate>>>
                     void operator()(Ts&& ts)
                     {
-                        pika::util::invoke_fused(
+                        pika::util::detail::invoke_fused(
                             pika::util::detail::bind_front(
                                 pika::execution::experimental::set_value,
                                 PIKA_MOVE(receiver)),

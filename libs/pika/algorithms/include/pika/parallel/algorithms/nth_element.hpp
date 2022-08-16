@@ -352,7 +352,7 @@ namespace pika {
             typename Pred = pika::parallel::v1::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<RandomIt> &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<RandomIt>::value_type,
                     typename std::iterator_traits<RandomIt>::value_type
                 >
@@ -376,7 +376,7 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<RandomIt> &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<RandomIt>::value_type,
                     typename std::iterator_traits<RandomIt>::value_type
                 >

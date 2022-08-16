@@ -85,7 +85,7 @@ struct test_async_executor
     // of a normal async call with arbitrary arguments
     // --------------------------------------------------------------------
     template <typename F, typename... Ts>
-    future<typename util::invoke_result<F, Ts...>::type> async_execute(
+    future<typename util::detail::invoke_result<F, Ts...>::type> async_execute(
         F&& f, Ts&&... ts)
     {
         using result_type =
@@ -178,7 +178,7 @@ struct test_async_executor
         // invoke a function with the unwrapped tuple future types to demonstrate
         // that we can access them
         std::cout << "when_all(fut) : tuple       : ";
-        util::invoke_fused(
+        util::detail::invoke_fused(
             [](const auto&... ts) {
                 std::cout << print_type<decltype(ts)...>(" | ") << "\n";
             },
@@ -221,7 +221,7 @@ struct test_async_executor
         // invoke a function with the unwrapped tuple future types to demonstrate
         // that we can access them
         std::cout << "dataflow      : tuple       : ";
-        util::invoke_fused(
+        util::detail::invoke_fused(
             [](const auto&... ts) {
                 std::cout << print_type<decltype(ts)...>(" | ") << "\n";
             },

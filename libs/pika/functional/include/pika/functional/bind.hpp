@@ -62,8 +62,9 @@ namespace pika::util::detail {
     {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        static constexpr PIKA_HOST_DEVICE util::invoke_result_t<T, Us...> call(
-            T&& t, Us&&... vs)
+        static constexpr PIKA_HOST_DEVICE
+            util::detail::invoke_result_t<T, Us...>
+            call(T&& t, Us&&... vs)
         {
             return PIKA_INVOKE(PIKA_FORWARD(T, t), PIKA_FORWARD(Us, vs)...);
         }
@@ -75,7 +76,7 @@ namespace pika::util::detail {
 
     template <typename F, typename... Ts, typename... Us>
     struct invoke_bound_result<F, util::pack<Ts...>, Us...>
-      : util::invoke_result<F,
+      : util::detail::invoke_result<F,
             decltype(bind_eval<Ts, sizeof...(Us)>::call(
                 std::declval<Ts>(), std::declval<Us>()...))...>
     {

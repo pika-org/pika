@@ -19,8 +19,8 @@
 struct test_async_executor : pika::execution::parallel_executor
 {
     template <typename F, typename T, typename... Ts>
-    pika::future<
-        typename pika::util::invoke_result<F, T, std::size_t, Ts...>::type>
+    pika::future<typename pika::util::detail::invoke_result<F, T, std::size_t,
+        Ts...>::type>
     async_execute(F&& f, T&& t, std::size_t chunk_size, Ts&&... ts)
     {
         // make sure the chunk_size is equal to what was specified below

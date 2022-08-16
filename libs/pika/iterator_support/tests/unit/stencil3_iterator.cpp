@@ -140,8 +140,8 @@ namespace test {
         {
             using element_type =
                 typename std::iterator_traits<Iterator>::reference;
-            using value_type =
-                typename pika::util::invoke_result<F, element_type>::type;
+            using value_type = typename pika::util::detail::invoke_result<F,
+                element_type>::type;
 
             using type = std::tuple<value_type, element_type, value_type>;
         };

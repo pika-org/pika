@@ -257,7 +257,7 @@ namespace pika {
                     }
 
                     // call supplied callback with or without index
-                    if constexpr (pika::is_invocable_v<F, std::size_t,
+                    if constexpr (pika::detail::is_invocable_v<F, std::size_t,
                                       future_type>)
                     {
                         f_(count_, PIKA_MOVE(*next));
@@ -313,7 +313,8 @@ namespace pika {
                 }
 
                 // call supplied callback with or without index
-                if constexpr (pika::is_invocable_v<F, std::size_t, future_type>)
+                if constexpr (pika::detail::is_invocable_v<F, std::size_t,
+                                  future_type>)
                 {
                     f_(count_, PIKA_MOVE(fut));
                 }

@@ -25,7 +25,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         template <typename T>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE Result operator()(T&& t)
         {
-            return pika::util::invoke_fused_r<Result>(f_, PIKA_FORWARD(T, t));
+            return pika::util::detail::invoke_fused_r<Result>(
+                f_, PIKA_FORWARD(T, t));
         }
     };
 }}}}    // namespace pika::parallel::util::detail

@@ -45,7 +45,7 @@ namespace pika { namespace parallel { namespace traits {
         struct projected_result_of<Proj, Iter,
             typename std::enable_if<
                 pika::traits::is_iterator<Iter>::value>::type>
-          : pika::util::invoke_result<Proj,
+          : pika::util::detail::invoke_result<Proj,
                 typename std::iterator_traits<Iter>::reference>
         {
         };
@@ -63,7 +63,7 @@ namespace pika { namespace parallel { namespace traits {
         // with a tuple<datapar<T>...> instead of just a tuple<T...>
         template <typename Proj, typename ValueType, typename Enable = void>
         struct projected_result_of_vector_pack_
-          : pika::util::invoke_result<Proj,
+          : pika::util::detail::invoke_result<Proj,
                 typename pika::parallel::traits::vector_pack_load<
                     typename pika::parallel::traits::vector_pack_type<
                         ValueType>::type,
@@ -108,11 +108,11 @@ namespace pika { namespace parallel { namespace traits {
         struct is_projected<Proj, Iter,
             typename std::enable_if<
                 pika::traits::is_iterator<Iter>::value &&
-                pika::is_invocable<Proj,
+                pika::detail::is_invocable<Proj,
                     typename std::iterator_traits<Iter>::reference>::value
              >::type>
           : std::integral_constant<bool,
-                !std::is_void<typename pika::util::invoke_result<Proj,
+                !std::is_void<typename pika::util::detail::invoke_result<Proj,
                     typename std::iterator_traits<Iter>::reference>::type
                 >::value>
         {
@@ -175,7 +175,8 @@ namespace pika { namespace parallel { namespace traits {
     ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         template <typename F, typename... Args>
-        struct is_indirect_callable_impl : pika::is_invocable<F, Args...>
+        struct is_indirect_callable_impl
+          : pika::detail::is_invocable<F, Args...>
         {
         };
 

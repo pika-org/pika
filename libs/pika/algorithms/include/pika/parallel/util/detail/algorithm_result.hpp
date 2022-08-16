@@ -258,19 +258,20 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename U, typename Conv,
-        PIKA_CONCEPT_REQUIRES_(pika::is_invocable_v<Conv, U>)>
-    constexpr typename pika::util::invoke_result<Conv, U>::type
+        PIKA_CONCEPT_REQUIRES_(pika::detail::is_invocable_v<Conv, U>)>
+    constexpr typename pika::util::detail::invoke_result<Conv, U>::type
     convert_to_result(U&& val, Conv&& conv)
     {
         return PIKA_INVOKE(conv, val);
     }
 
     template <typename U, typename Conv,
-        PIKA_CONCEPT_REQUIRES_(pika::is_invocable_v<Conv, U>)>
-    pika::future<typename pika::util::invoke_result<Conv, U>::type>
+        PIKA_CONCEPT_REQUIRES_(pika::detail::is_invocable_v<Conv, U>)>
+    pika::future<typename pika::util::detail::invoke_result<Conv, U>::type>
     convert_to_result(pika::future<U>&& f, Conv&& conv)
     {
-        using result_type = typename pika::util::invoke_result<Conv, U>::type;
+        using result_type =
+            typename pika::util::detail::invoke_result<Conv, U>::type;
 
         return pika::make_future<result_type>(
             PIKA_MOVE(f), PIKA_FORWARD(Conv, conv));

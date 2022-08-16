@@ -33,7 +33,7 @@ namespace pika { namespace util {
             // premature instantiations
             using reference_type =
                 typename util::lazy_conditional<std::is_void<Reference>::value,
-                    util::invoke_result<Transformer, Iterator>,
+                    util::detail::invoke_result<Transformer, Iterator>,
                     util::identity<Reference>>::type;
 
             using value_type =

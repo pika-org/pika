@@ -71,7 +71,8 @@ type4 tag_invoke(with_property_t, type4 const& t, property1 p)
 int main()
 {
     // This property can be required, and thus also preferred
-    static_assert(pika::is_invocable<with_property_t, type1, property1>::value,
+    static_assert(
+        pika::detail::is_invocable<with_property_t, type1, property1>::value,
         "Should be invocable");
 
     type1 t1_1{};
@@ -90,7 +91,7 @@ int main()
     PIKA_TEST_EQ(t1_3.p1.v, 2);
     PIKA_TEST_EQ(t1_4.p1.v, 3);
 
-    static_assert(pika::is_invocable<pika::experimental::prefer_t,
+    static_assert(pika::detail::is_invocable<pika::experimental::prefer_t,
                       with_property_t, type1, property1>::value,
         "Should be invocable");
 
@@ -109,10 +110,11 @@ int main()
     PIKA_TEST_EQ(t1_7.p1.v, 6);
 
     // This property cannot be required, but can be preferred
-    static_assert(!pika::is_invocable<with_property_t, type2, property1>::value,
+    static_assert(
+        !pika::detail::is_invocable<with_property_t, type2, property1>::value,
         "Should not be invocable");
 
-    static_assert(pika::is_invocable<pika::experimental::prefer_t,
+    static_assert(pika::detail::is_invocable<pika::experimental::prefer_t,
                       with_property_t, type2, property1>::value,
         "Should be invocable");
 
@@ -134,10 +136,11 @@ int main()
 
     // This property cannot be required, but can be preferred. The prefer
     // functionality has been customized (it adds one to the passed property).
-    static_assert(!pika::is_invocable<with_property_t, type3, property1>::value,
+    static_assert(
+        !pika::detail::is_invocable<with_property_t, type3, property1>::value,
         "Should not be invocable");
 
-    static_assert(pika::is_invocable<pika::experimental::prefer_t,
+    static_assert(pika::detail::is_invocable<pika::experimental::prefer_t,
                       with_property_t, type3, property1>::value,
         "Should be invocable");
 
@@ -160,10 +163,11 @@ int main()
     // This property can be required and preferred through a customization. The
     // customization for prefer should take precedence over the require
     // customization.
-    static_assert(pika::is_invocable<with_property_t, type4, property1>::value,
+    static_assert(
+        pika::detail::is_invocable<with_property_t, type4, property1>::value,
         "Should be invocable");
 
-    static_assert(pika::is_invocable<pika::experimental::prefer_t,
+    static_assert(pika::detail::is_invocable<pika::experimental::prefer_t,
                       with_property_t, type4, property1>::value,
         "Should be invocable");
 

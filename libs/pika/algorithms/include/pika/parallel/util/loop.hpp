@@ -34,7 +34,7 @@ namespace pika { namespace parallel { namespace util {
     private:
         template <typename VecOnly, typename F, typename... Iters>
         friend PIKA_HOST_DEVICE PIKA_FORCEINLINE
-            typename pika::util::invoke_result<F, Iters...>::type
+            typename pika::util::detail::invoke_result<F, Iters...>::type
             tag_fallback_invoke(pika::parallel::util::loop_step_t<ExPolicy>,
                 VecOnly&&, F&& f, Iters&... its)
         {
@@ -49,7 +49,7 @@ namespace pika { namespace parallel { namespace util {
     template <typename ExPolicy, typename VecOnly, typename F,
         typename... Iters>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE
-        typename pika::util::invoke_result<F, Iters...>::type
+        typename pika::util::detail::invoke_result<F, Iters...>::type
         loop_step(VecOnly&& v, F&& f, Iters&... its)
     {
         return pika::parallel::util::loop_step_t<ExPolicy>{}(

@@ -463,8 +463,8 @@ namespace pika { namespace parallel { namespace execution {
             auto unwrapped_futures_tuple = pika::util::map_pack(
                 detail::future_extract_value{}, predecessor);
 
-            int domain =
-                pika::util::invoke_fused(hint_, unwrapped_futures_tuple);
+            int domain = pika::util::detail::invoke_fused(
+                hint_, unwrapped_futures_tuple);
 #endif
 
 #ifndef GUIDED_EXECUTOR_DEBUG

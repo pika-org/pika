@@ -197,7 +197,7 @@ namespace pika::util::detail {
         T* target() noexcept
         {
             using TD = typename std::remove_cv<T>::type;
-            static_assert(is_invocable_r_v<R, TD&, Ts...>,
+            static_assert(pika::detail::is_invocable_r_v<R, TD&, Ts...>,
                 "T shall be Callable with the function signature");
 
             vtable const* f_vptr = get_vtable<TD>();
@@ -211,7 +211,7 @@ namespace pika::util::detail {
         T const* target() const noexcept
         {
             using TD = typename std::remove_cv<T>::type;
-            static_assert(is_invocable_r_v<R, TD&, Ts...>,
+            static_assert(pika::detail::is_invocable_r_v<R, TD&, Ts...>,
                 "T shall be Callable with the function signature");
 
             vtable const* f_vptr = get_vtable<TD>();

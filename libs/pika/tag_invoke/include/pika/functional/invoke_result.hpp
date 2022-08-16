@@ -12,31 +12,26 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////
-        template <typename T, typename Enable = void>
-        struct invoke_result_impl
-        {
-        };
+namespace pika::util::detail {
+    template <typename T, typename Enable = void>
+    struct invoke_result_impl
+    {
+    };
 
-        template <typename F, typename... Ts>
-        struct invoke_result_impl<F(Ts...),
-            std::void_t<decltype(PIKA_INVOKE(
-                std::declval<F>(), std::declval<Ts>()...))>>
-        {
-            using type =
-                decltype(PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...));
-        };
-
-    }    // namespace detail
-
-    ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
-    struct invoke_result : detail::invoke_result_impl<F && (Ts && ...)>
+    struct invoke_result_impl<F(Ts...),
+        std::void_t<decltype(PIKA_INVOKE(
+            std::declval<F>(), std::declval<Ts>()...))>>
+    {
+        using type =
+            decltype(PIKA_INVOKE(std::declval<F>(), std::declval<Ts>()...));
+    };
+
+    template <typename F, typename... Ts>
+    struct invoke_result : invoke_result_impl<F && (Ts && ...)>
     {
     };
 
     template <typename F, typename... Ts>
     using invoke_result_t = typename invoke_result<F, Ts...>::type;
-}}    // namespace pika::util
+}    // namespace pika::util::detail

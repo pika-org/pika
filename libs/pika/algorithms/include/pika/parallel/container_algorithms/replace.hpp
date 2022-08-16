@@ -1107,7 +1107,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_iterator<Iter>::value &&
                 pika::parallel::traits::is_projected<Proj, Iter>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<Iter>::value_type
                 >
             )>
@@ -1131,7 +1131,7 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<
                         typename pika::traits::range_iterator<Rng>::type
                     >::value_type
@@ -1354,7 +1354,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_iterator<OutIter>::value &&
                 pika::parallel::traits::is_projected<Proj, InIter>::value &&
                 pika::traits::is_sentinel_for<Sent, InIter>::value &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<InIter>::value_type
                 >
             )>
@@ -1384,7 +1384,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_range<Rng>::value &&
                 pika::traits::is_iterator<OutIter>::value &&
                 pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<
                         typename pika::traits::range_iterator<Rng>::type
                     >::value_type

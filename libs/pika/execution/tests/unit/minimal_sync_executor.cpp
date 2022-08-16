@@ -251,7 +251,8 @@ struct test_sync_executor1
     sync_execute(F&& f, Ts&&... ts)
     {
         ++count_sync;
-        return pika::util::invoke(std::forward<F>(f), std::forward<Ts>(ts)...);
+        return pika::util::detail::invoke(
+            std::forward<F>(f), std::forward<Ts>(ts)...);
     }
 };
 
@@ -278,7 +279,7 @@ struct test_sync_executor2 : test_sync_executor1
         std::vector<result_type> results;
         for (auto const& elem : shape)
         {
-            results.push_back(pika::util::invoke(f, elem, ts...));
+            results.push_back(pika::util::detail::invoke(f, elem, ts...));
         }
         return results;
     }
@@ -288,7 +289,7 @@ struct test_sync_executor2 : test_sync_executor1
     {
         for (auto const& elem : shape)
         {
-            pika::util::invoke(f, elem, ts...);
+            pika::util::detail::invoke(f, elem, ts...);
         }
     }
 

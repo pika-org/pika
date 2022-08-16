@@ -151,7 +151,8 @@ struct test_async_executor1
     using execution_category = pika::execution::parallel_execution_tag;
 
     template <typename F, typename... Ts>
-    static pika::future<typename pika::util::invoke_result<F, Ts...>::type>
+    static pika::future<
+        typename pika::util::detail::invoke_result<F, Ts...>::type>
     async_execute(F&& f, Ts&&... ts)
     {
         ++count_async;

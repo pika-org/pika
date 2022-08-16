@@ -56,7 +56,7 @@ namespace pika::util {
 
             template <typename... Ts>
             constexpr PIKA_HOST_DEVICE
-                typename util::invoke_result<F, Ts...>::type
+                typename util::detail::invoke_result<F, Ts...>::type
                 operator()(Ts&&... vs)
             {
                 check_call();

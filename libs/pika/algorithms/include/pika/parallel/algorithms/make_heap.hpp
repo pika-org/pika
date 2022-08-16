@@ -422,7 +422,7 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RndIter>::value &&
-                pika::is_invocable_v<Comp,
+                pika::detail::is_invocable_v<Comp,
                     typename std::iterator_traits<RndIter>::value_type,
                     typename std::iterator_traits<RndIter>::value_type
                 >
@@ -474,7 +474,7 @@ namespace pika {
         template <typename RndIter, typename Comp,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RndIter>::value &&
-                pika::is_invocable_v<Comp,
+                pika::detail::is_invocable_v<Comp,
                     typename std::iterator_traits<RndIter>::value_type,
                     typename std::iterator_traits<RndIter>::value_type
                 >

@@ -91,7 +91,7 @@ namespace pika::detail {
     {
         static auto error(F f, Args args)
         {
-            pika::util::invoke_fused(PIKA_MOVE(f), PIKA_MOVE(args));
+            pika::util::detail::invoke_fused(PIKA_MOVE(f), PIKA_MOVE(args));
         }
 
         using type = decltype(error(std::declval<F>(), std::declval<Args>()));
@@ -216,7 +216,7 @@ namespace pika::detail {
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    this->set_data(util::invoke_fused(
+                    this->set_data(util::detail::invoke_fused(
                         PIKA_MOVE(func_), PIKA_FORWARD(Futures_, futures)));
                 },
                 [&](std::exception_ptr ep) {
@@ -231,7 +231,7 @@ namespace pika::detail {
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    util::invoke_fused(
+                    util::detail::invoke_fused(
                         PIKA_MOVE(func_), PIKA_FORWARD(Futures_, futures));
 
                     this->set_data(util::unused_type());
