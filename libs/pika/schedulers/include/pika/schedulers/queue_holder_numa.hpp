@@ -251,7 +251,8 @@ namespace pika { namespace threads { namespace policies {
 
         // ----------------------------------------------------------------
         bool enumerate_threads(
-            util::function<bool(threads::detail::thread_id_type)> const& f,
+            util::detail::function<bool(threads::detail::thread_id_type)> const&
+                f,
             threads::detail::thread_schedule_state state) const
         {
             bool result = true;

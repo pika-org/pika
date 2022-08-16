@@ -11,7 +11,7 @@
 
 namespace pika::util::detail {
     template <typename Sig>
-    inline void reset_function(pika::util::function<Sig>& f)
+    inline void reset_function(pika::util::detail::function<Sig>& f)
     {
         f.reset();
     }

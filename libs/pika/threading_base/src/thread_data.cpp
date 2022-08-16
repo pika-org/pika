@@ -133,7 +133,8 @@ namespace pika::threads::detail {
         ran_exit_funcs_ = true;
     }
 
-    bool thread_data::add_thread_exit_callback(util::function<void()> const& f)
+    bool thread_data::add_thread_exit_callback(
+        util::detail::function<void()> const& f)
     {
         std::lock_guard<pika::util::detail::spinlock> l(
             spinlock_pool::spinlock_for(this));

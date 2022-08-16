@@ -400,7 +400,7 @@ namespace pika {
         resource::detail::delete_partitioner();
     }
 
-    void runtime::on_exit(util::function<void()> const& f)
+    void runtime::on_exit(util::detail::function<void()> const& f)
     {
         std::lock_guard<std::mutex> l(mtx_);
         on_exit_functions_.push_back(f);
@@ -415,7 +415,7 @@ namespace pika {
     {
         state_.store(state_stopped);
 
-        using value_type = util::function<void()>;
+        using value_type = util::detail::function<void()>;
 
         std::lock_guard<std::mutex> l(mtx_);
         for (value_type const& f : on_exit_functions_)
@@ -713,7 +713,7 @@ namespace pika {
 
     /// Enumerate all OS threads that have registered with the runtime.
     bool enumerate_os_threads(
-        util::function<bool(os_thread_data const&)> const& f)
+        util::detail::function<bool(os_thread_data const&)> const& f)
     {
         return get_runtime().enumerate_os_threads(f);
     }
@@ -752,7 +752,7 @@ namespace pika {
         get_runtime().get_thread_manager().report_error(num_thread, e);
     }
 
-    bool register_on_exit(util::function<void()> const& f)
+    bool register_on_exit(util::detail::function<void()> const& f)
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
@@ -806,8 +806,8 @@ namespace pika {
     }
 
     void set_config_entry_callback(std::string const& key,
-        util::function<void(std::string const&, std::string const&)> const&
-            callback)
+        util::detail::function<void(
+            std::string const&, std::string const&)> const& callback)
     {
         if (get_runtime_ptr() != nullptr)
         {
@@ -1219,7 +1219,7 @@ namespace pika {
     }    // namespace detail
 
     threads::detail::thread_result_type runtime::run_helper(
-        util::function<runtime::pika_main_function_type> const& func,
+        util::detail::function<runtime::pika_main_function_type> const& func,
         int& result, bool call_startup)
     {
         bool caught_exception = false;
@@ -1294,7 +1294,8 @@ namespace pika {
     }
 
     int runtime::start(
-        util::function<pika_main_function_type> const& func, bool blocking)
+        util::detail::function<pika_main_function_type> const& func,
+        bool blocking)
     {
 #if defined(_WIN64) && defined(PIKA_DEBUG) &&                                  \
     !defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
@@ -1360,7 +1361,7 @@ namespace pika {
 
     int runtime::start(bool blocking)
     {
-        util::function<pika_main_function_type> empty_main;
+        util::detail::function<pika_main_function_type> empty_main;
         return start(empty_main, blocking);
     }
 
@@ -1628,7 +1629,8 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    int runtime::run(util::function<pika_main_function_type> const& func)
+    int runtime::run(
+        util::detail::function<pika_main_function_type> const& func)
     {
         // start the main thread function
         start(func);
@@ -1870,7 +1872,7 @@ namespace pika {
 
     /// Enumerate all OS threads that have registered with the runtime.
     bool runtime::enumerate_os_threads(
-        util::function<bool(os_thread_data const&)> const& f) const
+        util::detail::function<bool(os_thread_data const&)> const& f) const
     {
         return thread_support_->enumerate_os_threads(f);
     }

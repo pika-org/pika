@@ -430,10 +430,10 @@ namespace pika { namespace threads { namespace policies {
         bool steal_by_function(std::size_t domain, std::size_t q_index,
             bool steal_numa, bool steal_core, thread_holder_type* origin,
             T& var, const char* prefix,
-            util::function<bool(
+            util::detail::function<bool(
                 std::size_t, std::size_t, thread_holder_type*, T&, bool, bool)>
                 operation_HP,
-            util::function<bool(
+            util::detail::function<bool(
                 std::size_t, std::size_t, thread_holder_type*, T&, bool, bool)>
                 operation)
         // NOLINTEND(bugprone-easily-swappable-parameters)
@@ -969,7 +969,8 @@ namespace pika { namespace threads { namespace policies {
         //---------------------------------------------------------------------
         // Enumerate matching threads from all queues
         bool enumerate_threads(
-            util::function<bool(threads::detail::thread_id_type)> const& f,
+            util::detail::function<bool(threads::detail::thread_id_type)> const&
+                f,
             threads::detail::thread_schedule_state state =
                 threads::detail::thread_schedule_state::unknown) const override
         {

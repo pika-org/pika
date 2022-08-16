@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     pika::lcos::local::spinlock mtx;
     pika::lcos::local::condition_variable_any cond;
 
-    pika::util::function<int(int, char**)> start_function =
+    pika::util::detail::function<int(int, char**)> start_function =
         pika::util::detail::bind(&start_func, std::ref(mtx), std::ref(cond));
 
     pika::start(start_function, argc, argv);

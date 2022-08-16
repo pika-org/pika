@@ -53,7 +53,7 @@ namespace pika {
 namespace pika { namespace lcos { namespace detail {
 
     using run_on_completed_error_handler_type =
-        util::function<void(std::exception_ptr const& e)>;
+        util::detail::function<void(std::exception_ptr const& e)>;
     PIKA_EXPORT void set_run_on_completed_error_handler(
         run_on_completed_error_handler_type f);
 

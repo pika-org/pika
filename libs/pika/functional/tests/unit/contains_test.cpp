@@ -56,7 +56,7 @@ struct Seventeen
 
 static void target_test()
 {
-    pika::util::function<int()> f;
+    pika::util::detail::function<int()> f;
 
     f = &forty_two;
     PIKA_TEST_EQ(*f.target<int (*)()>(), &forty_two);
@@ -74,7 +74,7 @@ static void target_test()
 
 //static void equal_test()
 //{
-//    pika::util::function<int()> f;
+//    pika::util::detail::function<int()> f;
 //
 //    f = &forty_two;
 //    PIKA_TEST(f == &forty_two);
@@ -104,7 +104,7 @@ static void target_test()
 //
 //    PIKA_TEST(f.contains(contain_test::ReturnIntFE(17)));
 //
-//    pika::util::function<int(void)> g;
+//    pika::util::detail::function<int(void)> g;
 //
 //    g = &forty_two;
 //    PIKA_TEST(g == &forty_two);
@@ -125,7 +125,7 @@ static void target_test()
 //{
 //    {
 //        ReturnInt ri(17);
-//        pika::util::function<int> f = std::ref(ri);
+//        pika::util::detail::function<int> f = std::ref(ri);
 //
 //        // References and values are equal
 //        PIKA_TEST(f == std::ref(ri));
@@ -151,7 +151,7 @@ static void target_test()
 //
 //    {
 //        ReturnInt ri(17);
-//        pika::util::function<int(void)> f = std::ref(ri);
+//        pika::util::detail::function<int(void)> f = std::ref(ri);
 //
 //        // References and values are equal
 //        PIKA_TEST(f == std::ref(ri));

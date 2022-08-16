@@ -43,7 +43,7 @@ namespace pika { namespace threads {
     ///                  is pre-initialized to \a pika#throws the function will throw
     ///                  on error instead.
     PIKA_EXPORT void resume_processing_unit_cb(thread_pool_base& pool,
-        util::function<void(void)> callback, std::size_t virt_core,
+        util::detail::function<void(void)> callback, std::size_t virt_core,
         error_code& ec = throws);
 
     /// Suspends the given processing unit. When the processing unit has been
@@ -78,7 +78,7 @@ namespace pika { namespace threads {
     ///                  is pre-initialized to \a pika#throws the function will throw
     ///                  on error instead.
     PIKA_EXPORT void suspend_processing_unit_cb(
-        util::function<void(void)> callback, thread_pool_base& pool,
+        util::detail::function<void(void)> callback, thread_pool_base& pool,
         std::size_t virt_core, error_code& ec = throws);
 
     /// Resumes the thread pool. When the all OS threads on the thread pool have
@@ -101,7 +101,7 @@ namespace pika { namespace threads {
     ///                 is pre-initialized to \a pika#throws the function will throw
     ///                 on error instead.
     PIKA_EXPORT void resume_pool_cb(thread_pool_base& pool,
-        util::function<void(void)> callback, error_code& ec = throws);
+        util::detail::function<void(void)> callback, error_code& ec = throws);
 
     /// Suspends the thread pool. When the all OS threads on the thread pool
     /// have been suspended the returned future will be ready.
@@ -130,5 +130,5 @@ namespace pika { namespace threads {
     /// \throws pika::exception if called from an pika thread which is running
     ///         on the pool itself.
     PIKA_EXPORT void suspend_pool_cb(thread_pool_base& pool,
-        util::function<void(void)> callback, error_code& ec = throws);
+        util::detail::function<void(void)> callback, error_code& ec = throws);
 }}    // namespace pika::threads

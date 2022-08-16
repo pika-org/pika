@@ -81,7 +81,7 @@ namespace pika { namespace util {
     PIKA_EXPORT void ignore_all_locks();
     PIKA_EXPORT void reset_ignored_all();
 
-    using registered_locks_error_handler_type = util::function<void()>;
+    using registered_locks_error_handler_type = util::detail::function<void()>;
 
     /// Sets a handler which gets called when verifying that no locks are held
     /// fails. Can be used to print information at the point of failure such as
@@ -89,7 +89,7 @@ namespace pika { namespace util {
     PIKA_EXPORT void set_registered_locks_error_handler(
         registered_locks_error_handler_type);
 
-    using register_locks_predicate_type = util::function<bool()>;
+    using register_locks_predicate_type = util::detail::function<bool()>;
 
     /// Sets a predicate which gets called each time a lock is registered,
     /// unregistered, or when locks are verified. If the predicate returns

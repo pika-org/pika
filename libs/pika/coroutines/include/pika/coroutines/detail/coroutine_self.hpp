@@ -73,7 +73,8 @@ namespace pika::threads::coroutines::detail {
             std::pair<threads::detail::thread_schedule_state, thread_id_type>;
         using arg_type = threads::detail::thread_restart_state;
 
-        using yield_decorator_type = util::function<arg_type(result_type)>;
+        using yield_decorator_type =
+            util::detail::function<arg_type(result_type)>;
 
         explicit coroutine_self(coroutine_self* next_self)
           : next_self_(next_self)

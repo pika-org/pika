@@ -60,8 +60,8 @@ bool MaybeThrowOnCopy::throwOnCopy = false;
 
 int main(int, char*[])
 {
-    pika::util::function<int()> f;
-    pika::util::function<int()> g;
+    pika::util::detail::function<int()> f;
+    pika::util::detail::function<int()> g;
 
     MaybeThrowOnCopy::throwOnCopy = false;
     f = MaybeThrowOnCopy(1);

@@ -14,7 +14,7 @@ functional
 This module provides function wrappers and helpers for managing functions and
 their arguments.
 
-* :cpp:class:`pika::util::function`
+* :cpp:class:`pika::util::detail::function`
 * :cpp:class:`pika::util::unique_function`
 * :cpp:func:`pika::util::detail::bind`
 * :cpp:func:`pika::util::detail::bind_back`

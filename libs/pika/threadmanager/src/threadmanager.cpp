@@ -675,7 +675,7 @@ namespace pika { namespace threads {
     ///////////////////////////////////////////////////////////////////////////
     // Enumerate all matching threads
     bool threadmanager::enumerate_threads(
-        util::function<bool(detail::thread_id_type)> const& f,
+        util::detail::function<bool(detail::thread_id_type)> const& f,
         detail::thread_schedule_state state) const
     {
         std::lock_guard<mutex_type> lk(mtx_);

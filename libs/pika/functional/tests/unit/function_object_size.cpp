@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <iostream>
 
-using pika::util::function;
+using pika::util::detail::function;
 
 ///////////////////////////////////////////////////////////////////////////////
 struct small_object

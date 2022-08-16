@@ -434,7 +434,7 @@ namespace pika { namespace parallel { namespace execution {
         struct bulk_oneway_vtable<R(Ts...)>
         {
             using bulk_sync_execute_function_type =
-                pika::util::function<R(std::size_t, Ts...)>;
+                pika::util::detail::function<R(std::size_t, Ts...)>;
 
             // bulk_sync_execute
             template <typename T>
@@ -479,9 +479,10 @@ namespace pika { namespace parallel { namespace execution {
         struct bulk_twoway_vtable<R(Ts...)>
         {
             using bulk_async_execute_function_type =
-                pika::util::function<R(std::size_t, Ts...)>;
-            using bulk_then_execute_function_type = pika::util::function<R(
-                std::size_t, pika::shared_future<void> const&, Ts...)>;
+                pika::util::detail::function<R(std::size_t, Ts...)>;
+            using bulk_then_execute_function_type =
+                pika::util::detail::function<R(
+                    std::size_t, pika::shared_future<void> const&, Ts...)>;
 
             // bulk_async_execute
             template <typename T>

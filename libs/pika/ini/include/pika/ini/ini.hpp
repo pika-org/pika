@@ -32,8 +32,8 @@ namespace pika { namespace util {
     class PIKA_EXPORT section
     {
     public:
-        using entry_changed_func =
-            util::function<void(const std::string&, const std::string&)>;
+        using entry_changed_func = util::detail::function<void(
+            const std::string&, const std::string&)>;
         using entry_type = std::pair<std::string, entry_changed_func>;
         using entry_map = std::map<std::string, entry_type>;
         using section_map = std::map<std::string, section>;

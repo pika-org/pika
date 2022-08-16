@@ -33,7 +33,7 @@
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     using thread_termination_handler_type =
-        util::function<void(std::exception_ptr const& e)>;
+        util::detail::function<void(std::exception_ptr const& e)>;
     PIKA_EXPORT void set_thread_termination_handler(
         thread_termination_handler_type f);
 

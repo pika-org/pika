@@ -95,7 +95,7 @@ namespace pika { namespace threads {
     }
 
     bool enumerate_threads(
-        util::function<bool(detail::thread_id_type)> const& f,
+        util::detail::function<bool(detail::thread_id_type)> const& f,
         detail::thread_schedule_state state)
     {
         return get_thread_manager().enumerate_threads(f, state);

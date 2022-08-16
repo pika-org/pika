@@ -179,7 +179,7 @@ namespace pika { namespace parallel { inline namespace v1 {
 #endif
 
         using exception_list_termination_handler_type =
-            pika::util::function<void()>;
+            pika::util::detail::function<void()>;
 
         PIKA_EXPORT void set_exception_list_termination_handler(
             exception_list_termination_handler_type f);

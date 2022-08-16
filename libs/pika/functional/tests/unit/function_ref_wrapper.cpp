@@ -27,11 +27,11 @@ struct stateful_type
 int main()
 {
     stateful_type a_function_object;
-    pika::util::function<int(int)> f;
+    pika::util::detail::function<int(int)> f;
 
     f = std::ref(a_function_object);
     PIKA_TEST_EQ(f(42), 42);
-    pika::util::function<int(int)> f2(f);
+    pika::util::detail::function<int(int)> f2(f);
     PIKA_TEST_EQ(f2(42), 42);
 
     return pika::util::report_errors();

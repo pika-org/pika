@@ -154,7 +154,7 @@ namespace executor_example {
         }
 
     private:
-        using thread_hook = pika::util::function<void()>;
+        using thread_hook = pika::util::detail::function<void()>;
 
         BaseExecutor& exec_;
         thread_hook on_start_;
