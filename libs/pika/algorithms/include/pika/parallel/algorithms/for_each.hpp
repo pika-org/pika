@@ -269,8 +269,6 @@ namespace pika::parallel::detail {
         template <typename Iter>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(Iter curr)
         {
-            using value_type =
-                std::decay_t<typename std::iterator_traits<Iter>::reference>;
             PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr));
         }
     };
@@ -294,8 +292,6 @@ namespace pika::parallel::detail {
         template <typename Iter>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(Iter curr)
         {
-            using value_type =
-                std::decay_t<typename std::iterator_traits<Iter>::reference>;
             PIKA_INVOKE(f_, *curr);
         }
     };
@@ -390,8 +386,6 @@ namespace pika::parallel::detail {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
             Iter part_begin, std::size_t part_size, std::size_t)
         {
-            using value_type =
-                std::decay_t<typename std::iterator_traits<Iter>::reference>;
             util::loop_n_ind<execution_policy_type>(part_begin, part_size, f_);
         }
     };
