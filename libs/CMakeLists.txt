@@ -101,7 +101,7 @@ configure_file(
   @ONLY
 )
 
-if(MSVC AND PIKA_COROUTINES_WITH_SWAP_CONTEXT_EMULATION)
+if(MSVC AND PIKA_WITH_SWAP_CONTEXT_EMULATION)
   target_link_options(pika PRIVATE "/EXPORT:switch_to_fiber")
 endif()
 

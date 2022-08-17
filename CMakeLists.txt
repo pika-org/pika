@@ -523,6 +523,13 @@ pika_option(
   ADVANCED
 )
 
+pika_option(
+  PIKA_WITH_SWAP_CONTEXT_EMULATION BOOL
+  "Emulate SwapContext API for coroutines (Windows only, default: OFF)" OFF
+  CATEGORY "Thread Manager"
+  ADVANCED
+)
+
 # We create a target to contain libraries like rt, dl etc. in order to remove
 # global variables
 add_library(pika_base_libraries INTERFACE)
@@ -954,6 +961,27 @@ pika_option(
   CATEGORY "Debugging"
   ADVANCED
 )
+
+# Special option to enable testing of FreeBSD specific limitations This is
+# purely an option allowing to test whether things work properly on systems that
+# may not report cores in the topology at all (e.g. FreeBSD). There is no need
+# for a user to every enable this.
+pika_option(
+  PIKA_WITH_ADDITIONAL_HWLOC_TESTING
+  BOOL
+  "Enable HWLOC filtering that makes it report no cores, this is purely an
+  option supporting better testing - do not enable under normal circumstances.
+  (default: OFF)"
+  OFF
+  ADVANCED
+  CATEGORY "Debugging"
+)
+
+if(PIKA_WITH_ADDITIONAL_HWLOC_TESTING)
+  pika_add_config_define_namespace(
+    DEFINE PIKA_HAVE_ADDITIONAL_HWLOC_TESTING NAMESPACE TOPOLOGY
+  )
+endif()
 
 # If APEX is defined, the action timers need thread debug info.
 pika_option(
@@ -1515,15 +1543,15 @@ set(PIKA_WITH_TARGET_ARCHITECTURE
     CACHE INTERNAL "" FORCE
 )
 
-# Compatibility with using Boost.Iterator traversal tags, introduced in V1.7.0
+# Compatibility with using Boost.Iterator traversal tags
 pika_option(
-  PIKA_ITERATOR_SUPPORT_WITH_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY BOOL
+  PIKA_WITH_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY BOOL
   "Enable Boost.Iterator traversal tag compatibility. (default: OFF)" OFF
-  ADVANCED CATEGORY "Modules"
+  ADVANCED CATEGORY "Generic"
 )
-if(PIKA_ITERATOR_SUPPORT_WITH_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
+if(PIKA_WITH_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
   pika_add_config_define_namespace(
-    DEFINE PIKA_ITERATOR_SUPPORT_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY
+    DEFINE PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY
     NAMESPACE ITERATOR_SUPPORT
   )
 endif()

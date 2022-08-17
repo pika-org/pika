@@ -50,7 +50,7 @@
 #include <sanitizer/asan_interface.h>
 #endif
 
-#if defined(PIKA_COROUTINES_HAVE_SWAP_CONTEXT_EMULATION)
+#if defined(PIKA_HAVE_SWAP_CONTEXT_EMULATION)
 extern "C" void switch_to_fiber(void* lpFiber) noexcept;
 #endif
 
@@ -149,7 +149,7 @@ namespace pika::threads::coroutines {
                     from.m_ctx = ConvertThreadToFiber(nullptr);
                     PIKA_ASSERT(from.m_ctx != nullptr);
 
-#if defined(PIKA_COROUTINES_HAVE_SWAP_CONTEXT_EMULATION)
+#if defined(PIKA_HAVE_SWAP_CONTEXT_EMULATION)
                     switch_to_fiber(to.m_ctx);
 #else
                     SwitchToFiber(to.m_ctx);
@@ -164,7 +164,7 @@ namespace pika::threads::coroutines {
                     bool call_from_main = from.m_ctx == nullptr;
                     if (call_from_main)
                         from.m_ctx = GetCurrentFiber();
-#if defined(PIKA_COROUTINES_HAVE_SWAP_CONTEXT_EMULATION)
+#if defined(PIKA_HAVE_SWAP_CONTEXT_EMULATION)
                     switch_to_fiber(to.m_ctx);
 #else
                     SwitchToFiber(to.m_ctx);

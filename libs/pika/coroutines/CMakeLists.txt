@@ -6,14 +6,6 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-pika_option(
-  PIKA_COROUTINES_WITH_SWAP_CONTEXT_EMULATION BOOL
-  "Emulate SwapContext API for coroutines (Windows only, default: OFF)" OFF
-  CATEGORY "Thread Manager"
-  ADVANCED
-  MODULE COROUTINES
-)
-
 set(coroutines_headers
     pika/coroutines/coroutine.hpp
     pika/coroutines/coroutine_fwd.hpp
@@ -50,7 +42,7 @@ set(coroutines_sources
 )
 
 if(MSVC)
-  if(PIKA_COROUTINES_WITH_SWAP_CONTEXT_EMULATION)
+  if(PIKA_WITH_SWAP_CONTEXT_EMULATION)
     # ##########################################################################
     # Emulation of SwapContext on Windows
     # ##########################################################################
@@ -60,12 +52,12 @@ if(MSVC)
         "SwitchToFiber emulation can not be enabled. The masm compiler \
          could not be found. Try setting the ASM_MASM environment variable to the \
          assembler executable (ml.exe/ml64.exe) or disable the emulation by setting \
-         PIKA_COROUTINES_WITH_SWAP_CONTEXT_EMULATION to Off"
+         PIKA_WITH_SWAP_CONTEXT_EMULATION to Off"
       )
     endif()
 
     pika_add_config_define_namespace(
-      DEFINE PIKA_COROUTINES_HAVE_SWAP_CONTEXT_EMULATION NAMESPACE COROUTINES
+      DEFINE PIKA_HAVE_SWAP_CONTEXT_EMULATION NAMESPACE COROUTINES
     )
 
     set(switch_to_fiber_source
@@ -82,9 +74,9 @@ if(MSVC)
       VERBATIM
     )
   endif()
-elseif(PIKA_COROUTINES_WITH_SWAP_CONTEXT_EMULATION)
+elseif(PIKA_WITH_SWAP_CONTEXT_EMULATION)
   pika_error(
-    "The option PIKA_COROUTINES_WITH_SWAP_CONTEXT_EMULATION is not supported on "
+    "The option PIKA_WITH_SWAP_CONTEXT_EMULATION is not supported on "
     "this platform, please disable the emulation by setting it to Off"
   )
 endif()
@@ -117,7 +109,7 @@ pika_add_module(
   CMAKE_SUBDIRS examples tests
 )
 
-if(MSVC AND PIKA_COROUTINES_WITH_SWAP_CONTEXT_EMULATION)
+if(MSVC AND PIKA_WITH_SWAP_CONTEXT_EMULATION)
   pika_info(
     "    SwitchToFiber emulation is enabled, using compiler: '${CMAKE_ASM_MASM_COMPILER}'"
   )

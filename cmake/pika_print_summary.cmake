@@ -84,13 +84,15 @@ function(pika_create_configuration_summary message module_name)
   set(_base_dir "pika/config")
   set(_template "config_defines_strings.hpp.in")
 
-  configure_file(
-    "${PIKA_SOURCE_DIR}/cmake/templates/${_template}"
-    "${PIKA_BINARY_DIR}/${_base_dir_local}/config_strings.hpp" @ONLY
-  )
-  configure_file(
-    "${PIKA_SOURCE_DIR}/cmake/templates/${_template}"
-    "${PIKA_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_base_dir}/config_strings.hpp"
-    @ONLY
-  )
+  if("${module_name_uc}" STREQUAL "PIKA")
+    configure_file(
+      "${PIKA_SOURCE_DIR}/cmake/templates/${_template}"
+      "${PIKA_BINARY_DIR}/${_base_dir_local}/config_strings.hpp" @ONLY
+    )
+    configure_file(
+      "${PIKA_SOURCE_DIR}/cmake/templates/${_template}"
+      "${PIKA_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_base_dir}/config_strings.hpp"
+      @ONLY
+    )
+  endif()
 endfunction()

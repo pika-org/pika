@@ -10,8 +10,7 @@
 
 #include <pika/config.hpp>
 
-#if !defined(                                                                  \
-    PIKA_ITERATOR_SUPPORT_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
+#if !defined(PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
 
 #include <pika/type_support/identity.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
@@ -139,7 +138,7 @@ namespace pika { namespace iterators {
 
 #define PIKA_ITERATOR_TRAVERSAL_TAG_NS boost
 
-#endif    // PIKA_ITERATOR_SUPPORT_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY
+#endif    // PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY
 
 namespace pika {
 
