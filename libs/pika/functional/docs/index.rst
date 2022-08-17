@@ -23,7 +23,6 @@ their arguments.
 * :cpp:func:`pika::util::detail::invoke`
 * :cpp:func:`pika::util::detail::invoke_fused`
 * :cpp:func:`pika::util::detail::one_shot`
-* :cpp:class:`pika::util::result_of`
 
 See the :ref:`API reference <modules_functional_api>` of the module for more
 details.
