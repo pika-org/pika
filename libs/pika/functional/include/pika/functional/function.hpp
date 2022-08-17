@@ -38,22 +38,20 @@ namespace pika::util::detail {
         function& operator=(function&&) noexcept = default;
 
         // the split SFINAE prevents MSVC from eagerly instantiating things
-        template <typename F, typename FD = typename std::decay<F>::type,
-            typename Enable1 = typename std::enable_if<
-                !std::is_same<FD, function>::value>::type,
-            typename Enable2 = typename std::enable_if<
-                pika::detail::is_invocable_r_v<R, FD&, Ts...>>::type>
+        template <typename F, typename FD = std::decay_t<F>,
+            typename Enable1 = std::enable_if_t<!std::is_same_v<FD, function>>,
+            typename Enable2 =
+                std::enable_if_t<pika::detail::is_invocable_r_v<R, FD&, Ts...>>>
         function(F&& f)
         {
             assign(PIKA_FORWARD(F, f));
         }
 
         // the split SFINAE prevents MSVC from eagerly instantiating things
-        template <typename F, typename FD = typename std::decay<F>::type,
-            typename Enable1 = typename std::enable_if<
-                !std::is_same<FD, function>::value>::type,
-            typename Enable2 = typename std::enable_if<
-                pika::detail::is_invocable_r_v<R, FD&, Ts...>>::type>
+        template <typename F, typename FD = std::decay_t<F>,
+            typename Enable1 = std::enable_if_t<!std::is_same_v<FD, function>>,
+            typename Enable2 =
+                std::enable_if_t<pika::detail::is_invocable_r_v<R, FD&, Ts...>>>
         function& operator=(F&& f)
         {
             assign(PIKA_FORWARD(F, f));

@@ -32,7 +32,7 @@ namespace pika::util::detail {
     constexpr VTable const* get_vtable() noexcept
     {
         static_assert(
-            !std::is_reference<T>::value, "T shall have no ref-qualifiers");
+            !std::is_reference_v<T>, "T shall have no ref-qualifiers");
 
         return &vtables<VTable, T>::instance;
     }
@@ -55,8 +55,7 @@ namespace pika::util::detail {
         template <typename T>
         static void* allocate(void* storage, std::size_t storage_size)
         {
-            using storage_t =
-                typename std::aligned_storage<sizeof(T), alignof(T)>::type;
+            using storage_t = std::aligned_storage_t<sizeof(T), alignof(T)>;
 
             if (sizeof(T) > storage_size)
             {
@@ -69,8 +68,7 @@ namespace pika::util::detail {
         static void _deallocate(
             void* obj, std::size_t storage_size, bool destroy)
         {
-            using storage_t =
-                typename std::aligned_storage<sizeof(T), alignof(T)>::type;
+            using storage_t = std::aligned_storage_t<sizeof(T), alignof(T)>;
 
             if (destroy)
             {

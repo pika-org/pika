@@ -22,7 +22,7 @@ namespace pika::util::detail {
     template <typename Arg0, typename... Args>
     struct tuple_first_argument<std::tuple<Arg0, Args...>>
     {
-        using type = typename std::decay<Arg0>::type;
+        using type = std::decay_t<Arg0>;
     };
 
     ///////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ namespace pika::util::detail {
     template <typename ReturnType, typename Arg0, typename... Args>
     struct function_first_argument<ReturnType (*)(Arg0, Args...)>
     {
-        using type = typename std::decay<Arg0>::type;
+        using type = std::decay_t<Arg0>;
     };
 
     ///////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ namespace pika::util::detail {
         typename... Args>
     struct lambda_first_argument<ReturnType (ClassType::*)(Arg0, Args...) const>
     {
-        using type = typename std::decay<Arg0>::type;
+        using type = std::decay_t<Arg0>;
     };
 
     template <typename F, typename Enable = void>
@@ -66,8 +66,7 @@ namespace pika::util::detail {
     // Specialization for functions
     template <typename F>
     struct first_argument<F,
-        std::enable_if_t<
-            std::is_function_v<typename std::remove_pointer<F>::type>>>
+        std::enable_if_t<std::is_function_v<std::remove_pointer_t<F>>>>
       : detail::function_first_argument<F>
     {
     };
@@ -75,8 +74,7 @@ namespace pika::util::detail {
     // Specialization for lambdas
     template <typename F>
     struct first_argument<F,
-        std::enable_if_t<
-            !std::is_function<typename std::remove_pointer<F>::type>::value>>
+        std::enable_if_t<!std::is_function_v<std::remove_pointer_t<F>>>>
       : detail::lambda_first_argument<decltype(&F::operator())>
     {
     };

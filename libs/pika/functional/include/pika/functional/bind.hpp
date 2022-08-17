@@ -95,7 +95,7 @@ namespace pika::util::detail {
     {
     public:
         template <typename F_, typename... Ts_,
-            typename = std::enable_if_t<std::is_constructible<F, F_>::value>>
+            typename = std::enable_if_t<std::is_constructible_v<F, F_>>>
         constexpr explicit bound(F_&& f, Ts_&&... vs)
           : _f(PIKA_FORWARD(F_, f))
           , _args(std::piecewise_construct, PIKA_FORWARD(Ts_, vs)...)

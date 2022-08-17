@@ -153,9 +153,8 @@ namespace pika::util::detail {
         template <typename F>
         void assign(F&& f)
         {
-            using T = typename std::decay<F>::type;
-            static_assert(
-                !Copyable || std::is_constructible<T, T const&>::value,
+            using T = std::decay_t<F>;
+            static_assert(!Copyable || std::is_constructible_v<T, T const&>,
                 "F shall be CopyConstructible");
 
             if (!detail::is_empty_function(f))
@@ -196,7 +195,7 @@ namespace pika::util::detail {
         template <typename T>
         T* target() noexcept
         {
-            using TD = typename std::remove_cv<T>::type;
+            using TD = std::remove_cv_t<T>;
             static_assert(pika::detail::is_invocable_r_v<R, TD&, Ts...>,
                 "T shall be Callable with the function signature");
 
@@ -210,7 +209,7 @@ namespace pika::util::detail {
         template <typename T>
         T const* target() const noexcept
         {
-            using TD = typename std::remove_cv<T>::type;
+            using TD = std::remove_cv_t<T>;
             static_assert(pika::detail::is_invocable_r_v<R, TD&, Ts...>,
                 "T shall be Callable with the function signature");
 

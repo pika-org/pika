@@ -24,8 +24,7 @@ namespace pika::util::detail {
     {
     public:
         template <typename F_,
-            typename = typename std::enable_if<
-                std::is_constructible<F, F_>::value>::type>
+            typename = std::enable_if_t<std::is_constructible_v<F, F_>>>
         constexpr explicit one_shot_wrapper(F_&& f)
           : _f(PIKA_FORWARD(F_, f))
 #if defined(PIKA_DEBUG)
@@ -54,9 +53,8 @@ namespace pika::util::detail {
         }
 
         template <typename... Ts>
-        constexpr PIKA_HOST_DEVICE
-            typename util::detail::invoke_result<F, Ts...>::type
-            operator()(Ts&&... vs)
+        constexpr PIKA_HOST_DEVICE util::detail::invoke_result_t<F, Ts...>
+        operator()(Ts&&... vs)
         {
             check_call();
 
@@ -97,9 +95,9 @@ namespace pika::util::detail {
     };
 
     template <typename F>
-    constexpr one_shot_wrapper<typename std::decay<F>::type> one_shot(F&& f)
+    constexpr one_shot_wrapper<std::decay_t<F>> one_shot(F&& f)
     {
-        using result_type = one_shot_wrapper<typename std::decay<F>::type>;
+        using result_type = one_shot_wrapper<std::decay_t<F>>;
 
         return result_type(PIKA_FORWARD(F, f));
     }

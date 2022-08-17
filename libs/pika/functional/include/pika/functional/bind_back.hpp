@@ -40,8 +40,7 @@ namespace pika::util::detail {
     {
     public:
         template <typename F_, typename... Ts_,
-            typename = typename std::enable_if<
-                std::is_constructible<F, F_>::value>::type>
+            typename = std::enable_if_t<std::is_constructible_v<F, F_>>>
         constexpr explicit bound_back(F_&& f, Ts_&&... vs)
           : _f(PIKA_FORWARD(F_, f))
           , _args(std::piecewise_construct, PIKA_FORWARD(Ts_, vs)...)
@@ -141,21 +140,20 @@ namespace pika::util::detail {
     };
 
     template <typename F, typename... Ts>
-    constexpr bound_back<typename std::decay<F>::type,
-        typename util::make_index_pack<sizeof...(Ts)>::type,
-        typename util::decay_unwrap<Ts>::type...>
+    constexpr bound_back<std::decay_t<F>,
+        util::make_index_pack_t<sizeof...(Ts)>, util::decay_unwrap_t<Ts>...>
     bind_back(F&& f, Ts&&... vs)
     {
-        using result_type = bound_back<typename std::decay<F>::type,
-            typename util::make_index_pack<sizeof...(Ts)>::type,
-            typename util::decay_unwrap<Ts>::type...>;
+        using result_type =
+            bound_back<std::decay_t<F>, util::make_index_pack_t<sizeof...(Ts)>,
+                util::decay_unwrap_t<Ts>...>;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }
 
     // nullary functions do not need to be bound again
     template <typename F>
-    constexpr typename std::decay<F>::type bind_back(F&& f)
+    constexpr std::decay_t<F> bind_back(F&& f)
     {
         return PIKA_FORWARD(F, f);
     }

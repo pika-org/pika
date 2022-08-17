@@ -20,8 +20,7 @@
 namespace pika::util::detail {
     template <typename Tuple>
     struct fused_index_pack
-      : make_index_pack<
-            std::tuple_size<typename std::decay<Tuple>::type>::value>
+      : make_index_pack<std::tuple_size_v<std::decay_t<Tuple>>>
     {
     };
 
@@ -31,15 +30,13 @@ namespace pika::util::detail {
 
     template <typename F, typename Tuple, std::size_t... Is>
     struct invoke_fused_result_impl<F, Tuple&, index_pack<Is...>>
-      : util::detail::invoke_result<F,
-            typename std::tuple_element<Is, Tuple>::type&...>
+      : util::detail::invoke_result<F, std::tuple_element_t<Is, Tuple>&...>
     {
     };
 
     template <typename F, typename Tuple, std::size_t... Is>
     struct invoke_fused_result_impl<F, Tuple&&, index_pack<Is...>>
-      : util::detail::invoke_result<F,
-            typename std::tuple_element<Is, Tuple>::type&&...>
+      : util::detail::invoke_result<F, std::tuple_element_t<Is, Tuple>&&...>
     {
     };
 
