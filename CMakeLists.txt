@@ -974,8 +974,7 @@ pika_option(
   (default: OFF)"
   OFF
   ADVANCED
-  CATEGORY "Modules"
-  MODULE TOPOLOGY
+  CATEGORY "Debugging"
 )
 
 if(PIKA_WITH_ADDITIONAL_HWLOC_TESTING)
@@ -1548,7 +1547,7 @@ set(PIKA_WITH_TARGET_ARCHITECTURE
 pika_option(
   PIKA_WITH_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY BOOL
   "Enable Boost.Iterator traversal tag compatibility. (default: OFF)" OFF
-  ADVANCED CATEGORY "Modules"
+  ADVANCED CATEGORY "Generic"
 )
 if(PIKA_WITH_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
   pika_add_config_define_namespace(

@@ -8,12 +8,11 @@
 include(CMakeParseArguments)
 
 set(PIKA_OPTION_CATEGORIES "Generic" "Build Targets" "Thread Manager"
-                           "Profiling" "Debugging" "Modules"
+                           "Profiling" "Debugging"
 )
 
 function(pika_option option type description default)
   set(options ADVANCED)
-  set(one_value_args CATEGORY MODULE)
   set(multi_value_args STRINGS)
   cmake_parse_arguments(
     PIKA_OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
@@ -62,13 +61,7 @@ function(pika_option option type description default)
     endif()
   endif()
 
-  if(PIKA_OPTION_MODULE)
-    string(TOUPPER ${PIKA_OPTION_MODULE} module_uc)
-    set(varname_uc PIKA_MODULE_CONFIG_${module_uc})
-    set_property(GLOBAL APPEND PROPERTY ${varname_uc} ${option})
-  else()
-    set_property(GLOBAL APPEND PROPERTY PIKA_MODULE_CONFIG_PIKA ${option})
-  endif()
+  set_property(GLOBAL APPEND PROPERTY PIKA_MODULE_CONFIG_PIKA ${option})
 
   set(_category "Generic")
   if(PIKA_OPTION_CATEGORY)
