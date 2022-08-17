@@ -20,7 +20,7 @@
 #include <utility>
 
 namespace pika::util::detail {
-    struct empty_function;
+    struct trivial_empty_function;
 
     ///////////////////////////////////////////////////////////////////////////
     struct callable_info_vtable
@@ -70,7 +70,7 @@ namespace pika::util::detail {
         }
 
         constexpr callable_info_vtable(
-            construct_vtable<empty_function>) noexcept
+            construct_vtable<trivial_empty_function>) noexcept
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
           : get_function_address(nullptr)
           , get_function_annotation(nullptr)
@@ -107,7 +107,8 @@ namespace pika::util::detail {
             return throw_bad_function_call<R>();
         }
 
-        constexpr callable_vtable(construct_vtable<empty_function>) noexcept
+        constexpr callable_vtable(
+            construct_vtable<trivial_empty_function>) noexcept
           : invoke(&callable_vtable::_empty_invoke)
         {
         }

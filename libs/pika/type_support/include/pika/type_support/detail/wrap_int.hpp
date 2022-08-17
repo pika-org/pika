@@ -8,10 +8,10 @@
 
 #include <pika/config.hpp>
 
-namespace pika { namespace traits { namespace detail {
+namespace pika::traits::detail {
     // wraps int so that int argument is favored over wrap_int
     struct wrap_int
     {
         constexpr wrap_int(int) {}
     };
-}}}    // namespace pika::traits::detail
+}    // namespace pika::traits::detail

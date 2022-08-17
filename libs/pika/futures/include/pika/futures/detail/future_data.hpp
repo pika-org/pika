@@ -166,10 +166,10 @@ namespace pika { namespace lcos { namespace detail {
     template <>
     struct future_data_result<void>
     {
-        using type = util::unused_type;
+        using type = util::detail::unused_type;
 
-        PIKA_FORCEINLINE static constexpr util::unused_type set(
-            util::unused_type u) noexcept
+        PIKA_FORCEINLINE static constexpr util::detail::unused_type set(
+            util::detail::unused_type u) noexcept
         {
             return u;
         }
@@ -226,7 +226,7 @@ namespace pika { namespace lcos { namespace detail {
 
         using future_data_refcnt_base::completed_callback_type;
         using future_data_refcnt_base::completed_callback_vector_type;
-        using result_type = util::unused_type;
+        using result_type = util::detail::unused_type;
         using init_no_addref = future_data_refcnt_base::init_no_addref;
 
         virtual ~future_data_base();
@@ -427,7 +427,8 @@ namespace pika { namespace lcos { namespace detail {
             return nullptr;
         }
 
-        util::unused_type* get_result_void(error_code& ec = throws) override
+        util::detail::unused_type* get_result_void(
+            error_code& ec = throws) override
         {
             return base_type::get_result_void(&storage_, ec);
         }

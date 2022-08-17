@@ -28,7 +28,7 @@ namespace pika { namespace execution { namespace experimental {
         struct just_sender_impl;
 
         template <typename std::size_t... Is, typename... Ts>
-        struct just_sender_impl<pika::util::index_pack<Is...>, Ts...>
+        struct just_sender_impl<pika::util::detail::index_pack<Is...>, Ts...>
         {
             struct just_sender_type
             {
@@ -131,7 +131,8 @@ namespace pika { namespace execution { namespace experimental {
         constexpr PIKA_FORCEINLINE auto operator()(Ts&&... ts) const
         {
             return just_detail::just_sender<
-                typename pika::util::make_index_pack<sizeof...(Ts)>::type,
+                typename pika::util::detail::make_index_pack<sizeof...(
+                    Ts)>::type,
                 Ts...>{PIKA_FORWARD(Ts, ts)...};
         }
     } just{};

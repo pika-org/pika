@@ -221,7 +221,7 @@ namespace pika {
 
             template <typename Tuple, std::size_t... Is>
             PIKA_FORCEINLINE void apply(
-                Tuple const& tuple, pika::util::index_pack<Is...>) const
+                Tuple const& tuple, pika::util::detail::index_pack<Is...>) const
             {
                 int const _sequencer[] = {
                     0, (((*this)(std::get<Is>(tuple))), 0)...};
@@ -231,7 +231,8 @@ namespace pika {
             template <typename... Ts>
             PIKA_FORCEINLINE void apply(std::tuple<Ts...> const& sequence) const
             {
-                apply(sequence, pika::util::make_index_pack_t<sizeof...(Ts)>());
+                apply(sequence,
+                    pika::util::detail::make_index_pack_t<sizeof...(Ts)>());
             }
 
             template <typename Sequence_>

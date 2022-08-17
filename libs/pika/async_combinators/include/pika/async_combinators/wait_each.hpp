@@ -209,7 +209,7 @@ namespace pika {
     template <typename F, typename... Ts,
         typename Enable =
             std::enable_if_t<!traits::is_future_v<std::decay_t<F>> &&
-                util::all_of_v<traits::is_future<Ts>...>>>
+                util::detail::all_of_v<traits::is_future<Ts>...>>>
     void wait_each_nothrow(F&& f, Ts&&... ts)
     {
         pika::when_each(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...).wait();
@@ -218,7 +218,7 @@ namespace pika {
     template <typename F, typename... Ts,
         typename Enable =
             std::enable_if_t<!traits::is_future_v<std::decay_t<F>> &&
-                util::all_of_v<traits::is_future<Ts>...>>>
+                util::detail::all_of_v<traits::is_future<Ts>...>>>
     void wait_each(F&& f, Ts&&... ts)
     {
         auto result =

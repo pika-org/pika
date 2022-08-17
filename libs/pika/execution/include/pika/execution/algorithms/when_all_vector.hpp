@@ -66,9 +66,9 @@ namespace pika::execution::experimental {
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
             // We expect a single value type or nothing from the predecessor
             // sender type
-            using element_value_type = detail::single_result_t<
-                pika::execution::experimental::value_types_of_t<Sender,
-                    detail::empty_env, pika::util::pack, pika::util::pack>>;
+            using element_value_type = detail::single_result_t<pika::execution::
+                    experimental::value_types_of_t<Sender, detail::empty_env,
+                        pika::util::detail::pack, pika::util::detail::pack>>;
 
             static constexpr bool is_void_value_type =
                 std::is_void_v<element_value_type>;
@@ -106,8 +106,9 @@ namespace pika::execution::experimental {
             // We expect a single value type or nothing from the predecessor
             // sender type
             using element_value_type = detail::single_result_t<
-                typename pika::execution::experimental::sender_traits<Sender>::
-                    template value_types<pika::util::pack, pika::util::pack>>;
+                typename pika::execution::experimental::sender_traits<
+                    Sender>::template value_types<pika::util::detail::pack,
+                    pika::util::detail::pack>>;
 
             static constexpr bool is_void_value_type =
                 std::is_void_v<element_value_type>;

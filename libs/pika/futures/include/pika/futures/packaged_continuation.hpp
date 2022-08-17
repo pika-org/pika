@@ -65,7 +65,7 @@ namespace pika { namespace lcos { namespace detail {
         pika::detail::try_catch_exception_ptr(
             [&]() {
                 func(PIKA_FORWARD(Future, future));
-                cont.set_value(util::unused);
+                cont.set_value(util::detail::unused);
             },
             [&](std::exception_ptr ep) { cont.set_exception(PIKA_MOVE(ep)); });
     }

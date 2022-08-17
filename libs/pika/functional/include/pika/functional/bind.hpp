@@ -75,7 +75,7 @@ namespace pika::util::detail {
     struct invoke_bound_result;
 
     template <typename F, typename... Ts, typename... Us>
-    struct invoke_bound_result<F, util::pack<Ts...>, Us...>
+    struct invoke_bound_result<F, util::detail::pack<Ts...>, Us...>
       : util::detail::invoke_result<F,
             decltype(bind_eval<Ts, sizeof...(Us)>::call(
                 std::declval<Ts>(), std::declval<Us>()...))...>
@@ -126,7 +126,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE
-            invoke_bound_result_t<F&, util::pack<Ts&...>, Us&&...>
+            invoke_bound_result_t<F&, util::detail::pack<Ts&...>, Us&&...>
             operator()(Us&&... vs) &
         {
             return PIKA_INVOKE(_f,
@@ -136,9 +136,9 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        constexpr PIKA_HOST_DEVICE
-            invoke_bound_result_t<F const&, util::pack<Ts const&...>, Us&&...>
-            operator()(Us&&... vs) const&
+        constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F const&,
+            util::detail::pack<Ts const&...>, Us&&...>
+        operator()(Us&&... vs) const&
         {
             return PIKA_INVOKE(_f,
                 detail::bind_eval<Ts const&, sizeof...(Us)>::call(
@@ -148,7 +148,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE
-            invoke_bound_result_t<F&&, util::pack<Ts&&...>, Us&&...>
+            invoke_bound_result_t<F&&, util::detail::pack<Ts&&...>, Us&&...>
             operator()(Us&&... vs) &&
         {
             return PIKA_INVOKE(PIKA_MOVE(_f),
@@ -159,9 +159,9 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
-        constexpr PIKA_HOST_DEVICE
-            invoke_bound_result_t<F const&&, util::pack<Ts const&&...>, Us&&...>
-            operator()(Us&&... vs) const&&
+        constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F const&&,
+            util::detail::pack<Ts const&&...>, Us&&...>
+        operator()(Us&&... vs) const&&
         {
             return PIKA_INVOKE(PIKA_MOVE(_f),
                 detail::bind_eval<Ts const, sizeof...(Us)>::call(
@@ -202,13 +202,14 @@ namespace pika::util::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
-    constexpr bound<std::decay_t<F>, util::make_index_pack_t<sizeof...(Ts)>,
-        util::decay_unwrap_t<Ts>...>
+    constexpr bound<std::decay_t<F>,
+        util::detail::make_index_pack_t<sizeof...(Ts)>,
+        util::detail::decay_unwrap_t<Ts>...>
     bind(F&& f, Ts&&... vs)
     {
-        using result_type =
-            bound<std::decay_t<F>, util::make_index_pack_t<sizeof...(Ts)>,
-                util::decay_unwrap_t<Ts>...>;
+        using result_type = bound<std::decay_t<F>,
+            util::detail::make_index_pack_t<sizeof...(Ts)>,
+            util::detail::decay_unwrap_t<Ts>...>;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }

@@ -52,7 +52,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         // Obtain initiating function's return type.
         static constexpr void get() noexcept {}
 
-        static constexpr void get(pika::util::unused_type) noexcept {}
+        static constexpr void get(pika::util::detail::unused_type) noexcept {}
 
         static void get(pika::future<void>&& t)
         {
@@ -96,7 +96,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             return pika::make_ready_future();
         }
 
-        static type get(pika::util::unused_type)
+        static type get(pika::util::detail::unused_type)
         {
             return pika::make_ready_future();
         }
@@ -143,7 +143,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             return pika::make_ready_future();
         }
 
-        static type get(pika::util::unused_type)
+        static type get(pika::util::detail::unused_type)
         {
             return pika::make_ready_future();
         }

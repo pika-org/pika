@@ -36,7 +36,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         template <std::size_t... Is>
         static PIKA_FORCEINLINE bool call(
             pika::util::zip_iterator<Iter...> const& it,
-            pika::util::index_pack<Is...>)
+            pika::util::detail::index_pack<Is...>)
         {
             auto const& t = it.get_iterator_tuple();
             bool const sequencer[] = {
@@ -48,15 +48,15 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         static PIKA_FORCEINLINE bool call(
             pika::util::zip_iterator<Iter...> const& it)
         {
-            return call(it,
-                typename pika::util::make_index_pack<sizeof...(Iter)>::type());
+            return call(
+                it, pika::util::detail::make_index_pack_t<sizeof...(Iter)>());
         }
     };
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename... Iter>
     struct iterator_datapar_compatible_impl<pika::util::zip_iterator<Iter...>>
-      : pika::util::all_of<std::is_arithmetic<
+      : pika::util::detail::all_of<std::is_arithmetic<
             typename std::iterator_traits<Iter>::value_type>...>
     {
     };
@@ -68,7 +68,7 @@ namespace pika { namespace parallel { namespace traits {
     namespace detail {
         template <typename Tuple, typename... Iter, std::size_t... Is>
         Tuple aligned_pack(pika::util::zip_iterator<Iter...> const& iter,
-            pika::util::index_pack<Is...>)
+            pika::util::detail::index_pack<Is...>)
         {
             auto const& t = iter.get_iterator_tuple();
             return std::make_tuple(
@@ -79,7 +79,7 @@ namespace pika { namespace parallel { namespace traits {
 
         template <typename Tuple, typename... Iter, std::size_t... Is>
         Tuple unaligned_pack(pika::util::zip_iterator<Iter...> const& iter,
-            pika::util::index_pack<Is...>)
+            pika::util::detail::index_pack<Is...>)
         {
             auto const& t = iter.get_iterator_tuple();
             return std::make_tuple(
@@ -97,16 +97,16 @@ namespace pika { namespace parallel { namespace traits {
         template <typename... Iter>
         static value_type aligned(pika::util::zip_iterator<Iter...> const& iter)
         {
-            return traits::detail::aligned_pack<value_type>(iter,
-                typename pika::util::make_index_pack<sizeof...(Iter)>::type());
+            return traits::detail::aligned_pack<value_type>(
+                iter, pika::util::detail::make_index_pack_t<sizeof...(Iter)>());
         }
 
         template <typename... Iter>
         static value_type unaligned(
             pika::util::zip_iterator<Iter...> const& iter)
         {
-            return traits::detail::unaligned_pack<value_type>(iter,
-                typename pika::util::make_index_pack<sizeof...(Iter)>::type());
+            return traits::detail::unaligned_pack<value_type>(
+                iter, pika::util::detail::make_index_pack<sizeof...(Iter)>());
         }
     };
 
@@ -115,7 +115,7 @@ namespace pika { namespace parallel { namespace traits {
         template <typename Tuple, typename... Iter, std::size_t... Is>
         void aligned_pack(Tuple& value,
             pika::util::zip_iterator<Iter...> const& iter,
-            pika::util::index_pack<Is...>)
+            pika::util::detail::index_pack<Is...>)
         {
             auto const& t = iter.get_iterator_tuple();
             int const sequencer[] = {0,
@@ -129,7 +129,7 @@ namespace pika { namespace parallel { namespace traits {
         template <typename Tuple, typename... Iter, std::size_t... Is>
         void unaligned_pack(Tuple& value,
             pika::util::zip_iterator<Iter...> const& iter,
-            pika::util::index_pack<Is...>)
+            pika::util::detail::index_pack<Is...>)
         {
             auto const& t = iter.get_iterator_tuple();
             int const sequencer[] = {0,
@@ -149,7 +149,7 @@ namespace pika { namespace parallel { namespace traits {
             V& value, pika::util::zip_iterator<Iter...> const& iter)
         {
             traits::detail::aligned_pack(value, iter,
-                typename pika::util::make_index_pack<sizeof...(Iter)>::type());
+                pika::util::detail::make_index_pack_t<sizeof...(Iter)>());
         }
 
         template <typename V, typename... Iter>
@@ -157,7 +157,7 @@ namespace pika { namespace parallel { namespace traits {
             V& value, pika::util::zip_iterator<Iter...> const& iter)
         {
             traits::detail::unaligned_pack(value, iter,
-                typename pika::util::make_index_pack<sizeof...(Iter)>::type());
+                pika::util::detail::make_index_pack<sizeof...(Iter)>());
         }
     };
 }}}    // namespace pika::parallel::traits

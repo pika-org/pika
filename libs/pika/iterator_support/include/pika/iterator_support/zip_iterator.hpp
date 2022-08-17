@@ -213,8 +213,8 @@ namespace pika { namespace util {
             template <std::size_t... Is>
             PIKA_HOST_DEVICE static
                 typename zip_iterator_reference<std::tuple<Ts...>>::type
-                call(
-                    util::index_pack<Is...>, std::tuple<Ts...> const& iterators)
+                call(util::detail::index_pack<Is...>,
+                    std::tuple<Ts...> const& iterators)
             {
                 return std::forward_as_tuple(*std::get<Is>(iterators)...);
             }
@@ -300,8 +300,8 @@ namespace pika { namespace util {
             PIKA_HOST_DEVICE typename base_type::reference dereference() const
             {
                 return dereference_iterator<IteratorTuple>::call(
-                    typename util::make_index_pack<
-                        std::tuple_size<IteratorTuple>::value>::type(),
+                    util::detail::make_index_pack_t<
+                        std::tuple_size<IteratorTuple>::value>(),
                     iterators_);
             }
 
@@ -328,7 +328,7 @@ namespace pika { namespace util {
 
         private:
             template <typename F, std::size_t... Is>
-            PIKA_HOST_DEVICE void apply(F&& f, util::index_pack<Is...>)
+            PIKA_HOST_DEVICE void apply(F&& f, util::detail::index_pack<Is...>)
             {
                 int const _sequencer[] = {
                     ((f(std::get<Is>(iterators_))), 0)...};
@@ -339,7 +339,7 @@ namespace pika { namespace util {
             PIKA_HOST_DEVICE void apply(F&& f)
             {
                 return apply(PIKA_FORWARD(F, f),
-                    util::make_index_pack<
+                    util::detail::make_index_pack<
                         std::tuple_size<IteratorTuple>::value>());
             }
 
@@ -530,7 +530,7 @@ namespace pika { namespace traits {
 
             template <std::size_t... Is, typename... Ts_>
             static result_type call(
-                util::index_pack<Is...>, std::tuple<Ts_...> const& t)
+                util::detail::index_pack<Is...>, std::tuple<Ts_...> const& t)
             {
                 return std::make_tuple(
                     typename F::template apply<Ts>()(std::get<Is>(t))...);
@@ -539,7 +539,7 @@ namespace pika { namespace traits {
             template <typename... Ts_>
             static result_type call(util::zip_iterator<Ts_...> const& iter)
             {
-                using pika::util::make_index_pack;
+                using pika::util::detail::make_index_pack;
                 return call(typename make_index_pack<sizeof...(Ts)>::type(),
                     iter.get_iterator_tuple());
             }

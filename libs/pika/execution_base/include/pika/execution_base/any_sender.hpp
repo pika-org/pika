@@ -886,11 +886,11 @@ namespace pika::execution::experimental {
             using value_types_pack =
                 pika::execution::experimental::value_types_of_t<Sender,
                     pika::execution::experimental::detail::empty_env,
-                    pika::util::pack, pika::util::pack>;
+                    pika::util::detail::pack, pika::util::detail::pack>;
 #else
             using value_types_pack = typename pika::execution::experimental::
                 sender_traits<std::decay_t<Sender>>::template value_types<
-                    pika::util::pack, pika::util::pack>;
+                    pika::util::detail::pack, pika::util::detail::pack>;
 #endif
             static_assert(value_types_pack::size == 1,
                 "any_sender and unique_any_sender require the predecessor "

@@ -93,7 +93,7 @@ namespace pika::util::detail {
         F&& f, Tuple&& t)
     {
         using index_pack = typename detail::fused_index_pack<Tuple>::type;
-        return util::void_guard<R>(),
+        return util::detail::void_guard<R>(),
                detail::invoke_fused_impl(
                    index_pack{}, PIKA_FORWARD(F, f), PIKA_FORWARD(Tuple, t));
     }

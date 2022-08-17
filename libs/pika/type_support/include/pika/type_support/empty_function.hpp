@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace pika { namespace util {
+namespace pika::util::detail {
 
     struct empty_function
     {
@@ -15,4 +15,4 @@ namespace pika { namespace util {
         {
         }
     };
-}}    // namespace pika::util
+}    // namespace pika::util::detail

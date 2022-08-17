@@ -14,8 +14,8 @@
 #include <pika/iterator_support/iterator_range.hpp>
 #include <pika/iterator_support/range.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
-#include <pika/type_support/identity.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
+#include <pika/type_support/type_identity.hpp>
 
 #include <cstddef>
 #include <iterator>
@@ -41,14 +41,14 @@ namespace pika { namespace util {
                     typename std::iterator_traits<Iterator>::iterator_category;
             };
 
-            using base_traversal =
-                util::lazy_conditional<std::is_integral<Incrementable>::value,
-                    util::identity<std::random_access_iterator_tag>,
-                    iterator_category<Incrementable>>;
+            using base_traversal = util::detail::lazy_conditional<
+                std::is_integral<Incrementable>::value,
+                ::pika::detail::type_identity<std::random_access_iterator_tag>,
+                iterator_category<Incrementable>>;
 
-            using traversal = typename util::lazy_conditional<
+            using traversal = util::detail::lazy_conditional_t<
                 std::is_void<CategoryOrTraversal>::value, base_traversal,
-                util::identity<CategoryOrTraversal>>::type;
+                ::pika::detail::type_identity<CategoryOrTraversal>>;
 
             // calculate difference_type of the resulting iterator
             template <typename Integer>
@@ -71,14 +71,14 @@ namespace pika { namespace util {
                     typename std::iterator_traits<Iterator>::difference_type;
             };
 
-            using base_difference =
-                util::lazy_conditional<std::is_integral<Incrementable>::value,
-                    integer_difference_type<Incrementable>,
-                    iterator_difference_type<Incrementable>>;
+            using base_difference = util::detail::lazy_conditional<
+                std::is_integral<Incrementable>::value,
+                integer_difference_type<Incrementable>,
+                iterator_difference_type<Incrementable>>;
 
-            using difference =
-                typename util::lazy_conditional<std::is_void<Difference>::value,
-                    base_difference, util::identity<Difference>>::type;
+            using difference = util::detail::lazy_conditional_t<
+                std::is_void<Difference>::value, base_difference,
+                ::pika::detail::type_identity<Difference>>;
 
             using type = iterator_adaptor<counting_iterator<Incrementable,
                                               CategoryOrTraversal, Difference>,

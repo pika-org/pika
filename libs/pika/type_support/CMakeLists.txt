@@ -11,10 +11,10 @@ set(type_support_headers
     pika/type_support/detected.hpp
     pika/type_support/empty_function.hpp
     pika/type_support/equality.hpp
-    pika/type_support/identity.hpp
     pika/type_support/lazy_conditional.hpp
     pika/type_support/pack.hpp
-    pika/type_support/unwrap_ref.hpp
+    pika/type_support/type_identity.hpp
+    pika/type_support/unwrap_reference.hpp
     pika/type_support/unused.hpp
     pika/type_support/void_guard.hpp
 )

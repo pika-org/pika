@@ -323,7 +323,8 @@ namespace pika::mpi::experimental {
                                 transform_mpi_sender_type,
                                 pika::execution::experimental::detail::
                                     empty_env,
-                                pika::util::pack, pika::util::pack>,
+                                pika::util::detail::pack,
+                                pika::util::detail::pack>,
                             result_types_helper>,
                         pika::detail::monostate>>>;
 #else
@@ -332,7 +333,8 @@ namespace pika::mpi::experimental {
                     pika::util::detail::unique_t<pika::util::detail::prepend_t<
                         pika::util::detail::transform_t<
                             transform_mpi_sender_type::value_types<
-                                pika::util::pack, pika::util::pack>,
+                                pika::util::detail::pack,
+                                pika::util::detail::pack>,
                             result_types_helper>,
                         pika::detail::monostate>>>;
 #endif

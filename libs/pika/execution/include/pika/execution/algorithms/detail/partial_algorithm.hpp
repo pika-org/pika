@@ -20,7 +20,8 @@ namespace pika {
     struct partial_algorithm_base;
 
     template <typename Tag, std::size_t... Is, typename... Ts>
-    struct partial_algorithm_base<Tag, pika::util::index_pack<Is...>, Ts...>
+    struct partial_algorithm_base<Tag, pika::util::detail::index_pack<Is...>,
+        Ts...>
     {
     private:
         pika::util::detail::member_pack_for<Ts...> ts;
@@ -49,5 +50,6 @@ namespace pika {
 
     template <typename Tag, typename... Ts>
     using partial_algorithm = partial_algorithm_base<Tag,
-        typename pika::util::make_index_pack<sizeof...(Ts)>::type, Ts...>;
+        typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type,
+        Ts...>;
 }}}}    // namespace pika::execution::experimental::detail

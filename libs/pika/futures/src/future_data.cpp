@@ -90,9 +90,9 @@ namespace pika { namespace lcos { namespace detail {
     future_data_base<traits::detail::future_data_void>::~future_data_base() =
         default;
 
-    static util::unused_type unused_;
+    static util::detail::unused_type unused_;
 
-    util::unused_type*
+    util::detail::unused_type*
     future_data_base<traits::detail::future_data_void>::get_result_void(
         void const* storage, error_code& ec)
     {

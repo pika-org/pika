@@ -499,18 +499,18 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                         pika::execution::experimental::value_types_of_t<
                             then_with_cuda_stream_sender_type,
                             pika::execution::experimental::detail::empty_env,
-                            pika::util::pack, pika::util::pack>,
+                            pika::util::detail::pack, pika::util::detail::pack>,
                         result_types_helper>,
                     pika::detail::monostate>>>;
 #else
-            using result_type =
-                pika::util::detail::change_pack_t<pika::detail::variant,
-                    pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                        pika::util::detail::transform_t<
-                            then_with_cuda_stream_sender_type::value_types<
-                                pika::util::pack, pika::util::pack>,
-                            result_types_helper>,
-                        pika::detail::monostate>>>;
+            using result_type = pika::util::detail::change_pack_t<
+                pika::detail::variant,
+                pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                    pika::util::detail::transform_t<
+                        then_with_cuda_stream_sender_type::value_types<
+                            pika::util::detail::pack, pika::util::detail::pack>,
+                        result_types_helper>,
+                    pika::detail::monostate>>>;
 #endif
             result_type result;
 

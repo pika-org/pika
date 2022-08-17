@@ -26,7 +26,7 @@ namespace pika::util::detail {
     struct invoke_bound_back_result;
 
     template <typename F, typename... Ts, typename... Us>
-    struct invoke_bound_back_result<F, util::pack<Ts...>, Us...>
+    struct invoke_bound_back_result<F, util::detail::pack<Ts...>, Us...>
       : util::detail::invoke_result<F, Us..., Ts...>
     {
     };
@@ -71,7 +71,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&,
-            util::pack<Ts&...>, Us&&...>::type
+            util::detail::pack<Ts&...>, Us&&...>::type
         operator()(Us&&... vs) &
         {
             return PIKA_INVOKE(
@@ -81,7 +81,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F const&,
-            util::pack<Ts const&...>, Us&&...>::type
+            util::detail::pack<Ts const&...>, Us&&...>::type
         operator()(Us&&... vs) const&
         {
             return PIKA_INVOKE(
@@ -91,7 +91,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F&&,
-            util::pack<Ts&&...>, Us&&...>::type
+            util::detail::pack<Ts&&...>, Us&&...>::type
         operator()(Us&&... vs) &&
         {
             return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)...,
@@ -101,7 +101,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE typename invoke_bound_back_result<F const&&,
-            util::pack<Ts const&&...>, Us&&...>::type
+            util::detail::pack<Ts const&&...>, Us&&...>::type
         operator()(Us&&... vs) const&&
         {
             return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Us, vs)...,
@@ -141,12 +141,13 @@ namespace pika::util::detail {
 
     template <typename F, typename... Ts>
     constexpr bound_back<std::decay_t<F>,
-        util::make_index_pack_t<sizeof...(Ts)>, util::decay_unwrap_t<Ts>...>
+        util::detail::make_index_pack_t<sizeof...(Ts)>,
+        util::detail::decay_unwrap_t<Ts>...>
     bind_back(F&& f, Ts&&... vs)
     {
-        using result_type =
-            bound_back<std::decay_t<F>, util::make_index_pack_t<sizeof...(Ts)>,
-                util::decay_unwrap_t<Ts>...>;
+        using result_type = bound_back<std::decay_t<F>,
+            util::detail::make_index_pack_t<sizeof...(Ts)>,
+            util::detail::decay_unwrap_t<Ts>...>;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }

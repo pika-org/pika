@@ -539,7 +539,7 @@ namespace pika {
                 typename pika::parallel::util::detail::algorithm_result<
                     ExPolicy>::type;
 
-            return pika::util::void_guard<result_type>(),
+            return pika::util::detail::void_guard<result_type>(),
                    pika::parallel::v1::detail::sort<RandomIt>().call(
                        PIKA_FORWARD(ExPolicy, policy), first, last,
                        PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));

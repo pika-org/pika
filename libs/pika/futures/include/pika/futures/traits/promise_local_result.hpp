@@ -18,7 +18,7 @@ namespace pika { namespace traits {
     };
 
     template <>
-    struct promise_local_result<util::unused_type>
+    struct promise_local_result<util::detail::unused_type>
     {
         using type = void;
     };

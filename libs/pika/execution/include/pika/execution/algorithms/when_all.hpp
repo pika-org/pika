@@ -85,7 +85,8 @@ namespace pika { namespace execution { namespace experimental {
             };
 
             template <typename... Ts, std::size_t... Is>
-            auto set_value_helper(pika::util::index_pack<Is...>, Ts&&... ts)
+            auto set_value_helper(
+                pika::util::detail::index_pack<Is...>, Ts&&... ts)
                 -> decltype((std::declval<typename OperationState::
                                      value_types_storage_type>()
                                     .template get<
@@ -103,8 +104,9 @@ namespace pika { namespace execution { namespace experimental {
                     ...);
             }
 
-            using index_pack_type = typename pika::util::make_index_pack<
-                OperationState::sender_pack_size>::type;
+            using index_pack_type =
+                typename pika::util::detail::make_index_pack<
+                    OperationState::sender_pack_size>::type;
 
             template <typename... Ts>
             auto set_value(Ts&&... ts) noexcept
@@ -182,8 +184,8 @@ namespace pika { namespace execution { namespace experimental {
             {
                 using value_types =
                     typename pika::execution::experimental::sender_traits<
-                        Sender>::template value_types<pika::util::pack,
-                        pika::util::pack>;
+                        Sender>::template value_types<pika::util::detail::pack,
+                        pika::util::detail::pack>;
                 using type = detail::single_result_non_void_t<value_types>;
             };
 
@@ -214,10 +216,10 @@ namespace pika { namespace execution { namespace experimental {
 
             template <std::size_t I>
             static constexpr std::size_t sender_pack_size_at_index =
-                detail::single_variant_t<
-                    typename sender_traits<pika::util::at_index_t<I,
-                        Senders...>>::template value_types<pika::util::pack,
-                        pika::util::pack>>::size;
+                detail::single_variant_t<typename sender_traits<
+                    pika::util::detail::at_index_t<I, Senders...>>::
+                        template value_types<pika::util::detail::pack,
+                            pika::util::detail::pack>>::size;
 
             template <typename Receiver, typename SendersPack,
                 std::size_t I = num_predecessors - 1>
@@ -240,10 +242,10 @@ namespace pika { namespace execution { namespace experimental {
                 // here and complains about incmplete types. Lifting the helper
                 // explicitly in here works.
                 static constexpr std::size_t sender_pack_size =
-                    detail::single_variant_t<
-                        typename sender_traits<pika::util::at_index_t<i,
-                            Senders...>>::template value_types<pika::util::pack,
-                            pika::util::pack>>::size;
+                    detail::single_variant_t<typename sender_traits<
+                        pika::util::detail::at_index_t<i, Senders...>>::
+                            template value_types<pika::util::detail::pack,
+                                pika::util::detail::pack>>::size;
 #endif
 
                 // Number of predecessor senders that have not yet called any of
@@ -261,8 +263,8 @@ namespace pika { namespace execution { namespace experimental {
                         pika::util::detail::member_pack_for,
                         pika::util::detail::transform_t<
                             pika::util::detail::concat_pack_of_packs_t<
-                                value_types<pika::util::pack,
-                                    pika::util::pack>>,
+                                value_types<pika::util::detail::pack,
+                                    pika::util::detail::pack>>,
                             add_optional>>;
                 // Values sent by all predecessor senders are stored here in the
                 // base-case operation state. They are stored in a
@@ -307,7 +309,7 @@ namespace pika { namespace execution { namespace experimental {
 
                 template <std::size_t... Is, typename... Ts>
                 void set_value_helper(pika::util::detail::member_pack<
-                    pika::util::index_pack<Is...>, Ts...>& ts)
+                    pika::util::detail::index_pack<Is...>, Ts...>& ts)
                 {
                     pika::execution::experimental::set_value(
                         PIKA_MOVE(receiver),
@@ -424,7 +426,7 @@ namespace pika { namespace execution { namespace experimental {
         // clang-format off
         template <typename... Senders,
             PIKA_CONCEPT_REQUIRES_(
-                pika::util::all_of_v<is_sender<Senders>...>
+                pika::util::detail::all_of_v<is_sender<Senders>...>
             )>
         // clang-format on
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(

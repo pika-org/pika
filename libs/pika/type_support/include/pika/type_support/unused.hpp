@@ -16,7 +16,7 @@
 #endif
 // clang-format on
 
-namespace pika { namespace util {
+namespace pika::util::detail {
     ///////////////////////////////////////////////////////////////////////////
     // We do not import fusion::unused_type anymore to avoid boost::fusion
     // being turned into an associate namespace, as this interferes with ADL
@@ -82,14 +82,14 @@ namespace pika { namespace util {
     PIKA_CONSTANT
 #endif
     constexpr unused_type unused = unused_type();
-}}    // namespace pika::util
+}    // namespace pika::util::detail
 
 //////////////////////////////////////////////////////////////////////////////
 // use this to silence compiler warnings related to unused function arguments.
 #if defined(__CUDA_ARCH__)
 #define PIKA_UNUSED(x) (void) x
 #else
-#define PIKA_UNUSED(x) ::pika::util::unused = (x)
+#define PIKA_UNUSED(x) ::pika::util::detail::unused = (x)
 #endif
 
 /////////////////////////////////////////////////////////////

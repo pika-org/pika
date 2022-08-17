@@ -25,19 +25,20 @@ namespace pika {
     };
 
     template <>
-    struct single_result<pika::util::pack<pika::util::pack<>>>
+    struct single_result<pika::util::detail::pack<pika::util::detail::pack<>>>
     {
         using type = void;
     };
 
     template <typename T>
-    struct single_result<pika::util::pack<pika::util::pack<T>>>
+    struct single_result<pika::util::detail::pack<pika::util::detail::pack<T>>>
     {
         using type = T;
     };
 
     template <typename T, typename U, typename... Ts>
-    struct single_result<pika::util::pack<pika::util::pack<T, U, Ts...>>>
+    struct single_result<
+        pika::util::detail::pack<pika::util::detail::pack<T, U, Ts...>>>
     {
         static_assert(sizeof(T) == 0,
             "expected a single variant with a single type in "
@@ -46,7 +47,7 @@ namespace pika {
     };
 
     template <typename T, typename U, typename... Ts>
-    struct single_result<pika::util::pack<T, U, Ts...>>
+    struct single_result<pika::util::detail::pack<T, U, Ts...>>
     {
         static_assert(sizeof(T) == 0,
             "expected a single variant with a single type in "
@@ -76,7 +77,7 @@ namespace pika {
     };
 
     template <typename T>
-    struct single_variant<pika::util::pack<T>>
+    struct single_variant<pika::util::detail::pack<T>>
     {
         using type = T;
     };

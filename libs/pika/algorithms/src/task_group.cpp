@@ -76,7 +76,7 @@ namespace pika::execution::experimental {
             auto state = PIKA_MOVE(state_);
             if (state)
             {
-                state->set_value(pika::util::unused);
+                state->set_value(pika::util::detail::unused);
             }
         }
     }

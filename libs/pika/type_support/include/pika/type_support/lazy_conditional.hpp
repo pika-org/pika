@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-namespace pika { namespace util {
+namespace pika::util::detail {
     template <bool Enable, typename C1, typename C2>
     struct lazy_conditional : std::conditional<Enable, C1, C2>::type
     {
@@ -16,4 +16,4 @@ namespace pika { namespace util {
 
     template <bool Enable, typename C1, typename C2>
     using lazy_conditional_t = typename lazy_conditional<Enable, C1, C2>::type;
-}}    // namespace pika::util
+}    // namespace pika::util::detail

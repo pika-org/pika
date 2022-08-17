@@ -143,7 +143,9 @@ namespace pika { namespace execution { namespace experimental {
                 make_future_receiver r_local = PIKA_MOVE(r);
 
                 pika::detail::try_catch_exception_ptr(
-                    [&]() { r_local.data->set_value(pika::util::unused); },
+                    [&]() {
+                        r_local.data->set_value(pika::util::detail::unused);
+                    },
                     [&](std::exception_ptr ep) {
                         r_local.data->set_exception(PIKA_MOVE(ep));
                     });
@@ -207,11 +209,11 @@ namespace pika { namespace execution { namespace experimental {
                 typename pika::execution::experimental::value_types_of_t<
                     std::decay_t<Sender>,
                     pika::execution::experimental::detail::empty_env,
-                    pika::util::pack, pika::util::pack>;
+                    pika::util::detail::pack, pika::util::detail::pack>;
 #else
             using value_types = typename pika::execution::experimental::
                 sender_traits<std::decay_t<Sender>>::template value_types<
-                    pika::util::pack, pika::util::pack>;
+                    pika::util::detail::pack, pika::util::detail::pack>;
 #endif
             using result_type =
                 std::decay_t<detail::single_result_t<value_types>>;

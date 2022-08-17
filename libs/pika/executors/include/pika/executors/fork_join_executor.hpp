@@ -371,7 +371,8 @@ namespace pika { namespace execution { namespace experimental {
                 template <std::size_t... Is_, typename F_, typename A_,
                     typename Tuple_>
                 static constexpr void invoke_helper(
-                    pika::util::index_pack<Is_...>, F_&& f, A_&& a, Tuple_&& t)
+                    pika::util::detail::index_pack<Is_...>, F_&& f, A_&& a,
+                    Tuple_&& t)
                 {
                     PIKA_INVOKE(PIKA_FORWARD(F_, f), PIKA_FORWARD(A_, a),
                         std::get<Is_>(PIKA_FORWARD(Tuple_, t))...);

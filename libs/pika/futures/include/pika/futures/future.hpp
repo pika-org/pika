@@ -102,7 +102,7 @@ namespace pika { namespace lcos { namespace detail {
     template <>
     struct future_value<void> : future_data_result<void>
     {
-        PIKA_FORCEINLINE static void get(pika::util::unused_type) {}
+        PIKA_FORCEINLINE static void get(pika::util::detail::unused_type) {}
 
         static void get_default() {}
     };
@@ -120,10 +120,10 @@ namespace pika { namespace lcos { namespace detail {
     };
 
     template <>
-    struct future_get_result<util::unused_type>
+    struct future_get_result<util::detail::unused_type>
     {
         template <typename SharedState>
-        PIKA_FORCEINLINE static util::unused_type* call(
+        PIKA_FORCEINLINE static util::detail::unused_type* call(
             SharedState const& state, error_code& ec = throws)
         {
             return state->get_result_void(ec);
@@ -902,7 +902,7 @@ namespace pika {
         else
         {
             return f.then(pika::launch::sync, [](pika::future<U>&& f) -> R {
-                return util::void_guard<R>(), f.get();
+                return util::detail::void_guard<R>(), f.get();
             });
         }
     }
@@ -1199,7 +1199,7 @@ namespace pika {
         {
             return f.then(
                 pika::launch::sync, [](pika::shared_future<U>&& f) -> R {
-                    return util::void_guard<R>(), f.get();
+                    return util::detail::void_guard<R>(), f.get();
                 });
         }
         // This silences a bogus warning from nvcc about no return from a
@@ -1311,19 +1311,20 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     // extension: create a pre-initialized future object, with allocator
     template <int DeductionGuard = 0, typename Allocator, typename T>
-    future<pika::util::decay_unwrap_t<T>> make_ready_future_alloc(
+    future<pika::util::detail::decay_unwrap_t<T>> make_ready_future_alloc(
         Allocator const& a, T&& init)
     {
-        return pika::make_ready_future_alloc<pika::util::decay_unwrap_t<T>>(
-            a, PIKA_FORWARD(T, init));
+        return pika::make_ready_future_alloc<
+            pika::util::detail::decay_unwrap_t<T>>(a, PIKA_FORWARD(T, init));
     }
 
     // extension: create a pre-initialized future object
     template <int DeductionGuard = 0, typename T>
-    PIKA_FORCEINLINE future<pika::util::decay_unwrap_t<T>> make_ready_future(
-        T&& init)
+    PIKA_FORCEINLINE future<pika::util::detail::decay_unwrap_t<T>>
+    make_ready_future(T&& init)
     {
-        return pika::make_ready_future_alloc<pika::util::decay_unwrap_t<T>>(
+        return pika::make_ready_future_alloc<
+            pika::util::detail::decay_unwrap_t<T>>(
             pika::detail::internal_allocator<>{}, PIKA_FORWARD(T, init));
     }
 
@@ -1361,10 +1362,10 @@ namespace pika {
     // extension: create a pre-initialized future object which gets ready at
     // a given point in time
     template <int DeductionGuard = 0, typename T>
-    future<pika::util::decay_unwrap_t<T>> make_ready_future_at(
+    future<pika::util::detail::decay_unwrap_t<T>> make_ready_future_at(
         pika::chrono::steady_time_point const& abs_time, T&& init)
     {
-        using result_type = pika::util::decay_unwrap_t<T>;
+        using result_type = pika::util::detail::decay_unwrap_t<T>;
         using shared_state = lcos::detail::timed_future_data<result_type>;
 
         pika::intrusive_ptr<shared_state> p(
@@ -1375,7 +1376,7 @@ namespace pika {
     }
 
     template <int DeductionGuard = 0, typename T>
-    future<pika::util::decay_unwrap_t<T>> make_ready_future_after(
+    future<pika::util::detail::decay_unwrap_t<T>> make_ready_future_after(
         pika::chrono::steady_duration const& rel_time, T&& init)
     {
         return pika::make_ready_future_at(
@@ -1387,14 +1388,14 @@ namespace pika {
     template <typename Allocator>
     inline future<void> make_ready_future_alloc(Allocator const& a)
     {
-        return pika::make_ready_future_alloc<void>(a, util::unused);
+        return pika::make_ready_future_alloc<void>(a, util::detail::unused);
     }
 
     // extension: create a pre-initialized future object
     PIKA_FORCEINLINE future<void> make_ready_future()
     {
         return make_ready_future_alloc<void>(
-            pika::detail::internal_allocator<>{}, util::unused);
+            pika::detail::internal_allocator<>{}, util::detail::unused);
     }
 
     // Extension (see wg21.link/P0319)
@@ -1413,7 +1414,7 @@ namespace pika {
         using shared_state = lcos::detail::timed_future_data<void>;
 
         return pika::traits::future_access<future<void>>::create(
-            new shared_state(abs_time.value(), pika::util::unused));
+            new shared_state(abs_time.value(), pika::util::detail::unused));
     }
 
     template <typename T>

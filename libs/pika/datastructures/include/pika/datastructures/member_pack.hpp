@@ -102,7 +102,7 @@ namespace pika::util::detail {
     struct PIKA_EMPTY_BASES member_pack;
 
     template <std::size_t... Is, typename... Ts>
-    struct PIKA_EMPTY_BASES member_pack<util::index_pack<Is...>, Ts...>
+    struct PIKA_EMPTY_BASES member_pack<util::detail::index_pack<Is...>, Ts...>
       : member_leaf<Is, Ts>...
     {
         member_pack() = default;
@@ -140,6 +140,6 @@ namespace pika::util::detail {
 
     template <typename... Ts>
     using member_pack_for =
-        member_pack<typename util::make_index_pack<sizeof...(Ts)>::type, Ts...>;
+        member_pack<util::detail::make_index_pack_t<sizeof...(Ts)>, Ts...>;
 
 }    // namespace pika::util::detail

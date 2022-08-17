@@ -285,6 +285,7 @@ void dereference_result()
 void equality_result()
 {
     using pika::traits::detail::equality_result;
+    using pika::traits::detail::equality_result_t;
 
     struct A
     {
@@ -301,9 +302,7 @@ void equality_result()
         }
     };
 
-    PIKA_TEST_MSG(
-        (std::is_same<B, typename equality_result<C, A>::type>::value),
-        "deduced type");
+    PIKA_TEST_MSG((std::is_same_v<B, equality_result_t<C, A>>), "deduced type");
 
     PIKA_TEST_MSG(
         (!has_nested_type<equality_result<B, A>>::value), "invalid operation");
@@ -312,6 +311,7 @@ void equality_result()
 void inequality_result()
 {
     using pika::traits::detail::inequality_result;
+    using pika::traits::detail::inequality_result_t;
 
     struct A
     {
@@ -329,8 +329,7 @@ void inequality_result()
     };
 
     PIKA_TEST_MSG(
-        (std::is_same<B, typename inequality_result<C, A>::type>::value),
-        "deduced type");
+        (std::is_same_v<B, inequality_result_t<C, A>>), "deduced type");
 
     PIKA_TEST_MSG((!has_nested_type<inequality_result<B, A>>::value),
         "invalid operation");
