@@ -10,9 +10,7 @@
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
 #include <pika/future.hpp>
-#include <pika/init.hpp>
-#include <pika/pack_traversal/unwrap.hpp>
-#include <pika/testing.hpp>
+#include <pika/unwrap.hpp>
 
 // define large action
 double func(double x1, double, double, double, double, double, double)
@@ -20,17 +18,10 @@ double func(double x1, double, double, double, double, double, double)
     return x1;
 }
 
-int pika_main()
+int main(int argc, char* argv[])
 {
     pika::shared_future<double> f = pika::make_ready_future(1.0);
     f = pika::dataflow(
         pika::launch::sync, pika::unwrapping(&func), f, f, f, f, f, f, f);
-    return pika::finalize();
-}
-
-int main(int argc, char* argv[])
-{
-    pika::init(pika_main, argc, argv);
-    return pika::util::report_errors();
 }
 #endif

@@ -169,6 +169,11 @@ int pika_main(pika::program_options::variables_map& vm)
         matrix_size.uiWC, matrix_size.uiHC);
 
     matrixMultiply<float>(matrix_size, device, iterations);
+
+    // There are no actual tests to run here. We only expect to reach this point
+    // without exceptions having been thrown.
+    PIKA_TEST(true);
+
     return pika::finalize();
 }
 

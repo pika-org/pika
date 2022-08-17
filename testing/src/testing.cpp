@@ -23,10 +23,28 @@
 namespace pika { namespace util {
     namespace detail {
 
+        std::atomic<std::size_t> fixture::sanity_tests_(0);
         std::atomic<std::size_t> fixture::sanity_failures_(0);
+        std::atomic<std::size_t> fixture::test_tests_(0);
         std::atomic<std::size_t> fixture::test_failures_(0);
 
-        void fixture::increment(counter_type c)
+        void fixture::increment_tests(counter_type c)
+        {
+            switch (c)
+            {
+            case counter_sanity:
+                ++sanity_tests_;
+                return;
+            case counter_test:
+                ++test_tests_;
+                return;
+            default:
+                break;
+            }
+            PIKA_ASSERT(false);
+        }
+
+        void fixture::increment_failures(counter_type c)
         {
             switch (c)
             {
@@ -42,7 +60,22 @@ namespace pika { namespace util {
             PIKA_ASSERT(false);
         }
 
-        std::size_t fixture::get(counter_type c) const
+        std::size_t fixture::get_tests(counter_type c) const
+        {
+            switch (c)
+            {
+            case counter_sanity:
+                return sanity_tests_;
+            case counter_test:
+                return test_tests_;
+            default:
+                break;
+            }
+            PIKA_ASSERT(false);
+            return std::size_t(-1);
+        }
+
+        std::size_t fixture::get_failures(counter_type c) const
         {
             switch (c)
             {
@@ -69,17 +102,36 @@ namespace pika { namespace util {
 
     int report_errors(std::ostream& stream)
     {
-        std::size_t sanity = detail::global_fixture.get(counter_sanity),
-                    test = detail::global_fixture.get(counter_test);
-        if (sanity == 0 && test == 0)
-            return 0;
+        auto sanity_tests = detail::global_fixture.get_tests(counter_sanity);
+        auto test_tests = detail::global_fixture.get_tests(counter_test);
+        auto sanity_failures =
+            detail::global_fixture.get_failures(counter_sanity);
+        auto test_failures = detail::global_fixture.get_failures(counter_test);
 
+        if (sanity_tests == 0 && test_tests == 0)
+        {
+            pika::util::ios_flags_saver ifs(stream);
+            stream << "No tests run. Did you forget to add tests?" << std::endl;
+            return 1;
+        }
+        else if (sanity_failures == 0 && test_failures == 0)
+        {
+            pika::util::ios_flags_saver ifs(stream);
+            stream << "All tests passed. Ran " << sanity_tests
+                   << " sanity check"    //-V128
+                   << ((sanity_tests == 1) ? " and " : "s and ") << test_tests
+                   << " test" << ((test_tests == 1) ? "." : "s.") << std::endl;
+            return 0;
+        }
         else
         {
             pika::util::ios_flags_saver ifs(stream);
-            stream << sanity << " sanity check"    //-V128
-                   << ((sanity == 1) ? " and " : "s and ") << test << " test"
-                   << ((test == 1) ? " failed." : "s failed.") << std::endl;
+            stream << "Tests failed. " << sanity_failures << "/" << sanity_tests
+                   << " sanity check"    //-V128
+                   << ((sanity_tests == 1) ? " and " : "s and ")
+                   << test_failures << "/" << test_tests << " test"
+                   << ((test_tests == 1) ? " failed." : "s failed.")
+                   << std::endl;
             return 1;
         }
     }

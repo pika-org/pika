@@ -36,7 +36,6 @@ set(function_tests
     nothrow_swap
     protect_test
     stateless_test
-    sum_avg
 )
 
 foreach(test ${function_tests})
@@ -56,3 +55,19 @@ foreach(test ${function_tests})
   pika_add_unit_test("modules.functional" ${test})
 
 endforeach()
+
+if(PIKA_WITH_COMPILE_ONLY_TESTS)
+  set(compile_tests sum_avg)
+
+  foreach(compile_test ${compile_tests})
+    set(sources ${compile_test}.cpp)
+
+    source_group("Source Files" FILES ${sources})
+
+    pika_add_unit_compile_test(
+      "modules.functional" ${compile_test}
+      SOURCES ${sources} ${${compile_test}_FLAGS}
+      FOLDER "Tests/Unit/Modules/Functional/CompileOnly"
+    )
+  endforeach()
+endif()

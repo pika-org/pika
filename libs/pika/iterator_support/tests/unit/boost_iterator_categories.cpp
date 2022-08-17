@@ -5,7 +5,6 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/modules/iterator_support.hpp>
-#include <pika/testing.hpp>
 
 #include <iterator>
 #include <type_traits>
@@ -33,6 +32,4 @@ int main()
                                    std::input_iterator_tag>,
                       pika::single_pass_traversal_tag>::value,
         "std::input_iterator_tag == pika::single_pass_traversal_tag");
-
-    return pika::util::report_errors();
 }

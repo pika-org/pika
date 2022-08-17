@@ -5,7 +5,6 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(tests
-    boost_iterator_categories
     counting_iterator
     irange
     is_iterator
@@ -46,3 +45,19 @@ foreach(test ${tests})
 
   pika_add_unit_test("modules.iterator_support" ${test} ${${test}_PARAMETERS})
 endforeach()
+
+if(PIKA_WITH_COMPILE_ONLY_TESTS)
+  set(compile_tests boost_iterator_categories)
+
+  foreach(compile_test ${compile_tests})
+    set(sources ${compile_test}.cpp)
+
+    source_group("Source Files" FILES ${sources})
+
+    pika_add_unit_compile_test(
+      "modules.iterator_support" ${compile_test}
+      SOURCES ${sources} ${${compile_test}_FLAGS}
+      FOLDER "Tests/Unit/Modules/IteratorSupport/CompileOnly"
+    )
+  endforeach()
+endif()

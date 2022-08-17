@@ -11,7 +11,6 @@ set(tests
     future_790
     future_unwrap_878
     future_unwrap_1182
-    set_pika_limit_798
     shared_future_continuation_order
     shared_future_then_2166
     wait_for_1751
@@ -37,7 +36,7 @@ endforeach()
 
 # compile only tests
 if(PIKA_WITH_COMPILE_ONLY_TESTS)
-  set(compile_tests future_range_ambiguity_2032)
+  set(compile_tests future_range_ambiguity_2032 set_pika_limit_798)
 
   if(PIKA_WITH_FAIL_COMPILE_TESTS)
     set(fail_compile_tests fail_future_2667)

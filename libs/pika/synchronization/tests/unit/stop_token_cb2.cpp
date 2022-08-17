@@ -152,6 +152,8 @@ int pika_main()
     try
     {
         test_stop_callback_inits();
+        // We expect to reach this point without an exception having been thrown
+        PIKA_TEST(true);
     }
     catch (...)
     {

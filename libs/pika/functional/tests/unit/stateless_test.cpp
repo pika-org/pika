@@ -44,5 +44,9 @@ int main(int, char*[])
     pika::util::function<int(int, int)> f;
     f = stateless_integer_add();
 
+    // This test checks that function does not allocate. We should reach this
+    // point without an exception having been thrown.
+    PIKA_TEST(true);
+
     return pika::util::report_errors();
 }
