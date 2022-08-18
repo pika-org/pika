@@ -4,11 +4,10 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests mpi_ring_async_executor algorithm_transform_mpi
-          mpi_ring_async_sender_receiver mpi_async_storage
+set(tests algorithm_transform_mpi mpi_ring_async_sender_receiver
+          mpi_async_storage
 )
 
-set(mpi_ring_async_executor_PARAMETERS THREADS 4 LOCALITIES 2 RUNWRAPPER mpi)
 set(mpi_ring_async_sender_receiver_PARAMETERS THREADS 4 LOCALITIES 2 RUNWRAPPER
                                               mpi
 )
@@ -28,7 +27,7 @@ foreach(test ${tests})
     ${test}_test INTERNAL_FLAGS
     SOURCES ${sources} ${${test}_FLAGS}
     EXCLUDE_FROM_ALL
-    DEPENDENCIES Mpi::mpi ${${test}_DEPENDENCIES}
+    DEPENDENCIES ${${test}_DEPENDENCIES}
     FOLDER "Tests/Unit/Modules/AsyncMPI"
   )
 

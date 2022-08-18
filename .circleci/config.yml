@@ -221,10 +221,12 @@ jobs:
                 -DPIKA_WITH_GIT_COMMIT=${CIRCLE_SHA1} \
                 -DPIKA_WITH_GIT_BRANCH="${CIRCLE_BRANCH}" \
                 -DPIKA_WITH_GIT_TAG="${CIRCLE_TAG}" \
+                -DPIKA_WITH_CXX_STANDARD=20 \
                 -DPIKA_WITH_PRECOMPILED_HEADERS=On \
                 -DPIKA_WITH_TOOLS=On \
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_MPI=ON \
+                -DPIKA_WITH_P2300_REFERENCE_IMPLEMENTATION=ON \
                 -DPIKA_WITH_EXAMPLES=On \
                 -DPIKA_WITH_TESTS=On \
                 -DPIKA_WITH_TESTS_HEADERS=On \

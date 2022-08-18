@@ -10,10 +10,6 @@ if(NOT PIKA_WITH_MPI)
   return()
 endif()
 
-include(pika_setup_mpi)
-pika_setup_mpi()
-set(additional_dependencies Mpi::mpi)
-
 set(mpi_base_headers pika/mpi_base/mpi.hpp pika/mpi_base/mpi_environment.hpp)
 set(mpi_base_sources mpi_environment.cpp)
 
@@ -24,6 +20,6 @@ pika_add_module(
   SOURCES ${mpi_base_sources}
   HEADERS ${mpi_base_headers}
   MODULE_DEPENDENCIES pika_logging pika_runtime_configuration pika_util
-  DEPENDENCIES ${additional_dependencies}
+  DEPENDENCIES MPI::MPI_CXX
   CMAKE_SUBDIRS examples tests
 )
