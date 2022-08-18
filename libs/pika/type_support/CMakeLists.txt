@@ -13,7 +13,6 @@ set(type_support_headers
     pika/type_support/equality.hpp
     pika/type_support/identity.hpp
     pika/type_support/lazy_conditional.hpp
-    pika/type_support/lazy_enable_if.hpp
     pika/type_support/pack.hpp
     pika/type_support/unwrap_ref.hpp
     pika/type_support/unused.hpp
