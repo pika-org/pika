@@ -7,10 +7,10 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/async_cuda/custom_blas_api.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
+
+#include <whip.hpp>
 
 #include <iosfwd>
 
@@ -20,11 +20,11 @@ namespace pika::cuda::experimental {
     {
     private:
         int device;
-        cudaStream_t stream{};
+        whip::stream_t stream{};
         cublasHandle_t handle{};
 
         static PIKA_EXPORT cublasHandle_t create_handle(
-            int device, cudaStream_t stream);
+            int device, whip::stream_t stream);
 
     public:
         PIKA_EXPORT cublas_handle();
@@ -37,7 +37,7 @@ namespace pika::cuda::experimental {
 
         PIKA_EXPORT cublasHandle_t get() const noexcept;
         PIKA_EXPORT int get_device() const noexcept;
-        PIKA_EXPORT cudaStream_t get_stream() const noexcept;
+        PIKA_EXPORT whip::stream_t get_stream() const noexcept;
 
         PIKA_EXPORT void set_stream(cuda_stream const& stream);
         PIKA_EXPORT void set_pointer_mode(cublasPointerMode_t pointer_mode);

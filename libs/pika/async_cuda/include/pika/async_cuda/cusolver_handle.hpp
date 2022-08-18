@@ -8,10 +8,10 @@
 
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_GPU_SUPPORT)
-#include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/async_cuda/custom_lapack_api.hpp>
+
+#include <whip.hpp>
 
 #include <iosfwd>
 
@@ -21,11 +21,11 @@ namespace pika::cuda::experimental {
     {
     private:
         int device;
-        cudaStream_t stream{};
+        whip::stream_t stream{};
         cusolverDnHandle_t handle{};
 
         static PIKA_EXPORT cusolverDnHandle_t create_handle(
-            int device, cudaStream_t stream);
+            int device, whip::stream_t stream);
 
     public:
         PIKA_EXPORT cusolver_handle();
@@ -38,7 +38,7 @@ namespace pika::cuda::experimental {
 
         PIKA_EXPORT cusolverDnHandle_t get() const noexcept;
         PIKA_EXPORT int get_device() const noexcept;
-        PIKA_EXPORT cudaStream_t get_stream() const noexcept;
+        PIKA_EXPORT whip::stream_t get_stream() const noexcept;
 
         PIKA_EXPORT void set_stream(cuda_stream const& stream);
 

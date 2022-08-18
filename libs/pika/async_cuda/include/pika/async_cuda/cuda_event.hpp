@@ -7,10 +7,8 @@
 
 #pragma once
 
-#include <pika/async_cuda/cuda_exception.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
-
 #include <boost/lockfree/stack.hpp>
+#include <whip.hpp>
 
 namespace pika::cuda::experimental::detail {
 
@@ -41,17 +39,17 @@ namespace pika::cuda::experimental::detail {
         // on destruction, all objects in stack will be freed
         ~cuda_event_pool()
         {
-            cudaEvent_t event;
+            whip::event_t event;
             bool ok = true;
             while (ok)
             {
                 ok = free_list_.pop(event);
                 if (ok)
-                    check_cuda_error(cudaEventDestroy(event));
+                    whip::event_destroy(event);
             }
         }
 
-        inline bool pop(cudaEvent_t& event)
+        inline bool pop(whip::event_t& event)
         {
             // pop an event off the pool, if that fails, create a new one
             while (!free_list_.pop(event))
@@ -61,7 +59,7 @@ namespace pika::cuda::experimental::detail {
             return true;
         }
 
-        inline bool push(cudaEvent_t event)
+        inline bool push(whip::event_t event)
         {
             return free_list_.push(event);
         }
@@ -69,18 +67,18 @@ namespace pika::cuda::experimental::detail {
     private:
         void add_event_to_pool()
         {
-            cudaEvent_t event;
+            whip::event_t event;
             // Create an cuda_event to query a CUDA/CUBLAS kernel for completion.
             // Timing is disabled for performance. [1]
             //
             // [1]: CUDA Runtime API, section 5.5 cuda_event Management
-            check_cuda_error(
-                cudaEventCreateWithFlags(&event, cudaEventDisableTiming));
+            whip::event_create_with_flags(&event, whip::event_disable_timing);
             free_list_.push(event);
         }
 
         // pool is dynamically sized and can grow if needed
-        boost::lockfree::stack<cudaEvent_t, boost::lockfree::fixed_sized<false>>
+        boost::lockfree::stack<whip::event_t,
+            boost::lockfree::fixed_sized<false>>
             free_list_;
     };
 }    // namespace pika::cuda::experimental::detail

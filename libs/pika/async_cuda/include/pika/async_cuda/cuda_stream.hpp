@@ -7,9 +7,9 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/async_cuda/cuda_exception.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/coroutines/thread_enums.hpp>
+
+#include <whip.hpp>
 
 #include <iosfwd>
 
@@ -26,7 +26,7 @@ namespace pika::cuda::experimental {
         int device;
         pika::execution::thread_priority priority;
         unsigned int flags;
-        cudaStream_t stream = 0;
+        whip::stream_t stream = 0;
 
         struct priorities
         {
@@ -35,7 +35,7 @@ namespace pika::cuda::experimental {
         };
 
         static PIKA_EXPORT priorities get_available_priorities();
-        static PIKA_EXPORT cudaStream_t create_stream(int device,
+        static PIKA_EXPORT whip::stream_t create_stream(int device,
             pika::execution::thread_priority priority, unsigned int flags);
 
     public:
@@ -49,7 +49,7 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT cuda_stream(cuda_stream const&);
         PIKA_EXPORT cuda_stream& operator=(cuda_stream const&);
 
-        PIKA_EXPORT cudaStream_t get() const noexcept;
+        PIKA_EXPORT whip::stream_t get() const noexcept;
         PIKA_EXPORT int get_device() const noexcept;
         PIKA_EXPORT pika::execution::thread_priority get_priority()
             const noexcept;

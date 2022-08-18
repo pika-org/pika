@@ -16,7 +16,6 @@ set(async_cuda_headers
     pika/async_cuda/cublas_handle.hpp
     pika/async_cuda/cuda_device_scope.hpp
     pika/async_cuda/cuda_event.hpp
-    pika/async_cuda/cuda_exception.hpp
     pika/async_cuda/cuda_polling_helper.hpp
     pika/async_cuda/cuda_pool.hpp
     pika/async_cuda/cuda_scheduler.hpp
@@ -25,7 +24,6 @@ set(async_cuda_headers
     pika/async_cuda/cusolver_exception.hpp
     pika/async_cuda/cusolver_handle.hpp
     pika/async_cuda/custom_blas_api.hpp
-    pika/async_cuda/custom_gpu_api.hpp
     pika/async_cuda/custom_lapack_api.hpp
     pika/async_cuda/detail/cuda_debug.hpp
     pika/async_cuda/detail/cuda_event_callback.hpp
@@ -38,7 +36,6 @@ set(async_cuda_sources
     cublas_handle.cpp
     cuda_device_scope.cpp
     cuda_event_callback.cpp
-    cuda_exception.cpp
     cuda_pool.cpp
     cuda_scheduler.cpp
     cuda_stream.cpp

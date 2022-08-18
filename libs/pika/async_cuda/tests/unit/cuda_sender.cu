@@ -23,18 +23,6 @@ namespace cu = pika::cuda::experimental;
 namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;
 
-constexpr auto cuda_launch_kernel =
-    [](auto&&... ts) -> decltype(cu::check_cuda_error(
-                         cudaLaunchKernel(std::forward<decltype(ts)>(ts)...))) {
-    cu::check_cuda_error(cudaLaunchKernel(std::forward<decltype(ts)>(ts)...));
-};
-
-constexpr auto cuda_memcpy_async =
-    [](auto&&... ts) -> decltype(cu::check_cuda_error(
-                         cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...))) {
-    cu::check_cuda_error(cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...));
-};
-
 __global__ void saxpy(int n, float a, float* x, float* y)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -50,7 +38,7 @@ auto launch_saxpy_kernel(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     return ex::when_all(std::forward<Sender>(predecessor),
                ex::just(reinterpret_cast<const void*>(&saxpy), dim3(blocks),
                    dim3(threads), args, std::size_t(0))) |
-        ex::transfer(cuda_sched) | cu::then_with_stream(cuda_launch_kernel);
+        ex::transfer(cuda_sched) | cu::then_with_stream(whip::launch_kernel);
 }
 
 template <typename T>
@@ -61,7 +49,7 @@ __global__ void trivial_kernel(T val)
 }
 
 template <typename T>
-void cuda_trivial_kernel(T t, cudaStream_t stream)
+void cuda_trivial_kernel(T t, whip::stream_t stream)
 {
     trivial_kernel<<<1, 1, 0, stream>>>(t);
 }
@@ -72,18 +60,13 @@ void test_saxpy(pika::cuda::experimental::cuda_scheduler& cuda_sched)
 
     // host arrays (CUDA pinned host memory for asynchronous data transfers)
     float *h_A, *h_B;
-    pika::cuda::experimental::check_cuda_error(
-        cudaMallocHost((void**) &h_A, N * sizeof(float)));
-    pika::cuda::experimental::check_cuda_error(
-        cudaMallocHost((void**) &h_B, N * sizeof(float)));
+    whip::malloc_host(&h_A, N * sizeof(float));
+    whip::malloc_host(&h_B, N * sizeof(float));
 
     // device arrays
     float *d_A, *d_B;
-    pika::cuda::experimental::check_cuda_error(
-        cudaMalloc((void**) &d_A, N * sizeof(float)));
-
-    pika::cuda::experimental::check_cuda_error(
-        cudaMalloc((void**) &d_B, N * sizeof(float)));
+    whip::malloc(&d_A, N * sizeof(float));
+    whip::malloc(&d_B, N * sizeof(float));
 
     // init host data
     for (int idx = 0; idx < N; idx++)
@@ -95,11 +78,11 @@ void test_saxpy(pika::cuda::experimental::cuda_scheduler& cuda_sched)
     // copy both arrays from cpu to gpu, putting both copies onto the stream
     // no need to get a future back yet
     auto copy_A = ex::transfer_just(cuda_sched, d_A, h_A, N * sizeof(float),
-                      cudaMemcpyHostToDevice) |
-        cu::then_with_stream(cuda_memcpy_async);
+                      whip::memcpy_host_to_device) |
+        cu::then_with_stream(whip::memcpy_async);
     auto copy_B = ex::transfer_just(cuda_sched, d_B, h_B, N * sizeof(float),
-                      cudaMemcpyHostToDevice) |
-        cu::then_with_stream(cuda_memcpy_async);
+                      whip::memcpy_host_to_device) |
+        cu::then_with_stream(whip::memcpy_async);
 
     unsigned int threads = 256;
     unsigned int blocks = (N + 255) / threads;
@@ -112,8 +95,8 @@ void test_saxpy(pika::cuda::experimental::cuda_scheduler& cuda_sched)
                  threads, args) |
         // finally, perform a copy from the gpu back to the cpu all on the same stream
         // grab a future to when this completes
-        cu::then_with_stream(pika::util::detail::bind_front(cuda_memcpy_async,
-            h_B, d_B, N * sizeof(float), cudaMemcpyDeviceToHost)) |
+        cu::then_with_stream(pika::util::detail::bind_front(whip::memcpy_async,
+            h_B, d_B, N * sizeof(float), whip::memcpy_device_to_host)) |
         // we can add a continuation to the memcpy sender, so that when the
         // memory copy completes, we can do new things ...
         ex::transfer(ex::thread_pool_scheduler{}) | ex::then([&]() {

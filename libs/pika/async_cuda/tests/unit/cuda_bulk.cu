@@ -26,14 +26,13 @@ int pika_main()
 
     using element_type = int;
 
-    auto malloc = [](void* p, element_type n, cudaStream_t stream) {
+    auto malloc = [](void* p, element_type n, whip::stream_t stream) {
 #if PIKA_CUDA_VERSION >= 1102
-        cu::check_cuda_error(
-            cudaMallocAsync(&p, sizeof(element_type) * n, stream));
+        whip::malloc_async(&p, sizeof(element_type) * n, stream);
 #else
         // This is not a good idea in real code, but is good enough for the
         // purposes of this test.
-        cu::check_cuda_error(cudaMalloc(&p, sizeof(element_type) * n));
+        whip::malloc(&p, sizeof(element_type) * n);
         PIKA_UNUSED(stream);
 #endif
         return p;
@@ -41,13 +40,13 @@ int pika_main()
     auto f = [] PIKA_HOST_DEVICE(element_type i, void* p) {
         static_cast<element_type*>(p)[i] = i;
     };
-    auto free = [](void* p, cudaStream_t stream) {
+    auto free = [](void* p, whip::stream_t stream) {
 #if PIKA_CUDA_VERSION >= 1102
-        cu::check_cuda_error(cudaFreeAsync(p, stream));
+        whip::free_async(p, stream);
 #else
         // This is not a good idea in real code, but is good enough for the
         // purposes of this test.
-        cu::check_cuda_error(cudaFree(p));
+        whip::free(p);
         PIKA_UNUSED(stream);
 #endif
     };
@@ -61,9 +60,9 @@ int pika_main()
         // We capture the host vector and the size into the lambda. The proper
         // way would be to use a when_all, but currently using when_all would
         // mean additional synchronization.
-        auto memcpy = [&](void* p, cudaStream_t stream) {
-            cu::check_cuda_error(cudaMemcpyAsync(host_vector.data(), p,
-                sizeof(element_type) * n, cudaMemcpyDeviceToHost, stream));
+        auto memcpy = [&](void* p, whip::stream_t stream) {
+            whip::memcpy_async(host_vector.data(), p, sizeof(element_type) * n,
+                whip::memcpy_device_to_host, stream);
             return p;
         };
 
@@ -91,9 +90,9 @@ int pika_main()
         // We capture the host vector the size into the lambda. The proper way
         // would be to use a when_all, but currently using when_all would mean
         // additional synchronization.
-        auto memcpy = [&](void* p, cudaStream_t stream) {
-            cu::check_cuda_error(cudaMemcpyAsync(host_vector.data(), p,
-                sizeof(element_type) * n, cudaMemcpyDeviceToHost, stream));
+        auto memcpy = [&](void* p, whip::stream_t stream) {
+            whip::memcpy_async(host_vector.data(), p, sizeof(element_type) * n,
+                whip::memcpy_device_to_host, stream);
             return p;
         };
 

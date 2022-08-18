@@ -7,14 +7,14 @@
 name: Linux CI (HIP, Debug)
 
 on:
-  push:
-    branches:
-      # Development and release branches
-      - main
-      - release**
-      # Bors branches
-      - trying
-      - staging
+  pull_request:
+      #    branches:
+      #      # Development and release branches
+      #      - main
+      #      - release**
+      #      # Bors branches
+      #      - trying
+      #      - staging
 
 jobs:
   build:
@@ -42,6 +42,7 @@ jobs:
               -GNinja \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_BUILD_TYPE=Debug \
+              -DWHIP_TYPE=HIP \
               -DPIKA_WITH_UNITY_BUILD=ON \
               -DPIKA_WITH_MALLOC=system \
               -DPIKA_WITH_EXAMPLES=ON \

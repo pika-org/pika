@@ -45,7 +45,7 @@ int main()
         cu::cusolver_handle handle{};
 
         PIKA_TEST_EQ(handle.get_device(), 0);
-        PIKA_TEST_EQ(handle.get_stream(), cudaStream_t{0});
+        PIKA_TEST_EQ(handle.get_stream(), whip::stream_t{0});
 
         PIKA_TEST_NEQ(handle.get(), cusolverDnHandle_t{});
 
@@ -68,9 +68,9 @@ int main()
         cu::cusolver_handle handle2{stream};
         cu::cusolver_handle handle3{stream};
 
-        PIKA_TEST_NEQ(handle1.get_stream(), cudaStream_t{0});
-        PIKA_TEST_NEQ(handle2.get_stream(), cudaStream_t{0});
-        PIKA_TEST_NEQ(handle3.get_stream(), cudaStream_t{0});
+        PIKA_TEST_NEQ(handle1.get_stream(), whip::stream_t{0});
+        PIKA_TEST_NEQ(handle2.get_stream(), whip::stream_t{0});
+        PIKA_TEST_NEQ(handle3.get_stream(), whip::stream_t{0});
         PIKA_TEST_EQ(handle1.get_stream(), stream.get());
         PIKA_TEST_EQ(handle2.get_stream(), stream.get());
         PIKA_TEST_EQ(handle3.get_stream(), stream.get());
@@ -97,9 +97,9 @@ int main()
         handle2.set_stream(stream);
         handle3.set_stream(stream);
 
-        PIKA_TEST_NEQ(handle1.get_stream(), cudaStream_t{0});
-        PIKA_TEST_NEQ(handle2.get_stream(), cudaStream_t{0});
-        PIKA_TEST_NEQ(handle3.get_stream(), cudaStream_t{0});
+        PIKA_TEST_NEQ(handle1.get_stream(), whip::stream_t{0});
+        PIKA_TEST_NEQ(handle2.get_stream(), whip::stream_t{0});
+        PIKA_TEST_NEQ(handle3.get_stream(), whip::stream_t{0});
         PIKA_TEST_EQ(handle1.get_stream(), stream.get());
         PIKA_TEST_EQ(handle2.get_stream(), stream.get());
         PIKA_TEST_EQ(handle3.get_stream(), stream.get());
@@ -159,23 +159,20 @@ int main()
         cu::cusolver_handle handle{stream};
 
         // step 2: copy A to device
-        cu::check_cuda_error(
-            cudaMalloc((void**) &d_A, sizeof(double) * lda * m));
-        cu::check_cuda_error(cudaMalloc((void**) &d_B, sizeof(double) * m));
-        cu::check_cuda_error(cudaMalloc((void**) &d_info, sizeof(int)));
-        cu::check_cuda_error(cudaMalloc((void**) &d_piv, m * sizeof(int)));
+        whip::malloc(&d_A, sizeof(double) * lda * m);
+        whip::malloc(&d_B, sizeof(double) * m);
+        whip::malloc(&d_info, sizeof(int));
+        whip::malloc(&d_piv, m * sizeof(int));
 
-        cu::check_cuda_error(cudaMemcpy(
-            d_A, A, sizeof(double) * lda * m, cudaMemcpyHostToDevice));
-        cu::check_cuda_error(
-            cudaMemcpy(d_B, B, sizeof(double) * m, cudaMemcpyHostToDevice));
+        whip::memcpy(
+            d_A, A, sizeof(double) * lda * m, whip::memcpy_host_to_device);
+        whip::memcpy(d_B, B, sizeof(double) * m, whip::memcpy_host_to_device);
 
         // step 3: query working space of getrf
 #if defined(PIKA_HAVE_CUDA)
         cu::check_cusolver_error(
             cusolverDnDgetrf_bufferSize(handle.get(), m, m, d_A, lda, &lwork));
-        cu::check_cuda_error(
-            cudaMalloc((void**) &d_work, sizeof(double) * lwork));
+        whip::malloc(&d_work, sizeof(double) * lwork);
 #endif
 
         // step 4: LU factorization
@@ -186,11 +183,10 @@ int main()
         cu::check_cusolver_error(
             cusolverDnDgetrf(handle.get(), m, m, d_A, lda, d_piv, d_info));
 #endif
-        cu::check_cuda_error(cudaDeviceSynchronize());
-        cu::check_cuda_error(cudaMemcpy(
-            LU, d_A, sizeof(double) * lda * m, cudaMemcpyDeviceToHost));
-        cu::check_cuda_error(
-            cudaMemcpy(&info, d_info, sizeof(int), cudaMemcpyDeviceToHost));
+        whip::device_synchronize();
+        whip::memcpy(
+            LU, d_A, sizeof(double) * lda * m, whip::memcpy_device_to_host);
+        whip::memcpy(&info, d_info, sizeof(int), whip::memcpy_device_to_host);
 
         PIKA_TEST_EQ(info, 0);
 
@@ -210,21 +206,20 @@ int main()
             cusolverDnDgetrs(handle.get(), CUBLAS_OP_N, m, 1, /* nrhs */
                 d_A, lda, d_piv, d_B, ldb));
 #endif
-        cu::check_cuda_error(cudaDeviceSynchronize());
-        cu::check_cuda_error(
-            cudaMemcpy(X, d_B, sizeof(double) * m, cudaMemcpyDeviceToHost));
+        whip::device_synchronize();
+        whip::memcpy(X, d_B, sizeof(double) * m, whip::memcpy_device_to_host);
 
         std::cout << "X = \n";
         print_matrix(m, 1, X, ldb, "X");
         std::cout << "=====\n";
 
         /* free resources */
-        cu::check_cuda_error(cudaFree(d_A));
-        cu::check_cuda_error(cudaFree(d_B));
-        cu::check_cuda_error(cudaFree(d_info));
-        cu::check_cuda_error(cudaFree(d_piv));
+        whip::free(d_A);
+        whip::free(d_B);
+        whip::free(d_info);
+        whip::free(d_piv);
 #if defined(PIKA_HAVE_CUDA)
-        cu::check_cuda_error(cudaFree(d_work));
+        whip::free(d_work);
 #endif
     }
 

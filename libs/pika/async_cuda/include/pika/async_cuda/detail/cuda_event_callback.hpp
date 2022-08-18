@@ -16,18 +16,19 @@
 
 #include <pika/config.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
+
+#include <whip.hpp>
 
 #include <string>
 
 namespace pika::cuda::experimental::detail {
     using event_callback_function_type =
-        pika::util::detail::unique_function<void(cudaError_t)>;
+        pika::util::detail::unique_function<void(whip::error_t)>;
 
     PIKA_EXPORT void add_event_callback(event_callback_function_type&& f,
-        cudaStream_t stream,
+        whip::stream_t stream,
         pika::execution::thread_priority =
             pika::execution::thread_priority::default_);
     PIKA_EXPORT void add_event_callback(

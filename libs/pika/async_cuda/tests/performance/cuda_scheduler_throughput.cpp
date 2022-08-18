@@ -56,12 +56,6 @@ struct sMatrixSize
     unsigned int uiWA, uiHA, uiWB, uiHB, uiWC, uiHC;
 };
 
-constexpr auto cuda_memcpy_async =
-    [](auto&&... ts) -> decltype(cu::check_cuda_error(
-                         cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...))) {
-    cu::check_cuda_error(cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...));
-};
-
 // -------------------------------------------------------------------------
 // Run a simple test matrix multiply using CUBLAS
 // -------------------------------------------------------------------------
@@ -94,18 +88,18 @@ void matrixMultiply(
     cu::enable_user_polling poll("default");
 
     T *d_A, *d_B, *d_C;
-    cu::check_cuda_error(cudaMalloc((void**) &d_A, size_A * sizeof(T)));
-    cu::check_cuda_error(cudaMalloc((void**) &d_B, size_B * sizeof(T)));
-    cu::check_cuda_error(cudaMalloc((void**) &d_C, size_C * sizeof(T)));
+    whip::malloc(&d_A, size_A * sizeof(T));
+    whip::malloc(&d_B, size_B * sizeof(T));
+    whip::malloc(&d_C, size_C * sizeof(T));
 
     // copy A and B to device
     auto copies_done =
         ex::when_all(ex::transfer_just(cuda_sched, d_A, h_A.data(),
-                         size_A * sizeof(T), cudaMemcpyHostToDevice) |
-                cu::then_with_stream(cuda_memcpy_async),
+                         size_A * sizeof(T), whip::memcpy_host_to_device) |
+                cu::then_with_stream(whip::memcpy_async),
             ex::transfer_just(cuda_sched, d_B, h_B.data(), size_B * sizeof(T),
-                cudaMemcpyHostToDevice) |
-                cu::then_with_stream(cuda_memcpy_async));
+                whip::memcpy_host_to_device) |
+                cu::then_with_stream(whip::memcpy_async));
 
     // print something when copies complete
     tt::sync_wait(std::move(copies_done) | ex::then([] {
@@ -142,9 +136,9 @@ void matrixMultiply(
 
     test_function(cuda_sched, "Event polling based scheduler", iterations);
 
-    cu::check_cuda_error(cudaFree(d_A));
-    cu::check_cuda_error(cudaFree(d_B));
-    cu::check_cuda_error(cudaFree(d_C));
+    whip::free(d_A);
+    whip::free(d_B);
+    whip::free(d_C);
 }
 
 // -------------------------------------------------------------------------

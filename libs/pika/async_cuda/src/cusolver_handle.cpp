@@ -15,7 +15,7 @@
 
 namespace pika::cuda::experimental {
     cusolverDnHandle_t cusolver_handle::create_handle(
-        int device, cudaStream_t stream)
+        int device, whip::stream_t stream)
     {
         cuda_device_scope d{device};
         cusolverDnHandle_t handle;
@@ -98,7 +98,7 @@ namespace pika::cuda::experimental {
         return device;
     }
 
-    cudaStream_t cusolver_handle::get_stream() const noexcept
+    whip::stream_t cusolver_handle::get_stream() const noexcept
     {
         return stream;
     }

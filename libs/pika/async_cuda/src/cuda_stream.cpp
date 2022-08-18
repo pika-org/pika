@@ -6,10 +6,10 @@
 
 #include <pika/config.hpp>
 #include <pika/async_cuda/cuda_device_scope.hpp>
-#include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/coroutines/thread_enums.hpp>
+
+#include <whip.hpp>
 
 #include <ostream>
 
@@ -18,28 +18,25 @@ namespace pika::cuda::experimental {
     {
         cuda_stream::priorities p;
 
-        check_cuda_error(
-            cudaDeviceGetStreamPriorityRange(&p.least, &p.greatest));
+        whip::get_stream_priority_range(&p.least, &p.greatest);
 
         return p;
     }
 
-    cudaStream_t cuda_stream::create_stream(int device,
+    whip::stream_t cuda_stream::create_stream(int device,
         pika::execution::thread_priority priority, unsigned int flags)
     {
         cuda_device_scope d{device};
         auto p = get_available_priorities();
 
-        cudaStream_t stream;
+        whip::stream_t stream;
         if (priority <= pika::execution::thread_priority::normal)
         {
-            check_cuda_error(
-                cudaStreamCreateWithPriority(&stream, flags, p.least));
+            whip::stream_create_with_priority(&stream, flags, p.least);
         }
         else
         {
-            check_cuda_error(
-                cudaStreamCreateWithPriority(&stream, flags, p.greatest));
+            whip::stream_create_with_priority(&stream, flags, p.greatest);
         }
 
         return stream;
@@ -103,7 +100,7 @@ namespace pika::cuda::experimental {
     {
         if (stream != 0)
         {
-            check_cuda_error(cudaStreamDestroy(stream));
+            whip::stream_destroy(stream);
         }
     }
 
@@ -122,7 +119,7 @@ namespace pika::cuda::experimental {
         return flags;
     }
 
-    cudaStream_t cuda_stream::get() const noexcept
+    whip::stream_t cuda_stream::get() const noexcept
     {
         return stream;
     }
