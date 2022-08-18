@@ -95,8 +95,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     PIKA_FORCEINLINE constexpr std::size_t distance(
         Iterable iter1, Iterable iter2)
     {
-        return calculate_distance<typename std::decay<Iterable>::type>::call(
-            iter1, iter2);
+        return calculate_distance<std::decay_t<Iterable>>::call(iter1, iter2);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -260,15 +259,14 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iterable next(
         Iterable iter, Stride offset)
     {
-        return calculate_next<typename std::decay<Iterable>::type>::call(
-            iter, offset);
+        return calculate_next<std::decay_t<Iterable>>::call(iter, offset);
     }
 
     template <typename Iterable, typename Stride>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iterable next(
         Iterable iter, std::size_t max_count, Stride offset)
     {
-        return calculate_next<typename std::decay<Iterable>::type>::call(
+        return calculate_next<std::decay_t<Iterable>>::call(
             iter, max_count, offset);
     }
 

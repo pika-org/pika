@@ -202,7 +202,7 @@ namespace pika { namespace parallel { namespace util {
     // Result:   intermediate result type of first step
     template <typename ExPolicy, typename R = void, typename Result = R>
     struct partitioner_with_cleanup
-      : detail::select_partitioner<typename std::decay<ExPolicy>::type,
+      : detail::select_partitioner<std::decay_t<ExPolicy>,
             detail::static_partitioner_with_cleanup,
             detail::task_static_partitioner_with_cleanup>::template apply<R,
             Result>

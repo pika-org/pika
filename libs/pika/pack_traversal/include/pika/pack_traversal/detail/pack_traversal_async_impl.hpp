@@ -92,11 +92,11 @@ namespace pika {
         /// given iterator tuple.
         template <typename Frame, typename State>
         auto make_resume_traversal_callable(Frame&& frame, State&& state)
-            -> resume_traversal_callable<typename std::decay<Frame>::type,
-                typename std::decay<State>::type>
+            -> resume_traversal_callable<std::decay_t<Frame>,
+                std::decay_t<State>>
         {
-            return resume_traversal_callable<typename std::decay<Frame>::type,
-                typename std::decay<State>::type>(
+            return resume_traversal_callable<std::decay_t<Frame>,
+                std::decay_t<State>>(
                 PIKA_FORWARD(Frame, frame), PIKA_FORWARD(State, state));
         }
 
@@ -313,8 +313,8 @@ namespace pika {
 
         /// Returns a static range for the given type
         template <typename T,
-            typename Range = static_async_range<typename std::decay<T>::type,
-                0U, std::tuple_size<typename std::decay<T>::type>::value>>
+            typename Range = static_async_range<std::decay_t<T>, 0U,
+                std::tuple_size<std::decay_t<T>>::value>>
         Range make_static_range(T&& element)
         {
             auto pointer = std::addressof(element);
@@ -354,8 +354,8 @@ namespace pika {
 
         template <typename T>
         using dynamic_async_range_of_t = dynamic_async_range<
-            typename std::decay<decltype(std::begin(std::declval<T>()))>::type,
-            typename std::decay<decltype(std::end(std::declval<T>()))>::type>;
+            std::decay_t<decltype(std::begin(std::declval<T>()))>,
+            std::decay_t<decltype(std::end(std::declval<T>()))>>;
 
         /// Returns a dynamic range for the given type
         template <typename T, typename Range = dynamic_async_range_of_t<T>>
@@ -404,16 +404,15 @@ namespace pika {
             /// Creates a new traversal point which
             template <typename Parent>
             auto push(Parent&& parent) -> async_traversal_point<Frame,
-                typename std::decay<Parent>::type, Hierarchy...>
+                std::decay_t<Parent>, Hierarchy...>
             {
                 // Create a new hierarchy which contains the
                 // the parent (the last traversed element).
                 auto hierarchy = std::tuple_cat(
                     std::make_tuple(PIKA_FORWARD(Parent, parent)), hierarchy_);
 
-                return async_traversal_point<Frame,
-                    typename std::decay<Parent>::type, Hierarchy...>(
-                    frame_, PIKA_MOVE(hierarchy), detached_);
+                return async_traversal_point<Frame, std::decay_t<Parent>,
+                    Hierarchy...>(frame_, PIKA_MOVE(hierarchy), detached_);
             }
 
             /// Forks the current traversal point and continues the child
@@ -544,9 +543,8 @@ namespace pika {
         /// Deduces to the traversal point class of the
         /// given frame and hierarchy
         template <typename Frame, typename... Hierarchy>
-        using traversal_point_of_t =
-            async_traversal_point<typename std::decay<Frame>::type,
-                typename std::decay<Hierarchy>::type...>;
+        using traversal_point_of_t = async_traversal_point<std::decay_t<Frame>,
+            std::decay_t<Hierarchy>...>;
 
         /// A callable object which is capable of resuming an asynchronous
         /// pack traversal.
@@ -637,9 +635,8 @@ namespace pika {
         {
             /// Deduces to the async traversal frame type of the given
             /// traversal arguments and mapper
-            using frame_type =
-                async_traversal_frame<typename std::decay<Visitor>::type,
-                    typename std::decay<Args>::type...>;
+            using frame_type = async_traversal_frame<std::decay_t<Visitor>,
+                std::decay_t<Args>...>;
 
             /// The type of the frame pointer
             using frame_pointer_type = pika::intrusive_ptr<frame_type>;

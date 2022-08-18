@@ -188,8 +188,7 @@ void test_sender_receiver_then_sync_wait()
     });
     auto result = tt::sync_wait(std::move(work));
     PIKA_TEST_EQ(then_count, std::size_t(1));
-    static_assert(
-        std::is_same<int, typename std::decay<decltype(result)>::type>::value,
+    static_assert(std::is_same<int, std::decay_t<decltype(result)>>::value,
         "result should be an int");
     PIKA_TEST_EQ(result, 42);
 }
@@ -222,8 +221,8 @@ void test_sender_receiver_then_arguments()
     });
     auto result = tt::sync_wait(std::move(work3));
     PIKA_TEST_EQ(then_count, std::size_t(3));
-    static_assert(std::is_same<std::size_t,
-                      typename std::decay<decltype(result)>::type>::value,
+    static_assert(
+        std::is_same<std::size_t, std::decay_t<decltype(result)>>::value,
         "result should be a std::size_t");
     PIKA_TEST_EQ(result, std::size_t(12));
 }
@@ -446,8 +445,8 @@ void test_transfer_arguments()
     });
 
     auto result = tt::sync_wait(std::move(work5));
-    static_assert(std::is_same<std::string,
-                      typename std::decay<decltype(result)>::type>::value,
+    static_assert(
+        std::is_same<std::string, std::decay_t<decltype(result)>>::value,
         "result should be a std::string");
     PIKA_TEST_EQ(result, std::string("result: 0!"));
 }

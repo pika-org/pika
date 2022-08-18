@@ -48,8 +48,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     template <typename Iter1, typename Iter2>
     struct iterators_datapar_compatible_impl
     {
-        using iterator1_type = typename std::decay<Iter1>::type;
-        using iterator2_type = typename std::decay<Iter2>::type;
+        using iterator1_type = std::decay_t<Iter1>;
+        using iterator2_type = std::decay_t<Iter2>;
 
         typedef typename std::iterator_traits<iterator1_type>::value_type
             value1_type;
@@ -84,9 +84,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 
     template <typename Iter>
     struct iterator_datapar_compatible<Iter,
-        typename std::enable_if<
-            pika::traits::is_random_access_iterator<Iter>::value>::type>
-      : iterator_datapar_compatible_impl<typename std::decay<Iter>::type>::type
+        std::enable_if_t<pika::traits::is_random_access_iterator_v<Iter>>>
+      : iterator_datapar_compatible_impl<std::decay_t<Iter>>::type
     {
     };
 

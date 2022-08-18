@@ -60,7 +60,7 @@ namespace pika {
     ///
     template <typename T>
     struct is_execution_policy
-      : pika::detail::is_execution_policy<typename std::decay<T>::type>
+      : pika::detail::is_execution_policy<std::decay_t<T>>
     {
     };
 
@@ -82,7 +82,7 @@ namespace pika {
     ///
     template <typename T>
     struct is_parallel_execution_policy
-      : pika::detail::is_parallel_execution_policy<typename std::decay<T>::type>
+      : pika::detail::is_parallel_execution_policy<std::decay_t<T>>
     {
     };
 
@@ -108,8 +108,7 @@ namespace pika {
     // extension:
     template <typename T>
     struct is_sequenced_execution_policy
-      : pika::detail::is_sequenced_execution_policy<
-            typename std::decay<T>::type>
+      : pika::detail::is_sequenced_execution_policy<std::decay_t<T>>
     {
     };
 
@@ -135,7 +134,7 @@ namespace pika {
     // extension:
     template <typename T>
     struct is_async_execution_policy
-      : pika::detail::is_async_execution_policy<typename std::decay<T>::type>
+      : pika::detail::is_async_execution_policy<std::decay_t<T>>
     {
     };
 
@@ -146,7 +145,7 @@ namespace pika {
     /// \cond NOINTERNAL
     template <typename T>
     struct is_rebound_execution_policy
-      : pika::detail::is_rebound_execution_policy<typename std::decay<T>::type>
+      : pika::detail::is_rebound_execution_policy<std::decay_t<T>>
     {
     };
 
@@ -157,8 +156,7 @@ namespace pika {
     // extension:
     template <typename T>
     struct is_vectorpack_execution_policy
-      : pika::detail::is_vectorpack_execution_policy<
-            typename std::decay<T>::type>
+      : pika::detail::is_vectorpack_execution_policy<std::decay_t<T>>
     {
     };
 

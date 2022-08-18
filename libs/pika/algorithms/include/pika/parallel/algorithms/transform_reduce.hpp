@@ -290,9 +290,9 @@ namespace pika { namespace parallel { inline namespace v1 {
             typename Convert>
         struct transform_reduce_iteration
         {
-            using execution_policy_type = typename std::decay<ExPolicy>::type;
-            using reduce_type = typename std::decay<Reduce>::type;
-            using convert_type = typename std::decay<Convert>::type;
+            using execution_policy_type = std::decay_t<ExPolicy>;
+            using reduce_type = std::decay_t<Reduce>;
+            using convert_type = std::decay_t<Convert>;
 
             reduce_type reduce_;
             convert_type convert_;
@@ -423,7 +423,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename Op1, typename Op2, typename T>
         struct transform_reduce_binary_partition
         {
-            using value_type = typename std::decay<T>::type;
+            using value_type = std::decay_t<T>;
 
             Op1 op1_;
             Op2 op2_;
@@ -609,13 +609,11 @@ namespace pika::detail {
                 Reduce, Convert> const& f) noexcept
         {
             char const* reduce_name =
-                get_function_address<typename std::decay<Reduce>::type>::call(
-                    f.reduce_);
+                get_function_address<std::decay_t<Reduce>>::call(f.reduce_);
 
             return reduce_name != nullptr ?
                 reduce_name :
-                get_function_address<typename std::decay<Convert>::type>::call(
-                    f.convert_);
+                get_function_address<std::decay_t<Convert>>::call(f.convert_);
         }
     };
 
@@ -627,13 +625,13 @@ namespace pika::detail {
             parallel::v1::detail::transform_reduce_iteration<T, ExPolicy,
                 Reduce, Convert> const& f) noexcept
         {
-            char const* reduce_name = get_function_annotation<
-                typename std::decay<Reduce>::type>::call(f.reduce_);
+            char const* reduce_name =
+                get_function_annotation<std::decay_t<Reduce>>::call(f.reduce_);
 
             return reduce_name != nullptr ?
                 reduce_name :
-                get_function_annotation<
-                    typename std::decay<Convert>::type>::call(f.convert_);
+                get_function_annotation<std::decay_t<Convert>>::call(
+                    f.convert_);
         }
     };
 

@@ -426,8 +426,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
 
             return execution::async_execute(policy.executor(),
-                &sort_thread<typename std::decay<ExPolicy>::type, RandomIt,
-                    Comp>,
+                &sort_thread<std::decay_t<ExPolicy>, RandomIt, Comp>,
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp), chunk_size);
         }

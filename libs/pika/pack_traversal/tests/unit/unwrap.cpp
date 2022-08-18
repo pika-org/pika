@@ -552,7 +552,7 @@ struct future_factory
     }
 
     template <typename T>
-    FutureType<typename std::decay<T>::type> operator()(T&& value) const
+    FutureType<std::decay_t<T>> operator()(T&& value) const
     {
         return pika::make_ready_future(std::forward<T>(value));
     }

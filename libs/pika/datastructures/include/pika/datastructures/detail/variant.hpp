@@ -371,7 +371,7 @@ namespace pika::variant_ns {
       using common_type_t = typename std::common_type<Ts...>::type;
 
       template <typename T>
-      using decay_t = typename std::decay<T>::type;
+      using decay_t = std::decay_t<T>;
 
       template <bool B, typename T = void>
       using enable_if_t = typename std::enable_if<B, T>::type;

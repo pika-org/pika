@@ -18,8 +18,8 @@ namespace pika { namespace parallel { namespace util {
     template <typename Pred, typename Proj>
     struct invoke_projected
     {
-        using pred_type = typename std::decay<Pred>::type;
-        using proj_type = typename std::decay<Proj>::type;
+        using pred_type = std::decay_t<Pred>;
+        using proj_type = std::decay_t<Proj>;
 
         pred_type pred_;
         proj_type proj_;
@@ -48,7 +48,7 @@ namespace pika { namespace parallel { namespace util {
     template <typename Pred>
     struct invoke_projected<Pred, projection_identity>
     {
-        using pred_type = typename std::decay<Pred>::type;
+        using pred_type = std::decay_t<Pred>;
 
         pred_type pred_;
 

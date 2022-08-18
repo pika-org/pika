@@ -41,7 +41,7 @@ void test_for_each_seq(IteratorTag, Proj&& proj)
     std::vector<std::size_t> c(10007);
     std::fill(std::begin(c), std::end(c), std::size_t(42));
 
-    counter<typename std::decay<Proj>::type> f{proj};
+    counter<std::decay_t<Proj>> f{proj};
     auto res = pika::ranges::for_each(
         pika::util::make_iterator_range(
             iterator(std::begin(c)), iterator(std::end(c))),

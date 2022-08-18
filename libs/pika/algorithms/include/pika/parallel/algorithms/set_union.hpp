@@ -231,7 +231,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                 }
 
                 using buffer_type = typename set_operations_buffer<Iter3>::type;
-                using func_type = typename std::decay<F>::type;
+                using func_type = std::decay_t<F>;
 
                 // calculate approximate destination index
                 auto f1 = [](difference_type1 idx1,

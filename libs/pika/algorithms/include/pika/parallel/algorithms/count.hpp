@@ -188,17 +188,16 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename ExPolicy, typename Op, typename Proj>
         struct count_iteration
         {
-            using execution_policy_type = typename std::decay<ExPolicy>::type;
-            using proj_type = typename std::decay<Proj>::type;
-            using op_type = typename std::decay<Op>::type;
+            using execution_policy_type = std::decay_t<ExPolicy>;
+            using proj_type = std::decay_t<Proj>;
+            using op_type = std::decay_t<Op>;
 
             op_type op_;
             proj_type proj_;
 
             template <typename Op_, typename Proj_,
-                typename U = typename std::enable_if<
-                    !std::is_same<typename std::decay<Op_>::type,
-                        count_iteration>::value>::type>
+                typename U = typename std::enable_if<!std::is_same<
+                    std::decay_t<Op_>, count_iteration>::value>::type>
             PIKA_HOST_DEVICE count_iteration(Op_&& op, Proj_&& proj)
               : op_(PIKA_FORWARD(Op_, op))
               , proj_(PIKA_FORWARD(Proj_, proj))

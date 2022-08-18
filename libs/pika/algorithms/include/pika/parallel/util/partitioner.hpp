@@ -47,7 +47,7 @@ namespace pika { namespace parallel { namespace util {
         {
             // estimate a chunk size based on number of cores used
             using parameters_type =
-                typename std::decay<ExPolicy>::type::executor_parameters_type;
+                std::decay_t<ExPolicy>::executor_parameters_type;
             using has_variable_chunk_size =
                 typename execution::extract_has_variable_chunk_size<
                     parameters_type>::type;
@@ -80,7 +80,7 @@ namespace pika { namespace parallel { namespace util {
         {
             // estimate a chunk size based on number of cores used
             using parameters_type =
-                typename std::decay<ExPolicy>::type::executor_parameters_type;
+                std::decay_t<ExPolicy>::executor_parameters_type;
             using has_variable_chunk_size =
                 typename execution::extract_has_variable_chunk_size<
                     parameters_type>::type;
@@ -115,7 +115,7 @@ namespace pika { namespace parallel { namespace util {
             PIKA_ASSERT(
                 pika::util::size(data) >= pika::util::size(chunk_sizes));
 
-            using data_type = typename std::decay<Data>::type;
+            using data_type = std::decay_t<Data>;
 
             typename data_type::const_iterator data_it =
                 pika::util::begin(data);
@@ -449,7 +449,7 @@ namespace pika { namespace parallel { namespace util {
     // Result:   intermediate result type of first step
     template <typename ExPolicy, typename R = void, typename Result = R>
     struct partitioner
-      : detail::select_partitioner<typename std::decay<ExPolicy>::type,
+      : detail::select_partitioner<std::decay_t<ExPolicy>,
             detail::static_partitioner,
             detail::task_static_partitioner>::template apply<R, Result>
     {

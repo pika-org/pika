@@ -136,7 +136,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename T>
         struct fill_iteration
         {
-            typename std::decay<T>::type val_;
+            std::decay_t<T> val_;
 
             template <typename U>
             PIKA_HOST_DEVICE typename std::enable_if<

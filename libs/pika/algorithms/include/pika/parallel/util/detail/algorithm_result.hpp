@@ -246,8 +246,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename ExPolicy, typename T = void>
-    struct algorithm_result
-      : algorithm_result_impl<typename std::decay<ExPolicy>::type, T>
+    struct algorithm_result : algorithm_result_impl<std::decay_t<ExPolicy>, T>
     {
         static_assert(!std::is_lvalue_reference<T>::value,
             "T shouldn't be a lvalue reference");

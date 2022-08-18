@@ -57,7 +57,7 @@ namespace pika::detail {
             pika::detail::dataflow_finalization<Frame> const& f) noexcept
         {
             char const* annotation = pika::detail::get_function_annotation<
-                typename std::decay<function_type>::type>::call(f.this_->func_);
+                std::decay_t<function_type>>::call(f.this_->func_);
             return annotation;
         }
     };
@@ -388,9 +388,8 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Policy, typename Func, typename... Ts,
-        typename Frame = dataflow_frame<typename std::decay<Policy>::type,
-            typename std::decay<Func>::type,
-            std::tuple<typename std::decay<Ts>::type...>>>
+        typename Frame = dataflow_frame<std::decay_t<Policy>,
+            std::decay_t<Func>, std::tuple<std::decay_t<Ts>...>>>
     typename Frame::type create_dataflow(
         Policy&& policy, Func&& func, Ts&&... ts)
     {
@@ -411,9 +410,8 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Allocator, typename Policy, typename Func,
         typename... Ts,
-        typename Frame = dataflow_frame<typename std::decay<Policy>::type,
-            typename std::decay<Func>::type,
-            std::tuple<typename std::decay<Ts>::type...>>>
+        typename Frame = dataflow_frame<std::decay_t<Policy>,
+            std::decay_t<Func>, std::tuple<std::decay_t<Ts>...>>>
     typename Frame::type create_dataflow_alloc(
         Allocator const& alloc, Policy&& policy, Func&& func, Ts&&... ts)
     {
@@ -470,18 +468,17 @@ namespace pika::detail {
         template <typename Allocator, typename P, typename F, typename Id,
             typename... Ts>
         PIKA_FORCEINLINE static auto call(Allocator const& alloc, P&& p, F&& f,
-            typename std::enable_if<
-                detail::is_action<typename std::decay<F>::type>::value,
+            typename std::enable_if<detail::is_action<std::decay_t<F>>::value,
                 Id>::type const& id,
             Ts&&... ts)
             -> decltype(dataflow_dispatch_impl<
-                detail::is_action<typename std::decay<F>::type>::value,
-                Policy>::call(alloc, PIKA_FORWARD(P, p), PIKA_FORWARD(F, f), id,
+                detail::is_action<std::decay_t<F>>::value, Policy>::call(alloc,
+                PIKA_FORWARD(P, p), PIKA_FORWARD(F, f), id,
                 PIKA_FORWARD(Ts, ts)...))
         {
             return dataflow_dispatch_impl<
-                detail::is_action<typename std::decay<F>::type>::value,
-                Policy>::call(alloc, PIKA_FORWARD(P, p), PIKA_FORWARD(F, f), id,
+                detail::is_action<std::decay_t<F>>::value, Policy>::call(alloc,
+                PIKA_FORWARD(P, p), PIKA_FORWARD(F, f), id,
                 PIKA_FORWARD(Ts, ts)...);
         }
     };
@@ -512,7 +509,7 @@ namespace pika::detail {
     {
         template <typename Allocator, typename F, typename... Ts,
             typename Enable = typename std::enable_if<
-                !detail::is_action<typename std::decay<F>::type>::value>::type>
+                !detail::is_action<std::decay_t<F>>::value>::type>
         PIKA_FORCEINLINE static auto call(Allocator const& alloc, F&& f,
             Ts&&... ts) -> decltype(dataflow_dispatch<launch>::call(alloc,
             launch::async, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
@@ -532,14 +529,12 @@ namespace pika::detail {
         PIKA_FORCEINLINE static auto call(
             Allocator const& alloc, F&& f, Ts&&... ts)
             -> decltype(dataflow_dispatch_impl<
-                detail::is_action<typename std::decay<F>::type>::value,
-                launch>::call(alloc, launch::async, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...))
+                detail::is_action<std::decay_t<F>>::value, launch>::call(alloc,
+                launch::async, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
             return dataflow_dispatch_impl<
-                detail::is_action<typename std::decay<F>::type>::value,
-                launch>::call(alloc, launch::async, PIKA_FORWARD(F, f),
-                PIKA_FORWARD(Ts, ts)...);
+                detail::is_action<std::decay_t<F>>::value, launch>::call(alloc,
+                launch::async, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
         }
     };
 }    // namespace pika::detail

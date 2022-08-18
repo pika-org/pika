@@ -25,7 +25,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename Proj, typename Rng>
     struct projected_range_result_of<Proj, Rng,
         typename std::enable_if<pika::traits::is_range<Rng>::value>::type>
-      : detail::projected_result_of<typename std::decay<Proj>::type,
+      : detail::projected_result_of<std::decay_t<Proj>,
             typename pika::traits::range_iterator<Rng>::type>
     {
     };
@@ -39,7 +39,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename Proj, typename Rng>
     struct is_projected_range<Proj, Rng,
         typename std::enable_if<pika::traits::is_range<Rng>::value>::type>
-      : detail::is_projected<typename std::decay<Proj>::type,
+      : detail::is_projected<std::decay_t<Proj>,
             typename pika::traits::range_iterator<Rng>::type>
     {
     };
@@ -58,7 +58,7 @@ namespace pika { namespace parallel { namespace traits {
     struct projected_range<Proj, Rng,
         typename std::enable_if<pika::traits::is_range<Rng>::value>::type>
     {
-        using projector_type = typename std::decay<Proj>::type;
+        using projector_type = std::decay_t<Proj>;
         using iterator_type = typename pika::traits::range_iterator<Rng>::type;
     };
 }}}    // namespace pika::parallel::traits

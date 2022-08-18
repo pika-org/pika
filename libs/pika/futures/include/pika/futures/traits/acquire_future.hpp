@@ -29,8 +29,7 @@ namespace pika { namespace traits {
     }
 
     template <typename T, typename Enable = void>
-    struct acquire_future
-      : detail::acquire_future_impl<typename std::decay<T>::type>
+    struct acquire_future : detail::acquire_future_impl<std::decay_t<T>>
     {
     };
 
@@ -123,7 +122,7 @@ namespace pika { namespace traits {
 
             template <typename Range_>
             typename std::enable_if<
-                !has_push_back<typename std::decay<Range_>::type>::value>::type
+                !has_push_back<std::decay_t<Range_>>::value>::type
             transform_future_disp(Range_&& futures, Range& values) const
             {
                 detail::reserve_if_random_access_by_range(values, futures);

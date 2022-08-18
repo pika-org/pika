@@ -433,7 +433,7 @@ namespace pika { namespace parallel { namespace util {
         typename Result2 = void,
         typename ScanPartTag = scan_partitioner_normal_tag>
     struct scan_partitioner
-      : detail::select_partitioner<typename std::decay<ExPolicy>::type,
+      : detail::select_partitioner<std::decay_t<ExPolicy>,
             detail::scan_static_partitioner,
             detail::scan_task_static_partitioner>::template apply<ScanPartTag,
             R, Result1, Result2>

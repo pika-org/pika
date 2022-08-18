@@ -110,7 +110,7 @@ struct wrapper
 {
     T m_x;
 
-    template <typename T_, typename TD = typename std::decay<T_>::type,
+    template <typename T_, typename TD = std::decay_t<T_>,
         typename Enable =
             typename std::enable_if<!std::is_same<TD, wrapper<T>>::value>::type>
     explicit wrapper(T_&& x)
