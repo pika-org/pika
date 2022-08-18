@@ -19,9 +19,9 @@ if [[ -z "${ghprbPullId:-}" ]]; then
     # Set first line of commit message to have better build names on staging and
     # trying
     export git_commit_message=$(git log --format=%B -n 1 HEAD | head -n1)
-    job_name="jenkins-pika-${git_local_branch}-${configuration_name_with_build_type}"
+    export job_name="jenkins-pika-${git_local_branch}-${configuration_name_with_build_type}"
 else
-    job_name="jenkins-pika-${ghprbPullId}-${configuration_name_with_build_type}"
+    export job_name="jenkins-pika-${ghprbPullId}-${configuration_name_with_build_type}"
 
     # Cancel currently running builds on the same branch, but only for pull
     # requests

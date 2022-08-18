@@ -8,14 +8,6 @@
 
 set -eux
 
-if [[ -z "${ghprbPullId:-}" ]]; then
-    # Set name of branch if not building a pull request
-    export git_local_branch=$(echo "${GIT_BRANCH}" | cut -f2 -d'/')
-    job_name="jenkins-pika-${git_local_branch}-${configuration_name_with_build_type}"
-else
-    job_name="jenkins-pika-${ghprbPullId}-${configuration_name_with_build_type}"
-fi
-
 # Make the name of the directories unique otherwise directories are removed by
 # another job
 orig_src_dir="$(pwd)"
