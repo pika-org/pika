@@ -288,73 +288,56 @@ pika_option(
 )
 pika_option(
   PIKA_WITH_TESTS_BENCHMARKS BOOL "Build benchmark tests (default: ON)" ON
-  CATEGORY "Build Targets"
+  DEPENDS "PIKA_WITH_TESTS" CATEGORY "Build Targets"
 )
 pika_option(
   PIKA_WITH_TESTS_REGRESSIONS BOOL "Build regression tests (default: ON)" ON
+  DEPENDS "PIKA_WITH_TESTS" CATEGORY "Build Targets"
+)
+pika_option(
+  PIKA_WITH_TESTS_UNIT BOOL "Build unit tests (default: ON)" ON DEPENDS
+  "PIKA_WITH_TESTS" CATEGORY "Build Targets"
+)
+pika_option(
+  PIKA_WITH_TESTS_HEADERS
+  BOOL
+  "Build header tests (default: ON)"
+  ON
+  ADVANCED
+  DEPENDS
+  "PIKA_WITH_TESTS"
   CATEGORY "Build Targets"
 )
 pika_option(
-  PIKA_WITH_TESTS_UNIT BOOL "Build unit tests (default: ON)" ON
+  PIKA_WITH_TESTS_EXTERNAL_BUILD
+  BOOL
+  "Build external CMake build tests (default: ON)"
+  ON
+  ADVANCED
+  DEPENDS
+  "PIKA_WITH_TESTS"
   CATEGORY "Build Targets"
 )
 pika_option(
-  PIKA_WITH_TESTS_HEADERS BOOL "Build header tests (default: ON)" ON ADVANCED
+  PIKA_WITH_TESTS_EXAMPLES
+  BOOL
+  "Add examples as tests (default: ON)"
+  ON
+  DEPENDS
+  "PIKA_WITH_TESTS;PIKA_WITH_EXAMPLES"
+  ADVANCED
   CATEGORY "Build Targets"
-)
-pika_option(
-  PIKA_WITH_TESTS_EXTERNAL_BUILD BOOL
-  "Build external CMake build tests (default: ON)" ON ADVANCED
-  CATEGORY "Build Targets"
-)
-pika_option(
-  PIKA_WITH_TESTS_EXAMPLES BOOL "Add examples as tests (default: ON)" ON
-  ADVANCED CATEGORY "Build Targets"
 )
 pika_option(
   PIKA_WITH_COMPILE_ONLY_TESTS BOOL
   "Create build system support for compile time only tests (default: ON)" ON
-  CATEGORY "Build Targets"
+  DEPENDS "PIKA_WITH_TESTS" CATEGORY "Build Targets"
 )
 pika_option(
   PIKA_WITH_FAIL_COMPILE_TESTS BOOL
-  "Create build system support for fail compile tests (default: ON)" ON
-  CATEGORY "Build Targets"
+  "Create build system support for fail compile tests (default: ON)" ON DEPENDS
+  "PIKA_WITH_TESTS" CATEGORY "Build Targets"
 )
-
-# disable all tests if PIKA_WITH_TESTS=OFF
-if(NOT PIKA_WITH_TESTS)
-  pika_set_option(
-    PIKA_WITH_TESTS_BENCHMARKS
-    VALUE OFF
-    FORCE
-  )
-  pika_set_option(
-    PIKA_WITH_TESTS_REGRESSIONS
-    VALUE OFF
-    FORCE
-  )
-  pika_set_option(
-    PIKA_WITH_TESTS_UNIT
-    VALUE OFF
-    FORCE
-  )
-  pika_set_option(
-    PIKA_WITH_TESTS_HEADERS
-    VALUE OFF
-    FORCE
-  )
-  pika_set_option(
-    PIKA_WITH_TESTS_EXTERNAL_BUILD
-    VALUE OFF
-    FORCE
-  )
-  pika_set_option(
-    PIKA_WITH_TESTS_EXAMPLES
-    VALUE OFF
-    FORCE
-  )
-endif()
 
 pika_option(
   PIKA_WITH_TOOLS BOOL "Build tools (default: OFF)" OFF ADVANCED
@@ -796,7 +779,7 @@ endif()
 pika_option(
   PIKA_WITH_EXAMPLES_OPENMP BOOL
   "Enable examples requiring OpenMP support (default: OFF)." OFF
-  CATEGORY "Build Targets"
+  CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
   ADVANCED
 )
 if(PIKA_WITH_EXAMPLES_OPENMP)
@@ -805,7 +788,7 @@ endif()
 pika_option(
   PIKA_WITH_EXAMPLES_TBB BOOL
   "Enable examples requiring TBB support (default: OFF)." OFF
-  CATEGORY "Build Targets"
+  CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
   ADVANCED
 )
 if(PIKA_WITH_EXAMPLES_TBB)
@@ -817,7 +800,7 @@ endif()
 pika_option(
   PIKA_WITH_EXAMPLES_QTHREADS BOOL
   "Enable examples requiring QThreads support (default: OFF)." OFF
-  CATEGORY "Build Targets"
+  CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
   ADVANCED
 )
 if(PIKA_WITH_EXAMPLES_QTHREADS)
@@ -829,7 +812,7 @@ endif()
 pika_option(
   PIKA_WITH_EXAMPLES_HDF5 BOOL
   "Enable examples requiring HDF5 support (default: OFF)." OFF
-  CATEGORY "Build Targets"
+  CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
   ADVANCED
 )
 if(PIKA_WITH_EXAMPLES_HDF5)
@@ -844,7 +827,7 @@ if(NOT "${PIKA_PLATFORM_UC}" STREQUAL "BLUEGENEQ")
   pika_option(
     PIKA_WITH_EXAMPLES_QT4 BOOL
     "Enable examples requiring Qt4 support (default: OFF)." OFF
-    CATEGORY "Build Targets"
+    CATEGORY "Build Targets" DEPENDS "PIKA_WITH_EXAMPLES"
     ADVANCED
   )
   if(PIKA_WITH_EXAMPLES_QT4)
