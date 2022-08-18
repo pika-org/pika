@@ -20,15 +20,13 @@ fi
 # another job
 orig_src_dir="$(pwd)"
 pika_dir="/dev/shm/pika"
-src_dir="${pika_dir}/src_${job_name}_${GIT_COMMIT}"
-build_dir="${pika_dir}/build_${job_name}_${GIT_COMMIT}"
-install_dir="${pika_dir}/install_${job_name}_${GIT_COMMIT}"
+src_dir="${pika_dir}/src_${job_name}"
+build_dir="${pika_dir}/build_${job_name}"
+install_dir="${pika_dir}/install_${job_name}"
 
 # Clean up directories older than 4 days, find fails if dir does not exist
 test -d ${pika_dir} && find ${pika_dir} -mindepth 1 -type d -ctime +4 -exec rm -rf {} \; 2> /dev/null
 
-# TODO: since use of bors, step probably not needed as every commit has a
-# different hash
 rm -rf "${src_dir}" "${build_dir}"
 # Copy source directory to /dev/shm for faster builds
 mkdir -p "${build_dir}" "${src_dir}"
