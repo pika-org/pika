@@ -16,6 +16,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -27,6 +28,19 @@ namespace pika { namespace util {
         std::atomic<std::size_t> fixture::sanity_failures_(0);
         std::atomic<std::size_t> fixture::test_tests_(0);
         std::atomic<std::size_t> fixture::test_failures_(0);
+
+        fixture::fixture(std::ostream& stream)
+          : stream_(stream)
+        {
+        }
+
+        fixture::~fixture()
+        {
+            if (report_errors(stream_) != 0)
+            {
+                std::exit(EXIT_FAILURE);
+            }
+        }
 
         void fixture::increment_tests(counter_type c)
         {

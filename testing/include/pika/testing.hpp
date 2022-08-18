@@ -33,7 +33,7 @@ namespace pika { namespace util {
     };
 
     namespace detail {
-        struct fixture
+        struct fixture final
         {
         public:
             using mutex_type = pika::util::detail::spinlock;
@@ -47,10 +47,8 @@ namespace pika { namespace util {
             mutex_type mutex_;
 
         public:
-            explicit fixture(std::ostream& stream)
-              : stream_(stream)
-            {
-            }
+            explicit fixture(std::ostream& stream);
+            ~fixture();
 
             PIKA_EXPORT void increment_tests(counter_type c);
             PIKA_EXPORT void increment_failures(counter_type c);
