@@ -11,10 +11,13 @@
 #include <pika/async_cuda/cuda_stream.hpp>
 #include <pika/async_cuda/custom_blas_api.hpp>
 
+#include <whip.hpp>
+
 #include <ostream>
 
 namespace pika::cuda::experimental {
-    cublasHandle_t cublas_handle::create_handle(int device, cudaStream_t stream)
+    cublasHandle_t cublas_handle::create_handle(
+        int device, whip::stream_t stream)
     {
         cuda_device_scope d{device};
         cublasHandle_t handle;
@@ -96,7 +99,7 @@ namespace pika::cuda::experimental {
         return device;
     }
 
-    cudaStream_t cublas_handle::get_stream() const noexcept
+    whip::stream_t cublas_handle::get_stream() const noexcept
     {
         return stream;
     }

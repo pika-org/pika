@@ -9,6 +9,8 @@
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
 
+#include <whip.hpp>
+
 #include <cstddef>
 #include <iostream>
 
@@ -27,7 +29,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
     cu::cuda_pool pool{};
     cu::cuda_scheduler sched{pool};
-    cudaStream_t cuda_stream = pool.get_next_stream().get();
+    whip::stream_t cuda_stream = pool.get_next_stream().get();
 
     // Warmup
     {
@@ -35,7 +37,7 @@ int pika_main(pika::program_options::variables_map& vm)
         for (std::size_t i = 0; i != iterations; ++i)
         {
             dummy<<<1, 1, 0, cuda_stream>>>();
-            cu::check_cuda_error(cudaStreamSynchronize(cuda_stream));
+            whip::stream_synchronize(cuda_stream);
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -48,7 +50,7 @@ int pika_main(pika::program_options::variables_map& vm)
         for (std::size_t i = 0; i != iterations; ++i)
         {
             dummy<<<1, 1, 0, cuda_stream>>>();
-            cu::check_cuda_error(cudaStreamSynchronize(cuda_stream));
+            whip::stream_synchronize(cuda_stream);
         }
         double elapsed = timer.elapsed();
         std::cout
@@ -65,14 +67,14 @@ int pika_main(pika::program_options::variables_map& vm)
             {
                 dummy<<<1, 1, 0, cuda_stream>>>();
             }
-            cu::check_cuda_error(cudaStreamSynchronize(cuda_stream));
+            whip::stream_synchronize(cuda_stream);
         }
 
         for (std::size_t i = 0; i < non_batch_iterations; ++i)
         {
             dummy<<<1, 1, 0, cuda_stream>>>();
         }
-        cu::check_cuda_error(cudaStreamSynchronize(cuda_stream));
+        whip::stream_synchronize(cuda_stream);
 
         double elapsed = timer.elapsed();
         std::cout
@@ -83,7 +85,7 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](cudaStream_t cuda_stream) {
+        auto const f = [](whip::stream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 
@@ -101,7 +103,7 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](cudaStream_t cuda_stream) {
+        auto const f = [](whip::stream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 
@@ -132,7 +134,7 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](cudaStream_t cuda_stream) {
+        auto const f = [](whip::stream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 
@@ -179,7 +181,7 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](cudaStream_t cuda_stream) {
+        auto const f = [](whip::stream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 
@@ -198,7 +200,7 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         cu::enable_user_polling poll("default");
 
-        auto const f = [](cudaStream_t cuda_stream) {
+        auto const f = [](whip::stream_t cuda_stream) {
             dummy<<<1, 1, 0, cuda_stream>>>();
         };
 

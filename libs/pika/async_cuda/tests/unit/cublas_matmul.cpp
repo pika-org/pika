@@ -34,6 +34,8 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <whip.hpp>
+
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -117,12 +119,6 @@ inline bool compare_L2_err(const float* reference, const float* data,
     return result;
 }
 
-constexpr auto cuda_memcpy_async =
-    [](auto&&... ts) -> decltype(cu::check_cuda_error(
-                         cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...))) {
-    cu::check_cuda_error(cudaMemcpyAsync(std::forward<decltype(ts)>(ts)...));
-};
-
 // -------------------------------------------------------------------------
 // Run a simple test matrix multiply using CUBLAS
 // -------------------------------------------------------------------------
@@ -149,21 +145,16 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     pika::for_each(par, h_B.begin(), h_B.end(), randfunc);
 
     T *d_A, *d_B, *d_C;
-    pika::cuda::experimental::check_cuda_error(
-        cudaMalloc((void**) &d_A, size_A * sizeof(T)));
-
-    pika::cuda::experimental::check_cuda_error(
-        cudaMalloc((void**) &d_B, size_B * sizeof(T)));
-
-    pika::cuda::experimental::check_cuda_error(
-        cudaMalloc((void**) &d_C, size_C * sizeof(T)));
+    whip::malloc(&d_A, size_A * sizeof(T));
+    whip::malloc(&d_B, size_B * sizeof(T));
+    whip::malloc(&d_C, size_C * sizeof(T));
 
     auto copy_A = ex::schedule(cuda_sched) |
-        cu::then_with_stream(pika::util::detail::bind_front(cuda_memcpy_async,
-            d_A, h_A.data(), size_A * sizeof(T), cudaMemcpyHostToDevice));
+        cu::then_with_stream(pika::util::detail::bind_front(whip::memcpy_async,
+            d_A, h_A.data(), size_A * sizeof(T), whip::memcpy_host_to_device));
     auto copy_B = ex::schedule(cuda_sched) |
-        cu::then_with_stream(pika::util::detail::bind_front(cuda_memcpy_async,
-            d_B, h_B.data(), size_B * sizeof(T), cudaMemcpyHostToDevice));
+        cu::then_with_stream(pika::util::detail::bind_front(whip::memcpy_async,
+            d_B, h_B.data(), size_B * sizeof(T), whip::memcpy_host_to_device));
     auto copy_AB =
         ex::when_all(std::move(copy_A), std::move(copy_B)) | ex::then([]() {
             std::cout << "The async host->device copy operations completed"
@@ -249,8 +240,9 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
     // when the matrix operations complete, copy the result to the host
     auto copy_finished = std::move(gemms_finished_split) |
         ex::transfer(cuda_sched) |
-        cu::then_with_stream(pika::util::detail::bind_front(cuda_memcpy_async,
-            h_CUBLAS.data(), d_C, size_C * sizeof(T), cudaMemcpyDeviceToHost));
+        cu::then_with_stream(
+            pika::util::detail::bind_front(whip::memcpy_async, h_CUBLAS.data(),
+                d_C, size_C * sizeof(T), whip::memcpy_device_to_host));
 
     auto all_done = ex::when_all(std::move(matrix_print_finished),
                         std::move(copy_finished)) |
@@ -284,9 +276,9 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
 
     tt::sync_wait(std::move(all_done));
 #endif
-    ::pika::cuda::experimental::check_cuda_error(cudaFree(d_A));
-    ::pika::cuda::experimental::check_cuda_error(cudaFree(d_B));
-    ::pika::cuda::experimental::check_cuda_error(cudaFree(d_C));
+    whip::free(d_A);
+    whip::free(d_B);
+    whip::free(d_C);
 }
 
 // -------------------------------------------------------------------------

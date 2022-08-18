@@ -9,6 +9,8 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <whip.hpp>
+
 #include "algorithm_test_utils.hpp"
 
 #include <atomic>
@@ -53,7 +55,7 @@ struct dummy
         ++host_void_calls;
     }
 
-    void operator()(cudaStream_t stream) const
+    void operator()(whip::stream_t stream) const
     {
         ++stream_void_calls;
         dummy_kernel<<<1, 1, 0, stream>>>();
@@ -79,7 +81,7 @@ struct dummy
         return x + 1;
     }
 
-    double operator()(int x, cudaStream_t stream) const
+    double operator()(int x, whip::stream_t stream) const
     {
         ++stream_int_calls;
         dummy_kernel<<<1, 1, 0, stream>>>();
@@ -106,7 +108,7 @@ struct dummy
         return x + 1;
     }
 
-    int operator()(double x, cudaStream_t stream) const
+    int operator()(double x, whip::stream_t stream) const
     {
         ++stream_double_calls;
         dummy_kernel<<<1, 1, 0, stream>>>();
@@ -144,7 +146,7 @@ std::atomic<std::size_t> dummy::cusolver_double_calls{0};
 struct dummy_stream
 {
     bool& called;
-    void operator()(cudaStream_t)
+    void operator()(whip::stream_t)
     {
         called = true;
     }
@@ -175,30 +177,20 @@ __global__ void increment_kernel(int* p)
 
 struct increment
 {
-    int* operator()(int* p, cudaStream_t stream) const
+    int* operator()(int* p, whip::stream_t stream) const
     {
         increment_kernel<<<1, 1, 0, stream>>>(p);
         return p;
     }
 };
 
-struct cuda_memcpy_async
-{
-    template <typename... Ts>
-    auto operator()(Ts&&... ts)
-        -> decltype(cudaMemcpyAsync(std::forward<Ts>(ts)...))
-    {
-        return cudaMemcpyAsync(std::forward<Ts>(ts)...);
-    }
-};
-
 auto non_default_constructible_params(
-    custom_type_non_default_constructible& x, cudaStream_t)
+    custom_type_non_default_constructible& x, whip::stream_t)
 {
     return std::move(x);
 }
 auto non_default_constructible_non_copyable_params(
-    custom_type_non_default_constructible_non_copyable& x, cudaStream_t)
+    custom_type_non_default_constructible_non_copyable& x, whip::stream_t)
 {
     return std::move(x);
 }
@@ -382,26 +374,26 @@ int pika_main()
 
     // Chaining multiple stream transforms without intermediate synchronization
     {
-        cudaStream_t first_stream{};
-        cudaStream_t second_stream{};
+        whip::stream_t first_stream{};
+        whip::stream_t second_stream{};
         tt::sync_wait(ex::schedule(cu::cuda_scheduler{pool}) |
             cu::then_with_stream(
-                [&](cudaStream_t stream) { first_stream = stream; }) |
-            cu::then_with_stream([&](cudaStream_t stream) {
+                [&](whip::stream_t stream) { first_stream = stream; }) |
+            cu::then_with_stream([&](whip::stream_t stream) {
                 PIKA_TEST_EQ(stream, first_stream);
             }) |
-            cu::then_with_stream([&](cudaStream_t stream) {
+            cu::then_with_stream([&](whip::stream_t stream) {
                 PIKA_TEST_EQ(stream, first_stream);
             }) |
             ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream([&](cudaStream_t stream) {
+            cu::then_with_stream([&](whip::stream_t stream) {
                 PIKA_TEST_NEQ(stream, first_stream);
                 second_stream = stream;
             }) |
-            cu::then_with_stream([&](cudaStream_t stream) {
+            cu::then_with_stream([&](whip::stream_t stream) {
                 PIKA_TEST_EQ(stream, second_stream);
             }) |
-            cu::then_with_stream([&](cudaStream_t stream) {
+            cu::then_with_stream([&](whip::stream_t stream) {
                 PIKA_TEST_EQ(stream, second_stream);
             }));
     }
@@ -411,28 +403,27 @@ int pika_main()
         type p_h = 0;
 
         type* p;
-        cu::check_cuda_error(cudaMalloc((void**) &p, sizeof(type)));
+        whip::malloc(&p, sizeof(type));
 
-        auto s = ex::just(p, &p_h, sizeof(type), cudaMemcpyHostToDevice) |
+        auto s = ex::just(p, &p_h, sizeof(type), whip::memcpy_host_to_device) |
             ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(cuda_memcpy_async{}) |
+            cu::then_with_stream(whip::memcpy_async) |
             ex::transfer(ex::thread_pool_scheduler{}) |
-            ex::then(&cu::check_cuda_error) | ex::then([p] { return p; }) |
+            ex::then([p] { return p; }) |
             ex::transfer(cu::cuda_scheduler{pool}) |
             cu::then_with_stream(increment{}) |
             cu::then_with_stream(increment{}) |
             cu::then_with_stream(increment{});
         tt::sync_wait(
             ex::when_all(ex::just(&p_h), std::move(s), ex::just(sizeof(type)),
-                ex::just(cudaMemcpyDeviceToHost)) |
+                ex::just(whip::memcpy_device_to_host)) |
             ex::transfer(cu::cuda_scheduler{pool}) |
-            cu::then_with_stream(cuda_memcpy_async{}) |
+            cu::then_with_stream(whip::memcpy_async) |
             ex::transfer(ex::thread_pool_scheduler{}) |
-            ex::then(&cu::check_cuda_error) |
             ex::then([&p_h] { PIKA_TEST_EQ(p_h, 3); }) |
             ex::transfer(ex::thread_pool_scheduler{}));
 
-        cu::check_cuda_error(cudaFree(p));
+        whip::free(p);
     }
 
     // cuBLAS and cuSOLVER

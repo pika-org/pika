@@ -5,17 +5,18 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/async_cuda/cuda_exception.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
+#include <pika/async_cuda/cuda_device_scope.hpp>
+
+#include <whip.hpp>
 
 namespace pika::cuda::experimental {
     cuda_device_scope::cuda_device_scope(int device)
       : device(device)
     {
-        check_cuda_error(cudaGetDevice(&old_device));
+        whip::get_device(&old_device);
         if (device != old_device)
         {
-            check_cuda_error(cudaSetDevice(device));
+            whip::set_device(device);
         }
     }
 
@@ -23,7 +24,7 @@ namespace pika::cuda::experimental {
     {
         if (device != old_device)
         {
-            check_cuda_error(cudaSetDevice(old_device));
+            whip::set_device(old_device);
         }
     }
 }    // namespace pika::cuda::experimental

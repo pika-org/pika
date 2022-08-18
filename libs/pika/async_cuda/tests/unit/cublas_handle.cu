@@ -7,6 +7,8 @@
 #include <pika/cuda.hpp>
 #include <pika/testing.hpp>
 
+#include <whip.hpp>
+
 #include <utility>
 
 #if defined(PIKA_HAVE_HIP)
@@ -31,7 +33,7 @@ int main()
         cu::cublas_handle handle{};
 
         PIKA_TEST_EQ(handle.get_device(), 0);
-        PIKA_TEST_EQ(handle.get_stream(), cudaStream_t{0});
+        PIKA_TEST_EQ(handle.get_stream(), whip::stream_t{0});
 
         PIKA_TEST_NEQ(handle.get(), cublasHandle_t{});
 
@@ -54,9 +56,9 @@ int main()
         cu::cublas_handle handle2{stream};
         cu::cublas_handle handle3{stream};
 
-        PIKA_TEST_NEQ(handle1.get_stream(), cudaStream_t{0});
-        PIKA_TEST_NEQ(handle2.get_stream(), cudaStream_t{0});
-        PIKA_TEST_NEQ(handle3.get_stream(), cudaStream_t{0});
+        PIKA_TEST_NEQ(handle1.get_stream(), whip::stream_t{0});
+        PIKA_TEST_NEQ(handle2.get_stream(), whip::stream_t{0});
+        PIKA_TEST_NEQ(handle3.get_stream(), whip::stream_t{0});
         PIKA_TEST_EQ(handle1.get_stream(), stream.get());
         PIKA_TEST_EQ(handle2.get_stream(), stream.get());
         PIKA_TEST_EQ(handle3.get_stream(), stream.get());
@@ -83,9 +85,9 @@ int main()
         handle2.set_stream(stream);
         handle3.set_stream(stream);
 
-        PIKA_TEST_NEQ(handle1.get_stream(), cudaStream_t{0});
-        PIKA_TEST_NEQ(handle2.get_stream(), cudaStream_t{0});
-        PIKA_TEST_NEQ(handle3.get_stream(), cudaStream_t{0});
+        PIKA_TEST_NEQ(handle1.get_stream(), whip::stream_t{0});
+        PIKA_TEST_NEQ(handle2.get_stream(), whip::stream_t{0});
+        PIKA_TEST_NEQ(handle3.get_stream(), whip::stream_t{0});
         PIKA_TEST_EQ(handle1.get_stream(), stream.get());
         PIKA_TEST_EQ(handle2.get_stream(), stream.get());
         PIKA_TEST_EQ(handle3.get_stream(), stream.get());
@@ -108,17 +110,17 @@ int main()
 
         int const n = 100;
         float* p;
-        cu::check_cuda_error(cudaMalloc(&p, sizeof(float) * n));
+        whip::malloc(&p, sizeof(float) * n);
 
         kernel<<<n, 1, 0, handle.get_stream()>>>(p);
-        cu::check_cuda_error(cudaGetLastError());
-        cu::check_cuda_error(cudaDeviceSynchronize());
+        whip::check_last_error();
+        whip::device_synchronize();
         float r;
         handle.set_pointer_mode(CUBLAS_POINTER_MODE_HOST);
         cu::check_cublas_error(cublasSasum(handle.get(), n, p, 1, &r));
-        cu::check_cuda_error(cudaDeviceSynchronize());
+        whip::device_synchronize();
 
-        cu::check_cuda_error(cudaFree(p));
+        whip::free(p);
 
         PIKA_TEST_EQ(r, (n * (n - 1) / 2));
     }

@@ -9,11 +9,9 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cublas_handle.hpp>
-#include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_scheduler.hpp>
 #include <pika/async_cuda/cusolver_handle.hpp>
 #include <pika/async_cuda/custom_blas_api.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/async_cuda/custom_lapack_api.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
 #include <pika/datastructures/variant.hpp>
@@ -23,6 +21,8 @@
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/type_support/pack.hpp>
+
+#include <whip.hpp>
 
 #include <exception>
 #include <functional>
@@ -62,13 +62,14 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     }
 
     template <typename R, typename... Ts>
-    void set_value_event_callback_helper(cudaError_t status, R&& r, Ts&&... ts)
+    void set_value_event_callback_helper(
+        whip::error_t status, R&& r, Ts&&... ts)
     {
         static_assert(sizeof...(Ts) <= 1, "Expecting at most one value");
 
-        PIKA_ASSERT(status != cudaErrorNotReady);
+        PIKA_ASSERT(status != whip::error_not_ready);
 
-        if (status == cudaSuccess)
+        if (status == whip::success)
         {
             pika::execution::experimental::set_value(
                 PIKA_FORWARD(R, r), PIKA_FORWARD(Ts, ts)...);
@@ -76,12 +77,11 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         else
         {
             pika::execution::experimental::set_error(PIKA_FORWARD(R, r),
-                std::make_exception_ptr(
-                    cuda_exception(std::string("Getting event after "
-                                               "CUDA stream transform "
-                                               "failed with status ") +
-                            cudaGetErrorString(status),
-                        status)));
+                std::make_exception_ptr(pika::exception(
+                    pika::error::unknown_error,
+                    pika::util::format("Getting event after CUDA stream "
+                                       "transform failed with status {} ({})",
+                        status, whip::get_error_string(status)))));
         }
     }
 
@@ -105,7 +105,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     void set_value_event_callback_void(OperationState& op_state)
     {
         detail::add_event_callback(
-            [&op_state](cudaError_t status) mutable {
+            [&op_state](whip::error_t status) mutable {
                 PIKA_ASSERT(
                     pika::detail::holds_alternative<pika::detail::monostate>(
                         op_state.result));
@@ -119,7 +119,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     void set_value_event_callback_non_void(OperationState& op_state)
     {
         detail::add_event_callback(
-            [&op_state](cudaError_t status) mutable {
+            [&op_state](whip::error_t status) mutable {
                 PIKA_ASSERT(
                     pika::detail::holds_alternative<Result>(op_state.result));
                 set_value_event_callback_helper(status,

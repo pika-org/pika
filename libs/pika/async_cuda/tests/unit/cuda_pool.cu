@@ -7,6 +7,8 @@
 #include <pika/cuda.hpp>
 #include <pika/testing.hpp>
 
+#include <whip.hpp>
+
 #include <cstddef>
 #include <utility>
 #include <vector>
@@ -81,7 +83,7 @@ int main()
         unsigned int expected_flags = 0;
         unsigned int flags = 0;
         cu::cuda_stream const& stream = pool.get_next_stream();
-        cu::check_cuda_error(cudaStreamGetFlags(stream.get(), &flags));
+        whip::stream_get_flags(stream.get(), &flags);
         PIKA_TEST_EQ(stream.get_flags(), expected_flags);
         PIKA_TEST_EQ(flags, expected_flags);
     }
@@ -92,18 +94,18 @@ int main()
 
         unsigned int flags = 0;
         cu::cuda_stream const& stream = pool.get_next_stream();
-        cu::check_cuda_error(cudaStreamGetFlags(stream.get(), &flags));
+        whip::stream_get_flags(stream.get(), &flags);
         PIKA_TEST_EQ(stream.get_flags(), expected_flags);
         PIKA_TEST_EQ(flags, expected_flags);
     }
 
     {
-        unsigned int expected_flags = cudaStreamNonBlocking;
+        unsigned int expected_flags = whip::stream_non_blocking;
         cu::cuda_pool pool{0, 3, 2, expected_flags};
 
         unsigned int flags = 0;
         cu::cuda_stream const& stream = pool.get_next_stream();
-        cu::check_cuda_error(cudaStreamGetFlags(stream.get(), &flags));
+        whip::stream_get_flags(stream.get(), &flags);
         PIKA_TEST_EQ(stream.get_flags(), expected_flags);
         PIKA_TEST_EQ(flags, expected_flags);
     }
@@ -143,22 +145,21 @@ int main()
         // A pool can be used to schedule work
         int const n = 1000;
         int* p;
-        cu::check_cuda_error(cudaMalloc(&p, sizeof(int) * n));
+        whip::malloc(&p, sizeof(int) * n);
 
         cu::cuda_pool pool{};
 
         for (std::size_t i = 0; i < n; ++i)
         {
             kernel<<<1, 1, 0, pool.get_next_stream().get()>>>(p, i);
-            cu::check_cuda_error(cudaGetLastError());
+            whip::check_last_error();
         }
 
-        cu::check_cuda_error(cudaDeviceSynchronize());
+        whip::device_synchronize();
         std::vector<int> s(n, 0);
 
-        cu::check_cuda_error(
-            cudaMemcpy(s.data(), p, sizeof(int) * n, cudaMemcpyDeviceToHost));
-        cu::check_cuda_error(cudaFree(p));
+        whip::memcpy(s.data(), p, sizeof(int) * n, whip::memcpy_device_to_host);
+        whip::free(p);
 
         for (int i = 0; i < n; ++i)
         {

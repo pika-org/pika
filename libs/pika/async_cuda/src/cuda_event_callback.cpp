@@ -10,13 +10,14 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cuda_event.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/async_cuda/detail/cuda_debug.hpp>
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
 #include <pika/concurrency/concurrentqueue.hpp>
 #include <pika/synchronization/spinlock.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
+
+#include <whip.hpp>
 
 #include <algorithm>
 #include <atomic>
@@ -39,7 +40,7 @@ namespace pika::cuda::experimental::detail {
     // the event is ready.
     struct event_callback
     {
-        cudaEvent_t event;
+        whip::event_t event;
         event_callback_function_type f;
     };
 
@@ -96,13 +97,24 @@ namespace pika::cuda::experimental::detail {
                 std::remove_if(event_callback_vector.begin(),
                     event_callback_vector.end(),
                     [&](event_callback& continuation) {
-                        cudaError_t status = cudaEventQuery(continuation.event);
+                        whip::error_t status = whip::success;
 
-                        if (status == cudaErrorNotReady)
+                        try
                         {
-                            return false;
+                            bool ready = whip::event_ready(continuation.event);
+
+                            // If the event is not yet ready, do nothing
+                            if (!ready)
+                            {
+                                return false;
+                            }
+                        }
+                        catch (whip::exception const& e)
+                        {
+                            status = e.get_error();
                         }
 
+                        // Forward successes and other errors to the callback
                         cud_debug.debug(
                             debug::detail::str<>("set ready vector"), "event",
                             debug::detail::hex<8>(continuation.event),
@@ -122,23 +134,31 @@ namespace pika::cuda::experimental::detail {
             detail::event_callback continuation;
             while (event_callback_queue.try_dequeue(continuation))
             {
-                cudaError_t status = cudaEventQuery(continuation.event);
+                whip::error_t status = whip::success;
 
-                if (status == cudaErrorNotReady)
+                try
                 {
-                    add_to_event_callback_vector(PIKA_MOVE(continuation));
+                    bool ready = whip::event_ready(continuation.event);
+
+                    if (!ready)
+                    {
+                        add_to_event_callback_vector(PIKA_MOVE(continuation));
+                        continue;
+                    }
                 }
-                else
+                catch (whip::exception const& e)
                 {
-                    cud_debug.debug(debug::detail::str<>("set ready queue"),
-                        "event", debug::detail::hex<8>(continuation.event),
-                        "enqueued events",
-                        debug::detail::dec<3>(get_number_of_enqueued_events()),
-                        "active events",
-                        debug::detail::dec<3>(get_number_of_active_events()));
-                    continuation.f(status);
-                    pool.push(PIKA_MOVE(continuation.event));
+                    status = e.get_error();
                 }
+
+                cud_debug.debug(debug::detail::str<>("set ready queue"),
+                    "event", debug::detail::hex<8>(continuation.event),
+                    "enqueued events",
+                    debug::detail::dec<3>(get_number_of_enqueued_events()),
+                    "active events",
+                    debug::detail::dec<3>(get_number_of_active_events()));
+                continuation.f(status);
+                pool.push(PIKA_MOVE(continuation.event));
             }
 
             using pika::threads::detail::polling_status;
@@ -147,15 +167,15 @@ namespace pika::cuda::experimental::detail {
         }
 
         void add_to_event_callback_queue(
-            event_callback_function_type&& f, cudaStream_t stream)
+            event_callback_function_type&& f, whip::stream_t stream)
         {
-            cudaEvent_t event;
+            whip::event_t event;
             if (!cuda_event_pool::get_event_pool().pop(event))
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "add_to_event_callback_queue", "could not get an event");
             }
-            check_cuda_error(cudaEventRecord(event, stream));
+            whip::event_record(event, stream);
 
             event_callback continuation{event, PIKA_MOVE(f)};
 
@@ -229,7 +249,7 @@ namespace pika::cuda::experimental::detail {
         }
 
         void add_to_event_callback_queue(event_callback_function_type&& f,
-            cudaStream_t stream, pika::execution::thread_priority priority)
+            whip::stream_t stream, pika::execution::thread_priority priority)
         {
             auto* queue = &np_queue;
             if (priority >= pika::execution::thread_priority::high)
@@ -257,7 +277,7 @@ namespace pika::cuda::experimental::detail {
     }
 
     void add_event_callback(event_callback_function_type&& f,
-        cudaStream_t stream, pika::execution::thread_priority priority)
+        whip::stream_t stream, pika::execution::thread_priority priority)
     {
         get_cuda_event_queue_holder().add_to_event_callback_queue(
             std::move(f), stream, priority);

@@ -8,10 +8,8 @@
 
 #include <pika/assert.hpp>
 #include <pika/async_base/scheduling_properties.hpp>
-#include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_pool.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/coroutines/thread_enums.hpp>
 #include <pika/execution/algorithms/execute.hpp>

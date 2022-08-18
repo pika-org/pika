@@ -80,15 +80,14 @@ if(NOT BOOST_ROOT AND NOT "$ENV{BOOST_ROOT}")
 endif()
 include(pika_setup_boost)
 
-# HIP
-include(pika_setup_hip)
-
 # Hwloc
 set(PIKA_HWLOC_ROOT "@HWLOC_ROOT@")
 include(pika_setup_hwloc)
 
-# CUDA
+# CUDA/HIP/whip
+include(pika_setup_hip)
 include(pika_setup_cuda)
+include(pika_setup_whip)
 
 include(pika_setup_mpi)
 
