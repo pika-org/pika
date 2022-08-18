@@ -39,5 +39,5 @@ int pika_main()
 int main(int argc, char** argv)
 {
     PIKA_TEST_EQ(pika::init(pika_main, argc, argv), 0);
-    return pika::util::report_errors();
+    return 0;
 }

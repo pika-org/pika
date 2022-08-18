@@ -200,5 +200,5 @@ int main(int argc, char* argv[])
     init_args.cfg = cfg;
 
     pika::init(pika_main, argc, argv, init_args);
-    return pika::util::report_errors();
+    return 0;
 }

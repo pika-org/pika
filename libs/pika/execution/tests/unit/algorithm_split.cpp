@@ -188,5 +188,5 @@ int main()
         tt::sync_wait(std::move(s));
     }
 
-    return pika::util::report_errors();
+    return 0;
 }

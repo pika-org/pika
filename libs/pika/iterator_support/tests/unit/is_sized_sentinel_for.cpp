@@ -39,5 +39,5 @@ int main()
         is_sized_sentinel_for();
     }
 
-    return pika::util::report_errors();
+    return 0;
 }

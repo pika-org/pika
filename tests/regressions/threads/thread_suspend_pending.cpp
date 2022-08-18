@@ -24,8 +24,6 @@ using pika::threads::detail::register_work;
 
 using pika::lcos::local::barrier;
 
-using pika::util::report_errors;
-
 ///////////////////////////////////////////////////////////////////////////////
 void suspend_test(barrier& b, std::size_t iterations)
 {
@@ -98,5 +96,5 @@ int main(int argc, char* argv[])
 
     PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
         "pika main exited with non-zero status");
-    return report_errors();
+    return 0;
 }

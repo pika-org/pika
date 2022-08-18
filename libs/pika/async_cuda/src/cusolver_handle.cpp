@@ -65,7 +65,7 @@ namespace pika::cuda::experimental {
     }
 
     cusolver_handle::cusolver_handle(cusolver_handle const& other)
-      : device(other.device)
+        : device(other.device)
       , stream(other.stream)
       , handle(other.handle != 0 ? create_handle(device, stream) : 0)
     {

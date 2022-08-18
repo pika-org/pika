@@ -98,7 +98,7 @@ int main(int argc, char** argv)
     if (vm.count("help"))
     {
         std::cout << desc_cmdline;
-        return pika::util::report_errors();
+        return 0;
     }
 
     if (vm.count("threads"))
@@ -136,5 +136,5 @@ int main(int argc, char** argv)
     for (std::uint64_t i = 0; i < threads; ++i)
         delete queues[i];
 
-    return pika::util::report_errors();
+    return 0;
 }

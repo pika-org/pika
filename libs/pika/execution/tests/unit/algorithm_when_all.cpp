@@ -240,5 +240,5 @@ int main()
 
     test_adl_isolation(ex::when_all(my_namespace::my_sender{}));
 
-    return pika::util::report_errors();
+    return 0;
 }

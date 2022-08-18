@@ -367,5 +367,5 @@ int main(int, char*[])
     test_default_values();
     test_value_name();
 
-    return pika::util::report_errors();
+    return 0;
 }

@@ -59,7 +59,7 @@ int pika_main(variables_map&)
     test_wait_for_all_from_array();
 
     pika::finalize();
-    return pika::util::report_errors();
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

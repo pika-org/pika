@@ -728,5 +728,5 @@ int main()
     member_function_void_test();
     nested_bind_test();
 
-    return pika::util::report_errors();
+    return 0;
 }

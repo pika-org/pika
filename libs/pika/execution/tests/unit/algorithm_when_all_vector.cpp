@@ -324,5 +324,5 @@ int main()
     test_adl_isolation(
         ex::when_all_vector(std::vector{my_namespace::my_sender{}}));
 
-    return pika::util::report_errors();
+    return 0;
 }
