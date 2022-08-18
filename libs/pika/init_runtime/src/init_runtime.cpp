@@ -121,13 +121,6 @@ namespace pika {
 
     int finalize(error_code& ec)
     {
-        if (!threads::detail::get_self_ptr())
-        {
-            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::finalize",
-                "this function can be called from an pika thread only");
-            return -1;
-        }
-
         if (!is_running())
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::finalize",
