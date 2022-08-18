@@ -41,7 +41,7 @@ namespace pika { namespace parallel { inline namespace v2 {
     {
     public:
         task_canceled_exception() noexcept
-          : pika::exception(pika::task_canceled_exception)
+          : pika::exception(pika::error::task_canceled_exception)
         {
         }
     };
@@ -182,8 +182,8 @@ namespace pika { namespace parallel { inline namespace v2 {
             // 'active' to be usable.
             if (id_ != threads::detail::get_self_id())
             {
-                PIKA_THROW_EXCEPTION(task_block_not_active, "task_block::run",
-                    "the task_block is not active");
+                PIKA_THROW_EXCEPTION(pika::error::task_block_not_active,
+                    "task_block::run", "the task_block is not active");
             }
 
             tasks_.run(policy_.executor(), PIKA_FORWARD(F, f),
@@ -232,8 +232,8 @@ namespace pika { namespace parallel { inline namespace v2 {
             // 'active' to be usable.
             if (id_ != threads::detail::get_self_id())
             {
-                PIKA_THROW_EXCEPTION(task_block_not_active, "task_block::run",
-                    "the task_block is not active");
+                PIKA_THROW_EXCEPTION(pika::error::task_block_not_active,
+                    "task_block::run", "the task_block is not active");
             }
 
             tasks_.run(PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f),
@@ -272,8 +272,8 @@ namespace pika { namespace parallel { inline namespace v2 {
             // 'active' to be usable.
             if (id_ != threads::detail::get_self_id())
             {
-                PIKA_THROW_EXCEPTION(task_block_not_active, "task_block::run",
-                    "the task_block is not active");
+                PIKA_THROW_EXCEPTION(pika::error::task_block_not_active,
+                    "task_block::run", "the task_block is not active");
                 return;
             }
 

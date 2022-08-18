@@ -156,7 +156,7 @@ namespace pika { namespace execution_base {
 
             if (aborted_)
             {
-                PIKA_THROW_EXCEPTION(yield_aborted, "suspend",
+                PIKA_THROW_EXCEPTION(pika::error::yield_aborted, "suspend",
                     "std::thread({}) aborted (yield returned wait_abort)", id_);
             }
         }
@@ -275,7 +275,7 @@ namespace pika { namespace execution_base {
                     pika::util::detail::get_spinlock_deadlock_detection_limit();
                 if (k >= deadlock_detection_limit)
                 {
-                    PIKA_THROW_EXCEPTION(deadlock, desc,
+                    PIKA_THROW_EXCEPTION(pika::error::deadlock, desc,
                         pika::util::format(
                             "yield_k yielded {} times. This may indicate a "
                             "deadlock in your application or a bug in pika. "

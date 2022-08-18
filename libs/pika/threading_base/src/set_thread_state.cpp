@@ -30,7 +30,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!thrd))
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "threads::detail::set_active_state",
                 "null thread id encountered");
             return thread_result_type(
@@ -60,7 +60,7 @@ namespace pika::threads::detail {
             get_thread_id_data(thrd)->get_last_worker_thread_num())};
 
         // just retry, set_state will create new thread if target is still active
-        error_code ec(lightweight);    // do not throw
+        error_code ec(throwmode::lightweight);    // do not throw
         set_thread_state(thrd.noref(), newstate, newstate_ex, priority,
             schedulehint, true, ec);
 
@@ -77,7 +77,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!thrd))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "threads::detail::set_thread_state",
                 "null thread id encountered");
             return thread_state(
@@ -87,7 +87,7 @@ namespace pika::threads::detail {
         // set_state can't be used to force a thread into active state
         if (new_state == thread_schedule_state::active)
         {
-            PIKA_THROWS_IF(ec, bad_parameter,
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "threads::detail::set_thread_state", "invalid new state: {}",
                 new_state);
             return thread_state(
@@ -204,7 +204,7 @@ namespace pika::threads::detail {
                     // NOLINTNEXTLINE(bugprone-branch-clone)
                     LTM_(fatal) << str;
 
-                    PIKA_THROWS_IF(ec, bad_parameter,
+                    PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                         "threads::detail::set_thread_state", str);
                     return thread_state(thread_schedule_state::unknown,
                         thread_restart_state::unknown);

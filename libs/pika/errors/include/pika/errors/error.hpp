@@ -22,123 +22,84 @@ namespace pika {
     ///
     /// This enumeration lists all possible error conditions which can be
     /// reported from any of the API functions.
-    enum error
+    enum class error
     {
+        /// The operation was successful
         success = 0,
-        ///< The operation was successful
+        /// The operation failed, but not in an unexpected manner
         no_success = 1,
-        ///< The operation did failed, but not in an unexpected manner
+        /// The operation is not implemented
         not_implemented = 2,
-        ///< The operation is not implemented
+        /// The operation caused an out of memory condition
         out_of_memory = 3,
-        ///< The operation caused an out of memory condition
-        bad_action_code = 4,
-        ///<
-        bad_component_type = 5,
-        ///< The specified component type is not known or otherwise invalid
-        network_error = 6,
-        ///< A generic network error occurred
-        version_too_new = 7,
-        ///< The version of the network representation for this object is too new
-        version_too_old = 8,
-        ///< The version of the network representation for this object is too old
-        version_unknown = 9,
-        ///< The version of the network representation for this object is unknown
-        unknown_component_address = 10,
-        ///<
-        duplicate_component_address = 11,
-        ///< The given global id has already been registered
-        invalid_status = 12,
-        ///< The operation was executed in an invalid status
-        bad_parameter = 13,
-        ///< One of the supplied parameters is invalid
-        internal_server_error = 14,
-        ///<
-        service_unavailable = 15,
-        ///<
-        bad_request = 16,
-        ///<
-        repeated_request = 17,
-        ///<
-        lock_error = 18,
-        ///<
-        duplicate_console = 19,
-        ///< There is more than one console locality
-        no_registered_console = 20,
-        ///< There is no registered console locality available
-        startup_timed_out = 21,
-        ///<
-        uninitialized_value = 22,
-        ///<
-        bad_response_type = 23,
-        ///<
-        deadlock = 24,
-        ///<
-        assertion_failure = 25,
-        ///<
-        null_thread_id = 26,
-        ///< Attempt to invoke a API function from a non-pika thread
-        invalid_data = 27,
-        ///<
-        yield_aborted = 28,
-        ///< The yield operation was aborted
-        dynamic_link_failure = 29,
-        ///<
-        commandline_option_error = 30,
-        ///< One of the options given on the command line is erroneous
-        serialization_error = 31,
-        ///< There was an error during serialization of this object
-        unhandled_exception = 32,
-        ///< An unhandled exception has been caught
-        kernel_error = 33,
-        ///< The OS kernel reported an error
-        broken_task = 34,
-        ///< The task associated with this future object is not available anymore
-        task_moved = 35,
-        ///< The task associated with this future object has been moved
-        task_already_started = 36,
-        ///< The task associated with this future object has already been started
-        future_already_retrieved = 37,
-        ///< The future object has already been retrieved
-        promise_already_satisfied = 38,
-        ///< The value for this future object has already been set
-        future_does_not_support_cancellation = 39,
-        ///< The future object does not support cancellation
-        future_can_not_be_cancelled = 40,
-        ///< The future can't be canceled at this time
-        no_state = 41,
-        ///< The future object has no valid shared state
-        broken_promise = 42,
-        ///< The promise has been deleted
-        thread_resource_error = 43,
-        ///<
-        future_cancelled = 44,
-        ///<
-        thread_cancelled = 45,
-        ///<
-        thread_not_interruptable = 46,
-        ///<
-        duplicate_component_id = 47,
-        ///< The component type has already been registered
-        unknown_error = 48,
-        ///< An unknown error occurred
-        bad_plugin_type = 49,
-        ///< The specified plugin type is not known or otherwise invalid
-        filesystem_error = 50,
-        ///< The specified file does not exist or other filesystem related error
-        bad_function_call = 51,
-        ///< equivalent of std::bad_function_call
-        task_canceled_exception = 52,
-        ///< parallel::v2::task_canceled_exception
-        task_block_not_active = 53,
-        ///< task_region is not active
-        out_of_range = 54,
-        ///< Equivalent to std::out_of_range
-        length_error = 55,
-        ///< Equivalent to std::length_error
-
-        migration_needs_retry = 56,    ///< migration failed because of global
-                                       ///< race, retry
+        /// The operation was executed in an invalid status
+        invalid_status = 4,
+        /// One of the supplied parameters is invalid
+        bad_parameter = 5,
+        ///
+        lock_error = 6,
+        ///
+        startup_timed_out = 7,
+        ///
+        uninitialized_value = 8,
+        ///
+        bad_response_type = 9,
+        ///
+        deadlock = 10,
+        ///
+        assertion_failure = 11,
+        /// Attempt to invoke a function that requires a pika thread from a non-pika thread
+        null_thread_id = 12,
+        ///
+        invalid_data = 13,
+        /// The yield operation was aborted
+        yield_aborted = 14,
+        ///
+        dynamic_link_failure = 15,
+        /// One of the options given on the command line is erroneous
+        commandline_option_error = 16,
+        /// An unhandled exception has been caught
+        unhandled_exception = 17,
+        /// The OS kernel reported an error
+        kernel_error = 18,
+        /// The task associated with this future object is not available anymore
+        broken_task = 19,
+        /// The task associated with this future object has been moved
+        task_moved = 20,
+        /// The task associated with this future object has already been started
+        task_already_started = 21,
+        /// The future object has already been retrieved
+        future_already_retrieved = 22,
+        /// The value for this future object has already been set
+        promise_already_satisfied = 23,
+        /// The future object does not support cancellation
+        future_does_not_support_cancellation = 24,
+        /// The future can't be canceled at this time
+        future_can_not_be_cancelled = 25,
+        /// The future object has no valid shared state
+        no_state = 26,
+        /// The promise has been deleted
+        broken_promise = 27,
+        ///
+        thread_resource_error = 28,
+        ///
+        future_cancelled = 29,
+        ///
+        thread_cancelled = 30,
+        ///
+        thread_not_interruptable = 31,
+        /// An unknown error occurred
+        unknown_error = 32,
+        /// equivalent of std::bad_function_call
+        bad_function_call = 33,
+        /// parallel::v2::task_canceled_exception
+        task_canceled_exception = 34,
+        /// task_region is not active
+        task_block_not_active = 35,
+        /// Equivalent to std::out_of_range
+        out_of_range = 36,
+        /// Equivalent to std::length_error
+        length_error = 37,
 
         /// \cond NOINTERNAL
         last_error,
@@ -149,68 +110,56 @@ namespace pika {
         /// \endcond
     };
 
-    /// \cond NOINTERNAL
-    char const* const error_names[] = {
-        /*  0 */ "success",
-        /*  1 */ "no_success",
-        /*  2 */ "not_implemented",
-        /*  3 */ "out_of_memory",
-        /*  4 */ "bad_action_code",
-        /*  5 */ "bad_component_type",
-        /*  6 */ "network_error",
-        /*  7 */ "version_too_new",
-        /*  8 */ "version_too_old",
-        /*  9 */ "version_unknown",
-        /* 10 */ "unknown_component_address",
-        /* 11 */ "duplicate_component_address",
-        /* 12 */ "invalid_status",
-        /* 13 */ "bad_parameter",
-        /* 14 */ "internal_server_error",
-        /* 15 */ "service_unavailable",
-        /* 16 */ "bad_request",
-        /* 17 */ "repeated_request",
-        /* 18 */ "lock_error",
-        /* 19 */ "duplicate_console",
-        /* 20 */ "no_registered_console",
-        /* 21 */ "startup_timed_out",
-        /* 22 */ "uninitialized_value",
-        /* 23 */ "bad_response_type",
-        /* 24 */ "deadlock",
-        /* 25 */ "assertion_failure",
-        /* 26 */ "null_thread_id",
-        /* 27 */ "invalid_data",
-        /* 28 */ "yield_aborted",
-        /* 29 */ "dynamic_link_failure",
-        /* 30 */ "commandline_option_error",
-        /* 31 */ "serialization_error",
-        /* 32 */ "unhandled_exception",
-        /* 33 */ "kernel_error",
-        /* 34 */ "broken_task",
-        /* 35 */ "task_moved",
-        /* 36 */ "task_already_started",
-        /* 37 */ "future_already_retrieved",
-        /* 38 */ "promise_already_satisfied",
-        /* 39 */ "future_does_not_support_cancellation",
-        /* 40 */ "future_can_not_be_cancelled",
-        /* 41 */ "no_state",
-        /* 42 */ "broken_promise",
-        /* 43 */ "thread_resource_error",
-        /* 44 */ "future_cancelled",
-        /* 45 */ "thread_cancelled",
-        /* 46 */ "thread_not_interruptable",
-        /* 47 */ "duplicate_component_id",
-        /* 48 */ "unknown_error",
-        /* 49 */ "bad_plugin_type",
-        /* 50 */ "filesystem_error",
-        /* 51 */ "bad_function_call",
-        /* 52 */ "task_canceled_exception",
-        /* 53 */ "task_block_not_active",
-        /* 54 */ "out_of_range",
-        /* 55 */ "length_error",
-        /* 56 */ "migration_needs_retry",
+    namespace detail {
+        /// \cond NOINTERNAL
+        char const* const error_names[] = {
+            /*  0 */ "success",
+            /*  1 */ "no_success",
+            /*  2 */ "not_implemented",
+            /*  3 */ "out_of_memory",
+            /*  4 */ "invalid_status",
+            /*  5 */ "bad_parameter",
+            /*  6 */ "lock_error",
+            /*  7 */ "startup_timed_out",
+            /*  8 */ "uninitialized_value",
+            /*  9 */ "bad_response_type",
+            /* 10 */ "deadlock",
+            /* 11 */ "assertion_failure",
+            /* 12 */ "null_thread_id",
+            /* 13 */ "invalid_data",
+            /* 14 */ "yield_aborted",
+            /* 15 */ "dynamic_link_failure",
+            /* 16 */ "commandline_option_error",
+            /* 17 */ "unhandled_exception",
+            /* 18 */ "kernel_error",
+            /* 19 */ "broken_task",
+            /* 20 */ "task_moved",
+            /* 21 */ "task_already_started",
+            /* 22 */ "future_already_retrieved",
+            /* 23 */ "promise_already_satisfied",
+            /* 24 */ "future_does_not_support_cancellation",
+            /* 25 */ "future_can_not_be_cancelled",
+            /* 26 */ "no_state",
+            /* 27 */ "broken_promise",
+            /* 28 */ "thread_resource_error",
+            /* 29 */ "future_cancelled",
+            /* 30 */ "thread_cancelled",
+            /* 31 */ "thread_not_interruptable",
+            /* 32 */ "unknown_error",
+            /* 33 */ "bad_function_call",
+            /* 34 */ "task_canceled_exception",
+            /* 35 */ "task_block_not_active",
+            /* 36 */ "out_of_range",
+            /* 37 */ "length_error",
 
-        /*    */ ""};
-    /// \endcond
+            /*    */ ""};
+
+        inline bool error_code_has_system_error(int e)
+        {
+            return e & static_cast<int>(pika::error::system_error_flag);
+        }
+        /// \endcond
+    }    // namespace detail
 }    // namespace pika
 
 /// \cond NOEXTERNAL

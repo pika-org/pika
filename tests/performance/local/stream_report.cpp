@@ -422,13 +422,13 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (vector_size < 1)
     {
-        PIKA_THROW_EXCEPTION(pika::commandline_option_error, "pika_main",
+        PIKA_THROW_EXCEPTION(pika::error::commandline_option_error, "pika_main",
             "Invalid vector size, must be at least 1");
     }
 
     if (iterations < 1)
     {
-        PIKA_THROW_EXCEPTION(pika::commandline_option_error, "pika_main",
+        PIKA_THROW_EXCEPTION(pika::error::commandline_option_error, "pika_main",
             "Invalid number of iterations given, must be at least 1");
     }
 

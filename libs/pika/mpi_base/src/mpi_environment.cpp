@@ -99,7 +99,7 @@ namespace pika { namespace util {
 
             if (provided < minimal)
             {
-                PIKA_THROW_EXCEPTION(invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "pika::util::mpi_environment::init",
                     "MPI doesn't provide minimal requested thread level");
             }

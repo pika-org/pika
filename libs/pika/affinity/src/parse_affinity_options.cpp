@@ -45,7 +45,8 @@ namespace pika::detail {
         }
         else
         {
-            PIKA_THROWS_IF(ec, bad_parameter, "parse_affinity_options",
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                "parse_affinity_options",
                 "failed to parse affinity specification: \"" + spec + "\"");
         }
 
@@ -125,7 +126,8 @@ namespace pika::detail {
 
             if (num_threads > num_pus_proc_mask)
             {
-                PIKA_THROWS_IF(ec, bad_parameter, "check_num_threads",
+                PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                    "check_num_threads",
                     "specified number of threads ({1}) is larger than number "
                     "of processing units available in process mask ({2})",
                     num_threads, num_pus_proc_mask);
@@ -138,7 +140,8 @@ namespace pika::detail {
 
             if (num_threads > num_threads_available)
             {
-                PIKA_THROWS_IF(ec, bad_parameter, "check_num_threads",
+                PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                    "check_num_threads",
                     "specified number of threads ({1}) is larger than number "
                     "of available processing units ({2})",
                     num_threads, num_threads_available);
@@ -184,7 +187,7 @@ namespace pika::detail {
 
                     if (threads::detail::any(affinities[num_thread]))
                     {
-                        PIKA_THROWS_IF(ec, bad_parameter,
+                        PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                             "decode_compact_distribution",
                             "affinity mask for thread {1} has already been set",
                             num_thread);
@@ -232,7 +235,7 @@ namespace pika::detail {
             {
                 if (threads::detail::any(affinities[num_thread]))
                 {
-                    PIKA_THROWS_IF(ec, bad_parameter,
+                    PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                         "decode_scatter_distribution",
                         "affinity mask for thread {1} has already been set",
                         num_thread);
@@ -349,7 +352,7 @@ namespace pika::detail {
             {
                 if (threads::detail::any(affinities[num_thread]))
                 {
-                    PIKA_THROWS_IF(ec, bad_parameter,
+                    PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                         "decode_balanced_distribution",
                         "affinity mask for thread {1} has already been set",
                         num_thread);
@@ -499,7 +502,7 @@ namespace pika::detail {
                 {
                     if (threads::detail::any(affinities[num_thread]))
                     {
-                        PIKA_THROWS_IF(ec, bad_parameter,
+                        PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                             "decode_numabalanced_distribution",
                             "affinity mask for thread {1} has already been set",
                             num_thread);

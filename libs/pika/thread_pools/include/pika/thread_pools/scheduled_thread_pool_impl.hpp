@@ -285,7 +285,7 @@ namespace pika { namespace threads { namespace detail {
         if (0 == pool_threads)
         {
             PIKA_THROW_EXCEPTION(
-                bad_parameter, "run", "number of threads is zero");
+                pika::error::bad_parameter, "run", "number of threads is zero");
         }
 
         if (!threads_.empty() ||
@@ -416,7 +416,7 @@ namespace pika { namespace threads { namespace detail {
         if (threads::detail::get_self_ptr() &&
             pika::this_thread::get_pool() == this)
         {
-            PIKA_THROWS_IF(ec, bad_parameter,
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::suspend_direct",
                 "cannot suspend a pool from itself");
             return;
@@ -439,7 +439,7 @@ namespace pika { namespace threads { namespace detail {
         if (LPIKA_ENABLED(debug))
             topo.write_to_log();
 
-        error_code ec(lightweight);
+        error_code ec(throwmode::lightweight);
         if (any(mask))
         {
             topo.set_thread_affinity_mask(mask, ec);
@@ -579,8 +579,8 @@ namespace pika { namespace threads { namespace detail {
             catch (std::exception const& e)
             {
                 // Repackage exceptions to avoid slicing.
-                pika::throw_with_info(
-                    pika::exception(unhandled_exception, e.what()));
+                pika::throw_with_info(pika::exception(
+                    pika::error::unhandled_exception, e.what()));
             }
         }
         catch (...)
@@ -608,7 +608,7 @@ namespace pika { namespace threads { namespace detail {
         if (thread_count_ == 0 && !sched_->Scheduler::is_state(state_running))
         {
             // thread-manager is not currently running
-            PIKA_THROWS_IF(ec, invalid_status,
+            PIKA_THROWS_IF(ec, pika::error::invalid_status,
                 "thread_pool<Scheduler>::create_thread",
                 "invalid state: thread pool is not running");
             return;
@@ -628,7 +628,7 @@ namespace pika { namespace threads { namespace detail {
         if (thread_count_ == 0 && !sched_->Scheduler::is_state(state_running))
         {
             // thread-manager is not currently running
-            PIKA_THROWS_IF(ec, invalid_status,
+            PIKA_THROWS_IF(ec, pika::error::invalid_status,
                 "thread_pool<Scheduler>::create_work",
                 "invalid state: thread pool is not running");
             return invalid_thread_id;
@@ -1852,7 +1852,7 @@ namespace pika { namespace threads { namespace detail {
         if (threads_[virt_core].joinable())
         {
             l.unlock();
-            PIKA_THROWS_IF(ec, bad_parameter,
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::add_processing_unit",
                 "the given virtual core has already been added to this "
                 "thread pool");
@@ -1882,7 +1882,7 @@ namespace pika { namespace threads { namespace detail {
         if (threads_.size() <= virt_core || !threads_[virt_core].joinable())
         {
             l.unlock();
-            PIKA_THROWS_IF(ec, bad_parameter,
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::remove_processing_unit",
                 "the given virtual core has already been stopped to run on "
                 "this thread pool");
@@ -1941,7 +1941,7 @@ namespace pika { namespace threads { namespace detail {
         if (threads_.size() <= virt_core || !threads_[virt_core].joinable())
         {
             l.unlock();
-            PIKA_THROWS_IF(ec, bad_parameter,
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::suspend_processing_unit_"
                 "direct",
                 "the given virtual core has already been stopped to run on "
@@ -1980,7 +1980,7 @@ namespace pika { namespace threads { namespace detail {
         if (threads_.size() <= virt_core || !threads_[virt_core].joinable())
         {
             l.unlock();
-            PIKA_THROWS_IF(ec, bad_parameter,
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter,
                 "scheduled_thread_pool<Scheduler>::resume_processing_unit",
                 "the given virtual core has already been stopped to run on "
                 "this thread pool");

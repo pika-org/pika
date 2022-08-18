@@ -197,7 +197,7 @@ pika::threads::detail::thread_result_type invoke_worker_timed_suspension(
 {
     worker_timed(delay * 1000);
 
-    pika::error_code ec(pika::lightweight);
+    pika::error_code ec(pika::throwmode::lightweight);
     pika::this_thread::suspend(
         pika::threads::detail::thread_schedule_state::suspended, "suspend", ec);
 

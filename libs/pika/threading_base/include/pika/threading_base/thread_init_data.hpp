@@ -48,7 +48,7 @@ namespace pika::threads::detail {
         {
             if (initial_state == thread_schedule_state::staged)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "thread_init_data::thread_init_data",
                     "threads shouldn't have 'staged' as their initial state");
             }
@@ -142,7 +142,7 @@ namespace pika::threads::detail {
 
             if (initial_state == thread_schedule_state::staged)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "thread_init_data::thread_init_data",
                     "threads shouldn't have 'staged' as their initial state");
             }

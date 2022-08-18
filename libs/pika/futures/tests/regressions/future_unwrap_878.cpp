@@ -22,7 +22,7 @@ int pika_main()
     try
     {
         //promise.set_value(42);
-        throw pika::bad_parameter;
+        throw pika::error::bad_parameter;
     }
     catch (...)
     {

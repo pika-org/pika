@@ -569,7 +569,8 @@ namespace pika { namespace threads {
         }
 
         //! FIXME Add names of available pools?
-        PIKA_THROW_EXCEPTION(bad_parameter, "threadmanager::get_pool",
+        PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
+            "threadmanager::get_pool",
             "the resource partitioner does not own a thread pool named '{}'.\n",
             pool_name);
     }

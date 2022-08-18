@@ -340,7 +340,8 @@ void define_task_block_exceptions_test3(Executor& exec)
     }
     catch (pika::exception const& e)
     {
-        PIKA_TEST_EQ(int(e.get_error()), int(pika::task_block_not_active));
+        PIKA_TEST_EQ(
+            int(e.get_error()), int(pika::error::task_block_not_active));
     }
     catch (...)
     {
@@ -373,7 +374,8 @@ void define_task_block_exceptions_test4(Executor& exec)
     }
     catch (pika::exception const& e)
     {
-        PIKA_TEST_EQ(int(e.get_error()), int(pika::task_block_not_active));
+        PIKA_TEST_EQ(
+            int(e.get_error()), int(pika::error::task_block_not_active));
     }
     catch (...)
     {

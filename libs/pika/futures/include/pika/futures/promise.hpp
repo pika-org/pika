@@ -118,7 +118,7 @@ namespace pika { namespace lcos { namespace local {
             {
                 if (future_retrieved_ || shared_future_retrieved_)
                 {
-                    PIKA_THROWS_IF(ec, future_already_retrieved,
+                    PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
                         "local::detail::promise_base<R>::get_future",
                         "future or shared future has already been retrieved "
                         "from this promise");
@@ -127,7 +127,7 @@ namespace pika { namespace lcos { namespace local {
 
                 if (shared_state_ == nullptr)
                 {
-                    PIKA_THROWS_IF(ec, no_state,
+                    PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
                         "local::detail::promise_base<R>::get_future",
                         "this promise has no valid shared state");
                     return pika::future<R>();
@@ -142,7 +142,7 @@ namespace pika { namespace lcos { namespace local {
             {
                 if (future_retrieved_)
                 {
-                    PIKA_THROWS_IF(ec, future_already_retrieved,
+                    PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
                         "local::detail::promise_base<R>::get_shared_future",
                         "future has already been retrieved from this promise");
                     return pika::shared_future<R>();
@@ -150,7 +150,7 @@ namespace pika { namespace lcos { namespace local {
 
                 if (shared_state_ == nullptr)
                 {
-                    PIKA_THROWS_IF(ec, no_state,
+                    PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
                         "local::detail::promise_base<R>::get_shared_future",
                         "this promise has no valid shared state");
                     return pika::shared_future<R>();
@@ -168,7 +168,7 @@ namespace pika { namespace lcos { namespace local {
             {
                 if (shared_state_ == nullptr)
                 {
-                    PIKA_THROW_EXCEPTION(no_state,
+                    PIKA_THROW_EXCEPTION(pika::error::no_state,
                         "local::detail::promise_base<R>::set_value",
                         "this promise has no valid shared state");
                     return;
@@ -176,7 +176,7 @@ namespace pika { namespace lcos { namespace local {
 
                 if (shared_state_->is_ready())
                 {
-                    PIKA_THROW_EXCEPTION(promise_already_satisfied,
+                    PIKA_THROW_EXCEPTION(pika::error::promise_already_satisfied,
                         "local::detail::promise_base<R>::set_value",
                         "result has already been stored for this promise");
                     return;
@@ -190,7 +190,7 @@ namespace pika { namespace lcos { namespace local {
             {
                 if (shared_state_ == nullptr)
                 {
-                    PIKA_THROW_EXCEPTION(no_state,
+                    PIKA_THROW_EXCEPTION(pika::error::no_state,
                         "local::detail::promise_base<R>::set_exception",
                         "this promise has no valid shared state");
                     return;
@@ -198,7 +198,7 @@ namespace pika { namespace lcos { namespace local {
 
                 if (shared_state_->is_ready())
                 {
-                    PIKA_THROW_EXCEPTION(promise_already_satisfied,
+                    PIKA_THROW_EXCEPTION(pika::error::promise_already_satisfied,
                         "local::detail::promise_base<R>::set_exception",
                         "result has already been stored for this promise");
                     return;
@@ -214,7 +214,7 @@ namespace pika { namespace lcos { namespace local {
                     (future_retrieved_ || shared_future_retrieved_) &&
                     !shared_state_->is_ready())
                 {
-                    shared_state_->set_error(broken_promise, fun,
+                    shared_state_->set_error(pika::error::broken_promise, fun,
                         "abandoning not ready shared state");
                 }
             }

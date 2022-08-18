@@ -16,7 +16,8 @@
 
 void throw_always()
 {
-    PIKA_THROW_EXCEPTION(pika::no_success, "throw_always", "simulated error");
+    PIKA_THROW_EXCEPTION(
+        pika::error::no_success, "throw_always", "simulated error");
 }
 
 std::exception_ptr test_transport()

@@ -266,7 +266,8 @@ namespace pika { namespace lcos { namespace detail {
         }
         virtual void cancel()
         {
-            PIKA_THROW_EXCEPTION(future_does_not_support_cancellation,
+            PIKA_THROW_EXCEPTION(
+                pika::error::future_does_not_support_cancellation,
                 "future_data_base::cancel",
                 "this future does not support cancellation");
         }
@@ -305,19 +306,19 @@ namespace pika { namespace lcos { namespace detail {
 
         virtual std::string const& get_registered_name() const
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "future_data_base::get_registered_name",
                 "this future does not support name registration");
         }
         virtual void set_registered_name(std::string /*name*/)
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "future_data_base::set_registered_name",
                 "this future does not support name registration");
         }
         virtual bool register_as(std::string /*name*/, bool /*manage_lifetime*/)
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "future_data_base::register_as",
                 "this future does not support name registration");
         }
@@ -462,7 +463,7 @@ namespace pika { namespace lcos { namespace detail {
                 // this future should be 'empty' still (it can't be made ready
                 // more than once).
                 l.unlock();
-                PIKA_THROW_EXCEPTION(promise_already_satisfied,
+                PIKA_THROW_EXCEPTION(pika::error::promise_already_satisfied,
                     "future_data_base::set_value",
                     "data has already been set for this future");
                 return;
@@ -521,7 +522,7 @@ namespace pika { namespace lcos { namespace detail {
                 // this future should be 'empty' still (it can't be made ready
                 // more than once).
                 l.unlock();
-                PIKA_THROW_EXCEPTION(promise_already_satisfied,
+                PIKA_THROW_EXCEPTION(pika::error::promise_already_satisfied,
                     "future_data_base::set_exception",
                     "data has already been set for this future");
                 return;
@@ -875,7 +876,7 @@ namespace pika { namespace lcos { namespace detail {
             if (started_)
             {
                 l.unlock();
-                PIKA_THROW_EXCEPTION(task_already_started,
+                PIKA_THROW_EXCEPTION(pika::error::task_already_started,
                     "task_base::check_started",
                     "this task has already been started");
                 return;
@@ -1016,14 +1017,15 @@ namespace pika { namespace lcos { namespace detail {
                         this->started_ = true;
 
                         l.unlock();
-                        this->set_error(future_cancelled,
+                        this->set_error(pika::error::future_cancelled,
                             "task_base<Result>::cancel",
                             "future has been canceled");
                     }
                     else
                     {
                         l.unlock();
-                        PIKA_THROW_EXCEPTION(future_can_not_be_cancelled,
+                        PIKA_THROW_EXCEPTION(
+                            pika::error::future_can_not_be_cancelled,
                             "task_base<Result>::cancel",
                             "future can't be canceled at this time");
                     }

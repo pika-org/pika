@@ -110,7 +110,7 @@ namespace pika::detail {
             std::size_t num_initialized = count_initialized(affinity_masks_);
             if (num_initialized != num_threads_)
             {
-                PIKA_THROW_EXCEPTION(bad_parameter,
+                PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
                     "affinity_data::affinity_data",
                     "The number of OS threads requested ({1}) does not match "
                     "the number of threads to bind ({2})",

@@ -134,7 +134,7 @@ void dispatch_work()
     pika::apply([jobs, done, &received_jobs, &was_closed]() mutable {
         while (true)
         {
-            pika::error_code ec(pika::lightweight);
+            pika::error_code ec(pika::throwmode::lightweight);
             int next = jobs.get(pika::launch::sync, ec);
             (void) next;
             if (!ec)

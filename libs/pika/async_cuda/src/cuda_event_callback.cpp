@@ -161,7 +161,7 @@ namespace pika::cuda::experimental::detail {
             cudaEvent_t event;
             if (!cuda_event_pool::get_event_pool().pop(event))
             {
-                PIKA_THROW_EXCEPTION(invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "add_to_event_callback_queue", "could not get an event");
             }
             check_cuda_error(cudaEventRecord(event, stream));

@@ -33,7 +33,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!thrd))
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "threads::detail::wake_timer_thread",
                 "null thread id encountered (id)");
             return thread_result_type(
@@ -42,7 +42,7 @@ namespace pika::threads::detail {
 
         if (PIKA_UNLIKELY(!timer_id))
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "threads::detail::wake_timer_thread",
                 "null thread id encountered (timer_id)");
             return thread_result_type(
@@ -54,7 +54,7 @@ namespace pika::threads::detail {
 
         if (!triggered->load())
         {
-            error_code ec(lightweight);    // do not throw
+            error_code ec(throwmode::lightweight);    // do not throw
             set_thread_state(timer_id, thread_schedule_state::pending,
                 my_statex, execution::thread_priority::boost,
                 execution::thread_schedule_hint(), retry_on_active, ec);
@@ -74,8 +74,8 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!thrd))
         {
-            PIKA_THROW_EXCEPTION(null_thread_id, "threads::detail::at_timer",
-                "null thread id encountered");
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
+                "threads::detail::at_timer", "null thread id encountered");
             return thread_result_type(
                 thread_schedule_state::terminated, invalid_thread_id);
         }
@@ -98,7 +98,7 @@ namespace pika::threads::detail {
         thread_id_ref_type wake_id = invalid_thread_id;
         create_thread(scheduler, data, wake_id);
 
-        PIKA_THROW_EXCEPTION(invalid_status, "at_timer",
+        PIKA_THROW_EXCEPTION(pika::error::invalid_status, "at_timer",
             "Timed suspension is currently not supported");
         // // create timer firing in correspondence with given time
         // using deadline_timer =
@@ -169,7 +169,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!thrd))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "threads::detail::set_thread_state",
                 "null thread id encountered");
             return invalid_thread_id;

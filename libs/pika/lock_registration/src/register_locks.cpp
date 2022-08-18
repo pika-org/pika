@@ -287,7 +287,8 @@ namespace pika { namespace util {
                     }
                     else
                     {
-                        PIKA_THROW_EXCEPTION(invalid_status, "verify_no_locks",
+                        PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                            "verify_no_locks",
                             "suspending thread while at least one lock is "
                             "being held (default handler)");
                     }
@@ -310,7 +311,7 @@ namespace pika { namespace util {
         //    // we throw an error if there are still registered locks for
         //    // this OS-thread
         //    if (!held_locks.empty()) {
-        //        PIKA_THROW_EXCEPTION(invalid_status, "force_error_on_lock",
+        //        PIKA_THROW_EXCEPTION(pika::error::invalid_status, "force_error_on_lock",
         //            "At least one lock is held while thread is being "
         //            terminated or interrupted.");
         //    }

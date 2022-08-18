@@ -66,7 +66,7 @@ namespace pika { namespace lcos { namespace local {
         bool trigger_conditions(error_code& ec = throws)
         {
             bool triggered = false;
-            error_code rc(lightweight);
+            error_code rc(throwmode::lightweight);
             for (conditional_trigger* c : conditions_)
             {
                 triggered |= c->set(rc);
@@ -166,7 +166,7 @@ namespace pika { namespace lcos { namespace local {
 
             if (generation_value < generation_)
             {
-                PIKA_THROWS_IF(ec, pika::invalid_status, function_name,
+                PIKA_THROWS_IF(ec, pika::error::invalid_status, function_name,
                     "sequencing error, generational counter too small");
                 return;
             }

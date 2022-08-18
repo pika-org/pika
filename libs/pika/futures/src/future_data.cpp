@@ -125,7 +125,8 @@ namespace pika { namespace lcos { namespace detail {
         if (s == empty)
         {
             // the value has already been moved out of this future
-            PIKA_THROWS_IF(ec, no_state, "future_data_base::get_result",
+            PIKA_THROWS_IF(ec, pika::error::future_already_retrieved,
+                "future_data_base::get_result",
                 "this future has no valid shared state");
             return nullptr;
         }

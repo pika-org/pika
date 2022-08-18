@@ -187,7 +187,7 @@ void do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point()
     }
     catch (pika::exception& e)
     {
-        PIKA_TEST_EQ(e.get_error(), pika::thread_not_interruptable);
+        PIKA_TEST_EQ(e.get_error(), pika::error::thread_not_interruptable);
         caught = true;
     }
 
@@ -347,7 +347,7 @@ void test_double_join()
     }
     catch (pika::exception& e)
     {
-        PIKA_TEST_EQ(e.get_error(), pika::invalid_status);
+        PIKA_TEST_EQ(e.get_error(), pika::error::invalid_status);
         caught = true;
     }
 

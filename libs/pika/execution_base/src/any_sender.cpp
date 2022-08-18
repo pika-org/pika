@@ -17,7 +17,7 @@
 namespace pika::execution::experimental::detail {
     void empty_any_operation_state::start() & noexcept
     {
-        PIKA_THROW_EXCEPTION(pika::bad_function_call,
+        PIKA_THROW_EXCEPTION(pika::error::bad_function_call,
             "attempted to call start on empty any_operation_state",
             "any_operation_state::start");
     }
@@ -35,7 +35,7 @@ namespace pika::execution::experimental::detail {
 
     void throw_bad_any_call(char const* class_name, char const* function_name)
     {
-        PIKA_THROW_EXCEPTION(pika::bad_function_call,
+        PIKA_THROW_EXCEPTION(pika::error::bad_function_call,
             pika::util::format(
                 "attempted to call {} on empty {}", function_name, class_name),
             pika::util::format("{}::{}", class_name, function_name));

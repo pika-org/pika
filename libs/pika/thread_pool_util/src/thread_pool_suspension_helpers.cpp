@@ -22,17 +22,18 @@ namespace pika { namespace threads {
     {
         if (!threads::detail::get_self_ptr())
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "resume_processing_unit",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                "resume_processing_unit",
                 "cannot call resume_processing_unit from outside pika, use"
                 "resume_processing_unit_cb instead");
         }
         else if (!pool.get_scheduler()->has_scheduler_mode(
                      policies::enable_elasticity))
         {
-            return pika::make_exceptional_future<void>(
-                PIKA_GET_EXCEPTION(invalid_status, "resume_processing_unit",
-                    "this thread pool does not support suspending "
-                    "processing units"));
+            return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
+                pika::error::invalid_status, "resume_processing_unit",
+                "this thread pool does not support suspending "
+                "processing units"));
         }
 
         return pika::async([&pool, virt_core]() -> void {
@@ -47,7 +48,8 @@ namespace pika { namespace threads {
         if (!pool.get_scheduler()->has_scheduler_mode(
                 policies::enable_elasticity))
         {
-            PIKA_THROWS_IF(ec, invalid_status, "resume_processing_unit_cb",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status,
+                "resume_processing_unit_cb",
                 "this thread pool does not support suspending "
                 "processing units");
             return;
@@ -74,26 +76,27 @@ namespace pika { namespace threads {
     {
         if (!threads::detail::get_self_ptr())
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "suspend_processing_unit",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                "suspend_processing_unit",
                 "cannot call suspend_processing_unit from outside pika, use"
                 "suspend_processing_unit_cb instead");
         }
         if (!pool.get_scheduler()->has_scheduler_mode(
                 policies::enable_elasticity))
         {
-            return pika::make_exceptional_future<void>(
-                PIKA_GET_EXCEPTION(invalid_status, "suspend_processing_unit",
-                    "this thread pool does not support suspending "
-                    "processing units"));
+            return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
+                pika::error::invalid_status, "suspend_processing_unit",
+                "this thread pool does not support suspending "
+                "processing units"));
         }
         if (!pool.get_scheduler()->has_scheduler_mode(
                 policies::enable_stealing) &&
             pika::this_thread::get_pool() == &pool)
         {
-            return pika::make_exceptional_future<void>(
-                PIKA_GET_EXCEPTION(invalid_status, "suspend_processing_unit",
-                    "this thread pool does not support suspending "
-                    "processing units from itself (no thread stealing)"));
+            return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
+                pika::error::invalid_status, "suspend_processing_unit",
+                "this thread pool does not support suspending "
+                "processing units from itself (no thread stealing)"));
         }
 
         return pika::async([&pool, virt_core]() -> void {
@@ -108,7 +111,8 @@ namespace pika { namespace threads {
         if (!pool.get_scheduler()->has_scheduler_mode(
                 policies::enable_elasticity))
         {
-            PIKA_THROWS_IF(ec, invalid_status, "suspend_processing_unit_cb",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status,
+                "suspend_processing_unit_cb",
                 "this thread pool does not support suspending processing "
                 "units");
             return;
@@ -126,7 +130,7 @@ namespace pika { namespace threads {
                     policies::enable_stealing) &&
                 pika::this_thread::get_pool() == &pool)
             {
-                PIKA_THROW_EXCEPTION(invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "suspend_processing_unit_"
                     "cb",
                     "this thread pool does not support suspending "
@@ -145,7 +149,7 @@ namespace pika { namespace threads {
     {
         if (!threads::detail::get_self_ptr())
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "resume_pool",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "resume_pool",
                 "cannot call resume_pool from outside pika, use resume_pool_cb "
                 "or the member function resume_direct instead");
             return pika::make_ready_future();
@@ -178,7 +182,7 @@ namespace pika { namespace threads {
     {
         if (!threads::detail::get_self_ptr())
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "suspend_pool",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "suspend_pool",
                 "cannot call suspend_pool from outside pika, use "
                 "suspend_pool_cb or the member function suspend_direct "
                 "instead");
@@ -188,7 +192,7 @@ namespace pika { namespace threads {
             pika::this_thread::get_pool() == &pool)
         {
             return pika::make_exceptional_future<void>(
-                PIKA_GET_EXCEPTION(bad_parameter, "suspend_pool",
+                PIKA_GET_EXCEPTION(pika::error::bad_parameter, "suspend_pool",
                     "cannot suspend a pool from itself"));
         }
 
@@ -202,7 +206,7 @@ namespace pika { namespace threads {
         if (threads::detail::get_self_ptr() &&
             pika::this_thread::get_pool() == &pool)
         {
-            PIKA_THROWS_IF(ec, bad_parameter, "suspend_pool_cb",
+            PIKA_THROWS_IF(ec, pika::error::bad_parameter, "suspend_pool_cb",
                 "cannot suspend a pool from itself");
             return;
         }

@@ -429,7 +429,8 @@ namespace pika {
         if (n > values.size())
         {
             return pika::make_exceptional_future<when_some_result<result_type>>(
-                PIKA_GET_EXCEPTION(pika::bad_parameter, "pika::when_some",
+                PIKA_GET_EXCEPTION(pika::error::bad_parameter,
+                    "pika::when_some",
                     "number of results to wait for is out of bounds"));
         }
 
@@ -494,7 +495,7 @@ namespace pika {
         }
 
         return pika::make_exceptional_future<when_some_result<result_type>>(
-            PIKA_GET_EXCEPTION(pika::bad_parameter, "pika::when_some",
+            PIKA_GET_EXCEPTION(pika::error::bad_parameter, "pika::when_some",
                 "number of results to wait for is out of bounds"));
     }
 
@@ -518,7 +519,8 @@ namespace pika {
         if (n > 1 + sizeof...(Ts))
         {
             return pika::make_exceptional_future<when_some_result<result_type>>(
-                PIKA_GET_EXCEPTION(pika::bad_parameter, "pika::when_some",
+                PIKA_GET_EXCEPTION(pika::error::bad_parameter,
+                    "pika::when_some",
                     "number of results to wait for is out of bounds"));
         }
 

@@ -75,7 +75,7 @@ namespace pika { namespace lcos { namespace local {
             bool triggered = false;
             if (!conditions_.empty())
             {
-                error_code rc(lightweight);
+                error_code rc(throwmode::lightweight);
                 for (conditional_trigger* c : conditions_)
                 {
                     triggered |= c->set(rc);
@@ -195,7 +195,8 @@ namespace pika { namespace lcos { namespace local {
                 // out of bounds index
                 l.unlock();
                 outer_lock.unlock();
-                PIKA_THROWS_IF(ec, bad_parameter, "base_and_gate<>::set",
+                PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                    "base_and_gate<>::set",
                     "index is out of range for this base_and_gate");
                 return false;
             }
@@ -204,7 +205,8 @@ namespace pika { namespace lcos { namespace local {
                 // segment already filled, logic error
                 l.unlock();
                 outer_lock.unlock();
-                PIKA_THROWS_IF(ec, bad_parameter, "base_and_gate<>::set",
+                PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                    "base_and_gate<>::set",
                     "input with the given index has already been triggered");
                 return false;
             }
@@ -297,7 +299,7 @@ namespace pika { namespace lcos { namespace local {
             if (generation_value < generation_)
             {
                 l.unlock();
-                PIKA_THROWS_IF(ec, pika::invalid_status, function_name,
+                PIKA_THROWS_IF(ec, pika::error::invalid_status, function_name,
                     "sequencing error, generational counter too small");
                 return;
             }
@@ -349,7 +351,8 @@ namespace pika { namespace lcos { namespace local {
                 // reset happens while part of the slots are filled
                 l.unlock();
                 outer_lock.unlock();
-                PIKA_THROWS_IF(ec, bad_parameter, "base_and_gate<>::init",
+                PIKA_THROWS_IF(ec, pika::error::bad_parameter,
+                    "base_and_gate<>::init",
                     "initializing this base_and_gate while slots are filled");
                 return;
             }

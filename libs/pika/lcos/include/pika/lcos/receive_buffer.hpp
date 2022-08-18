@@ -233,7 +233,7 @@ namespace pika { namespace lcos { namespace local {
                     std::make_pair(step, std::make_shared<entry_data>()));
                 if (!res.second)
                 {
-                    PIKA_THROW_EXCEPTION(invalid_status,
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                         "base_receive_buffer::get_buffer_entry",
                         "couldn't insert a new entry into the receive buffer");
                 }
@@ -455,7 +455,7 @@ namespace pika { namespace lcos { namespace local {
                     std::make_pair(step, std::make_shared<entry_data>()));
                 if (!res.second)
                 {
-                    PIKA_THROW_EXCEPTION(invalid_status,
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                         "base_receive_buffer::get_buffer_entry",
                         "couldn't insert a new entry into the receive buffer");
                 }

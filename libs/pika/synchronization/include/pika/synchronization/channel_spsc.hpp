@@ -167,7 +167,7 @@ namespace pika { namespace lcos { namespace local {
             bool expected = false;
             if (!closed_.compare_exchange_weak(expected, true))
             {
-                PIKA_THROW_EXCEPTION(pika::invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "pika::lcos::local::channel_spsc::close",
                     "attempting to close an already closed channel");
             }

@@ -60,7 +60,7 @@ namespace pika {
         {
             l2.unlock();
             l.unlock();
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "thread::operator=", "destroying running thread");
         }
         id_ = rhs.id_;
@@ -76,8 +76,8 @@ namespace pika {
             {
                 try
                 {
-                    PIKA_THROW_EXCEPTION(invalid_status, "thread::~thread",
-                        "destroying running thread");
+                    PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                        "thread::~thread", "destroying running thread");
                 }
                 catch (...)
                 {
@@ -106,8 +106,8 @@ namespace pika {
         threads::detail::thread_id_type id = threads::detail::get_self_id();
         if (id == threads::detail::invalid_thread_id)
         {
-            PIKA_THROW_EXCEPTION(null_thread_id, "run_thread_exit_callbacks",
-                "null thread id encountered");
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
+                "run_thread_exit_callbacks", "null thread id encountered");
         }
         threads::detail::run_thread_exit_callbacks(id);
         threads::detail::free_thread_exit_callbacks(id);
@@ -177,12 +177,12 @@ namespace pika {
 
         // create the new thread, note that id_ is guaranteed to be valid
         // before the thread function is executed
-        error_code ec(lightweight);
+        error_code ec(throwmode::lightweight);
         pool->create_thread(data, id_, ec);
         if (ec)
         {
-            PIKA_THROW_EXCEPTION(thread_resource_error, "thread::start_thread",
-                "Could not create thread");
+            PIKA_THROW_EXCEPTION(pika::error::thread_resource_error,
+                "thread::start_thread", "Could not create thread");
             return;
         }
     }
@@ -200,7 +200,7 @@ namespace pika {
         if (!joinable_locked())
         {
             l.unlock();
-            PIKA_THROW_EXCEPTION(invalid_status, "thread::join",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "thread::join",
                 "trying to join a non joinable thread");
         }
 
@@ -208,8 +208,8 @@ namespace pika {
         if (this_id == id_)
         {
             l.unlock();
-            PIKA_THROW_EXCEPTION(thread_resource_error, "thread::join",
-                "pika::thread: trying joining itself");
+            PIKA_THROW_EXCEPTION(pika::error::thread_resource_error,
+                "thread::join", "pika::thread: trying joining itself");
             return;
         }
         this_thread::interruption_point();
@@ -297,7 +297,7 @@ namespace pika {
                 if (!this->is_ready())
                 {
                     threads::detail::interrupt_thread(id_.noref());
-                    this->set_error(thread_cancelled,
+                    this->set_error(pika::error::thread_cancelled,
                         "thread_task_base::cancel", "future has been canceled");
                     id_ = threads::detail::invalid_thread_id;
                 }
@@ -322,8 +322,8 @@ namespace pika {
     {
         if (id_ == threads::detail::invalid_thread_id)
         {
-            PIKA_THROWS_IF(ec, null_thread_id, "thread::get_future",
-                "null thread id encountered");
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
+                "thread::get_future", "null thread id encountered");
             return pika::future<void>();
         }
 
@@ -331,7 +331,8 @@ namespace pika {
         pika::intrusive_ptr<lcos::detail::future_data<void>> base(p);
         if (!p->valid())
         {
-            PIKA_THROWS_IF(ec, thread_resource_error, "thread::get_future",
+            PIKA_THROWS_IF(ec, pika::error::thread_resource_error,
+                "thread::get_future",
                 "Could not create future as thread has been terminated.");
             return pika::future<void>();
         }

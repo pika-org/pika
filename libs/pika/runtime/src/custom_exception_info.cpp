@@ -397,7 +397,7 @@ namespace pika {
 
             // if this is not a pika thread we do not need to query neither for
             // the shepherd thread nor for the thread id
-            error_code ec(lightweight);
+            error_code ec(throwmode::lightweight);
             std::uint32_t node = get_locality_id(ec);
 
             std::size_t shepherd = std::size_t(-1);

@@ -183,7 +183,7 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT void PIKA_CDECL new_handler()
     {
-        PIKA_THROW_EXCEPTION(out_of_memory, "new_handler",
+        PIKA_THROW_EXCEPTION(pika::error::out_of_memory, "new_handler",
             "new allocator failed to allocate memory");
     }
 
@@ -860,7 +860,8 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "pika::get_os_thread_count()",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                "pika::get_os_thread_count()",
                 "the runtime system has not been initialized yet");
             return std::size_t(0);
         }
@@ -872,7 +873,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::is_scheduler_numa_sensitive",
                 "the runtime system has not been initialized yet");
             return false;
@@ -1004,7 +1005,8 @@ namespace pika { namespace threads {
         pika::runtime* rt = pika::get_runtime_ptr();
         if (rt == nullptr)
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "pika::threads::get_topology",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                "pika::threads::get_topology",
                 "the pika runtime system has not been initialized yet");
         }
         return rt->get_topology();
@@ -1060,7 +1062,7 @@ namespace pika {
         {
             if (rt->get_state() > state_pre_startup)
             {
-                PIKA_THROW_EXCEPTION(invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "register_pre_startup_function",
                     "Too late to register a new pre-startup function.");
                 return;
@@ -1080,7 +1082,7 @@ namespace pika {
         {
             if (rt->get_state() > state_startup)
             {
-                PIKA_THROW_EXCEPTION(invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "register_startup_function",
                     "Too late to register a new startup function.");
                 return;
@@ -1100,7 +1102,7 @@ namespace pika {
         {
             if (rt->get_state() > state_pre_shutdown)
             {
-                PIKA_THROW_EXCEPTION(invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "register_pre_shutdown_function",
                     "Too late to register a new pre-shutdown function.");
                 return;
@@ -1120,7 +1122,7 @@ namespace pika {
         {
             if (rt->get_state() > state_shutdown)
             {
-                PIKA_THROW_EXCEPTION(invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "register_shutdown_function",
                     "Too late to register a new shutdown function.");
                 return;
@@ -1185,7 +1187,7 @@ namespace pika {
                     // Make sure the mask does not contradict the CPU bindings
                     // returned by the system (see #973: Would like option to
                     // report HWLOC bindings).
-                    error_code ec(lightweight);
+                    error_code ec(throwmode::lightweight);
                     std::thread& blob = tm.get_os_thread_handle(i);
                     threads::detail::mask_type boundcpu =
                         top.get_cpubind_mask(blob, ec);
@@ -1199,7 +1201,7 @@ namespace pika {
                             threads::detail::to_string(boundcpu);
                         std::string pu_mask_str =
                             threads::detail::to_string(pu_mask);
-                        PIKA_THROW_EXCEPTION(invalid_status,
+                        PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                             "handle_print_bind",
                             pika::util::format(
                                 "unexpected mismatch between locality {1}: "
@@ -1513,7 +1515,8 @@ namespace pika {
 
         if (state_.load() != state_running)
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "runtime::suspend",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                "runtime::suspend",
                 "Can only suspend runtime from running state");
             return -1;
         }
@@ -1536,7 +1539,7 @@ namespace pika {
 
         if (state_.load() != state_sleeping)
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "runtime::resume",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status, "runtime::resume",
                 "Can only resume runtime from suspended state");
             return -1;
         }
@@ -1687,7 +1690,7 @@ namespace pika {
         std::size_t local_thread_num, std::size_t global_thread_num,
         char const* pool_name, char const* postfix, bool service_thread)
     {
-        error_code ec(lightweight);
+        error_code ec(throwmode::lightweight);
         return init_tss_ex(context, type, local_thread_num, global_thread_num,
             pool_name, postfix, service_thread, ec);
     }
@@ -1765,15 +1768,17 @@ namespace pika {
                         used_processing_units),
                     ec);
 
-                // comment this out for now as on CircleCI this is causing unending grief
-                //if (ec)
-                //{
-                //    PIKA_THROW_EXCEPTION(kernel_error, "runtime::init_tss_ex",
-                //        "failed to set thread affinity mask ({}) for service "
-                //        "thread: {}",
-                //        pika::threads::detail::to_string(used_processing_units),
-                //        detail::thread_name());
-                //}
+                // comment this out for now as on CircleCI this is causing
+                // unending grief
+                // if (ec)
+                // {
+                //     PIKA_THROW_EXCEPTION(pika::error::kernel_error,
+                //         "runtime::init_tss_ex",
+                //         "failed to set thread affinity mask ({}) for service "
+                //         "thread: {}",
+                //         pika::threads::detail::to_string(used_processing_units),
+                //         detail::thread_name());
+                // }
             }
 #endif
         }
@@ -1895,7 +1900,8 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "pika::get_num_worker_threads",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                "pika::get_num_worker_threads",
                 "the runtime system has not been initialized yet");
             return std::size_t(0);
         }
@@ -1910,7 +1916,8 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "pika::get_num_localities",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                "pika::get_num_localities",
                 "the runtime system has not been initialized yet");
             return std::size_t(0);
         }
@@ -1923,7 +1930,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::get_initial_num_localities",
                 "the runtime system has not been initialized yet");
             return std::size_t(0);
@@ -1937,7 +1944,8 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
-            PIKA_THROW_EXCEPTION(invalid_status, "pika::get_num_localities",
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                "pika::get_num_localities",
                 "the runtime system has not been initialized yet");
             return make_ready_future(std::uint32_t(0));
         }

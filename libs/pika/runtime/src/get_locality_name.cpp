@@ -18,7 +18,7 @@ namespace pika { namespace detail {
         runtime* rt = get_runtime_ptr();
         if (rt == nullptr)
         {
-            PIKA_THROW_EXCEPTION(invalid_status,
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "pika::detail::get_locality_name",
                 "the runtime system is not operational at this point");
             return "";

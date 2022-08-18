@@ -25,7 +25,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 /// \cond NODETAIL
-namespace pika { namespace detail {
+namespace pika::detail {
     template <typename Exception>
     [[noreturn]] PIKA_EXPORT void throw_exception(Exception const& e,
         std::string const& func, std::string const& file, long line);
@@ -63,7 +63,7 @@ namespace pika { namespace detail {
         pika::error_code& ec, exception const& e, std::string const& func);
 
     [[noreturn]] PIKA_EXPORT void throw_thread_interrupted_exception();
-}}    // namespace pika::detail
+}    // namespace pika::detail
 /// \endcond
 
 namespace pika {
@@ -99,7 +99,7 @@ namespace pika {
         PIKA_GET_EXCEPTION_, PIKA_PP_NARGS(__VA_ARGS__))(__VA_ARGS__))         \
 /**/
 #define PIKA_GET_EXCEPTION_3(errcode, f, msg)                                  \
-    PIKA_GET_EXCEPTION_4(errcode, pika::plain, f, msg)                         \
+    PIKA_GET_EXCEPTION_4(errcode, pika::throwmode::plain, f, msg)              \
 /**/
 #define PIKA_GET_EXCEPTION_4(errcode, mode, f, msg)                            \
     pika::detail::get_exception(errcode, msg, mode, f, __FILE__, __LINE__) /**/
@@ -151,7 +151,7 @@ namespace pika {
 ///          // Throw a pika::exception initialized from the given parameters.
 ///          // Additionally associate with this exception some detailed
 ///          // diagnostic information about the throw-site.
-///          PIKA_THROW_EXCEPTION(pika::no_success, "raise_exception", "simulated error");
+///          PIKA_THROW_EXCEPTION(pika::error:no_success, "raise_exception", "simulated error");
 ///      }
 /// \endcode
 ///

@@ -105,7 +105,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::set_thread_description",
                 "null thread id encountered");
             return util::detail::thread_description();
@@ -122,7 +122,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::get_thread_lco_description",
                 "null thread id encountered");
             return nullptr;
@@ -140,7 +140,7 @@ namespace pika::threads::detail {
     {
         if (PIKA_UNLIKELY(!id))
         {
-            PIKA_THROWS_IF(ec, null_thread_id,
+            PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::set_thread_lco_description",
                 "null thread id encountered");
             return nullptr;

@@ -113,7 +113,7 @@ void dispatch_work()
     pika::apply([jobs, done]() mutable {
         while (true)
         {
-            pika::error_code ec(pika::lightweight);
+            pika::error_code ec(pika::throwmode::lightweight);
             int value = jobs.get(pika::launch::sync, ec);
             if (!ec)
             {

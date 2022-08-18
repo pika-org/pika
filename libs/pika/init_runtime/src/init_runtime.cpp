@@ -123,14 +123,14 @@ namespace pika {
     {
         if (!threads::detail::get_self_ptr())
         {
-            PIKA_THROWS_IF(ec, invalid_status, "pika::finalize",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::finalize",
                 "this function can be called from an pika thread only");
             return -1;
         }
 
         if (!is_running())
         {
-            PIKA_THROWS_IF(ec, invalid_status, "pika::finalize",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::finalize",
                 "the runtime system is not active (did you already "
                 "call finalize?)");
             return -1;
@@ -142,7 +142,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
-            PIKA_THROWS_IF(ec, invalid_status, "pika::finalize",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::finalize",
                 "the runtime system is not active (did you already "
                 "call pika::stop?)");
             return -1;
@@ -157,7 +157,7 @@ namespace pika {
     {
         if (threads::detail::get_self_ptr())
         {
-            PIKA_THROWS_IF(ec, invalid_status, "pika::stop",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::stop",
                 "this function cannot be called from an pika thread");
             return -1;
         }
@@ -165,7 +165,7 @@ namespace pika {
         std::unique_ptr<runtime> rt(get_runtime_ptr());    // take ownership!
         if (nullptr == rt.get())
         {
-            PIKA_THROWS_IF(ec, invalid_status, "pika::stop",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::stop",
                 "the runtime system is not active (did you already "
                 "call pika::stop?)");
             return -1;
@@ -184,7 +184,7 @@ namespace pika {
     {
         if (threads::detail::get_self_ptr())
         {
-            PIKA_THROWS_IF(ec, invalid_status, "pika::suspend",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::suspend",
                 "this function cannot be called from an pika thread");
             return -1;
         }
@@ -192,7 +192,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
-            PIKA_THROWS_IF(ec, invalid_status, "pika::suspend",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::suspend",
                 "the runtime system is not active (did you already "
                 "call pika::stop?)");
             return -1;
@@ -206,7 +206,7 @@ namespace pika {
     {
         if (threads::detail::get_self_ptr())
         {
-            PIKA_THROWS_IF(ec, invalid_status, "pika::resume",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::resume",
                 "this function cannot be called from an pika thread");
             return -1;
         }
@@ -214,7 +214,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
-            PIKA_THROWS_IF(ec, invalid_status, "pika::resume",
+            PIKA_THROWS_IF(ec, pika::error::invalid_status, "pika::resume",
                 "the runtime system is not active (did you already "
                 "call pika::stop?)");
             return -1;
@@ -362,9 +362,9 @@ namespace pika {
 
             pika::detail::set_assertion_handler(
                 &pika::detail::assertion_handler);
-            pika::set_custom_exception_info_handler(
+            pika::detail::set_custom_exception_info_handler(
                 &pika::detail::custom_exception_info);
-            pika::set_pre_exception_handler(
+            pika::detail::set_pre_exception_handler(
                 &pika::detail::pre_exception_handler);
             pika::set_thread_termination_handler(
                 [](std::exception_ptr const& e) { report_error(e); });

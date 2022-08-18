@@ -244,8 +244,8 @@ namespace pika { namespace mpi { namespace experimental {
         void pika_MPI_Handler(MPI_Comm*, int* errorcode, ...)
         {
             mpi_debug.debug(debug::detail::str<>("pika_MPI_Handler"));
-            PIKA_THROW_EXCEPTION(
-                invalid_status, "pika_MPI_Handler", error_message(*errorcode));
+            PIKA_THROW_EXCEPTION(pika::error::invalid_status,
+                "pika_MPI_Handler", error_message(*errorcode));
         }
     }    // namespace detail
 
@@ -509,7 +509,7 @@ namespace pika { namespace mpi { namespace experimental {
                 mpi_debug.error(
                     debug::detail::str<>("pika::mpi::experimental::init"),
                     "init failed");
-                PIKA_THROW_EXCEPTION(invalid_status,
+                PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "pika::mpi::experimental::init",
                     "the MPI installation doesn't allow multiple threads");
             }

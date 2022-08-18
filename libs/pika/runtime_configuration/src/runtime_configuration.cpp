@@ -640,7 +640,8 @@ namespace pika { namespace util {
             // file doesn't exist or is ill-formed
             if (&ec == &throws)
                 throw;
-            ec = make_error_code(e.get_error(), e.what(), pika::rethrow);
+            ec = make_error_code(
+                e.get_error(), e.what(), pika::throwmode::rethrow);
             return false;
         }
         return true;

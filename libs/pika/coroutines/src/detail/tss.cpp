@@ -67,7 +67,7 @@ namespace pika::threads::coroutines::detail {
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "pika::threads::coroutines::detail::get_tss_thread_data",
                 "null thread id encountered");
             return 0;
@@ -96,7 +96,7 @@ namespace pika::threads::coroutines::detail {
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "pika::threads::coroutines::detail::set_tss_thread_data",
                 "null thread id encountered");
             return 0;
@@ -136,7 +136,7 @@ namespace pika::threads::coroutines::detail {
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "pika::threads::coroutines::detail::find_tss_data",
                 "null thread id encountered");
             return nullptr;
@@ -174,7 +174,7 @@ namespace pika::threads::coroutines::detail {
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "pika::threads::coroutines::detail::add_new_tss_node",
                 "null thread id encountered");
             return;
@@ -201,7 +201,7 @@ namespace pika::threads::coroutines::detail {
         coroutine_self* self = coroutine_self::get_self();
         if (nullptr == self)
         {
-            PIKA_THROW_EXCEPTION(null_thread_id,
+            PIKA_THROW_EXCEPTION(pika::error::null_thread_id,
                 "pika::threads::coroutines::detail::erase_tss_node",
                 "null thread id encountered");
             return;
