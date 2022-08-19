@@ -52,7 +52,7 @@ namespace executor_example {
             decltype(auto) operator()(Ts&&... ts)
             {
                 on_exit _{exec_};
-                return pika::util::invoke(f_, std::forward<Ts>(ts)...);
+                return pika::util::detail::invoke(f_, std::forward<Ts>(ts)...);
             }
 
             executor_with_thread_hooks const& exec_;
@@ -154,7 +154,7 @@ namespace executor_example {
         }
 
     private:
-        using thread_hook = pika::util::function<void()>;
+        using thread_hook = pika::util::detail::function<void()>;
 
         BaseExecutor& exec_;
         thread_hook on_start_;

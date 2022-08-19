@@ -67,7 +67,7 @@ namespace jacobi_smp {
                  * left
                 (*deps_new)[j]
                     = pika::dataflow(
-                        pika::util::bind(
+                        pika::util::detail::bind(
                             jacobi_kernel_wrap
                           , range(y, y_end)
                           , n
@@ -81,7 +81,7 @@ namespace jacobi_smp {
                 (*deps_new)[j] =
                     pika::when_all(std::move(trigger))
                         .then(pika::launch::async,
-                            pika::util::bind(jacobi_kernel_wrap,
+                            pika::util::detail::bind(jacobi_kernel_wrap,
                                 range(y, y_end), n, std::ref(*grid_new),
                                 std::cref(*grid_old)));
             }

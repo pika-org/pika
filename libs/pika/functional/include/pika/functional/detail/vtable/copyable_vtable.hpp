@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <new>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     struct copyable_vtable
     {
         template <typename T>
@@ -40,4 +40,4 @@ namespace pika { namespace util { namespace detail {
         {
         }
     };
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

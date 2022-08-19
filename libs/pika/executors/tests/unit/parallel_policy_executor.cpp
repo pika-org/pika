@@ -95,13 +95,14 @@ void test_bulk_sync(bool sync)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executor exec;
     pika::parallel::execution::bulk_sync_execute(exec,
-        pika::util::bind(sync ? &bulk_test_s : &bulk_test_a, _1, tid, _2), v,
-        42);
+        pika::util::detail::bind(
+            sync ? &bulk_test_s : &bulk_test_a, _1, tid, _2),
+        v, 42);
     pika::parallel::execution::bulk_sync_execute(
         exec, sync ? &bulk_test_s : &bulk_test_a, v, tid, 42);
 }
@@ -117,14 +118,14 @@ void test_bulk_async(bool sync)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executor exec;
-    pika::when_all(
-        pika::parallel::execution::bulk_async_execute(exec,
-            pika::util::bind(sync ? &bulk_test_s : &bulk_test_a, _1, tid, _2),
-            v, 42))
+    pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
+                       pika::util::detail::bind(
+                           sync ? &bulk_test_s : &bulk_test_a, _1, tid, _2),
+                       v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
                        exec, sync ? &bulk_test_s : &bulk_test_a, v, tid, 42))
@@ -164,15 +165,15 @@ void test_bulk_then(bool sync)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
-    using pika::util::placeholders::_3;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
 
     pika::shared_future<void> f = pika::make_ready_future();
 
     executor exec;
     pika::parallel::execution::bulk_then_execute(exec,
-        pika::util::bind(
+        pika::util::detail::bind(
             sync ? &bulk_test_f_s : &bulk_test_f_a, _1, _2, tid, _3),
         v, f, 42)
         .get();

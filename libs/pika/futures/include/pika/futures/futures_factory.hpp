@@ -103,7 +103,7 @@ namespace pika { namespace lcos { namespace local {
                 {
                     threads::detail::thread_init_data data(
                         threads::detail::make_thread_function_nullary(
-                            util::deferred_call(
+                            util::detail::deferred_call(
                                 &base_type::run_impl, PIKA_MOVE(this_))),
                         util::detail::thread_description(f_, annotation),
                         policy.priority(),
@@ -119,7 +119,7 @@ namespace pika { namespace lcos { namespace local {
 
                 threads::detail::thread_init_data data(
                     threads::detail::make_thread_function_nullary(
-                        util::deferred_call(
+                        util::detail::deferred_call(
                             &base_type::run_impl, PIKA_MOVE(this_))),
                     util::detail::thread_description(f_, annotation),
                     policy.priority(), policy.hint(), policy.stacksize(),
@@ -245,7 +245,7 @@ namespace pika { namespace lcos { namespace local {
 
                     pika::intrusive_ptr<base_type> this_(this);
                     parallel::execution::post(*exec_,
-                        util::deferred_call(
+                        util::detail::deferred_call(
                             &base_type::run_impl, PIKA_MOVE(this_)),
                         exec_->get_schedulehint(), annotation);
                     return threads::detail::invalid_thread_id;

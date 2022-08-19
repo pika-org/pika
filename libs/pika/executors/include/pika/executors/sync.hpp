@@ -23,7 +23,7 @@ namespace pika { namespace detail {
 
     template <typename Func>
     struct sync_dispatch_launch_policy_helper<Func,
-        std::enable_if_t<!traits::is_action_v<Func>>>
+        std::enable_if_t<!detail::is_action_v<Func>>>
     {
         template <typename Policy_, typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call(

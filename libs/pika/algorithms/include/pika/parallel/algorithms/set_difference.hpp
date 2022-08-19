@@ -270,7 +270,7 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter1>::value &&
                 pika::traits::is_iterator<FwdIter2>::value &&
                 pika::traits::is_iterator<FwdIter3>::value &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<FwdIter1>::value_type,
                     typename std::iterator_traits<FwdIter2>::value_type
                 >
@@ -314,7 +314,7 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter1>::value &&
                 pika::traits::is_iterator<FwdIter2>::value &&
                 pika::traits::is_iterator<FwdIter3>::value &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<FwdIter1>::value_type,
                     typename std::iterator_traits<FwdIter2>::value_type
                 >

@@ -162,8 +162,9 @@ namespace pika { namespace parallel { namespace execution {
                     pika::util::detail::invoke_deferred_result_t<F, Future,
                         Ts...>;
 
-                auto func = pika::util::one_shot(pika::util::bind_back(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                auto func =
+                    pika::util::detail::one_shot(pika::util::detail::bind_back(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
                 pika::traits::detail::shared_state_ptr_t<result_type> p =
                     lcos::detail::make_continuation_exec<result_type>(
@@ -291,7 +292,7 @@ namespace pika { namespace parallel { namespace execution {
             // fall-back: emulate sync_execute using async_execute
             template <typename TwoWayExecutor, typename F, typename... Ts>
             static auto call_impl(std::false_type, TwoWayExecutor&& exec, F&& f,
-                Ts&&... ts) -> pika::util::invoke_result_t<F, Ts...>
+                Ts&&... ts) -> pika::util::detail::invoke_result_t<F, Ts...>
             {
                 try
                 {
@@ -330,7 +331,7 @@ namespace pika { namespace parallel { namespace execution {
             template <typename TwoWayExecutor, typename F, typename... Ts>
             PIKA_FORCEINLINE static auto call_impl(
                 pika::traits::detail::wrap_int, TwoWayExecutor&& exec, F&& f,
-                Ts&&... ts) -> pika::util::invoke_result_t<F, Ts...>
+                Ts&&... ts) -> pika::util::detail::invoke_result_t<F, Ts...>
             {
                 using is_void = typename std::is_void<pika::util::detail::
                         invoke_deferred_result_t<F, Ts...>>::type;
@@ -385,8 +386,9 @@ namespace pika { namespace parallel { namespace execution {
                     pika::util::detail::invoke_deferred_result_t<F, Future,
                         Ts...>;
 
-                auto func = pika::util::one_shot(pika::util::bind_back(
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+                auto func =
+                    pika::util::detail::one_shot(pika::util::detail::bind_back(
+                        PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
                 pika::traits::detail::shared_state_ptr_t<result_type> p =
                     lcos::detail::make_continuation_exec<result_type>(

@@ -12,8 +12,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util { namespace detail {
-
+namespace pika::util::detail {
     ///////////////////////////////////////////////////////////////////////////
     // when `pm` is a pointer to member of a class `C` and
     // `is_base_of_v<C, remove_reference_t<T>>` is `true`;
@@ -133,9 +132,8 @@ namespace pika { namespace util { namespace detail {
     };
 
     template <typename F>
-    using invoke = typename dispatch_invoke<F>::type;
+    using invoke_impl = typename dispatch_invoke<F>::type;
 
 #define PIKA_INVOKE(F, ...)                                                    \
-    (::pika::util::detail::invoke<decltype((F))>(F)(__VA_ARGS__))
-
-}}}    // namespace pika::util::detail
+    (::pika::util::detail::invoke_impl<decltype((F))>(F)(__VA_ARGS__))
+}    // namespace pika::util::detail

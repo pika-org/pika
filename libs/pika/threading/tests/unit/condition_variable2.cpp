@@ -521,8 +521,9 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
             arr_ready_cv{};
         std::vector<pika::jthread> vthreads_deferred;
 
-        pika::jthread t0(pika::util::bind_back(cv_wait, 0, std::ref(ready),
-            std::ref(ready_mtx), std::ref(ready_cv), call_notify));
+        pika::jthread t0(
+            pika::util::detail::bind_back(cv_wait, 0, std::ref(ready),
+                std::ref(ready_mtx), std::ref(ready_cv), call_notify));
         {
             auto t0ssource = t0.get_stop_source();
             pika::this_thread::yield();

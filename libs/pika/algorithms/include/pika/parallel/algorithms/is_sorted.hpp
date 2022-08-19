@@ -300,7 +300,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         part_size - 1,
                         [&trail, &tok, &pred_projected](
                             FwdIter it) mutable -> void {
-                            if (pika::util::invoke(
+                            if (pika::util::detail::invoke(
                                     pred_projected, *it, *trail++))
                             {
                                 tok.cancel();
@@ -313,7 +313,8 @@ namespace pika { namespace parallel { inline namespace v1 {
 
                     if (!tok.was_cancelled() && trail != last)
                     {
-                        return !pika::util::invoke(pred_projected, *trail, *i);
+                        return !pika::util::detail::invoke(
+                            pred_projected, *trail, *i);
                     }
                     return !tok.was_cancelled();
                 };
@@ -388,7 +389,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                         part_begin, part_size - 1, tok,
                         [&trail, &tok, &pred_projected](
                             reference& v, std::size_t ind) -> void {
-                            if (pika::util::invoke(pred_projected, v, *trail++))
+                            if (pika::util::detail::invoke(
+                                    pred_projected, v, *trail++))
                             {
                                 tok.cancel(ind);
                             }
@@ -437,7 +439,7 @@ namespace pika {
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
-                pika::is_invocable_v<
+                pika::detail::is_invocable_v<
                     Pred,
                     typename std::iterator_traits<FwdIter>::value_type,
                     typename std::iterator_traits<FwdIter>::value_type
@@ -459,7 +461,7 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value &&
-                pika::is_invocable_v<
+                pika::detail::is_invocable_v<
                     Pred,
                     typename std::iterator_traits<FwdIter>::value_type,
                     typename std::iterator_traits<FwdIter>::value_type
@@ -487,7 +489,7 @@ namespace pika {
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
-                pika::is_invocable_v<
+                pika::detail::is_invocable_v<
                     Pred,
                     typename std::iterator_traits<FwdIter>::value_type,
                     typename std::iterator_traits<FwdIter>::value_type
@@ -510,7 +512,7 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value &&
-                pika::is_invocable_v<
+                pika::detail::is_invocable_v<
                     Pred,
                     typename std::iterator_traits<FwdIter>::value_type,
                     typename std::iterator_traits<FwdIter>::value_type

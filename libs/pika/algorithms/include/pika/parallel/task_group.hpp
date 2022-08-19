@@ -74,7 +74,8 @@ namespace pika { namespace execution { namespace experimental {
                     std::exception_ptr p;
                     try
                     {
-                        pika::util::invoke_fused(PIKA_MOVE(f), PIKA_MOVE(t));
+                        pika::util::detail::invoke_fused(
+                            PIKA_MOVE(f), PIKA_MOVE(t));
                         return;
                     }
                     catch (...)

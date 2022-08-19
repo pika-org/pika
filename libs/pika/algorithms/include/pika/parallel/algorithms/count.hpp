@@ -232,7 +232,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 typename std::iterator_traits<Iter>::difference_type ret = 0;
                 util::loop_n<execution_policy_type>(part_begin, part_size,
-                    pika::util::bind_back(*this, std::ref(ret)));
+                    pika::util::detail::bind_back(*this, std::ref(ret)));
                 return ret;
             }
 
@@ -269,7 +269,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 typename std::iterator_traits<InIterB>::difference_type ret = 0;
 
                 util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    pika::util::bind_back(PIKA_MOVE(f1), std::ref(ret)));
+                    pika::util::detail::bind_back(
+                        PIKA_MOVE(f1), std::ref(ret)));
 
                 return ret;
             }
@@ -331,7 +332,8 @@ namespace pika { namespace parallel { inline namespace v1 {
                 typename std::iterator_traits<InIterB>::difference_type ret = 0;
 
                 util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    pika::util::bind_back(PIKA_MOVE(f1), std::ref(ret)));
+                    pika::util::detail::bind_back(
+                        PIKA_MOVE(f1), std::ref(ret)));
 
                 return ret;
             }
@@ -433,7 +435,7 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter>::value &&
-                pika::is_invocable_v<F,
+                pika::detail::is_invocable_v<F,
                     typename std::iterator_traits<FwdIter>::value_type
                 >
             )>
@@ -458,7 +460,7 @@ namespace pika {
         template <typename InIter, typename F,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter>::value &&
-                pika::is_invocable_v<F,
+                pika::detail::is_invocable_v<F,
                     typename std::iterator_traits<InIter>::value_type
                 >
             )>

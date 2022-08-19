@@ -586,9 +586,9 @@ namespace pika { namespace parallel { inline namespace v1 {
                     util::loop_n<std::decay_t<ExPolicy>>(++part_begin,
                         part_size,
                         [base, pred, proj](zip_iterator it) mutable -> void {
-                            bool f = pika::util::invoke(pred,
-                                pika::util::invoke(proj, *base),
-                                pika::util::invoke(proj, get<0>(*it)));
+                            bool f = pika::util::detail::invoke(pred,
+                                pika::util::detail::invoke(proj, *base),
+                                pika::util::detail::invoke(proj, get<0>(*it)));
 
                             if (!(get<1>(*it) = f))
                                 base = get<0>(it.get_iterator_tuple());

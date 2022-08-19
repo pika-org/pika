@@ -22,18 +22,14 @@ set(functional_headers
     pika/functional/bind_front.hpp
     pika/functional/first_argument.hpp
     pika/functional/function.hpp
-    pika/functional/function_ref.hpp
     pika/functional/invoke.hpp
     pika/functional/invoke_fused.hpp
-    pika/functional/mem_fn.hpp
     pika/functional/one_shot.hpp
-    pika/functional/protect.hpp
     pika/functional/unique_function.hpp
     pika/functional/traits/get_function_address.hpp
     pika/functional/traits/get_function_annotation.hpp
     pika/functional/traits/is_action.hpp
     pika/functional/traits/is_bind_expression.hpp
-    pika/functional/traits/is_placeholder.hpp
 )
 
 # Default location is $PIKA_ROOT/libs/functional/src
@@ -48,7 +44,6 @@ pika_add_module(
     "pika/functional/traits/get_function_annotation.hpp"
     "pika/functional/traits/is_action.hpp"
     "pika/functional/traits/is_bind_expression.hpp"
-    "pika/functional/traits/is_placeholder.hpp"
   SOURCES ${functional_sources}
   HEADERS ${functional_headers}
   MODULE_DEPENDENCIES

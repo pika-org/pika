@@ -169,7 +169,7 @@ void wait_for_tasks(
         if (all_count != suspended_tasks + 1)
         {
             thread_init_data data(
-                make_thread_function_nullary(pika::util::bind(
+                make_thread_function_nullary(pika::util::detail::bind(
                     &wait_for_tasks, std::ref(finished), suspended_tasks)),
                 "wait_for_tasks", pika::execution::thread_priority::low);
             register_work(data);
@@ -305,7 +305,7 @@ void stage_workers(std::uint64_t target_thread, std::uint64_t local_tasks,
     if (num_thread != target_thread)
     {
         thread_init_data data(
-            make_thread_function_nullary(pika::util::bind(
+            make_thread_function_nullary(pika::util::detail::bind(
                 &stage_workers, target_thread, local_tasks, stage_worker)),
             "stage_workers", pika::execution::thread_priority::normal,
             pika::execution::thread_schedule_hint(
@@ -472,7 +472,7 @@ int pika_main(variables_map& vm)
                 continue;
 
             thread_init_data data(
-                make_thread_function_nullary(pika::util::bind(
+                make_thread_function_nullary(pika::util::detail::bind(
                     &stage_workers, i, tasks_per_feeder, stage_worker)),
                 "stage_workers", pika::execution::thread_priority::normal,
                 pika::execution::thread_schedule_hint(
@@ -490,7 +490,7 @@ int pika_main(variables_map& vm)
         pika::lcos::local::barrier finished(2);
 
         thread_init_data data(
-            make_thread_function_nullary(pika::util::bind(
+            make_thread_function_nullary(pika::util::detail::bind(
                 &wait_for_tasks, std::ref(finished), total_suspended_tasks)),
             "wait_for_tasks", pika::execution::thread_priority::low);
         register_work(data);

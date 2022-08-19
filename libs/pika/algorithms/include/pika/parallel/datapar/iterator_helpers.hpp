@@ -317,7 +317,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
     struct invoke_vectorized_in2
     {
         template <typename F, typename Iter1, typename Iter2>
-        static typename pika::util::invoke_result<F, V1*, V2*>::type
+        static typename pika::util::detail::invoke_result<F, V1*, V2*>::type
         call_aligned(F&& f, Iter1& it1, Iter2& it2)
         {
             static_assert(traits::vector_pack_size<V1>::value ==
@@ -339,7 +339,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         }
 
         template <typename F, typename Iter1, typename Iter2>
-        static typename pika::util::invoke_result<F, V1*, V2*>::type
+        static typename pika::util::detail::invoke_result<F, V1*, V2*>::type
         call_unaligned(F&& f, Iter1& it1, Iter2& it2)
         {
             static_assert(traits::vector_pack_size<V1>::value ==
@@ -375,7 +375,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static
-            typename pika::util::invoke_result<F, V11*, V12*>::type
+            typename pika::util::detail::invoke_result<F, V11*, V12*>::type
             call1(F&& f, Iter1& it1, Iter2& it2)
         {
             return invoke_vectorized_in2<V11, V12>::call_aligned(
@@ -384,7 +384,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static
-            typename pika::util::invoke_result<F, V1*, V2*>::type
+            typename pika::util::detail::invoke_result<F, V1*, V2*>::type
             callv(F&& f, Iter1& it1, Iter2& it2)
         {
             if (!is_data_aligned(it1) || !is_data_aligned(it2))

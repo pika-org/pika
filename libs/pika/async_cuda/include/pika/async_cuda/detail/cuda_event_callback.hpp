@@ -24,7 +24,7 @@
 
 namespace pika::cuda::experimental::detail {
     using event_callback_function_type =
-        pika::util::unique_function<void(cudaError_t)>;
+        pika::util::detail::unique_function<void(cudaError_t)>;
 
     PIKA_EXPORT void add_event_callback(event_callback_function_type&& f,
         cudaStream_t stream,

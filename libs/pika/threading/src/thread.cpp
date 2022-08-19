@@ -114,7 +114,7 @@ namespace pika {
     }
 
     threads::detail::thread_result_type thread::thread_function_nullary(
-        util::unique_function<void()> const& func)
+        util::detail::unique_function<void()> const& func)
     {
         try
         {
@@ -161,14 +161,14 @@ namespace pika {
         return pika::threads::detail::hardware_concurrency();
     }
 
-    void thread::start_thread(
-        threads::thread_pool_base* pool, util::unique_function<void()>&& func)
+    void thread::start_thread(threads::thread_pool_base* pool,
+        util::detail::unique_function<void()>&& func)
     {
         PIKA_ASSERT(pool);
 
         threads::detail::thread_init_data data(
-            util::one_shot(
-                util::bind(&thread::thread_function_nullary, PIKA_MOVE(func))),
+            util::detail::one_shot(util::detail::bind(
+                &thread::thread_function_nullary, PIKA_MOVE(func))),
             "thread::thread_function_nullary",
             execution::thread_priority::default_,
             execution::thread_schedule_hint(),
@@ -216,7 +216,7 @@ namespace pika {
 
         // register callback function to be called when thread exits
         if (threads::detail::add_thread_exit_callback(
-                id_.noref(), util::bind_front(&resume_thread, this_id)))
+                id_.noref(), util::detail::bind_front(&resume_thread, this_id)))
         {
             // wait for thread to be terminated
             util::unlock_guard ul(l);
@@ -272,7 +272,7 @@ namespace pika {
                 threads::detail::thread_id_ref_type const& id)
             {
                 if (threads::detail::add_thread_exit_callback(id.noref(),
-                        util::bind_front(
+                        util::detail::bind_front(
                             &thread_task_base::thread_exit_function,
                             future_base_type(this))))
                 {

@@ -59,13 +59,13 @@ int app_main(variables_map& vm)
         run(f, iterations);
     }
     {
-        pika::util::function<void(), false> f = foo();
-        std::cout << "pika::util::function (non-serializable)";
+        pika::util::detail::function<void(), false> f = foo();
+        std::cout << "pika::util::detail::function (non-serializable)";
         run(f, iterations);
     }
     {
-        pika::util::function<void()> f = foo();
-        std::cout << "pika::util::function (serializable)";
+        pika::util::detail::function<void()> f = foo();
+        std::cout << "pika::util::detail::function (serializable)";
         run(f, iterations);
     }
     {

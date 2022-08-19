@@ -983,7 +983,8 @@ namespace pika { namespace threads { namespace policies {
         ///////////////////////////////////////////////////////////////////////
         // Enumerate matching threads from all queues
         bool enumerate_threads(
-            util::function<bool(threads::detail::thread_id_type)> const& f,
+            util::detail::function<bool(threads::detail::thread_id_type)> const&
+                f,
             threads::detail::thread_schedule_state state =
                 threads::detail::thread_schedule_state::unknown) const override
         {
@@ -1297,39 +1298,41 @@ namespace pika { namespace threads { namespace policies {
             else
                 first_mask = pu_mask;
 
-            auto iterate = [&](pika::util::function<bool(std::size_t)> f) {
-                // check our neighbors in a radial fashion (left and right
-                // alternating, increasing distance each iteration)
-                std::ptrdiff_t i = 1;
-                for (/**/; i < radius; ++i)
-                {
-                    std::ptrdiff_t left =
-                        (static_cast<std::ptrdiff_t>(num_thread) - i) %
-                        static_cast<std::ptrdiff_t>(num_threads);
-                    if (left < 0)
-                        left = static_cast<std::ptrdiff_t>(num_threads) + left;
+            auto iterate =
+                [&](pika::util::detail::function<bool(std::size_t)> f) {
+                    // check our neighbors in a radial fashion (left and right
+                    // alternating, increasing distance each iteration)
+                    std::ptrdiff_t i = 1;
+                    for (/**/; i < radius; ++i)
+                    {
+                        std::ptrdiff_t left =
+                            (static_cast<std::ptrdiff_t>(num_thread) - i) %
+                            static_cast<std::ptrdiff_t>(num_threads);
+                        if (left < 0)
+                            left =
+                                static_cast<std::ptrdiff_t>(num_threads) + left;
 
-                    if (f(std::size_t(left)))
-                    {
-                        victim_threads_[num_thread].data_.push_back(
-                            static_cast<std::size_t>(left));
-                    }
+                        if (f(std::size_t(left)))
+                        {
+                            victim_threads_[num_thread].data_.push_back(
+                                static_cast<std::size_t>(left));
+                        }
 
-                    std::size_t right = (num_thread + i) % num_threads;
-                    if (f(right))
-                    {
-                        victim_threads_[num_thread].data_.push_back(right);
+                        std::size_t right = (num_thread + i) % num_threads;
+                        if (f(right))
+                        {
+                            victim_threads_[num_thread].data_.push_back(right);
+                        }
                     }
-                }
-                if ((num_threads % 2) == 0)
-                {
-                    std::size_t right = (num_thread + i) % num_threads;
-                    if (f(right))
+                    if ((num_threads % 2) == 0)
                     {
-                        victim_threads_[num_thread].data_.push_back(right);
+                        std::size_t right = (num_thread + i) % num_threads;
+                        if (f(right))
+                        {
+                            victim_threads_[num_thread].data_.push_back(right);
+                        }
                     }
-                }
-            };
+                };
 
             // check for threads which share the same core...
             iterate([&](std::size_t other_num_thread) {

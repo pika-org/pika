@@ -61,7 +61,7 @@ struct external_future_executor
     decltype(auto) async_execute(F&& f, Ts&&... ts)
     {
         using is_void = typename std::is_void<
-            typename pika::util::invoke_result<F, Ts...>::type>;
+            typename pika::util::detail::invoke_result<F, Ts...>::type>;
         return async_execute_helper(
             is_void{}, std::forward<F>(f), std::forward<Ts>(ts)...);
     }
@@ -72,7 +72,7 @@ struct external_future_executor
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
-                pika::util::invoke_fused(
+                pika::util::detail::invoke_fused(
                     std::forward<F>(f), std::forward<Futures>(futures));
 
                 // Signal completion from another thread/task.
@@ -95,7 +95,7 @@ struct external_future_executor
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
-                auto&& r = pika::util::invoke_fused(
+                auto&& r = pika::util::detail::invoke_fused(
                     std::forward<F>(f), std::forward<Futures>(futures));
 
                 // Signal completion from another thread/task.
@@ -157,7 +157,7 @@ struct external_future_additional_argument_executor
     decltype(auto) async_execute(F&& f, Ts&&... ts)
     {
         using is_void =
-            typename std::is_void<typename pika::util::invoke_result<F,
+            typename std::is_void<typename pika::util::detail::invoke_result<F,
                 additional_argument, Ts...>::type>;
         return async_execute_helper(
             is_void{}, std::forward<F>(f), std::forward<Ts>(ts)...);
@@ -170,7 +170,7 @@ struct external_future_additional_argument_executor
         pika::detail::try_catch_exception_ptr(
             [&]() {
                 additional_argument a{};
-                pika::util::invoke_fused(std::forward<F>(f),
+                pika::util::detail::invoke_fused(std::forward<F>(f),
                     std::tuple_cat(
                         std::tie(a), std::forward<Futures>(futures)));
 
@@ -195,7 +195,7 @@ struct external_future_additional_argument_executor
         pika::detail::try_catch_exception_ptr(
             [&]() {
                 additional_argument a{};
-                auto&& r = pika::util::invoke_fused(std::forward<F>(f),
+                auto&& r = pika::util::detail::invoke_fused(std::forward<F>(f),
                     std::tuple_cat(
                         std::tie(a), std::forward<Futures>(futures)));
 

@@ -48,9 +48,9 @@ namespace pika { namespace traits {
 
         template <typename Future, typename F>
         struct future_then_result<Future, F,
-            std::void_t<pika::util::invoke_result_t<F&, Future>>>
+            std::void_t<pika::util::detail::invoke_result_t<F&, Future>>>
         {
-            using cont_result = pika::util::invoke_result_t<F&, Future>;
+            using cont_result = pika::util::detail::invoke_result_t<F&, Future>;
 
             // perform unwrapping of future<future<R>>
             using result_type = util::lazy_conditional_t<

@@ -25,13 +25,15 @@ static unsigned func_impl(int arg1, bool arg2, double arg3)
 
 int main(int, char*[])
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
-    pika::util::function<unsigned(bool, double)> f1 =
-        pika::util::bind(func_impl, 15, _1, _2);
-    pika::util::function<unsigned(double)> f2 = pika::util::bind(f1, false, _1);
-    pika::util::function<unsigned()> f3 = pika::util::bind(f2, 4.0);
+    pika::util::detail::function<unsigned(bool, double)> f1 =
+        pika::util::detail::bind(func_impl, 15, _1, _2);
+    pika::util::detail::function<unsigned(double)> f2 =
+        pika::util::detail::bind(f1, false, _1);
+    pika::util::detail::function<unsigned()> f3 =
+        pika::util::detail::bind(f2, 4.0);
 
     PIKA_TEST_EQ(f3(), 120u);
 

@@ -81,7 +81,7 @@ namespace pika { namespace util {
 
     PIKA_EXPORT void perftests_report(std::string const& name,
         std::string const& exec, const std::size_t steps,
-        function<void(void)>&& test);
+        detail::function<void(void)>&& test);
 
     PIKA_EXPORT void perftests_print_times();
 

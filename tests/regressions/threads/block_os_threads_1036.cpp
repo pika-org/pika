@@ -33,7 +33,7 @@ void blocker(pika::barrier<>& exit_barrier, std::atomic<std::uint64_t>& entered,
     {
         pika::threads::detail::thread_init_data data(
             pika::threads::detail::make_thread_function_nullary(
-                pika::util::bind(&blocker, std::ref(exit_barrier),
+                pika::util::detail::bind(&blocker, std::ref(exit_barrier),
                     std::ref(entered), std::ref(started),
                     std::ref(blocked_threads), worker)),
             "blocker", pika::execution::thread_priority::normal,
@@ -83,7 +83,7 @@ int pika_main()
 
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary(
-                    pika::util::bind(&blocker, std::ref(exit_barrier),
+                    pika::util::detail::bind(&blocker, std::ref(exit_barrier),
                         std::ref(entered), std::ref(started),
                         std::ref(blocked_threads), i)),
                 "blocker", pika::execution::thread_priority::normal,

@@ -21,13 +21,12 @@
 #endif
 
 #include <pika/functional/bind.hpp>
-
-namespace placeholders = pika::util::placeholders;
+#include <pika/testing.hpp>
 
 #include <functional>
 #include <iostream>
 
-#include <pika/testing.hpp>
+namespace placeholders = std::placeholders;
 
 //
 
@@ -144,41 +143,46 @@ void function_test()
 {
     int const i = 1;
 
-    PIKA_TEST(pika::util::bind(f_0)(i) == 17041L);
-    PIKA_TEST(pika::util::bind(f_1, placeholders::_1)(i) == 1L);
-    PIKA_TEST(pika::util::bind(f_2, placeholders::_1, 2)(i) == 21L);
-    PIKA_TEST(pika::util::bind(f_3, placeholders::_1, 2, 3)(i) == 321L);
-    PIKA_TEST(pika::util::bind(f_4, placeholders::_1, 2, 3, 4)(i) == 4321L);
-    PIKA_TEST(pika::util::bind(f_5, placeholders::_1, 2, 3, 4, 5)(i) == 54321L);
+    PIKA_TEST(pika::util::detail::bind(f_0)(i) == 17041L);
+    PIKA_TEST(pika::util::detail::bind(f_1, placeholders::_1)(i) == 1L);
+    PIKA_TEST(pika::util::detail::bind(f_2, placeholders::_1, 2)(i) == 21L);
+    PIKA_TEST(pika::util::detail::bind(f_3, placeholders::_1, 2, 3)(i) == 321L);
     PIKA_TEST(
-        pika::util::bind(f_6, placeholders::_1, 2, 3, 4, 5, 6)(i) == 654321L);
-    PIKA_TEST(pika::util::bind(f_7, placeholders::_1, 2, 3, 4, 5, 6, 7)(i) ==
-        7654321L);
-    PIKA_TEST(pika::util::bind(f_8, placeholders::_1, 2, 3, 4, 5, 6, 7, 8)(i) ==
-        87654321L);
-    PIKA_TEST(pika::util::bind(f_9, placeholders::_1, 2, 3, 4, 5, 6, 7, 8, 9)(
-                  i) == 987654321L);
+        pika::util::detail::bind(f_4, placeholders::_1, 2, 3, 4)(i) == 4321L);
+    PIKA_TEST(pika::util::detail::bind(f_5, placeholders::_1, 2, 3, 4, 5)(i) ==
+        54321L);
+    PIKA_TEST(pika::util::detail::bind(f_6, placeholders::_1, 2, 3, 4, 5, 6)(
+                  i) == 654321L);
+    PIKA_TEST(pika::util::detail::bind(f_7, placeholders::_1, 2, 3, 4, 5, 6, 7)(
+                  i) == 7654321L);
+    PIKA_TEST(pika::util::detail::bind(
+                  f_8, placeholders::_1, 2, 3, 4, 5, 6, 7, 8)(i) == 87654321L);
+    PIKA_TEST(pika::util::detail::bind(f_9, placeholders::_1, 2, 3, 4, 5, 6, 7,
+                  8, 9)(i) == 987654321L);
 
-    PIKA_TEST((pika::util::bind(fv_0)(i), (global_result == 17041L)));
-    PIKA_TEST(
-        (pika::util::bind(fv_1, placeholders::_1)(i), (global_result == 1L)));
-    PIKA_TEST((pika::util::bind(fv_2, placeholders::_1, 2)(i),
+    PIKA_TEST((pika::util::detail::bind(fv_0)(i), (global_result == 17041L)));
+    PIKA_TEST((pika::util::detail::bind(fv_1, placeholders::_1)(i),
+        (global_result == 1L)));
+    PIKA_TEST((pika::util::detail::bind(fv_2, placeholders::_1, 2)(i),
         (global_result == 21L)));
-    PIKA_TEST((pika::util::bind(fv_3, placeholders::_1, 2, 3)(i),
+    PIKA_TEST((pika::util::detail::bind(fv_3, placeholders::_1, 2, 3)(i),
         (global_result == 321L)));
-    PIKA_TEST((pika::util::bind(fv_4, placeholders::_1, 2, 3, 4)(i),
+    PIKA_TEST((pika::util::detail::bind(fv_4, placeholders::_1, 2, 3, 4)(i),
         (global_result == 4321L)));
-    PIKA_TEST((pika::util::bind(fv_5, placeholders::_1, 2, 3, 4, 5)(i),
+    PIKA_TEST((pika::util::detail::bind(fv_5, placeholders::_1, 2, 3, 4, 5)(i),
         (global_result == 54321L)));
-    PIKA_TEST((pika::util::bind(fv_6, placeholders::_1, 2, 3, 4, 5, 6)(i),
-        (global_result == 654321L)));
-    PIKA_TEST((pika::util::bind(fv_7, placeholders::_1, 2, 3, 4, 5, 6, 7)(i),
-        (global_result == 7654321L)));
-    PIKA_TEST((pika::util::bind(fv_8, placeholders::_1, 2, 3, 4, 5, 6, 7, 8)(i),
-        (global_result == 87654321L)));
     PIKA_TEST(
-        (pika::util::bind(fv_9, placeholders::_1, 2, 3, 4, 5, 6, 7, 8, 9)(i),
-            (global_result == 987654321L)));
+        (pika::util::detail::bind(fv_6, placeholders::_1, 2, 3, 4, 5, 6)(i),
+            (global_result == 654321L)));
+    PIKA_TEST(
+        (pika::util::detail::bind(fv_7, placeholders::_1, 2, 3, 4, 5, 6, 7)(i),
+            (global_result == 7654321L)));
+    PIKA_TEST((pika::util::detail::bind(
+                   fv_8, placeholders::_1, 2, 3, 4, 5, 6, 7, 8)(i),
+        (global_result == 87654321L)));
+    PIKA_TEST((pika::util::detail::bind(
+                   fv_9, placeholders::_1, 2, 3, 4, 5, 6, 7, 8, 9)(i),
+        (global_result == 987654321L)));
 }
 
 //
@@ -211,16 +215,16 @@ void function_object_test()
 
     int const k = 3;
 
-    PIKA_TEST(pika::util::bind(Y(), ref(i))() == 7);
-    PIKA_TEST(pika::util::bind(Y(), ref(i))() == 8);
-    PIKA_TEST(pika::util::bind(Y(), i, placeholders::_1)(k) == 38);
-    PIKA_TEST(pika::util::bind(Y(), i, placeholders::_1, 9)(k) == 938);
+    PIKA_TEST(pika::util::detail::bind(Y(), ref(i))() == 7);
+    PIKA_TEST(pika::util::detail::bind(Y(), ref(i))() == 8);
+    PIKA_TEST(pika::util::detail::bind(Y(), i, placeholders::_1)(k) == 38);
+    PIKA_TEST(pika::util::detail::bind(Y(), i, placeholders::_1, 9)(k) == 938);
 
 #if !defined(__MWERKS__) || (__MWERKS__ > 0x2407)
     // Fails for this version of the compiler.
 
     global_result = 0;
-    pika::util::bind(Y(), i, placeholders::_1, 9, 4)(k);
+    pika::util::detail::bind(Y(), i, placeholders::_1, 9, 4)(k);
     PIKA_TEST_EQ(global_result, 4938);
 
 #endif
@@ -234,13 +238,13 @@ void function_object_test2()
 
     int const k = 3;
 
-    PIKA_TEST(pika::util::bind(Y(), ref(i))() == 7);
-    PIKA_TEST(pika::util::bind(Y(), ref(i))() == 8);
-    PIKA_TEST(pika::util::bind(Y(), i, placeholders::_1)(k) == 38);
-    PIKA_TEST(pika::util::bind(Y(), i, placeholders::_1, 9)(k) == 938);
+    PIKA_TEST(pika::util::detail::bind(Y(), ref(i))() == 7);
+    PIKA_TEST(pika::util::detail::bind(Y(), ref(i))() == 8);
+    PIKA_TEST(pika::util::detail::bind(Y(), i, placeholders::_1)(k) == 38);
+    PIKA_TEST(pika::util::detail::bind(Y(), i, placeholders::_1, 9)(k) == 938);
 
     global_result = 0;
-    pika::util::bind(Y(), i, placeholders::_1, 9, 4)(k);
+    pika::util::detail::bind(Y(), i, placeholders::_1, 9, 4)(k);
     PIKA_TEST_EQ(global_result, 4938);
 }
 
@@ -259,7 +263,7 @@ struct Z
 
 void adaptable_function_object_test()
 {
-    PIKA_TEST_EQ(pika::util::bind(Z(), 7, 4)(), 47);
+    PIKA_TEST_EQ(pika::util::detail::bind(Z(), 7, 4)(), 47);
 }
 
 #endif
@@ -503,84 +507,84 @@ void member_function_test()
 
     // 0
 
-    pika::util::bind(&X::f0, &x)();
-    pika::util::bind(&X::f0, ref(x))();
+    pika::util::detail::bind(&X::f0, &x)();
+    pika::util::detail::bind(&X::f0, ref(x))();
 
-    pika::util::bind(&X::g0, &x)();
-    pika::util::bind(&X::g0, x)();
-    pika::util::bind(&X::g0, ref(x))();
+    pika::util::detail::bind(&X::g0, &x)();
+    pika::util::detail::bind(&X::g0, x)();
+    pika::util::detail::bind(&X::g0, ref(x))();
 
     // 1
 
-    pika::util::bind(&X::f1, &x, 1)();
-    pika::util::bind(&X::f1, ref(x), 1)();
+    pika::util::detail::bind(&X::f1, &x, 1)();
+    pika::util::detail::bind(&X::f1, ref(x), 1)();
 
-    pika::util::bind(&X::g1, &x, 1)();
-    pika::util::bind(&X::g1, x, 1)();
-    pika::util::bind(&X::g1, ref(x), 1)();
+    pika::util::detail::bind(&X::g1, &x, 1)();
+    pika::util::detail::bind(&X::g1, x, 1)();
+    pika::util::detail::bind(&X::g1, ref(x), 1)();
 
     // 2
 
-    pika::util::bind(&X::f2, &x, 1, 2)();
-    pika::util::bind(&X::f2, ref(x), 1, 2)();
+    pika::util::detail::bind(&X::f2, &x, 1, 2)();
+    pika::util::detail::bind(&X::f2, ref(x), 1, 2)();
 
-    pika::util::bind(&X::g2, &x, 1, 2)();
-    pika::util::bind(&X::g2, x, 1, 2)();
-    pika::util::bind(&X::g2, ref(x), 1, 2)();
+    pika::util::detail::bind(&X::g2, &x, 1, 2)();
+    pika::util::detail::bind(&X::g2, x, 1, 2)();
+    pika::util::detail::bind(&X::g2, ref(x), 1, 2)();
 
     // 3
 
-    pika::util::bind(&X::f3, &x, 1, 2, 3)();
-    pika::util::bind(&X::f3, ref(x), 1, 2, 3)();
+    pika::util::detail::bind(&X::f3, &x, 1, 2, 3)();
+    pika::util::detail::bind(&X::f3, ref(x), 1, 2, 3)();
 
-    pika::util::bind(&X::g3, &x, 1, 2, 3)();
-    pika::util::bind(&X::g3, x, 1, 2, 3)();
-    pika::util::bind(&X::g3, ref(x), 1, 2, 3)();
+    pika::util::detail::bind(&X::g3, &x, 1, 2, 3)();
+    pika::util::detail::bind(&X::g3, x, 1, 2, 3)();
+    pika::util::detail::bind(&X::g3, ref(x), 1, 2, 3)();
 
     // 4
 
-    pika::util::bind(&X::f4, &x, 1, 2, 3, 4)();
-    pika::util::bind(&X::f4, ref(x), 1, 2, 3, 4)();
+    pika::util::detail::bind(&X::f4, &x, 1, 2, 3, 4)();
+    pika::util::detail::bind(&X::f4, ref(x), 1, 2, 3, 4)();
 
-    pika::util::bind(&X::g4, &x, 1, 2, 3, 4)();
-    pika::util::bind(&X::g4, x, 1, 2, 3, 4)();
-    pika::util::bind(&X::g4, ref(x), 1, 2, 3, 4)();
+    pika::util::detail::bind(&X::g4, &x, 1, 2, 3, 4)();
+    pika::util::detail::bind(&X::g4, x, 1, 2, 3, 4)();
+    pika::util::detail::bind(&X::g4, ref(x), 1, 2, 3, 4)();
 
     // 5
 
-    pika::util::bind(&X::f5, &x, 1, 2, 3, 4, 5)();
-    pika::util::bind(&X::f5, ref(x), 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&X::f5, &x, 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&X::f5, ref(x), 1, 2, 3, 4, 5)();
 
-    pika::util::bind(&X::g5, &x, 1, 2, 3, 4, 5)();
-    pika::util::bind(&X::g5, x, 1, 2, 3, 4, 5)();
-    pika::util::bind(&X::g5, ref(x), 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&X::g5, &x, 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&X::g5, x, 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&X::g5, ref(x), 1, 2, 3, 4, 5)();
 
     // 6
 
-    pika::util::bind(&X::f6, &x, 1, 2, 3, 4, 5, 6)();
-    pika::util::bind(&X::f6, ref(x), 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&X::f6, &x, 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&X::f6, ref(x), 1, 2, 3, 4, 5, 6)();
 
-    pika::util::bind(&X::g6, &x, 1, 2, 3, 4, 5, 6)();
-    pika::util::bind(&X::g6, x, 1, 2, 3, 4, 5, 6)();
-    pika::util::bind(&X::g6, ref(x), 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&X::g6, &x, 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&X::g6, x, 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&X::g6, ref(x), 1, 2, 3, 4, 5, 6)();
 
     // 7
 
-    pika::util::bind(&X::f7, &x, 1, 2, 3, 4, 5, 6, 7)();
-    pika::util::bind(&X::f7, ref(x), 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&X::f7, &x, 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&X::f7, ref(x), 1, 2, 3, 4, 5, 6, 7)();
 
-    pika::util::bind(&X::g7, &x, 1, 2, 3, 4, 5, 6, 7)();
-    pika::util::bind(&X::g7, x, 1, 2, 3, 4, 5, 6, 7)();
-    pika::util::bind(&X::g7, ref(x), 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&X::g7, &x, 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&X::g7, x, 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&X::g7, ref(x), 1, 2, 3, 4, 5, 6, 7)();
 
     // 8
 
-    pika::util::bind(&X::f8, &x, 1, 2, 3, 4, 5, 6, 7, 8)();
-    pika::util::bind(&X::f8, ref(x), 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&X::f8, &x, 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&X::f8, ref(x), 1, 2, 3, 4, 5, 6, 7, 8)();
 
-    pika::util::bind(&X::g8, &x, 1, 2, 3, 4, 5, 6, 7, 8)();
-    pika::util::bind(&X::g8, x, 1, 2, 3, 4, 5, 6, 7, 8)();
-    pika::util::bind(&X::g8, ref(x), 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&X::g8, &x, 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&X::g8, x, 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&X::g8, ref(x), 1, 2, 3, 4, 5, 6, 7, 8)();
 
     PIKA_TEST_EQ(x.hash, static_cast<unsigned int>(23558));
 }
@@ -593,84 +597,84 @@ void member_function_void_test()
 
     // 0
 
-    pika::util::bind(&V::f0, &v)();
-    pika::util::bind(&V::f0, ref(v))();
+    pika::util::detail::bind(&V::f0, &v)();
+    pika::util::detail::bind(&V::f0, ref(v))();
 
-    pika::util::bind(&V::g0, &v)();
-    pika::util::bind(&V::g0, v)();
-    pika::util::bind(&V::g0, ref(v))();
+    pika::util::detail::bind(&V::g0, &v)();
+    pika::util::detail::bind(&V::g0, v)();
+    pika::util::detail::bind(&V::g0, ref(v))();
 
     // 1
 
-    pika::util::bind(&V::f1, &v, 1)();
-    pika::util::bind(&V::f1, ref(v), 1)();
+    pika::util::detail::bind(&V::f1, &v, 1)();
+    pika::util::detail::bind(&V::f1, ref(v), 1)();
 
-    pika::util::bind(&V::g1, &v, 1)();
-    pika::util::bind(&V::g1, v, 1)();
-    pika::util::bind(&V::g1, ref(v), 1)();
+    pika::util::detail::bind(&V::g1, &v, 1)();
+    pika::util::detail::bind(&V::g1, v, 1)();
+    pika::util::detail::bind(&V::g1, ref(v), 1)();
 
     // 2
 
-    pika::util::bind(&V::f2, &v, 1, 2)();
-    pika::util::bind(&V::f2, ref(v), 1, 2)();
+    pika::util::detail::bind(&V::f2, &v, 1, 2)();
+    pika::util::detail::bind(&V::f2, ref(v), 1, 2)();
 
-    pika::util::bind(&V::g2, &v, 1, 2)();
-    pika::util::bind(&V::g2, v, 1, 2)();
-    pika::util::bind(&V::g2, ref(v), 1, 2)();
+    pika::util::detail::bind(&V::g2, &v, 1, 2)();
+    pika::util::detail::bind(&V::g2, v, 1, 2)();
+    pika::util::detail::bind(&V::g2, ref(v), 1, 2)();
 
     // 3
 
-    pika::util::bind(&V::f3, &v, 1, 2, 3)();
-    pika::util::bind(&V::f3, ref(v), 1, 2, 3)();
+    pika::util::detail::bind(&V::f3, &v, 1, 2, 3)();
+    pika::util::detail::bind(&V::f3, ref(v), 1, 2, 3)();
 
-    pika::util::bind(&V::g3, &v, 1, 2, 3)();
-    pika::util::bind(&V::g3, v, 1, 2, 3)();
-    pika::util::bind(&V::g3, ref(v), 1, 2, 3)();
+    pika::util::detail::bind(&V::g3, &v, 1, 2, 3)();
+    pika::util::detail::bind(&V::g3, v, 1, 2, 3)();
+    pika::util::detail::bind(&V::g3, ref(v), 1, 2, 3)();
 
     // 4
 
-    pika::util::bind(&V::f4, &v, 1, 2, 3, 4)();
-    pika::util::bind(&V::f4, ref(v), 1, 2, 3, 4)();
+    pika::util::detail::bind(&V::f4, &v, 1, 2, 3, 4)();
+    pika::util::detail::bind(&V::f4, ref(v), 1, 2, 3, 4)();
 
-    pika::util::bind(&V::g4, &v, 1, 2, 3, 4)();
-    pika::util::bind(&V::g4, v, 1, 2, 3, 4)();
-    pika::util::bind(&V::g4, ref(v), 1, 2, 3, 4)();
+    pika::util::detail::bind(&V::g4, &v, 1, 2, 3, 4)();
+    pika::util::detail::bind(&V::g4, v, 1, 2, 3, 4)();
+    pika::util::detail::bind(&V::g4, ref(v), 1, 2, 3, 4)();
 
     // 5
 
-    pika::util::bind(&V::f5, &v, 1, 2, 3, 4, 5)();
-    pika::util::bind(&V::f5, ref(v), 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&V::f5, &v, 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&V::f5, ref(v), 1, 2, 3, 4, 5)();
 
-    pika::util::bind(&V::g5, &v, 1, 2, 3, 4, 5)();
-    pika::util::bind(&V::g5, v, 1, 2, 3, 4, 5)();
-    pika::util::bind(&V::g5, ref(v), 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&V::g5, &v, 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&V::g5, v, 1, 2, 3, 4, 5)();
+    pika::util::detail::bind(&V::g5, ref(v), 1, 2, 3, 4, 5)();
 
     // 6
 
-    pika::util::bind(&V::f6, &v, 1, 2, 3, 4, 5, 6)();
-    pika::util::bind(&V::f6, ref(v), 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&V::f6, &v, 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&V::f6, ref(v), 1, 2, 3, 4, 5, 6)();
 
-    pika::util::bind(&V::g6, &v, 1, 2, 3, 4, 5, 6)();
-    pika::util::bind(&V::g6, v, 1, 2, 3, 4, 5, 6)();
-    pika::util::bind(&V::g6, ref(v), 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&V::g6, &v, 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&V::g6, v, 1, 2, 3, 4, 5, 6)();
+    pika::util::detail::bind(&V::g6, ref(v), 1, 2, 3, 4, 5, 6)();
 
     // 7
 
-    pika::util::bind(&V::f7, &v, 1, 2, 3, 4, 5, 6, 7)();
-    pika::util::bind(&V::f7, ref(v), 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&V::f7, &v, 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&V::f7, ref(v), 1, 2, 3, 4, 5, 6, 7)();
 
-    pika::util::bind(&V::g7, &v, 1, 2, 3, 4, 5, 6, 7)();
-    pika::util::bind(&V::g7, v, 1, 2, 3, 4, 5, 6, 7)();
-    pika::util::bind(&V::g7, ref(v), 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&V::g7, &v, 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&V::g7, v, 1, 2, 3, 4, 5, 6, 7)();
+    pika::util::detail::bind(&V::g7, ref(v), 1, 2, 3, 4, 5, 6, 7)();
 
     // 8
 
-    pika::util::bind(&V::f8, &v, 1, 2, 3, 4, 5, 6, 7, 8)();
-    pika::util::bind(&V::f8, ref(v), 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&V::f8, &v, 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&V::f8, ref(v), 1, 2, 3, 4, 5, 6, 7, 8)();
 
-    pika::util::bind(&V::g8, &v, 1, 2, 3, 4, 5, 6, 7, 8)();
-    pika::util::bind(&V::g8, v, 1, 2, 3, 4, 5, 6, 7, 8)();
-    pika::util::bind(&V::g8, ref(v), 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&V::g8, &v, 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&V::g8, v, 1, 2, 3, 4, 5, 6, 7, 8)();
+    pika::util::detail::bind(&V::g8, ref(v), 1, 2, 3, 4, 5, 6, 7, 8)();
 
     PIKA_TEST_EQ(v.hash, static_cast<unsigned int>(23558));
 }
@@ -680,31 +684,37 @@ void nested_bind_test()
     int const x = 1;
     int const y = 2;
 
-    PIKA_TEST(pika::util::bind(f_1, pika::util::bind(f_1, placeholders::_1))(
-                  x) == 1L);
-    PIKA_TEST(pika::util::bind(f_1,
-                  pika::util::bind(f_2, placeholders::_1, placeholders::_2))(
-                  x, y) == 21L);
-    PIKA_TEST(pika::util::bind(f_2, pika::util::bind(f_1, placeholders::_1),
-                  pika::util::bind(f_1, placeholders::_1))(x) == 11L);
-    PIKA_TEST(pika::util::bind(f_2, pika::util::bind(f_1, placeholders::_1),
-                  pika::util::bind(f_1, placeholders::_2))(x, y) == 21L);
-    PIKA_TEST(pika::util::bind(f_1, pika::util::bind(f_0))() == 17041L);
+    PIKA_TEST(pika::util::detail::bind(f_1,
+                  pika::util::detail::bind(f_1, placeholders::_1))(x) == 1L);
+    PIKA_TEST(pika::util::detail::bind(f_1,
+                  pika::util::detail::bind(
+                      f_2, placeholders::_1, placeholders::_2))(x, y) == 21L);
+    PIKA_TEST(pika::util::detail::bind(f_2,
+                  pika::util::detail::bind(f_1, placeholders::_1),
+                  pika::util::detail::bind(f_1, placeholders::_1))(x) == 11L);
+    PIKA_TEST(
+        pika::util::detail::bind(f_2,
+            pika::util::detail::bind(f_1, placeholders::_1),
+            pika::util::detail::bind(f_1, placeholders::_2))(x, y) == 21L);
+    PIKA_TEST(pika::util::detail::bind(f_1, pika::util::detail::bind(f_0))() ==
+        17041L);
 
-    PIKA_TEST(
-        (pika::util::bind(fv_1, pika::util::bind(f_1, placeholders::_1))(x),
-            (global_result == 1L)));
-    PIKA_TEST(
-        (pika::util::bind(fv_1,
-             pika::util::bind(f_2, placeholders::_1, placeholders::_2))(x, y),
-            (global_result == 21L)));
-    PIKA_TEST((pika::util::bind(fv_2, pika::util::bind(f_1, placeholders::_1),
-                   pika::util::bind(f_1, placeholders::_1))(x),
-        (global_result == 11L)));
-    PIKA_TEST((pika::util::bind(fv_2, pika::util::bind(f_1, placeholders::_1),
-                   pika::util::bind(f_1, placeholders::_2))(x, y),
+    PIKA_TEST((pika::util::detail::bind(
+                   fv_1, pika::util::detail::bind(f_1, placeholders::_1))(x),
+        (global_result == 1L)));
+    PIKA_TEST((pika::util::detail::bind(fv_1,
+                   pika::util::detail::bind(
+                       f_2, placeholders::_1, placeholders::_2))(x, y),
         (global_result == 21L)));
-    PIKA_TEST((pika::util::bind(fv_1, pika::util::bind(f_0))(),
+    PIKA_TEST((pika::util::detail::bind(fv_2,
+                   pika::util::detail::bind(f_1, placeholders::_1),
+                   pika::util::detail::bind(f_1, placeholders::_1))(x),
+        (global_result == 11L)));
+    PIKA_TEST((pika::util::detail::bind(fv_2,
+                   pika::util::detail::bind(f_1, placeholders::_1),
+                   pika::util::detail::bind(f_1, placeholders::_2))(x, y),
+        (global_result == 21L)));
+    PIKA_TEST((pika::util::detail::bind(fv_1, pika::util::detail::bind(f_0))(),
         (global_result == 17041L)));
 }
 

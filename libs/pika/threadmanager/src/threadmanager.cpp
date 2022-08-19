@@ -66,19 +66,19 @@ namespace pika { namespace threads {
       , notifier_(notifier)
       , network_background_callback_(network_background_callback)
     {
-        using util::placeholders::_1;
-        using util::placeholders::_3;
+        using std::placeholders::_1;
+        using std::placeholders::_3;
 
         // Add callbacks local to threadmanager.
         notifier.add_on_start_thread_callback(
-            util::bind(&threadmanager::init_tss, this, _1));
+            util::detail::bind(&threadmanager::init_tss, this, _1));
         notifier.add_on_stop_thread_callback(
-            util::bind(&threadmanager::deinit_tss, this));
+            util::detail::bind(&threadmanager::deinit_tss, this));
 
         auto& rp = pika::resource::get_partitioner();
-        notifier.add_on_start_thread_callback(util::bind(
+        notifier.add_on_start_thread_callback(util::detail::bind(
             &resource::detail::partitioner::assign_pu, std::ref(rp), _3, _1));
-        notifier.add_on_stop_thread_callback(util::bind(
+        notifier.add_on_stop_thread_callback(util::detail::bind(
             &resource::detail::partitioner::unassign_pu, std::ref(rp), _3, _1));
     }
 
@@ -675,7 +675,7 @@ namespace pika { namespace threads {
     ///////////////////////////////////////////////////////////////////////////
     // Enumerate all matching threads
     bool threadmanager::enumerate_threads(
-        util::function<bool(detail::thread_id_type)> const& f,
+        util::detail::function<bool(detail::thread_id_type)> const& f,
         detail::thread_schedule_state state) const
     {
         std::lock_guard<mutex_type> lk(mtx_);

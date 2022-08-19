@@ -10,7 +10,7 @@
 
 #include <functional>
 
-namespace pika { namespace traits {
+namespace pika::detail {
     template <typename T>
     struct is_bind_expression : std::is_bind_expression<T>
     {
@@ -23,4 +23,4 @@ namespace pika { namespace traits {
 
     template <typename T>
     inline constexpr bool is_bind_expression_v = is_bind_expression<T>::value;
-}}    // namespace pika::traits
+}    // namespace pika::detail

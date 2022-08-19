@@ -61,11 +61,11 @@ void test_apply_with_executor(Executor& exec)
     accumulator.store(0);
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, &increment, 1);
-        pika::apply(exec, pika::util::bind(&increment, 1));
-        pika::apply(exec, pika::util::bind(&increment, _1), 1);
+        pika::apply(exec, pika::util::detail::bind(&increment, 1));
+        pika::apply(exec, pika::util::detail::bind(&increment, _1), 1);
     }
 
     {
@@ -74,53 +74,56 @@ void test_apply_with_executor(Executor& exec)
 
         p.set_value(1);
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, &increment_with_future, f);
-        pika::apply(exec, pika::util::bind(&increment_with_future, f));
-        pika::apply(exec, pika::util::bind(&increment_with_future, _1), f);
+        pika::apply(exec, pika::util::detail::bind(&increment_with_future, f));
+        pika::apply(
+            exec, pika::util::detail::bind(&increment_with_future, _1), f);
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, increment, 1);
-        pika::apply(exec, pika::util::bind(increment, 1));
-        pika::apply(exec, pika::util::bind(increment, _1), 1);
+        pika::apply(exec, pika::util::detail::bind(increment, 1));
+        pika::apply(exec, pika::util::detail::bind(increment, _1), 1);
     }
 
     {
         increment_type inc;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, &increment_type::call, inc, 1);
-        pika::apply(exec, pika::util::bind(&increment_type::call, inc, 1));
-        pika::apply(exec, pika::util::bind(&increment_type::call, inc, _1), 1);
+        pika::apply(
+            exec, pika::util::detail::bind(&increment_type::call, inc, 1));
+        pika::apply(
+            exec, pika::util::detail::bind(&increment_type::call, inc, _1), 1);
     }
 
     {
         increment_function_object obj;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, obj, 1);
-        pika::apply(exec, pika::util::bind(obj, 1));
-        pika::apply(exec, pika::util::bind(obj, _1), 1);
+        pika::apply(exec, pika::util::detail::bind(obj, 1));
+        pika::apply(exec, pika::util::detail::bind(obj, _1), 1);
     }
 
     {
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
         pika::apply(exec, increment_lambda, 1);
-        pika::apply(exec, pika::util::bind(increment_lambda, 1));
-        pika::apply(exec, pika::util::bind(increment_lambda, _1), 1);
+        pika::apply(exec, pika::util::detail::bind(increment_lambda, 1));
+        pika::apply(exec, pika::util::detail::bind(increment_lambda, _1), 1);
     }
 
     pika::lcos::local::no_mutex result_mutex;
     std::unique_lock<pika::lcos::local::no_mutex> l(result_mutex);
     result_cv.wait_for(l, std::chrono::seconds(1),
-        pika::util::bind(
+        pika::util::detail::bind(
             std::equal_to<std::int32_t>(), std::ref(accumulator), 18));
 
     PIKA_TEST_EQ(accumulator.load(), 18);

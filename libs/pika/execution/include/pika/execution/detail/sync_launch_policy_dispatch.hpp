@@ -26,7 +26,7 @@ namespace pika { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Action>
     struct sync_launch_policy_dispatch<Action,
-        std::enable_if_t<!traits::is_action_v<Action>>>
+        std::enable_if_t<!detail::is_action_v<Action>>>
     {
         // general case execute on separate thread (except launch::sync)
         template <typename F, typename... Ts>
@@ -43,8 +43,9 @@ namespace pika { namespace detail {
                     launch::sync, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
             }
 
-            lcos::local::futures_factory<result_type()> p(util::deferred_call(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(
+                util::detail::deferred_call(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
             if (pika::detail::has_async_policy(policy))
             {

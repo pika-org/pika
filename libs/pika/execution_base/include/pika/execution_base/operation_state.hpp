@@ -80,7 +80,7 @@ namespace pika { namespace execution { namespace experimental {
     struct is_operation_state
       : detail::is_operation_state_impl<std::is_destructible<O>::value &&
                 std::is_object<O>::value &&
-                pika::is_invocable_v<start_t, std::decay_t<O>&>,
+                pika::detail::is_invocable_v<start_t, std::decay_t<O>&>,
             O>
     {
     };

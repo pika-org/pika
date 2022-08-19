@@ -18,101 +18,92 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        template <typename F>
-        class one_shot_wrapper    //-V690
+namespace pika::util::detail {
+    template <typename F>
+    class one_shot_wrapper    //-V690
+    {
+    public:
+        template <typename F_,
+            typename = std::enable_if_t<std::is_constructible_v<F, F_>>>
+        constexpr explicit one_shot_wrapper(F_&& f)
+          : _f(PIKA_FORWARD(F_, f))
+#if defined(PIKA_DEBUG)
+          , _called(false)
+#endif
         {
-        public:
-            template <typename F_,
-                typename = typename std::enable_if<
-                    std::is_constructible<F, F_>::value>::type>
-            constexpr explicit one_shot_wrapper(F_&& f)
-              : _f(PIKA_FORWARD(F_, f))
+        }
+
+        constexpr one_shot_wrapper(one_shot_wrapper&& other)
+          : _f(PIKA_MOVE(other._f))
 #if defined(PIKA_DEBUG)
-              , _called(false)
+          , _called(other._called)
 #endif
-            {
-            }
-
-            constexpr one_shot_wrapper(one_shot_wrapper&& other)
-              : _f(PIKA_MOVE(other._f))
+        {
 #if defined(PIKA_DEBUG)
-              , _called(other._called)
+            other._called = true;
 #endif
-            {
+        }
+
+        void check_call()
+        {
 #if defined(PIKA_DEBUG)
-                other._called = true;
+            PIKA_ASSERT(!_called);
+            _called = true;
 #endif
-            }
+        }
 
-            void check_call()
-            {
-#if defined(PIKA_DEBUG)
-                PIKA_ASSERT(!_called);
-                _called = true;
-#endif
-            }
+        template <typename... Ts>
+        constexpr PIKA_HOST_DEVICE util::detail::invoke_result_t<F, Ts...>
+        operator()(Ts&&... vs)
+        {
+            check_call();
 
-            template <typename... Ts>
-            constexpr PIKA_HOST_DEVICE
-                typename util::invoke_result<F, Ts...>::type
-                operator()(Ts&&... vs)
-            {
-                check_call();
+            return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Ts, vs)...);
+        }
 
-                return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_FORWARD(Ts, vs)...);
-            }
+        constexpr std::size_t get_function_address() const
+        {
+            return pika::detail::get_function_address<F>::call(_f);
+        }
 
-            constexpr std::size_t get_function_address() const
-            {
-                return traits::get_function_address<F>::call(_f);
-            }
-
-            constexpr char const* get_function_annotation() const
-            {
+        constexpr char const* get_function_annotation() const
+        {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-                return traits::get_function_annotation<F>::call(_f);
+            return pika::detail::get_function_annotation<F>::call(_f);
 #else
-                return nullptr;
+            return nullptr;
 #endif
-            }
+        }
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-            util::itt::string_handle get_function_annotation_itt() const
-            {
+        util::itt::string_handle get_function_annotation_itt() const
+        {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-                return traits::get_function_annotation_itt<F>::call(_f);
+            return pika::detail::get_function_annotation_itt<F>::call(_f);
 #else
-                static util::itt::string_handle sh("one_shot_wrapper");
-                return sh;
+            static util::itt::string_handle sh("one_shot_wrapper");
+            return sh;
 #endif
-            }
+        }
 #endif
 
-        public:    // exposition-only
-            F _f;
+    public:    // exposition-only
+        F _f;
 #if defined(PIKA_DEBUG)
-            bool _called;
+        bool _called;
 #endif
-        };
-    }    // namespace detail
+    };
 
     template <typename F>
-    constexpr detail::one_shot_wrapper<typename std::decay<F>::type> one_shot(
-        F&& f)
+    constexpr one_shot_wrapper<std::decay_t<F>> one_shot(F&& f)
     {
-        using result_type =
-            detail::one_shot_wrapper<typename std::decay<F>::type>;
+        using result_type = one_shot_wrapper<std::decay_t<F>>;
 
         return result_type(PIKA_FORWARD(F, f));
     }
-}}    // namespace pika::util
+}    // namespace pika::util::detail
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace traits {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::detail {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
     template <typename F>
     struct get_function_address<util::detail::one_shot_wrapper<F>>
@@ -147,4 +138,4 @@ namespace pika { namespace traits {
     };
 #endif
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail

@@ -80,11 +80,11 @@ void test_bulk_sync(Executor& exec)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&async_bulk_test, _1, tid, _2), v, 42);
+        exec, pika::util::detail::bind(&async_bulk_test, _1, tid, _2), v, 42);
     pika::parallel::execution::bulk_sync_execute(
         exec, &async_bulk_test, v, tid, 42);
 }
@@ -97,11 +97,12 @@ void test_bulk_async(Executor& exec)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
-    pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
-                       pika::util::bind(&async_bulk_test, _1, tid, _2), v, 42))
+    pika::when_all(
+        pika::parallel::execution::bulk_async_execute(exec,
+            pika::util::detail::bind(&async_bulk_test, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
                        exec, &async_bulk_test, v, tid, 42))
@@ -150,7 +151,8 @@ struct test_async_executor1
     using execution_category = pika::execution::parallel_execution_tag;
 
     template <typename F, typename... Ts>
-    static pika::future<typename pika::util::invoke_result<F, Ts...>::type>
+    static pika::future<
+        typename pika::util::detail::invoke_result<F, Ts...>::type>
     async_execute(F&& f, Ts&&... ts)
     {
         ++count_async;

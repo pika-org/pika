@@ -29,7 +29,7 @@ namespace pika { namespace threads {
     namespace detail {
         // This is the overload for running functions which return a value.
         template <typename F, typename... Ts>
-        typename util::invoke_result<F, Ts...>::type run_as_pika_thread(
+        typename util::detail::invoke_result<F, Ts...>::type run_as_pika_thread(
             std::false_type, F const& f, Ts&&... ts)
         {
             // NOTE: The condition variable needs be able to live past the scope
@@ -39,7 +39,8 @@ namespace pika { namespace threads {
             auto cond = std::make_shared<std::condition_variable_any>();
             bool stopping = false;
 
-            using result_type = typename util::invoke_result<F, Ts...>::type;
+            using result_type =
+                typename util::detail::invoke_result<F, Ts...>::type;
 
             // Using the optional for storing the returned result value
             // allows to support non-default-constructible and move-only
@@ -139,14 +140,14 @@ namespace pika { namespace threads {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
-    typename util::invoke_result<F, Ts...>::type run_as_pika_thread(
+    typename util::detail::invoke_result<F, Ts...>::type run_as_pika_thread(
         F const& f, Ts&&... vs)
     {
         // This shouldn't be used on a pika-thread
         PIKA_ASSERT(pika::threads::detail::get_self_ptr() == nullptr);
 
         using result_is_void = typename std::is_void<
-            typename util::invoke_result<F, Ts...>::type>::type;
+            typename util::detail::invoke_result<F, Ts...>::type>::type;
 
         return detail::run_as_pika_thread(
             result_is_void(), f, PIKA_FORWARD(Ts, vs)...);

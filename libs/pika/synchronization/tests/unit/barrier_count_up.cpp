@@ -69,7 +69,7 @@ int pika_main(variables_map& vm)
             b.count_up();
 
             thread_init_data data(
-                make_thread_function_nullary(pika::util::bind(
+                make_thread_function_nullary(pika::util::detail::bind(
                     &local_barrier_test, std::ref(b), std::ref(c))),
                 "local_barrier_test");
             register_work(data);

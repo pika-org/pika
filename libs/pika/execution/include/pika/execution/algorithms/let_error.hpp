@@ -72,7 +72,7 @@ namespace pika { namespace execution { namespace experimental {
             template <typename Error>
             struct successor_sender_types_helper
             {
-                using type = pika::util::invoke_result_t<F,
+                using type = pika::util::detail::invoke_result_t<F,
                     std::add_lvalue_reference_t<Error>>;
                 static_assert(pika::execution::experimental::is_sender<
                                   std::decay_t<type>>::value,
@@ -231,9 +231,10 @@ namespace pika { namespace execution { namespace experimental {
                     };
 
                     template <typename... Ts,
-                        typename = std::enable_if_t<pika::is_invocable_v<
-                            pika::execution::experimental::set_value_t,
-                            Receiver&&, Ts...>>>
+                        typename =
+                            std::enable_if_t<pika::detail::is_invocable_v<
+                                pika::execution::experimental::set_value_t,
+                                Receiver&&, Ts...>>>
                     friend void tag_invoke(set_value_t,
                         let_error_predecessor_receiver&& r, Ts&&... ts) noexcept
                     {

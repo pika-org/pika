@@ -63,7 +63,7 @@ namespace pika { namespace execution { namespace experimental {
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        if constexpr (std::is_void_v<pika::util::
+                        if constexpr (std::is_void_v<pika::util::detail::
                                               invoke_result_t<F, Ts...>>)
                         {
                         // Certain versions of GCC with optimizations fail on
@@ -129,7 +129,8 @@ namespace pika { namespace execution { namespace experimental {
             template <template <typename...> class Tuple, typename... Ts>
             struct invoke_result_helper<Tuple<Ts...>>
             {
-                using result_type = pika::util::invoke_result_t<F, Ts...>;
+                using result_type =
+                    pika::util::detail::invoke_result_t<F, Ts...>;
                 using type =
                     std::conditional_t<std::is_void<result_type>::value,
                         Tuple<>, Tuple<result_type>>;

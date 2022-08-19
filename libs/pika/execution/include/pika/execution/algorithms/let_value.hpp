@@ -64,7 +64,7 @@ namespace pika { namespace execution { namespace experimental {
             template <template <typename...> class Tuple, typename... Ts>
             struct successor_sender_types_helper<Tuple<Ts...>>
             {
-                using type = pika::util::invoke_result_t<F,
+                using type = pika::util::detail::invoke_result_t<F,
                     std::add_lvalue_reference_t<Ts>...>;
                 static_assert(pika::execution::experimental::is_sender<
                                   std::decay_t<type>>::value,
@@ -225,7 +225,8 @@ namespace pika { namespace execution { namespace experimental {
                         {
                             using operation_state_type =
                                 decltype(pika::execution::experimental::connect(
-                                    pika::util::invoke_fused(PIKA_MOVE(f), t),
+                                    pika::util::detail::invoke_fused(
+                                        PIKA_MOVE(f), t),
                                     std::declval<Receiver>()));
 
 #if defined(PIKA_HAVE_CXX17_COPY_ELISION)
@@ -233,21 +234,23 @@ namespace pika { namespace execution { namespace experimental {
                             // returned from connect without any intermediate copy
                             // construction (the operation state is not required to be
                             // copyable nor movable).
-                            op_state.successor_op_state
-                                .template emplace<operation_state_type>(
-                                    pika::util::detail::with_result_of([&]() {
-                                        return pika::execution::experimental::
-                                            connect(pika::util::invoke_fused(
-                                                        PIKA_MOVE(f), t),
-                                                PIKA_MOVE(receiver));
-                                    }));
+                            op_state.successor_op_state.template emplace<
+                                operation_state_type>(
+                                pika::util::detail::with_result_of([&]() {
+                                    return pika::execution::experimental::
+                                        connect(
+                                            pika::util::detail::invoke_fused(
+                                                PIKA_MOVE(f), t),
+                                            PIKA_MOVE(receiver));
+                                }));
 #else
                             // MSVC doesn't get copy elision quite right, the operation
                             // state must be constructed explicitly directly in place
                             op_state.successor_op_state
                                 .template emplace_f<operation_state_type>(
                                     pika::execution::experimental::connect,
-                                    pika::util::invoke_fused(PIKA_MOVE(f), t),
+                                    pika::util::detail::invoke_fused(
+                                        PIKA_MOVE(f), t),
                                     PIKA_MOVE(receiver));
 #endif
                             pika::detail::visit(

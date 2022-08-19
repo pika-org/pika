@@ -215,7 +215,7 @@ namespace pika { namespace execution { namespace experimental {
 #endif
             using result_type =
                 std::decay_t<detail::single_result_t<value_types>>;
-            using operation_state_type = pika::util::invoke_result_t<
+            using operation_state_type = pika::util::detail::invoke_result_t<
                 pika::execution::experimental::connect_t, Sender,
                 detail::make_future_receiver<result_type, allocator_type>>;
 

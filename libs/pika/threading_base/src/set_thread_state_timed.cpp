@@ -88,9 +88,9 @@ namespace pika::threads::detail {
         std::shared_ptr<std::atomic<bool>> triggered(
             std::make_shared<std::atomic<bool>>(false));
 
-        thread_init_data data(
-            util::bind_front(&wake_timer_thread, thrd, newstate, newstate_ex,
-                priority, self_id.noref(), triggered, retry_on_active),
+        thread_init_data data(util::detail::bind_front(&wake_timer_thread, thrd,
+                                  newstate, newstate_ex, priority,
+                                  self_id.noref(), triggered, retry_on_active),
             "wake_timer", priority, execution::thread_schedule_hint(),
             execution::thread_stacksize::small_,
             thread_schedule_state::suspended, true);
@@ -178,7 +178,7 @@ namespace pika::threads::detail {
         // this creates a new thread which creates the timer and handles the
         // requested actions
         thread_init_data data(
-            util::bind(&at_timer, scheduler, abs_time.value(),
+            util::detail::bind(&at_timer, scheduler, abs_time.value(),
                 thread_id_ref_type(thrd), newstate, newstate_ex, priority,
                 started, retry_on_active),
             "at_timer (expire at)", priority, schedulehint,

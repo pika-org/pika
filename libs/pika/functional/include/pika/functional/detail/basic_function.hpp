@@ -25,7 +25,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     static const std::size_t function_storage_size = 3 * sizeof(void*);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -153,9 +153,8 @@ namespace pika { namespace util { namespace detail {
         template <typename F>
         void assign(F&& f)
         {
-            using T = typename std::decay<F>::type;
-            static_assert(
-                !Copyable || std::is_constructible<T, T const&>::value,
+            using T = std::decay_t<F>;
+            static_assert(!Copyable || std::is_constructible_v<T, T const&>,
                 "F shall be CopyConstructible");
 
             if (!detail::is_empty_function(f))
@@ -196,8 +195,8 @@ namespace pika { namespace util { namespace detail {
         template <typename T>
         T* target() noexcept
         {
-            using TD = typename std::remove_cv<T>::type;
-            static_assert(is_invocable_r_v<R, TD&, Ts...>,
+            using TD = std::remove_cv_t<T>;
+            static_assert(pika::detail::is_invocable_r_v<R, TD&, Ts...>,
                 "T shall be Callable with the function signature");
 
             vtable const* f_vptr = get_vtable<TD>();
@@ -210,8 +209,8 @@ namespace pika { namespace util { namespace detail {
         template <typename T>
         T const* target() const noexcept
         {
-            using TD = typename std::remove_cv<T>::type;
-            static_assert(is_invocable_r_v<R, TD&, Ts...>,
+            using TD = std::remove_cv_t<T>;
+            static_assert(pika::detail::is_invocable_r_v<R, TD&, Ts...>,
                 "T shall be Callable with the function signature");
 
             vtable const* f_vptr = get_vtable<TD>();
@@ -248,4 +247,4 @@ namespace pika { namespace util { namespace detail {
         using base_type::storage;
         using base_type::vptr;
     };
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

@@ -288,9 +288,11 @@ namespace pika { namespace parallel { inline namespace v1 {
                         part_count, tok,
                         [&f, &proj1, &proj2, &tok](
                             reference t, std::size_t i) mutable -> void {
-                            if (!pika::util::invoke(f,
-                                    pika::util::invoke(proj1, std::get<0>(t)),
-                                    pika::util::invoke(proj2, std::get<1>(t))))
+                            if (!pika::util::detail::invoke(f,
+                                    pika::util::detail::invoke(
+                                        proj1, std::get<0>(t)),
+                                    pika::util::detail::invoke(
+                                        proj2, std::get<1>(t))))
                             {
                                 tok.cancel(i);
                             }
@@ -397,7 +399,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                     util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                         part_count, tok,
                         [&f, &tok](reference t, std::size_t i) mutable -> void {
-                            if (!pika::util::invoke(
+                            if (!pika::util::detail::invoke(
                                     f, std::get<0>(t), std::get<1>(t)))
                             {
                                 tok.cancel(i);
@@ -445,7 +447,7 @@ namespace pika {
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<FwdIter1>::value_type,
                     typename std::iterator_traits<FwdIter2>::value_type
                 >
@@ -504,7 +506,7 @@ namespace pika {
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<FwdIter1>::value_type,
                     typename std::iterator_traits<FwdIter2>::value_type
                 >
@@ -556,7 +558,7 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<FwdIter1>::value_type,
                     typename std::iterator_traits<FwdIter2>::value_type
                 >
@@ -610,7 +612,7 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
-                pika::is_invocable_v<Pred,
+                pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<FwdIter1>::value_type,
                     typename std::iterator_traits<FwdIter2>::value_type
                 >

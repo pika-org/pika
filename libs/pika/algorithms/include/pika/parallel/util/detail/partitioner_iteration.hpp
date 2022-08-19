@@ -25,7 +25,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         template <typename T>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE Result operator()(T&& t)
         {
-            return pika::util::invoke_fused_r<Result>(f_, PIKA_FORWARD(T, t));
+            return pika::util::detail::invoke_fused_r<Result>(
+                f_, PIKA_FORWARD(T, t));
         }
     };
 }}}}    // namespace pika::parallel::util::detail
@@ -34,7 +35,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 #include <pika/functional/traits/get_function_address.hpp>
 #include <pika/functional/traits/get_function_annotation.hpp>
 
-namespace pika { namespace traits {
+namespace pika::detail {
     template <typename Result, typename F>
     struct get_function_address<
         parallel::util::detail::partitioner_iteration<Result, F>>
@@ -75,5 +76,5 @@ namespace pika { namespace traits {
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail
 #endif

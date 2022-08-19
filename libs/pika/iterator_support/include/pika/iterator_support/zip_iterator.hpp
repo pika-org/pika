@@ -513,7 +513,7 @@ namespace pika { namespace traits {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename F, typename T>
-        struct element_result_of : util::invoke_result<F, T>
+        struct element_result_of : util::detail::invoke_result<F, T>
         {
         };
 

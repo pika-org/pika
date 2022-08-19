@@ -150,7 +150,7 @@ namespace pika {
             /// Calls the visitor with the given element
             template <typename T>
             auto traverse(T&& value) ->
-                typename pika::util::invoke_result<Visitor&,
+                typename pika::util::detail::invoke_result<Visitor&,
                     async_traverse_visit_tag, T>::type
             {
                 return PIKA_INVOKE(visitor(), async_traverse_visit_tag{},
@@ -627,7 +627,8 @@ namespace pika {
         void resume_traversal_callable<Frame, State>::operator()()
         {
             auto hierarchy = std::tuple_cat(std::make_tuple(frame_), state_);
-            util::invoke_fused(resume_state_callable{}, PIKA_MOVE(hierarchy));
+            util::detail::invoke_fused(
+                resume_state_callable{}, PIKA_MOVE(hierarchy));
         }
 
         /// Gives access to types related to the traversal frame

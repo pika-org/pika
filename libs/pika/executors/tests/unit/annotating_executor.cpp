@@ -194,8 +194,8 @@ void bulk_test(int seq, int passed_through)    //-V813
 template <typename Executor>
 void test_bulk_sync(Executor&& executor)
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     std::string desc("test_bulk_sync");
     {
@@ -203,7 +203,7 @@ void test_bulk_sync(Executor&& executor)
             pika::execution::experimental::with_annotation, executor, desc);
 
         pika::parallel::execution::bulk_sync_execute(
-            exec, pika::util::bind(&bulk_test, _1, _2), 107, 42);
+            exec, pika::util::detail::bind(&bulk_test, _1, _2), 107, 42);
 
         PIKA_TEST_EQ(annotation, desc);
         PIKA_TEST_EQ(annotation,
@@ -223,7 +223,7 @@ void test_bulk_sync(Executor&& executor)
 
         annotation.clear();
         pika::parallel::execution::bulk_sync_execute(
-            exec, pika::util::bind(&bulk_test, _1, _2), 107, 42);
+            exec, pika::util::detail::bind(&bulk_test, _1, _2), 107, 42);
 
         PIKA_TEST_EQ(annotation, desc);
         PIKA_TEST_EQ(annotation,
@@ -242,16 +242,17 @@ void test_bulk_sync(Executor&& executor)
 template <typename Executor>
 void test_bulk_async(Executor&& executor)
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     std::string desc("test_bulk_async");
     {
         auto exec = pika::experimental::prefer(
             pika::execution::experimental::with_annotation, executor, desc);
 
-        pika::when_all(pika::parallel::execution::bulk_async_execute(
-                           exec, pika::util::bind(&bulk_test, _1, _2), 107, 42))
+        pika::when_all(
+            pika::parallel::execution::bulk_async_execute(
+                exec, pika::util::detail::bind(&bulk_test, _1, _2), 107, 42))
             .get();
 
         PIKA_TEST_EQ(annotation, desc);
@@ -273,8 +274,9 @@ void test_bulk_async(Executor&& executor)
             pika::execution::experimental::with_annotation(executor, desc);
 
         annotation.clear();
-        pika::when_all(pika::parallel::execution::bulk_async_execute(
-                           exec, pika::util::bind(&bulk_test, _1, _2), 107, 42))
+        pika::when_all(
+            pika::parallel::execution::bulk_async_execute(
+                exec, pika::util::detail::bind(&bulk_test, _1, _2), 107, 42))
             .get();
 
         PIKA_TEST_EQ(annotation, desc);
@@ -313,9 +315,9 @@ void bulk_test_f(int seq, pika::shared_future<void> f,
 template <typename Executor>
 void test_bulk_then(Executor&& executor)
 {
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
-    using pika::util::placeholders::_3;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
 
     pika::shared_future<void> f = pika::make_ready_future();
 
@@ -324,8 +326,8 @@ void test_bulk_then(Executor&& executor)
         auto exec = pika::experimental::prefer(
             pika::execution::experimental::with_annotation, executor, desc);
 
-        pika::parallel::execution::bulk_then_execute(
-            exec, pika::util::bind(&bulk_test_f, _1, _2, _3), 107, f, 42)
+        pika::parallel::execution::bulk_then_execute(exec,
+            pika::util::detail::bind(&bulk_test_f, _1, _2, _3), 107, f, 42)
             .get();
 
         PIKA_TEST_EQ(annotation, desc);
@@ -347,8 +349,8 @@ void test_bulk_then(Executor&& executor)
             pika::execution::experimental::with_annotation(executor, desc);
 
         annotation.clear();
-        pika::parallel::execution::bulk_then_execute(
-            exec, pika::util::bind(&bulk_test_f, _1, _2, _3), 107, f, 42)
+        pika::parallel::execution::bulk_then_execute(exec,
+            pika::util::detail::bind(&bulk_test_f, _1, _2, _3), 107, f, 42)
             .get();
 
         PIKA_TEST_EQ(annotation, desc);

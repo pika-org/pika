@@ -38,18 +38,20 @@ struct pika_driver : htts2::driver
             "pika.os_threads=" + std::to_string(osthreads_),
             "pika.run_pika_main!=0", "pika.commandline.allow_unknown!=1"};
 
-        pika::util::function<int(pika::program_options::variables_map & vm)> f;
+        pika::util::detail::function<int(
+            pika::program_options::variables_map & vm)>
+            f;
         pika::program_options::options_description desc;
 
         pika::init_params init_args;
         init_args.cfg = cfg;
         init_args.desc_cmdline = desc;
 
-        using pika::util::placeholders::_1;
+        using std::placeholders::_1;
 
-        pika::init(
-            std::function<int(pika::program_options::variables_map&)>(
-                pika::util::bind(&pika_driver::run_impl, std::ref(*this), _1)),
+        pika::init(std::function<int(pika::program_options::variables_map&)>(
+                       pika::util::detail::bind(
+                           &pika_driver::run_impl, std::ref(*this), _1)),
             argc_, argv_, init_args);
     }
 
@@ -88,8 +90,8 @@ private:
             // Reschedule in an attempt to correct.
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary(
-                    pika::util::bind(&pika_driver::stage_tasks, std::ref(*this),
-                        target_osthread)),
+                    pika::util::detail::bind(&pika_driver::stage_tasks,
+                        std::ref(*this), target_osthread)),
                 nullptr    // No pika-thread name.
                 ,
                 pika::execution::thread_priority::normal
@@ -101,9 +103,9 @@ private:
 
         for (std::uint64_t i = 0; i < this->tasks_; ++i)
         {
-            using pika::util::placeholders::_1;
+            using std::placeholders::_1;
             pika::threads::detail::thread_init_data data(
-                pika::util::bind(
+                pika::util::detail::bind(
                     &pika_driver::payload_thread_function, std::ref(*this), _1),
                 nullptr    // No pika-thread name.
                 ,
@@ -130,7 +132,7 @@ private:
             {
                 pika::threads::detail::thread_init_data data(
                     pika::threads::detail::make_thread_function_nullary(
-                        pika::util::bind(&pika_driver::wait_for_tasks,
+                        pika::util::detail::bind(&pika_driver::wait_for_tasks,
                             std::ref(*this), std::ref(finished))),
                     nullptr, pika::execution::thread_priority::low);
                 register_work(data);
@@ -164,7 +166,7 @@ private:
 
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary(
-                    pika::util::bind(
+                    pika::util::detail::bind(
                         &pika_driver::stage_tasks, std::ref(*this), i)),
                 nullptr    // No pika-thread name.
                 ,
@@ -196,8 +198,8 @@ private:
 
         pika::threads::detail::thread_init_data data(
             pika::threads::detail::make_thread_function_nullary(
-                pika::util::bind(&pika_driver::wait_for_tasks, std::ref(*this),
-                    std::ref(finished))),
+                pika::util::detail::bind(&pika_driver::wait_for_tasks,
+                    std::ref(*this), std::ref(finished))),
             nullptr, pika::execution::thread_priority::low);
         register_work(data);
 

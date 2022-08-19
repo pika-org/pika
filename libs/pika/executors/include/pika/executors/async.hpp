@@ -25,7 +25,7 @@ namespace pika { namespace detail {
 
     template <typename Func>
     struct async_dispatch_launch_policy_helper<Func,
-        std::enable_if_t<!traits::is_action_v<Func>>>
+        std::enable_if_t<!detail::is_action_v<Func>>>
     {
         template <typename Policy_, typename F, typename... Ts>
         PIKA_FORCEINLINE static auto call(
@@ -63,7 +63,7 @@ namespace pika { namespace detail {
     {
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(F&& f, Ts&&... ts)
         {

@@ -86,11 +86,11 @@ void test_bulk_sync(Executor& exec)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42);
+        exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42);
     pika::parallel::execution::bulk_sync_execute(exec, &bulk_test, v, tid, 42);
 }
 
@@ -102,11 +102,12 @@ void test_bulk_async(Executor& exec)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
-    pika::when_all(pika::parallel::execution::bulk_async_execute(
-                       exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42))
+    pika::when_all(
+        pika::parallel::execution::bulk_async_execute(
+            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
                        exec, &bulk_test, v, tid, 42))
@@ -133,14 +134,14 @@ void test_bulk_then(Executor& exec)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
-    using pika::util::placeholders::_3;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
 
     pika::shared_future<void> f = pika::make_ready_future();
 
     pika::parallel::execution::bulk_then_execute(
-        exec, pika::util::bind(&bulk_test_f, _1, _2, tid, _3), v, f, 42)
+        exec, pika::util::detail::bind(&bulk_test_f, _1, _2, tid, _3), v, f, 42)
         .get();
     pika::parallel::execution::bulk_then_execute(
         exec, &bulk_test_f, v, f, tid, 42)

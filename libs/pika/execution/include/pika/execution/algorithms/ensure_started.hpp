@@ -70,8 +70,8 @@ namespace pika::execution::experimental {
             template <typename Ts>
             void operator()(Ts&& ts)
             {
-                pika::util::invoke_fused(
-                    pika::util::bind_front(
+                pika::util::detail::invoke_fused(
+                    pika::util::detail::bind_front(
                         pika::execution::experimental::set_value,
                         PIKA_MOVE(receiver)),
                     PIKA_FORWARD(Ts, ts));
@@ -168,7 +168,8 @@ namespace pika::execution::experimental {
                     error_type, value_type>
                     v;
 
-                using continuation_type = pika::util::unique_function<void()>;
+                using continuation_type =
+                    pika::util::detail::unique_function<void()>;
                 std::optional<continuation_type> continuation;
 
                 struct ensure_started_receiver

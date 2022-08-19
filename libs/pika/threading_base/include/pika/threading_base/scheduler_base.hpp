@@ -167,7 +167,7 @@ namespace pika::threads::policies {
         // depending on the predicate
         std::vector<std::size_t> domain_threads(std::size_t local_id,
             const std::vector<std::size_t>& ts,
-            util::function<bool(std::size_t, std::size_t)> pred);
+            util::detail::function<bool(std::size_t, std::size_t)> pred);
 
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
         virtual std::uint64_t get_creation_time(bool reset) = 0;
@@ -211,7 +211,8 @@ namespace pika::threads::policies {
 
         // Enumerate all matching threads
         virtual bool enumerate_threads(
-            util::function<bool(threads::detail::thread_id_type)> const& f,
+            util::detail::function<bool(threads::detail::thread_id_type)> const&
+                f,
             threads::detail::thread_schedule_state state =
                 threads::detail::thread_schedule_state::unknown) const = 0;
 

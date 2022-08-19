@@ -604,7 +604,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_iterator_v<InIter> &&
                 pika::traits::is_sentinel_for<Sent, InIter>::value &&
                 pika::traits::is_iterator_v<OutIter> &&
-                pika::is_invocable_v<Op,
+                pika::detail::is_invocable_v<Op,
                     typename std::iterator_traits<InIter>::value_type,
                     typename std::iterator_traits<InIter>::value_type
                 >
@@ -636,7 +636,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_sentinel_for<Sent, FwdIter1>::value &&
                 pika::traits::is_iterator_v<FwdIter2> &&
-                pika::is_invocable_v<Op,
+                pika::detail::is_invocable_v<Op,
                     typename std::iterator_traits<FwdIter1>::value_type,
                     typename std::iterator_traits<FwdIter1>::value_type
                 >
@@ -666,7 +666,7 @@ namespace pika { namespace ranges {
             typename Op = std::plus<T>,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::is_invocable_v<Op,
+                pika::detail::is_invocable_v<Op,
                     typename pika::traits::range_traits<Rng>::value_type,
                     typename pika::traits::range_traits<Rng>::value_type
                 >
@@ -696,7 +696,7 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::is_invocable_v<Op,
+                pika::detail::is_invocable_v<Op,
                     typename pika::traits::range_traits<Rng>::value_type,
                     typename pika::traits::range_traits<Rng>::value_type
                 >

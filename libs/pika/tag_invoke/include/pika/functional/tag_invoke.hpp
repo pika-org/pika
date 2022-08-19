@@ -106,12 +106,10 @@ namespace pika { namespace functional {
 #include <utility>
 
 namespace pika { namespace functional {
-
     template <auto& Tag>
     using tag_t = typename std::decay<decltype(Tag)>::type;
 
     namespace tag_invoke_t_ns {
-
         // poison pill
         void tag_invoke();
 
@@ -152,7 +150,8 @@ namespace pika { namespace functional {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
     using is_tag_invocable =
-        pika::is_invocable<decltype(tag_invoke_ns::tag_invoke), Tag, Args...>;
+        pika::detail::is_invocable<decltype(tag_invoke_ns::tag_invoke), Tag,
+            Args...>;
 
     template <typename Tag, typename... Args>
     inline constexpr bool is_tag_invocable_v =
@@ -203,15 +202,14 @@ namespace pika { namespace functional {
 
     template <typename Tag, typename... Args>
     using tag_invoke_result =
-        pika::util::invoke_result<decltype(tag_invoke_ns::tag_invoke), Tag,
-            Args...>;
+        pika::util::detail::invoke_result<decltype(tag_invoke_ns::tag_invoke),
+            Tag, Args...>;
 
     template <typename Tag, typename... Args>
     using tag_invoke_result_t = typename tag_invoke_result<Tag, Args...>::type;
 
     ///////////////////////////////////////////////////////////////////////////////
     namespace tag_base_ns {
-
         // poison pill
         void tag_invoke();
 
@@ -250,7 +248,6 @@ namespace pika { namespace functional {
     }    // namespace tag_base_ns
 
     inline namespace tag_invoke_base_ns {
-
         template <typename Tag>
         using tag = tag_base_ns::tag<Tag>;
 
@@ -259,7 +256,6 @@ namespace pika { namespace functional {
     }    // namespace tag_invoke_base_ns
 
     inline namespace tag_invoke_f_ns {
-
         using tag_invoke_ns::tag_invoke;
     }    // namespace tag_invoke_f_ns
 }}       // namespace pika::functional

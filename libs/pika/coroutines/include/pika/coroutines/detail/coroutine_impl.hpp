@@ -65,7 +65,8 @@ namespace pika::threads::coroutines::detail {
             std::pair<threads::detail::thread_schedule_state, thread_id_type>;
         using arg_type = threads::detail::thread_restart_state;
 
-        using functor_type = util::unique_function<result_type(arg_type)>;
+        using functor_type =
+            util::detail::unique_function<result_type(arg_type)>;
 
         coroutine_impl(
             functor_type&& f, thread_id_type id, std::ptrdiff_t stack_size)

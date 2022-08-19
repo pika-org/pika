@@ -79,12 +79,12 @@ namespace pika::mpi::experimental {
 
         template <typename F, typename... Ts>
         inline constexpr bool is_mpi_request_invocable_v =
-            pika::is_invocable_v<F,
+            pika::detail::is_invocable_v<F,
                 std::add_lvalue_reference_t<std::decay_t<Ts>>..., MPI_Request*>;
 
         template <typename F, typename... Ts>
         using mpi_request_invoke_result_t =
-            std::decay_t<pika::util::invoke_result_t<F,
+            std::decay_t<pika::util::detail::invoke_result_t<F,
                 std::add_lvalue_reference_t<std::decay_t<Ts>>...,
                 MPI_Request*>>;
 
@@ -218,7 +218,7 @@ namespace pika::mpi::experimental {
                                 if constexpr (std::is_void_v<
                                                   invoke_result_type>)
                                 {
-                                    pika::util::invoke_fused(
+                                    pika::util::detail::invoke_fused(
                                         [&](auto&... ts) mutable {
                                             PIKA_INVOKE(PIKA_MOVE(r.op_state.f),
                                                 ts..., &request);
@@ -232,7 +232,7 @@ namespace pika::mpi::experimental {
                                 }
                                 else
                                 {
-                                    pika::util::invoke_fused(
+                                    pika::util::detail::invoke_fused(
                                         [&](auto&... ts) mutable {
                                             r.op_state.result.template emplace<
                                                 invoke_result_type>(PIKA_INVOKE(

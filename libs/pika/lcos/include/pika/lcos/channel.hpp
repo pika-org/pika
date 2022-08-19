@@ -279,9 +279,9 @@ namespace pika { namespace lcos { namespace local {
             template <typename T1>
             local::packaged_task<void()> push_pt(T1&& val)
             {
-                return local::packaged_task<void()>(
-                    util::deferred_call(&one_element_queue_async::set_deferred,
-                        this, PIKA_FORWARD(T1, val)));
+                return local::packaged_task<void()>(util::detail::deferred_call(
+                    &one_element_queue_async::set_deferred, this,
+                    PIKA_FORWARD(T1, val)));
             }
             local::packaged_task<T()> pop_pt()
             {

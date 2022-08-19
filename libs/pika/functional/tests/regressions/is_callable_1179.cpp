@@ -29,8 +29,8 @@ struct p
 ///////////////////////////////////////////////////////////////////////////////
 int main()
 {
-    using pika::is_invocable_v;
-    using pika::util::invoke;
+    using pika::detail::is_invocable_v;
+    using pika::util::detail::invoke;
 
     using mem_fun_ptr = int (s::*)();
     PIKA_TEST_MSG((is_invocable_v<mem_fun_ptr, p> == false), "mem-fun-ptr");

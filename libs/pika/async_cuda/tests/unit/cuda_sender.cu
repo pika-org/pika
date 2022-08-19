@@ -112,8 +112,8 @@ void test_saxpy(pika::cuda::experimental::cuda_scheduler& cuda_sched)
                  threads, args) |
         // finally, perform a copy from the gpu back to the cpu all on the same stream
         // grab a future to when this completes
-        cu::then_with_stream(pika::bind_front(cuda_memcpy_async, h_B, d_B,
-            N * sizeof(float), cudaMemcpyDeviceToHost)) |
+        cu::then_with_stream(pika::util::detail::bind_front(cuda_memcpy_async,
+            h_B, d_B, N * sizeof(float), cudaMemcpyDeviceToHost)) |
         // we can add a continuation to the memcpy sender, so that when the
         // memory copy completes, we can do new things ...
         ex::transfer(ex::thread_pool_scheduler{}) | ex::then([&]() {

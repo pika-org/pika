@@ -33,9 +33,10 @@ namespace pika { namespace traits {
 
         template <typename Executor, typename Future, typename F>
         struct future_then_executor_result<Executor, Future, F,
-            std::void_t<pika::util::invoke_result_t<F&, Future>>>
+            std::void_t<pika::util::detail::invoke_result_t<F&, Future>>>
         {
-            using func_result_type = pika::util::invoke_result_t<F&, Future>;
+            using func_result_type =
+                pika::util::detail::invoke_result_t<F&, Future>;
 
             using cont_result =
                 traits::executor_future_t<Executor, func_result_type, Future>;

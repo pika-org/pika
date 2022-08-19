@@ -178,7 +178,8 @@ namespace pika { namespace lcos { namespace local {
             "pika::is_async_execution_policy<ExPolicy>::value");
 
         using ftype = typename std::decay<F>::type;
-        using first_type = typename pika::util::first_argument<ftype>::type;
+        using first_type =
+            typename pika::util::detail::first_argument<ftype>::type;
 
         using barrier_type = pika::lcos::local::barrier;
         using table_type =
@@ -212,7 +213,8 @@ namespace pika { namespace lcos { namespace local {
             "pika::is_execution_policy<ExPolicy>::value");
 
         using ftype = typename std::decay<F>::type;
-        using first_type = typename pika::util::first_argument<ftype>::type;
+        using first_type =
+            typename pika::util::detail::first_argument<ftype>::type;
 
         using barrier_type = pika::lcos::local::barrier;
         using table_type =

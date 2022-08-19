@@ -41,7 +41,7 @@ struct stateless_integer_add
 
 int main(int, char*[])
 {
-    pika::util::function<int(int, int)> f;
+    pika::util::detail::function<int(int, int)> f;
     f = stateless_integer_add();
 
     // This test checks that function does not allocate. We should reach this

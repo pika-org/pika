@@ -50,7 +50,7 @@ namespace pika { namespace resource {
     };
 
     using scheduler_function =
-        util::function<std::unique_ptr<pika::threads::thread_pool_base>(
+        util::detail::function<std::unique_ptr<pika::threads::thread_pool_base>(
             pika::threads::thread_pool_init_parameters,
             pika::threads::policies::thread_queue_init_parameters)>;
 

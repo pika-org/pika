@@ -187,7 +187,8 @@ namespace pika { namespace execution { namespace experimental {
 
         template <typename Executor, typename F>
         struct is_executor_of_base_impl<Executor, F,
-            std::enable_if_t<pika::is_invocable<std::decay_t<F>&>::value &&
+            std::enable_if_t<
+                pika::detail::is_invocable<std::decay_t<F>&>::value &&
                 std::is_constructible<std::decay_t<F>, F>::value &&
                 std::is_destructible<std::decay_t<F>>::value &&
                 std::is_move_constructible<std::decay_t<F>>::value &&
@@ -236,8 +237,9 @@ namespace pika { namespace execution { namespace experimental {
 
         template <typename S, typename R>
         struct connect_result_helper<S, R,
-            std::enable_if_t<pika::is_invocable<connect_t, S, R>::value>>
-          : pika::util::invoke_result<connect_t, S, R>
+            std::enable_if_t<
+                pika::detail::is_invocable<connect_t, S, R>::value>>
+          : pika::util::detail::invoke_result<connect_t, S, R>
         {
         };
     }    // namespace detail
@@ -248,9 +250,9 @@ namespace pika { namespace execution { namespace experimental {
         {
             F f;
 
-            void set_value() noexcept(noexcept(PIKA_INVOKE(f, )))
+            void set_value() noexcept(noexcept(f()))
             {
-                PIKA_INVOKE(f, );
+                f();
             }
 
             template <typename E_>
@@ -294,17 +296,22 @@ namespace pika { namespace execution { namespace experimental {
         template <typename Sender, typename Receiver>
         struct is_sender_to_impl<true, Sender, Receiver>
           : std::integral_constant<bool,
-                pika::is_invocable_v<connect_t, Sender&&, Receiver&&> ||
-                    pika::is_invocable_v<connect_t, Sender&&, Receiver&> ||
-                    pika::is_invocable_v<connect_t, Sender&&,
+                pika::detail::is_invocable_v<connect_t, Sender&&, Receiver&&> ||
+                    pika::detail::is_invocable_v<connect_t, Sender&&,
+                        Receiver&> ||
+                    pika::detail::is_invocable_v<connect_t, Sender&&,
                         Receiver const&> ||
-                    pika::is_invocable_v<connect_t, Sender&, Receiver&&> ||
-                    pika::is_invocable_v<connect_t, Sender&, Receiver&> ||
-                    pika::is_invocable_v<connect_t, Sender&, Receiver const&> ||
-                    pika::is_invocable_v<connect_t, Sender const&,
+                    pika::detail::is_invocable_v<connect_t, Sender&,
                         Receiver&&> ||
-                    pika::is_invocable_v<connect_t, Sender const&, Receiver&> ||
-                    pika::is_invocable_v<connect_t, Sender const&,
+                    pika::detail::is_invocable_v<connect_t, Sender&,
+                        Receiver&> ||
+                    pika::detail::is_invocable_v<connect_t, Sender&,
+                        Receiver const&> ||
+                    pika::detail::is_invocable_v<connect_t, Sender const&,
+                        Receiver&&> ||
+                    pika::detail::is_invocable_v<connect_t, Sender const&,
+                        Receiver&> ||
+                    pika::detail::is_invocable_v<connect_t, Sender const&,
                         Receiver const&>>
         {
         };
@@ -458,7 +465,8 @@ namespace pika { namespace execution { namespace experimental {
 
     template <typename Scheduler>
     struct is_scheduler<Scheduler,
-        std::enable_if_t<pika::is_invocable<schedule_t, Scheduler>::value &&
+        std::enable_if_t<
+            pika::detail::is_invocable<schedule_t, Scheduler>::value &&
             std::is_copy_constructible<Scheduler>::value &&
             pika::traits::is_equality_comparable<Scheduler>::value>>
       : std::true_type
@@ -470,6 +478,6 @@ namespace pika { namespace execution { namespace experimental {
 
     template <typename S, typename R>
     using connect_result_t =
-        typename pika::util::invoke_result<connect_t, S, R>::type;
+        typename pika::util::detail::invoke_result<connect_t, S, R>::type;
 }}}    // namespace pika::execution::experimental
 #endif

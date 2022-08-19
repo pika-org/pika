@@ -133,12 +133,12 @@ void test_bulk_sync(Executor& exec)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     std::vector<pika::thread::id> ids =
-        pika::parallel::execution::bulk_sync_execute(
-            exec, pika::util::bind(&sync_bulk_test, _1, tid, _2), v, 42);
+        pika::parallel::execution::bulk_sync_execute(exec,
+            pika::util::detail::bind(&sync_bulk_test, _1, tid, _2), v, 42);
     for (auto const& id : ids)
     {
         PIKA_TEST_EQ(id, pika::this_thread::get_id());
@@ -151,8 +151,8 @@ void test_bulk_sync(Executor& exec)
         PIKA_TEST_EQ(id, pika::this_thread::get_id());
     }
 
-    pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&sync_bulk_test_void, _1, tid, _2), v, 42);
+    pika::parallel::execution::bulk_sync_execute(exec,
+        pika::util::detail::bind(&sync_bulk_test_void, _1, tid, _2), v, 42);
     pika::parallel::execution::bulk_sync_execute(
         exec, &sync_bulk_test_void, v, tid, 42);
 }
@@ -165,19 +165,20 @@ void test_bulk_async(Executor& exec)
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
-    pika::when_all(pika::parallel::execution::bulk_async_execute(exec,
-                       pika::util::bind(&sync_bulk_test, _1, tid, _2), v, 42))
+    pika::when_all(
+        pika::parallel::execution::bulk_async_execute(exec,
+            pika::util::detail::bind(&sync_bulk_test, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
                        exec, &sync_bulk_test, v, tid, 42))
         .get();
 
     pika::when_all(
-        pika::parallel::execution::bulk_async_execute(
-            exec, pika::util::bind(&sync_bulk_test_void, _1, tid, _2), v, 42))
+        pika::parallel::execution::bulk_async_execute(exec,
+            pika::util::detail::bind(&sync_bulk_test_void, _1, tid, _2), v, 42))
         .get();
     pika::when_all(pika::parallel::execution::bulk_async_execute(
                        exec, &sync_bulk_test_void, v, tid, 42))
@@ -250,7 +251,8 @@ struct test_sync_executor1
     sync_execute(F&& f, Ts&&... ts)
     {
         ++count_sync;
-        return pika::util::invoke(std::forward<F>(f), std::forward<Ts>(ts)...);
+        return pika::util::detail::invoke(
+            std::forward<F>(f), std::forward<Ts>(ts)...);
     }
 };
 
@@ -277,7 +279,7 @@ struct test_sync_executor2 : test_sync_executor1
         std::vector<result_type> results;
         for (auto const& elem : shape)
         {
-            results.push_back(pika::util::invoke(f, elem, ts...));
+            results.push_back(pika::util::detail::invoke(f, elem, ts...));
         }
         return results;
     }
@@ -287,7 +289,7 @@ struct test_sync_executor2 : test_sync_executor1
     {
         for (auto const& elem : shape)
         {
-            pika::util::invoke(f, elem, ts...);
+            pika::util::detail::invoke(f, elem, ts...);
         }
     }
 

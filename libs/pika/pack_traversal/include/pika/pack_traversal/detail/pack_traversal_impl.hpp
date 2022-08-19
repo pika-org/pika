@@ -300,7 +300,8 @@ namespace pika { namespace util { namespace detail {
     /// Deduces to a true type if the type leads to at least one effective
     /// call to the mapper.
     template <typename Mapper, typename T>
-    using is_effective_t = is_invocable<typename Mapper::traversor_type, T>;
+    using is_effective_t =
+        pika::detail::is_invocable<typename Mapper::traversor_type, T>;
 
     /// Deduces to a true type if any type leads to at least one effective
     /// call to the mapper.

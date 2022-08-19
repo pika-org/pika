@@ -205,7 +205,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         [&fst_bool, &pred_projected, &tok](
                             Iter const& a) mutable -> void {
                             if (fst_bool !=
-                                pika::util::invoke(pred_projected, *a))
+                                pika::util::detail::invoke(pred_projected, *a))
                             {
                                 if (fst_bool)
                                     fst_bool = false;

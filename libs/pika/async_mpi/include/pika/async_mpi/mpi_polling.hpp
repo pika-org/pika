@@ -33,7 +33,7 @@ namespace pika::mpi::experimental {
         static constexpr print_on mpi_debug("MPI_FUT");
 
         using request_callback_function_type =
-            pika::util::unique_function<void(int)>;
+            pika::util::detail::unique_function<void(int)>;
 
         PIKA_EXPORT void add_request_callback(
             request_callback_function_type&& f, MPI_Request req);

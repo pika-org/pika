@@ -137,8 +137,9 @@ namespace pika::threads::detail {
                         get_thread_state_name(new_state));
 
                     thread_init_data data(
-                        util::bind(&set_active_state, thread_id_ref_type(thrd),
-                            new_state, new_state_ex, priority, previous_state),
+                        util::detail::bind(&set_active_state,
+                            thread_id_ref_type(thrd), new_state, new_state_ex,
+                            priority, previous_state),
                         "set state for active thread", priority);
 
                     create_work(get_thread_id_data(thrd)->get_scheduler_base(),

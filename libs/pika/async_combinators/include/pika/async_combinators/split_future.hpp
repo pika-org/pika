@@ -128,7 +128,7 @@ namespace pika {
                     pika::traits::detail::get_shared_state(future);
 
                 state->execute_deferred();
-                state->set_on_completed(util::deferred_call(
+                state->set_on_completed(util::detail::deferred_call(
                     &split_nth_continuation::on_ready<I, Future>,
                     PIKA_MOVE(this_), state));
             }
@@ -251,9 +251,9 @@ namespace pika {
                     pika::traits::detail::get_shared_state(future);
 
                 state->execute_deferred();
-                state->set_on_completed(
-                    util::deferred_call(&split_continuation::on_ready<Future>,
-                        PIKA_MOVE(this_), i, state));
+                state->set_on_completed(util::detail::deferred_call(
+                    &split_continuation::on_ready<Future>, PIKA_MOVE(this_), i,
+                    state));
             }
         };
 

@@ -112,10 +112,7 @@ namespace pika::functional::detail {
 #include <utility>
 
 namespace pika::functional::detail {
-
-    ///////////////////////////////////////////////////////////////////////////
     namespace tag_fallback_invoke_t_ns {
-
         // poison pill
         void tag_fallback_invoke();
 
@@ -159,7 +156,7 @@ namespace pika::functional::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Tag, typename... Args>
-    using is_tag_fallback_invocable = pika::is_invocable<
+    using is_tag_fallback_invocable = pika::detail::is_invocable<
         decltype(tag_fallback_invoke_ns::tag_fallback_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
@@ -209,7 +206,7 @@ namespace pika::functional::detail {
         is_nothrow_tag_fallback_invocable<Tag, Args...>::value;
 
     template <typename Tag, typename... Args>
-    using tag_fallback_invoke_result = pika::util::invoke_result<
+    using tag_fallback_invoke_result = pika::util::detail::invoke_result<
         decltype(tag_fallback_invoke_ns::tag_fallback_invoke), Tag, Args...>;
 
     template <typename Tag, typename... Args>
@@ -218,7 +215,6 @@ namespace pika::functional::detail {
 
     ///////////////////////////////////////////////////////////////////////////////
     namespace tag_base_ns {
-
         template <typename Tag, typename... Args>
         struct not_tag_fallback_noexcept_dispatchable;
 
@@ -348,7 +344,6 @@ namespace pika::functional::detail {
     }    // namespace tag_base_ns
 
     inline namespace tag_invoke_base_ns {
-
         template <typename Tag>
         using tag_fallback = tag_base_ns::tag_fallback<Tag>;
 
@@ -357,7 +352,6 @@ namespace pika::functional::detail {
     }    // namespace tag_invoke_base_ns
 
     inline namespace tag_fallback_invoke_f_ns {
-
         using tag_fallback_invoke_ns::tag_fallback_invoke;
     }    // namespace tag_fallback_invoke_f_ns
 }    // namespace pika::functional::detail

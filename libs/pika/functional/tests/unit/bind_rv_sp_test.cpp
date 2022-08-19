@@ -20,13 +20,13 @@
 #endif
 
 #include <pika/functional/bind.hpp>
+#include <pika/testing.hpp>
 
-namespace placeholders = pika::util::placeholders;
-
+#include <functional>
 #include <iostream>
 #include <memory>
 
-#include <pika/testing.hpp>
+namespace placeholders = std::placeholders;
 
 struct X
 {
@@ -55,7 +55,9 @@ int main()
 {
     Y y;
 
-    PIKA_TEST_EQ(pika::util::bind(&X::f, pika::util::bind(&Y::f, &y))(), 42);
+    PIKA_TEST_EQ(
+        pika::util::detail::bind(&X::f, pika::util::detail::bind(&Y::f, &y))(),
+        42);
 
     return pika::util::report_errors();
 }

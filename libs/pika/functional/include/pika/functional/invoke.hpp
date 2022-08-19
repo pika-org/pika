@@ -13,8 +13,7 @@
 
 #include <utility>
 
-namespace pika { namespace util {
-
+namespace pika::util::detail {
 #define PIKA_INVOKE_R(R, F, ...)                                               \
     (::pika::util::void_guard<R>(), PIKA_INVOKE(F, __VA_ARGS__))
 
@@ -35,8 +34,8 @@ namespace pika { namespace util {
     ///
     /// \note This function is similar to `std::invoke` (C++17)
     template <typename F, typename... Ts>
-    constexpr PIKA_HOST_DEVICE typename util::invoke_result<F, Ts...>::type
-    invoke(F&& f, Ts&&... vs)
+    constexpr PIKA_HOST_DEVICE util::detail::invoke_result_t<F, Ts...> invoke(
+        F&& f, Ts&&... vs)
     {
         return PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }
@@ -51,29 +50,4 @@ namespace pika { namespace util {
     {
         return PIKA_INVOKE_R(R, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    namespace functional {
-        struct invoke
-        {
-            template <typename F, typename... Ts>
-            constexpr PIKA_HOST_DEVICE
-                typename util::invoke_result<F, Ts...>::type
-                operator()(F&& f, Ts&&... vs) const
-            {
-                return PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
-            }
-        };
-
-        template <typename R>
-        struct invoke_r
-        {
-            template <typename F, typename... Ts>
-            constexpr PIKA_HOST_DEVICE R operator()(F&& f, Ts&&... vs) const
-            {
-                return PIKA_INVOKE_R(
-                    R, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
-            }
-        };
-    }    // namespace functional
-}}       // namespace pika::util
+}    // namespace pika::util::detail

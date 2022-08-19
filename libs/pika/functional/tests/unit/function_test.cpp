@@ -11,8 +11,8 @@
 
 // For more information, see http://www.boost.org
 
-// NOTE: Warning caused by assignment of pika::util::function<float()> to
-// pika::util::function<double()> in test_emptiness. Triggered in
+// NOTE: Warning caused by assignment of pika::util::detail::function<float()> to
+// pika::util::detail::function<double()> in test_emptiness. Triggered in
 // pika/functional/function.hpp which is included latest by pika/include/util.hpp.
 #if defined(__clang__)
 #pragma clang diagnostic push
@@ -125,7 +125,7 @@ struct add_to_obj
 
 static void test_zero_args()
 {
-    using func_void_type = pika::util::function<void()>;
+    using func_void_type = pika::util::detail::function<void()>;
 
     write_five_obj five;
     write_three_obj three;
@@ -572,8 +572,8 @@ static void test_zero_args()
 
     // Const vs. non-const
     write_const_1_nonconst_2 one_or_two;
-    const pika::util::function<void()> v7(one_or_two);
-    pika::util::function<void()> v8(one_or_two);
+    const pika::util::detail::function<void()> v7(one_or_two);
+    pika::util::detail::function<void()> v8(one_or_two);
 
     global_int = 0;
     v7();
@@ -593,7 +593,7 @@ static void test_zero_args()
     PIKA_TEST(v9np.empty());
 
     // Test return values
-    using func_int_type = pika::util::function<int()>;
+    using func_int_type = pika::util::detail::function<int()>;
     generate_five_obj gen_five;
     generate_three_obj gen_three;
 
@@ -611,7 +611,7 @@ static void test_zero_args()
     PIKA_TEST(!i0);
 
     // Test return values with compatible types
-    using func_long_type = pika::util::function<long()>;
+    using func_long_type = pika::util::detail::function<long()>;
     func_long_type i1(gen_five);
 
     PIKA_TEST_EQ(i1(), 5);
@@ -630,42 +630,43 @@ static void test_one_arg()
 {
     std::negate<int> neg;
 
-    pika::util::function<int(int)> f1(neg);
+    pika::util::detail::function<int(int)> f1(neg);
     PIKA_TEST_EQ(f1(5), -5);
 
-    pika::util::function<string(string)> id(&identity_str);
+    pika::util::detail::function<string(string)> id(&identity_str);
     PIKA_TEST_EQ(id("str"), "str");
 
-    pika::util::function<string(const char*)> id2(&identity_str);
+    pika::util::detail::function<string(const char*)> id2(&identity_str);
     PIKA_TEST_EQ(id2("foo"), "foo");
 
     add_to_obj add_to(5);
-    pika::util::function<int(int)> f2(add_to);
+    pika::util::detail::function<int(int)> f2(add_to);
     PIKA_TEST_EQ(f2(3), 8);
 
-    const pika::util::function<int(int)> cf2(add_to);
+    const pika::util::detail::function<int(int)> cf2(add_to);
     PIKA_TEST_EQ(cf2(3), 8);
 }
 
 static void test_two_args()
 {
-    pika::util::function<string(const string&, const string&)> cat(&string_cat);
+    pika::util::detail::function<string(const string&, const string&)> cat(
+        &string_cat);
     PIKA_TEST_EQ(cat("str", "ing"), "string");
 
-    pika::util::function<int(short, short)> sum(&sum_ints);
+    pika::util::detail::function<int(short, short)> sum(&sum_ints);
     PIKA_TEST_EQ(sum(2, 3), 5);
 }
 
 static void test_emptiness()
 {
-    pika::util::function<float()> f1;
+    pika::util::detail::function<float()> f1;
     PIKA_TEST(f1.empty());
 
-    pika::util::function<float()> f2;
+    pika::util::detail::function<float()> f2;
     f2 = f1;
     PIKA_TEST(f2.empty());
 
-    pika::util::function<double()> f3;
+    pika::util::detail::function<double()> f3;
     f3 = f2;
     PIKA_TEST(f3.empty());
 }
@@ -691,7 +692,7 @@ struct X
 
 static void test_member_functions()
 {
-    pika::util::function<int(X*)> f1(&X::twice);
+    pika::util::detail::function<int(X*)> f1(&X::twice);
 
     X one(1);
     X five(5);
@@ -699,13 +700,13 @@ static void test_member_functions()
     PIKA_TEST_EQ(f1(&one), 2);
     PIKA_TEST_EQ(f1(&five), 10);
 
-    pika::util::function<int(X*)> f1_2;
+    pika::util::detail::function<int(X*)> f1_2;
     f1_2 = &X::twice;
 
     PIKA_TEST_EQ(f1_2(&one), 2);
     PIKA_TEST_EQ(f1_2(&five), 10);
 
-    pika::util::function<int(X&, int)> f2(&X::plus);
+    pika::util::detail::function<int(X&, int)> f2(&X::plus);
     PIKA_TEST_EQ(f2(one, 3), 4);
     PIKA_TEST_EQ(f2(five, 4), 9);
 }
@@ -735,7 +736,7 @@ static void test_ref()
     add_with_throw_on_copy atc;
     try
     {
-        pika::util::function<int(int, int)> f(std::ref(atc));
+        pika::util::detail::function<int(int, int)> f(std::ref(atc));
         PIKA_TEST_EQ(f(1, 3), 4);
     }
     catch (std::runtime_error const& /*e*/)
@@ -748,8 +749,8 @@ static void dummy() {}
 
 static void test_empty_ref()
 {
-    pika::util::function<void()> f1;
-    pika::util::function<void()> f2(std::ref(f1));
+    pika::util::detail::function<void()> f1;
+    pika::util::detail::function<void()> f2(std::ref(f1));
 
     try
     {
@@ -775,7 +776,7 @@ static void test_empty_ref()
 
 static void test_exception()
 {
-    pika::util::function<int(int, int)> f;
+    pika::util::detail::function<int(int, int)> f;
     try
     {
         f(5, 4);
@@ -787,7 +788,7 @@ static void test_exception()
     }
 }
 
-using reader_type = pika::util::function<void*(void* reader)>;
+using reader_type = pika::util::detail::function<void*(void* reader)>;
 using mapped_type = std::pair<int, reader_type>;
 
 static void test_implicit()
@@ -796,12 +797,12 @@ static void test_implicit()
     m = mapped_type();
 }
 
-static void test_call_obj(pika::util::function<int(int, int)> f)
+static void test_call_obj(pika::util::detail::function<int(int, int)> f)
 {
     PIKA_TEST(!f.empty());
 }
 
-static void test_call_cref(const pika::util::function<int(int, int)>& f)
+static void test_call_cref(const pika::util::detail::function<int(int, int)>& f)
 {
     PIKA_TEST(!f.empty());
 }
@@ -911,7 +912,7 @@ int main(int, char*[])
     test_exception();
     test_implicit();
     test_call();
-    test_move_semantics<pika::util::function<void()>>();
+    test_move_semantics<pika::util::detail::function<void()>>();
 
     return pika::util::report_errors();
 }

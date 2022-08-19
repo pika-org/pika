@@ -22,7 +22,8 @@
 struct shared_parallel_executor
 {
     template <typename F, typename... Ts>
-    pika::shared_future<typename pika::util::invoke_result<F, Ts...>::type>
+    pika::shared_future<
+        typename pika::util::detail::invoke_result<F, Ts...>::type>
     async_execute(F&& f, Ts&&... ts)
     {
         return pika::async(std::forward<F>(f), std::forward<Ts>(ts)...);
@@ -80,12 +81,12 @@ void test_bulk_sync()
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executor exec;
     pika::parallel::execution::bulk_sync_execute(
-        exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42);
+        exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42);
     pika::parallel::execution::bulk_sync_execute(exec, &bulk_test, v, tid, 42);
 }
 
@@ -98,13 +99,13 @@ void test_bulk_async()
     std::vector<int> v(107);
     std::iota(std::begin(v), std::end(v), std::rand());
 
-    using pika::util::placeholders::_1;
-    using pika::util::placeholders::_2;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
 
     executor exec;
     std::vector<pika::shared_future<void>> futs =
         pika::parallel::execution::bulk_async_execute(
-            exec, pika::util::bind(&bulk_test, _1, tid, _2), v, 42);
+            exec, pika::util::detail::bind(&bulk_test, _1, tid, _2), v, 42);
     pika::when_all(futs).get();
 
     futs = pika::parallel::execution::bulk_async_execute(

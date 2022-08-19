@@ -15,7 +15,7 @@ This module exposes the basic functionality for traversing various packs, both
 synchronously and asynchronously: :cpp:func:`pika::util::traverse_pack` and
 :cpp:func:`pika::util::traverse_pack_async`. It also exposes the higher level
 functionality of unwrapping nested futures: :cpp:func:`pika::util::unwrap` and
-its function object form :cpp:class:`pika::util::functional::unwrap`.
+its function object form :cpp:class:`pika::util::detail::functional::unwrap`.
 
 See the :ref:`API reference <modules_pack_traversal_api>` of this module for more
 details.

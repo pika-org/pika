@@ -551,7 +551,7 @@ namespace pika { namespace util {
 
     template <typename F1, typename F2>
     static PIKA_FORCEINLINE
-        util::function<void(std::string const&, std::string const&)>
+        util::detail::function<void(std::string const&, std::string const&)>
         compose_callback(F1&& f1, F2&& f2)
     {
         if (!f1)

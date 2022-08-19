@@ -62,7 +62,8 @@ int pika_main(variables_map& vm)
         {
             pika::threads::detail::thread_init_data data(
                 pika::threads::detail::make_thread_function_nullary(
-                    pika::util::bind(&suspend_test, std::ref(b), iterations)),
+                    pika::util::detail::bind(
+                        &suspend_test, std::ref(b), iterations)),
                 "suspend_test");
             register_work(data);
         }

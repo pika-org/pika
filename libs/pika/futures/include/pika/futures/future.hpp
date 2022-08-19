@@ -1214,7 +1214,7 @@ namespace pika {
     template <typename R, typename U, typename Conv>
     pika::future<R> make_future(pika::shared_future<U> f, Conv&& conv)
     {
-        static_assert(pika::is_invocable_r_v<R, Conv, U>,
+        static_assert(pika::detail::is_invocable_r_v<R, Conv, U>,
             "the argument type must be convertible to the requested "
             "result type by using the supplied conversion function");
 

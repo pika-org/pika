@@ -914,7 +914,7 @@ namespace pika { namespace resource { namespace detail {
     }
 
     std::size_t partitioner::shrink_pool(std::string const& pool_name,
-        util::function<void(std::size_t)> const& remove_pu)
+        util::detail::function<void(std::size_t)> const& remove_pu)
     {
         if (!(mode_ & mode_allow_dynamic_pools))
         {
@@ -961,7 +961,7 @@ namespace pika { namespace resource { namespace detail {
     }
 
     std::size_t partitioner::expand_pool(std::string const& pool_name,
-        util::function<void(std::size_t)> const& add_pu)
+        util::detail::function<void(std::size_t)> const& add_pu)
     {
         if (!(mode_ & mode_allow_dynamic_pools))
         {

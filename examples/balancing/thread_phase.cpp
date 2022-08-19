@@ -121,9 +121,9 @@ int pika_main(variables_map& vm)
             const std::size_t index = j % mutex_count;
 
             thread_init_data data(
-                make_thread_function_nullary(pika::util::bind(&lock_and_wait,
-                    std::ref(m[index]), std::ref(b0), std::ref(b1),
-                    std::ref(pikathreads[j]), wait)),
+                make_thread_function_nullary(pika::util::detail::bind(
+                    &lock_and_wait, std::ref(m[index]), std::ref(b0),
+                    std::ref(b1), std::ref(pikathreads[j]), wait)),
                 "lock_and_wait");
             ids.push_back(register_thread(data));
         }

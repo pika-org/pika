@@ -11,7 +11,7 @@
 #include <pika/config.hpp>
 #include <pika/functional/detail/vtable/vtable.hpp>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     ///////////////////////////////////////////////////////////////////////////
     struct empty_function
     {
@@ -35,21 +35,19 @@ namespace pika { namespace util { namespace detail {
 // ("there was an error in verifying the lgenfe output!") with this enabled, so
 // we explicitly use the fallback.
 #if !defined(PIKA_HAVE_CUDA)
-            template <typename Sig>
-            constexpr function_vtable<Sig, true> const*
-            get_empty_function_vtable() noexcept
-            {
-                return &vtables<function_vtable<Sig, true>,
-                    empty_function>::instance;
-            }
+    template <typename Sig>
+    constexpr function_vtable<Sig, true> const*
+    get_empty_function_vtable() noexcept
+    {
+        return &vtables<function_vtable<Sig, true>, empty_function>::instance;
+    }
 #else
-            template <typename Sig>
-            function_vtable<Sig, true> const*
-            get_empty_function_vtable() noexcept
-            {
-                static function_vtable<Sig, true> const empty_vtable =
-                    detail::construct_vtable<empty_function>();
-                return &empty_vtable;
-            }
+    template <typename Sig>
+    function_vtable<Sig, true> const* get_empty_function_vtable() noexcept
+    {
+        static function_vtable<Sig, true> const empty_vtable =
+            detail::construct_vtable<empty_function>();
+        return &empty_vtable;
+    }
 #endif
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

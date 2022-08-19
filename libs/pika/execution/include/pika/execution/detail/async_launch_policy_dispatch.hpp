@@ -61,11 +61,11 @@ namespace pika { namespace detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Action>
     struct async_launch_policy_dispatch<Action,
-        std::enable_if_t<!traits::is_action_v<Action>>>
+        std::enable_if_t<!detail::is_action_v<Action>>>
     {
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(launch policy, pika::util::detail::thread_description const& desc,
             threads::thread_pool_base* pool, F&& f, Ts&&... ts)
@@ -79,8 +79,9 @@ namespace pika { namespace detail {
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
             }
 
-            lcos::local::futures_factory<result_type()> p(util::deferred_call(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(
+                util::detail::deferred_call(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
             if (pika::detail::has_async_policy(policy))
             {
                 threads::detail::thread_id_ref_type tid =
@@ -107,7 +108,7 @@ namespace pika { namespace detail {
 
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(launch policy, pika::util::detail::thread_description const& desc,
             F&& f, Ts&&... ts)
@@ -119,7 +120,7 @@ namespace pika { namespace detail {
 
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(launch policy, F&& f, Ts&&... ts)
         {
@@ -131,7 +132,7 @@ namespace pika { namespace detail {
 
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::sync_policy, F&& f, Ts&&... ts)
         {
@@ -141,7 +142,7 @@ namespace pika { namespace detail {
 
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::async_policy policy,
             pika::util::detail::thread_description const& desc,
@@ -152,8 +153,9 @@ namespace pika { namespace detail {
             using result_type =
                 util::detail::invoke_deferred_result_t<F, Ts...>;
 
-            lcos::local::futures_factory<result_type()> p(util::deferred_call(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(
+                util::detail::deferred_call(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
             threads::detail::thread_id_ref_type tid =
                 p.apply(pool, desc.get_description(), policy);
@@ -171,7 +173,7 @@ namespace pika { namespace detail {
 
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::async_policy policy, F&& f, Ts&&... ts)
         {
@@ -183,7 +185,7 @@ namespace pika { namespace detail {
 
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::fork_policy policy,
             pika::util::detail::thread_description const& desc,
@@ -194,8 +196,9 @@ namespace pika { namespace detail {
             using result_type =
                 util::detail::invoke_deferred_result_t<F, Ts...>;
 
-            lcos::local::futures_factory<result_type()> p(util::deferred_call(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(
+                util::detail::deferred_call(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
             threads::detail::thread_id_ref_type tid =
                 p.apply(pool, desc.get_description(), policy);
@@ -223,7 +226,7 @@ namespace pika { namespace detail {
 
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::fork_policy policy, F&& f, Ts&&... ts)
         {
@@ -235,15 +238,16 @@ namespace pika { namespace detail {
 
         template <typename F, typename... Ts>
         PIKA_FORCEINLINE static std::enable_if_t<
-            traits::detail::is_deferred_invocable_v<F, Ts...>,
+            pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::deferred_policy, F&& f, Ts&&... ts)
         {
             using result_type =
                 util::detail::invoke_deferred_result_t<F, Ts...>;
 
-            lcos::local::futures_factory<result_type()> p(util::deferred_call(
-                PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
+            lcos::local::futures_factory<result_type()> p(
+                util::detail::deferred_call(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...));
 
             return p.get_future();
         }

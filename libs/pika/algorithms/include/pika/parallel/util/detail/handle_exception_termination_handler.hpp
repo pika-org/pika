@@ -11,7 +11,7 @@
 
 namespace pika { namespace parallel { namespace util { namespace detail {
     using parallel_exception_termination_handler_type =
-        pika::util::function<void()>;
+        pika::util::detail::function<void()>;
 
     PIKA_EXPORT void set_parallel_exception_termination_handler(
         parallel_exception_termination_handler_type f);

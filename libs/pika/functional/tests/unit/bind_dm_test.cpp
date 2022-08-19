@@ -20,13 +20,12 @@
 #endif
 
 #include <pika/functional/bind.hpp>
-
-namespace placeholders = pika::util::placeholders;
+#include <pika/testing.hpp>
 
 #include <functional>
 #include <iostream>
 
-#include <pika/testing.hpp>
+namespace placeholders = std::placeholders;
 
 struct X
 {
@@ -44,22 +43,22 @@ int main()
     X x = {17041};
     X* px = &x;
 
-    PIKA_TEST_EQ(pika::util::bind(&X::m, placeholders::_1)(x), 17041);
-    PIKA_TEST_EQ(pika::util::bind(&X::m, placeholders::_1)(px), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, placeholders::_1)(x), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, placeholders::_1)(px), 17041);
 
-    PIKA_TEST_EQ(pika::util::bind(&X::m, x)(), 17041);
-    PIKA_TEST_EQ(pika::util::bind(&X::m, px)(), 17041);
-    PIKA_TEST_EQ(pika::util::bind(&X::m, std::ref(x))(), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, x)(), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, px)(), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, std::ref(x))(), 17041);
 
     X const cx = x;
     X const* pcx = &cx;
 
-    PIKA_TEST_EQ(pika::util::bind(&X::m, placeholders::_1)(cx), 17041);
-    PIKA_TEST_EQ(pika::util::bind(&X::m, placeholders::_1)(pcx), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, placeholders::_1)(cx), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, placeholders::_1)(pcx), 17041);
 
-    PIKA_TEST_EQ(pika::util::bind(&X::m, cx)(), 17041);
-    PIKA_TEST_EQ(pika::util::bind(&X::m, pcx)(), 17041);
-    PIKA_TEST_EQ(pika::util::bind(&X::m, std::ref(cx))(), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, cx)(), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, pcx)(), 17041);
+    PIKA_TEST_EQ(pika::util::detail::bind(&X::m, std::ref(cx))(), 17041);
 
     return pika::util::report_errors();
 }

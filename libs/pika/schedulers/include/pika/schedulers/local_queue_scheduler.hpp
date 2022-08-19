@@ -633,7 +633,8 @@ namespace pika { namespace threads { namespace policies {
         ///////////////////////////////////////////////////////////////////////
         // Enumerate matching threads from all queues
         bool enumerate_threads(
-            util::function<bool(threads::detail::thread_id_type)> const& f,
+            util::detail::function<bool(threads::detail::thread_id_type)> const&
+                f,
             threads::detail::thread_schedule_state state =
                 threads::detail::thread_schedule_state::unknown) const override
         {

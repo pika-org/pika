@@ -243,7 +243,7 @@ struct callback_receiver
     friend void tag_invoke(
         ex::set_value_t, callback_receiver&& r, Ts&&...) noexcept
     {
-        PIKA_INVOKE(r.f, );
+        r.f();
         std::lock_guard l{r.mtx};
         r.executed = true;
         r.cond.notify_one();

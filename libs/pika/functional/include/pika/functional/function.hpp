@@ -18,8 +18,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::util::detail {
     template <typename Sig>
     class function;
 
@@ -39,22 +38,20 @@ namespace pika { namespace util {
         function& operator=(function&&) noexcept = default;
 
         // the split SFINAE prevents MSVC from eagerly instantiating things
-        template <typename F, typename FD = typename std::decay<F>::type,
-            typename Enable1 = typename std::enable_if<
-                !std::is_same<FD, function>::value>::type,
+        template <typename F, typename FD = std::decay_t<F>,
+            typename Enable1 = std::enable_if_t<!std::is_same_v<FD, function>>,
             typename Enable2 =
-                typename std::enable_if<is_invocable_r_v<R, FD&, Ts...>>::type>
+                std::enable_if_t<pika::detail::is_invocable_r_v<R, FD&, Ts...>>>
         function(F&& f)
         {
             assign(PIKA_FORWARD(F, f));
         }
 
         // the split SFINAE prevents MSVC from eagerly instantiating things
-        template <typename F, typename FD = typename std::decay<F>::type,
-            typename Enable1 = typename std::enable_if<
-                !std::is_same<FD, function>::value>::type,
+        template <typename F, typename FD = std::decay_t<F>,
+            typename Enable1 = std::enable_if_t<!std::is_same_v<FD, function>>,
             typename Enable2 =
-                typename std::enable_if<is_invocable_r_v<R, FD&, Ts...>>::type>
+                std::enable_if_t<pika::detail::is_invocable_r_v<R, FD&, Ts...>>>
         function& operator=(F&& f)
         {
             assign(PIKA_FORWARD(F, f));
@@ -67,24 +64,26 @@ namespace pika { namespace util {
         using base_type::reset;
         using base_type::target;
     };
-}}    // namespace pika::util
+}    // namespace pika::util::detail
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace traits {
+namespace pika::detail {
     template <typename Sig>
-    struct get_function_address<util::function<Sig>>
+    struct get_function_address<util::detail::function<Sig>>
     {
-        static constexpr std::size_t call(util::function<Sig> const& f) noexcept
+        static constexpr std::size_t call(
+            util::detail::function<Sig> const& f) noexcept
         {
             return f.get_function_address();
         }
     };
 
     template <typename Sig>
-    struct get_function_annotation<util::function<Sig>>
+    struct get_function_annotation<util::detail::function<Sig>>
     {
-        static constexpr char const* call(util::function<Sig> const& f) noexcept
+        static constexpr char const* call(
+            util::detail::function<Sig> const& f) noexcept
         {
             return f.get_function_annotation();
         }
@@ -92,14 +91,14 @@ namespace pika { namespace traits {
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename Sig>
-    struct get_function_annotation_itt<util::function<Sig>>
+    struct get_function_annotation_itt<util::detail::function<Sig>>
     {
         static util::itt::string_handle call(
-            util::function<Sig> const& f) noexcept
+            util::detail::function<Sig> const& f) noexcept
         {
             return f.get_function_annotation_itt();
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail
 #endif

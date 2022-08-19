@@ -114,7 +114,8 @@ namespace pika {
 
         PIKA_EXPORT void pre_exception_handler();
 
-        using get_full_build_string_type = pika::util::function<std::string()>;
+        using get_full_build_string_type =
+            pika::util::detail::function<std::string()>;
         PIKA_EXPORT void set_get_full_build_string(
             get_full_build_string_type f);
         PIKA_EXPORT std::string get_full_build_string();

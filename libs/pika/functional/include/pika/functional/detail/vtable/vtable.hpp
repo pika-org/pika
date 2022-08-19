@@ -13,8 +13,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace pika { namespace util { namespace detail {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::util::detail {
     template <typename T>
     struct construct_vtable
     {
@@ -33,7 +32,7 @@ namespace pika { namespace util { namespace detail {
     constexpr VTable const* get_vtable() noexcept
     {
         static_assert(
-            !std::is_reference<T>::value, "T shall have no ref-qualifiers");
+            !std::is_reference_v<T>, "T shall have no ref-qualifiers");
 
         return &vtables<VTable, T>::instance;
     }
@@ -56,8 +55,7 @@ namespace pika { namespace util { namespace detail {
         template <typename T>
         static void* allocate(void* storage, std::size_t storage_size)
         {
-            using storage_t =
-                typename std::aligned_storage<sizeof(T), alignof(T)>::type;
+            using storage_t = std::aligned_storage_t<sizeof(T), alignof(T)>;
 
             if (sizeof(T) > storage_size)
             {
@@ -70,8 +68,7 @@ namespace pika { namespace util { namespace detail {
         static void _deallocate(
             void* obj, std::size_t storage_size, bool destroy)
         {
-            using storage_t =
-                typename std::aligned_storage<sizeof(T), alignof(T)>::type;
+            using storage_t = std::aligned_storage_t<sizeof(T), alignof(T)>;
 
             if (destroy)
             {
@@ -91,4 +88,4 @@ namespace pika { namespace util { namespace detail {
         {
         }
     };
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

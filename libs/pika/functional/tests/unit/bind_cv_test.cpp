@@ -20,12 +20,12 @@
 #endif
 
 #include <pika/functional/bind.hpp>
+#include <pika/testing.hpp>
 
-namespace placeholders = pika::util::placeholders;
-
+#include <functional>
 #include <iostream>
 
-#include <pika/testing.hpp>
+namespace placeholders = std::placeholders;
 
 struct X
 {
@@ -150,17 +150,19 @@ void test(F f, int r)
 
 int main()
 {
-    test(pika::util::bind(X()), 17041);
-    test(pika::util::bind(X(), 1), 1);
-    test(pika::util::bind(X(), 1, 2), 1 + 2);
-    test(pika::util::bind(X(), 1, 2, 3), 1 + 2 + 3);
-    test(pika::util::bind(X(), 1, 2, 3, 4), 1 + 2 + 3 + 4);
-    test(pika::util::bind(X(), 1, 2, 3, 4, 5), 1 + 2 + 3 + 4 + 5);
-    test(pika::util::bind(X(), 1, 2, 3, 4, 5, 6), 1 + 2 + 3 + 4 + 5 + 6);
-    test(pika::util::bind(X(), 1, 2, 3, 4, 5, 6, 7), 1 + 2 + 3 + 4 + 5 + 6 + 7);
-    test(pika::util::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8),
+    test(pika::util::detail::bind(X()), 17041);
+    test(pika::util::detail::bind(X(), 1), 1);
+    test(pika::util::detail::bind(X(), 1, 2), 1 + 2);
+    test(pika::util::detail::bind(X(), 1, 2, 3), 1 + 2 + 3);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4), 1 + 2 + 3 + 4);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5), 1 + 2 + 3 + 4 + 5);
+    test(
+        pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6), 1 + 2 + 3 + 4 + 5 + 6);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7),
+        1 + 2 + 3 + 4 + 5 + 6 + 7);
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8),
         1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
-    test(pika::util::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8, 9),
+    test(pika::util::detail::bind(X(), 1, 2, 3, 4, 5, 6, 7, 8, 9),
         1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9);
 
     return pika::util::report_errors();

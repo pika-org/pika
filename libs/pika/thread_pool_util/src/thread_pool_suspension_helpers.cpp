@@ -42,7 +42,7 @@ namespace pika { namespace threads {
     }
 
     void resume_processing_unit_cb(thread_pool_base& pool,
-        util::function<void(void)> callback, std::size_t virt_core,
+        util::detail::function<void(void)> callback, std::size_t virt_core,
         error_code& ec)
     {
         if (!pool.get_scheduler()->has_scheduler_mode(
@@ -105,7 +105,7 @@ namespace pika { namespace threads {
     }
 
     void suspend_processing_unit_cb(thread_pool_base& pool,
-        util::function<void(void)> callback, std::size_t virt_core,
+        util::detail::function<void(void)> callback, std::size_t virt_core,
         error_code& ec)
     {
         if (!pool.get_scheduler()->has_scheduler_mode(
@@ -160,7 +160,7 @@ namespace pika { namespace threads {
     }
 
     void resume_pool_cb(thread_pool_base& pool,
-        util::function<void(void)> callback, error_code& /* ec */)
+        util::detail::function<void(void)> callback, error_code& /* ec */)
     {
         auto resume_direct_wrapper =
             [&pool, callback = PIKA_MOVE(callback)]() -> void {
@@ -201,7 +201,7 @@ namespace pika { namespace threads {
     }
 
     void suspend_pool_cb(thread_pool_base& pool,
-        util::function<void(void)> callback, error_code& ec)
+        util::detail::function<void(void)> callback, error_code& ec)
     {
         if (threads::detail::get_self_ptr() &&
             pika::this_thread::get_pool() == &pool)

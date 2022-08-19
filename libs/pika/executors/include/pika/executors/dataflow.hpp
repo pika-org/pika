@@ -46,10 +46,8 @@ namespace pika::detail {
 }
 // namespace pika::lcos::detail
 
-namespace pika { namespace traits {
+namespace pika::detail {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-    ///////////////////////////////////////////////////////////////////////////
-    // traits specialization to get annotation from dataflow_finalization
     template <typename Frame>
     struct get_function_annotation<pika::detail::dataflow_finalization<Frame>>
     {
@@ -58,13 +56,13 @@ namespace pika { namespace traits {
         static constexpr char const* call(
             pika::detail::dataflow_finalization<Frame> const& f) noexcept
         {
-            char const* annotation = pika::traits::get_function_annotation<
+            char const* annotation = pika::detail::get_function_annotation<
                 typename std::decay<function_type>::type>::call(f.this_->func_);
             return annotation;
         }
     };
 #endif
-}}    // namespace pika::traits
+}    // namespace pika::detail
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika::detail {
@@ -93,7 +91,7 @@ namespace pika::detail {
     {
         static auto error(F f, Args args)
         {
-            pika::util::invoke_fused(PIKA_MOVE(f), PIKA_MOVE(args));
+            pika::util::detail::invoke_fused(PIKA_MOVE(f), PIKA_MOVE(args));
         }
 
         using type = decltype(error(std::declval<F>(), std::declval<Args>()));
@@ -139,7 +137,7 @@ namespace pika::detail {
 
     template <typename Policy, typename F, typename Args>
     struct dataflow_return
-      : detail::dataflow_return_impl<traits::is_action<F>::value, Policy, F,
+      : detail::dataflow_return_impl<detail::is_action<F>::value, Policy, F,
             Args>
     {
     };
@@ -177,7 +175,7 @@ namespace pika::detail {
         using dataflow_type = dataflow_frame<Policy, Func, Futures>;
 
         friend struct dataflow_finalization<dataflow_type>;
-        friend struct traits::get_function_annotation<
+        friend struct pika::detail::get_function_annotation<
             dataflow_finalization<dataflow_type>>;
 
     private:
@@ -218,7 +216,7 @@ namespace pika::detail {
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    this->set_data(util::invoke_fused(
+                    this->set_data(util::detail::invoke_fused(
                         PIKA_MOVE(func_), PIKA_FORWARD(Futures_, futures)));
                 },
                 [&](std::exception_ptr ep) {
@@ -233,7 +231,7 @@ namespace pika::detail {
         {
             pika::detail::try_catch_exception_ptr(
                 [&]() {
-                    util::invoke_fused(
+                    util::detail::invoke_fused(
                         PIKA_MOVE(func_), PIKA_FORWARD(Futures_, futures));
 
                     this->set_data(util::unused_type());
@@ -473,16 +471,16 @@ namespace pika::detail {
             typename... Ts>
         PIKA_FORCEINLINE static auto call(Allocator const& alloc, P&& p, F&& f,
             typename std::enable_if<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 Id>::type const& id,
             Ts&&... ts)
             -> decltype(dataflow_dispatch_impl<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 Policy>::call(alloc, PIKA_FORWARD(P, p), PIKA_FORWARD(F, f), id,
                 PIKA_FORWARD(Ts, ts)...))
         {
             return dataflow_dispatch_impl<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 Policy>::call(alloc, PIKA_FORWARD(P, p), PIKA_FORWARD(F, f), id,
                 PIKA_FORWARD(Ts, ts)...);
         }
@@ -514,7 +512,7 @@ namespace pika::detail {
     {
         template <typename Allocator, typename F, typename... Ts,
             typename Enable = typename std::enable_if<
-                !traits::is_action<typename std::decay<F>::type>::value>::type>
+                !detail::is_action<typename std::decay<F>::type>::value>::type>
         PIKA_FORCEINLINE static auto call(Allocator const& alloc, F&& f,
             Ts&&... ts) -> decltype(dataflow_dispatch<launch>::call(alloc,
             launch::async, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
@@ -534,12 +532,12 @@ namespace pika::detail {
         PIKA_FORCEINLINE static auto call(
             Allocator const& alloc, F&& f, Ts&&... ts)
             -> decltype(dataflow_dispatch_impl<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 launch>::call(alloc, launch::async, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...))
         {
             return dataflow_dispatch_impl<
-                traits::is_action<typename std::decay<F>::type>::value,
+                detail::is_action<typename std::decay<F>::type>::value,
                 launch>::call(alloc, launch::async, PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...);
         }

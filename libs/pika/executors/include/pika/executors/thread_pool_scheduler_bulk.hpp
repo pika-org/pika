@@ -206,8 +206,9 @@ namespace pika { namespace execution { namespace experimental {
                             std::advance(it, i_begin);
                             for (std::uint32_t i = i_begin; i < i_end; ++i)
                             {
-                                pika::util::invoke_fused(
-                                    pika::util::bind_front(op_state->f, *it),
+                                pika::util::detail::invoke_fused(
+                                    pika::util::detail::bind_front(
+                                        op_state->f, *it),
                                     ts);
                                 ++it;
                             }
@@ -270,8 +271,8 @@ namespace pika { namespace execution { namespace experimental {
                                 std::decay_t<Ts>, pika::detail::monostate>>>
                         void operator()(Ts&& ts) const
                         {
-                            pika::util::invoke_fused(
-                                pika::util::bind_front(
+                            pika::util::detail::invoke_fused(
+                                pika::util::detail::bind_front(
                                     pika::execution::experimental::set_value,
                                     PIKA_MOVE(op_state->receiver)),
                                 PIKA_FORWARD(Ts, ts));

@@ -31,6 +31,6 @@ namespace pika {
 
     /// Set the string value of a configuration entry given by \p key.
     PIKA_EXPORT void set_config_entry_callback(std::string const& key,
-        util::function<void(std::string const&, std::string const&)> const&
-            callback);
+        util::detail::function<void(
+            std::string const&, std::string const&)> const& callback);
 }    // namespace pika

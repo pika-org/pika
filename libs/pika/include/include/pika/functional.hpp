@@ -12,25 +12,15 @@
 #include <pika/functional/function.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/functional/invoke_fused.hpp>
-#include <pika/functional/mem_fn.hpp>
 #include <pika/functional/traits/is_bind_expression.hpp>
-#include <pika/functional/traits/is_placeholder.hpp>
 #include <pika/functional/unique_function.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 #include <pika/threading_base/scoped_annotation.hpp>
 
 namespace pika {
-    using pika::traits::is_bind_expression;
-    using pika::traits::is_placeholder;
-    using pika::util::bind_back;
-    using pika::util::bind_front;
-    using pika::util::function;
-    using pika::util::invoke;
-    using pika::util::invoke_fused;
-    using pika::util::mem_fn;
-    using pika::util::unique_function;
-
-    namespace placeholders {
-        using namespace pika::util::placeholders;
-    }
+    using pika::detail::is_bind_expression;
+    using pika::util::detail::function;
+    using pika::util::detail::invoke;
+    using pika::util::detail::invoke_fused;
+    using pika::util::detail::unique_function;
 }    // namespace pika
