@@ -42,21 +42,24 @@ namespace pika { namespace util {
         };
     }    // namespace detail
 
+#if defined(__has_builtin) && __has_builtin(__integer_pack)
     template <std::size_t N>
-    struct make_index_pack
-#if defined(PIKA_HAVE_BUILTIN_INTEGER_PACK)
-      : index_pack<__integer_pack(N)...>
-#elif (defined(PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ) &&                          \
-    !defined(PIKA_COMPUTE_DEVICE_CODE)) ||                                     \
-    (defined(PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ_CUDA) &&                       \
-        defined(PIKA_COMPUTE_DEVICE_CODE))
-      : __make_integer_seq<pack_c, std::size_t, N>
-#else
-      : detail::make_index_pack_join<typename make_index_pack<N / 2>::type,
-            typename make_index_pack<N - N / 2>::type>
-#endif
+    struct make_index_pack : index_pack<__integer_pack(N)...>
     {
     };
+#elif defined(__has_builtin) && __has_builtin(__make_integer_seq)
+    template <std::size_t N>
+    struct make_index_pack : __make_integer_seq<pack_c, std::size_t, N>
+    {
+    };
+#else
+    template <std::size_t N>
+    struct make_index_pack
+      : detail::make_index_pack_join<typename make_index_pack<N / 2>::type,
+            typename make_index_pack<N - N / 2>::type>
+    {
+    };
+#endif
 
     template <>
     struct make_index_pack<0> : pack_c<std::size_t>
