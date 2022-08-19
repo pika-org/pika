@@ -164,10 +164,7 @@ namespace pika { namespace util {
         {
         };
 
-#if (defined(PIKA_HAVE_BUILTIN_TYPE_PACK_ELEMENT) &&                           \
-    !defined(PIKA_COMPUTE_DEVICE_CODE)) ||                                     \
-    (defined(PIKA_HAVE_BUILTIN_TYPE_PACK_ELEMENT_CUDA) &&                      \
-        defined(PIKA_COMPUTE_DEVICE_CODE))
+#if defined(__has_builtin) && __has_builtin(__type_pack_element)
         template <std::size_t I, typename Ts, bool InBounds = (I < Ts::size)>
         struct at_index_impl : empty
         {
