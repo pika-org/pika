@@ -653,9 +653,8 @@ namespace pika { namespace util { namespace detail {
         /// different types.
         template <typename Strategy, typename T, typename M>
         auto remap(Strategy, T&& container, M&& mapper)
-            -> decltype(invoke_fused(
-                std::declval<tuple_like_remapper<Strategy, std::decay_t<M>,
-                    std::decay_t<T>>>(),
+            -> decltype(invoke_fused(std::declval<tuple_like_remapper<Strategy,
+                                         std::decay_t<M>, std::decay_t<T>>>(),
                 PIKA_FORWARD(T, container)))
         {
             return invoke_fused(

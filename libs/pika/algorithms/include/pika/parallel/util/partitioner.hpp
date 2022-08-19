@@ -47,7 +47,7 @@ namespace pika { namespace parallel { namespace util {
         {
             // estimate a chunk size based on number of cores used
             using parameters_type =
-                std::decay_t<ExPolicy>::executor_parameters_type;
+                typename std::decay_t<ExPolicy>::executor_parameters_type;
             using has_variable_chunk_size =
                 typename execution::extract_has_variable_chunk_size<
                     parameters_type>::type;
@@ -80,7 +80,7 @@ namespace pika { namespace parallel { namespace util {
         {
             // estimate a chunk size based on number of cores used
             using parameters_type =
-                std::decay_t<ExPolicy>::executor_parameters_type;
+                typename std::decay_t<ExPolicy>::executor_parameters_type;
             using has_variable_chunk_size =
                 typename execution::extract_has_variable_chunk_size<
                     parameters_type>::type;
