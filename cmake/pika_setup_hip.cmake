@@ -31,7 +31,6 @@ if(PIKA_WITH_HIP AND NOT TARGET roc::rocblas)
 
   find_package(rocblas REQUIRED)
   find_package(rocsolver REQUIRED)
-  find_package(hipblas REQUIRED CONFIG)
 
   if(NOT PIKA_FIND_PACKAGE)
     pika_add_config_define(PIKA_HAVE_HIP)

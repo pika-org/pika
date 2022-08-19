@@ -10,26 +10,20 @@
 
 #if defined(PIKA_HAVE_HIP)
 
-#include <hipblas/hipblas.h>
+#include <rocblas/rocblas.h>
 
-#define cublasCreate hipblasCreate
-#define cublasDestroy hipblasDestroy
-#define cublasHandle_t hipblasHandle_t
-#define cublasPointerMode_t hipblasPointerMode_t
-#define cublasSetPointerMode hipblasSetPointerMode
-#define cublasSetStream hipblasSetStream
-#define cublasStatus_t hipblasStatus_t
+#define cublasCreate rocblas_create_handle
+#define cublasDestroy rocblas_destroy_handle
+#define cublasHandle_t rocblas_handle
+#define cublasPointerMode_t rocblas_pointer_mode
+#define cublasSetPointerMode rocblas_set_pointer_mode
+#define cublasSetStream rocblas_set_stream
+#define cublasStatus_t rocblas_status
 
-#define CUBLAS_POINTER_MODE_HOST HIPBLAS_POINTER_MODE_HOST
-#define CUBLAS_STATUS_SUCCESS HIPBLAS_STATUS_SUCCESS
-#define CUBLAS_STATUS_NOT_INITIALIZED HIPBLAS_STATUS_NOT_INITIALIZED
-#define CUBLAS_STATUS_ALLOC_FAILED HIPBLAS_STATUS_ALLOC_FAILED
-#define CUBLAS_STATUS_INVALID_VALUE HIPBLAS_STATUS_INVALID_VALUE
-#define CUBLAS_STATUS_ARCH_MISMATCH HIPBLAS_STATUS_ARCH_MISMATCH
-#define CUBLAS_STATUS_MAPPING_ERROR HIPBLAS_STATUS_MAPPING_ERROR
-#define CUBLAS_STATUS_EXECUTION_FAILED HIPBLAS_STATUS_EXECUTION_FAILED
-#define CUBLAS_STATUS_INTERNAL_ERROR HIPBLAS_STATUS_INTERNAL_ERROR
-#define CUBLAS_STATUS_NOT_SUPPORTED HIPBLAS_STATUS_NOT_SUPPORTED
+#define CUBLAS_POINTER_MODE_HOST rocblas_pointer_mode_host
+#define CUBLAS_STATUS_SUCCESS rocblas_status_success
+#define CUBLAS_STATUS_INVALID_VALUE rocblas_status_invalid_value
+#define CUBLAS_STATUS_INTERNAL_ERROR rocblas_status_internal_error
 
 #elif defined(PIKA_HAVE_CUDA)
 

@@ -10,7 +10,7 @@
 #include <utility>
 
 #if defined(PIKA_HAVE_HIP)
-#define cublasSasum hipblasSasum
+#define cublasSasum rocblas_sasum
 #endif
 
 namespace cu = pika::cuda::experimental;
