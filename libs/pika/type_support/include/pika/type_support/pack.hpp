@@ -39,21 +39,41 @@ namespace pika::util::detail {
     {
     };
 
-    template <std::size_t N>
-    struct make_index_pack
-#if defined(PIKA_HAVE_BUILTIN_INTEGER_PACK)
-      : index_pack<__integer_pack(N)...>
-#elif (defined(PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ) &&                          \
-    !defined(PIKA_COMPUTE_DEVICE_CODE)) ||                                     \
-    (defined(PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ_CUDA) &&                       \
-        defined(PIKA_COMPUTE_DEVICE_CODE))
-      : __make_integer_seq<pack_c, std::size_t, N>
-#else
-      : make_index_pack_join<typename make_index_pack<N / 2>::type,
-            typename make_index_pack<N - N / 2>::type>
-#endif
-    {
+#define PIKA_MAKE_INDEX_PACK_INTEGER_PACK                                      \
+    template <std::size_t N>                                                   \
+    struct make_index_pack : index_pack<__integer_pack(N)...>                  \
+    {                                                                          \
     };
+
+#define PIKA_MAKE_INDEX_PACK_MAKE_INTEGER_SEQ                                  \
+    template <std::size_t N>                                                   \
+    struct make_index_pack : __make_integer_seq<pack_c, std::size_t, N>        \
+    {                                                                          \
+    };
+
+#define PIKA_MAKE_INDEX_PACK_FALLBACK                                          \
+    template <std::size_t N>                                                   \
+    struct make_index_pack                                                     \
+      : make_index_pack_join<typename make_index_pack<N / 2>::type,            \
+            typename make_index_pack<N - N / 2>::type>                         \
+    {                                                                          \
+    };
+
+#if defined(__has_builtin)
+#if __has_builtin(__integer_pack)
+    PIKA_MAKE_INDEX_PACK_INTEGER_PACK
+#elif __has_builtin(__make_integer_seq)
+    PIKA_MAKE_INDEX_PACK_MAKE_INTEGER_SEQ
+#else
+    PIKA_MAKE_INDEX_PACK_FALLBACK
+#endif
+#else
+    PIKA_MAKE_INDEX_PACK_FALLBACK
+#endif
+
+#undef PIKA_MAKE_INDEX_PACK_INTEGER_PACK
+#undef PIKA_MAKE_INDEX_PACK_MAKE_INTEGER_SEQ
+#undef PIKA_MAKE_INDEX_PACK_FALLBACK
 
     template <>
     struct make_index_pack<0> : pack_c<std::size_t>
