@@ -6,6 +6,7 @@
 
 #include <pika/init.hpp>
 #include <pika/program_options.hpp>
+#include <pika/testing.hpp>
 
 #include <iostream>
 #include <string>
@@ -51,5 +52,7 @@ int main(int argc, char* argv[])
     init_args.desc_cmdline = cmdline;
     init_args.cfg = cfg;
 
+    // This test should just run without crashing
+    PIKA_TEST(true);
     return pika::init(pika_main, argc + 1, newargv.data(), init_args);
 }

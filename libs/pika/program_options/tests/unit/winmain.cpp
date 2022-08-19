@@ -4,10 +4,11 @@
 // (See accompanying file LICENSE_1_0.txt
 // or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/testing.hpp>
+
 #if defined(PIKA_WINDOWS)
 #include <pika/preprocessor/cat.hpp>
 #include <pika/program_options/parsers.hpp>
-#include <pika/testing.hpp>
 
 #include <cctype>
 #include <cstdlib>
@@ -71,6 +72,8 @@ int main(int, char*[])
 #else
 int main(int, char*[])
 {
+    // There is nothing to test if not on Windows
+    PIKA_TEST(true);
     return 0;
 }
 #endif

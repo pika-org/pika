@@ -6,12 +6,12 @@
 
 #include <pika/config.hpp>
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
+#include <pika/chrono.hpp>
+#include <pika/format.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/format.hpp>
-#include <pika/modules/program_options.hpp>
-#include <pika/modules/timing.hpp>
-#include <pika/testing.hpp>
+#include <pika/program_options.hpp>
+#include <pika/testing/performance.hpp>
 
 #include <cstddef>
 #include <cstdint>

@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/init.hpp>
+#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <chrono>
@@ -35,5 +36,7 @@ int main(int argc, char** argv)
         "pika.stacks.huge_size=" +
             std::to_string(PIKA_HUGE_STACK_SIZE + 0x1000)};
 
+    // This test should just run without crashing
+    PIKA_TEST(true);
     return pika::init(pika_main, argc, argv, p);
 }

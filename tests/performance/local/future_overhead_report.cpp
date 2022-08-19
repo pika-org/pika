@@ -10,7 +10,7 @@
 #include <pika/chrono.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/testing.hpp>
+#include <pika/testing/performance.hpp>
 #include <pika/thread.hpp>
 
 #include <array>

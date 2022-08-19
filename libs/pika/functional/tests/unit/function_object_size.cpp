@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <pika/modules/functional.hpp>
+#include <pika/testing.hpp>
 
 #include <cstdint>
 #include <iostream>
@@ -160,5 +161,7 @@ int main()
         f2(7, 8);
     }
 
+    // This test should just run without crashing
+    PIKA_TEST(true);
     return 0;
 }

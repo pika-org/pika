@@ -15,7 +15,6 @@
 #include <pika/modules/synchronization.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/runtime.hpp>
-#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 #include <pika/threading_base/annotated_function.hpp>
 

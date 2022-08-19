@@ -6,6 +6,7 @@
 
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
+#include <pika/testing/performance.hpp>
 
 #include <cstddef>
 #include <cstdint>

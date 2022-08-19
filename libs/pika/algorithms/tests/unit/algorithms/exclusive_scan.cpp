@@ -7,6 +7,7 @@
 #include <pika/init.hpp>
 #include <pika/parallel/algorithms/exclusive_scan.hpp>
 #include <pika/testing.hpp>
+#include <pika/testing/performance.hpp>
 
 #include <cstddef>
 #include <iostream>

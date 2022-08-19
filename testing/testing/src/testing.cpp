@@ -149,20 +149,4 @@ namespace pika { namespace util {
             return 1;
         }
     }
-
-    void print_cdash_timing(const char* name, double time)
-    {
-        // use format followed by single cout for better multi-threaded output
-        std::string temp =
-            pika::util::format("<DartMeasurement name=\"{}\" "
-                               "type=\"numeric/double\">{}</DartMeasurement>",
-                name, time);
-        std::cout << temp << std::endl;
-    }
-
-    void print_cdash_timing(const char* name, std::uint64_t time)
-    {
-        print_cdash_timing(name, static_cast<double>(time) / 1e9);
-    }
-
 }}    // namespace pika::util

@@ -9,6 +9,7 @@
 #include <pika/parallel/algorithms/generate.hpp>
 #include <pika/parallel/algorithms/reduce_by_key.hpp>
 #include <pika/testing.hpp>
+#include <pika/testing/performance.hpp>
 //
 #include <iomanip>
 #include <random>

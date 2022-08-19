@@ -246,7 +246,7 @@ void test_pika_thread()
         bool caught_exception = false;
         try
         {
-            for (int i = 0; ++i)
+            for (int i = 0;; ++i)
             {
                 if (shall_die.stop_requested())
                 {

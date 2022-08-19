@@ -5,8 +5,12 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/assert.hpp>
+#include <pika/testing.hpp>
 
 int main()
 {
     PIKA_ASSERT(true);
+
+    // This test should just run without crashing
+    PIKA_TEST(true);
 }

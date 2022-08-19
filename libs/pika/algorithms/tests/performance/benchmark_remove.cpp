@@ -13,7 +13,6 @@
 #include <pika/parallel/algorithms/copy.hpp>
 #include <pika/parallel/algorithms/generate.hpp>
 #include <pika/parallel/algorithms/remove.hpp>
-#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <array>
@@ -302,8 +301,5 @@ int main(int argc, char* argv[])
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
-
-    return 0;
+    return pika::init(pika_main, argc, argv, init_args);
 }

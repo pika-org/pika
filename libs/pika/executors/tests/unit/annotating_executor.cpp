@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+#include <pika/testing.hpp>
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #include <pika/execution.hpp>
@@ -12,7 +13,6 @@
 #include <pika/init.hpp>
 #include <pika/latch.hpp>
 #include <pika/modules/properties.hpp>
-#include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
 #include <cstdlib>
@@ -504,6 +504,8 @@ int main(int argc, char* argv[])
 #else
 int main()
 {
+    // There is nothing to test if thread descriptions are disabled
+    PIKA_TEST(true);
     return 0;
 }
 #endif
