@@ -46,6 +46,7 @@ status = [
   "jenkins/cscs/gcc-11-debug",
   "jenkins/cscs/gcc-12-debug",
   "jenkins/cscs/gcc-cuda-debug",
+  "jenkins/cscs-ault/hipcc-release",
 ]
 required_approvals = 0
 delete_merged_branches = true
