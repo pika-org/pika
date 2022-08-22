@@ -112,7 +112,7 @@ struct wrapper
 
     template <typename T_, typename TD = std::decay_t<T_>,
         typename Enable =
-            typename std::enable_if<!std::is_same<TD, wrapper<T>>::value>::type>
+            std::enable_if_t<!std::is_same<TD, wrapper<T>>::value>>
     explicit wrapper(T_&& x)
       : m_x(std::forward<T_>(x))
     {
@@ -120,7 +120,7 @@ struct wrapper
 
     template <typename U>
     wrapper(const wrapper<U>& other,
-        typename std::enable_if<std::is_convertible<U, T>::value>::type* = 0)
+        std::enable_if_t<std::is_convertible<U, T>::value>* = 0)
       : m_x(other.m_x)
     {
     }

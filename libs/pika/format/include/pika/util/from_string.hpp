@@ -72,8 +72,7 @@ namespace pika { namespace util {
         }
 
         template <typename T>
-        struct from_string<T,
-            typename std::enable_if<std::is_integral<T>::value>::type>
+        struct from_string<T, std::enable_if_t<std::is_integral<T>::value>>
         {
             template <typename Char>
             static void call(std::basic_string<Char> const& value, int& target)
@@ -142,7 +141,7 @@ namespace pika { namespace util {
 
         template <typename T>
         struct from_string<T,
-            typename std::enable_if<std::is_floating_point<T>::value>::type>
+            std::enable_if_t<std::is_floating_point<T>::value>>
         {
             template <typename Char>
             static void call(

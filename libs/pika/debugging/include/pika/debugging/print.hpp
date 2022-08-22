@@ -127,8 +127,7 @@ namespace NS_DEBUG {
     struct hex_impl;
 
     template <int N, typename T>
-    struct hex_impl<N, T,
-        typename std::enable_if<!std::is_pointer<T>::value>::type>
+    struct hex_impl<N, T, std::enable_if_t<!std::is_pointer<T>::value>>
     {
         constexpr explicit hex_impl(T const& v)
           : data_(v)
@@ -149,8 +148,7 @@ namespace NS_DEBUG {
     PIKA_EXPORT void print_ptr(std::ostream& os, Int v, int n);
 
     template <int N, typename T>
-    struct hex_impl<N, T,
-        typename std::enable_if<std::is_pointer<T>::value>::type>
+    struct hex_impl<N, T, std::enable_if_t<std::is_pointer<T>::value>>
     {
         constexpr explicit hex_impl(T const& v)
           : data_(v)

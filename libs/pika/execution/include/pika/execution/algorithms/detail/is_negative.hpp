@@ -17,8 +17,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
 
     // signed integral values may be negative
     template <typename T>
-    struct is_negative_helper<T,
-        typename std::enable_if<std::is_signed<T>::value>::type>
+    struct is_negative_helper<T, std::enable_if_t<std::is_signed<T>::value>>
     {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static bool call(T const& size)
         {
@@ -38,8 +37,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
 
     // unsigned integral values are never negative
     template <typename T>
-    struct is_negative_helper<T,
-        typename std::enable_if<std::is_unsigned<T>::value>::type>
+    struct is_negative_helper<T, std::enable_if_t<std::is_unsigned<T>::value>>
     {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static bool call(T const&)
         {

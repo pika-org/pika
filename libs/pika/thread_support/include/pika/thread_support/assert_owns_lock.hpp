@@ -28,7 +28,7 @@ namespace pika { namespace util { namespace detail {
     }
 
     template <typename Lock>
-    typename std::enable_if<has_owns_lock<Lock>::value>::type assert_owns_lock(
+    std::enable_if_t<has_owns_lock<Lock>::value> assert_owns_lock(
         Lock const& l, long) noexcept
     {
         PIKA_ASSERT(l.owns_lock());
@@ -36,8 +36,8 @@ namespace pika { namespace util { namespace detail {
     }
 
     template <typename Lock>
-    typename std::enable_if<has_owns_lock<Lock>::value>::type
-    assert_doesnt_own_lock(Lock const& l, long) noexcept
+    std::enable_if_t<has_owns_lock<Lock>::value> assert_doesnt_own_lock(
+        Lock const& l, long) noexcept
     {
         PIKA_ASSERT(!l.owns_lock());
         PIKA_UNUSED(l);

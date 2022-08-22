@@ -306,7 +306,7 @@ namespace pika { namespace traits {
 
         template <typename Iter, typename Cat>
         struct belongs_to_iterator_category<Iter, Cat,
-            typename std::enable_if<is_iterator<Iter>::value>::type>
+            std::enable_if_t<is_iterator<Iter>::value>>
           : std::is_base_of<Cat,
                 typename std::iterator_traits<Iter>::iterator_category>
         {
@@ -320,7 +320,7 @@ namespace pika { namespace traits {
 
         template <typename Iter, typename Traversal>
         struct belongs_to_iterator_traversal<Iter, Traversal,
-            typename std::enable_if<is_iterator<Iter>::value>::type>
+            std::enable_if_t<is_iterator<Iter>::value>>
           : std::integral_constant<bool,
                 std::is_base_of<Traversal,
                     pika::traits::iterator_traversal_t<Iter>>::value ||
@@ -336,7 +336,7 @@ namespace pika { namespace traits {
 
         template <typename Iter, typename Cat>
         struct has_category<Iter, Cat,
-            typename std::enable_if<is_iterator<Iter>::value>::type>
+            std::enable_if_t<is_iterator<Iter>::value>>
           : std::is_same<Cat,
                 typename std::iterator_traits<Iter>::iterator_category>
         {
@@ -350,14 +350,14 @@ namespace pika { namespace traits {
 
         template <typename Iter, typename Traversal>
         struct has_traversal<Iter, Traversal,
-            typename std::enable_if<is_iterator<Iter>::value>::type>
+            std::enable_if_t<is_iterator<Iter>::value>>
           : std::is_same<Traversal, pika::traits::iterator_traversal_t<Iter>>
         {
         };
 
         template <typename Iter>
         struct has_traversal<Iter, pika::bidirectional_traversal_tag,
-            typename std::enable_if<is_iterator<Iter>::value>::type>
+            std::enable_if_t<is_iterator<Iter>::value>>
           : std::integral_constant<bool,
                 std::is_same<pika::bidirectional_traversal_tag,
                     pika::traits::iterator_traversal_t<Iter>>::value ||
@@ -370,7 +370,7 @@ namespace pika { namespace traits {
 
         template <typename Iter>
         struct has_traversal<Iter, pika::random_access_traversal_tag,
-            typename std::enable_if<is_iterator<Iter>::value>::type>
+            std::enable_if_t<is_iterator<Iter>::value>>
           : std::integral_constant<bool,
                 std::is_same<pika::random_access_traversal_tag,
                     pika::traits::iterator_traversal_t<Iter>>::value ||

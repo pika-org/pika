@@ -374,7 +374,7 @@ namespace pika { namespace util { namespace detail {
         };
         template <typename C>
         class container_accessor<C,
-            typename std::enable_if<std::is_rvalue_reference<C&&>::value>::type>
+            std::enable_if_t<std::is_rvalue_reference<C&&>::value>>
         {
             C&& container_;
 
@@ -617,7 +617,7 @@ namespace pika { namespace util { namespace detail {
             typename OldArg, std::size_t Size>
         struct tuple_like_remapper<strategy_remap_tag, M, Base<OldArg, Size>,
             // Support for skipping completely untouched types
-            typename std::enable_if<is_effective_t<M, OldArg>::value>::type>
+            std::enable_if_t<is_effective_t<M, OldArg>::value>>
         {
             M mapper_;
 
@@ -634,7 +634,7 @@ namespace pika { namespace util { namespace detail {
             typename OldArg, std::size_t Size>
         struct tuple_like_remapper<strategy_traverse_tag, M, Base<OldArg, Size>,
             // Support for skipping completely untouched types
-            typename std::enable_if<is_effective_t<M, OldArg>::value>::type>
+            std::enable_if_t<is_effective_t<M, OldArg>::value>>
         {
             M mapper_;
 
