@@ -26,7 +26,7 @@ namespace pika { namespace traits {
     template <typename Sent, typename Iter>
     struct is_sentinel_for<Sent, Iter,
         typename std::enable_if_t<is_iterator_v<Iter> &&
-            is_weakly_equality_comparable_with<Iter, Sent>::value>>
+            detail::is_weakly_equality_comparable_with_v<Iter, Sent>>>
       : std::true_type
     {
     };

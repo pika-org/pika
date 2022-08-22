@@ -11,8 +11,8 @@
 #include <pika/functional/invoke_result.hpp>
 #include <pika/futures/traits/future_traits.hpp>
 #include <pika/futures/traits/is_future.hpp>
-#include <pika/type_support/identity.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
+#include <pika/type_support/type_identity.hpp>
 
 #include <type_traits>
 #include <utility>
@@ -53,10 +53,10 @@ namespace pika { namespace traits {
             using cont_result = pika::util::detail::invoke_result_t<F&, Future>;
 
             // perform unwrapping of future<future<R>>
-            using result_type = util::lazy_conditional_t<
+            using result_type = util::detail::lazy_conditional_t<
                 pika::traits::detail::is_unique_future<cont_result>::value,
                 pika::traits::future_traits<cont_result>,
-                pika::util::identity<cont_result>>;
+                pika::detail::type_identity<cont_result>>;
 
             using type = pika::future<result_type>;
         };

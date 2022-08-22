@@ -26,7 +26,7 @@ namespace pika::util::detail {
     struct invoke_bound_front_result;
 
     template <typename F, typename... Ts, typename... Us>
-    struct invoke_bound_front_result<F, util::pack<Ts...>, Us...>
+    struct invoke_bound_front_result<F, util::detail::pack<Ts...>, Us...>
       : util::detail::invoke_result<F, Ts..., Us...>
     {
     };
@@ -72,7 +72,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE typename invoke_bound_front_result<F&,
-            util::pack<Ts&...>, Us&&...>::type
+            util::detail::pack<Ts&...>, Us&&...>::type
         operator()(Us&&... vs) &
         {
             return PIKA_INVOKE(
@@ -82,7 +82,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE typename invoke_bound_front_result<F const&,
-            util::pack<Ts const&...>, Us&&...>::type
+            util::detail::pack<Ts const&...>, Us&&...>::type
         operator()(Us&&... vs) const&
         {
             return PIKA_INVOKE(
@@ -92,7 +92,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE typename invoke_bound_front_result<F&&,
-            util::pack<Ts&&...>, Us&&...>::type
+            util::detail::pack<Ts&&...>, Us&&...>::type
         operator()(Us&&... vs) &&
         {
             return PIKA_INVOKE(PIKA_MOVE(_f),
@@ -103,7 +103,7 @@ namespace pika::util::detail {
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename... Us>
         constexpr PIKA_HOST_DEVICE typename invoke_bound_front_result<F const&&,
-            util::pack<Ts const&&...>, Us&&...>::type
+            util::detail::pack<Ts const&&...>, Us&&...>::type
         operator()(Us&&... vs) const&&
         {
             return PIKA_INVOKE(PIKA_MOVE(_f),
@@ -144,12 +144,12 @@ namespace pika::util::detail {
 
     template <typename F, typename... Ts>
     constexpr bound_front<std::decay_t<F>,
-        typename util::make_index_pack<sizeof...(Ts)>::type,
+        typename util::detail::make_index_pack<sizeof...(Ts)>::type,
         std::decay_t<Ts>...>
     bind_front(F&& f, Ts&&... vs)
     {
         using result_type = bound_front<std::decay_t<F>,
-            typename util::make_index_pack<sizeof...(Ts)>::type,
+            typename util::detail::make_index_pack<sizeof...(Ts)>::type,
             std::decay_t<Ts>...>;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);

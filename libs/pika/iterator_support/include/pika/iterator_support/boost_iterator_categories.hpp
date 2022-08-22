@@ -12,8 +12,8 @@
 
 #if !defined(PIKA_HAVE_BOOST_ITERATOR_TRAVERSAL_TAG_COMPATIBILITY)
 
-#include <pika/type_support/identity.hpp>
 #include <pika/type_support/lazy_conditional.hpp>
+#include <pika/type_support/type_identity.hpp>
 
 #include <iterator>
 #include <type_traits>
@@ -53,28 +53,30 @@ namespace pika { namespace iterators {
         // for new-style types.
         template <typename Cat>
         struct std_category_to_traversal
-          : pika::util::lazy_conditional<
+          : pika::util::detail::lazy_conditional<
                 std::is_convertible<Cat,
                     std::random_access_iterator_tag>::value,
-                pika::util::identity<random_access_traversal_tag>,
-                pika::util::lazy_conditional<
+                ::pika::detail::type_identity<random_access_traversal_tag>,
+                pika::util::detail::lazy_conditional<
                     std::is_convertible<Cat,
                         std::bidirectional_iterator_tag>::value,
-                    pika::util::identity<bidirectional_traversal_tag>,
-                    pika::util::lazy_conditional<
+                    ::pika::detail::type_identity<bidirectional_traversal_tag>,
+                    pika::util::detail::lazy_conditional<
                         std::is_convertible<Cat,
                             std::forward_iterator_tag>::value,
-                        pika::util::identity<forward_traversal_tag>,
-                        pika::util::lazy_conditional<
+                        ::pika::detail::type_identity<forward_traversal_tag>,
+                        pika::util::detail::lazy_conditional<
                             std::is_convertible<Cat,
                                 std::input_iterator_tag>::value,
-                            pika::util::identity<single_pass_traversal_tag>,
-                            pika::util::lazy_conditional<
+                            ::pika::detail::type_identity<
+                                single_pass_traversal_tag>,
+                            pika::util::detail::lazy_conditional<
                                 std::is_convertible<Cat,
                                     std::output_iterator_tag>::value,
-                                pika::util::identity<
+                                ::pika::detail::type_identity<
                                     incrementable_traversal_tag>,
-                                pika::util::identity<no_traversal_tag>>>>>>
+                                ::pika::detail::type_identity<
+                                    no_traversal_tag>>>>>>
         {
         };
     }    // namespace detail
@@ -82,9 +84,10 @@ namespace pika { namespace iterators {
     // Convert an iterator category into a traversal tag
     template <typename Cat>
     struct iterator_category_to_traversal
-      : pika::util::lazy_conditional<
+      : pika::util::detail::lazy_conditional<
             std::is_convertible<Cat, incrementable_traversal_tag>::value,
-            pika::util::identity<Cat>, detail::std_category_to_traversal<Cat>>
+            ::pika::detail::type_identity<Cat>,
+            detail::std_category_to_traversal<Cat>>
     {
     };
 
@@ -99,25 +102,28 @@ namespace pika { namespace iterators {
     // Convert an iterator traversal to one of the traversal tags.
     template <typename Traversal>
     struct pure_traversal_tag
-      : pika::util::lazy_conditional<
+      : pika::util::detail::lazy_conditional<
             std::is_convertible<Traversal, random_access_traversal_tag>::value,
-            pika::util::identity<random_access_traversal_tag>,
-            pika::util::lazy_conditional<
+            ::pika::detail::type_identity<random_access_traversal_tag>,
+            pika::util::detail::lazy_conditional<
                 std::is_convertible<Traversal,
                     bidirectional_traversal_tag>::value,
-                pika::util::identity<bidirectional_traversal_tag>,
-                pika::util::lazy_conditional<std::is_convertible<Traversal,
-                                                 forward_traversal_tag>::value,
-                    pika::util::identity<forward_traversal_tag>,
-                    pika::util::lazy_conditional<
+                ::pika::detail::type_identity<bidirectional_traversal_tag>,
+                pika::util::detail::lazy_conditional<
+                    std::is_convertible<Traversal,
+                        forward_traversal_tag>::value,
+                    ::pika::detail::type_identity<forward_traversal_tag>,
+                    pika::util::detail::lazy_conditional<
                         std::is_convertible<Traversal,
                             single_pass_traversal_tag>::value,
-                        pika::util::identity<single_pass_traversal_tag>,
-                        pika::util::lazy_conditional<
+                        ::pika::detail::type_identity<
+                            single_pass_traversal_tag>,
+                        pika::util::detail::lazy_conditional<
                             std::is_convertible<Traversal,
                                 incrementable_traversal_tag>::value,
-                            pika::util::identity<incrementable_traversal_tag>,
-                            pika::util::identity<no_traversal_tag>>>>>>
+                            ::pika::detail::type_identity<
+                                incrementable_traversal_tag>,
+                            ::pika::detail::type_identity<no_traversal_tag>>>>>>
     {
     };
 

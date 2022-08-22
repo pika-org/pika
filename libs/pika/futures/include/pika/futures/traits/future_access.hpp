@@ -200,7 +200,7 @@ namespace pika { namespace traits {
             pika::future<R>&& src, Destination& dest, std::true_type)
         {
             src.get();
-            dest.set_value(util::unused);
+            dest.set_value(util::detail::unused);
         }
 
     public:
@@ -278,7 +278,7 @@ namespace pika { namespace traits {
             pika::shared_future<R>&& src, Destination& dest, std::true_type)
         {
             src.get();
-            dest.set_value(util::unused);
+            dest.set_value(util::detail::unused);
         }
 
     public:

@@ -13,7 +13,7 @@
 
 namespace pika::util::detail {
     ///////////////////////////////////////////////////////////////////////////
-    struct empty_function
+    struct trivial_empty_function
     {
     };    // must be trivial and empty
 
@@ -39,14 +39,15 @@ namespace pika::util::detail {
     constexpr function_vtable<Sig, true> const*
     get_empty_function_vtable() noexcept
     {
-        return &vtables<function_vtable<Sig, true>, empty_function>::instance;
+        return &vtables<function_vtable<Sig, true>,
+            trivial_empty_function>::instance;
     }
 #else
     template <typename Sig>
     function_vtable<Sig, true> const* get_empty_function_vtable() noexcept
     {
         static function_vtable<Sig, true> const empty_vtable =
-            detail::construct_vtable<empty_function>();
+            detail::construct_vtable<trivial_empty_function>();
         return &empty_vtable;
     }
 #endif

@@ -97,7 +97,7 @@ namespace pika { namespace execution { namespace experimental {
                             >>>;
 #endif
 
-            // pika::util::pack acts as a concrete type in place of Tuple. It is
+            // pika::util::detail::pack acts as a concrete type in place of Tuple. It is
             // required for computing successor_sender_types, but disappears
             // from the final error_types.
             template <template <typename...> class Variant>
@@ -105,7 +105,8 @@ namespace pika { namespace execution { namespace experimental {
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
                     pika::util::detail::concat_pack_of_packs_t<
                         pika::util::detail::transform_t<
-                            successor_sender_types<pika::util::pack, Variant>,
+                            successor_sender_types<pika::util::detail::pack,
+                                Variant>,
                             detail::error_types<Variant>::template apply>>,
                     std::exception_ptr>>;
 

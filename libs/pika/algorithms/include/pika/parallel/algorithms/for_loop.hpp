@@ -767,7 +767,7 @@ namespace pika {
             ///////////////////////////////////////////////////////////////////////
             template <typename... Ts, std::size_t... Is>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void init_iteration(
-                std::tuple<Ts...>& args, pika::util::index_pack<Is...>,
+                std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
                 std::size_t part_index) noexcept
             {
                 int const _sequencer[] = {
@@ -777,8 +777,8 @@ namespace pika {
 
             template <typename... Ts, std::size_t... Is, typename F, typename B>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void invoke_iteration(
-                std::tuple<Ts...>& args, pika::util::index_pack<Is...>, F&& f,
-                B part_begin)
+                std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
+                F&& f, B part_begin)
             {
                 PIKA_INVOKE(PIKA_FORWARD(F, f), part_begin,
                     std::get<Is>(args).iteration_value()...);
@@ -786,7 +786,8 @@ namespace pika {
 
             template <typename... Ts, std::size_t... Is>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void next_iteration(
-                std::tuple<Ts...>& args, pika::util::index_pack<Is...>) noexcept
+                std::tuple<Ts...>& args,
+                pika::util::detail::index_pack<Is...>) noexcept
             {
                 int const _sequencer[] = {
                     0, (std::get<Is>(args).next_iteration(), 0)...};
@@ -795,7 +796,7 @@ namespace pika {
 
             template <typename... Ts, std::size_t... Is>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void exit_iteration(
-                std::tuple<Ts...>& args, pika::util::index_pack<Is...>,
+                std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
                 std::size_t size) noexcept
             {
                 int const _sequencer[] = {
@@ -830,8 +831,9 @@ namespace pika {
                     B part_begin, std::size_t part_steps,
                     std::size_t part_index)
                 {
-                    auto pack = typename pika::util::make_index_pack<sizeof...(
-                        Ts)>::type();
+                    auto pack =
+                        typename pika::util::detail::make_index_pack<sizeof...(
+                            Ts)>::type();
                     detail::init_iteration(args_, pack, part_index);
 
                     if (stride_ == 1)
@@ -982,9 +984,10 @@ namespace pika {
 
                 template <typename ExPolicy, typename InIter, typename S,
                     typename F>
-                PIKA_HOST_DEVICE static constexpr pika::util::unused_type
-                sequential(ExPolicy&&, InIter first, std::size_t count,
-                    S stride, F&& f)
+                PIKA_HOST_DEVICE static constexpr pika::util::detail::
+                    unused_type
+                    sequential(ExPolicy&&, InIter first, std::size_t count,
+                        S stride, F&& f)
                 {
                     if (stride == 1)
                     {
@@ -1022,14 +1025,15 @@ namespace pika {
                         }
                     }
 
-                    return pika::util::unused_type();
+                    return pika::util::detail::unused_type();
                 }
 
                 template <typename ExPolicy, typename InIter, typename Size,
                     typename S, typename F, typename Arg, typename... Args>
-                PIKA_HOST_DEVICE static constexpr pika::util::unused_type
-                sequential(ExPolicy&&, InIter first, Size size, S stride, F&& f,
-                    Arg&& arg, Args&&... args)
+                PIKA_HOST_DEVICE static constexpr pika::util::detail::
+                    unused_type
+                    sequential(ExPolicy&&, InIter first, Size size, S stride,
+                        F&& f, Arg&& arg, Args&&... args)
                 {
                     int const init_sequencer[] = {(arg.init_iteration(0), 0),
                         (args.init_iteration(0), 0)...};
@@ -1080,7 +1084,7 @@ namespace pika {
                         (args.exit_iteration(size), 0)...};
                     (void) exit_sequencer;
 
-                    return pika::util::unused_type();
+                    return pika::util::detail::unused_type();
                 }
 
                 template <typename ExPolicy, typename B, typename Size,
@@ -1102,14 +1106,14 @@ namespace pika {
                                 PIKA_FORWARD(ExPolicy, policy), first, size,
                                 part_iterations<ExPolicy, F, S>{
                                     PIKA_FORWARD(F, f)},
-                                pika::util::empty_function{});
+                                pika::util::detail::empty_function{});
                         }
 
                         return util::partitioner<ExPolicy>::call_with_index(
                             PIKA_FORWARD(ExPolicy, policy), first, size, stride,
                             part_iterations<ExPolicy, F, S>{
                                 PIKA_FORWARD(F, f), stride},
-                            pika::util::empty_function{});
+                            pika::util::detail::empty_function{});
                     }
                     else
                     {
@@ -1126,9 +1130,8 @@ namespace pika {
                                 PIKA_FORWARD(F, f), stride, args},
                             [=](std::vector<pika::future<void>>&&) mutable
                             -> void {
-                                auto pack =
-                                    typename pika::util::make_index_pack<
-                                        sizeof...(Ts)>::type();
+                                auto pack = typename pika::util::detail::
+                                    make_index_pack<sizeof...(Ts)>::type();
                                 // make sure live-out variables are properly set on
                                 // return
                                 detail::exit_iteration(args, pack, size);
@@ -1142,7 +1145,7 @@ namespace pika {
                 std::size_t... Is, typename... Args>
             typename util::detail::algorithm_result<ExPolicy>::type for_loop(
                 ExPolicy&& policy, B first, E last, S stride,
-                pika::util::index_pack<Is...>, Args&&... args)
+                pika::util::detail::index_pack<Is...>, Args&&... args)
             {
                 // stride shall not be zero
                 PIKA_ASSERT(stride != 0);
@@ -1173,7 +1176,7 @@ namespace pika {
                 std::size_t... Is, typename... Args>
             typename util::detail::algorithm_result<ExPolicy>::type for_loop_n(
                 ExPolicy&& policy, B first, Size size, S stride,
-                pika::util::index_pack<Is...>, Args&&... args)
+                pika::util::detail::index_pack<Is...>, Args&&... args)
             {
                 // stride shall not be zero
                 PIKA_ASSERT(stride != 0);
@@ -1221,7 +1224,7 @@ namespace pika {
             static_assert(sizeof...(Args) >= 1,
                 "for_loop must be called with at least a function object");
 
-            using pika::util::make_index_pack;
+            using pika::util::detail::make_index_pack;
             return parallel::v2::detail::for_loop(
                 PIKA_FORWARD(ExPolicy, policy), first, last, 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
@@ -1241,7 +1244,7 @@ namespace pika {
             static_assert(sizeof...(Args) >= 1,
                 "for_loop must be called with at least a function object");
 
-            using pika::util::make_index_pack;
+            using pika::util::detail::make_index_pack;
             return parallel::v2::detail::for_loop(pika::execution::seq, first,
                 last, 1, typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
@@ -1270,7 +1273,7 @@ namespace pika {
                 "for_loop_strided must be called with at least a function "
                 "object");
 
-            using pika::util::make_index_pack;
+            using pika::util::detail::make_index_pack;
             return parallel::v2::detail::for_loop(
                 PIKA_FORWARD(ExPolicy, policy), first, last, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
@@ -1292,7 +1295,7 @@ namespace pika {
                 "for_loop_strided must be called with at least a function "
                 "object");
 
-            using pika::util::make_index_pack;
+            using pika::util::detail::make_index_pack;
             return parallel::v2::detail::for_loop(pika::execution::seq, first,
                 last, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
@@ -1322,7 +1325,7 @@ namespace pika {
             static_assert(sizeof...(Args) >= 1,
                 "for_loop_n must be called with at least a function object");
 
-            using pika::util::make_index_pack;
+            using pika::util::detail::make_index_pack;
             return parallel::v2::detail::for_loop_n(
                 PIKA_FORWARD(ExPolicy, policy), first, size, 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
@@ -1343,7 +1346,7 @@ namespace pika {
             static_assert(sizeof...(Args) >= 1,
                 "for_loop_n must be called with at least a function object");
 
-            using pika::util::make_index_pack;
+            using pika::util::detail::make_index_pack;
             return parallel::v2::detail::for_loop_n(pika::execution::seq, first,
                 size, 1, typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
@@ -1374,7 +1377,7 @@ namespace pika {
                 "for_loop_n_strided must be called with at least a function "
                 "object");
 
-            using pika::util::make_index_pack;
+            using pika::util::detail::make_index_pack;
             return parallel::v2::detail::for_loop_n(
                 PIKA_FORWARD(ExPolicy, policy), first, size, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
@@ -1397,7 +1400,7 @@ namespace pika {
                 "for_loop_n_strided must be called with at least a function "
                 "object");
 
-            using pika::util::make_index_pack;
+            using pika::util::detail::make_index_pack;
             return parallel::v2::detail::for_loop_n(pika::execution::seq, first,
                 size, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),

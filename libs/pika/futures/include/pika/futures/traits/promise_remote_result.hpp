@@ -18,7 +18,7 @@ namespace pika { namespace traits {
     template <>
     struct promise_remote_result<void>
     {
-        using type = pika::util::unused_type;
+        using type = pika::util::detail::unused_type;
     };
 
     template <typename Result>

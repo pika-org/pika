@@ -919,10 +919,10 @@ namespace pika { namespace lcos { namespace local {
     template <>
     class channel_iterator<void>
       : public pika::util::iterator_facade<channel_iterator<void>,
-            util::unused_type const, std::input_iterator_tag>
+            util::detail::unused_type const, std::input_iterator_tag>
     {
         using base_type = pika::util::iterator_facade<channel_iterator<void>,
-            util::unused_type const, std::input_iterator_tag>;
+            util::detail::unused_type const, std::input_iterator_tag>;
 
     public:
         channel_iterator()
@@ -937,7 +937,7 @@ namespace pika { namespace lcos { namespace local {
     private:
         bool get_checked()
         {
-            pika::future<util::unused_type> f;
+            pika::future<util::detail::unused_type> f;
             if (channel_->try_get(std::size_t(-1), &f))
             {
                 f.get();
@@ -964,11 +964,12 @@ namespace pika { namespace lcos { namespace local {
         base_type::reference dereference() const
         {
             PIKA_ASSERT(data_);
-            return util::unused;
+            return util::detail::unused;
         }
 
     private:
-        pika::intrusive_ptr<detail::channel_impl_base<util::unused_type>>
+        pika::intrusive_ptr<
+            detail::channel_impl_base<util::detail::unused_type>>
             channel_;
         bool data_;
     };
@@ -981,7 +982,7 @@ namespace pika { namespace lcos { namespace local {
         {
         public:
             explicit channel_base(
-                detail::channel_impl_base<util::unused_type>* impl)
+                detail::channel_impl_base<util::detail::unused_type>* impl)
               : channel_(impl)
             {
             }
@@ -1012,17 +1013,20 @@ namespace pika { namespace lcos { namespace local {
             ///////////////////////////////////////////////////////////////////////
             void set(std::size_t generation = std::size_t(-1))
             {
-                channel_->set(generation, pika::util::unused_type()).get();
+                channel_->set(generation, pika::util::detail::unused_type())
+                    .get();
             }
             void set(
                 launch::sync_policy, std::size_t generation = std::size_t(-1))
             {
-                channel_->set(generation, pika::util::unused_type()).get();
+                channel_->set(generation, pika::util::detail::unused_type())
+                    .get();
             }
             pika::future<void> set(
                 launch::async_policy, std::size_t generation = std::size_t(-1))
             {
-                return channel_->set(generation, pika::util::unused_type());
+                return channel_->set(
+                    generation, pika::util::detail::unused_type());
             }
 
             std::size_t close(bool force_delete_entries = false)
@@ -1054,14 +1058,15 @@ namespace pika { namespace lcos { namespace local {
             }
 
             ///////////////////////////////////////////////////////////////////
-            constexpr channel_impl_base<util::unused_type>* get_channel_impl()
-                const noexcept
+            constexpr channel_impl_base<util::detail::unused_type>*
+            get_channel_impl() const noexcept
             {
                 return channel_.get();
             }
 
         protected:
-            pika::intrusive_ptr<channel_impl_base<util::unused_type>> channel_;
+            pika::intrusive_ptr<channel_impl_base<util::detail::unused_type>>
+                channel_;
         };
     }    // namespace detail
 
@@ -1080,7 +1085,8 @@ namespace pika { namespace lcos { namespace local {
         using value_type = void;
 
         channel()
-          : base_type(new detail::unlimited_channel<util::unused_type>())
+          : base_type(
+                new detail::unlimited_channel<util::detail::unused_type>())
         {
         }
 
@@ -1106,7 +1112,8 @@ namespace pika { namespace lcos { namespace local {
         using value_type = void;
 
         one_element_channel()
-          : base_type(new detail::one_element_channel<util::unused_type>())
+          : base_type(
+                new detail::one_element_channel<util::detail::unused_type>())
         {
         }
 

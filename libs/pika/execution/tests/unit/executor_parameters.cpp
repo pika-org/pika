@@ -26,9 +26,8 @@
 template <typename... Parameters>
 void parameters_test_impl(Parameters&&... params)
 {
-    static_assert(
-        pika::util::all_of<
-            pika::traits::is_executor_parameters<Parameters>...>::value,
+    static_assert(pika::util::detail::all_of_v<
+                      pika::traits::is_executor_parameters<Parameters>...>,
         "pika::traits::is_executor_parameters<Parameters>::value");
 
     using iterator_tag = std::random_access_iterator_tag;

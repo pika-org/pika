@@ -125,7 +125,7 @@ namespace pika { namespace lcos { namespace local {
 
         template <typename... I>
         typename std::enable_if<
-            util::all_of<typename std::is_integral<I>::type...>::value>::type
+            util::detail::all_of_v<typename std::is_integral<I>::type...>>::type
         sync_images(I... i) const
         {
             std::set<std::size_t> images = {(std::size_t) i...};

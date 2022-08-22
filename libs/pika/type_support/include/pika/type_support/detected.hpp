@@ -11,9 +11,9 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
-    // pika::util::nonesuch is a class type used by pika::util::detected_t to
-    // indicate detection failure.
+namespace pika::util::detail {
+    // pika::util::detail::nonesuch is a class type used by
+    // pika::util::detail::detected_t to indicate detection failure.
     struct nonesuch
     {
         nonesuch() = delete;
@@ -22,38 +22,33 @@ namespace pika { namespace util {
         void operator=(nonesuch const&) = delete;
     };
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        template <typename Default, typename AlwaysVoid,
-            template <typename...> class Op, typename... Args>
-        struct detector
-        {
-            using value_t = std::false_type;
-            using type = Default;
-        };
+    template <typename Default, typename AlwaysVoid,
+        template <typename...> class Op, typename... Args>
+    struct detector
+    {
+        using value_t = std::false_type;
+        using type = Default;
+    };
 
-        template <typename Default, template <typename...> class Op,
-            typename... Args>
-        struct detector<Default, std::void_t<Op<Args...>>, Op, Args...>
-        {
-            using value_t = std::true_type;
-            using type = Op<Args...>;
-        };
-    }    // namespace detail
+    template <typename Default, template <typename...> class Op,
+        typename... Args>
+    struct detector<Default, std::void_t<Op<Args...>>, Op, Args...>
+    {
+        using value_t = std::true_type;
+        using type = Op<Args...>;
+    };
 
     // The alias template is_detected is an alias for std::true_type if the
     // template-id Op<Args...> is valid; otherwise it is an alias for
     // std::false_type.
     template <template <typename...> class Op, typename... Args>
-    using is_detected =
-        typename detail::detector<nonesuch, void, Op, Args...>::value_t;
+    using is_detected = typename detector<nonesuch, void, Op, Args...>::value_t;
 
     // The alias template detected_t is an alias for Op<Args...> if that
     // template-id is valid; otherwise it is an alias for the class
-    // pika::util::nonesuch.
+    // pika::util::detail::nonesuch.
     template <template <typename...> class Op, typename... Args>
-    using detected_t =
-        typename detail::detector<nonesuch, void, Op, Args...>::type;
+    using detected_t = typename detector<nonesuch, void, Op, Args...>::type;
 
     // The alias template detected_or is an alias for an unspecified class type
     // with two public member typedefs value_t and type, which are defined as
@@ -65,7 +60,7 @@ namespace pika { namespace util {
     //   alias for Default.
     template <typename Default, template <typename...> class Op,
         typename... Args>
-    using detected_or = detail::detector<Default, void, Op, Args...>;
+    using detected_or = detector<Default, void, Op, Args...>;
 
     template <typename Default, template <typename...> class Op,
         typename... Args>
@@ -82,4 +77,4 @@ namespace pika { namespace util {
     template <typename To, template <typename...> class Op, typename... Args>
     using is_detected_convertible =
         std::is_convertible<detected_t<Op, Args...>, To>;
-}}    // namespace pika::util
+}    // namespace pika::util::detail

@@ -64,8 +64,8 @@ namespace pika { namespace execution { namespace experimental {
                     PredecessorSender>::template error_types<Variant>,
                 std::decay>;
             static_assert(
-                !std::is_same<predecessor_error_types<pika::util::pack>,
-                    pika::util::pack<>>::value,
+                !std::is_same<predecessor_error_types<pika::util::detail::pack>,
+                    pika::util::detail::pack<>>::value,
                 "let_error used with a predecessor that has an empty "
                 "error_types. Is let_error misplaced?");
 

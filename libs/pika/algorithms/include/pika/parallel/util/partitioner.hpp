@@ -280,7 +280,7 @@ namespace pika { namespace parallel { namespace util {
 
             static R reduce(std::vector<pika::future<Result>>&& workitems,
                 std::list<std::exception_ptr>&& errors,
-                pika::util::empty_function)
+                pika::util::detail::empty_function)
             {
                 // wait for all tasks to finish
                 pika::wait_all_nothrow(workitems);

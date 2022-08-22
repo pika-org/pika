@@ -13,21 +13,19 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
+namespace pika::util::detail {
     ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        template <typename TD>
-        struct decay_unwrap_impl
-        {
-            using type = TD;
-        };
+    template <typename TD>
+    struct decay_unwrap_impl
+    {
+        using type = TD;
+    };
 
-        template <typename X>
-        struct decay_unwrap_impl<::std::reference_wrapper<X>>
-        {
-            using type = X&;
-        };
-    }    // namespace detail
+    template <typename X>
+    struct decay_unwrap_impl<::std::reference_wrapper<X>>
+    {
+        using type = X&;
+    };
 
     template <typename T>
     struct decay_unwrap : detail::decay_unwrap_impl<std::decay_t<T>>
@@ -36,4 +34,4 @@ namespace pika { namespace util {
 
     template <typename T>
     using decay_unwrap_t = typename decay_unwrap<T>::type;
-}}    // namespace pika::util
+}    // namespace pika::util::detail

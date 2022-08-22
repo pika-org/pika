@@ -77,7 +77,7 @@ namespace pika::this_thread::experimental {
             // fail to compile.
             using result_type = std::decay_t<pika::execution::experimental::
                     detail::single_result_t<predecessor_value_types<
-                        pika::util::pack, pika::util::pack>>>;
+                        pika::util::detail::pack, pika::util::detail::pack>>>;
 
             // Constant to indicate if the type of the result from the
             // predecessor sender is void or not
@@ -119,7 +119,7 @@ namespace pika::this_thread::experimental {
             // fail to compile.
             using result_type = std::decay_t<pika::execution::experimental::
                     detail::single_result_t<predecessor_value_types<
-                        pika::util::pack, pika::util::pack>>>;
+                        pika::util::detail::pack, pika::util::detail::pack>>>;
 
             // Constant to indicate if the type of the result from the
             // predecessor sender is void or not

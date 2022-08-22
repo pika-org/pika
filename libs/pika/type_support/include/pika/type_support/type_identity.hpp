@@ -6,10 +6,10 @@
 
 #pragma once
 
-namespace pika { namespace util {
+namespace pika::detail {
     template <typename T>
-    struct identity
+    struct type_identity
     {
         using type = T;
     };
-}}    // namespace pika::util
+}    // namespace pika::detail

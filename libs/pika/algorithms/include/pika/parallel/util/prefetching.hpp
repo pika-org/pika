@@ -262,14 +262,14 @@ namespace pika { namespace parallel { namespace util {
 
         template <typename... Ts, std::size_t... Is>
         PIKA_FORCEINLINE void prefetch_containers(std::tuple<Ts...> const& t,
-            pika::util::index_pack<Is...>, std::size_t idx)
+            pika::util::detail::index_pack<Is...>, std::size_t idx)
         {
             prefetch_addresses((std::get<Is>(t).get())[idx]...);
         }
 #else
         template <typename... Ts, std::size_t... Is>
         PIKA_FORCEINLINE void prefetch_containers(std::tuple<Ts...> const& t,
-            pika::util::index_pack<Is...>, std::size_t idx)
+            pika::util::detail::index_pack<Is...>, std::size_t idx)
         {
             int const sequencer[] = {(std::get<Is>(t).get()[idx], 0)..., 0};
             (void) sequencer;
@@ -285,7 +285,8 @@ namespace pika { namespace parallel { namespace util {
                 Pred)
             {
                 using index_pack_type =
-                    typename pika::util::make_index_pack<sizeof...(Ts)>::type;
+                    typename pika::util::detail::make_index_pack<sizeof...(
+                        Ts)>::type;
 
                 for (/**/; count != 0; (void) --count, ++it)
                 {
@@ -318,7 +319,8 @@ namespace pika { namespace parallel { namespace util {
                 CancelToken& tok, F&& f, Pred)
             {
                 using index_pack_type =
-                    typename pika::util::make_index_pack<sizeof...(Ts)>::type;
+                    typename pika::util::detail::make_index_pack<sizeof...(
+                        Ts)>::type;
 
                 for (/**/; count != 0; (void) --count, ++it)
                 {
@@ -368,7 +370,8 @@ namespace pika { namespace parallel { namespace util {
                 Pred)
             {
                 using index_pack_type =
-                    typename pika::util::make_index_pack<sizeof...(Ts)>::type;
+                    typename pika::util::detail::make_index_pack<sizeof...(
+                        Ts)>::type;
 
                 for (/**/; count != 0; (void) --count, ++it)
                 {
@@ -401,7 +404,8 @@ namespace pika { namespace parallel { namespace util {
                 CancelToken& tok, F&& f, Pred)
             {
                 using index_pack_type =
-                    typename pika::util::make_index_pack<sizeof...(Ts)>::type;
+                    typename pika::util::detail::make_index_pack<sizeof...(
+                        Ts)>::type;
 
                 for (/**/; count != 0; (void) --count, ++it)
                 {
@@ -451,7 +455,8 @@ namespace pika { namespace parallel { namespace util {
     {
         static_assert(pika::traits::is_random_access_iterator<Itr>::value,
             "Iterators have to be of random access iterator category");
-        static_assert(pika::util::all_of<pika::traits::is_range<Ts>...>::value,
+        static_assert(
+            pika::util::detail::all_of_v<pika::traits::is_range<Ts>...>,
             "All variadic parameters have to represent ranges");
 
         using ranges_type = std::tuple<std::reference_wrapper<Ts const>...>;
@@ -469,7 +474,8 @@ namespace pika { namespace parallel { namespace util {
             using iterator_type = prefetching::prefetching_iterator<Itr, Ts...>;
             using type = typename iterator_type::base_iterator;
             using index_pack_type =
-                typename pika::util::make_index_pack<sizeof...(Ts)>::type;
+                typename pika::util::detail::make_index_pack<sizeof...(
+                    Ts)>::type;
 
             template <typename End, typename F>
             static iterator_type call(iterator_type it, End end, F&& f)
@@ -529,7 +535,8 @@ namespace pika { namespace parallel { namespace util {
             using iterator_type = prefetching::prefetching_iterator<Itr, Ts...>;
             using type = typename iterator_type::base_iterator;
             using index_pack_type =
-                typename pika::util::make_index_pack<sizeof...(Ts)>::type;
+                typename pika::util::detail::make_index_pack<sizeof...(
+                    Ts)>::type;
 
             template <typename End, typename F>
             static iterator_type call(iterator_type it, End end, F&& f)

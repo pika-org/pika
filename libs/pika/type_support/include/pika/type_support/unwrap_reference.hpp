@@ -10,28 +10,29 @@
 
 #include <functional>
 
-namespace pika { namespace util {
+namespace pika::detail {
     template <typename T>
-    struct unwrap_reference
+    struct unwrap_reference_impl
     {
         using type = T;
     };
 
     template <typename T>
-    struct unwrap_reference<std::reference_wrapper<T>>
+    struct unwrap_reference_impl<std::reference_wrapper<T>>
     {
         using type = T;
     };
 
     template <typename T>
-    struct unwrap_reference<std::reference_wrapper<T> const>
+    struct unwrap_reference_impl<std::reference_wrapper<T> const>
     {
         using type = T;
     };
 
     template <typename T>
-    PIKA_FORCEINLINE typename unwrap_reference<T>::type& unwrap_ref(T& t)
+    PIKA_FORCEINLINE typename unwrap_reference_impl<T>::type& unwrap_reference(
+        T& t)
     {
         return t;
     }
-}}    // namespace pika::util
+}    // namespace pika::detail

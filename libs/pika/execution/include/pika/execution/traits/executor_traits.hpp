@@ -105,7 +105,7 @@ namespace pika { namespace parallel { namespace execution {
         using execution_category = typename T::execution_category;
 
     public:
-        using type = pika::util::detected_or_t<
+        using type = pika::util::detail::detected_or_t<
             pika::execution::unsequenced_execution_tag, execution_category,
             Executor>;
     };
@@ -119,8 +119,8 @@ namespace pika { namespace parallel { namespace execution {
         using shape_type = typename T::shape_type;
 
     public:
-        using type =
-            pika::util::detected_or_t<std::size_t, shape_type, Executor>;
+        using type = pika::util::detail::detected_or_t<std::size_t, shape_type,
+            Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -133,9 +133,8 @@ namespace pika { namespace parallel { namespace execution {
         using index_type = typename T::index_type;
 
     public:
-        using type =
-            pika::util::detected_or_t<typename executor_shape<Executor>::type,
-                index_type, Executor>;
+        using type = pika::util::detail::detected_or_t<
+            typename executor_shape<Executor>::type, index_type, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -147,9 +146,8 @@ namespace pika { namespace parallel { namespace execution {
         using parameters_type = typename T::parameters_type;
 
     public:
-        using type =
-            pika::util::detected_or_t<pika::execution::static_chunk_size,
-                parameters_type, Executor>;
+        using type = pika::util::detail::detected_or_t<
+            pika::execution::static_chunk_size, parameters_type, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -171,7 +169,7 @@ namespace pika { namespace parallel { namespace execution {
         };
 
         template <typename Executor, typename T, typename... Ts>
-        struct executor_future<Executor, T, pika::util::pack<Ts...>,
+        struct executor_future<Executor, T, pika::util::detail::pack<Ts...>,
             std::enable_if_t<pika::traits::is_two_way_executor_v<Executor> &&
                 exposes_future_type<Executor, T>::value>>
         {
@@ -179,7 +177,7 @@ namespace pika { namespace parallel { namespace execution {
         };
 
         template <typename Executor, typename T, typename... Ts>
-        struct executor_future<Executor, T, pika::util::pack<Ts...>,
+        struct executor_future<Executor, T, pika::util::detail::pack<Ts...>,
             std::enable_if_t<pika::traits::is_two_way_executor_v<Executor> &&
                 !exposes_future_type<Executor, T>::value>>
         {
@@ -198,7 +196,7 @@ namespace pika { namespace parallel { namespace execution {
     template <typename Executor, typename T, typename... Ts>
     struct executor_future
       : detail::executor_future<std::decay_t<Executor>, T,
-            pika::util::pack<std::decay_t<Ts>...>>
+            pika::util::detail::pack<std::decay_t<Ts>...>>
     {
     };
 

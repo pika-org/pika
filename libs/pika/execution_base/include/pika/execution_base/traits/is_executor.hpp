@@ -133,7 +133,7 @@ namespace pika { namespace traits {
     // trait testing for any of the above
     template <typename T, typename Enable = void>
     struct is_executor_any
-      : util::any_of<is_one_way_executor<T>,
+      : util::detail::any_of<is_one_way_executor<T>,
             is_never_blocking_one_way_executor<T>, is_bulk_one_way_executor<T>,
             is_two_way_executor<T>, is_bulk_two_way_executor<T>>
     {

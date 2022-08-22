@@ -392,7 +392,7 @@ namespace pika {
             using result_type =
                 pika::parallel::util::detail::algorithm_result_t<ExPolicy>;
 
-            return pika::util::void_guard<result_type>(),
+            return pika::util::detail::void_guard<result_type>(),
                    pika::parallel::v1::detail::nth_element<RandomIt>().call(
                        PIKA_FORWARD(ExPolicy, policy), first, nth, last,
                        PIKA_FORWARD(Pred, pred),

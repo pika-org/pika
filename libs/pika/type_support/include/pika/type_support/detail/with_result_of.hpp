@@ -8,7 +8,7 @@
 
 #include <utility>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     // Based on
     // https://quuxplusone.github.io/blog/2018/05/17/super-elider-round-2/ and
     // https://akrzemi1.wordpress.com/2018/05/16/rvalues-redefined/.
@@ -42,4 +42,4 @@ namespace pika { namespace util { namespace detail {
     {
         return with_result_of_t<F>(PIKA_FORWARD(F, f));
     }
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail

@@ -186,12 +186,13 @@ namespace pika { namespace parallel { namespace traits {
         };
 
         template <typename ExPolicy, typename F, typename... Projected>
-        struct is_indirect_callable<ExPolicy, F, pika::util::pack<Projected...>,
-            typename std::enable_if<pika::util::all_of<is_projected_indirect<
-                                        Projected>...>::value &&
+        struct is_indirect_callable<ExPolicy, F,
+            pika::util::detail::pack<Projected...>,
+            std::enable_if_t<pika::util::detail::all_of_v<
+                                 is_projected_indirect<Projected>...> &&
                 (!pika::is_vectorpack_execution_policy<ExPolicy>::value ||
-                    !pika::util::all_of<
-                        is_projected_zip_iterator<Projected>...>::value)>::type>
+                    !pika::util::detail::all_of_v<
+                        is_projected_zip_iterator<Projected>...>)>>
           : is_indirect_callable_impl<F,
                 typename projected_result_of_indirect<Projected>::type...>
         {
@@ -202,12 +203,13 @@ namespace pika { namespace parallel { namespace traits {
         // special handling because zip_iterator<>::reference is not a real
         // reference type.
         template <typename ExPolicy, typename F, typename... Projected>
-        struct is_indirect_callable<ExPolicy, F, pika::util::pack<Projected...>,
-            typename std::enable_if<pika::util::all_of<is_projected_indirect<
-                                        Projected>...>::value &&
+        struct is_indirect_callable<ExPolicy, F,
+            pika::util::detail::pack<Projected...>,
+            std::enable_if_t<pika::util::detail::all_of_v<
+                                 is_projected_indirect<Projected>...> &&
                 pika::is_vectorpack_execution_policy<ExPolicy>::value &&
-                pika::util::all_of<
-                    is_projected_zip_iterator<Projected>...>::value>::type>
+                pika::util::detail::all_of_v<
+                    is_projected_zip_iterator<Projected>...>>>
           : is_indirect_callable_impl<F,
                 typename projected_result_of_vector_pack<Projected>::type...>
         {
@@ -218,7 +220,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename ExPolicy, typename F, typename... Projected>
     struct is_indirect_callable
       : detail::is_indirect_callable<std::decay_t<ExPolicy>, std::decay_t<F>,
-            pika::util::pack<std::decay_t<Projected>...>>
+            pika::util::detail::pack<std::decay_t<Projected>...>>
     {
     };
 

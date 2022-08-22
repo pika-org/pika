@@ -525,7 +525,7 @@ namespace pika { namespace lcos { namespace local {
         //   - no_state if *this has no shared state.
         void set_value()
         {
-            base_type::set_value(pika::util::unused);
+            base_type::set_value(pika::util::detail::unused);
         }
 
         // Effects: atomically stores the exception pointer p in the shared

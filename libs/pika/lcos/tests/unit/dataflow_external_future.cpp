@@ -81,7 +81,7 @@ struct external_future_executor
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p)]() {
                     pika::util::yield_while([]() { return !done; });
-                    frame_p->set_data(pika::util::unused_type{});
+                    frame_p->set_data(pika::util::detail::unused_type{});
                 });
             },
             [&](std::exception_ptr ep) {
@@ -180,7 +180,7 @@ struct external_future_additional_argument_executor
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p)]() {
                     pika::util::yield_while([]() { return !done; });
-                    frame_p->set_data(pika::util::unused_type{});
+                    frame_p->set_data(pika::util::detail::unused_type{});
                 });
             },
             [&](std::exception_ptr ep) {

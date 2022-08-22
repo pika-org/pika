@@ -137,7 +137,7 @@ namespace pika {
 #include <pika/iterator_support/range.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/type_support/decay.hpp>
-#include <pika/type_support/unwrap_ref.hpp>
+#include <pika/type_support/unwrap_reference.hpp>
 
 #include <algorithm>
 #include <cstddef>
@@ -189,11 +189,11 @@ namespace pika {
             {
                 if constexpr (is_end_v<I>)
                 {
-                    this->set_value(util::unused);
+                    this->set_value(util::detail::unused);
                 }
                 else
                 {
-                    using future_type = pika::util::decay_unwrap_t<
+                    using future_type = pika::util::detail::decay_unwrap_t<
                         typename std::tuple_element<I, Tuple>::type>;
 
                     if constexpr (pika::traits::is_future_v<future_type> ||
@@ -209,7 +209,8 @@ namespace pika {
                                     future_type>,
                             "element must be future or range of futures");
 
-                        auto&& curr = pika::util::unwrap_ref(std::get<I>(t_));
+                        auto&& curr =
+                            pika::detail::unwrap_reference(std::get<I>(t_));
                         await_range<I>(
                             pika::util::begin(curr), pika::util::end(curr));
                     }
@@ -269,7 +270,7 @@ namespace pika {
 
                     if (++count_ == needed_count_)
                     {
-                        this->set_value(util::unused);
+                        this->set_value(util::detail::unused);
 
                         // explicitly destruct iterators as those might
                         // become dangling after we make ourselves ready
@@ -286,7 +287,7 @@ namespace pika {
             template <std::size_t I>
             PIKA_FORCEINLINE void await_future()
             {
-                using future_type = pika::util::decay_unwrap_t<
+                using future_type = pika::util::detail::decay_unwrap_t<
                     typename std::tuple_element<I, Tuple>::type>;
 
                 pika::intrusive_ptr<when_each_frame> this_(this);
@@ -325,7 +326,7 @@ namespace pika {
 
                 if (++count_ == needed_count_)
                 {
-                    this->set_value(util::unused);
+                    this->set_value(util::detail::unused);
                     return;
                 }
 
@@ -429,7 +430,7 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
     std::enable_if_t<!pika::traits::is_future_v<std::decay_t<F>> &&
-            pika::util::all_of_v<pika::traits::is_future<Ts>...>,
+            pika::util::detail::all_of_v<pika::traits::is_future<Ts>...>,
         pika::future<void>>
     when_each(F&& f, Ts&&... ts)
     {

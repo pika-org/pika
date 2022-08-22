@@ -234,7 +234,7 @@ namespace pika::detail {
                     util::detail::invoke_fused(
                         PIKA_MOVE(func_), PIKA_FORWARD(Futures_, futures));
 
-                    this->set_data(util::unused_type());
+                    this->set_data(util::detail::unused_type());
                 },
                 [&](std::exception_ptr ep) {
                     this->set_exception(PIKA_MOVE(ep));

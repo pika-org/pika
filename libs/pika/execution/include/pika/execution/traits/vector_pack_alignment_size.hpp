@@ -42,11 +42,11 @@ namespace pika { namespace parallel { namespace traits {
 
     template <typename... Vector>
     struct vector_pack_alignment<std::tuple<Vector...>,
-        typename std::enable_if<
-            pika::util::all_of<is_vector_pack<Vector>...>::value>::type>
+        std::enable_if_t<
+            pika::util::detail::all_of_v<is_vector_pack<Vector>...>>>
     {
-        typedef typename std::tuple_element<0, std::tuple<Vector...>>::type
-            pack_type;
+        using pack_type =
+            typename std::tuple_element<0, std::tuple<Vector...>>::type;
 
         static std::size_t const value =
             vector_pack_alignment<pack_type>::value;
@@ -58,8 +58,8 @@ namespace pika { namespace parallel { namespace traits {
 
     template <typename... Vector>
     struct vector_pack_size<std::tuple<Vector...>,
-        typename std::enable_if<
-            pika::util::all_of<is_vector_pack<Vector>...>::value>::type>
+        std::enable_if_t<
+            pika::util::detail::all_of_v<is_vector_pack<Vector>...>>>
     {
         typedef typename std::tuple_element<0, std::tuple<Vector...>>::type
             pack_type;

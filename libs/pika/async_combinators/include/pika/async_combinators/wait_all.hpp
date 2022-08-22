@@ -134,7 +134,7 @@ namespace pika {
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/memory/intrusive_ptr.hpp>
 #include <pika/type_support/decay.hpp>
-#include <pika/type_support/unwrap_ref.hpp>
+#include <pika/type_support/unwrap_reference.hpp>
 
 #include <algorithm>
 #include <array>
@@ -304,9 +304,10 @@ namespace pika {
             template <std::size_t I>
             PIKA_FORCEINLINE void await_range()
             {
-                await_range<I>(
-                    pika::util::begin(pika::util::unwrap_ref(std::get<I>(t_))),
-                    pika::util::end(pika::util::unwrap_ref(std::get<I>(t_))));
+                await_range<I>(pika::util::begin(pika::detail::unwrap_reference(
+                                   std::get<I>(t_))),
+                    pika::util::end(
+                        pika::detail::unwrap_reference(std::get<I>(t_))));
             }
 
             // Current element is a simple future
@@ -346,11 +347,11 @@ namespace pika {
                 if constexpr (is_end_v<I>)
                 {
                     // simply make ourself ready
-                    this->set_value(util::unused);
+                    this->set_value(util::detail::unused);
                 }
                 else
                 {
-                    using future_type = pika::util::decay_unwrap_t<
+                    using future_type = pika::util::detail::decay_unwrap_t<
                         typename std::tuple_element<I, Tuple>::type>;
 
                     if constexpr (is_future_or_shared_state_v<future_type>)
