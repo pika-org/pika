@@ -70,7 +70,7 @@ if [[ -z "${ghprbPullId:-}" ]]; then
         "${github_commit_status}" \
         "${configuration_name_with_build_type}" \
         "${cdash_build_id}" \
-        "jenkins/cscs"
+        "jenkins/cscs-daint"
 else
     # Extract just the organization and repo names "org/repo" from the full URL
     github_commit_repo="$(echo $ghprbPullLink | sed -n 's/https:\/\/github.com\/\(.*\)\/pull\/[0-9]*/\1/p')"
@@ -83,7 +83,7 @@ else
         "${github_commit_status}" \
         "${configuration_name_with_build_type}" \
         "${cdash_build_id}" \
-        "jenkins/cscs"
+        "jenkins/cscs-daint"
 fi
 
 set -e
