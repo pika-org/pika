@@ -364,8 +364,8 @@ public:
     }
 
     template <typename T,
-        typename std::enable_if<std::is_same<typename std::decay<T>::type,
-            test_tag_1>::value>::type* = nullptr>
+        typename std::enable_if<
+            std::is_same<std::decay_t<T>, test_tag_1>::value>::type* = nullptr>
     void operator()(T)
     {
         ++counter_.get();

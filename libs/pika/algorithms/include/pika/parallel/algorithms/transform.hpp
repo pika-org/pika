@@ -211,8 +211,8 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename F, typename Proj>
         struct transform_projected
         {
-            typename std::decay<F>::type& f_;
-            typename std::decay<Proj>::type& proj_;
+            std::decay_t<F>& f_;
+            std::decay_t<Proj>& proj_;
 
             PIKA_HOST_DEVICE constexpr transform_projected(
                 F& f, Proj& proj) noexcept
@@ -233,7 +233,7 @@ namespace pika { namespace parallel { inline namespace v1 {
         template <typename F>
         struct transform_projected<F, util::projection_identity>
         {
-            typename std::decay<F>::type& f_;
+            std::decay_t<F>& f_;
 
             PIKA_HOST_DEVICE constexpr transform_projected(
                 F& f, util::projection_identity) noexcept

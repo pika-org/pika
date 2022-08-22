@@ -706,7 +706,7 @@ namespace pika { namespace parallel { namespace execution {
             return *this;
         }
 
-        template <typename Exec, typename PE = typename std::decay<Exec>::type,
+        template <typename Exec, typename PE = std::decay_t<Exec>,
             typename Enable = typename std::enable_if<
                 !std::is_same<PE, polymorphic_executor>::value>::type>
         polymorphic_executor(Exec&& exec)
@@ -715,7 +715,7 @@ namespace pika { namespace parallel { namespace execution {
             assign(PIKA_FORWARD(Exec, exec));
         }
 
-        template <typename Exec, typename PE = typename std::decay<Exec>::type,
+        template <typename Exec, typename PE = std::decay_t<Exec>,
             typename Enable = typename std::enable_if<
                 !std::is_same<PE, polymorphic_executor>::value>::type>
         polymorphic_executor& operator=(Exec&& exec)
@@ -733,7 +733,7 @@ namespace pika { namespace parallel { namespace execution {
         template <typename Exec>
         void assign(Exec&& exec)
         {
-            using T = typename std::decay<Exec>::type;
+            using T = std::decay_t<Exec>;
             static_assert(std::is_constructible<T, T const&>::value,
                 "Exec shall be CopyConstructible");
 

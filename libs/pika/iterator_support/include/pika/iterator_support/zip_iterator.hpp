@@ -491,10 +491,10 @@ namespace pika { namespace util {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename... Ts>
-    PIKA_HOST_DEVICE zip_iterator<typename std::decay<Ts>::type...>
-    make_zip_iterator(Ts&&... vs)
+    PIKA_HOST_DEVICE zip_iterator<std::decay_t<Ts>...> make_zip_iterator(
+        Ts&&... vs)
     {
-        using result_type = zip_iterator<typename std::decay<Ts>::type...>;
+        using result_type = zip_iterator<std::decay_t<Ts>...>;
 
         return result_type(PIKA_FORWARD(Ts, vs)...);
     }

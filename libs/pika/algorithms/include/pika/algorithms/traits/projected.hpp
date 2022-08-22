@@ -24,7 +24,7 @@ namespace pika { namespace traits {
     template <typename T, typename Enable = void>
     struct projected_iterator
     {
-        using type = typename std::decay<T>::type;
+        using type = std::decay_t<T>;
     };
 
     template <typename Iterator>
@@ -87,8 +87,7 @@ namespace pika { namespace parallel { namespace traits {
 
     template <typename F, typename Iter, typename Enable = void>
     struct projected_result_of
-      : detail::projected_result_of<typename std::decay<F>::type,
-            typename std::decay<Iter>::type>
+      : detail::projected_result_of<std::decay_t<F>, std::decay_t<Iter>>
     {
     };
 
@@ -135,7 +134,7 @@ namespace pika { namespace parallel { namespace traits {
 
     template <typename F, typename Iter, typename Enable = void>
     struct is_projected
-      : detail::is_projected<typename std::decay<F>::type,
+      : detail::is_projected<std::decay_t<F>,
             typename pika::traits::projected_iterator<Iter>::type>
     {
     };
@@ -150,7 +149,7 @@ namespace pika { namespace parallel { namespace traits {
     template <typename Proj, typename Iter>
     struct projected
     {
-        using projector_type = typename std::decay<Proj>::type;
+        using projector_type = std::decay_t<Proj>;
         using iterator_type =
             typename pika::traits::projected_iterator<Iter>::type;
     };
@@ -218,9 +217,8 @@ namespace pika { namespace parallel { namespace traits {
 
     template <typename ExPolicy, typename F, typename... Projected>
     struct is_indirect_callable
-      : detail::is_indirect_callable<typename std::decay<ExPolicy>::type,
-            typename std::decay<F>::type,
-            pika::util::pack<typename std::decay<Projected>::type...>>
+      : detail::is_indirect_callable<std::decay_t<ExPolicy>, std::decay_t<F>,
+            pika::util::pack<std::decay_t<Projected>...>>
     {
     };
 

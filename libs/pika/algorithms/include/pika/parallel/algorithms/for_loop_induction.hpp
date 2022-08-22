@@ -53,7 +53,7 @@ namespace pika { namespace parallel { inline namespace v2 {
             constexpr void exit_iteration(std::size_t /*index*/) noexcept {}
 
         private:
-            typename std::decay<T>::type var_;
+            std::decay_t<T> var_;
             T curr_;
         };
 
@@ -132,7 +132,7 @@ namespace pika { namespace parallel { inline namespace v2 {
             constexpr void exit_iteration(std::size_t /*index*/) noexcept {}
 
         private:
-            typename std::decay<T>::type var_;
+            std::decay_t<T> var_;
             T curr_;
             std::size_t stride_;
         };

@@ -287,7 +287,7 @@ namespace pika { namespace traits {
     }    // namespace detail
 
     template <typename Iter, typename Enable = void>
-    struct is_iterator : detail::is_iterator<typename std::decay<Iter>::type>
+    struct is_iterator : detail::is_iterator<std::decay_t<Iter>>
     {
     };
 
@@ -394,11 +394,9 @@ namespace pika { namespace traits {
     template <typename Iter, typename Enable = void>
     struct is_output_iterator
       : std::integral_constant<bool,
-            detail::belongs_to_iterator_category<
-                typename std::decay<Iter>::type,
+            detail::belongs_to_iterator_category<std::decay_t<Iter>,
                 std::output_iterator_tag>::value ||
-                detail::belongs_to_iterator_traversal<
-                    typename std::decay<Iter>::type,
+                detail::belongs_to_iterator_traversal<std::decay_t<Iter>,
                     pika::incrementable_traversal_tag>::value>
     {
     };
@@ -413,11 +411,9 @@ namespace pika { namespace traits {
     template <typename Iter, typename Enable = void>
     struct is_input_iterator
       : std::integral_constant<bool,
-            detail::belongs_to_iterator_category<
-                typename std::decay<Iter>::type,
+            detail::belongs_to_iterator_category<std::decay_t<Iter>,
                 std::input_iterator_tag>::value ||
-                detail::belongs_to_iterator_traversal<
-                    typename std::decay<Iter>::type,
+                detail::belongs_to_iterator_traversal<std::decay_t<Iter>,
                     pika::single_pass_traversal_tag>::value>
     {
     };
@@ -431,11 +427,9 @@ namespace pika { namespace traits {
     template <typename Iter, typename Enable = void>
     struct is_forward_iterator
       : std::integral_constant<bool,
-            detail::belongs_to_iterator_category<
-                typename std::decay<Iter>::type,
+            detail::belongs_to_iterator_category<std::decay_t<Iter>,
                 std::forward_iterator_tag>::value ||
-                detail::belongs_to_iterator_traversal<
-                    typename std::decay<Iter>::type,
+                detail::belongs_to_iterator_traversal<std::decay_t<Iter>,
                     pika::forward_traversal_tag>::value>
     {
     };
@@ -450,11 +444,9 @@ namespace pika { namespace traits {
     template <typename Iter, typename Enable = void>
     struct is_bidirectional_iterator
       : std::integral_constant<bool,
-            detail::belongs_to_iterator_category<
-                typename std::decay<Iter>::type,
+            detail::belongs_to_iterator_category<std::decay_t<Iter>,
                 std::bidirectional_iterator_tag>::value ||
-                detail::belongs_to_iterator_traversal<
-                    typename std::decay<Iter>::type,
+                detail::belongs_to_iterator_traversal<std::decay_t<Iter>,
                     pika::bidirectional_traversal_tag>::value>
     {
     };
@@ -470,9 +462,9 @@ namespace pika { namespace traits {
     template <typename Iter, typename Enable = void>
     struct is_random_access_iterator
       : std::integral_constant<bool,
-            detail::has_category<typename std::decay<Iter>::type,
+            detail::has_category<std::decay_t<Iter>,
                 std::random_access_iterator_tag>::value ||
-                detail::has_traversal<typename std::decay<Iter>::type,
+                detail::has_traversal<std::decay_t<Iter>,
                     pika::random_access_traversal_tag>::value>
     {
     };

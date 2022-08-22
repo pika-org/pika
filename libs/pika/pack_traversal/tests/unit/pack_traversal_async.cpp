@@ -292,7 +292,7 @@ static void test_async_tuple_like_traversal()
 }
 
 template <typename T, typename... Args,
-    typename Vector = std::vector<typename std::decay<T>::type>>
+    typename Vector = std::vector<std::decay_t<T>>>
 Vector vector_of(T&& first, Args&&... args)
 {
     return Vector{std::forward<T>(first), std::forward<Args>(args)...};

@@ -50,8 +50,8 @@ namespace pika { namespace util { namespace detail {
         /// inheritance and `using Base::operator()` because this
         /// isn't taken into account when doing SFINAE.
         template <typename T,
-            typename std::enable_if<is_void_future<
-                typename std::decay<T>::type>::value>::type* = nullptr>
+            typename std::enable_if<
+                is_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const -> decltype(spread_this())
         {
 #if defined(PIKA_CUDA_VERSION)
@@ -63,8 +63,8 @@ namespace pika { namespace util { namespace detail {
         }
 
         template <typename T,
-            typename std::enable_if<is_non_void_future<
-                typename std::decay<T>::type>::value>::type* = nullptr>
+            typename std::enable_if<
+                is_non_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const
             -> decltype(map_pack(future_unwrap_until_depth<Depth - 1>{},
 #if defined(PIKA_CUDA_VERSION)
@@ -88,8 +88,8 @@ namespace pika { namespace util { namespace detail {
         /// inheritance and `using Base::operator()` because this
         /// isn't taken into account when doing SFINAE.
         template <typename T,
-            typename std::enable_if<is_void_future<
-                typename std::decay<T>::type>::value>::type* = nullptr>
+            typename std::enable_if<
+                is_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const -> decltype(spread_this())
         {
 #if defined(PIKA_CUDA_VERSION)
@@ -101,10 +101,10 @@ namespace pika { namespace util { namespace detail {
         }
 
         template <typename T,
-            typename std::enable_if<is_non_void_future<
-                typename std::decay<T>::type>::value>::type* = nullptr>
-        auto operator()(T&& future) const -> typename traits::future_traits<
-            typename std::decay<T>::type>::result_type
+            typename std::enable_if<
+                is_non_void_future<std::decay_t<T>>::value>::type* = nullptr>
+        auto operator()(T&& future) const ->
+            typename traits::future_traits<std::decay_t<T>>::result_type
         {
 #if defined(PIKA_CUDA_VERSION)
             return std::forward<T>(future).get();
@@ -120,8 +120,8 @@ namespace pika { namespace util { namespace detail {
         /// inheritance and `using Base::operator()` because this
         /// isn't taken into account when doing SFINAE.
         template <typename T,
-            typename std::enable_if<is_void_future<
-                typename std::decay<T>::type>::value>::type* = nullptr>
+            typename std::enable_if<
+                is_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const -> decltype(spread_this())
         {
 #if defined(PIKA_CUDA_VERSION)
@@ -133,8 +133,8 @@ namespace pika { namespace util { namespace detail {
         }
 
         template <typename T,
-            typename std::enable_if<is_non_void_future<
-                typename std::decay<T>::type>::value>::type* = nullptr>
+            typename std::enable_if<
+                is_non_void_future<std::decay_t<T>>::value>::type* = nullptr>
         auto operator()(T&& future) const -> decltype(map_pack(
             std::declval<future_unwrap_until_depth const&>(),
 #if defined(PIKA_CUDA_VERSION)
@@ -201,7 +201,7 @@ namespace pika { namespace util { namespace detail {
     template <bool HadMultipleArguments, typename T>
     using should_fuse_invoke = std::integral_constant<bool,
         (HadMultipleArguments &&
-            traits::detail::is_tuple_like_v<typename std::decay<T>::type>)>;
+            traits::detail::is_tuple_like_v<std::decay_t<T>>)>;
 
     /// Invokes the callable object with the result:
     /// - If the result is a tuple-like type `invoke_fused` is used
@@ -294,9 +294,9 @@ namespace pika { namespace util { namespace detail {
     /// contained in the given pack args until the depth Depth.
     template <std::size_t Depth, typename T>
     auto functional_unwrap_depth_impl(T&& callable)
-        -> functional_unwrap_impl<typename std::decay<T>::type, Depth>
+        -> functional_unwrap_impl<std::decay_t<T>, Depth>
     {
-        return functional_unwrap_impl<typename std::decay<T>::type, Depth>(
+        return functional_unwrap_impl<std::decay_t<T>, Depth>(
             PIKA_FORWARD(T, callable));
     }
 }}}    // namespace pika::util::detail

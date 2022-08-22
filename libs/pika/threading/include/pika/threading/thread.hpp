@@ -49,8 +49,8 @@ namespace pika {
         thread() noexcept;
 
         template <typename F,
-            typename Enable = typename std::enable_if<!std::is_same<
-                typename std::decay<F>::type, thread>::value>::type>
+            typename Enable = typename std::enable_if<
+                !std::is_same<std::decay_t<F>, thread>::value>::type>
         explicit thread(F&& f)
         {
             auto thrd_data = threads::detail::get_self_id_data();

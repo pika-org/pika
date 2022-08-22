@@ -92,15 +92,13 @@ namespace pika::threads::detail {
     template <typename F>
     thread_function_type make_thread_function(F&& f)
     {
-        return {
-            thread_function<typename std::decay<F>::type>{PIKA_FORWARD(F, f)}};
+        return {thread_function<std::decay_t<F>>{PIKA_FORWARD(F, f)}};
     }
 
     template <typename F>
     thread_function_type make_thread_function_nullary(F&& f)
     {
-        return {thread_function_nullary<typename std::decay<F>::type>{
-            PIKA_FORWARD(F, f)}};
+        return {thread_function_nullary<std::decay_t<F>>{PIKA_FORWARD(F, f)}};
     }
 
     ///////////////////////////////////////////////////////////////////////////

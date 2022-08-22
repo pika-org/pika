@@ -65,23 +65,23 @@ namespace pika { namespace traits {
 
     template <typename T, typename U>
     struct is_weakly_equality_comparable_with
-      : detail::is_weakly_equality_comparable_with<typename std::decay<T>::type,
-            typename std::decay<U>::type>
+      : detail::is_weakly_equality_comparable_with<std::decay_t<T>,
+            std::decay_t<U>>
     {
     };
 
     // for now is_equality_comparable is equivalent to its weak version
     template <typename T, typename U>
     struct is_equality_comparable_with
-      : detail::is_weakly_equality_comparable_with<typename std::decay<T>::type,
-            typename std::decay<U>::type>
+      : detail::is_weakly_equality_comparable_with<std::decay_t<T>,
+            std::decay_t<U>>
     {
     };
 
     template <typename T>
     struct is_equality_comparable
-      : detail::is_weakly_equality_comparable_with<typename std::decay<T>::type,
-            typename std::decay<T>::type>
+      : detail::is_weakly_equality_comparable_with<std::decay_t<T>,
+            std::decay_t<T>>
     {
     };
 }}    // namespace pika::traits

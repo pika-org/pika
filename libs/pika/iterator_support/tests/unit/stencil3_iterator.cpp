@@ -163,11 +163,10 @@ namespace test {
     };
 
     template <typename F>
-    inline custom_stencil_transformer<typename std::decay<F>::type>
+    inline custom_stencil_transformer<std::decay_t<F>>
     make_custom_stencil_transformer(F&& f)
     {
-        using transformer_type =
-            custom_stencil_transformer<typename std::decay<F>::type>;
+        using transformer_type = custom_stencil_transformer<std::decay_t<F>>;
         return transformer_type(std::forward<F>(f));
     }
 }    // namespace test

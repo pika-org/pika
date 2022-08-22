@@ -159,7 +159,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
             typename pika::traits::detail::shared_state_ptr<
                 vector_result_type>::type;
 
-        using future_type = typename std::decay<Future>::type;
+        using future_type = std::decay_t<Future>;
 
         // vector<future<func_result_type>> -> vector<func_result_type>
         shared_state_type p = pika::lcos::detail::make_continuation_exec_policy<

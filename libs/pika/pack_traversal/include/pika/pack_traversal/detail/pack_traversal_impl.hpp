@@ -175,7 +175,7 @@ namespace pika { namespace util { namespace detail {
             /// with the given arguments.
             template <typename First, typename... Rest>
             using array_type_of_t =
-                Type<typename std::decay<First>::type, 1 + sizeof...(Rest)>;
+                Type<std::decay_t<First>, 1 + sizeof...(Rest)>;
 
             // We overload with one argument here so Clang and GCC don't
             // have any issues with overloading against zero arguments.
@@ -426,7 +426,7 @@ namespace pika { namespace util { namespace detail {
         template <typename T>
         using dereferenced_of_t =
             typename std::conditional<std::is_reference<T>::value,
-                typename std::decay<T>::type, T>::type;
+                std::decay_t<T>, T>::type;
 
         /// Returns the type which is resulting if the mapping is applied to
         /// an element in the container.
@@ -474,8 +474,8 @@ namespace pika { namespace util { namespace detail {
             container_mapping_tag<false, false>, M&& mapper, T&& container)
             -> decltype(rebind_container<mapped_type_from_t<T, M>>(container))
         {
-            static_assert(has_push_back<typename std::decay<T>::type,
-                              element_of_t<T>>::value,
+            static_assert(
+                has_push_back<std::decay_t<T>, element_of_t<T>>::value,
                 "Can only remap containers that provide a push_back "
                 "method!");
 
@@ -505,7 +505,7 @@ namespace pika { namespace util { namespace detail {
         /// type we accepted such as int -> int.
         template <typename M, typename T>
         auto remap_container(container_mapping_tag<false, true>, M&& mapper,
-            T&& container) -> typename std::decay<T>::type
+            T&& container) -> std::decay_t<T>
         {
             for (auto&& val : container_accessor_of(PIKA_FORWARD(T, container)))
             {
@@ -652,15 +652,14 @@ namespace pika { namespace util { namespace detail {
         /// to a container of the same type which may contain
         /// different types.
         template <typename Strategy, typename T, typename M>
-        auto
-        remap(Strategy, T&& container, M&& mapper) -> decltype(invoke_fused(
-            std::declval<tuple_like_remapper<Strategy,
-                typename std::decay<M>::type, typename std::decay<T>::type>>(),
-            PIKA_FORWARD(T, container)))
+        auto remap(Strategy, T&& container, M&& mapper)
+            -> decltype(invoke_fused(std::declval<tuple_like_remapper<Strategy,
+                                         std::decay_t<M>, std::decay_t<T>>>(),
+                PIKA_FORWARD(T, container)))
         {
             return invoke_fused(
-                tuple_like_remapper<Strategy, typename std::decay<M>::type,
-                    typename std::decay<T>::type>{PIKA_FORWARD(M, mapper)},
+                tuple_like_remapper<Strategy, std::decay_t<M>, std::decay_t<T>>{
+                    PIKA_FORWARD(M, mapper)},
                 PIKA_FORWARD(T, container));
         }
     }    // end namespace tuple_like_remapping
@@ -925,11 +924,11 @@ namespace pika { namespace util { namespace detail {
     /// Traverses the given pack with the given mapper and strategy
     template <typename Strategy, typename Mapper, typename... T>
     auto apply_pack_transform(Strategy strategy, Mapper&& mapper, T&&... pack)
-        -> decltype(std::declval<mapping_helper<Strategy,
-                        typename std::decay<Mapper>::type>>()
+        -> decltype(std::declval<
+                    mapping_helper<Strategy, std::decay_t<Mapper>>>()
                         .init_traverse(strategy, PIKA_FORWARD(T, pack)...))
     {
-        mapping_helper<Strategy, typename std::decay<Mapper>::type> helper(
+        mapping_helper<Strategy, std::decay_t<Mapper>> helper(
             PIKA_FORWARD(Mapper, mapper));
         return helper.init_traverse(strategy, PIKA_FORWARD(T, pack)...);
     }

@@ -184,7 +184,7 @@ namespace pika {
     [[noreturn]] void throw_with_info(
         E&& e, exception_info&& xi = exception_info())
     {
-        using ED = typename std::decay<E>::type;
+        using ED = std::decay_t<E>;
         static_assert(std::is_class<ED>::value && !std::is_final<ED>::value,
             "E shall be a valid base class");
         static_assert(!std::is_base_of<exception_info, ED>::value,

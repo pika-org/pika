@@ -107,7 +107,7 @@ namespace pika { namespace functional {
 
 namespace pika { namespace functional {
     template <auto& Tag>
-    using tag_t = typename std::decay<decltype(Tag)>::type;
+    using tag_t = std::decay_t<decltype(Tag)>;
 
     namespace tag_invoke_t_ns {
         // poison pill

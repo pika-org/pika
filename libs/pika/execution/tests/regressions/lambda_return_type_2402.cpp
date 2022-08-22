@@ -25,7 +25,7 @@ int pika_main()
     pika::for_each(
         pika::execution::par_simd, zip_it_begin, zip_it_end, [](auto t) {
             using comp_type = typename std::tuple_element<0, decltype(t)>::type;
-            using var_type = typename std::decay<comp_type>::type;
+            using var_type = std::decay_t<comp_type>;
 
             var_type mass_density = 0.0;
             mass_density(mass_density > 0.0) = 7.0;

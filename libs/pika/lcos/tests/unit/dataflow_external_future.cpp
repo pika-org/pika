@@ -76,8 +76,8 @@ struct external_future_executor
                     std::forward<F>(f), std::forward<Futures>(futures));
 
                 // Signal completion from another thread/task.
-                pika::intrusive_ptr<typename std::remove_pointer<
-                    typename std::decay<Frame>::type>::type>
+                pika::intrusive_ptr<
+                    typename std::remove_pointer<std::decay_t<Frame>>::type>
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p)]() {
                     pika::util::yield_while([]() { return !done; });
@@ -99,8 +99,8 @@ struct external_future_executor
                     std::forward<F>(f), std::forward<Futures>(futures));
 
                 // Signal completion from another thread/task.
-                pika::intrusive_ptr<typename std::remove_pointer<
-                    typename std::decay<Frame>::type>::type>
+                pika::intrusive_ptr<
+                    typename std::remove_pointer<std::decay_t<Frame>>::type>
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p), r = std::move(r)]() {
                     pika::util::yield_while([]() { return !done; });
@@ -115,8 +115,8 @@ struct external_future_executor
     template <typename Frame, typename F, typename Futures>
     void dataflow_finalize(Frame&& frame, F&& f, Futures&& futures)
     {
-        using is_void = typename std::remove_pointer<
-            typename std::decay<Frame>::type>::type::is_void;
+        using is_void =
+            typename std::remove_pointer<std::decay_t<Frame>>::type::is_void;
         dataflow_finalize_helper(is_void{}, std::forward<Frame>(frame),
             std::forward<F>(f), std::forward<Futures>(futures));
     }
@@ -175,8 +175,8 @@ struct external_future_additional_argument_executor
                         std::tie(a), std::forward<Futures>(futures)));
 
                 // Signal completion from another thread/task.
-                pika::intrusive_ptr<typename std::remove_pointer<
-                    typename std::decay<Frame>::type>::type>
+                pika::intrusive_ptr<
+                    typename std::remove_pointer<std::decay_t<Frame>>::type>
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p)]() {
                     pika::util::yield_while([]() { return !done; });
@@ -200,8 +200,8 @@ struct external_future_additional_argument_executor
                         std::tie(a), std::forward<Futures>(futures)));
 
                 // Signal completion from another thread/task.
-                pika::intrusive_ptr<typename std::remove_pointer<
-                    typename std::decay<Frame>::type>::type>
+                pika::intrusive_ptr<
+                    typename std::remove_pointer<std::decay_t<Frame>>::type>
                     frame_p(frame);
                 pika::apply([frame_p = std::move(frame_p), r = std::move(r)]() {
                     pika::util::yield_while([]() { return !done; });
@@ -216,8 +216,8 @@ struct external_future_additional_argument_executor
     template <typename Frame, typename F, typename Futures>
     void dataflow_finalize(Frame&& frame, F&& f, Futures&& futures)
     {
-        using is_void = typename std::remove_pointer<
-            typename std::decay<Frame>::type>::type::is_void;
+        using is_void =
+            typename std::remove_pointer<std::decay_t<Frame>>::type::is_void;
         dataflow_finalize_helper(is_void{}, std::forward<Frame>(frame),
             std::forward<F>(f), std::forward<Futures>(futures));
     }

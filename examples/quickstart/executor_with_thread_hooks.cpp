@@ -177,36 +177,35 @@ namespace pika { namespace parallel { namespace execution {
     template <typename BaseExecutor>
     struct is_one_way_executor<
         executor_example::executor_with_thread_hooks<BaseExecutor>>
-      : is_one_way_executor<typename std::decay<BaseExecutor>::type>
+      : is_one_way_executor<std::decay_t<BaseExecutor>>
     {
     };
 
     template <typename BaseExecutor>
     struct is_never_blocking_one_way_executor<
         executor_example::executor_with_thread_hooks<BaseExecutor>>
-      : is_never_blocking_one_way_executor<
-            typename std::decay<BaseExecutor>::type>
+      : is_never_blocking_one_way_executor<std::decay_t<BaseExecutor>>
     {
     };
 
     template <typename BaseExecutor>
     struct is_two_way_executor<
         executor_example::executor_with_thread_hooks<BaseExecutor>>
-      : is_two_way_executor<typename std::decay<BaseExecutor>::type>
+      : is_two_way_executor<std::decay_t<BaseExecutor>>
     {
     };
 
     template <typename BaseExecutor>
     struct is_bulk_one_way_executor<
         executor_example::executor_with_thread_hooks<BaseExecutor>>
-      : is_bulk_one_way_executor<typename std::decay<BaseExecutor>::type>
+      : is_bulk_one_way_executor<std::decay_t<BaseExecutor>>
     {
     };
 
     template <typename BaseExecutor>
     struct is_bulk_two_way_executor<
         executor_example::executor_with_thread_hooks<BaseExecutor>>
-      : is_bulk_two_way_executor<typename std::decay<BaseExecutor>::type>
+      : is_bulk_two_way_executor<std::decay_t<BaseExecutor>>
     {
     };
 }}}    // namespace pika::parallel::execution

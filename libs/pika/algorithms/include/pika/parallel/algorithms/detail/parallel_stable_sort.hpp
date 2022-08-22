@@ -148,8 +148,8 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     Iter parallel_stable_sort(Exec&& exec, Iter first, Sent last,
         std::size_t cores, std::size_t chunk_size, Compare&& comp)
     {
-        using parallel_stable_sort_helper_t = parallel_stable_sort_helper<Iter,
-            Sent, typename std::decay<Compare>::type>;
+        using parallel_stable_sort_helper_t =
+            parallel_stable_sort_helper<Iter, Sent, std::decay_t<Compare>>;
 
         parallel_stable_sort_helper_t sorter(
             first, last, PIKA_FORWARD(Compare, comp));

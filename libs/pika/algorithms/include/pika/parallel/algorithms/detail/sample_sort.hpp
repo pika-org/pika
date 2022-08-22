@@ -388,7 +388,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         std::size_t chunk_size)
     {
         using sample_sort_helper_t =
-            sample_sort_helper<Iter, Sent, typename std::decay<Compare>::type>;
+            sample_sort_helper<Iter, Sent, std::decay_t<Compare>>;
 
         sample_sort_helper_t sorter(PIKA_FORWARD(Compare, comp), num_threads);
         sorter(PIKA_FORWARD(Exec, exec), first, last, paux, naux, chunk_size);

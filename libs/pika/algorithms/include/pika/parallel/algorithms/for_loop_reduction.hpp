@@ -124,11 +124,10 @@ namespace pika { namespace parallel { inline namespace v2 {
     ///          it the two views to be combined.
     ///
     template <typename T, typename Op>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T,
-        typename std::decay<Op>::type>
+    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::decay_t<Op>>
     reduction(T& var, T const& identity, Op&& combiner)
     {
-        return detail::reduction_helper<T, typename std::decay<Op>::type>(
+        return detail::reduction_helper<T, std::decay_t<Op>>(
             var, identity, PIKA_FORWARD(Op, combiner));
     }
 

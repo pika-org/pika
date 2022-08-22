@@ -259,7 +259,7 @@ namespace pika { namespace parallel { inline namespace v1 {
                         RndIter>::get(PIKA_MOVE(first));
                 }
 
-                using execution_policy = typename std::decay<ExPolicy>::type;
+                using execution_policy = std::decay_t<ExPolicy>;
                 using parameters_type =
                     typename execution_policy::executor_parameters_type;
                 using executor_type = typename execution_policy::executor_type;

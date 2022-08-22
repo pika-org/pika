@@ -154,7 +154,7 @@ namespace pika { namespace lcos { namespace local {
             std::shared_ptr<barrier_type> barrier_;
             std::shared_ptr<table_type> barriers_;
             std::shared_ptr<mutex_type> mtx_;
-            typename std::decay<F>::type f_;
+            std::decay_t<F> f_;
             std::size_t num_images_;
 
             template <typename... Ts>
@@ -177,7 +177,7 @@ namespace pika { namespace lcos { namespace local {
         static_assert(pika::is_async_execution_policy<ExPolicy>::value,
             "pika::is_async_execution_policy<ExPolicy>::value");
 
-        using ftype = typename std::decay<F>::type;
+        using ftype = std::decay_t<F>;
         using first_type =
             typename pika::util::detail::first_argument<ftype>::type;
 
@@ -212,7 +212,7 @@ namespace pika { namespace lcos { namespace local {
         static_assert(pika::is_execution_policy<ExPolicy>::value,
             "pika::is_execution_policy<ExPolicy>::value");
 
-        using ftype = typename std::decay<F>::type;
+        using ftype = std::decay_t<F>;
         using first_type =
             typename pika::util::detail::first_argument<ftype>::type;
 

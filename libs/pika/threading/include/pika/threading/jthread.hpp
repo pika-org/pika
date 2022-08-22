@@ -100,8 +100,8 @@ namespace pika {
         //          would be exceeded.
         //
         template <typename F, typename... Ts,
-            typename Enable = typename std::enable_if<!std::is_same<
-                typename std::decay<F>::type, jthread>::value>::type>
+            typename Enable = typename std::enable_if<
+                !std::is_same<std::decay_t<F>, jthread>::value>::type>
         explicit jthread(F&& f, Ts&&... ts)
           : ssource_{}    // initialize stop_source
           , thread_{

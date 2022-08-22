@@ -225,7 +225,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     template <typename Iter, typename Sent, typename Compare>
     void spin_sort(Iter first, Sent last, Compare&& comp)
     {
-        spin_sort_helper<Iter, Sent, typename std::decay<Compare>::type> sorter(
+        spin_sort_helper<Iter, Sent, std::decay_t<Compare>> sorter(
             first, last, PIKA_FORWARD(Compare, comp));
     }
 
@@ -233,7 +233,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     void spin_sort(Iter first, Sent last, Compare&& comp,
         util::range<typename std::iterator_traits<Iter>::value_type*> range_aux)
     {
-        spin_sort_helper<Iter, Sent, typename std::decay<Compare>::type> sorter(
+        spin_sort_helper<Iter, Sent, std::decay_t<Compare>> sorter(
             first, last, PIKA_FORWARD(Compare, comp), range_aux);
     }
 
@@ -241,7 +241,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     void spin_sort(Iter first, Sent last, Compare comp,
         typename std::iterator_traits<Iter>::value_type* paux, std::size_t naux)
     {
-        spin_sort_helper<Iter, Sent, typename std::decay<Compare>::type> sorter(
+        spin_sort_helper<Iter, Sent, std::decay_t<Compare>> sorter(
             first, last, PIKA_FORWARD(Compare, comp), paux, naux);
     }
 

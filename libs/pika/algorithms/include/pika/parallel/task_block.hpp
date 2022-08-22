@@ -316,7 +316,7 @@ namespace pika { namespace parallel { inline namespace v2 {
                 static_assert(pika::is_execution_policy<ExPolicy>::value,
                     "pika::is_execution_policy<ExPolicy>::value");
 
-                using policy_type = typename std::decay<ExPolicy>::type;
+                using policy_type = std::decay_t<ExPolicy>;
                 task_block<policy_type> trh(PIKA_FORWARD(ExPolicy, policy));
 
                 // invoke the user supplied function

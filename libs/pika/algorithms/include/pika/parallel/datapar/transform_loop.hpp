@@ -33,7 +33,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_transform_loop_n
         {
-            using iterator_type = typename std::decay<Iterator>::type;
+            using iterator_type = std::decay_t<Iterator>;
 
             typedef typename traits::vector_pack_type<
                 typename std::iterator_traits<iterator_type>::value_type>::type
@@ -105,7 +105,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_transform_loop_n_ind
         {
-            using iterator_type = typename std::decay<Iterator>::type;
+            using iterator_type = std::decay_t<Iterator>;
 
             typedef typename traits::vector_pack_type<
                 typename std::iterator_traits<iterator_type>::value_type>::type
@@ -177,7 +177,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_transform_loop
         {
-            using iterator_type = typename std::decay<Iterator>::type;
+            using iterator_type = std::decay_t<Iterator>;
             typedef typename std::iterator_traits<iterator_type>::value_type
                 value_type;
 
@@ -244,7 +244,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iterator>
         struct datapar_transform_loop_ind
         {
-            using iterator_type = typename std::decay<Iterator>::type;
+            using iterator_type = std::decay_t<Iterator>;
             typedef typename std::iterator_traits<iterator_type>::value_type
                 value_type;
 
@@ -313,7 +313,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iter1, typename Iter2>
         struct datapar_transform_binary_loop_n
         {
-            using iterator1_type = typename std::decay<Iter1>::type;
+            using iterator1_type = std::decay_t<Iter1>;
             typedef typename std::iterator_traits<iterator1_type>::value_type
                 value_type;
 
@@ -396,8 +396,8 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iter1, typename Iter2>
         struct datapar_transform_binary_loop
         {
-            using iterator1_type = typename std::decay<Iter1>::type;
-            using iterator2_type = typename std::decay<Iter2>::type;
+            using iterator1_type = std::decay_t<Iter1>;
+            using iterator2_type = std::decay_t<Iter2>;
 
             typedef typename std::iterator_traits<iterator1_type>::value_type
                 value1_type;
@@ -523,7 +523,7 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iter1, typename Iter2>
         struct datapar_transform_binary_loop_ind_n
         {
-            using iterator1_type = typename std::decay<Iter1>::type;
+            using iterator1_type = std::decay_t<Iter1>;
             typedef typename std::iterator_traits<iterator1_type>::value_type
                 value_type;
 
@@ -609,8 +609,8 @@ namespace pika { namespace parallel { namespace util {
         template <typename Iter1, typename Iter2>
         struct datapar_transform_binary_loop_ind
         {
-            using iterator1_type = typename std::decay<Iter1>::type;
-            using iterator2_type = typename std::decay<Iter2>::type;
+            using iterator1_type = std::decay_t<Iter1>;
+            using iterator2_type = std::decay_t<Iter2>;
 
             typedef typename std::iterator_traits<iterator1_type>::value_type
                 value1_type;
