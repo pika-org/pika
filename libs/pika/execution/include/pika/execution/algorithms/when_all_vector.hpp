@@ -262,7 +262,7 @@ namespace pika::execution::experimental {
                     for (auto&& sender : senders)
                     {
                         op_states[i].emplace(
-                            pika::util::detail::with_result_of([&]() {
+                            pika::detail::with_result_of([&]() {
                                 return pika::execution::experimental::connect(
                                     PIKA_MOVE(sender),
                                     when_all_vector_receiver{*this, i});

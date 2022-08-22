@@ -233,7 +233,7 @@ namespace pika { namespace execution { namespace experimental {
                 shared_state(Sender_&& sender, allocator_type const& alloc)
                   : alloc(alloc)
                 {
-                    os.emplace(pika::util::detail::with_result_of([&]() {
+                    os.emplace(pika::detail::with_result_of([&]() {
                         return pika::execution::experimental::connect(
                             PIKA_FORWARD(Sender_, sender),
                             split_receiver{*this});

@@ -237,7 +237,7 @@ namespace pika { namespace execution { namespace experimental {
                     // intermediate copy construction (the operation
                     // state is not required to be copyable nor movable).
                     scheduler_op_state.emplace(
-                        pika::util::detail::with_result_of([&]() {
+                        pika::detail::with_result_of([&]() {
                             return pika::execution::experimental::connect(
                                 pika::execution::experimental::schedule(
                                     PIKA_MOVE(scheduler)),
