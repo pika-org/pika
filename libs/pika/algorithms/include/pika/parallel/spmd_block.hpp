@@ -177,7 +177,8 @@ namespace pika {
                 "pika::is_async_execution_policy<ExPolicy>::value");
 
             using ftype = std::decay_t<F>;
-            using first_type = typename pika::util::first_argument<ftype>::type;
+            using first_type =
+                typename pika::util::detail::first_argument<ftype>::type;
 
             using barrier_type = pika::lcos::local::barrier;
             using table_type =
@@ -213,7 +214,8 @@ namespace pika {
                 "pika::is_execution_policy<ExPolicy>::value");
 
             using ftype = std::decay_t<F>;
-            using first_type = typename pika::util::first_argument<ftype>::type;
+            using first_type =
+                typename pika::util::detail::first_argument<ftype>::type;
 
             using barrier_type = pika::lcos::local::barrier;
             using table_type =
