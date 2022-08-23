@@ -193,7 +193,7 @@ namespace pika { namespace execution { namespace experimental {
                 std::is_destructible<std::decay_t<F>>::value &&
                 std::is_move_constructible<std::decay_t<F>>::value &&
                 std::is_copy_constructible<Executor>::value &&
-                pika::traits::detail::is_equality_comparable_v<Executor>>>
+                pika::detail::is_equality_comparable_v<Executor>>>
           : std::true_type
         {
         };
@@ -468,8 +468,7 @@ namespace pika { namespace execution { namespace experimental {
         std::enable_if_t<
             pika::detail::is_invocable<schedule_t, Scheduler>::value &&
             std::is_copy_constructible<Scheduler>::value &&
-            pika::traits::detail::is_equality_comparable_v<Scheduler>>>
-      : std::true_type
+            pika::detail::is_equality_comparable_v<Scheduler>>> : std::true_type
     {
     };
 

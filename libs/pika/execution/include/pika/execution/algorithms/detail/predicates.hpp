@@ -275,7 +275,7 @@ namespace pika { namespace parallel { namespace detail {
     {
         template <typename T1, typename T2,
             typename Enable = std::enable_if_t<
-                pika::traits::detail::is_equality_comparable_with_v<T1, T2>>>
+                pika::detail::is_equality_comparable_with_v<T1, T2>>>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
             T1&& t1, T2&& t2) const
         {
@@ -287,7 +287,7 @@ namespace pika { namespace parallel { namespace detail {
     {
         template <typename T1, typename T2,
             typename Enable = std::enable_if_t<
-                pika::traits::detail::is_equality_comparable_with_v<T1, T2>>>
+                pika::detail::is_equality_comparable_with_v<T1, T2>>>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
             T1&& t1, T2&& t2) const
         {

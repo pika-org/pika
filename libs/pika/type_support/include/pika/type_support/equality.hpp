@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::traits::detail {
+namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename T, typename U, typename Enable = void>
@@ -97,4 +97,4 @@ namespace pika::traits::detail {
     template <typename T>
     inline constexpr bool is_equality_comparable_v =
         is_equality_comparable<T>::value;
-}    // namespace pika::traits::detail
+}    // namespace pika::detail
