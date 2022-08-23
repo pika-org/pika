@@ -10,16 +10,19 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     set(PIKA_WITH_CLANG_CUDA ON)
   endif()
 
-  # Check CUDA standard
-  if(DEFINED CMAKE_CUDA_STANDARD AND NOT CMAKE_CUDA_STANDARD STREQUAL
-                                     PIKA_WITH_CXX_STANDARD
-  )
-    pika_error(
-      "You've set CMAKE_CUDA_STANDARD to ${CMAKE_CUDA_STANDARD} and PIKA_WITH_CXX_STANDARD to ${PIKA_WITH_CXX_STANDARD}. Please unset CMAKE_CUDA_STANDARD."
+  # Check and set CUDA standard
+  if(NOT PIKA_FIND_PACKAGE)
+    if(DEFINED CMAKE_CUDA_STANDARD AND NOT CMAKE_CUDA_STANDARD STREQUAL
+                                       PIKA_WITH_CXX_STANDARD
     )
+      pika_error(
+        "You've set CMAKE_CUDA_STANDARD to ${CMAKE_CUDA_STANDARD} and PIKA_WITH_CXX_STANDARD to ${PIKA_WITH_CXX_STANDARD}. Please unset CMAKE_CUDA_STANDARD."
+      )
+    endif()
+
+    set(CMAKE_CUDA_STANDARD ${PIKA_WITH_CXX_STANDARD})
   endif()
 
-  set(CMAKE_CUDA_STANDARD ${PIKA_WITH_CXX_STANDARD})
   set(CMAKE_CUDA_STANDARD_REQUIRED ON)
   set(CMAKE_CUDA_EXTENSIONS OFF)
 
@@ -39,7 +42,9 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     target_link_libraries(Cuda::cuda INTERFACE CUDA::cublas CUDA::cusolver)
   endif()
   # Flag not working for CLANG CUDA
-  target_compile_features(Cuda::cuda INTERFACE cuda_std_${CMAKE_CUDA_STANDARD})
+  target_compile_features(
+    Cuda::cuda INTERFACE cuda_std_${PIKA_WITH_CXX_STANDARD}
+  )
   set_target_properties(
     Cuda::cuda PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON
   )
