@@ -1311,20 +1311,19 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     // extension: create a pre-initialized future object, with allocator
     template <int DeductionGuard = 0, typename Allocator, typename T>
-    future<pika::util::detail::decay_unwrap_t<T>> make_ready_future_alloc(
+    future<pika::detail::decay_unwrap_t<T>> make_ready_future_alloc(
         Allocator const& a, T&& init)
     {
-        return pika::make_ready_future_alloc<
-            pika::util::detail::decay_unwrap_t<T>>(a, PIKA_FORWARD(T, init));
+        return pika::make_ready_future_alloc<pika::detail::decay_unwrap_t<T>>(
+            a, PIKA_FORWARD(T, init));
     }
 
     // extension: create a pre-initialized future object
     template <int DeductionGuard = 0, typename T>
-    PIKA_FORCEINLINE future<pika::util::detail::decay_unwrap_t<T>>
-    make_ready_future(T&& init)
+    PIKA_FORCEINLINE future<pika::detail::decay_unwrap_t<T>> make_ready_future(
+        T&& init)
     {
-        return pika::make_ready_future_alloc<
-            pika::util::detail::decay_unwrap_t<T>>(
+        return pika::make_ready_future_alloc<pika::detail::decay_unwrap_t<T>>(
             pika::detail::internal_allocator<>{}, PIKA_FORWARD(T, init));
     }
 
@@ -1362,10 +1361,10 @@ namespace pika {
     // extension: create a pre-initialized future object which gets ready at
     // a given point in time
     template <int DeductionGuard = 0, typename T>
-    future<pika::util::detail::decay_unwrap_t<T>> make_ready_future_at(
+    future<pika::detail::decay_unwrap_t<T>> make_ready_future_at(
         pika::chrono::steady_time_point const& abs_time, T&& init)
     {
-        using result_type = pika::util::detail::decay_unwrap_t<T>;
+        using result_type = pika::detail::decay_unwrap_t<T>;
         using shared_state = lcos::detail::timed_future_data<result_type>;
 
         pika::intrusive_ptr<shared_state> p(
@@ -1376,7 +1375,7 @@ namespace pika {
     }
 
     template <int DeductionGuard = 0, typename T>
-    future<pika::util::detail::decay_unwrap_t<T>> make_ready_future_after(
+    future<pika::detail::decay_unwrap_t<T>> make_ready_future_after(
         pika::chrono::steady_duration const& rel_time, T&& init)
     {
         return pika::make_ready_future_at(

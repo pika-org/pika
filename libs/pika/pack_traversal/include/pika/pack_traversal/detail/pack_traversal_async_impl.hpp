@@ -487,7 +487,7 @@ namespace pika {
             template <typename Current>
             void async_traverse_one(Current&& current)
             {
-                using ElementType = typename pika::util::detail::decay_unwrap<
+                using ElementType = typename pika::detail::decay_unwrap<
                     decltype(*current)>::type;
                 return async_traverse_one_impl(
                     container_category_of_t<ElementType>{},

@@ -23,8 +23,8 @@
 namespace pika::detail {
     template <typename F, typename... Ts>
     struct is_deferred_invocable
-      : pika::detail::is_invocable<util::detail::decay_unwrap_t<F>,
-            util::detail::decay_unwrap_t<Ts>...>
+      : pika::detail::is_invocable<detail::decay_unwrap_t<F>,
+            detail::decay_unwrap_t<Ts>...>
     {
     };
 
@@ -36,8 +36,8 @@ namespace pika::detail {
 namespace pika::util::detail {
     template <typename F, typename... Ts>
     struct invoke_deferred_result
-      : util::detail::invoke_result<util::detail::decay_unwrap_t<F>,
-            util::detail::decay_unwrap_t<Ts>...>
+      : util::detail::invoke_result<::pika::detail::decay_unwrap_t<F>,
+            ::pika::detail::decay_unwrap_t<Ts>...>
     {
     };
 
@@ -116,7 +116,7 @@ namespace pika::util::detail {
 
     template <typename F, typename... Ts>
     deferred<std::decay_t<F>, util::detail::make_index_pack_t<sizeof...(Ts)>,
-        util::detail::decay_unwrap_t<Ts>...>
+        ::pika::detail::decay_unwrap_t<Ts>...>
     deferred_call(F&& f, Ts&&... vs)
     {
         static_assert(pika::detail::is_deferred_invocable_v<F, Ts...>,
@@ -124,7 +124,7 @@ namespace pika::util::detail {
 
         using result_type = deferred<std::decay_t<F>,
             util::detail::make_index_pack_t<sizeof...(Ts)>,
-            util::detail::decay_unwrap_t<Ts>...>;
+            ::pika::detail::decay_unwrap_t<Ts>...>;
 
         return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }

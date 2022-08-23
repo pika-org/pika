@@ -696,8 +696,7 @@ namespace pika { namespace parallel { namespace execution {
     static_assert(                                                             \
         parameters_type_counter<                                               \
             PIKA_PP_CAT(pika::parallel::execution::detail::has_, func) <       \
-            pika::util::detail::decay_unwrap_t<Params>>::value... > ::value <= \
-            1,                                                                 \
+            pika::detail::decay_unwrap_t<Params>>::value... > ::value <= 1,    \
         "Passing more than one executor parameters type "                      \
         "exposing " PIKA_PP_STRINGIZE(func) " is not possible") /**/
 

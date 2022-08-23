@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::util::detail {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename TD>
     struct decay_unwrap_impl
@@ -34,4 +34,4 @@ namespace pika::util::detail {
 
     template <typename T>
     using decay_unwrap_t = typename decay_unwrap<T>::type;
-}    // namespace pika::util::detail
+}    // namespace pika::detail
