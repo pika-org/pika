@@ -53,7 +53,7 @@ namespace pika { namespace traits {
             using cont_result = pika::util::detail::invoke_result_t<F&, Future>;
 
             // perform unwrapping of future<future<R>>
-            using result_type = util::detail::lazy_conditional_t<
+            using result_type = ::pika::detail::lazy_conditional_t<
                 pika::traits::detail::is_unique_future<cont_result>::value,
                 pika::traits::future_traits<cont_result>,
                 pika::detail::type_identity<cont_result>>;
