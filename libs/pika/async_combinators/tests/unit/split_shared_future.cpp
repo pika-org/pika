@@ -171,7 +171,7 @@ int pika_main()
     test_split_future_array();
 
     pika::finalize();
-    return pika::util::report_errors();
+    return 0;
 }
 
 int main(int argc, char* argv[])

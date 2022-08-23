@@ -5,7 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 function(pika_add_test category name)
-  set(options FAILURE_EXPECTED RUN_SERIAL)
+  set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING)
   set(one_value_args EXECUTABLE LOCALITIES THREADS TIMEOUT RUNWRAPPER)
   set(multi_value_args ARGS)
   cmake_parse_arguments(
@@ -89,8 +89,14 @@ function(pika_add_test category name)
   endif()
 
   # Only real tests, i.e. executables ending in _test, link to pika_testing
-  if(TARGET ${${name}_EXECUTABLE}_test)
+  if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_TESTING)
     target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE pika_testing)
+  endif()
+
+  if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_PERFORMANCE_TESTING)
+    target_link_libraries(
+      ${${name}_EXECUTABLE}_test PRIVATE pika_performance_testing
+    )
   endif()
 
 endfunction(pika_add_test)
@@ -132,18 +138,24 @@ function(pika_add_test_and_deps_test category subcategory name)
   endif()
 endfunction(pika_add_test_and_deps_test)
 
+# Only unit and regression tests link to the testing library. Performance tests
+# and examples don't link to the testing library. Performance tests link to the
+# performance_testing library.
 function(pika_add_unit_test subcategory name)
-  pika_add_test_and_deps_test("unit" "${subcategory}" ${name} ${ARGN})
+  pika_add_test_and_deps_test("unit" "${subcategory}" ${name} ${ARGN} TESTING)
 endfunction(pika_add_unit_test)
 
 function(pika_add_regression_test subcategory name)
   # ARGN needed in case we add a test with the same executable
-  pika_add_test_and_deps_test("regressions" "${subcategory}" ${name} ${ARGN})
+  pika_add_test_and_deps_test(
+    "regressions" "${subcategory}" ${name} ${ARGN} TESTING
+  )
 endfunction(pika_add_regression_test)
 
 function(pika_add_performance_test subcategory name)
   pika_add_test_and_deps_test(
     "performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL
+    PERFORMANCE_TESTING
   )
 endfunction(pika_add_performance_test)
 

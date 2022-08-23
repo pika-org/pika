@@ -26,7 +26,7 @@
 #include <pika/parallel/algorithms/copy.hpp>
 #include <pika/parallel/algorithms/for_each.hpp>
 #include <pika/parallel/algorithms/for_loop.hpp>
-#include <pika/testing.hpp>
+#include <pika/testing/performance.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -170,10 +170,6 @@ int pika_main(pika::program_options::variables_map& vm)
 
     matrixMultiply<float>(matrix_size, device, iterations);
 
-    // There are no actual tests to run here. We only expect to reach this point
-    // without exceptions having been thrown.
-    PIKA_TEST(true);
-
     return pika::finalize();
 }
 
@@ -197,6 +193,5 @@ int main(int argc, char** argv)
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
-    auto result = pika::init(pika_main, argc, argv, init_args);
-    return result || pika::util::report_errors();
+    return pika::init(pika_main, argc, argv, init_args);
 }

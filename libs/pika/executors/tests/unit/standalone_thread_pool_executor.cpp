@@ -204,5 +204,5 @@ int main()
         pool.stop(l, true);
     }
 
-    return pika::util::report_errors();
+    return 0;
 }

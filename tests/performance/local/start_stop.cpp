@@ -8,11 +8,11 @@
 // This is meant to be compared to resume_suspend and openmp_parallel_region.
 
 #include <pika/chrono.hpp>
-#include <pika/execution_base/this_thread.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/program_options.hpp>
-#include <pika/testing.hpp>
+#include <pika/program_options.hpp>
+#include <pika/testing/performance.hpp>
+#include <pika/thread.hpp>
 
 #include <cstddef>
 #include <cstdint>

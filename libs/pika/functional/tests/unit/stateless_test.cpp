@@ -48,5 +48,5 @@ int main(int, char*[])
     // point without an exception having been thrown.
     PIKA_TEST(true);
 
-    return pika::util::report_errors();
+    return 0;
 }

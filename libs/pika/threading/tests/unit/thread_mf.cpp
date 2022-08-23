@@ -222,7 +222,7 @@ int pika_main(variables_map& /*vm*/)
     }
 
     pika::finalize();
-    return pika::util::report_errors();
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

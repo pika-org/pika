@@ -252,5 +252,5 @@ int main()
         function_objects();
     }
 
-    return pika::util::report_errors();
+    return 0;
 }

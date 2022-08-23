@@ -264,5 +264,5 @@ int main()
         N, x);
 }
 
-return pika::util::report_errors();
+return 0;
 }

@@ -7,7 +7,7 @@
 #include <pika/init.hpp>
 #include <pika/modules/iterator_support.hpp>
 #include <pika/modules/timing.hpp>
-#include <pika/testing.hpp>
+#include <pika/testing/performance.hpp>
 
 #include <chrono>
 #include <cstddef>

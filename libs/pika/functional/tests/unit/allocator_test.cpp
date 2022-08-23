@@ -145,5 +145,5 @@ int main(int, char*[])
     fv.assign(&do_nothing, std::allocator<int>());
     fv2.assign(fv, std::allocator<int>());
 
-    return pika::util::report_errors();
+    return 0;
 }

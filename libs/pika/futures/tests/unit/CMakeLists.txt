@@ -10,7 +10,6 @@ set(tests
     future_ref
     future_then
     promise_allocator
-    use_allocator
     make_future
     make_ready_future
     shared_future
@@ -40,3 +39,16 @@ foreach(test ${tests})
 
   pika_add_unit_test("modules.futures" ${test} ${${test}_PARAMETERS})
 endforeach()
+
+if(PIKA_WITH_COMPILE_ONLY_TESTS)
+  set(compile_tests use_allocator)
+  foreach(compile_test ${compile_tests})
+    set(sources ${compile_test}.cpp)
+    source_group("Source Files" FILES ${sources})
+    pika_add_unit_compile_test(
+      "modules.futures" ${compile_test}
+      SOURCES ${sources} ${${compile_test}_FLAGS}
+      FOLDER "Tests/Unit/Modules/Futures/CompileOnly"
+    )
+  endforeach()
+endif()

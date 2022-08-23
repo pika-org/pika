@@ -236,5 +236,5 @@ int main()
 
     test_adl_isolation(ex::then(ex::just(), my_namespace::my_type{}));
 
-    return pika::util::report_errors();
+    return 0;
 }

@@ -99,7 +99,7 @@ int pika_main()
 
     pika::finalize();
     pika::deb_schbin.debug(pika::debug::detail::str<15>("Finalized"));
-    return pika::util::report_errors();
+    return 0;
 }
 
 int main(int argc, char* argv[])

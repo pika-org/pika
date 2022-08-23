@@ -255,5 +255,5 @@ int main(int argc, char* argv[])
 
     MPI_Finalize();
 
-    return result || pika::util::report_errors();
+    return result;
 }

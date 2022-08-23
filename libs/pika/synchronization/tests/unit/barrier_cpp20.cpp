@@ -115,10 +115,10 @@ void test_barrier_oncomplete()
 ///////////////////////////////////////////////////////////////////////////////
 void local_barrier_test_no_completion_split(pika::barrier<>& b)
 {
+    ++c1;
+
     // signal the barrier
     auto token = b.arrive();
-
-    ++c1;
 
     // wait for all threads to enter the barrier
     b.wait(std::move(token));
@@ -158,10 +158,10 @@ void test_barrier_empty_oncomplete_split()
 
 void local_barrier_test_split(pika::barrier<oncomplete>& b)
 {
+    ++c1;
+
     // signal the barrier
     auto token = b.arrive();
-
-    ++c1;
 
     // wait for all threads to enter the barrier
     b.wait(std::move(token));

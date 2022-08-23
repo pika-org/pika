@@ -231,7 +231,7 @@ int pika_main()
     }
 
     pika::finalize();
-    return pika::util::report_errors();
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -4,9 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <pika/modules/format.hpp>
 #include <pika/testing/performance.hpp>
 
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <string>
 #include <type_traits>
@@ -57,4 +59,18 @@ namespace pika { namespace util {
         std::cout << detail::times();
     }
 
+    void print_cdash_timing(const char* name, double time)
+    {
+        // use format followed by single cout for better multi-threaded output
+        std::string temp =
+            pika::util::format("<DartMeasurement name=\"{}\" "
+                               "type=\"numeric/double\">{}</DartMeasurement>",
+                name, time);
+        std::cout << temp << std::endl;
+    }
+
+    void print_cdash_timing(const char* name, std::uint64_t time)
+    {
+        print_cdash_timing(name, static_cast<double>(time) / 1e9);
+    }
 }}    // namespace pika::util

@@ -12,7 +12,7 @@
 #include <pika/chrono.hpp>
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
-#include <pika/testing.hpp>
+#include <pika/testing/performance.hpp>
 
 #include "foreach_scaling_helpers.hpp"
 

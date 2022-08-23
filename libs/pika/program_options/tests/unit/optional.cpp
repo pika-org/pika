@@ -55,5 +55,5 @@ void test_optional()
 int main(int, char*[])
 {
     test_optional();
-    return pika::util::report_errors();
+    return 0;
 }

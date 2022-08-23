@@ -12,7 +12,6 @@
 #include <pika/modules/timing.hpp>
 #include <pika/parallel/algorithms/generate.hpp>
 #include <pika/parallel/algorithms/partition.hpp>
-#include <pika/testing.hpp>
 
 #include <algorithm>
 #include <cstddef>
@@ -213,8 +212,5 @@ int main(int argc, char* argv[])
     init_args.desc_cmdline = desc_commandline;
     init_args.cfg = cfg;
 
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
-
-    return pika::util::report_errors();
+    return pika::init(pika_main, argc, argv, init_args);
 }

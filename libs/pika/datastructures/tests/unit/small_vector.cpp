@@ -952,5 +952,5 @@ int main()
     test::test_vector_methods_with_initializer_list_as_argument_for<
         pika::detail::small_vector<int, 5>>();
 
-    return pika::util::report_errors();
+    return 0;
 }

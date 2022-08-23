@@ -10,6 +10,7 @@
 #include <pika/modules/iterator_support.hpp>
 #include <pika/parallel/algorithms/inclusive_scan.hpp>
 #include <pika/testing.hpp>
+#include <pika/testing/performance.hpp>
 
 #include <cstddef>
 #include <iostream>

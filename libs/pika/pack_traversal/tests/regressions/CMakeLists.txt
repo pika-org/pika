@@ -5,7 +5,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(tests unwrapped_1528)
+set(tests)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)
@@ -26,7 +26,7 @@ endforeach()
 
 # compile only tests
 if(PIKA_WITH_COMPILE_ONLY_TESTS)
-  set(compile_tests unwrapping_noncopyable)
+  set(compile_tests unwrapped_1528 unwrapping_noncopyable)
 
   foreach(compile_test ${compile_tests})
     set(sources ${compile_test}.cpp)

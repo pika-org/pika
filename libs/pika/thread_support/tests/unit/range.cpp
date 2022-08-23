@@ -128,5 +128,5 @@ int main(int argc, char* argv[])
         vector_range();
     }
 
-    return pika::util::report_errors();
+    return 0;
 }

@@ -84,5 +84,5 @@ int main()
         start_called = false;
     }
 
-    return pika::util::report_errors();
+    return 0;
 }

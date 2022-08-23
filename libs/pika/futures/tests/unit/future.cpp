@@ -600,7 +600,7 @@ int pika_main(variables_map&)
     }
 
     pika::finalize();
-    return pika::util::report_errors();
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

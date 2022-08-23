@@ -11,11 +11,11 @@
 #include <pika/assert.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/program_options.hpp>
-#include <pika/testing.hpp>
+#include <pika/parallel/algorithms/nth_element.hpp>
+
 #include <chrono>
 #include <ciso646>
 
-#include <pika/parallel/algorithms/nth_element.hpp>
 #include <algorithm>
 #include <iostream>
 #include <random>
@@ -158,9 +158,5 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    // Initialize and run pika.
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
-
-    return pika::util::report_errors();
+    return pika::init(pika_main, argc, argv, init_args);
 }

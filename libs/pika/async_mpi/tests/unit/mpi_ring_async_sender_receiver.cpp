@@ -243,5 +243,5 @@ int main(int argc, char* argv[])
     // Finalize MPI
     MPI_Finalize();
 
-    return result || pika::util::report_errors();
+    return result;
 }

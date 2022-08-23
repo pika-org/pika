@@ -7,6 +7,7 @@
 #include <pika/init.hpp>
 #include <pika/parallel/algorithms/exclusive_scan.hpp>
 #include <pika/testing.hpp>
+#include <pika/testing/performance.hpp>
 
 #include <cstddef>
 #include <iostream>
@@ -209,5 +210,5 @@ int main(int argc, char* argv[])
     PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
         "pika main exited with non-zero status");
 
-    return pika::util::report_errors();
+    return 0;
 }

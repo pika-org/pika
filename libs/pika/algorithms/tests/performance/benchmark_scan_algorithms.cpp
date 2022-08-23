@@ -12,7 +12,6 @@
 #include <pika/parallel/algorithms/transform_exclusive_scan.hpp>
 #include <pika/parallel/algorithms/transform_inclusive_scan.hpp>
 #include <pika/parallel/algorithms/unique.hpp>
-#include <pika/testing.hpp>
 
 #include <array>
 #include <cstddef>
@@ -203,9 +202,5 @@ int main(int argc, char* argv[])
     pika::init_params init_args;
     init_args.cfg = cfg;
 
-    // Initialize and run pika.
-    PIKA_TEST_EQ_MSG(pika::init(pika_main, argc, argv, init_args), 0,
-        "pika main exited with non-zero status");
-
-    return pika::util::report_errors();
+    return pika::init(pika_main, argc, argv, init_args);
 }

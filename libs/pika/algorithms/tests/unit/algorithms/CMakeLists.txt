@@ -159,6 +159,12 @@ if(PIKA_WITH_TUPLE_RVALUE_SWAP)
   list(APPEND tests sort_by_key)
 endif()
 
+set(exclusive_scan_FLAGS DEPENDENCIES pika_performance_testing)
+set(inclusive_scan_FLAGS DEPENDENCIES pika_performance_testing)
+set(reduce_by_key_FLAGS DEPENDENCIES pika_performance_testing)
+set(sort_FLAGS DEPENDENCIES pika_performance_testing)
+set(stable_sort_FLAGS DEPENDENCIES pika_performance_testing)
+
 foreach(test ${tests})
   set(sources ${test}.cpp)
 

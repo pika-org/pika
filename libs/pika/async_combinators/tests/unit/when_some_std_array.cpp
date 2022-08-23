@@ -63,7 +63,7 @@ int pika_main(variables_map&)
     test_wait_for_either_of_two_futures_list();
 
     pika::finalize();
-    return pika::util::report_errors();
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

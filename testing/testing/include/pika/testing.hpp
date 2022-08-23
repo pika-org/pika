@@ -15,7 +15,6 @@
 #include <pika/preprocessor/expand.hpp>
 #include <pika/preprocessor/nargs.hpp>
 #include <pika/preprocessor/stringize.hpp>
-#include <pika/testing/performance.hpp>
 #include <pika/thread_support/spinlock.hpp>
 #include <pika/util/ios_flags_saver.hpp>
 
@@ -33,7 +32,7 @@ namespace pika { namespace util {
     };
 
     namespace detail {
-        struct fixture
+        struct fixture final
         {
         public:
             using mutex_type = pika::util::detail::spinlock;
@@ -47,10 +46,8 @@ namespace pika { namespace util {
             mutex_type mutex_;
 
         public:
-            explicit fixture(std::ostream& stream)
-              : stream_(stream)
-            {
-            }
+            explicit fixture(std::ostream& stream);
+            ~fixture();
 
             PIKA_EXPORT void increment_tests(counter_type c);
             PIKA_EXPORT void increment_failures(counter_type c);
@@ -192,9 +189,6 @@ namespace pika { namespace util {
     ////////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT int report_errors();
     PIKA_EXPORT int report_errors(std::ostream& stream);
-    PIKA_EXPORT void print_cdash_timing(const char* name, double time);
-    PIKA_EXPORT void print_cdash_timing(const char* name, std::uint64_t time);
-
 }}    // namespace pika::util
 
 ////////////////////////////////////////////////////////////////////////////////

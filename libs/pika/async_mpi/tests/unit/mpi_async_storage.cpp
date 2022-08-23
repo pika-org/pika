@@ -555,5 +555,8 @@ int main(int argc, char* argv[])
 
     auto res = pika::init(pika_main, argc, argv, init_args);
     MPI_Finalize();
+
+    // This test should just run without crashing
+    PIKA_TEST(true);
     return res;
 }

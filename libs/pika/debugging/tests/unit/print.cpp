@@ -137,5 +137,5 @@ int main()
     std::cout << "enabled  counter " << enabled_counter << std::endl;
     std::cout << "disabled counter " << disabled_counter << std::endl;
 
-    return pika::util::report_errors();
+    return 0;
 }
