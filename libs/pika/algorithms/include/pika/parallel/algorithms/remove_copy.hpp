@@ -270,124 +270,118 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     /////////////////////////////////////////////////////////////////////////////
     // remove_copy
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // sequential remove_copy
-        template <typename InIter, typename Sent, typename OutIter, typename T,
-            typename Proj>
-        constexpr inline util::in_out_result<InIter, OutIter>
-        sequential_remove_copy(
-            InIter first, Sent last, OutIter dest, T const& value, Proj&& proj)
+    // sequential remove_copy
+    template <typename InIter, typename Sent, typename OutIter, typename T,
+        typename Proj>
+    constexpr inline util::in_out_result<InIter, OutIter>
+    sequential_remove_copy(
+        InIter first, Sent last, OutIter dest, T const& value, Proj&& proj)
+    {
+        for (/* */; first != last; ++first)
         {
-            for (/* */; first != last; ++first)
+            if (!(PIKA_INVOKE(proj, *first) == value))
             {
-                if (!(PIKA_INVOKE(proj, *first) == value))
-                {
-                    *dest++ = *first;
-                }
+                *dest++ = *first;
             }
-            return util::in_out_result<InIter, OutIter>{first, dest};
+        }
+        return util::in_out_result<InIter, OutIter>{first, dest};
+    }
+
+    template <typename IterPair>
+    struct remove_copy
+      : public detail::algorithm<remove_copy<IterPair>, IterPair>
+    {
+        remove_copy()
+          : remove_copy::algorithm("remove_copy")
+        {
         }
 
-        template <typename IterPair>
-        struct remove_copy
-          : public detail::algorithm<remove_copy<IterPair>, IterPair>
+        template <typename ExPolicy, typename InIter, typename Sent,
+            typename OutIter, typename T, typename Proj>
+        static util::in_out_result<InIter, OutIter> sequential(ExPolicy,
+            InIter first, Sent last, OutIter dest, T const& val, Proj&& proj)
         {
-            remove_copy()
-              : remove_copy::algorithm("remove_copy")
-            {
-            }
+            return sequential_remove_copy(
+                first, last, dest, val, PIKA_FORWARD(Proj, proj));
+        }
 
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename OutIter, typename T, typename Proj>
-            static util::in_out_result<InIter, OutIter> sequential(ExPolicy,
-                InIter first, Sent last, OutIter dest, T const& val,
-                Proj&& proj)
-            {
-                return sequential_remove_copy(
-                    first, last, dest, val, PIKA_FORWARD(Proj, proj));
-            }
-
-            template <typename ExPolicy, typename FwdIter1, typename Sent,
-                typename FwdIter2, typename T, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter1, FwdIter2>>::type
-            parallel(ExPolicy&& policy, FwdIter1 first, Sent last,
-                FwdIter2 dest, T const& val, Proj&& proj)
-            {
-                return copy_if<IterPair>().call(
-                    PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                    [val](T const& a) -> bool { return !(a == val); },
-                    PIKA_FORWARD(Proj, proj));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+        template <typename ExPolicy, typename FwdIter1, typename Sent,
+            typename FwdIter2, typename T, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<FwdIter1, FwdIter2>>::type
+        parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
+            T const& val, Proj&& proj)
+        {
+            return copy_if<IterPair>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                [val](T const& a) -> bool { return !(a == val); },
+                PIKA_FORWARD(Proj, proj));
+        }
+    };
+    /// \endcond
 
     /////////////////////////////////////////////////////////////////////////////
     // remove_copy_if
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // sequential remove_copy_if
-        template <typename InIter, typename Sent, typename OutIter, typename F,
-            typename Proj>
-        inline util::in_out_result<InIter, OutIter> sequential_remove_copy_if(
-            InIter first, Sent last, OutIter dest, F p, Proj&& proj)
+    // sequential remove_copy_if
+    template <typename InIter, typename Sent, typename OutIter, typename F,
+        typename Proj>
+    inline util::in_out_result<InIter, OutIter> sequential_remove_copy_if(
+        InIter first, Sent last, OutIter dest, F p, Proj&& proj)
+    {
+        for (/* */; first != last; ++first)
         {
-            for (/* */; first != last; ++first)
+            if (!PIKA_INVOKE(p, PIKA_INVOKE(proj, *first)))
             {
-                if (!PIKA_INVOKE(p, PIKA_INVOKE(proj, *first)))
-                {
-                    *dest++ = *first;
-                }
+                *dest++ = *first;
             }
-            return util::in_out_result<InIter, OutIter>{first, dest};
+        }
+        return util::in_out_result<InIter, OutIter>{first, dest};
+    }
+
+    template <typename IterPair>
+    struct remove_copy_if
+      : public detail::algorithm<remove_copy_if<IterPair>, IterPair>
+    {
+        remove_copy_if()
+          : remove_copy_if::algorithm("remove_copy_if")
+        {
         }
 
-        template <typename IterPair>
-        struct remove_copy_if
-          : public detail::algorithm<remove_copy_if<IterPair>, IterPair>
+        template <typename ExPolicy, typename InIter, typename Sent,
+            typename OutIter, typename F, typename Proj>
+        static util::in_out_result<InIter, OutIter> sequential(
+            ExPolicy, InIter first, Sent last, OutIter dest, F&& f, Proj&& proj)
         {
-            remove_copy_if()
-              : remove_copy_if::algorithm("remove_copy_if")
-            {
-            }
+            return sequential_remove_copy_if(first, last, dest,
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
+        }
 
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename OutIter, typename F, typename Proj>
-            static util::in_out_result<InIter, OutIter> sequential(ExPolicy,
-                InIter first, Sent last, OutIter dest, F&& f, Proj&& proj)
-            {
-                return sequential_remove_copy_if(first, last, dest,
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-            }
+        template <typename ExPolicy, typename FwdIter1, typename Sent,
+            typename FwdIter2, typename F, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<FwdIter1, FwdIter2>>::type
+        parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
+            F&& f, Proj&& proj)
+        {
+            using value_type =
+                typename std::iterator_traits<FwdIter1>::value_type;
 
-            template <typename ExPolicy, typename FwdIter1, typename Sent,
-                typename FwdIter2, typename F, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter1, FwdIter2>>::type
-            parallel(ExPolicy&& policy, FwdIter1 first, Sent last,
-                FwdIter2 dest, F&& f, Proj&& proj)
-            {
-                using value_type =
-                    typename std::iterator_traits<FwdIter1>::value_type;
-
-                return copy_if<IterPair>().call(
-                    PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                    [f = PIKA_FORWARD(F, f)](value_type const& a) -> bool {
-                        return !PIKA_INVOKE(f, a);
-                    },
-                    PIKA_FORWARD(Proj, proj));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+            return copy_if<IterPair>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                [f = PIKA_FORWARD(F, f)](
+                    value_type const& a) -> bool { return !PIKA_INVOKE(f, a); },
+                PIKA_FORWARD(Proj, proj));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -414,7 +408,7 @@ namespace pika {
             static_assert((pika::traits::is_output_iterator<InIter>::value),
                 "Required output iterator.");
 
-            auto&& res = pika::parallel::v1::detail::remove_copy_if<
+            auto&& res = pika::parallel::detail::remove_copy_if<
                 pika::parallel::util::in_out_result<InIter, OutIter>>()
                              .call(pika::execution::sequenced_policy{}, first,
                                  last, dest, PIKA_FORWARD(Pred, pred),
@@ -445,7 +439,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Required at least forward iterator.");
 
-            auto&& res = pika::parallel::v1::detail::remove_copy_if<
+            auto&& res = pika::parallel::detail::remove_copy_if<
                 pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                              .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                                  dest, PIKA_FORWARD(Pred, pred),

@@ -36,7 +36,7 @@ void test_for_loop_reduction_plus(ExPolicy&& policy)
 
     std::size_t sum = 0;
     pika::ranges::for_loop(std::forward<ExPolicy>(policy), c,
-        pika::parallel::reduction_plus(sum),
+        pika::reduction_plus(sum),
         [](iterator it, std::size_t& sum) { sum += *it; });
 
     // verify values
@@ -58,7 +58,7 @@ void test_for_loop_reduction_multiplies(ExPolicy&& policy)
 
     std::size_t prod = 0;
     pika::ranges::for_loop(std::forward<ExPolicy>(policy), c,
-        pika::parallel::reduction_multiplies(prod),
+        pika::reduction_multiplies(prod),
         [](iterator it, std::size_t& prod) { prod *= *it; });
 
     // verify values
@@ -81,14 +81,13 @@ void test_for_loop_reduction_min(ExPolicy&& policy)
     std::size_t minval = c[0];
 
     pika::ranges::for_loop(std::forward<ExPolicy>(policy), c,
-        pika::parallel::reduction_min(minval),
-        [](iterator it, std::size_t& minval) {
+        pika::reduction_min(minval), [](iterator it, std::size_t& minval) {
             minval = (std::min)(minval, *it);
         });
 
     // verify values
     std::size_t minval2 = std::accumulate(std::begin(c), std::end(c), c[0],
-        pika::parallel::v1::detail::min_of<std::size_t>());
+        pika::parallel::detail::min_of<std::size_t>());
     PIKA_TEST_EQ(minval, minval2);
 }
 

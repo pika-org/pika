@@ -92,7 +92,7 @@ namespace pika {
         unknown_error = 32,
         /// equivalent of std::bad_function_call
         bad_function_call = 33,
-        /// parallel::v2::task_canceled_exception
+        /// parallel::task_canceled_exception
         task_canceled_exception = 34,
         /// task_region is not active
         task_block_not_active = 35,

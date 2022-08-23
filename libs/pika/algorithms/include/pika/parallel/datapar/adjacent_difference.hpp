@@ -23,9 +23,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::detail {
     template <typename ExPolicy>
     struct datapar_adjacent_difference
     {
@@ -68,5 +66,5 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         return datapar_adjacent_difference<ExPolicy>::call(
             first, last, dest, PIKA_FORWARD(Op, op));
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail
 #endif

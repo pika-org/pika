@@ -103,7 +103,7 @@ void sort_by_key_benchmark()
         o_values = values;
 
         pika::chrono::detail::high_resolution_timer t;
-        pika::parallel::sort_by_key(
+        pika::sort_by_key(
             pika::execution::par, keys.begin(), keys.end(), values.begin());
         auto elapsed =
             static_cast<std::uint64_t>(t.elapsed<std::chrono::nanoseconds>());
@@ -156,8 +156,8 @@ void test_sort_by_key1(
     o_values = values;
 
     // sort_by_key, blocking when seq, par, par_vec
-    pika::parallel::sort_by_key(std::forward<ExPolicy>(policy), keys.begin(),
-        keys.end(), values.begin());
+    pika::sort_by_key(std::forward<ExPolicy>(policy), keys.begin(), keys.end(),
+        values.begin());
 
     // after sorting by key, the values should be equal to the original keys
     bool is_equal = std::equal(keys.begin(), keys.end(), o_values.begin());
@@ -209,7 +209,7 @@ void test_sort_by_key_async(
     o_values = values;
 
     // sort_by_key, blocking when seq, par, par_vec
-    auto fresult = pika::parallel::sort_by_key(std::forward<ExPolicy>(policy),
+    auto fresult = pika::sort_by_key(std::forward<ExPolicy>(policy),
         keys.begin(), keys.end(), values.begin());
     fresult.get();
 

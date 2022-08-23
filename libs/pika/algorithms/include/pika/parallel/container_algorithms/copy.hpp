@@ -364,8 +364,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I, typename O>
     using copy_result = parallel::util::in_out_result<I, O>;
 
@@ -397,9 +396,9 @@ namespace pika { namespace ranges {
             FwdIter1 iter, Sent1 sent, FwdIter dest)
         {
             using copy_iter_t =
-                pika::parallel::v1::detail::copy_iter<FwdIter1, FwdIter>;
+                pika::parallel::detail::copy_iter<FwdIter1, FwdIter>;
 
-            return pika::parallel::v1::detail::transfer<copy_iter_t>(
+            return pika::parallel::detail::transfer<copy_iter_t>(
                 PIKA_FORWARD(ExPolicy, policy), iter, sent, dest);
         }
 
@@ -418,11 +417,11 @@ namespace pika { namespace ranges {
         tag_fallback_invoke(
             pika::ranges::copy_t, ExPolicy&& policy, Rng&& rng, FwdIter dest)
         {
-            using copy_iter_t = pika::parallel::v1::detail::copy_iter<
+            using copy_iter_t = pika::parallel::detail::copy_iter<
                 typename pika::traits::range_traits<Rng>::iterator_type,
                 FwdIter>;
 
-            return pika::parallel::v1::detail::transfer<copy_iter_t>(
+            return pika::parallel::detail::transfer<copy_iter_t>(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), dest);
         }
@@ -439,9 +438,9 @@ namespace pika { namespace ranges {
             pika::ranges::copy_t, FwdIter1 iter, Sent1 sent, FwdIter dest)
         {
             using copy_iter_t =
-                pika::parallel::v1::detail::copy_iter<FwdIter1, FwdIter>;
+                pika::parallel::detail::copy_iter<FwdIter1, FwdIter>;
 
-            return pika::parallel::v1::detail::transfer<copy_iter_t>(
+            return pika::parallel::detail::transfer<copy_iter_t>(
                 pika::execution::seq, iter, sent, dest);
         }
 
@@ -456,11 +455,11 @@ namespace pika { namespace ranges {
             typename pika::traits::range_traits<Rng>::iterator_type, FwdIter>
         tag_fallback_invoke(pika::ranges::copy_t, Rng&& rng, FwdIter dest)
         {
-            using copy_iter_t = pika::parallel::v1::detail::copy_iter<
+            using copy_iter_t = pika::parallel::detail::copy_iter<
                 typename pika::traits::range_traits<Rng>::iterator_type,
                 FwdIter>;
 
-            return pika::parallel::v1::detail::transfer<copy_iter_t>(
+            return pika::parallel::detail::transfer<copy_iter_t>(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), dest);
         }
@@ -492,7 +491,7 @@ namespace pika { namespace ranges {
                 "Requires at least forward iterator or sequential execution.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return pika::parallel::util::detail::algorithm_result<ExPolicy,
                     ranges::copy_n_result<FwdIter1, FwdIter2>>::
@@ -500,7 +499,7 @@ namespace pika { namespace ranges {
                         PIKA_MOVE(first), PIKA_MOVE(dest)});
             }
 
-            return pika::parallel::v1::detail::copy_n<
+            return pika::parallel::detail::copy_n<
                 ranges::copy_n_result<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
                     dest);
@@ -521,13 +520,13 @@ namespace pika { namespace ranges {
                 "Requires at least output iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return ranges::copy_n_result<FwdIter1, FwdIter2>{
                     PIKA_MOVE(first), PIKA_MOVE(dest)};
             }
 
-            return pika::parallel::v1::detail::copy_n<
+            return pika::parallel::detail::copy_n<
                 ranges::copy_n_result<FwdIter1, FwdIter2>>()
                 .call(pika::execution::seq, first, std::size_t(count), dest);
         }
@@ -547,10 +546,10 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
                 pika::traits::is_sentinel_for<Sent1, FwdIter1>::value &&
-                pika::parallel::traits::is_projected<Proj, FwdIter1>::value &&
+                pika::parallel::detail::is_projected<Proj, FwdIter1>::value &&
                 pika::traits::is_iterator<FwdIter>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, Pred,
-                    pika::parallel::traits::projected<Proj, FwdIter1>
+                pika::parallel::detail::is_indirect_callable<ExPolicy, Pred,
+                    pika::parallel::detail::projected<Proj, FwdIter1>
                 >::value
             )>
         // clang-format on
@@ -568,7 +567,7 @@ namespace pika { namespace ranges {
                         pika::traits::is_output_iterator<FwdIter>::value),
                 "Requires at least forward iterator or sequential execution.");
 
-            return pika::parallel::v1::detail::copy_if<
+            return pika::parallel::detail::copy_if<
                 pika::parallel::util::in_out_result<FwdIter1, FwdIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), iter, sent, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
@@ -581,10 +580,10 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
                 pika::traits::is_iterator<FwdIter>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, Pred,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                pika::parallel::detail::is_indirect_callable<ExPolicy, Pred,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -600,7 +599,7 @@ namespace pika { namespace ranges {
                         pika::traits::is_output_iterator<FwdIter>::value),
                 "Requires at least forward iterator or sequential execution.");
 
-            return pika::parallel::v1::detail::copy_if<
+            return pika::parallel::detail::copy_if<
                 pika::parallel::util::in_out_result<
                     typename pika::traits::range_traits<Rng>::iterator_type,
                     FwdIter>>()
@@ -616,11 +615,11 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<FwdIter1>::value &&
                 pika::traits::is_sentinel_for<Sent1, FwdIter1>::value &&
-                pika::parallel::traits::is_projected<Proj, FwdIter1>::value &&
+                pika::parallel::detail::is_projected<Proj, FwdIter1>::value &&
                 pika::traits::is_iterator<FwdIter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected<Proj, FwdIter1>
+                    pika::parallel::detail::projected<Proj, FwdIter1>
                 >::value
             )>
         // clang-format on
@@ -634,7 +633,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_output_iterator<FwdIter>::value),
                 "Required at least output iterator.");
 
-            return pika::parallel::v1::detail::copy_if<
+            return pika::parallel::detail::copy_if<
                 pika::parallel::util::in_out_result<FwdIter1, FwdIter>>()
                 .call(pika::execution::seq, iter, sent, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
@@ -645,11 +644,11 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
                 pika::traits::is_iterator<FwdIter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -661,7 +660,7 @@ namespace pika { namespace ranges {
             static_assert((pika::traits::is_output_iterator<FwdIter>::value),
                 "Required at least output iterator.");
 
-            return pika::parallel::v1::detail::copy_if<
+            return pika::parallel::detail::copy_if<
                 pika::parallel::util::in_out_result<
                     typename pika::traits::range_traits<Rng>::iterator_type,
                     FwdIter>>()
@@ -671,6 +670,5 @@ namespace pika { namespace ranges {
         }
 
     } copy_if{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 #endif    // DOXYGEN

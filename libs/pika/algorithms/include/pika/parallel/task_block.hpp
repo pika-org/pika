@@ -28,8 +28,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v2 {
-
+namespace pika::parallel {
     namespace detail {
         struct define_task_block_impl;
     }    // namespace detail
@@ -487,12 +486,12 @@ namespace pika { namespace parallel { inline namespace v2 {
         define_task_block_restore_thread(
             pika::execution::par, PIKA_FORWARD(F, f));
     }
-}}}    // namespace pika::parallel::v2
+}    // namespace pika::parallel
 
 /// \cond NOINTERNAL
 namespace std {
     template <typename ExPolicy>
-    pika::parallel::v2::task_block<ExPolicy>* addressof(
-        pika::parallel::v2::task_block<ExPolicy>&) = delete;
+    pika::parallel::task_block<ExPolicy>* addressof(
+        pika::parallel::task_block<ExPolicy>&) = delete;
 }
 /// \endcond

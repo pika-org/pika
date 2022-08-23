@@ -65,19 +65,19 @@ namespace pika {
     typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
     move(ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest);
 
-    // clang-format off
-}
+    // clang-format on
+}    // namespace pika
 
-#else // DOXYGEN
+#else    // DOXYGEN
 
 #include <pika/config.hpp>
-#include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/parallel/util/detail/sender_util.hpp>
 #include <pika/executors/execution_policy.hpp>
+#include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/parallel/algorithms/copy.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
 #include <pika/parallel/algorithms/detail/transfer.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
+#include <pika/parallel/util/detail/sender_util.hpp>
 #include <pika/parallel/util/foreach_partitioner.hpp>
 #include <pika/parallel/util/result_types.hpp>
 #include <pika/parallel/util/transfer.hpp>
@@ -89,79 +89,74 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // move
-    namespace detail {
-        /// \cond NOINTERNAL
-
-        template <typename IterPair>
-        struct move_pair
-          : public detail::algorithm<detail::move_pair<IterPair>, IterPair>
+    /// \cond NOINTERNAL
+    template <typename IterPair>
+    struct move_pair
+      : public detail::algorithm<detail::move_pair<IterPair>, IterPair>
+    {
+        move_pair()
+          : move_pair::algorithm("move")
         {
-            move_pair()
-              : move_pair::algorithm("move")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename OutIter>
-            static constexpr std::enable_if_t<
-                !pika::traits::is_random_access_iterator_v<InIter>,
-                util::in_out_result<InIter, OutIter>>
-            sequential(ExPolicy, InIter first, Sent last, OutIter dest)
-            {
-                return util::move(first, last, dest);
-            }
-
-            template <typename ExPolicy, typename InIter, typename Sent,
-                typename OutIter>
-            static constexpr std::enable_if_t<
-                pika::traits::is_random_access_iterator_v<InIter>,
-                util::in_out_result<InIter, OutIter>>
-            sequential(ExPolicy, InIter first, Sent last, OutIter dest)
-            {
-                return util::move_n(first, detail::distance(first, last), dest);
-            }
-
-            template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter1, FwdIter2>>::type
-            parallel(
-                ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest)
-            {
-                using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
-
-                return util::detail::get_in_out_result(
-                    util::foreach_partitioner<ExPolicy>::call(
-                        PIKA_FORWARD(ExPolicy, policy),
-                        pika::util::make_zip_iterator(first, dest),
-                        detail::distance(first, last),
-                        [](zip_iterator part_begin, std::size_t part_size,
-                            std::size_t) {
-                            using std::get;
-
-                            auto iters = part_begin.get_iterator_tuple();
-                            util::move_n(
-                                get<0>(iters), part_size, get<1>(iters));
-                        },
-                        [](zip_iterator&& last) -> zip_iterator {
-                            return PIKA_MOVE(last);
-                        }));
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename FwdIter1, typename FwdIter2>
-        struct move : public move_pair<util::in_out_result<FwdIter1, FwdIter2>>
+        template <typename ExPolicy, typename InIter, typename Sent,
+            typename OutIter>
+        static constexpr std::enable_if_t<
+            !pika::traits::is_random_access_iterator_v<InIter>,
+            util::in_out_result<InIter, OutIter>>
+        sequential(ExPolicy, InIter first, Sent last, OutIter dest)
         {
-        };
-        /// \endcond
-    }    // namespace detail
-}}}    // namespace pika::parallel::v1
+            return util::move(first, last, dest);
+        }
+
+        template <typename ExPolicy, typename InIter, typename Sent,
+            typename OutIter>
+        static constexpr std::enable_if_t<
+            pika::traits::is_random_access_iterator_v<InIter>,
+            util::in_out_result<InIter, OutIter>>
+        sequential(ExPolicy, InIter first, Sent last, OutIter dest)
+        {
+            return util::move_n(first, detail::distance(first, last), dest);
+        }
+
+        template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_out_result<FwdIter1, FwdIter2>>::type
+        parallel(
+            ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest)
+        {
+            using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
+
+            return util::detail::get_in_out_result(
+                util::foreach_partitioner<ExPolicy>::call(
+                    PIKA_FORWARD(ExPolicy, policy),
+                    pika::util::make_zip_iterator(first, dest),
+                    detail::distance(first, last),
+                    [](zip_iterator part_begin, std::size_t part_size,
+                        std::size_t) {
+                        using std::get;
+
+                        auto iters = part_begin.get_iterator_tuple();
+                        util::move_n(get<0>(iters), part_size, get<1>(iters));
+                    },
+                    [](zip_iterator&& last) -> zip_iterator {
+                        return PIKA_MOVE(last);
+                    }));
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename FwdIter1, typename FwdIter2>
+    struct move : public move_pair<util::in_out_result<FwdIter1, FwdIter2>>
+    {
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::move
     inline constexpr struct move_t final
@@ -181,8 +176,8 @@ namespace pika {
             FwdIter1 last, FwdIter2 dest)
         {
             return pika::parallel::util::get_second_element(
-                pika::parallel::v1::detail::transfer<
-                    pika::parallel::v1::detail::move<FwdIter1, FwdIter2>>(
+                pika::parallel::detail::transfer<
+                    pika::parallel::detail::move<FwdIter1, FwdIter2>>(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest));
         }
 

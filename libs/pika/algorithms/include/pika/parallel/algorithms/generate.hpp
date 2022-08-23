@@ -150,97 +150,83 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
-
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // generate
-    namespace detail {
-
-        template <typename FwdIter>
-        struct generate : public detail::algorithm<generate<FwdIter>, FwdIter>
+    template <typename FwdIter>
+    struct generate : public detail::algorithm<generate<FwdIter>, FwdIter>
+    {
+        generate()
+          : generate::algorithm("generate")
         {
-            generate()
-              : generate::algorithm("generate")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename F>
-            static constexpr Iter sequential(
-                ExPolicy&& policy, Iter first, Sent last, F&& f)
-            {
-                return sequential_generate(PIKA_FORWARD(ExPolicy, policy),
-                    first, last, PIKA_FORWARD(F, f));
-            }
+        template <typename ExPolicy, typename Iter, typename Sent, typename F>
+        static constexpr Iter sequential(
+            ExPolicy&& policy, Iter first, Sent last, F&& f)
+        {
+            return sequential_generate(PIKA_FORWARD(ExPolicy, policy), first,
+                last, PIKA_FORWARD(F, f));
+        }
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename F>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, F&& f)
-            {
-                auto f1 = [policy, f = PIKA_FORWARD(F, f)](
-                              Iter part_begin, std::size_t part_size) mutable {
-                    auto part_end = part_begin;
-                    std::advance(part_end, part_size);
-                    return sequential_generate(
-                        PIKA_MOVE(policy), part_begin, part_end, PIKA_MOVE(f));
-                };
-                return util::partitioner<ExPolicy, Iter>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), PIKA_MOVE(f1),
-                    [first, last](std::vector<pika::future<Iter>>&&) {
-                        return detail::advance_to_sentinel(first, last);
-                    });
-            }
-        };
-    }    // namespace detail
+        template <typename ExPolicy, typename Iter, typename Sent, typename F>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, F&& f)
+        {
+            auto f1 = [policy, f = PIKA_FORWARD(F, f)](
+                          Iter part_begin, std::size_t part_size) mutable {
+                auto part_end = part_begin;
+                std::advance(part_end, part_size);
+                return sequential_generate(
+                    PIKA_MOVE(policy), part_begin, part_end, PIKA_MOVE(f));
+            };
+            return util::partitioner<ExPolicy, Iter>::call(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), PIKA_MOVE(f1),
+                [first, last](std::vector<pika::future<Iter>>&&) {
+                    return detail::advance_to_sentinel(first, last);
+                });
+        }
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     // generate_n
-    namespace detail {
-
-        template <typename FwdIter>
-        struct generate_n
-          : public detail::algorithm<generate_n<FwdIter>, FwdIter>
+    template <typename FwdIter>
+    struct generate_n : public detail::algorithm<generate_n<FwdIter>, FwdIter>
+    {
+        generate_n()
+          : generate_n::algorithm("generate_n")
         {
-            generate_n()
-              : generate_n::algorithm("generate_n")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename InIter, typename F>
-            static FwdIter sequential(
-                ExPolicy&& policy, InIter first, std::size_t count, F&& f)
-            {
+        template <typename ExPolicy, typename InIter, typename F>
+        static FwdIter sequential(
+            ExPolicy&& policy, InIter first, std::size_t count, F&& f)
+        {
+            return sequential_generate_n(
+                PIKA_FORWARD(ExPolicy, policy), first, count, f);
+        }
+
+        template <typename ExPolicy, typename F>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, std::size_t count, F&& f)
+        {
+            auto f1 = [policy, f = PIKA_FORWARD(F, f)](
+                          FwdIter part_begin, std::size_t part_size) mutable {
                 return sequential_generate_n(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, f);
-            }
-
-            template <typename ExPolicy, typename F>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(
-                    ExPolicy&& policy, FwdIter first, std::size_t count, F&& f)
-            {
-                auto f1 = [policy, f = PIKA_FORWARD(F, f)](FwdIter part_begin,
-                              std::size_t part_size) mutable {
-                    return sequential_generate_n(
-                        PIKA_MOVE(policy), part_begin, part_size, PIKA_MOVE(f));
-                };
-                return util::partitioner<ExPolicy, FwdIter>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_MOVE(f1),
-                    [first, count](
-                        std::vector<pika::future<FwdIter>>&&) mutable {
-                        std::advance(first, count);
-                        return first;
-                    });
-            }
-        };
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+                    PIKA_MOVE(policy), part_begin, part_size, PIKA_MOVE(f));
+            };
+            return util::partitioner<ExPolicy, FwdIter>::call(
+                PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_MOVE(f1),
+                [first, count](std::vector<pika::future<FwdIter>>&&) mutable {
+                    std::advance(first, count);
+                    return first;
+                });
+        }
+    };
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::generate
     inline constexpr struct generate_t final
@@ -262,7 +248,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::generate<FwdIter>().call(
+            return pika::parallel::detail::generate<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(F, f));
         }
@@ -279,7 +265,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::generate<FwdIter>().call(
+            return pika::parallel::detail::generate<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f));
         }
     } generate{};
@@ -305,13 +291,13 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
 
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return pika::parallel::util::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 
-            return pika::parallel::v1::detail::generate_n<FwdIter>().call(
+            return pika::parallel::detail::generate_n<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
                 PIKA_FORWARD(F, f));
         }
@@ -328,12 +314,12 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
 
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return first;
             }
 
-            return pika::parallel::v1::detail::generate_n<FwdIter>().call(
+            return pika::parallel::detail::generate_n<FwdIter>().call(
                 pika::execution::seq, first, std::size_t(count),
                 PIKA_FORWARD(F, f));
         }

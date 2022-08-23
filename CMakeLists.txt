@@ -1032,10 +1032,8 @@ pika_option(
 # (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0022r0.html)
 #
 pika_option(
-  PIKA_WITH_TUPLE_RVALUE_SWAP
-  BOOL
-  "Enable swapping of rvalue tuples (needed for parallel::sort_by_key, default: OFF)."
-  OFF
+  PIKA_WITH_TUPLE_RVALUE_SWAP BOOL
+  "Enable swapping of rvalue tuples (needed for sort_by_key, default: OFF)." OFF
   CATEGORY "Utility"
   ADVANCED
 )

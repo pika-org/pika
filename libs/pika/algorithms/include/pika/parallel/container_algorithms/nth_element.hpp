@@ -298,23 +298,23 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct nth_element_t final
       : pika::detail::tag_parallel_algorithm<nth_element_t>
     {
     private:
         // clang-format off
         template <typename RandomIt, typename Sent,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_random_access_iterator_v<RandomIt> &&
                 pika::traits::is_sentinel_for_v<Sent, RandomIt> &&
-                pika::parallel::traits::is_projected_v<Proj, RandomIt> &&
-                pika::parallel::traits::is_indirect_callable_v<
+                pika::parallel::detail::is_projected_v<Proj, RandomIt> &&
+                pika::parallel::detail::is_indirect_callable_v<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected<Proj, RandomIt>,
-                    pika::parallel::traits::projected<Proj, RandomIt>
+                    pika::parallel::detail::projected<Proj, RandomIt>,
+                    pika::parallel::detail::projected<Proj, RandomIt>
                 >
             )>
         // clang-format on
@@ -325,24 +325,24 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires at least random access iterator.");
 
-            return pika::parallel::v1::detail::nth_element<RandomIt>().call(
+            return pika::parallel::detail::nth_element<RandomIt>().call(
                 pika::execution::seq, first, nth, last,
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename ExPolicy, typename RandomIt, typename Sent,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_random_access_iterator_v<RandomIt> &&
                 pika::traits::is_sentinel_for_v<Sent, RandomIt> &&
-                pika::parallel::traits::is_projected_v<Proj, RandomIt> &&
-                pika::parallel::traits::is_indirect_callable_v<
+                pika::parallel::detail::is_projected_v<Proj, RandomIt> &&
+                pika::parallel::detail::is_indirect_callable_v<
                     ExPolicy, Pred,
-                    pika::parallel::traits::projected<Proj, RandomIt>,
-                    pika::parallel::traits::projected<Proj, RandomIt>
+                    pika::parallel::detail::projected<Proj, RandomIt>,
+                    pika::parallel::detail::projected<Proj, RandomIt>
                 >
             )>
         // clang-format on
@@ -354,22 +354,22 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires at least random access iterator.");
 
-            return pika::parallel::v1::detail::nth_element<RandomIt>().call(
+            return pika::parallel::detail::nth_element<RandomIt>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, nth, last,
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename Rng,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range_v<Rng> &&
-                pika::parallel::traits::is_projected_range_v<Proj, Rng> &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range_v<Proj, Rng> &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Pred,
-                    pika::parallel::traits::projected_range<Proj, Rng>,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -384,23 +384,23 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires at least random access iterator.");
 
-            return pika::parallel::v1::detail::nth_element<iterator_type>()
-                .call(pika::execution::seq, std::begin(rng), nth, std::end(rng),
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::nth_element<iterator_type>().call(
+                pika::execution::seq, std::begin(rng), nth, std::end(rng),
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename ExPolicy, typename Rng,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&
-                pika::parallel::traits::is_projected_range_v<Proj, Rng> &&
-                pika::parallel::traits::is_indirect_callable_v<
+                pika::parallel::detail::is_projected_range_v<Proj, Rng> &&
+                pika::parallel::detail::is_indirect_callable_v<
                     ExPolicy, Pred,
-                    pika::parallel::traits::projected_range<Proj, Rng>,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >
             )>
         // clang-format on
@@ -416,12 +416,12 @@ namespace pika { namespace ranges {
                 pika::traits::is_random_access_iterator_v<iterator_type>,
                 "Requires at least random access iterator.");
 
-            return pika::parallel::v1::detail::nth_element<iterator_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng), nth,
-                    std::end(rng), PIKA_FORWARD(Pred, pred),
-                    PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::nth_element<iterator_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), std::begin(rng), nth,
+                std::end(rng), PIKA_FORWARD(Pred, pred),
+                PIKA_FORWARD(Proj, proj));
         }
     } nth_element{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

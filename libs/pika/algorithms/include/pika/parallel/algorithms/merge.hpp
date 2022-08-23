@@ -198,151 +198,335 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     /////////////////////////////////////////////////////////////////////////////
     // merge
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // sequential merge with projection function.
-        template <typename Iter1, typename Sent1, typename Iter2,
-            typename Sent2, typename OutIter, typename Comp, typename Proj1,
-            typename Proj2>
-        constexpr util::in_in_out_result<Iter1, Iter2, OutIter>
-        sequential_merge(Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-            OutIter dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    // sequential merge with projection function.
+    template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
+        typename OutIter, typename Comp, typename Proj1, typename Proj2>
+    constexpr util::in_in_out_result<Iter1, Iter2, OutIter> sequential_merge(
+        Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, OutIter dest,
+        Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    {
+        if (first1 != last1 && first2 != last2)
         {
-            if (first1 != last1 && first2 != last2)
+            while (true)
             {
-                while (true)
+                if (PIKA_INVOKE(comp, PIKA_INVOKE(proj2, *first2),
+                        PIKA_INVOKE(proj1, *first1)))
                 {
-                    if (PIKA_INVOKE(comp, PIKA_INVOKE(proj2, *first2),
-                            PIKA_INVOKE(proj1, *first1)))
+                    *dest++ = *first2++;
+                    if (first2 == last2)
                     {
-                        *dest++ = *first2++;
-                        if (first2 == last2)
-                        {
-                            break;
-                        }
+                        break;
                     }
-                    else
-                    {
-                        *dest++ = *first1++;
-                        if (first1 == last1)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            auto copy_result1 = util::copy(first1, last1, dest);
-            auto copy_result2 = util::copy(first2, last2, copy_result1.out);
-
-            return {copy_result1.in, copy_result2.in, copy_result2.out};
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        struct lower_bound_helper;
-
-        struct upper_bound_helper
-        {
-            // upper_bound with projection function.
-            template <typename Iter, typename Sent, typename T, typename Comp,
-                typename Proj>
-            static constexpr Iter call(
-                Iter first, Sent last, T const& value, Comp&& comp, Proj&& proj)
-            {
-                return detail::upper_bound(first, last, value,
-                    PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
-            }
-
-            using another_type = lower_bound_helper;
-        };
-
-        struct lower_bound_helper
-        {
-            // lower_bound with projection function.
-            template <typename Iter, typename Sent, typename T, typename Comp,
-                typename Proj>
-            static constexpr Iter call(
-                Iter first, Sent last, T const& value, Comp&& comp, Proj&& proj)
-            {
-                return detail::lower_bound(first, last, value,
-                    PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
-            }
-
-            using another_type = upper_bound_helper;
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename ExPolicy, typename Iter1, typename Sent1,
-            typename Iter2, typename Sent2, typename Iter3, typename Comp,
-            typename Proj1, typename Proj2, typename BinarySearchHelper>
-        void parallel_merge_helper(ExPolicy policy, Iter1 first1, Sent1 last1,
-            Iter2 first2, Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1,
-            Proj2&& proj2, bool range_reversal, BinarySearchHelper)
-        {
-            constexpr std::size_t threshold = 65536;
-
-            std::size_t size1 = detail::distance(first1, last1);
-            std::size_t size2 = detail::distance(first2, last2);
-
-            // Perform sequential merge if data size is smaller than threshold.
-            if (size1 + size2 <= threshold)
-            {
-                if (range_reversal)
-                {
-                    sequential_merge(first2, last2, first1, last1, dest,
-                        PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj2, proj2),
-                        PIKA_FORWARD(Proj1, proj1));
                 }
                 else
                 {
-                    sequential_merge(first1, last1, first2, last2, dest,
-                        PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj1, proj1),
-                        PIKA_FORWARD(Proj2, proj2));
+                    *dest++ = *first1++;
+                    if (first1 == last1)
+                    {
+                        break;
+                    }
                 }
-                return;
             }
+        }
 
-            // Let size1 is bigger than size2 always.
-            if (size1 < size2)
+        auto copy_result1 = util::copy(first1, last1, dest);
+        auto copy_result2 = util::copy(first2, last2, copy_result1.out);
+
+        return {copy_result1.in, copy_result2.in, copy_result2.out};
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    struct lower_bound_helper;
+
+    struct upper_bound_helper
+    {
+        // upper_bound with projection function.
+        template <typename Iter, typename Sent, typename T, typename Comp,
+            typename Proj>
+        static constexpr Iter call(
+            Iter first, Sent last, T const& value, Comp&& comp, Proj&& proj)
+        {
+            return detail::upper_bound(first, last, value,
+                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
+        }
+
+        using another_type = lower_bound_helper;
+    };
+
+    struct lower_bound_helper
+    {
+        // lower_bound with projection function.
+        template <typename Iter, typename Sent, typename T, typename Comp,
+            typename Proj>
+        static constexpr Iter call(
+            Iter first, Sent last, T const& value, Comp&& comp, Proj&& proj)
+        {
+            return detail::lower_bound(first, last, value,
+                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
+        }
+
+        using another_type = upper_bound_helper;
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename ExPolicy, typename Iter1, typename Sent1, typename Iter2,
+        typename Sent2, typename Iter3, typename Comp, typename Proj1,
+        typename Proj2, typename BinarySearchHelper>
+    void parallel_merge_helper(ExPolicy policy, Iter1 first1, Sent1 last1,
+        Iter2 first2, Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1,
+        Proj2&& proj2, bool range_reversal, BinarySearchHelper)
+    {
+        constexpr std::size_t threshold = 65536;
+
+        std::size_t size1 = detail::distance(first1, last1);
+        std::size_t size2 = detail::distance(first2, last2);
+
+        // Perform sequential merge if data size is smaller than threshold.
+        if (size1 + size2 <= threshold)
+        {
+            if (range_reversal)
             {
-                // For stability of algorithm, must switch binary search methods
-                // when swapping size1 and size2.
-                parallel_merge_helper(policy, first2, last2, first1, last1,
-                    dest, PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj2, proj2),
-                    PIKA_FORWARD(Proj1, proj1), !range_reversal,
-                    typename BinarySearchHelper::another_type());
-                return;
+                sequential_merge(first2, last2, first1, last1, dest,
+                    PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj2, proj2),
+                    PIKA_FORWARD(Proj1, proj1));
+            }
+            else
+            {
+                sequential_merge(first1, last1, first2, last2, dest,
+                    PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj1, proj1),
+                    PIKA_FORWARD(Proj2, proj2));
+            }
+            return;
+        }
+
+        // Let size1 is bigger than size2 always.
+        if (size1 < size2)
+        {
+            // For stability of algorithm, must switch binary search methods
+            // when swapping size1 and size2.
+            parallel_merge_helper(policy, first2, last2, first1, last1, dest,
+                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj2, proj2),
+                PIKA_FORWARD(Proj1, proj1), !range_reversal,
+                typename BinarySearchHelper::another_type());
+            return;
+        }
+
+        PIKA_ASSERT(size1 >= size2);
+        PIKA_ASSERT(size1 >= 1ul);
+
+        Iter1 mid1 = first1 + size1 / 2;
+        Iter2 boundary2 = BinarySearchHelper::call(
+            first2, last2, PIKA_INVOKE(proj1, *mid1), comp, proj2);
+        Iter3 target = dest + (mid1 - first1) + (boundary2 - first2);
+
+        *target = *mid1;
+
+        pika::future<void> fut =
+            execution::async_execute(policy.executor(), [&]() -> void {
+                // Process left side ranges.
+                parallel_merge_helper(policy, first1, mid1, first2, boundary2,
+                    dest, comp, proj1, proj2, range_reversal,
+                    BinarySearchHelper());
+            });
+
+        try
+        {
+            // Process right side ranges.
+            parallel_merge_helper(policy, mid1 + 1, last1, boundary2, last2,
+                target + 1, PIKA_FORWARD(Comp, comp),
+                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2),
+                range_reversal, BinarySearchHelper());
+        }
+        catch (...)
+        {
+            fut.wait();
+
+            std::vector<pika::future<void>> futures;
+            futures.reserve(2);
+            futures.emplace_back(PIKA_MOVE(fut));
+            futures.emplace_back(
+                pika::make_exceptional_future<void>(std::current_exception()));
+
+            std::list<std::exception_ptr> errors;
+            util::detail::handle_local_exceptions<ExPolicy>::call(
+                futures, errors);
+
+            // Not reachable.
+            PIKA_ASSERT(false);
+            return;
+        }
+
+        fut.get();
+    }
+
+    template <typename ExPolicy, typename Iter1, typename Sent1, typename Iter2,
+        typename Sent2, typename Iter3, typename Comp, typename Proj1,
+        typename Proj2>
+    pika::future<util::in_in_out_result<Iter1, Iter2, Iter3>> parallel_merge(
+        ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
+        Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    {
+        using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
+
+        auto f1 = [first1, last1, first2, last2, dest,
+                      policy = PIKA_FORWARD(ExPolicy, policy),
+                      comp = PIKA_FORWARD(Comp, comp),
+                      proj1 = PIKA_FORWARD(Proj1, proj1),
+                      proj2 =
+                          PIKA_FORWARD(Proj2, proj2)]() mutable -> result_type {
+            try
+            {
+                parallel_merge_helper(PIKA_MOVE(policy), first1, last1, first2,
+                    last2, dest, PIKA_MOVE(comp), PIKA_MOVE(proj1),
+                    PIKA_MOVE(proj2), false, lower_bound_helper());
+
+                auto len1 = detail::distance(first1, last1);
+                auto len2 = detail::distance(first2, last2);
+                return {std::next(first1, len1), std::next(first2, len2),
+                    std::next(dest, len1 + len2)};
+            }
+            catch (...)
+            {
+                util::detail::handle_local_exceptions<ExPolicy>::call(
+                    std::current_exception());
+                PIKA_ASSERT(false);
+                // To silence no return statement in all control blocks
+                auto len1 = detail::distance(first1, last1);
+                auto len2 = detail::distance(first2, last2);
+                return {std::next(first1, len1), std::next(first2, len2),
+                    std::next(dest, len1 + len2)};
             }
 
-            PIKA_ASSERT(size1 >= size2);
-            PIKA_ASSERT(size1 >= 1ul);
+            // Not reachable.
+            PIKA_ASSERT(false);
+        };
 
-            Iter1 mid1 = first1 + size1 / 2;
-            Iter2 boundary2 = BinarySearchHelper::call(
-                first2, last2, PIKA_INVOKE(proj1, *mid1), comp, proj2);
-            Iter3 target = dest + (mid1 - first1) + (boundary2 - first2);
+        return execution::async_execute(policy.executor(), PIKA_MOVE(f1));
+    }
 
-            *target = *mid1;
+    ///////////////////////////////////////////////////////////////////////
+    template <typename IterTuple>
+    struct merge : public detail::algorithm<merge<IterTuple>, IterTuple>
+    {
+        merge()
+          : merge::algorithm("merge")
+        {
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename Iter3, typename Comp,
+            typename Proj1, typename Proj2>
+        static util::in_in_out_result<Iter1, Iter2, Iter3> sequential(ExPolicy,
+            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, Iter3 dest,
+            Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+        {
+            return sequential_merge(first1, last1, first2, last2, dest,
+                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename Iter3, typename Comp,
+            typename Proj1, typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_in_out_result<Iter1, Iter2, Iter3>>::type
+        parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+        {
+            using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
+            using algorithm_result =
+                util::detail::algorithm_result<ExPolicy, result_type>;
+
+            try
+            {
+                return algorithm_result::get(parallel_merge(
+                    PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
+                    last2, dest, PIKA_FORWARD(Comp, comp),
+                    PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2)));
+            }
+            catch (...)
+            {
+                return algorithm_result::get(
+                    detail::handle_exception<ExPolicy, result_type>::call(
+                        std::current_exception()));
+            }
+        }
+    };
+    /// \endcond
+
+    // TODO: Support forward and bidirectional iterator. (#2826)
+    // For now, only support random access iterator.
+
+    /////////////////////////////////////////////////////////////////////////////
+    // inplace_merge
+    // sequential inplace_merge with projection function.
+    template <typename Iter, typename Sent, typename Comp, typename Proj>
+    inline Iter sequential_inplace_merge(
+        Iter first, Iter middle, Sent last, Comp&& comp, Proj&& proj)
+    {
+        std::inplace_merge(first, middle,
+            detail::advance_to_sentinel(middle, last),
+            util::compare_projected<Comp&, Proj&>(comp, proj));
+        return last;
+    }
+
+    template <typename ExPolicy, typename Iter, typename Sent, typename Comp,
+        typename Proj>
+    void parallel_inplace_merge_helper(ExPolicy&& policy, Iter first,
+        Iter middle, Sent last, Comp&& comp, Proj&& proj)
+    {
+        const std::size_t threshold = 65536ul;
+        PIKA_ASSERT(threshold >= 5ul);
+
+        std::size_t left_size = middle - first;
+        std::size_t right_size = last - middle;
+
+        // Perform sequential inplace_merge
+        //   if data size is smaller than threshold.
+        if (left_size + right_size <= threshold)
+        {
+            sequential_inplace_merge(first, middle, last,
+                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
+            return;
+        }
+
+        if (left_size >= right_size)
+        {
+            // Means that always 'pivot' < 'middle'.
+            PIKA_ASSERT(left_size >= 3ul);
+
+            // Select pivot in left-side range.
+            Iter pivot = first + left_size / 2;
+            Iter boundary = lower_bound_helper::call(
+                middle, last, PIKA_INVOKE(proj, *pivot), comp, proj);
+            Iter target = pivot + (boundary - middle);
+
+            // Swap two blocks, [pivot, middle) and [middle, boundary).
+            // After this, [first, last) will be divided into three blocks,
+            //   [first, target), target, and [target+1, last).
+            // And all elements of [first, target) are less than
+            //   the thing of target.
+            // And all elements of [target+1, last) are greater or equal than
+            //   the thing of target.
+            detail::sequential_rotate(pivot, middle, boundary);
 
             pika::future<void> fut =
                 execution::async_execute(policy.executor(), [&]() -> void {
-                    // Process left side ranges.
-                    parallel_merge_helper(policy, first1, mid1, first2,
-                        boundary2, dest, comp, proj1, proj2, range_reversal,
-                        BinarySearchHelper());
+                    // Process the range which is left-side of 'target'.
+                    parallel_inplace_merge_helper(
+                        policy, first, pivot, target, comp, proj);
                 });
 
             try
             {
-                // Process right side ranges.
-                parallel_merge_helper(policy, mid1 + 1, last1, boundary2, last2,
-                    target + 1, PIKA_FORWARD(Comp, comp),
-                    PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2),
-                    range_reversal, BinarySearchHelper());
+                // Process the range which is right-side of 'target'.
+                parallel_inplace_merge_helper(
+                    policy, target + 1, boundary, last, comp, proj);
             }
             catch (...)
             {
@@ -360,349 +544,154 @@ namespace pika { namespace parallel { inline namespace v1 {
 
                 // Not reachable.
                 PIKA_ASSERT(false);
-                return;
             }
 
-            fut.get();
+            if (fut.valid())    // NOLINT
+            {
+                fut.get();
+            }
         }
-
-        template <typename ExPolicy, typename Iter1, typename Sent1,
-            typename Iter2, typename Sent2, typename Iter3, typename Comp,
-            typename Proj1, typename Proj2>
-        pika::future<util::in_in_out_result<Iter1, Iter2, Iter3>>
-        parallel_merge(ExPolicy&& policy, Iter1 first1, Sent1 last1,
-            Iter2 first2, Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1,
-            Proj2&& proj2)
+        else    // left_size < right_size
         {
-            using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
+            // Means that always 'pivot' < 'last'.
+            PIKA_ASSERT(right_size >= 3ul);
 
-            auto f1 = [first1, last1, first2, last2, dest,
-                          policy = PIKA_FORWARD(ExPolicy, policy),
-                          comp = PIKA_FORWARD(Comp, comp),
-                          proj1 = PIKA_FORWARD(Proj1, proj1),
-                          proj2 = PIKA_FORWARD(
-                              Proj2, proj2)]() mutable -> result_type {
+            // Select pivot in right-side range.
+            Iter pivot = middle + right_size / 2;
+            Iter boundary = upper_bound_helper::call(
+                first, middle, PIKA_INVOKE(proj, *pivot), comp, proj);
+            Iter target = boundary + (pivot - middle);
+
+            // Swap two blocks, [boundary, middle) and [middle, pivot+1).
+            // After this, [first, last) will be divided into three blocks,
+            //   [first, target), target, and [target+1, last).
+            // And all elements of [first, target) are less than
+            //   the thing of target.
+            // And all elements of [target+1, last) are greater or equal than
+            //   the thing of target.
+            detail::sequential_rotate(boundary, middle, pivot + 1);
+
+            pika::future<void> fut =
+                execution::async_execute(policy.executor(), [&]() -> void {
+                    // Process the range which is left-side of 'target'.
+                    parallel_inplace_merge_helper(
+                        policy, first, boundary, target, comp, proj);
+                });
+
+            try
+            {
+                // Process the range which is right-side of 'target'.
+                parallel_inplace_merge_helper(
+                    policy, target + 1, pivot + 1, last, comp, proj);
+            }
+            catch (...)
+            {
+                fut.wait();
+
+                std::vector<pika::future<void>> futures;
+                futures.reserve(2);
+                futures.emplace_back(PIKA_MOVE(fut));
+                futures.emplace_back(pika::make_exceptional_future<void>(
+                    std::current_exception()));
+
+                std::list<std::exception_ptr> errors;
+                util::detail::handle_local_exceptions<ExPolicy>::call(
+                    futures, errors);
+
+                // Not reachable.
+                PIKA_ASSERT(false);
+            }
+
+            if (fut.valid())    // NOLINT
+            {
+                fut.get();
+            }
+        }
+    }
+
+    template <typename ExPolicy, typename Iter, typename Sent, typename Comp,
+        typename Proj>
+    inline pika::future<Iter> parallel_inplace_merge(ExPolicy&& policy,
+        Iter first, Iter middle, Sent last, Comp&& comp, Proj&& proj)
+    {
+        return execution::async_execute(policy.executor(),
+            [policy, first, middle, last, comp = PIKA_FORWARD(Comp, comp),
+                proj = PIKA_FORWARD(Proj, proj)]() mutable -> Iter {
                 try
                 {
-                    parallel_merge_helper(PIKA_MOVE(policy), first1, last1,
-                        first2, last2, dest, PIKA_MOVE(comp), PIKA_MOVE(proj1),
-                        PIKA_MOVE(proj2), false, lower_bound_helper());
-
-                    auto len1 = detail::distance(first1, last1);
-                    auto len2 = detail::distance(first2, last2);
-                    return {std::next(first1, len1), std::next(first2, len2),
-                        std::next(dest, len1 + len2)};
+                    parallel_inplace_merge_helper(policy, first, middle, last,
+                        PIKA_MOVE(comp), PIKA_MOVE(proj));
+                    return last;
                 }
                 catch (...)
                 {
                     util::detail::handle_local_exceptions<ExPolicy>::call(
                         std::current_exception());
-                    PIKA_ASSERT(false);
-                    // To silence no return statement in all control blocks
-                    auto len1 = detail::distance(first1, last1);
-                    auto len2 = detail::distance(first2, last2);
-                    return {std::next(first1, len1), std::next(first2, len2),
-                        std::next(dest, len1 + len2)};
                 }
 
                 // Not reachable.
                 PIKA_ASSERT(false);
-            };
+                return last;
+            });
+    }
 
-            return execution::async_execute(policy.executor(), PIKA_MOVE(f1));
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename IterTuple>
-        struct merge : public detail::algorithm<merge<IterTuple>, IterTuple>
+    template <typename Result>
+    struct inplace_merge
+      : public detail::algorithm<inplace_merge<Result>, Result>
+    {
+        inplace_merge()
+          : inplace_merge::algorithm("inplace_merge")
         {
-            merge()
-              : merge::algorithm("merge")
-            {
-            }
-
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename Iter3, typename Comp,
-                typename Proj1, typename Proj2>
-            static util::in_in_out_result<Iter1, Iter2, Iter3> sequential(
-                ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-                Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
-            {
-                return sequential_merge(first1, last1, first2, last2, dest,
-                    PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
-            }
-
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename Iter3, typename Comp,
-                typename Proj1, typename Proj2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_in_out_result<Iter1, Iter2, Iter3>>::type
-            parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
-                Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1,
-                Proj2&& proj2)
-            {
-                using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
-                using algorithm_result =
-                    util::detail::algorithm_result<ExPolicy, result_type>;
-
-                try
-                {
-                    return algorithm_result::get(parallel_merge(
-                        PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
-                        last2, dest, PIKA_FORWARD(Comp, comp),
-                        PIKA_FORWARD(Proj1, proj1),
-                        PIKA_FORWARD(Proj2, proj2)));
-                }
-                catch (...)
-                {
-                    return algorithm_result::get(
-                        detail::handle_exception<ExPolicy, result_type>::call(
-                            std::current_exception()));
-                }
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-
-    // TODO: Support forward and bidirectional iterator. (#2826)
-    // For now, only support random access iterator.
-
-    /////////////////////////////////////////////////////////////////////////////
-    // inplace_merge
-    namespace detail {
-
-        // sequential inplace_merge with projection function.
-        template <typename Iter, typename Sent, typename Comp, typename Proj>
-        inline Iter sequential_inplace_merge(
-            Iter first, Iter middle, Sent last, Comp&& comp, Proj&& proj)
-        {
-            std::inplace_merge(first, middle,
-                detail::advance_to_sentinel(middle, last),
-                util::compare_projected<Comp&, Proj&>(comp, proj));
-            return last;
         }
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        void parallel_inplace_merge_helper(ExPolicy&& policy, Iter first,
-            Iter middle, Sent last, Comp&& comp, Proj&& proj)
+        static Iter sequential(ExPolicy, Iter first, Iter middle, Sent last,
+            Comp&& comp, Proj&& proj)
         {
-            const std::size_t threshold = 65536ul;
-            PIKA_ASSERT(threshold >= 5ul);
-
-            std::size_t left_size = middle - first;
-            std::size_t right_size = last - middle;
-
-            // Perform sequential inplace_merge
-            //   if data size is smaller than threshold.
-            if (left_size + right_size <= threshold)
-            {
-                sequential_inplace_merge(first, middle, last,
-                    PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
-                return;
-            }
-
-            if (left_size >= right_size)
-            {
-                // Means that always 'pivot' < 'middle'.
-                PIKA_ASSERT(left_size >= 3ul);
-
-                // Select pivot in left-side range.
-                Iter pivot = first + left_size / 2;
-                Iter boundary = lower_bound_helper::call(
-                    middle, last, PIKA_INVOKE(proj, *pivot), comp, proj);
-                Iter target = pivot + (boundary - middle);
-
-                // Swap two blocks, [pivot, middle) and [middle, boundary).
-                // After this, [first, last) will be divided into three blocks,
-                //   [first, target), target, and [target+1, last).
-                // And all elements of [first, target) are less than
-                //   the thing of target.
-                // And all elements of [target+1, last) are greater or equal than
-                //   the thing of target.
-                detail::sequential_rotate(pivot, middle, boundary);
-
-                pika::future<void> fut =
-                    execution::async_execute(policy.executor(), [&]() -> void {
-                        // Process the range which is left-side of 'target'.
-                        parallel_inplace_merge_helper(
-                            policy, first, pivot, target, comp, proj);
-                    });
-
-                try
-                {
-                    // Process the range which is right-side of 'target'.
-                    parallel_inplace_merge_helper(
-                        policy, target + 1, boundary, last, comp, proj);
-                }
-                catch (...)
-                {
-                    fut.wait();
-
-                    std::vector<pika::future<void>> futures;
-                    futures.reserve(2);
-                    futures.emplace_back(PIKA_MOVE(fut));
-                    futures.emplace_back(pika::make_exceptional_future<void>(
-                        std::current_exception()));
-
-                    std::list<std::exception_ptr> errors;
-                    util::detail::handle_local_exceptions<ExPolicy>::call(
-                        futures, errors);
-
-                    // Not reachable.
-                    PIKA_ASSERT(false);
-                }
-
-                if (fut.valid())    // NOLINT
-                {
-                    fut.get();
-                }
-            }
-            else    // left_size < right_size
-            {
-                // Means that always 'pivot' < 'last'.
-                PIKA_ASSERT(right_size >= 3ul);
-
-                // Select pivot in right-side range.
-                Iter pivot = middle + right_size / 2;
-                Iter boundary = upper_bound_helper::call(
-                    first, middle, PIKA_INVOKE(proj, *pivot), comp, proj);
-                Iter target = boundary + (pivot - middle);
-
-                // Swap two blocks, [boundary, middle) and [middle, pivot+1).
-                // After this, [first, last) will be divided into three blocks,
-                //   [first, target), target, and [target+1, last).
-                // And all elements of [first, target) are less than
-                //   the thing of target.
-                // And all elements of [target+1, last) are greater or equal than
-                //   the thing of target.
-                detail::sequential_rotate(boundary, middle, pivot + 1);
-
-                pika::future<void> fut =
-                    execution::async_execute(policy.executor(), [&]() -> void {
-                        // Process the range which is left-side of 'target'.
-                        parallel_inplace_merge_helper(
-                            policy, first, boundary, target, comp, proj);
-                    });
-
-                try
-                {
-                    // Process the range which is right-side of 'target'.
-                    parallel_inplace_merge_helper(
-                        policy, target + 1, pivot + 1, last, comp, proj);
-                }
-                catch (...)
-                {
-                    fut.wait();
-
-                    std::vector<pika::future<void>> futures;
-                    futures.reserve(2);
-                    futures.emplace_back(PIKA_MOVE(fut));
-                    futures.emplace_back(pika::make_exceptional_future<void>(
-                        std::current_exception()));
-
-                    std::list<std::exception_ptr> errors;
-                    util::detail::handle_local_exceptions<ExPolicy>::call(
-                        futures, errors);
-
-                    // Not reachable.
-                    PIKA_ASSERT(false);
-                }
-
-                if (fut.valid())    // NOLINT
-                {
-                    fut.get();
-                }
-            }
+            return sequential_inplace_merge(first, middle, last,
+                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
         }
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        inline pika::future<Iter> parallel_inplace_merge(ExPolicy&& policy,
-            Iter first, Iter middle, Sent last, Comp&& comp, Proj&& proj)
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Iter middle, Sent last,
+            Comp&& comp, Proj&& proj)
         {
-            return execution::async_execute(policy.executor(),
-                [policy, first, middle, last, comp = PIKA_FORWARD(Comp, comp),
-                    proj = PIKA_FORWARD(Proj, proj)]() mutable -> Iter {
-                    try
-                    {
-                        parallel_inplace_merge_helper(policy, first, middle,
-                            last, PIKA_MOVE(comp), PIKA_MOVE(proj));
-                        return last;
-                    }
-                    catch (...)
-                    {
-                        util::detail::handle_local_exceptions<ExPolicy>::call(
-                            std::current_exception());
-                    }
+            using result = util::detail::algorithm_result<ExPolicy, Iter>;
 
-                    // Not reachable.
-                    PIKA_ASSERT(false);
-                    return last;
-                });
-        }
-
-        template <typename Result>
-        struct inplace_merge
-          : public detail::algorithm<inplace_merge<Result>, Result>
-        {
-            inplace_merge()
-              : inplace_merge::algorithm("inplace_merge")
+            try
             {
+                return result::get(parallel_inplace_merge(
+                    PIKA_FORWARD(ExPolicy, policy), first, middle, last,
+                    PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj)));
             }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Comp, typename Proj>
-            static Iter sequential(ExPolicy, Iter first, Iter middle, Sent last,
-                Comp&& comp, Proj&& proj)
+            catch (...)
             {
-                return sequential_inplace_merge(first, middle, last,
-                    PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
+                return result::get(
+                    detail::handle_exception<ExPolicy, Iter>::call(
+                        std::current_exception()));
             }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Comp, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, Iter middle, Sent last,
-                Comp&& comp, Proj&& proj)
-            {
-                using result = util::detail::algorithm_result<ExPolicy, Iter>;
-
-                try
-                {
-                    return result::get(parallel_inplace_merge(
-                        PIKA_FORWARD(ExPolicy, policy), first, middle, last,
-                        PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj)));
-                }
-                catch (...)
-                {
-                    return result::get(
-                        detail::handle_exception<ExPolicy, Iter>::call(
-                            std::current_exception()));
-                }
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Iter>
-        inline void get_void_result(Iter)
-        {
         }
+    };
 
-        template <typename Iter>
-        inline pika::future<void> get_void_result(pika::future<Iter>&& f)
-        {
-            return pika::future<void>(PIKA_MOVE(f));
-        }
-    }    // namespace detail
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Iter>
+    inline void get_void_result(Iter)
+    {
+    }
 
+    template <typename Iter>
+    inline pika::future<void> get_void_result(pika::future<Iter>&& f)
+    {
+        return pika::future<void>(PIKA_MOVE(f));
+    }
     // TODO: Support bidirectional iterator. (#2826)
     // For now, only support random access iterator.
-}}}    // namespace pika::parallel::v1
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::merge
     inline constexpr struct merge_t final
@@ -711,7 +700,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename RandIter1, typename RandIter2,
-            typename RandIter3, typename Comp = pika::parallel::v1::detail::less,
+            typename RandIter3, typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter1>::value &&
@@ -744,7 +733,7 @@ namespace pika {
                     RandIter3>;
 
             return pika::parallel::util::get_third_element(
-                pika::parallel::v1::detail::merge<result_type>().call(
+                pika::parallel::detail::merge<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                     last2, dest, PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity(),
@@ -753,7 +742,7 @@ namespace pika {
 
         // clang-format off
         template <typename RandIter1, typename RandIter2, typename RandIter3,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter1>::value &&
                 pika::traits::is_iterator<RandIter2>::value &&
@@ -783,7 +772,7 @@ namespace pika {
                     RandIter3>;
 
             return pika::parallel::util::get_third_element(
-                pika::parallel::v1::detail::merge<result_type>().call(
+                pika::parallel::detail::merge<result_type>().call(
                     pika::execution::seq, first1, last1, first2, last2, dest,
                     PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity(),
@@ -799,7 +788,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter>::value &&
@@ -818,8 +807,8 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Required at least random access iterator.");
 
-            return pika::parallel::v1::detail::get_void_result(
-                pika::parallel::v1::detail::inplace_merge<RandIter>().call(
+            return pika::parallel::detail::get_void_result(
+                pika::parallel::detail::inplace_merge<RandIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, middle, last,
                     PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity()));
@@ -827,7 +816,7 @@ namespace pika {
 
         // clang-format off
         template <typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter>::value &&
                 pika::detail::is_invocable_v<Comp,
@@ -843,8 +832,8 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Required at least random access iterator.");
 
-            return pika::parallel::v1::detail::get_void_result(
-                pika::parallel::v1::detail::inplace_merge<RandIter>().call(
+            return pika::parallel::detail::get_void_result(
+                pika::parallel::detail::inplace_merge<RandIter>().call(
                     pika::execution::seq, first, middle, last,
                     PIKA_FORWARD(Comp, comp),
                     pika::parallel::util::projection_identity()));

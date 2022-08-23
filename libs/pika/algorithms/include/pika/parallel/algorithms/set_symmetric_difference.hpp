@@ -133,142 +133,133 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // set_symmetric_difference
-    namespace detail {
-
-        template <typename Iter1, typename Sent1, typename Iter2,
-            typename Sent2, typename Iter3, typename Comp, typename Proj1,
-            typename Proj2>
-        constexpr util::in_in_out_result<Iter1, Iter2, Iter3>
-        sequential_set_symmetric_difference(Iter1 first1, Sent1 last1,
-            Iter2 first2, Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1,
-            Proj2&& proj2)
+    template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
+        typename Iter3, typename Comp, typename Proj1, typename Proj2>
+    constexpr util::in_in_out_result<Iter1, Iter2, Iter3>
+    sequential_set_symmetric_difference(Iter1 first1, Sent1 last1, Iter2 first2,
+        Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    {
+        while (first1 != last1)
         {
-            while (first1 != last1)
+            if (first2 == last2)
             {
-                if (first2 == last2)
-                {
-                    auto result = util::copy(first1, last1, dest);
-                    return {result.in, first2, result.out};
-                }
+                auto result = util::copy(first1, last1, dest);
+                return {result.in, first2, result.out};
+            }
 
-                auto&& value1 = PIKA_INVOKE(proj1, *first1);
-                auto&& value2 = PIKA_INVOKE(proj2, *first2);
+            auto&& value1 = PIKA_INVOKE(proj1, *first1);
+            auto&& value2 = PIKA_INVOKE(proj2, *first2);
 
-                if (PIKA_INVOKE(comp, value1, value2))
+            if (PIKA_INVOKE(comp, value1, value2))
+            {
+                *dest++ = *first1++;
+            }
+            else
+            {
+                if (PIKA_INVOKE(comp, value2, value1))
                 {
-                    *dest++ = *first1++;
+                    *dest++ = *first2;
                 }
                 else
                 {
-                    if (PIKA_INVOKE(comp, value2, value1))
-                    {
-                        *dest++ = *first2;
-                    }
-                    else
-                    {
-                        ++first1;
-                    }
-                    ++first2;
+                    ++first1;
                 }
+                ++first2;
             }
-
-            auto result = util::copy(first2, last2, dest);
-            return {first1, result.in, result.out};
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Result>
-        struct set_symmetric_difference
-          : public detail::algorithm<set_symmetric_difference<Result>, Result>
+        auto result = util::copy(first2, last2, dest);
+        return {first1, result.in, result.out};
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Result>
+    struct set_symmetric_difference
+      : public detail::algorithm<set_symmetric_difference<Result>, Result>
+    {
+        set_symmetric_difference()
+          : set_symmetric_difference::algorithm("set_symmetric_difference")
         {
-            set_symmetric_difference()
-              : set_symmetric_difference::algorithm("set_symmetric_difference")
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename Iter3, typename F,
+            typename Proj1, typename Proj2>
+        static util::in_in_out_result<Iter1, Iter2, Iter3> sequential(ExPolicy,
+            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, Iter3 dest,
+            F&& f, Proj1&& proj1, Proj2&& proj2)
+        {
+            return sequential_set_symmetric_difference(first1, last1, first2,
+                last2, dest, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename Iter3, typename F,
+            typename Proj1, typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy,
+            util::in_in_out_result<Iter1, Iter2, Iter3>>::type
+        parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, Iter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2)
+        {
+            using difference_type1 =
+                typename std::iterator_traits<Iter1>::difference_type;
+            using difference_type2 =
+                typename std::iterator_traits<Iter2>::difference_type;
+
+            using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
+
+            if (first1 == last1)
             {
+                return util::detail::convert_to_result(
+                    detail::copy<util::in_out_result<Iter2, Iter3>>().call(
+                        PIKA_FORWARD(ExPolicy, policy), first2, last2, dest),
+                    [first1](util::in_out_result<Iter2, Iter3> const& p)
+                        -> result_type {
+                        return {first1, p.in, p.out};
+                    });
             }
 
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename Iter3, typename F,
-                typename Proj1, typename Proj2>
-            static util::in_in_out_result<Iter1, Iter2, Iter3> sequential(
-                ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-                Iter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2)
+            if (first2 == last2)
             {
-                return sequential_set_symmetric_difference(first1, last1,
-                    first2, last2, dest, PIKA_FORWARD(F, f),
-                    PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2));
+                return util::detail::convert_to_result(
+                    detail::copy<util::in_out_result<Iter1, Iter3>>().call(
+                        PIKA_FORWARD(ExPolicy, policy), first1, last1, dest),
+                    [first2](util::in_out_result<Iter1, Iter3> const& p)
+                        -> result_type {
+                        return {p.in, first2, p.out};
+                    });
             }
 
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename Iter3, typename F,
-                typename Proj1, typename Proj2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::in_in_out_result<Iter1, Iter2, Iter3>>::type
-            parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
-                Sent2 last2, Iter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2)
-            {
-                using difference_type1 =
-                    typename std::iterator_traits<Iter1>::difference_type;
-                using difference_type2 =
-                    typename std::iterator_traits<Iter2>::difference_type;
+            using buffer_type = typename set_operations_buffer<Iter3>::type;
+            using func_type = std::decay_t<F>;
 
-                using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
+            // calculate approximate destination index
+            auto f1 = [](difference_type1 idx1,
+                          difference_type2 idx2) -> difference_type1 {
+                return idx1 + idx2;
+            };
 
-                if (first1 == last1)
-                {
-                    return util::detail::convert_to_result(
-                        detail::copy<util::in_out_result<Iter2, Iter3>>().call(
-                            PIKA_FORWARD(ExPolicy, policy), first2, last2,
-                            dest),
-                        [first1](util::in_out_result<Iter2, Iter3> const& p)
-                            -> result_type {
-                            return {first1, p.in, p.out};
-                        });
-                }
+            // perform required set operation for one chunk
+            auto f2 = [proj1, proj2](Iter1 part_first1, Sent1 part_last1,
+                          Iter2 part_first2, Sent2 part_last2,
+                          buffer_type* dest, func_type const& f) {
+                return sequential_set_symmetric_difference(part_first1,
+                    part_last1, part_first2, part_last2, dest, f, proj1, proj2);
+            };
 
-                if (first2 == last2)
-                {
-                    return util::detail::convert_to_result(
-                        detail::copy<util::in_out_result<Iter1, Iter3>>().call(
-                            PIKA_FORWARD(ExPolicy, policy), first1, last1,
-                            dest),
-                        [first2](util::in_out_result<Iter1, Iter3> const& p)
-                            -> result_type {
-                            return {p.in, first2, p.out};
-                        });
-                }
-
-                using buffer_type = typename set_operations_buffer<Iter3>::type;
-                using func_type = std::decay_t<F>;
-
-                // calculate approximate destination index
-                auto f1 = [](difference_type1 idx1,
-                              difference_type2 idx2) -> difference_type1 {
-                    return idx1 + idx2;
-                };
-
-                // perform required set operation for one chunk
-                auto f2 = [proj1, proj2](Iter1 part_first1, Sent1 part_last1,
-                              Iter2 part_first2, Sent2 part_last2,
-                              buffer_type* dest, func_type const& f) {
-                    return sequential_set_symmetric_difference(part_first1,
-                        part_last1, part_first2, part_last2, dest, f, proj1,
-                        proj2);
-                };
-
-                return set_operation(PIKA_FORWARD(ExPolicy, policy), first1,
-                    last1, first2, last2, dest, PIKA_FORWARD(F, f),
-                    PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2),
-                    PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+            return set_operation(PIKA_FORWARD(ExPolicy, policy), first1, last1,
+                first2, last2, dest, PIKA_FORWARD(F, f),
+                PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2),
+                PIKA_MOVE(f1), PIKA_MOVE(f2));
+        }
+    };
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::set_symmetric_difference
     inline constexpr struct set_symmetric_difference_t final
@@ -277,7 +268,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-            typename FwdIter3, typename Pred = pika::parallel::v1::detail::less,
+            typename FwdIter3, typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
@@ -313,8 +304,7 @@ namespace pika {
                 FwdIter2, FwdIter3>;
 
             return pika::parallel::util::get_third_element(
-                pika::parallel::v1::detail::set_symmetric_difference<
-                    result_type>()
+                pika::parallel::detail::set_symmetric_difference<result_type>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first1,
                         last1, first2, last2, dest, PIKA_FORWARD(Pred, op),
                         pika::parallel::util::projection_identity(),
@@ -323,7 +313,7 @@ namespace pika {
 
         // clang-format off
         template <typename FwdIter1, typename FwdIter2, typename FwdIter3,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<FwdIter1>::value &&
                 pika::traits::is_iterator<FwdIter2>::value &&
@@ -349,8 +339,7 @@ namespace pika {
                 FwdIter2, FwdIter3>;
 
             return pika::parallel::util::get_third_element(
-                pika::parallel::v1::detail::set_symmetric_difference<
-                    result_type>()
+                pika::parallel::detail::set_symmetric_difference<result_type>()
                     .call(pika::execution::seq, first1, last1, first2, last2,
                         dest, PIKA_FORWARD(Pred, op),
                         pika::parallel::util::projection_identity(),

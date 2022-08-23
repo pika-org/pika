@@ -24,9 +24,7 @@
 #include <utility>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util { namespace detail {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util::detail {
     template <typename F, typename Future, typename FwdIter>
     // requires traits::is_future<Future>
     void add_ready_future(
@@ -128,8 +126,8 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         std::size_t max_chunks = execution::maximal_number_of_chunks(
             policy.parameters(), policy.executor(), cores, count);
 
-        FwdIter last = parallel::v1::detail::next(begin, count);
-        Stride stride = parallel::v1::detail::abs(s);
+        FwdIter last = parallel::detail::next(begin, count);
+        Stride stride = parallel::detail::abs(s);
 
         auto test_function = [&](std::size_t test_chunk_size) -> std::size_t {
             if (test_chunk_size == 0)
@@ -149,7 +147,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             add_ready_future(workitems, f1, begin, test_chunk_size);
 
             // modifies 'test_chunk_size'
-            begin = parallel::v1::detail::next(begin, count, test_chunk_size);
+            begin = parallel::detail::next(begin, count, test_chunk_size);
 
             count -= test_chunk_size;
             return test_chunk_size;
@@ -196,7 +194,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         PIKA_ASSERT(0 != max_chunks);
 
         std::vector<tuple_type> shape;
-        Stride stride = parallel::v1::detail::abs(s);
+        Stride stride = parallel::detail::abs(s);
 
         // different versions of clang-format do different things
         // clang-format off
@@ -229,7 +227,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             shape.push_back(std::make_tuple(first, chunk));
 
             // modifies 'chunk'
-            first = parallel::v1::detail::next(first, count, chunk);
+            first = parallel::detail::next(first, count, chunk);
             count -= chunk;
         }
         // clang-format on
@@ -278,9 +276,9 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         std::size_t max_chunks = execution::maximal_number_of_chunks(
             policy.parameters(), policy.executor(), cores, count);
 
-        FwdIter last = parallel::v1::detail::next(begin, count);
+        FwdIter last = parallel::detail::next(begin, count);
 
-        Stride stride = parallel::v1::detail::abs(s);
+        Stride stride = parallel::detail::abs(s);
         std::size_t base_idx = 0;
         auto test_function = [&](std::size_t test_chunk_size) -> std::size_t {
             if (test_chunk_size == 0)
@@ -299,7 +297,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
                 workitems, f1, begin, base_idx, test_chunk_size);
 
             // modifies 'test_chunk_size'
-            begin = parallel::v1::detail::next(begin, count, test_chunk_size);
+            begin = parallel::detail::next(begin, count, test_chunk_size);
 
             base_idx += test_chunk_size;
             count -= test_chunk_size;
@@ -348,7 +346,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             policy.parameters(), policy.executor(), cores, count);
 
         std::vector<tuple_type> shape;
-        Stride stride = parallel::v1::detail::abs(s);
+        Stride stride = parallel::detail::abs(s);
         std::size_t base_idx = 0;
 
         // different versions of clang-format do different things
@@ -382,7 +380,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             shape.push_back(std::make_tuple(first, chunk, base_idx));
 
             // modifies 'chunk'
-            first = parallel::v1::detail::next(first, count, chunk);
+            first = parallel::detail::next(first, count, chunk);
 
             count -= chunk;
             base_idx += chunk;
@@ -391,4 +389,4 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 
         return shape;
     }
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail

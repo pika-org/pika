@@ -22,10 +22,9 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v2 {
-    namespace detail {
+namespace pika {
+    namespace parallel::detail {
         /// \cond NOINTERNAL
-
         ///////////////////////////////////////////////////////////////////////
         template <typename T, typename Op>
         struct reduction_helper
@@ -72,7 +71,7 @@ namespace pika { namespace parallel { inline namespace v2 {
         };
 
         /// \endcond
-    }    // namespace detail
+    }    // namespace parallel::detail
 
     /// The function template returns a reduction object of unspecified type
     /// having a value type and encapsulating an identity value for the
@@ -124,114 +123,125 @@ namespace pika { namespace parallel { inline namespace v2 {
     ///          it the two views to be combined.
     ///
     template <typename T, typename Op>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::decay_t<Op>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::decay_t<Op>>
     reduction(T& var, T const& identity, Op&& combiner)
     {
-        return detail::reduction_helper<T, std::decay_t<Op>>(
+        return parallel::detail::reduction_helper<T, std::decay_t<Op>>(
             var, identity, PIKA_FORWARD(Op, combiner));
     }
 
     /// \cond NOINTERNAL
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::plus<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::plus<T>>
     reduction_plus(T& var)
     {
         return reduction(var, T(), std::plus<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::plus<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::plus<T>>
     reduction_plus(T& var, T const& identity)
     {
         return reduction(var, identity, std::plus<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::multiplies<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::multiplies<T>>
     reduction_multiplies(T& var)
     {
         return reduction(var, T(1), std::multiplies<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::multiplies<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::multiplies<T>>
     reduction_multiplies(T& var, T const& identity)
     {
         return reduction(var, identity, std::multiplies<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::bit_and<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::bit_and<T>>
     reduction_bit_and(T& var)
     {
         return reduction(var, ~(T()), std::bit_and<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::bit_and<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::bit_and<T>>
     reduction_bit_and(T& var, T const& identity)
     {
         return reduction(var, identity, std::bit_and<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::bit_or<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::bit_or<T>>
     reduction_bit_or(T& var)
     {
         return reduction(var, T(), std::bit_or<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::bit_or<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::bit_or<T>>
     reduction_bit_or(T& var, T const& identity)
     {
         return reduction(var, identity, std::bit_or<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::bit_xor<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::bit_xor<T>>
     reduction_bit_xor(T& var)
     {
         return reduction(var, T(), std::bit_xor<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T, std::bit_xor<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        std::bit_xor<T>>
     reduction_bit_xor(T& var, T const& identity)
     {
         return reduction(var, identity, std::bit_xor<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T,
-        v1::detail::min_of<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        parallel::detail::min_of<T>>
     reduction_min(T& var)
     {
-        return reduction(var, var, v1::detail::min_of<T>());
+        return reduction(var, var, parallel::detail::min_of<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T,
-        v1::detail::min_of<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        parallel::detail::min_of<T>>
     reduction_min(T& var, T const& identity)
     {
-        return reduction(var, identity, v1::detail::min_of<T>());
+        return reduction(var, identity, parallel::detail::min_of<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T,
-        v1::detail::max_of<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        parallel::detail::max_of<T>>
     reduction_max(T& var)
     {
-        return reduction(var, var, v1::detail::max_of<T>());
+        return reduction(var, var, parallel::detail::max_of<T>());
     }
 
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::reduction_helper<T,
-        v1::detail::max_of<T>>
+    PIKA_FORCEINLINE constexpr parallel::detail::reduction_helper<T,
+        parallel::detail::max_of<T>>
     reduction_max(T& var, T const& identity)
     {
-        return reduction(var, identity, v1::detail::max_of<T>());
+        return reduction(var, identity, parallel::detail::max_of<T>());
     }
     /// \endcond
-}}}    // namespace pika::parallel::v2
+}    // namespace pika

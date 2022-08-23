@@ -484,7 +484,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::remove_if
     inline constexpr struct remove_if_t final
@@ -496,7 +496,7 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
                 pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<Iter>::value_type
@@ -511,7 +511,7 @@ namespace pika { namespace ranges {
                 "Required at least input iterator.");
 
             return pika::parallel::util::make_subrange<Iter, Sent>(
-                pika::parallel::v1::detail::remove_if<Iter>().call(
+                pika::parallel::detail::remove_if<Iter>().call(
                     pika::execution::seq, first, sent, PIKA_FORWARD(Pred, pred),
                     PIKA_FORWARD(Proj, proj)),
                 sent);
@@ -522,7 +522,7 @@ namespace pika { namespace ranges {
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
                 pika::detail::is_invocable_v<Pred,
                     typename std::iterator_traits<
                         typename pika::traits::range_iterator<Rng>::type
@@ -542,7 +542,7 @@ namespace pika { namespace ranges {
             return pika::parallel::util::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::remove_if<
+                pika::parallel::detail::remove_if<
                     typename pika::traits::range_iterator<Rng>::type>()
                     .call(pika::execution::seq, pika::util::begin(rng),
                         pika::util::end(rng), PIKA_FORWARD(Pred, pred),
@@ -557,9 +557,9 @@ namespace pika { namespace ranges {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter>::value &&
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value &&
-                pika::parallel::traits::is_projected<Proj, FwdIter>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy,
-                    Pred, pika::parallel::traits::projected<Proj, FwdIter>>::value
+                pika::parallel::detail::is_projected<Proj, FwdIter>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy,
+                    Pred, pika::parallel::detail::projected<Proj, FwdIter>>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -571,7 +571,7 @@ namespace pika { namespace ranges {
                 "Required at least forward iterator.");
 
             return pika::parallel::util::make_subrange<FwdIter, Sent>(
-                pika::parallel::v1::detail::remove_if<FwdIter>().call(
+                pika::parallel::detail::remove_if<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, sent,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
                 sent);
@@ -583,9 +583,9 @@ namespace pika { namespace ranges {
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy,
-                    Pred, pika::parallel::traits::projected_range<Proj, Rng>>::value
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy,
+                    Pred, pika::parallel::detail::projected_range<Proj, Rng>>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -601,7 +601,7 @@ namespace pika { namespace ranges {
             return pika::parallel::util::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::v1::detail::remove_if<
+                pika::parallel::detail::remove_if<
                     typename pika::traits::range_iterator<Rng>::type>()
                     .call(PIKA_FORWARD(ExPolicy, policy),
                         pika::util::begin(rng), pika::util::end(rng),
@@ -619,11 +619,11 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename Iter, typename Sent,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<Iter,
+            typename T = typename pika::parallel::detail::projected<Iter,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<Iter>::value &&
-                pika::parallel::traits::is_projected<Proj, Iter>::value &&
+                pika::parallel::detail::is_projected<Proj, Iter>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
@@ -645,11 +645,11 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename Rng,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<
+            typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value
             )>
         // clang-format on
         friend subrange_t<typename pika::traits::range_iterator<Rng>::type>
@@ -673,13 +673,13 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<FwdIter,
+            typename T = typename pika::parallel::detail::projected<FwdIter,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter>::value &&
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value &&
-                pika::parallel::traits::is_projected<Proj, FwdIter>::value
+                pika::parallel::detail::is_projected<Proj, FwdIter>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -701,12 +701,12 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng,
             typename Proj = pika::parallel::util::projection_identity,
-            typename T = typename pika::parallel::traits::projected<
+            typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value
             )>
         // clang-format on
         friend typename parallel::util::detail::algorithm_result<ExPolicy,
@@ -729,6 +729,6 @@ namespace pika { namespace ranges {
         }
 
     } remove{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

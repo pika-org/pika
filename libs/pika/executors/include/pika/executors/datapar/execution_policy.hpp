@@ -23,7 +23,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution { inline namespace v1 {
+namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     /// Extension: The class simd_task_policy is an execution
     /// policy type used as a unique type to disambiguate parallel algorithm
@@ -1247,9 +1247,9 @@ namespace pika { namespace execution { inline namespace v1 {
             .on(executor())
             .with(parameters());
     }
-}}}    // namespace pika::execution::v1
+}    // namespace pika::execution
 
-namespace pika { namespace detail {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     // extensions
 
@@ -1447,6 +1447,6 @@ namespace pika { namespace detail {
     {
     };
     /// \endcond
-}}    // namespace pika::detail
+}    // namespace pika::detail
 
 #endif

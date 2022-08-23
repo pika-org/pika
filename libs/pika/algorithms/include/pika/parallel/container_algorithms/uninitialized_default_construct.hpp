@@ -273,7 +273,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct uninitialized_default_construct_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_default_construct_t>
     {
@@ -292,7 +292,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_default_construct<
+            return pika::parallel::detail::uninitialized_default_construct<
                 FwdIter>()
                 .call(pika::execution::seq, first, last);
         }
@@ -313,7 +313,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_default_construct<
+            return pika::parallel::detail::uninitialized_default_construct<
                 FwdIter>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last);
         }
@@ -335,7 +335,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_default_construct<
+            return pika::parallel::detail::uninitialized_default_construct<
                 iterator_type>()
                 .call(pika::execution::seq, std::begin(rng), std::end(rng));
         }
@@ -359,7 +359,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_default_construct<
+            return pika::parallel::detail::uninitialized_default_construct<
                 iterator_type>()
                 .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng),
                     std::end(rng));
@@ -384,9 +384,9 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::
-                uninitialized_default_construct_n<FwdIter>()
-                    .call(pika::execution::seq, first, count);
+            return pika::parallel::detail::uninitialized_default_construct_n<
+                FwdIter>()
+                .call(pika::execution::seq, first, count);
         }
 
         // clang-format off
@@ -404,11 +404,11 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::
-                uninitialized_default_construct_n<FwdIter>()
-                    .call(PIKA_FORWARD(ExPolicy, policy), first, count);
+            return pika::parallel::detail::uninitialized_default_construct_n<
+                FwdIter>()
+                .call(PIKA_FORWARD(ExPolicy, policy), first, count);
         }
     } uninitialized_default_construct_n{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

@@ -759,450 +759,435 @@ namespace pika {
 #include <vector>
 
 namespace pika {
-    namespace parallel { inline namespace v2 {
-        // for_loop
-        namespace detail {
-            /// \cond NOINTERNAL
+    namespace parallel::detail {
+        /// \cond NOINTERNAL
+        ///////////////////////////////////////////////////////////////////////
+        template <typename... Ts, std::size_t... Is>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void init_iteration(
+            std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
+            std::size_t part_index) noexcept
+        {
+            int const _sequencer[] = {
+                0, (std::get<Is>(args).init_iteration(part_index), 0)...};
+            (void) _sequencer;
+        }
 
-            ///////////////////////////////////////////////////////////////////////
-            template <typename... Ts, std::size_t... Is>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void init_iteration(
-                std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
-                std::size_t part_index) noexcept
+        template <typename... Ts, std::size_t... Is, typename F, typename B>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void invoke_iteration(
+            std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
+            F&& f, B part_begin)
+        {
+            PIKA_INVOKE(PIKA_FORWARD(F, f), part_begin,
+                std::get<Is>(args).iteration_value()...);
+        }
+
+        template <typename... Ts, std::size_t... Is>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void next_iteration(
+            std::tuple<Ts...>& args,
+            pika::util::detail::index_pack<Is...>) noexcept
+        {
+            int const _sequencer[] = {
+                0, (std::get<Is>(args).next_iteration(), 0)...};
+            (void) _sequencer;
+        }
+
+        template <typename... Ts, std::size_t... Is>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void exit_iteration(
+            std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
+            std::size_t size) noexcept
+        {
+            int const _sequencer[] = {
+                0, (std::get<Is>(args).exit_iteration(size), 0)...};
+            (void) _sequencer;
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        template <typename ExPolicy, typename F, typename S,
+            typename Tuple = std::tuple<>>
+        struct part_iterations;
+
+        template <typename ExPolicy, typename F, typename S, typename... Ts>
+        struct part_iterations<ExPolicy, F, S, std::tuple<Ts...>>
+        {
+            using fun_type = std::decay_t<F>;
+
+            fun_type f_;
+            S stride_;
+            std::tuple<Ts...> args_;
+
+            template <typename F_, typename S_, typename Args>
+            part_iterations(F_&& f, S_&& stride, Args&& args)
+              : f_(PIKA_FORWARD(F_, f))
+              , stride_(PIKA_FORWARD(S_, stride))
+              , args_(PIKA_FORWARD(Args, args))
             {
-                int const _sequencer[] = {
-                    0, (std::get<Is>(args).init_iteration(part_index), 0)...};
-                (void) _sequencer;
             }
 
-            template <typename... Ts, std::size_t... Is, typename F, typename B>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void invoke_iteration(
-                std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
-                F&& f, B part_begin)
+            template <typename B>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
+                B part_begin, std::size_t part_steps, std::size_t part_index)
             {
-                PIKA_INVOKE(PIKA_FORWARD(F, f), part_begin,
-                    std::get<Is>(args).iteration_value()...);
-            }
+                auto pack =
+                    typename pika::util::detail::make_index_pack<sizeof...(
+                        Ts)>::type();
+                detail::init_iteration(args_, pack, part_index);
 
-            template <typename... Ts, std::size_t... Is>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void next_iteration(
-                std::tuple<Ts...>& args,
-                pika::util::detail::index_pack<Is...>) noexcept
-            {
-                int const _sequencer[] = {
-                    0, (std::get<Is>(args).next_iteration(), 0)...};
-                (void) _sequencer;
-            }
-
-            template <typename... Ts, std::size_t... Is>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void exit_iteration(
-                std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
-                std::size_t size) noexcept
-            {
-                int const _sequencer[] = {
-                    0, (std::get<Is>(args).exit_iteration(size), 0)...};
-                (void) _sequencer;
-            }
-
-            ///////////////////////////////////////////////////////////////////////
-            template <typename ExPolicy, typename F, typename S,
-                typename Tuple = std::tuple<>>
-            struct part_iterations;
-
-            template <typename ExPolicy, typename F, typename S, typename... Ts>
-            struct part_iterations<ExPolicy, F, S, std::tuple<Ts...>>
-            {
-                using fun_type = std::decay_t<F>;
-
-                fun_type f_;
-                S stride_;
-                std::tuple<Ts...> args_;
-
-                template <typename F_, typename S_, typename Args>
-                part_iterations(F_&& f, S_&& stride, Args&& args)
-                  : f_(PIKA_FORWARD(F_, f))
-                  , stride_(PIKA_FORWARD(S_, stride))
-                  , args_(PIKA_FORWARD(Args, args))
+                if (stride_ == 1)
                 {
-                }
-
-                template <typename B>
-                PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                    B part_begin, std::size_t part_steps,
-                    std::size_t part_index)
-                {
-                    auto pack =
-                        typename pika::util::detail::make_index_pack<sizeof...(
-                            Ts)>::type();
-                    detail::init_iteration(args_, pack, part_index);
-
-                    if (stride_ == 1)
+                    while (part_steps-- != 0)
                     {
-                        while (part_steps-- != 0)
-                        {
-                            detail::invoke_iteration(
-                                args_, pack, f_, part_begin++);
-                            detail::next_iteration(args_, pack);
-                        }
-                    }
-                    else if (stride_ > 0)
-                    {
-                        while (part_steps >= std::size_t(stride_))
-                        {
-                            detail::invoke_iteration(
-                                args_, pack, f_, part_begin);
-
-                            part_begin =
-                                parallel::v1::detail::next(part_begin, stride_);
-                            part_steps -= stride_;
-
-                            detail::next_iteration(args_, pack);
-                        }
-
-                        if (part_steps != 0)
-                        {
-                            detail::invoke_iteration(
-                                args_, pack, f_, part_begin);
-                            detail::next_iteration(args_, pack);
-                        }
-                    }
-                    else
-                    {
-                        while (part_steps >= std::size_t(-stride_))
-                        {
-                            detail::invoke_iteration(
-                                args_, pack, f_, part_begin);
-
-                            part_begin =
-                                parallel::v1::detail::next(part_begin, stride_);
-                            part_steps += stride_;
-
-                            detail::next_iteration(args_, pack);
-                        }
-
-                        if (part_steps != 0)
-                        {
-                            detail::invoke_iteration(
-                                args_, pack, f_, part_begin);
-                            detail::next_iteration(args_, pack);
-                        }
+                        detail::invoke_iteration(args_, pack, f_, part_begin++);
+                        detail::next_iteration(args_, pack);
                     }
                 }
-            };
+                else if (stride_ > 0)
+                {
+                    while (part_steps >= std::size_t(stride_))
+                    {
+                        detail::invoke_iteration(args_, pack, f_, part_begin);
 
-            template <typename ExPolicy, typename F, typename S>
-            struct part_iterations<ExPolicy, F, S, std::tuple<>>
+                        part_begin =
+                            parallel::detail::next(part_begin, stride_);
+                        part_steps -= stride_;
+
+                        detail::next_iteration(args_, pack);
+                    }
+
+                    if (part_steps != 0)
+                    {
+                        detail::invoke_iteration(args_, pack, f_, part_begin);
+                        detail::next_iteration(args_, pack);
+                    }
+                }
+                else
+                {
+                    while (part_steps >= std::size_t(-stride_))
+                    {
+                        detail::invoke_iteration(args_, pack, f_, part_begin);
+
+                        part_begin =
+                            parallel::detail::next(part_begin, stride_);
+                        part_steps += stride_;
+
+                        detail::next_iteration(args_, pack);
+                    }
+
+                    if (part_steps != 0)
+                    {
+                        detail::invoke_iteration(args_, pack, f_, part_begin);
+                        detail::next_iteration(args_, pack);
+                    }
+                }
+            }
+        };
+
+        template <typename ExPolicy, typename F, typename S>
+        struct part_iterations<ExPolicy, F, S, std::tuple<>>
+        {
+            using fun_type = std::decay_t<F>;
+
+            fun_type f_;
+            S stride_;
+
+            template <typename F_,
+                typename Enable = std::enable_if_t<
+                    !std::is_same_v<std::decay_t<F_>, part_iterations>>>
+            explicit part_iterations(F_&& f)
+              : f_(PIKA_FORWARD(F_, f))
+              , stride_(1)
             {
-                using fun_type = std::decay_t<F>;
+            }
 
-                fun_type f_;
-                S stride_;
+            template <typename F_, typename S_>
+            part_iterations(F_&& f, S_&& stride)
+              : f_(PIKA_FORWARD(F_, f))
+              , stride_(PIKA_FORWARD(S_, stride))
+            {
+            }
 
-                template <typename F_,
-                    typename Enable = std::enable_if_t<
-                        !std::is_same_v<std::decay_t<F_>, part_iterations>>>
-                explicit part_iterations(F_&& f)
-                  : f_(PIKA_FORWARD(F_, f))
-                  , stride_(1)
+            template <typename F_, typename S_, typename Args>
+            part_iterations(F_&& f, S_&& stride, Args&&)
+              : f_(PIKA_FORWARD(F_, f))
+              , stride_(PIKA_FORWARD(S_, stride))
+            {
+            }
+
+            template <typename B>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
+                B part_begin, std::size_t part_steps)
+            {
+                PIKA_ASSERT(stride_ == 1);
+                parallel::util::loop_n<std::decay_t<ExPolicy>>(
+                    part_begin, part_steps, f_);
+            }
+
+            template <typename B>
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
+                B part_begin, std::size_t part_steps, std::size_t)
+            {
+                if (stride_ == 1)
                 {
-                }
-
-                template <typename F_, typename S_>
-                part_iterations(F_&& f, S_&& stride)
-                  : f_(PIKA_FORWARD(F_, f))
-                  , stride_(PIKA_FORWARD(S_, stride))
-                {
-                }
-
-                template <typename F_, typename S_, typename Args>
-                part_iterations(F_&& f, S_&& stride, Args&&)
-                  : f_(PIKA_FORWARD(F_, f))
-                  , stride_(PIKA_FORWARD(S_, stride))
-                {
-                }
-
-                template <typename B>
-                PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                    B part_begin, std::size_t part_steps)
-                {
-                    PIKA_ASSERT(stride_ == 1);
                     parallel::util::loop_n<std::decay_t<ExPolicy>>(
                         part_begin, part_steps, f_);
                 }
-
-                template <typename B>
-                PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                    B part_begin, std::size_t part_steps, std::size_t)
+                else if (stride_ > 0)
                 {
-                    if (stride_ == 1)
+                    while (part_steps >= std::size_t(stride_))
                     {
-                        parallel::util::loop_n<std::decay_t<ExPolicy>>(
-                            part_begin, part_steps, f_);
+                        PIKA_INVOKE(f_, part_begin);
+
+                        part_begin =
+                            parallel::detail::next(part_begin, stride_);
+                        part_steps -= stride_;
                     }
-                    else if (stride_ > 0)
+
+                    if (part_steps != 0)
                     {
-                        while (part_steps >= std::size_t(stride_))
-                        {
-                            PIKA_INVOKE(f_, part_begin);
-
-                            part_begin =
-                                parallel::v1::detail::next(part_begin, stride_);
-                            part_steps -= stride_;
-                        }
-
-                        if (part_steps != 0)
-                        {
-                            PIKA_INVOKE(f_, part_begin);
-                        }
-                    }
-                    else
-                    {
-                        while (part_steps >= std::size_t(-stride_))
-                        {
-                            PIKA_INVOKE(f_, part_begin);
-
-                            part_begin =
-                                parallel::v1::detail::next(part_begin, stride_);
-                            part_steps += stride_;
-                        }
-
-                        if (part_steps != 0)
-                        {
-                            PIKA_INVOKE(f_, part_begin);
-                        }
+                        PIKA_INVOKE(f_, part_begin);
                     }
                 }
-            };
+                else
+                {
+                    while (part_steps >= std::size_t(-stride_))
+                    {
+                        PIKA_INVOKE(f_, part_begin);
 
-            ///////////////////////////////////////////////////////////////////////
-            struct for_loop_algo : public v1::detail::algorithm<for_loop_algo>
+                        part_begin =
+                            parallel::detail::next(part_begin, stride_);
+                        part_steps += stride_;
+                    }
+
+                    if (part_steps != 0)
+                    {
+                        PIKA_INVOKE(f_, part_begin);
+                    }
+                }
+            }
+        };
+
+        ///////////////////////////////////////////////////////////////////////
+        struct for_loop_algo : public detail::algorithm<for_loop_algo>
+        {
+            constexpr for_loop_algo() noexcept
+              : for_loop_algo::algorithm("for_loop_algo")
             {
-                constexpr for_loop_algo() noexcept
-                  : for_loop_algo::algorithm("for_loop_algo")
+            }
+
+            template <typename ExPolicy, typename InIter, typename S,
+                typename F>
+            PIKA_HOST_DEVICE static constexpr pika::util::detail::unused_type
+            sequential(
+                ExPolicy&&, InIter first, std::size_t count, S stride, F&& f)
+            {
+                if (stride == 1)
                 {
+                    parallel::util::loop_n<std::decay_t<ExPolicy>>(
+                        first, count, PIKA_FORWARD(F, f));
                 }
-
-                template <typename ExPolicy, typename InIter, typename S,
-                    typename F>
-                PIKA_HOST_DEVICE static constexpr pika::util::detail::
-                    unused_type
-                    sequential(ExPolicy&&, InIter first, std::size_t count,
-                        S stride, F&& f)
+                else if (stride > 0)
                 {
-                    if (stride == 1)
+                    while (count >= std::size_t(stride))
                     {
-                        parallel::util::loop_n<std::decay_t<ExPolicy>>(
-                            first, count, PIKA_FORWARD(F, f));
-                    }
-                    else if (stride > 0)
-                    {
-                        while (count >= std::size_t(stride))
-                        {
-                            PIKA_INVOKE(f, first);
+                        PIKA_INVOKE(f, first);
 
-                            first = parallel::v1::detail::next(first, stride);
-                            count -= stride;
-                        }
-
-                        if (count != 0)
-                        {
-                            PIKA_INVOKE(f, first);
-                        }
-                    }
-                    else
-                    {
-                        while (count >= std::size_t(-stride))
-                        {
-                            PIKA_INVOKE(f, first);
-
-                            first = parallel::v1::detail::next(first, stride);
-                            count += stride;
-                        }
-
-                        if (count != 0)
-                        {
-                            PIKA_INVOKE(f, first);
-                        }
-                    }
-
-                    return pika::util::detail::unused_type();
-                }
-
-                template <typename ExPolicy, typename InIter, typename Size,
-                    typename S, typename F, typename Arg, typename... Args>
-                PIKA_HOST_DEVICE static constexpr pika::util::detail::
-                    unused_type
-                    sequential(ExPolicy&&, InIter first, Size size, S stride,
-                        F&& f, Arg&& arg, Args&&... args)
-                {
-                    int const init_sequencer[] = {(arg.init_iteration(0), 0),
-                        (args.init_iteration(0), 0)...};
-                    (void) init_sequencer;
-
-                    std::size_t count = size;
-                    if (stride > 0)
-                    {
-                        while (count >= std::size_t(stride))
-                        {
-                            PIKA_INVOKE(f, first, arg.iteration_value(),
-                                args.iteration_value()...);
-
-                            first = parallel::v1::detail::next(first, stride);
-                            count -= stride;
-
-                            int const next_sequencer[] = {
-                                (arg.next_iteration(), 0),
-                                (args.next_iteration(), 0)...};
-                            (void) next_sequencer;
-                        }
-                    }
-                    else
-                    {
-                        while (count >= std::size_t(-stride))
-                        {
-                            PIKA_INVOKE(f, first, arg.iteration_value(),
-                                args.iteration_value()...);
-
-                            first = parallel::v1::detail::next(first, stride);
-                            count += stride;
-
-                            int const next_sequencer[] = {
-                                (arg.next_iteration(), 0),
-                                (args.next_iteration(), 0)...};
-                            (void) next_sequencer;
-                        }
+                        first = parallel::detail::next(first, stride);
+                        count -= stride;
                     }
 
                     if (count != 0)
                     {
+                        PIKA_INVOKE(f, first);
+                    }
+                }
+                else
+                {
+                    while (count >= std::size_t(-stride))
+                    {
+                        PIKA_INVOKE(f, first);
+
+                        first = parallel::detail::next(first, stride);
+                        count += stride;
+                    }
+
+                    if (count != 0)
+                    {
+                        PIKA_INVOKE(f, first);
+                    }
+                }
+
+                return pika::util::detail::unused_type();
+            }
+
+            template <typename ExPolicy, typename InIter, typename Size,
+                typename S, typename F, typename Arg, typename... Args>
+            PIKA_HOST_DEVICE static constexpr pika::util::detail::unused_type
+            sequential(ExPolicy&&, InIter first, Size size, S stride, F&& f,
+                Arg&& arg, Args&&... args)
+            {
+                int const init_sequencer[] = {
+                    (arg.init_iteration(0), 0), (args.init_iteration(0), 0)...};
+                (void) init_sequencer;
+
+                std::size_t count = size;
+                if (stride > 0)
+                {
+                    while (count >= std::size_t(stride))
+                    {
                         PIKA_INVOKE(f, first, arg.iteration_value(),
                             args.iteration_value()...);
+
+                        first = parallel::detail::next(first, stride);
+                        count -= stride;
+
+                        int const next_sequencer[] = {(arg.next_iteration(), 0),
+                            (args.next_iteration(), 0)...};
+                        (void) next_sequencer;
                     }
+                }
+                else
+                {
+                    while (count >= std::size_t(-stride))
+                    {
+                        PIKA_INVOKE(f, first, arg.iteration_value(),
+                            args.iteration_value()...);
 
-                    // make sure live-out variables are properly set on return
-                    int const exit_sequencer[] = {(arg.exit_iteration(size), 0),
-                        (args.exit_iteration(size), 0)...};
-                    (void) exit_sequencer;
+                        first = parallel::detail::next(first, stride);
+                        count += stride;
 
-                    return pika::util::detail::unused_type();
+                        int const next_sequencer[] = {(arg.next_iteration(), 0),
+                            (args.next_iteration(), 0)...};
+                        (void) next_sequencer;
+                    }
                 }
 
-                template <typename ExPolicy, typename B, typename Size,
-                    typename S, typename F, typename... Ts>
-                static typename util::detail::algorithm_result<ExPolicy>::type
-                parallel(ExPolicy&& policy, B first, Size size, S stride, F&& f,
-                    Ts&&... ts)
+                if (count != 0)
                 {
-                    if (size == 0)
-                    {
-                        return util::detail::algorithm_result<ExPolicy>::get();
-                    }
+                    PIKA_INVOKE(f, first, arg.iteration_value(),
+                        args.iteration_value()...);
+                }
 
-                    if constexpr (sizeof...(Ts) == 0)
-                    {
-                        if (stride == 1)
-                        {
-                            return util::partitioner<ExPolicy>::call(
-                                PIKA_FORWARD(ExPolicy, policy), first, size,
-                                part_iterations<ExPolicy, F, S>{
-                                    PIKA_FORWARD(F, f)},
-                                pika::util::detail::empty_function{});
-                        }
+                // make sure live-out variables are properly set on return
+                int const exit_sequencer[] = {(arg.exit_iteration(size), 0),
+                    (args.exit_iteration(size), 0)...};
+                (void) exit_sequencer;
 
-                        return util::partitioner<ExPolicy>::call_with_index(
-                            PIKA_FORWARD(ExPolicy, policy), first, size, stride,
-                            part_iterations<ExPolicy, F, S>{
-                                PIKA_FORWARD(F, f), stride},
+                return pika::util::detail::unused_type();
+            }
+
+            template <typename ExPolicy, typename B, typename Size, typename S,
+                typename F, typename... Ts>
+            static typename util::detail::algorithm_result<ExPolicy>::type
+            parallel(ExPolicy&& policy, B first, Size size, S stride, F&& f,
+                Ts&&... ts)
+            {
+                if (size == 0)
+                {
+                    return util::detail::algorithm_result<ExPolicy>::get();
+                }
+
+                if constexpr (sizeof...(Ts) == 0)
+                {
+                    if (stride == 1)
+                    {
+                        return util::partitioner<ExPolicy>::call(
+                            PIKA_FORWARD(ExPolicy, policy), first, size,
+                            part_iterations<ExPolicy, F, S>{PIKA_FORWARD(F, f)},
                             pika::util::detail::empty_function{});
                     }
-                    else
-                    {
-                        // we need to decay copy here to properly transport
-                        // everything to a GPU device
-                        using args_type = std::tuple<std::decay_t<Ts>...>;
 
-                        args_type args =
-                            std::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
-
-                        return util::partitioner<ExPolicy>::call_with_index(
-                            policy, first, size, stride,
-                            part_iterations<ExPolicy, F, S, args_type>{
-                                PIKA_FORWARD(F, f), stride, args},
-                            [=](std::vector<pika::future<void>>&&) mutable
-                            -> void {
-                                auto pack = typename pika::util::detail::
-                                    make_index_pack<sizeof...(Ts)>::type();
-                                // make sure live-out variables are properly set on
-                                // return
-                                detail::exit_iteration(args, pack, size);
-                            });
-                    }
+                    return util::partitioner<ExPolicy>::call_with_index(
+                        PIKA_FORWARD(ExPolicy, policy), first, size, stride,
+                        part_iterations<ExPolicy, F, S>{
+                            PIKA_FORWARD(F, f), stride},
+                        pika::util::detail::empty_function{});
                 }
-            };
-
-            // reshuffle arguments, last argument is function object, will go first
-            template <typename ExPolicy, typename B, typename E, typename S,
-                std::size_t... Is, typename... Args>
-            typename util::detail::algorithm_result<ExPolicy>::type for_loop(
-                ExPolicy&& policy, B first, E last, S stride,
-                pika::util::detail::index_pack<Is...>, Args&&... args)
-            {
-                // stride shall not be zero
-                PIKA_ASSERT(stride != 0);
-
-                // stride should be negative only if E is an integral type or at
-                // least a bidirectional iterator
-                if (stride < 0)
+                else
                 {
-                    PIKA_ASSERT(std::is_integral<E>::value ||
-                        pika::traits::is_bidirectional_iterator<E>::value);
+                    // we need to decay copy here to properly transport
+                    // everything to a GPU device
+                    using args_type = std::tuple<std::decay_t<Ts>...>;
+
+                    args_type args =
+                        std::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
+
+                    return util::partitioner<ExPolicy>::call_with_index(policy,
+                        first, size, stride,
+                        part_iterations<ExPolicy, F, S, args_type>{
+                            PIKA_FORWARD(F, f), stride, args},
+                        [=](std::vector<pika::future<void>>&&) mutable -> void {
+                            auto pack =
+                                typename pika::util::detail::make_index_pack<
+                                    sizeof...(Ts)>::type();
+                            // make sure live-out variables are properly set on
+                            // return
+                            detail::exit_iteration(args, pack, size);
+                        });
                 }
+            }
+        };
 
-                static_assert((std::is_integral<B>::value ||
-                                  pika::traits::is_forward_iterator<B>::value),
-                    "Requires at least forward iterator or integral loop "
-                    "boundaries.");
+        // reshuffle arguments, last argument is function object, will go first
+        template <typename ExPolicy, typename B, typename E, typename S,
+            std::size_t... Is, typename... Args>
+        typename util::detail::algorithm_result<ExPolicy>::type for_loop(
+            ExPolicy&& policy, B first, E last, S stride,
+            pika::util::detail::index_pack<Is...>, Args&&... args)
+        {
+            // stride shall not be zero
+            PIKA_ASSERT(stride != 0);
 
-                std::size_t size = parallel::v1::detail::distance(first, last);
-                auto&& t = std::forward_as_tuple(PIKA_FORWARD(Args, args)...);
-
-                return for_loop_algo().call(PIKA_FORWARD(ExPolicy, policy),
-                    first, size, stride, std::get<sizeof...(Args) - 1>(t),
-                    std::get<Is>(t)...);
+            // stride should be negative only if E is an integral type or at
+            // least a bidirectional iterator
+            if (stride < 0)
+            {
+                PIKA_ASSERT(std::is_integral<E>::value ||
+                    pika::traits::is_bidirectional_iterator<E>::value);
             }
 
-            // reshuffle arguments, last argument is function object, will go first
-            template <typename ExPolicy, typename B, typename Size, typename S,
-                std::size_t... Is, typename... Args>
-            typename util::detail::algorithm_result<ExPolicy>::type for_loop_n(
-                ExPolicy&& policy, B first, Size size, S stride,
-                pika::util::detail::index_pack<Is...>, Args&&... args)
+            static_assert((std::is_integral<B>::value ||
+                              pika::traits::is_forward_iterator<B>::value),
+                "Requires at least forward iterator or integral loop "
+                "boundaries.");
+
+            std::size_t size = parallel::detail::distance(first, last);
+            auto&& t = std::forward_as_tuple(PIKA_FORWARD(Args, args)...);
+
+            return for_loop_algo().call(PIKA_FORWARD(ExPolicy, policy), first,
+                size, stride, std::get<sizeof...(Args) - 1>(t),
+                std::get<Is>(t)...);
+        }
+
+        // reshuffle arguments, last argument is function object, will go first
+        template <typename ExPolicy, typename B, typename Size, typename S,
+            std::size_t... Is, typename... Args>
+        typename util::detail::algorithm_result<ExPolicy>::type for_loop_n(
+            ExPolicy&& policy, B first, Size size, S stride,
+            pika::util::detail::index_pack<Is...>, Args&&... args)
+        {
+            // stride shall not be zero
+            PIKA_ASSERT(stride != 0);
+
+            // stride should be negative only if E is an integral type or at
+            // least a bidirectional iterator
+            if (stride < 0)
             {
-                // stride shall not be zero
-                PIKA_ASSERT(stride != 0);
-
-                // stride should be negative only if E is an integral type or at
-                // least a bidirectional iterator
-                if (stride < 0)
-                {
-                    PIKA_ASSERT(std::is_integral<B>::value ||
-                        pika::traits::is_bidirectional_iterator<B>::value);
-                }
-
-                static_assert((std::is_integral<B>::value ||
-                                  pika::traits::is_forward_iterator<B>::value),
-                    "Requires at least forward iterator or integral loop "
-                    "boundaries.");
-
-                auto&& t = std::forward_as_tuple(PIKA_FORWARD(Args, args)...);
-
-                return for_loop_algo().call(PIKA_FORWARD(ExPolicy, policy),
-                    first, size, stride, std::get<sizeof...(Args) - 1>(t),
-                    std::get<Is>(t)...);
+                PIKA_ASSERT(std::is_integral<B>::value ||
+                    pika::traits::is_bidirectional_iterator<B>::value);
             }
-            /// \endcond
-        }    // namespace detail
-    }}       // namespace parallel::v2
+
+            static_assert((std::is_integral<B>::value ||
+                              pika::traits::is_forward_iterator<B>::value),
+                "Requires at least forward iterator or integral loop "
+                "boundaries.");
+
+            auto&& t = std::forward_as_tuple(PIKA_FORWARD(Args, args)...);
+
+            return for_loop_algo().call(PIKA_FORWARD(ExPolicy, policy), first,
+                size, stride, std::get<sizeof...(Args) - 1>(t),
+                std::get<Is>(t)...);
+        }
+        /// \endcond
+    }    // namespace parallel::detail
 
     ///////////////////////////////////////////////////////////////////////////
     inline constexpr struct for_loop_t final
@@ -1225,8 +1210,8 @@ namespace pika {
                 "for_loop must be called with at least a function object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(
-                PIKA_FORWARD(ExPolicy, policy), first, last, 1,
+            return parallel::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
+                first, last, 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -1245,8 +1230,8 @@ namespace pika {
                 "for_loop must be called with at least a function object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(pika::execution::seq, first,
-                last, 1, typename make_index_pack<sizeof...(Args) - 1>::type(),
+            return parallel::detail::for_loop(pika::execution::seq, first, last,
+                1, typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
     } for_loop{};
@@ -1274,8 +1259,8 @@ namespace pika {
                 "object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(
-                PIKA_FORWARD(ExPolicy, policy), first, last, stride,
+            return parallel::detail::for_loop(PIKA_FORWARD(ExPolicy, policy),
+                first, last, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -1296,9 +1281,8 @@ namespace pika {
                 "object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop(pika::execution::seq, first,
-                last, stride,
-                typename make_index_pack<sizeof...(Args) - 1>::type(),
+            return parallel::detail::for_loop(pika::execution::seq, first, last,
+                stride, typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
     } for_loop_strided{};
@@ -1326,8 +1310,8 @@ namespace pika {
                 "for_loop_n must be called with at least a function object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop_n(
-                PIKA_FORWARD(ExPolicy, policy), first, size, 1,
+            return parallel::detail::for_loop_n(PIKA_FORWARD(ExPolicy, policy),
+                first, size, 1,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -1347,7 +1331,7 @@ namespace pika {
                 "for_loop_n must be called with at least a function object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop_n(pika::execution::seq, first,
+            return parallel::detail::for_loop_n(pika::execution::seq, first,
                 size, 1, typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -1378,8 +1362,8 @@ namespace pika {
                 "object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop_n(
-                PIKA_FORWARD(ExPolicy, policy), first, size, stride,
+            return parallel::detail::for_loop_n(PIKA_FORWARD(ExPolicy, policy),
+                first, size, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
         }
@@ -1401,7 +1385,7 @@ namespace pika {
                 "object");
 
             using pika::util::detail::make_index_pack;
-            return parallel::v2::detail::for_loop_n(pika::execution::seq, first,
+            return parallel::detail::for_loop_n(pika::execution::seq, first,
                 size, stride,
                 typename make_index_pack<sizeof...(Args) - 1>::type(),
                 PIKA_FORWARD(Args, args)...);
@@ -1413,10 +1397,10 @@ namespace pika {
 namespace pika::detail {
     template <typename ExPolicy, typename F, typename S, typename Tuple>
     struct get_function_address<
-        parallel::v2::detail::part_iterations<ExPolicy, F, S, Tuple>>
+        parallel::detail::part_iterations<ExPolicy, F, S, Tuple>>
     {
         static constexpr std::size_t call(
-            parallel::v2::detail::part_iterations<ExPolicy, F, S, Tuple> const&
+            parallel::detail::part_iterations<ExPolicy, F, S, Tuple> const&
                 f) noexcept
         {
             return get_function_address<std::decay_t<F>>::call(f.f_);
@@ -1425,10 +1409,10 @@ namespace pika::detail {
 
     template <typename ExPolicy, typename F, typename S, typename Tuple>
     struct get_function_annotation<
-        parallel::v2::detail::part_iterations<ExPolicy, F, S, Tuple>>
+        parallel::detail::part_iterations<ExPolicy, F, S, Tuple>>
     {
         static constexpr char const* call(
-            parallel::v2::detail::part_iterations<ExPolicy, F, S, Tuple> const&
+            parallel::detail::part_iterations<ExPolicy, F, S, Tuple> const&
                 f) noexcept
         {
             return get_function_annotation<std::decay_t<F>>::call(f.f_);
@@ -1438,10 +1422,10 @@ namespace pika::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename ExPolicy, typename F, typename S, typename Tuple>
     struct get_function_annotation_itt<
-        parallel::v2::detail::part_iterations<ExPolicy, F, S, Tuple>>
+        parallel::detail::part_iterations<ExPolicy, F, S, Tuple>>
     {
         static util::itt::string_handle call(
-            parallel::v2::detail::part_iterations<ExPolicy, F, S, Tuple> const&
+            parallel::detail::part_iterations<ExPolicy, F, S, Tuple> const&
                 f) noexcept
         {
             return get_function_annotation_itt<std::decay_t<F>>::call(f.f_);

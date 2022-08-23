@@ -240,171 +240,166 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     /////////////////////////////////////////////////////////////////////////////
     // remove_if
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        template <typename Iter, typename Sent, typename Pred, typename Proj>
-        Iter sequential_remove_if(Iter first, Sent last, Pred pred, Proj proj)
+    template <typename Iter, typename Sent, typename Pred, typename Proj>
+    Iter sequential_remove_if(Iter first, Sent last, Pred pred, Proj proj)
+    {
+        first = pika::parallel::detail::sequential_find_if<
+            pika::execution::sequenced_policy>(first, last, pred, proj);
+
+        if (first != last)
+            for (Iter i = first; ++i != last;)
+                if (!PIKA_INVOKE(pred, PIKA_INVOKE(proj, *i)))
+                {
+                    *first++ = PIKA_MOVE(*i);
+                }
+        return first;
+    }
+
+    template <typename FwdIter>
+    struct remove_if : public detail::algorithm<remove_if<FwdIter>, FwdIter>
+    {
+        remove_if()
+          : remove_if::algorithm("remove_if")
         {
-            first = pika::parallel::v1::detail::sequential_find_if<
-                pika::execution::sequenced_policy>(first, last, pred, proj);
-
-            if (first != last)
-                for (Iter i = first; ++i != last;)
-                    if (!PIKA_INVOKE(pred, PIKA_INVOKE(proj, *i)))
-                    {
-                        *first++ = PIKA_MOVE(*i);
-                    }
-            return first;
         }
 
-        template <typename FwdIter>
-        struct remove_if : public detail::algorithm<remove_if<FwdIter>, FwdIter>
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Pred, typename Proj>
+        static Iter sequential(
+            ExPolicy, Iter first, Sent last, Pred&& pred, Proj&& proj)
         {
-            remove_if()
-              : remove_if::algorithm("remove_if")
-            {
-            }
+            return sequential_remove_if(first, last, PIKA_FORWARD(Pred, pred),
+                PIKA_FORWARD(Proj, proj));
+        }
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Pred, typename Proj>
-            static Iter sequential(
-                ExPolicy, Iter first, Sent last, Pred&& pred, Proj&& proj)
-            {
-                return sequential_remove_if(first, last,
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
-            }
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Pred, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(
+            ExPolicy&& policy, Iter first, Sent last, Pred&& pred, Proj&& proj)
+        {
+            using zip_iterator = pika::util::zip_iterator<Iter, bool*>;
+            using algorithm_result =
+                util::detail::algorithm_result<ExPolicy, Iter>;
+            using difference_type =
+                typename std::iterator_traits<Iter>::difference_type;
 
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Pred, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, Pred&& pred,
-                Proj&& proj)
-            {
-                using zip_iterator = pika::util::zip_iterator<Iter, bool*>;
-                using algorithm_result =
-                    util::detail::algorithm_result<ExPolicy, Iter>;
-                using difference_type =
-                    typename std::iterator_traits<Iter>::difference_type;
+            difference_type count = detail::distance(first, last);
 
-                difference_type count = detail::distance(first, last);
+            if (count == 0)
+                return algorithm_result::get(PIKA_MOVE(first));
 
-                if (count == 0)
-                    return algorithm_result::get(PIKA_MOVE(first));
+            std::shared_ptr<bool[]> flags(new bool[count]);
+            std::size_t init = 0u;
 
-                std::shared_ptr<bool[]> flags(new bool[count]);
-                std::size_t init = 0u;
+            using pika::util::make_zip_iterator;
+            using std::get;
+            using scan_partitioner_type = util::scan_partitioner<ExPolicy, Iter,
+                std::size_t, void, util::scan_partitioner_sequential_f3_tag>;
 
-                using pika::util::make_zip_iterator;
-                using std::get;
-                using scan_partitioner_type =
-                    util::scan_partitioner<ExPolicy, Iter, std::size_t, void,
-                        util::scan_partitioner_sequential_f3_tag>;
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [pred = PIKA_FORWARD(Pred, pred),
+                          proj = PIKA_FORWARD(Proj, proj)](
+                          zip_iterator part_begin,
+                          std::size_t part_size) -> std::size_t {
+                // MSVC complains if pred or proj is captured by ref below
+                util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
+                    [pred, proj](zip_iterator it) mutable {
+                        bool f = pika::util::detail::invoke(pred,
+                            pika::util::detail::invoke(proj, get<0>(*it)));
 
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [pred = PIKA_FORWARD(Pred, pred),
-                              proj = PIKA_FORWARD(Proj, proj)](
-                              zip_iterator part_begin,
-                              std::size_t part_size) -> std::size_t {
-                    // MSVC complains if pred or proj is captured by ref below
-                    util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
-                        [pred, proj](zip_iterator it) mutable {
-                            bool f = pika::util::detail::invoke(pred,
-                                pika::util::detail::invoke(proj, get<0>(*it)));
-
-                            get<1>(*it) = f;
-                        });
-
-                    // There is no need to return the partition result.
-                    // But, the scan_partitioner doesn't support 'void' as
-                    // Result1. So, unavoidably return non-meaning value.
-                    return 0u;
-                };
-
-                auto f2 = pika::unwrapping(
-                    [](std::size_t, std::size_t) -> std::size_t {
-                        // There is no need to propagate the partition
-                        // results. But, the scan_partitioner doesn't
-                        // support 'void' as Result1. So, unavoidably
-                        // return non-meaning value.
-                        return 0u;
+                        get<1>(*it) = f;
                     });
 
-                std::shared_ptr<Iter> dest_ptr = std::make_shared<Iter>(first);
-                auto f3 =
-                    [dest_ptr, flags](zip_iterator part_begin,
-                        std::size_t part_size,
-                        pika::shared_future<std::size_t> curr,
-                        pika::shared_future<std::size_t> next) mutable -> void {
-                    PIKA_UNUSED(flags);
+                // There is no need to return the partition result.
+                // But, the scan_partitioner doesn't support 'void' as
+                // Result1. So, unavoidably return non-meaning value.
+                return 0u;
+            };
 
-                    curr.get();    // rethrow exceptions
-                    next.get();    // rethrow exceptions
+            auto f2 =
+                pika::unwrapping([](std::size_t, std::size_t) -> std::size_t {
+                    // There is no need to propagate the partition
+                    // results. But, the scan_partitioner doesn't
+                    // support 'void' as Result1. So, unavoidably
+                    // return non-meaning value.
+                    return 0u;
+                });
 
-                    Iter& dest = *dest_ptr;
+            std::shared_ptr<Iter> dest_ptr = std::make_shared<Iter>(first);
+            auto f3 =
+                [dest_ptr, flags](zip_iterator part_begin,
+                    std::size_t part_size,
+                    pika::shared_future<std::size_t> curr,
+                    pika::shared_future<std::size_t> next) mutable -> void {
+                PIKA_UNUSED(flags);
 
-                    using execution_policy_type = std::decay_t<ExPolicy>;
-                    if (dest == get<0>(part_begin.get_iterator_tuple()))
-                    {
-                        // Self-assignment must be detected.
-                        util::loop_n<execution_policy_type>(
-                            part_begin, part_size, [&dest](zip_iterator it) {
-                                if (!get<1>(*it))
-                                {
-                                    if (dest != get<0>(it.get_iterator_tuple()))
-                                        *dest++ = PIKA_MOVE(get<0>(*it));
-                                    else
-                                        ++dest;
-                                }
-                            });
-                    }
-                    else
-                    {
-                        // Self-assignment can't be performed.
-                        util::loop_n<execution_policy_type>(
-                            part_begin, part_size, [&dest](zip_iterator it) {
-                                if (!get<1>(*it))
+                curr.get();    // rethrow exceptions
+                next.get();    // rethrow exceptions
+
+                Iter& dest = *dest_ptr;
+
+                using execution_policy_type = std::decay_t<ExPolicy>;
+                if (dest == get<0>(part_begin.get_iterator_tuple()))
+                {
+                    // Self-assignment must be detected.
+                    util::loop_n<execution_policy_type>(
+                        part_begin, part_size, [&dest](zip_iterator it) {
+                            if (!get<1>(*it))
+                            {
+                                if (dest != get<0>(it.get_iterator_tuple()))
                                     *dest++ = PIKA_MOVE(get<0>(*it));
-                            });
-                    }
-                };
+                                else
+                                    ++dest;
+                            }
+                        });
+                }
+                else
+                {
+                    // Self-assignment can't be performed.
+                    util::loop_n<execution_policy_type>(
+                        part_begin, part_size, [&dest](zip_iterator it) {
+                            if (!get<1>(*it))
+                                *dest++ = PIKA_MOVE(get<0>(*it));
+                        });
+                }
+            };
 
-                auto f4 =
-                    [dest_ptr, flags](
-                        std::vector<pika::shared_future<std::size_t>>&& items,
-                        std::vector<pika::future<void>>&& data) mutable
-                    -> Iter {
-                    PIKA_UNUSED(flags);
+            auto f4 =
+                [dest_ptr, flags](
+                    std::vector<pika::shared_future<std::size_t>>&& items,
+                    std::vector<pika::future<void>>&& data) mutable -> Iter {
+                PIKA_UNUSED(flags);
 
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    items.clear();
-                    data.clear();
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                items.clear();
+                data.clear();
 
-                    return *dest_ptr;
-                };
+                return *dest_ptr;
+            };
 
-                return scan_partitioner_type::call(
-                    PIKA_FORWARD(ExPolicy, policy),
-                    make_zip_iterator(first, flags.get()), count, init,
-                    // step 1 performs first part of scan algorithm
-                    PIKA_MOVE(f1),
-                    // step 2 propagates the partition results from left
-                    // to right
-                    PIKA_MOVE(f2),
-                    // step 3 runs final accumulation on each partition
-                    PIKA_MOVE(f3),
-                    // step 4 use this return value
-                    PIKA_MOVE(f4));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+            return scan_partitioner_type::call(PIKA_FORWARD(ExPolicy, policy),
+                make_zip_iterator(first, flags.get()), count, init,
+                // step 1 performs first part of scan algorithm
+                PIKA_MOVE(f1),
+                // step 2 propagates the partition results from left
+                // to right
+                PIKA_MOVE(f2),
+                // step 3 runs final accumulation on each partition
+                PIKA_MOVE(f3),
+                // step 4 use this return value
+                PIKA_MOVE(f4));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -427,7 +422,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::remove_if<FwdIter>().call(
+            return pika::parallel::detail::remove_if<FwdIter>().call(
                 pika::execution::sequenced_policy{}, first, last,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity());
@@ -451,7 +446,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::v1::detail::remove_if<FwdIter>().call(
+            return pika::parallel::detail::remove_if<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity());

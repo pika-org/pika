@@ -33,8 +33,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
+namespace pika::parallel::detail {
     static constexpr std::uint32_t sample_sort_limit_per_task = (1 << 16);
 
     /// \struct sample_sort
@@ -445,5 +444,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             (value_type*) nullptr, std::size_t(0),
             std::size_t(sample_sort_limit_per_task));
     }
-
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

@@ -12,8 +12,7 @@
 #include <iterator>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
+namespace pika::parallel::detail {
     /// @brief : Insertion sort algorithm
     /// @param [in] first: iterator to the first element of the range
     /// @param [in] last : iterator to the next element of the last in the range
@@ -45,4 +44,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             *beta = PIKA_MOVE(aux);
         }
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

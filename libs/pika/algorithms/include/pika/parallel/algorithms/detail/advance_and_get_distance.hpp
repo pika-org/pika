@@ -14,7 +14,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
     // helper facility to both advance the iterator to the sentinel and return the
     // distance
     template <typename Iter, typename Sent>
@@ -50,4 +50,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             return offset;
         }
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

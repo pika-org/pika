@@ -26,9 +26,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::detail {
     template <typename Result>
     struct local_algorithm_result
     {
@@ -114,7 +112,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             catch (...)
             {
                 // this does not return
-                return pika::parallel::v1::detail::handle_exception<ExPolicy,
+                return pika::parallel::detail::handle_exception<ExPolicy,
                     local_result_type>::call();
             }
 #endif
@@ -229,4 +227,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
     private:
         char const* const name_;
     };
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

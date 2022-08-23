@@ -20,9 +20,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace util {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     namespace detail {
         template <typename Category, typename Enable = void>
         struct copy_helper;
@@ -116,14 +114,14 @@ namespace pika { namespace parallel { namespace util {
         };
 
         template <typename Dummy>
-        struct copy_helper<pika::traits::trivially_copyable_pointer_tag, Dummy>
+        struct copy_helper<pika::detail::trivially_copyable_pointer_tag, Dummy>
         {
             template <typename InIter, typename Sent, typename OutIter>
             PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
                 InIter first, Sent last, OutIter dest)
             {
                 return copy_memmove(
-                    first, parallel::v1::detail::distance(first, last), dest);
+                    first, parallel::detail::distance(first, last), dest);
             }
         };
     }    // namespace detail
@@ -132,9 +130,9 @@ namespace pika { namespace parallel { namespace util {
     PIKA_FORCEINLINE constexpr in_out_result<InIter, OutIter> copy(
         InIter first, Sent last, OutIter dest)
     {
-        using category = pika::traits::pointer_copy_category_t<
+        using category = pika::detail::pointer_copy_category_t<
             std::decay_t<
-                pika::traits::remove_const_iterator_value_type_t<InIter>>,
+                pika::detail::remove_const_iterator_value_type_t<InIter>>,
             std::decay_t<OutIter>>;
         return detail::copy_helper<category>::call(first, last, dest);
     }
@@ -169,7 +167,7 @@ namespace pika { namespace parallel { namespace util {
         };
 
         template <typename Dummy>
-        struct copy_n_helper<pika::traits::trivially_copyable_pointer_tag,
+        struct copy_n_helper<pika::detail::trivially_copyable_pointer_tag,
             Dummy>
         {
             template <typename InIter, typename OutIter>
@@ -192,9 +190,9 @@ namespace pika { namespace parallel { namespace util {
             tag_fallback_invoke(pika::parallel::util::copy_n_t<ExPolicy>,
                 InIter first, std::size_t count, OutIter dest)
         {
-            using category = pika::traits::pointer_copy_category_t<
+            using category = pika::detail::pointer_copy_category_t<
                 std::decay_t<
-                    pika::traits::remove_const_iterator_value_type_t<InIter>>,
+                    pika::detail::remove_const_iterator_value_type_t<InIter>>,
                 std::decay_t<OutIter>>;
             return detail::copy_n_helper<category>::call(first, count, dest);
         }
@@ -232,7 +230,7 @@ namespace pika { namespace parallel { namespace util {
         InIter const& first, OutIter const& dest)
     {
         using category =
-            pika::traits::pointer_copy_category_t<std::decay_t<InIter>,
+            pika::detail::pointer_copy_category_t<std::decay_t<InIter>,
                 std::decay_t<OutIter>>;
         detail::copy_synchronize_helper<category>::call(first, dest);
     }
@@ -259,14 +257,14 @@ namespace pika { namespace parallel { namespace util {
         };
 
         template <typename Dummy>
-        struct move_helper<pika::traits::trivially_copyable_pointer_tag, Dummy>
+        struct move_helper<pika::detail::trivially_copyable_pointer_tag, Dummy>
         {
             template <typename InIter, typename Sent, typename OutIter>
             PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
                 InIter first, Sent last, OutIter dest)
             {
                 return copy_memmove(
-                    first, parallel::v1::detail::distance(first, last), dest);
+                    first, parallel::detail::distance(first, last), dest);
             }
         };
     }    // namespace detail
@@ -276,7 +274,7 @@ namespace pika { namespace parallel { namespace util {
         InIter first, Sent last, OutIter dest)
     {
         using category =
-            pika::traits::pointer_move_category_t<std::decay_t<InIter>,
+            pika::detail::pointer_move_category_t<std::decay_t<InIter>,
                 std::decay_t<OutIter>>;
         return detail::move_helper<category>::call(first, last, dest);
     }
@@ -313,7 +311,7 @@ namespace pika { namespace parallel { namespace util {
         };
 
         template <typename Dummy>
-        struct move_n_helper<pika::traits::trivially_copyable_pointer_tag,
+        struct move_n_helper<pika::detail::trivially_copyable_pointer_tag,
             Dummy>
         {
             template <typename InIter, typename OutIter>
@@ -330,8 +328,8 @@ namespace pika { namespace parallel { namespace util {
         InIter first, std::size_t count, OutIter dest)
     {
         using category =
-            pika::traits::pointer_move_category_t<std::decay_t<InIter>,
+            pika::detail::pointer_move_category_t<std::decay_t<InIter>,
                 std::decay_t<OutIter>>;
         return detail::move_n_helper<category>::call(first, count, dest);
     }
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

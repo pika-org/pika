@@ -171,7 +171,7 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////
     // partial_sort_copy
     template <typename Iter>
@@ -242,7 +242,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             }
             else
             {
-                parallel::v1::partial_sort<vec_iter_t>().call(
+                parallel::detail::partial_sort<vec_iter_t>().call(
                     pika::execution::seq, aux.begin(), aux.begin() + nmin,
                     aux.end(), PIKA_MOVE(proj_comp),
                     util::projection_identity{});
@@ -320,7 +320,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
                 else
                 {
                     //
-                    pika::parallel::v1::partial_sort<vec_iter_t>().call(
+                    pika::parallel::detail::partial_sort<vec_iter_t>().call(
                         policy(pika::execution::non_task), aux.begin(),
                         aux.begin() + nmin, aux.end(), PIKA_MOVE(proj_comp),
                         util::projection_identity{});
@@ -341,7 +341,7 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             }
         }
     };
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -352,7 +352,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename InIter, typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<InIter> &&
                 pika::traits::is_iterator_v<RandIter> &&
@@ -375,7 +375,7 @@ namespace pika {
             using result_type = parallel::util::in_out_result<InIter, RandIter>;
 
             return parallel::util::get_second_element(
-                parallel::v1::detail::partial_sort_copy<result_type>().call(
+                parallel::detail::partial_sort_copy<result_type>().call(
                     pika::execution::seq, first, last, d_first, d_last,
                     PIKA_FORWARD(Comp, comp),
                     parallel::util::projection_identity{},
@@ -385,7 +385,7 @@ namespace pika {
         // clang-format off
         template <typename ExPolicy, typename FwdIter,
             typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter> &&
@@ -411,7 +411,7 @@ namespace pika {
                 parallel::util::in_out_result<FwdIter, RandIter>;
 
             return parallel::util::get_second_element(
-                parallel::v1::detail::partial_sort_copy<result_type>().call(
+                parallel::detail::partial_sort_copy<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, d_first,
                     d_last, PIKA_FORWARD(Comp, comp),
                     parallel::util::projection_identity{},

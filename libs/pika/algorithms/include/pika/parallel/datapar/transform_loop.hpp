@@ -27,9 +27,8 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace util {
+namespace pika::parallel::util {
     namespace detail {
-        ///////////////////////////////////////////////////////////////////////
         template <typename Iterator>
         struct datapar_transform_loop_n
         {
@@ -101,7 +100,6 @@ namespace pika { namespace parallel { namespace util {
     }
 
     namespace detail {
-        ///////////////////////////////////////////////////////////////////////
         template <typename Iterator>
         struct datapar_transform_loop_n_ind
         {
@@ -728,5 +726,5 @@ namespace pika { namespace parallel { namespace util {
             InIter2>::call(first1, last1, first2, last2, dest,
             PIKA_FORWARD(F, f));
     }
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util
 #endif

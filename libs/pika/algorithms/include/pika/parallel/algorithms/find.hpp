@@ -400,554 +400,523 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
-
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // find
-    namespace detail {
-
-        template <typename FwdIter>
-        struct find : public detail::algorithm<find<FwdIter>, FwdIter>
+    template <typename FwdIter>
+    struct find : public detail::algorithm<find<FwdIter>, FwdIter>
+    {
+        find()
+          : find::algorithm("find")
         {
-            find()
-              : find::algorithm("find")
-            {
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename T, typename Proj = util::projection_identity>
-            static constexpr Iter sequential(ExPolicy, Iter first, Sent last,
-                T const& val, Proj&& proj = Proj())
-            {
-                return sequential_find<ExPolicy>(
-                    first, last, val, PIKA_FORWARD(Proj, proj));
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename T, typename Proj = util::projection_identity>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, T const& val,
-                Proj&& proj = Proj())
-            {
-                using result = util::detail::algorithm_result<ExPolicy, Iter>;
-                using type = typename std::iterator_traits<Iter>::value_type;
-                using difference_type =
-                    typename std::iterator_traits<Iter>::difference_type;
-
-                difference_type count = detail::distance(first, last);
-                if (count <= 0)
-                    return result::get(PIKA_MOVE(last));
-
-                util::cancellation_token<std::size_t> tok(count);
-
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [val, proj = PIKA_FORWARD(Proj, proj), tok](Iter it,
-                              std::size_t part_size,
-                              std::size_t base_idx) mutable -> void {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_size, tok,
-                        [&val, &proj, &tok](
-                            type& v, std::size_t i) mutable -> void {
-                            if (pika::util::detail::invoke(proj, v) == val)
-                            {
-                                tok.cancel(i);
-                            }
-                        });
-                };
-
-                auto f2 = [tok, count, first, last](
-                              std::vector<pika::future<void>>&& data) mutable
-                    -> Iter {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
-
-                    difference_type find_res =
-                        static_cast<difference_type>(tok.get_data());
-
-                    if (find_res != count)
-                    {
-                        std::advance(first, find_res);
-                    }
-                    else
-                    {
-                        first = detail::advance_to_sentinel(first, last);
-                    }
-                    return PIKA_MOVE(first);
-                };
-
-                return util::partitioner<ExPolicy, Iter, void>::call_with_index(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, 1,
-                    PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-    }    // namespace detail
-
-    ///////////////////////////////////////////////////////////////////////////
-    // find_if
-    namespace detail {
-
-        template <typename FwdIter>
-        struct find_if : public detail::algorithm<find_if<FwdIter>, FwdIter>
-        {
-            find_if()
-              : find_if::algorithm("find_if")
-            {
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename F, typename Proj = util::projection_identity>
-            static constexpr Iter sequential(
-                ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
-            {
-                return sequential_find_if<ExPolicy>(
-                    first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename F, typename Proj = util::projection_identity>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, F&& f,
-                Proj&& proj = Proj())
-            {
-                using result = util::detail::algorithm_result<ExPolicy, Iter>;
-                using type = typename std::iterator_traits<Iter>::value_type;
-                using difference_type =
-                    typename std::iterator_traits<Iter>::difference_type;
-
-                difference_type count = detail::distance(first, last);
-                if (count <= 0)
-                    return result::get(PIKA_MOVE(last));
-
-                util::cancellation_token<std::size_t> tok(count);
-
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [f = PIKA_FORWARD(F, f),
-                              proj = PIKA_FORWARD(Proj, proj),
-                              tok](Iter it, std::size_t part_size,
-                              std::size_t base_idx) mutable -> void {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_size, tok,
-                        [&f, &proj, &tok](
-                            type& v, std::size_t i) mutable -> void {
-                            if (pika::util::detail::invoke(
-                                    f, pika::util::detail::invoke(proj, v)))
-                            {
-                                tok.cancel(i);
-                            }
-                        });
-                };
-
-                auto f2 = [tok, count, first, last](
-                              std::vector<pika::future<void>>&& data) mutable
-                    -> Iter {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
-
-                    difference_type find_res =
-                        static_cast<difference_type>(tok.get_data());
-
-                    if (find_res != count)
-                    {
-                        std::advance(first, find_res);
-                    }
-                    else
-                    {
-                        first = detail::advance_to_sentinel(first, last);
-                    }
-                    return PIKA_MOVE(first);
-                };
-
-                return util::partitioner<ExPolicy, Iter, void>::call_with_index(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, 1,
-                    PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-    }    // namespace detail
-
-    ///////////////////////////////////////////////////////////////////////////
-    // find_if_not
-    namespace detail {
-
-        template <typename FwdIter>
-        struct find_if_not
-          : public detail::algorithm<find_if_not<FwdIter>, FwdIter>
-        {
-            find_if_not()
-              : find_if_not::algorithm("find_if_not")
-            {
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename F, typename Proj = util::projection_identity>
-            static constexpr Iter sequential(
-                ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
-            {
-                return sequential_find_if_not<ExPolicy>(
-                    first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename F, typename Proj = util::projection_identity>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, F&& f,
-                Proj&& proj = Proj())
-            {
-                using result = util::detail::algorithm_result<ExPolicy, Iter>;
-                using type = typename std::iterator_traits<Iter>::value_type;
-                using difference_type =
-                    typename std::iterator_traits<Iter>::difference_type;
-
-                difference_type count = detail::distance(first, last);
-                if (count <= 0)
-                    return result::get(PIKA_MOVE(last));
-
-                util::cancellation_token<std::size_t> tok(count);
-
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [f = PIKA_FORWARD(F, f),
-                              proj = PIKA_FORWARD(Proj, proj),
-                              tok](Iter it, std::size_t part_size,
-                              std::size_t base_idx) mutable -> void {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_size, tok,
-                        [&f, &proj, &tok](
-                            type& v, std::size_t i) mutable -> void {
-                            if (!pika::util::detail::invoke(
-                                    f, pika::util::detail::invoke(proj, v)))
-                            {
-                                tok.cancel(i);
-                            }
-                        });
-                };
-
-                auto f2 = [tok, count, first, last](
-                              std::vector<pika::future<void>>&& data) mutable
-                    -> Iter {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
-
-                    difference_type find_res =
-                        static_cast<difference_type>(tok.get_data());
-
-                    if (find_res != count)
-                    {
-                        std::advance(first, find_res);
-                    }
-                    else
-                    {
-                        first = detail::advance_to_sentinel(first, last);
-                    }
-                    return PIKA_MOVE(first);
-                };
-
-                return util::partitioner<ExPolicy, Iter, void>::call_with_index(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, 1,
-                    PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-    }    // namespace detail
-
-    ///////////////////////////////////////////////////////////////////////////
-    // find_end
-    namespace detail {
-
-        template <typename Iter1, typename Sent1, typename Iter2,
-            typename Sent2, typename Pred, typename Proj1, typename Proj2>
-        constexpr Iter1 sequential_search(Iter1 first1, Sent1 last1,
-            Iter2 first2, Sent2 last2, Pred&& op, Proj1&& proj1, Proj2&& proj2)
-        {
-            for (/**/; /**/; ++first1)
-            {
-                Iter1 it1 = first1;
-                for (Iter2 it2 = first2; /**/; (void) ++it1, ++it2)
-                {
-                    if (it2 == last2)
-                    {
-                        return first1;
-                    }
-                    if (it1 == last1)
-                    {
-                        return last1;
-                    }
-                    if (!PIKA_INVOKE(op, PIKA_INVOKE(proj1, *it1),
-                            PIKA_INVOKE(proj2, *it2)))
-                    {
-                        break;
-                    }
-                }
-            }
         }
 
-        template <typename Iter1, typename Sent1, typename Iter2,
-            typename Sent2, typename Pred, typename Proj1, typename Proj2>
-        constexpr Iter1 sequential_find_end(Iter1 first1, Sent1 last1,
-            Iter2 first2, Sent2 last2, Pred&& op, Proj1&& proj1, Proj2&& proj2)
+        template <typename ExPolicy, typename Iter, typename Sent, typename T,
+            typename Proj = util::projection_identity>
+        static constexpr Iter sequential(
+            ExPolicy, Iter first, Sent last, T const& val, Proj&& proj = Proj())
         {
-            if (first2 == last2)
-            {
-                return detail::advance_to_sentinel(first1, last1);
-            }
+            return sequential_find<ExPolicy>(
+                first, last, val, PIKA_FORWARD(Proj, proj));
+        }
 
-            Iter1 result = last1;
-            while (true)
-            {
-                Iter1 new_result = sequential_search(
-                    first1, last1, first2, last2, op, proj1, proj2);
+        template <typename ExPolicy, typename Iter, typename Sent, typename T,
+            typename Proj = util::projection_identity>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, T const& val,
+            Proj&& proj = Proj())
+        {
+            using result = util::detail::algorithm_result<ExPolicy, Iter>;
+            using type = typename std::iterator_traits<Iter>::value_type;
+            using difference_type =
+                typename std::iterator_traits<Iter>::difference_type;
 
-                if (new_result == last1)
+            difference_type count = detail::distance(first, last);
+            if (count <= 0)
+                return result::get(PIKA_MOVE(last));
+
+            util::cancellation_token<std::size_t> tok(count);
+
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [val, proj = PIKA_FORWARD(Proj, proj), tok](Iter it,
+                          std::size_t part_size,
+                          std::size_t base_idx) mutable -> void {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_size, tok,
+                    [&val, &proj, &tok](
+                        type& v, std::size_t i) mutable -> void {
+                        if (pika::util::detail::invoke(proj, v) == val)
+                        {
+                            tok.cancel(i);
+                        }
+                    });
+            };
+
+            auto f2 =
+                [tok, count, first, last](
+                    std::vector<pika::future<void>>&& data) mutable -> Iter {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
+
+                difference_type find_res =
+                    static_cast<difference_type>(tok.get_data());
+
+                if (find_res != count)
                 {
-                    break;
+                    std::advance(first, find_res);
                 }
                 else
                 {
-                    result = new_result;
-                    first1 = result;
-                    ++first1;
+                    first = detail::advance_to_sentinel(first, last);
                 }
-            }
-            return result;
+                return PIKA_MOVE(first);
+            };
+
+            return util::partitioner<ExPolicy, Iter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+    // find_if
+    template <typename FwdIter>
+    struct find_if : public detail::algorithm<find_if<FwdIter>, FwdIter>
+    {
+        find_if()
+          : find_if::algorithm("find_if")
+        {
         }
 
-        template <typename FwdIter>
-        struct find_end : public detail::algorithm<find_end<FwdIter>, FwdIter>
+        template <typename ExPolicy, typename Iter, typename Sent, typename F,
+            typename Proj = util::projection_identity>
+        static constexpr Iter sequential(
+            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
         {
-            find_end()
-              : find_end::algorithm("find_end")
+            return sequential_find_if<ExPolicy>(
+                first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent, typename F,
+            typename Proj = util::projection_identity>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, F&& f,
+            Proj&& proj = Proj())
+        {
+            using result = util::detail::algorithm_result<ExPolicy, Iter>;
+            using type = typename std::iterator_traits<Iter>::value_type;
+            using difference_type =
+                typename std::iterator_traits<Iter>::difference_type;
+
+            difference_type count = detail::distance(first, last);
+            if (count <= 0)
+                return result::get(PIKA_MOVE(last));
+
+            util::cancellation_token<std::size_t> tok(count);
+
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [f = PIKA_FORWARD(F, f), proj = PIKA_FORWARD(Proj, proj),
+                          tok](Iter it, std::size_t part_size,
+                          std::size_t base_idx) mutable -> void {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_size, tok,
+                    [&f, &proj, &tok](type& v, std::size_t i) mutable -> void {
+                        if (pika::util::detail::invoke(
+                                f, pika::util::detail::invoke(proj, v)))
+                        {
+                            tok.cancel(i);
+                        }
+                    });
+            };
+
+            auto f2 =
+                [tok, count, first, last](
+                    std::vector<pika::future<void>>&& data) mutable -> Iter {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
+
+                difference_type find_res =
+                    static_cast<difference_type>(tok.get_data());
+
+                if (find_res != count)
+                {
+                    std::advance(first, find_res);
+                }
+                else
+                {
+                    first = detail::advance_to_sentinel(first, last);
+                }
+                return PIKA_MOVE(first);
+            };
+
+            return util::partitioner<ExPolicy, Iter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+    // find_if_not
+    template <typename FwdIter>
+    struct find_if_not : public detail::algorithm<find_if_not<FwdIter>, FwdIter>
+    {
+        find_if_not()
+          : find_if_not::algorithm("find_if_not")
+        {
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent, typename F,
+            typename Proj = util::projection_identity>
+        static constexpr Iter sequential(
+            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
+        {
+            return sequential_find_if_not<ExPolicy>(
+                first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
+        }
+
+        template <typename ExPolicy, typename Iter, typename Sent, typename F,
+            typename Proj = util::projection_identity>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, F&& f,
+            Proj&& proj = Proj())
+        {
+            using result = util::detail::algorithm_result<ExPolicy, Iter>;
+            using type = typename std::iterator_traits<Iter>::value_type;
+            using difference_type =
+                typename std::iterator_traits<Iter>::difference_type;
+
+            difference_type count = detail::distance(first, last);
+            if (count <= 0)
+                return result::get(PIKA_MOVE(last));
+
+            util::cancellation_token<std::size_t> tok(count);
+
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [f = PIKA_FORWARD(F, f), proj = PIKA_FORWARD(Proj, proj),
+                          tok](Iter it, std::size_t part_size,
+                          std::size_t base_idx) mutable -> void {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_size, tok,
+                    [&f, &proj, &tok](type& v, std::size_t i) mutable -> void {
+                        if (!pika::util::detail::invoke(
+                                f, pika::util::detail::invoke(proj, v)))
+                        {
+                            tok.cancel(i);
+                        }
+                    });
+            };
+
+            auto f2 =
+                [tok, count, first, last](
+                    std::vector<pika::future<void>>&& data) mutable -> Iter {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
+
+                difference_type find_res =
+                    static_cast<difference_type>(tok.get_data());
+
+                if (find_res != count)
+                {
+                    std::advance(first, find_res);
+                }
+                else
+                {
+                    first = detail::advance_to_sentinel(first, last);
+                }
+                return PIKA_MOVE(first);
+            };
+
+            return util::partitioner<ExPolicy, Iter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+    // find_end
+    template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
+        typename Pred, typename Proj1, typename Proj2>
+    constexpr Iter1 sequential_search(Iter1 first1, Sent1 last1, Iter2 first2,
+        Sent2 last2, Pred&& op, Proj1&& proj1, Proj2&& proj2)
+    {
+        for (/**/; /**/; ++first1)
+        {
+            Iter1 it1 = first1;
+            for (Iter2 it2 = first2; /**/; (void) ++it1, ++it2)
             {
+                if (it2 == last2)
+                {
+                    return first1;
+                }
+                if (it1 == last1)
+                {
+                    return last1;
+                }
+                if (!PIKA_INVOKE(
+                        op, PIKA_INVOKE(proj1, *it1), PIKA_INVOKE(proj2, *it2)))
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
+        typename Pred, typename Proj1, typename Proj2>
+    constexpr Iter1 sequential_find_end(Iter1 first1, Sent1 last1, Iter2 first2,
+        Sent2 last2, Pred&& op, Proj1&& proj1, Proj2&& proj2)
+    {
+        if (first2 == last2)
+        {
+            return detail::advance_to_sentinel(first1, last1);
+        }
+
+        Iter1 result = last1;
+        while (true)
+        {
+            Iter1 new_result = sequential_search(
+                first1, last1, first2, last2, op, proj1, proj2);
+
+            if (new_result == last1)
+            {
+                break;
+            }
+            else
+            {
+                result = new_result;
+                first1 = result;
+                ++first1;
+            }
+        }
+        return result;
+    }
+
+    template <typename FwdIter>
+    struct find_end : public detail::algorithm<find_end<FwdIter>, FwdIter>
+    {
+        find_end()
+          : find_end::algorithm("find_end")
+        {
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename Pred, typename Proj1,
+            typename Proj2>
+        static constexpr Iter1 sequential(ExPolicy, Iter1 first1, Sent1 last1,
+            Iter2 first2, Sent2 last2, Pred&& op, Proj1&& proj1, Proj2&& proj2)
+        {
+            return sequential_find_end(first1, last1, first2, last2,
+                PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename Pred, typename Proj1,
+            typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy, Iter1>::type
+        parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, Pred&& op, Proj1&& proj1, Proj2&& proj2)
+        {
+            using result_type = util::detail::algorithm_result<ExPolicy, Iter1>;
+
+            using difference_type =
+                typename std::iterator_traits<Iter1>::difference_type;
+
+            difference_type diff = detail::distance(first2, last2);
+            if (diff <= 0)
+            {
+                return result_type::get(PIKA_MOVE(last1));
             }
 
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename Pred, typename Proj1,
-                typename Proj2>
-            static constexpr Iter1 sequential(ExPolicy, Iter1 first1,
-                Sent1 last1, Iter2 first2, Sent2 last2, Pred&& op,
-                Proj1&& proj1, Proj2&& proj2)
+            difference_type count = detail::distance(first1, last1);
+            if (diff > count)
             {
-                return sequential_find_end(first1, last1, first2, last2,
-                    PIKA_FORWARD(Pred, op), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
+                return result_type::get(PIKA_MOVE(last1));
             }
 
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename Pred, typename Proj1,
-                typename Proj2>
-            static
-                typename util::detail::algorithm_result<ExPolicy, Iter1>::type
-                parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1,
-                    Iter2 first2, Sent2 last2, Pred&& op, Proj1&& proj1,
-                    Proj2&& proj2)
-            {
-                using result_type =
-                    util::detail::algorithm_result<ExPolicy, Iter1>;
+            util::cancellation_token<difference_type,
+                std::greater<difference_type>>
+                tok(-1);
 
-                using difference_type =
-                    typename std::iterator_traits<Iter1>::difference_type;
+            auto f1 = [diff, tok, first2, op = PIKA_FORWARD(Pred, op),
+                          proj1 = PIKA_FORWARD(Proj1, proj1),
+                          proj2 = PIKA_FORWARD(Proj2, proj2)](Iter1 it,
+                          std::size_t part_size,
+                          std::size_t base_idx) mutable -> void {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_size, tok,
+                    [=, &tok, &op, &proj1, &proj2](
+                        auto t, std::size_t i) mutable -> void {
+                        // Note: replacing the invoke() with PIKA_INVOKE()
+                        // below makes gcc generate errors
+                        if (PIKA_INVOKE(op, PIKA_INVOKE(proj1, t),
+                                pika::util::detail::invoke(proj2, *first2)))
+                        {
+                            difference_type local_count = 1;
+                            auto mid = t;
+                            auto mid2 = first2;
+                            ++mid;
+                            ++mid2;
 
-                difference_type diff = detail::distance(first2, last2);
-                if (diff <= 0)
-                {
-                    return result_type::get(PIKA_MOVE(last1));
-                }
-
-                difference_type count = detail::distance(first1, last1);
-                if (diff > count)
-                {
-                    return result_type::get(PIKA_MOVE(last1));
-                }
-
-                util::cancellation_token<difference_type,
-                    std::greater<difference_type>>
-                    tok(-1);
-
-                auto f1 = [diff, tok, first2, op = PIKA_FORWARD(Pred, op),
-                              proj1 = PIKA_FORWARD(Proj1, proj1),
-                              proj2 = PIKA_FORWARD(Proj2, proj2)](Iter1 it,
-                              std::size_t part_size,
-                              std::size_t base_idx) mutable -> void {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_size, tok,
-                        [=, &tok, &op, &proj1, &proj2](
-                            auto t, std::size_t i) mutable -> void {
-                            // Note: replacing the invoke() with PIKA_INVOKE()
-                            // below makes gcc generate errors
-                            if (PIKA_INVOKE(op, PIKA_INVOKE(proj1, t),
-                                    pika::util::detail::invoke(proj2, *first2)))
+                            for (; local_count != diff;
+                                 (void) ++local_count, ++mid, ++mid2)
                             {
-                                difference_type local_count = 1;
-                                auto mid = t;
-                                auto mid2 = first2;
-                                ++mid;
-                                ++mid2;
-
-                                for (; local_count != diff;
-                                     (void) ++local_count, ++mid, ++mid2)
+                                if (!PIKA_INVOKE(op, PIKA_INVOKE(proj1, mid),
+                                        pika::util::detail::invoke(
+                                            proj2, *mid2)))
                                 {
-                                    if (!PIKA_INVOKE(op,
-                                            PIKA_INVOKE(proj1, mid),
-                                            pika::util::detail::invoke(
-                                                proj2, *mid2)))
-                                    {
-                                        break;
-                                    }
-                                }
-
-                                if (local_count == diff)
-                                {
-                                    tok.cancel(i);
+                                    break;
                                 }
                             }
-                        });
-                };
 
-                auto f2 = [tok, count, first1, last1](
-                              std::vector<pika::future<void>>&& data) mutable
-                    -> Iter1 {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
+                            if (local_count == diff)
+                            {
+                                tok.cancel(i);
+                            }
+                        }
+                    });
+            };
 
-                    difference_type find_end_res = tok.get_data();
+            auto f2 =
+                [tok, count, first1, last1](
+                    std::vector<pika::future<void>>&& data) mutable -> Iter1 {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
 
-                    if (find_end_res >= 0 && find_end_res != count)
-                    {
-                        std::advance(first1, find_end_res);
-                    }
-                    else
-                    {
-                        first1 = last1;
-                    }
-                    return PIKA_MOVE(first1);
-                };
+                difference_type find_end_res = tok.get_data();
 
-                return util::partitioner<ExPolicy, Iter1,
-                    void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
-                    first1, count - diff + 1, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-    }    // namespace detail
+                if (find_end_res >= 0 && find_end_res != count)
+                {
+                    std::advance(first1, find_end_res);
+                }
+                else
+                {
+                    first1 = last1;
+                }
+                return PIKA_MOVE(first1);
+            };
+
+            return util::partitioner<ExPolicy, Iter1, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), first1, count - diff + 1, 1,
+                PIKA_MOVE(f1), PIKA_MOVE(f2));
+        }
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     // find_first_of
-    namespace detail {
-        template <typename FwdIter>
-        struct find_first_of
-          : public detail::algorithm<find_first_of<FwdIter>, FwdIter>
+    template <typename FwdIter>
+    struct find_first_of
+      : public detail::algorithm<find_first_of<FwdIter>, FwdIter>
+    {
+        find_first_of()
+          : find_first_of::algorithm("find_first_of")
         {
-            find_first_of()
-              : find_first_of::algorithm("find_first_of")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename InIter1, typename InIter2,
-                typename Pred, typename Proj1, typename Proj2>
-            static InIter1 sequential(ExPolicy, InIter1 first, InIter1 last,
-                InIter2 s_first, InIter2 s_last, Pred&& op, Proj1&& proj1,
-                Proj2&& proj2)
-            {
-                if (first == last)
-                    return last;
+        template <typename ExPolicy, typename InIter1, typename InIter2,
+            typename Pred, typename Proj1, typename Proj2>
+        static InIter1 sequential(ExPolicy, InIter1 first, InIter1 last,
+            InIter2 s_first, InIter2 s_last, Pred&& op, Proj1&& proj1,
+            Proj2&& proj2)
+        {
+            if (first == last)
+                return last;
 
-                util::compare_projected<Pred&, Proj1&, Proj2&> f(
-                    op, proj1, proj2);
-                for (/* */; first != last; ++first)
+            util::compare_projected<Pred&, Proj1&, Proj2&> f(op, proj1, proj2);
+            for (/* */; first != last; ++first)
+            {
+                for (InIter2 iter = s_first; iter != s_last; ++iter)
                 {
-                    for (InIter2 iter = s_first; iter != s_last; ++iter)
+                    if (PIKA_INVOKE(f, *first, *iter))
                     {
-                        if (PIKA_INVOKE(f, *first, *iter))
-                        {
-                            return first;
-                        }
+                        return first;
                     }
                 }
-                return last;
             }
+            return last;
+        }
 
-            template <typename ExPolicy, typename FwdIter2, typename Pred,
-                typename Proj1, typename Proj2>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, FwdIter last,
-                    FwdIter2 s_first, FwdIter2 s_last, Pred&& op, Proj1&& proj1,
-                    Proj2&& proj2)
-            {
-                using result =
-                    util::detail::algorithm_result<ExPolicy, FwdIter>;
-                using reference =
-                    typename std::iterator_traits<FwdIter>::reference;
-                using difference_type =
-                    typename std::iterator_traits<FwdIter>::difference_type;
-                using s_difference_type =
-                    typename std::iterator_traits<FwdIter2>::difference_type;
+        template <typename ExPolicy, typename FwdIter2, typename Pred,
+            typename Proj1, typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, FwdIter last,
+            FwdIter2 s_first, FwdIter2 s_last, Pred&& op, Proj1&& proj1,
+            Proj2&& proj2)
+        {
+            using result = util::detail::algorithm_result<ExPolicy, FwdIter>;
+            using reference = typename std::iterator_traits<FwdIter>::reference;
+            using difference_type =
+                typename std::iterator_traits<FwdIter>::difference_type;
+            using s_difference_type =
+                typename std::iterator_traits<FwdIter2>::difference_type;
 
-                s_difference_type diff = std::distance(s_first, s_last);
-                if (diff <= 0)
-                    return result::get(PIKA_MOVE(last));
+            s_difference_type diff = std::distance(s_first, s_last);
+            if (diff <= 0)
+                return result::get(PIKA_MOVE(last));
 
-                difference_type count = std::distance(first, last);
-                if (diff > count)
-                    return result::get(PIKA_MOVE(last));
+            difference_type count = std::distance(first, last);
+            if (diff > count)
+                return result::get(PIKA_MOVE(last));
 
-                util::cancellation_token<difference_type> tok(count);
+            util::cancellation_token<difference_type> tok(count);
 
-                auto f1 = [s_first, s_last, tok, op = PIKA_FORWARD(Pred, op),
-                              proj1 = PIKA_FORWARD(Proj1, proj1),
-                              proj2 = PIKA_FORWARD(Proj2, proj2)](FwdIter it,
-                              std::size_t part_size,
-                              std::size_t base_idx) mutable -> void {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_size, tok,
-                        [&tok, &s_first, &s_last, &op, &proj1, &proj2](
-                            reference v, std::size_t i) mutable -> void {
-                            util::compare_projected<Pred&, Proj1&, Proj2&> f(
-                                op, proj1, proj2);
-                            for (FwdIter2 iter = s_first; iter != s_last;
-                                 ++iter)
+            auto f1 = [s_first, s_last, tok, op = PIKA_FORWARD(Pred, op),
+                          proj1 = PIKA_FORWARD(Proj1, proj1),
+                          proj2 = PIKA_FORWARD(Proj2, proj2)](FwdIter it,
+                          std::size_t part_size,
+                          std::size_t base_idx) mutable -> void {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_size, tok,
+                    [&tok, &s_first, &s_last, &op, &proj1, &proj2](
+                        reference v, std::size_t i) mutable -> void {
+                        util::compare_projected<Pred&, Proj1&, Proj2&> f(
+                            op, proj1, proj2);
+                        for (FwdIter2 iter = s_first; iter != s_last; ++iter)
+                        {
+                            if (PIKA_INVOKE(f, v, *iter))
                             {
-                                if (PIKA_INVOKE(f, v, *iter))
-                                {
-                                    tok.cancel(i);
-                                }
+                                tok.cancel(i);
                             }
-                        });
-                };
+                        }
+                    });
+            };
 
-                auto f2 = [tok, count, first, last](
-                              std::vector<pika::future<void>>&& data) mutable
-                    -> FwdIter {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
+            auto f2 =
+                [tok, count, first, last](
+                    std::vector<pika::future<void>>&& data) mutable -> FwdIter {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
 
-                    difference_type find_first_of_res = tok.get_data();
+                difference_type find_first_of_res = tok.get_data();
 
-                    if (find_first_of_res != count)
-                    {
-                        std::advance(first, find_first_of_res);
-                    }
-                    else
-                    {
-                        first = last;
-                    }
+                if (find_first_of_res != count)
+                {
+                    std::advance(first, find_first_of_res);
+                }
+                else
+                {
+                    first = last;
+                }
 
-                    return PIKA_MOVE(first);
-                };
+                return PIKA_MOVE(first);
+            };
 
-                return util::partitioner<ExPolicy, FwdIter,
-                    void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
-                    first, count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+            return util::partitioner<ExPolicy, FwdIter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::find
     inline constexpr struct find_t final
@@ -970,7 +939,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find<FwdIter>().call(
+            return pika::parallel::detail::find<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, val,
                 pika::parallel::util::projection_identity{});
         }
@@ -988,7 +957,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::find<InIter>().call(
+            return pika::parallel::detail::find<InIter>().call(
                 pika::execution::seq, first, last, val,
                 pika::parallel::util::projection_identity{});
         }
@@ -1019,7 +988,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_if<FwdIter>().call(
+            return pika::parallel::detail::find_if<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
@@ -1039,7 +1008,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::find_if<InIter>().call(
+            return pika::parallel::detail::find_if<InIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
@@ -1070,7 +1039,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_if_not<FwdIter>().call(
+            return pika::parallel::detail::find_if_not<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
@@ -1090,7 +1059,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<FwdIter>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::find_if_not<FwdIter>().call(
+            return pika::parallel::detail::find_if_not<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
                 pika::parallel::util::projection_identity{});
         }
@@ -1126,7 +1095,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_end<FwdIter1>().call(
+            return pika::parallel::detail::find_end<FwdIter1>().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
                 pika::parallel::util::projection_identity(),
@@ -1151,9 +1120,9 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_end<FwdIter1>().call(
+            return pika::parallel::detail::find_end<FwdIter1>().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
-                pika::parallel::v1::detail::equal_to{},
+                pika::parallel::detail::equal_to{},
                 pika::parallel::util::projection_identity(),
                 pika::parallel::util::projection_identity());
         }
@@ -1178,7 +1147,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_end<FwdIter1>().call(
+            return pika::parallel::detail::find_end<FwdIter1>().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
                 pika::parallel::util::projection_identity(),
@@ -1200,9 +1169,9 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_end<FwdIter1>().call(
+            return pika::parallel::detail::find_end<FwdIter1>().call(
                 pika::execution::seq, first1, last1, first2, last2,
-                pika::parallel::v1::detail::equal_to{},
+                pika::parallel::detail::equal_to{},
                 pika::parallel::util::projection_identity(),
                 pika::parallel::util::projection_identity());
         }
@@ -1237,7 +1206,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Subsequence requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_first_of<FwdIter1>().call(
+            return pika::parallel::detail::find_first_of<FwdIter1>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
                 pika::parallel::util::projection_identity(),
@@ -1262,9 +1231,9 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Subsequence requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_first_of<FwdIter1>().call(
+            return pika::parallel::detail::find_first_of<FwdIter1>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, s_first, s_last,
-                pika::parallel::v1::detail::equal_to{},
+                pika::parallel::detail::equal_to{},
                 pika::parallel::util::projection_identity(),
                 pika::parallel::util::projection_identity());
         }
@@ -1288,7 +1257,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Subsequence requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_first_of<FwdIter1>().call(
+            return pika::parallel::detail::find_first_of<FwdIter1>().call(
                 pika::execution::seq, first, last, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
                 pika::parallel::util::projection_identity(),
@@ -1310,9 +1279,9 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Subsequence requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::find_first_of<FwdIter1>().call(
+            return pika::parallel::detail::find_first_of<FwdIter1>().call(
                 pika::execution::seq, first, last, s_first, s_last,
-                pika::parallel::v1::detail::equal_to{},
+                pika::parallel::detail::equal_to{},
                 pika::parallel::util::projection_identity(),
                 pika::parallel::util::projection_identity());
         }

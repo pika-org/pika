@@ -179,119 +179,115 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // lexicographical_compare
-    namespace detail {
-        /// \cond NOINTERNAL
-        struct lexicographical_compare
-          : public detail::algorithm<lexicographical_compare, bool>
+    /// \cond NOINTERNAL
+    struct lexicographical_compare
+      : public detail::algorithm<lexicographical_compare, bool>
+    {
+        lexicographical_compare()
+          : lexicographical_compare::algorithm("lexicographical_compare")
         {
-            lexicographical_compare()
-              : lexicographical_compare::algorithm("lexicographical_compare")
+        }
+
+        template <typename ExPolicy, typename InIter1, typename Sent1,
+            typename InIter2, typename Sent2, typename Pred, typename Proj1,
+            typename Proj2>
+        static bool sequential(ExPolicy, InIter1 first1, Sent1 last1,
+            InIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
+            Proj2&& proj2)
+        {
+            for (; (first1 != last1) && (first2 != last2);
+                 ++first1, (void) ++first2)
             {
+                if (PIKA_INVOKE(pred, PIKA_INVOKE(proj1, *first1),
+                        PIKA_INVOKE(proj2, *first2)))
+                    return true;
+                if (PIKA_INVOKE(pred, PIKA_INVOKE(proj2, *first2),
+                        PIKA_INVOKE(proj1, *first1)))
+                    return false;
+            }
+            return (first1 == last1) && (first2 != last2);
+        }
+
+        template <typename ExPolicy, typename FwdIter1, typename Sent1,
+            typename FwdIter2, typename Sent2, typename Pred, typename Proj1,
+            typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
+            FwdIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
+            Proj2&& proj2)
+        {
+            using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
+            using reference = typename zip_iterator::reference;
+
+            std::size_t count1 = detail::distance(first1, last1);
+            std::size_t count2 = detail::distance(first2, last2);
+
+            // An empty range is lexicographically less than any non-empty
+            // range
+            if (count1 == 0 && count2 != 0)
+            {
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    true);
             }
 
-            template <typename ExPolicy, typename InIter1, typename Sent1,
-                typename InIter2, typename Sent2, typename Pred, typename Proj1,
-                typename Proj2>
-            static bool sequential(ExPolicy, InIter1 first1, Sent1 last1,
-                InIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-                Proj2&& proj2)
+            if (count2 == 0 && count1 != 0)
             {
-                for (; (first1 != last1) && (first2 != last2);
-                     ++first1, (void) ++first2)
-                {
-                    if (PIKA_INVOKE(pred, PIKA_INVOKE(proj1, *first1),
-                            PIKA_INVOKE(proj2, *first2)))
-                        return true;
-                    if (PIKA_INVOKE(pred, PIKA_INVOKE(proj2, *first2),
-                            PIKA_INVOKE(proj1, *first1)))
-                        return false;
-                }
-                return (first1 == last1) && (first2 != last2);
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    false);
             }
 
-            template <typename ExPolicy, typename FwdIter1, typename Sent1,
-                typename FwdIter2, typename Sent2, typename Pred,
-                typename Proj1, typename Proj2>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
-                FwdIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-                Proj2&& proj2)
-            {
-                using zip_iterator =
-                    pika::util::zip_iterator<FwdIter1, FwdIter2>;
-                using reference = typename zip_iterator::reference;
+            std::size_t count = (std::min)(count1, count2);
+            util::cancellation_token<std::size_t> tok(count);
 
-                std::size_t count1 = detail::distance(first1, last1);
-                std::size_t count2 = detail::distance(first2, last2);
+            auto f1 = [tok, pred, proj1, proj2](zip_iterator it,
+                          std::size_t part_count,
+                          std::size_t base_idx) mutable -> void {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_count, tok,
+                    [&pred, &tok, &proj1, &proj2](
+                        reference t, std::size_t i) mutable -> void {
+                        using std::get;
+                        if (PIKA_INVOKE(pred, PIKA_INVOKE(proj1, get<0>(t)),
+                                PIKA_INVOKE(proj2, get<1>(t))) ||
+                            PIKA_INVOKE(pred, PIKA_INVOKE(proj2, get<1>(t)),
+                                PIKA_INVOKE(proj1, get<0>(t))))
+                        {
+                            tok.cancel(i);
+                        }
+                    });
+            };
 
-                // An empty range is lexicographically less than any non-empty
-                // range
-                if (count1 == 0 && count2 != 0)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        true);
-                }
+            auto f2 =
+                [tok, first1, first2, last1, last2, pred, proj1, proj2](
+                    std::vector<pika::future<void>>&& data) mutable -> bool {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
 
-                if (count2 == 0 && count1 != 0)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        false);
-                }
+                std::size_t mismatched = tok.get_data();
 
-                std::size_t count = (std::min)(count1, count2);
-                util::cancellation_token<std::size_t> tok(count);
+                std::advance(first1, mismatched);
+                std::advance(first2, mismatched);
 
-                auto f1 = [tok, pred, proj1, proj2](zip_iterator it,
-                              std::size_t part_count,
-                              std::size_t base_idx) mutable -> void {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_count, tok,
-                        [&pred, &tok, &proj1, &proj2](
-                            reference t, std::size_t i) mutable -> void {
-                            using std::get;
-                            if (PIKA_INVOKE(pred, PIKA_INVOKE(proj1, get<0>(t)),
-                                    PIKA_INVOKE(proj2, get<1>(t))) ||
-                                PIKA_INVOKE(pred, PIKA_INVOKE(proj2, get<1>(t)),
-                                    PIKA_INVOKE(proj1, get<0>(t))))
-                            {
-                                tok.cancel(i);
-                            }
-                        });
-                };
+                if (first1 != last1 && first2 != last2)
+                    return PIKA_INVOKE(pred, PIKA_INVOKE(proj1, *first1),
+                        PIKA_INVOKE(proj2, *first2));
 
-                auto f2 = [tok, first1, first2, last1, last2, pred, proj1,
-                              proj2](
-                              std::vector<pika::future<void>>&& data) mutable
-                    -> bool {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
+                return first2 != last2;
+            };
 
-                    std::size_t mismatched = tok.get_data();
-
-                    std::advance(first1, mismatched);
-                    std::advance(first2, mismatched);
-
-                    if (first1 != last1 && first2 != last2)
-                        return PIKA_INVOKE(pred, PIKA_INVOKE(proj1, *first1),
-                            PIKA_INVOKE(proj2, *first2));
-
-                    return first2 != last2;
-                };
-
-                using pika::util::make_zip_iterator;
-                return util::partitioner<ExPolicy, bool, void>::call_with_index(
-                    PIKA_FORWARD(ExPolicy, policy),
-                    make_zip_iterator(first1, first2), count, 1, PIKA_MOVE(f1),
-                    PIKA_MOVE(f2));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+            using pika::util::make_zip_iterator;
+            return util::partitioner<ExPolicy, bool, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy),
+                make_zip_iterator(first1, first2), count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -301,7 +297,7 @@ namespace pika {
     {
         // clang-format off
         template <typename InIter1, typename InIter2,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter1>::value &&
                 pika::traits::is_iterator<InIter2>::value &&
@@ -320,7 +316,7 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<InIter2>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::lexicographical_compare().call(
+            return pika::parallel::detail::lexicographical_compare().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity{},
@@ -329,7 +325,7 @@ namespace pika {
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
@@ -351,7 +347,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::lexicographical_compare().call(
+            return pika::parallel::detail::lexicographical_compare().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
                 pika::parallel::util::projection_identity{},

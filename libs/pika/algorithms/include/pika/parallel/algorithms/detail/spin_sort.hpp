@@ -24,8 +24,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
+namespace pika::parallel::detail {
     /// This function divide r_input in two parts, sort it, and merge moving
     ///        the elements to range_buf
     /// \param [in] r_input     range with the elements to sort
@@ -244,5 +243,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         spin_sort_helper<Iter, Sent, std::decay_t<Compare>> sorter(
             first, last, PIKA_FORWARD(Compare, comp), paux, naux);
     }
-
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

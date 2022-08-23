@@ -19,10 +19,7 @@
 #include <utility>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util { namespace detail {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util::detail {
     template <typename ExPolicy>
     struct handle_local_exceptions
     {
@@ -393,4 +390,4 @@ namespace pika { namespace parallel { namespace util { namespace detail {
 #endif
         }
     };
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail

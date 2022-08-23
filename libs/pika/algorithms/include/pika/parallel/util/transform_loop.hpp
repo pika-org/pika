@@ -19,11 +19,8 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace util {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     namespace detail {
-
         template <typename Iter>
         struct transform_loop
         {
@@ -689,5 +686,4 @@ namespace pika { namespace parallel { namespace util {
             first1, count, first2, dest, PIKA_FORWARD(F, f));
     }
 #endif
-
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

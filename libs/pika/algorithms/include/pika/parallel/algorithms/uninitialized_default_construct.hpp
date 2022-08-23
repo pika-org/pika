@@ -188,197 +188,184 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // uninitialized_default_construct
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // provide our own implementation of std::uninitialized_default_construct as some
-        // versions of MSVC horribly fail at compiling it for some types T
-        template <typename Iter, typename Sent>
-        Iter std_uninitialized_default_construct(Iter first, Sent last)
+    // provide our own implementation of std::uninitialized_default_construct as some
+    // versions of MSVC horribly fail at compiling it for some types T
+    template <typename Iter, typename Sent>
+    Iter std_uninitialized_default_construct(Iter first, Sent last)
+    {
+        using value_type = typename std::iterator_traits<Iter>::value_type;
+
+        Iter s_first = first;
+        try
         {
-            using value_type = typename std::iterator_traits<Iter>::value_type;
+            for (/* */; first != last; ++first)
+            {
+                ::new (std::addressof(*first)) value_type;
+            }
+            return first;
+        }
+        catch (...)
+        {
+            for (/* */; s_first != first; ++s_first)
+            {
+                (*s_first).~value_type();
+            }
+            throw;
+        }
+    }
 
-            Iter s_first = first;
-            try
-            {
-                for (/* */; first != last; ++first)
-                {
-                    ::new (std::addressof(*first)) value_type;
-                }
-                return first;
-            }
-            catch (...)
-            {
-                for (/* */; s_first != first; ++s_first)
-                {
-                    (*s_first).~value_type();
-                }
-                throw;
-            }
+    ///////////////////////////////////////////////////////////////////////
+    template <typename InIter>
+    InIter sequential_uninitialized_default_construct_n(InIter first,
+        std::size_t count, util::cancellation_token<util::detail::no_data>& tok)
+    {
+        using value_type = typename std::iterator_traits<InIter>::value_type;
+
+        return util::loop_with_cleanup_n_with_token(
+            first, count, tok,
+            [](InIter it) -> void { ::new (std::addressof(*it)) value_type; },
+            [](InIter it) -> void { (*it).~value_type(); });
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename ExPolicy, typename FwdIter>
+    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    parallel_sequential_uninitialized_default_construct_n(
+        ExPolicy&& policy, FwdIter first, std::size_t count)
+    {
+        if (count == 0)
+        {
+            return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
+                PIKA_MOVE(first));
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename InIter>
-        InIter sequential_uninitialized_default_construct_n(InIter first,
-            std::size_t count,
-            util::cancellation_token<util::detail::no_data>& tok)
-        {
-            using value_type =
-                typename std::iterator_traits<InIter>::value_type;
+        using partition_result_type = std::pair<FwdIter, FwdIter>;
+        using value_type = typename std::iterator_traits<FwdIter>::value_type;
 
-            return util::loop_with_cleanup_n_with_token(
-                first, count, tok,
-                [](InIter it) -> void {
-                    ::new (std::addressof(*it)) value_type;
+        util::cancellation_token<util::detail::no_data> tok;
+        return util::partitioner_with_cleanup<ExPolicy, FwdIter,
+            partition_result_type>::
+            call(
+                PIKA_FORWARD(ExPolicy, policy), first, count,
+                [tok](FwdIter it,
+                    std::size_t part_size) mutable -> partition_result_type {
+                    return std::make_pair(it,
+                        sequential_uninitialized_default_construct_n(
+                            it, part_size, tok));
                 },
-                [](InIter it) -> void { (*it).~value_type(); });
+                // finalize, called once if no error occurred
+                [first, count](
+                    std::vector<pika::future<partition_result_type>>&&
+                        data) mutable -> FwdIter {
+                    // make sure iterators embedded in function object that is
+                    // attached to futures are invalidated
+                    data.clear();
+
+                    std::advance(first, count);
+                    return first;
+                },
+                // cleanup function, called for each partition which
+                // didn't fail, but only if at least one failed
+                [](partition_result_type&& r) -> void {
+                    while (r.first != r.second)
+                    {
+                        (*r.first).~value_type();
+                        ++r.first;
+                    }
+                });
+    }
+    ///////////////////////////////////////////////////////////////////////
+    template <typename FwdIter>
+    struct uninitialized_default_construct
+      : public detail::algorithm<uninitialized_default_construct<FwdIter>,
+            FwdIter>
+    {
+        uninitialized_default_construct()
+          : uninitialized_default_construct::algorithm(
+                "uninitialized_default_construct")
+        {
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename ExPolicy, typename FwdIter>
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        parallel_sequential_uninitialized_default_construct_n(
-            ExPolicy&& policy, FwdIter first, std::size_t count)
+        template <typename ExPolicy, typename Sent>
+        static FwdIter sequential(ExPolicy, FwdIter first, Sent last)
         {
-            if (count == 0)
-            {
-                return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
-                    PIKA_MOVE(first));
-            }
-
-            using partition_result_type = std::pair<FwdIter, FwdIter>;
-            using value_type =
-                typename std::iterator_traits<FwdIter>::value_type;
-
-            util::cancellation_token<util::detail::no_data> tok;
-            return util::partitioner_with_cleanup<ExPolicy, FwdIter,
-                partition_result_type>::
-                call(
-                    PIKA_FORWARD(ExPolicy, policy), first, count,
-                    [tok](FwdIter it, std::size_t part_size) mutable
-                    -> partition_result_type {
-                        return std::make_pair(it,
-                            sequential_uninitialized_default_construct_n(
-                                it, part_size, tok));
-                    },
-                    // finalize, called once if no error occurred
-                    [first, count](
-                        std::vector<pika::future<partition_result_type>>&&
-                            data) mutable -> FwdIter {
-                        // make sure iterators embedded in function object that is
-                        // attached to futures are invalidated
-                        data.clear();
-
-                        std::advance(first, count);
-                        return first;
-                    },
-                    // cleanup function, called for each partition which
-                    // didn't fail, but only if at least one failed
-                    [](partition_result_type&& r) -> void {
-                        while (r.first != r.second)
-                        {
-                            (*r.first).~value_type();
-                            ++r.first;
-                        }
-                    });
+            return std_uninitialized_default_construct(first, last);
         }
-        ///////////////////////////////////////////////////////////////////////
-        template <typename FwdIter>
-        struct uninitialized_default_construct
-          : public detail::algorithm<uninitialized_default_construct<FwdIter>,
-                FwdIter>
+
+        template <typename ExPolicy, typename Sent>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last)
         {
-            uninitialized_default_construct()
-              : uninitialized_default_construct::algorithm(
-                    "uninitialized_default_construct")
-            {
-            }
-
-            template <typename ExPolicy, typename Sent>
-            static FwdIter sequential(ExPolicy, FwdIter first, Sent last)
-            {
-                return std_uninitialized_default_construct(first, last);
-            }
-
-            template <typename ExPolicy, typename Sent>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, Sent last)
-            {
-                return parallel_sequential_uninitialized_default_construct_n(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return parallel_sequential_uninitialized_default_construct_n(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last));
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // uninitialized_default_construct_n
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // provide our own implementation of std::uninitialized_default_construct as some
-        // versions of MSVC horribly fail at compiling it for some types T
-        template <typename InIter>
-        InIter std_uninitialized_default_construct_n(
-            InIter first, std::size_t count)
+    // provide our own implementation of std::uninitialized_default_construct as some
+    // versions of MSVC horribly fail at compiling it for some types T
+    template <typename InIter>
+    InIter std_uninitialized_default_construct_n(
+        InIter first, std::size_t count)
+    {
+        using value_type = typename std::iterator_traits<InIter>::value_type;
+
+        InIter s_first = first;
+        try
         {
-            using value_type =
-                typename std::iterator_traits<InIter>::value_type;
+            for (/* */; count != 0; (void) ++first, --count)
+            {
+                ::new (std::addressof(*first)) value_type;
+            }
+            return first;
+        }
+        catch (...)
+        {
+            for (/* */; s_first != first; ++s_first)
+            {
+                (*s_first).~value_type();
+            }
+            throw;
+        }
+    }
 
-            InIter s_first = first;
-            try
-            {
-                for (/* */; count != 0; (void) ++first, --count)
-                {
-                    ::new (std::addressof(*first)) value_type;
-                }
-                return first;
-            }
-            catch (...)
-            {
-                for (/* */; s_first != first; ++s_first)
-                {
-                    (*s_first).~value_type();
-                }
-                throw;
-            }
+    template <typename FwdIter>
+    struct uninitialized_default_construct_n
+      : public detail::algorithm<uninitialized_default_construct_n<FwdIter>,
+            FwdIter>
+    {
+        uninitialized_default_construct_n()
+          : uninitialized_default_construct_n::algorithm(
+                "uninitialized_default_construct_n")
+        {
         }
 
-        template <typename FwdIter>
-        struct uninitialized_default_construct_n
-          : public detail::algorithm<uninitialized_default_construct_n<FwdIter>,
-                FwdIter>
+        template <typename ExPolicy>
+        static FwdIter sequential(ExPolicy, FwdIter first, std::size_t count)
         {
-            uninitialized_default_construct_n()
-              : uninitialized_default_construct_n::algorithm(
-                    "uninitialized_default_construct_n")
-            {
-            }
+            return std_uninitialized_default_construct_n(first, count);
+        }
 
-            template <typename ExPolicy>
-            static FwdIter sequential(
-                ExPolicy, FwdIter first, std::size_t count)
-            {
-                return std_uninitialized_default_construct_n(first, count);
-            }
-
-            template <typename ExPolicy>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, std::size_t count)
-            {
-                return parallel_sequential_uninitialized_default_construct_n(
-                    PIKA_FORWARD(ExPolicy, policy), first, count);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+        template <typename ExPolicy>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, std::size_t count)
+        {
+            return parallel_sequential_uninitialized_default_construct_n(
+                PIKA_FORWARD(ExPolicy, policy), first, count);
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -398,8 +385,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            pika::parallel::v1::detail::uninitialized_default_construct<
-                FwdIter>()
+            pika::parallel::detail::uninitialized_default_construct<FwdIter>()
                 .call(pika::execution::seq, first, last);
         }
 
@@ -422,7 +408,7 @@ namespace pika {
                     ExPolicy>::type;
 
             return pika::util::detail::void_guard<result_type>(),
-                   pika::parallel::v1::detail::uninitialized_default_construct<
+                   pika::parallel::detail::uninitialized_default_construct<
                        FwdIter>()
                        .call(PIKA_FORWARD(ExPolicy, policy), first, last);
         }
@@ -449,14 +435,14 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return first;
             }
 
-            return pika::parallel::v1::detail::
-                uninitialized_default_construct_n<FwdIter>()
-                    .call(pika::execution::seq, first, std::size_t(count));
+            return pika::parallel::detail::uninitialized_default_construct_n<
+                FwdIter>()
+                .call(pika::execution::seq, first, std::size_t(count));
         }
 
         // clang-format off
@@ -475,16 +461,16 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return parallel::util::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 
-            return pika::parallel::v1::detail::
-                uninitialized_default_construct_n<FwdIter>()
-                    .call(PIKA_FORWARD(ExPolicy, policy), first,
-                        std::size_t(count));
+            return pika::parallel::detail::uninitialized_default_construct_n<
+                FwdIter>()
+                .call(
+                    PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count));
         }
 
     } uninitialized_default_construct_n{};

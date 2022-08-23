@@ -302,8 +302,7 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::is_heap
     inline constexpr struct is_heap_t final
@@ -312,15 +311,15 @@ namespace pika { namespace ranges {
     private:
         // clang-format off
         template <typename ExPolicy, typename Rng,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, Comp,
-                    pika::parallel::traits::projected_range<Proj, Rng>,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, Comp,
+                    pika::parallel::detail::projected_range<Proj, Rng>,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -336,7 +335,7 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<iterator_type>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap<iterator_type>().call(
+            return pika::parallel::detail::is_heap<iterator_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(Comp, comp),
                 PIKA_FORWARD(Proj, proj));
@@ -344,14 +343,14 @@ namespace pika { namespace ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Iter, typename Sent,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, Comp,
-                    pika::parallel::traits::projected<Proj, Iter>,
-                    pika::parallel::traits::projected<Proj, Iter>
+                pika::parallel::detail::is_indirect_callable<ExPolicy, Comp,
+                    pika::parallel::detail::projected<Proj, Iter>,
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -364,22 +363,22 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<Iter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap<Iter>().call(
+            return pika::parallel::detail::is_heap<Iter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename Rng,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Comp,
-                    pika::parallel::traits::projected_range<Proj, Rng>,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -393,7 +392,7 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<iterator_type>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap<iterator_type>().call(
+            return pika::parallel::detail::is_heap<iterator_type>().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), PIKA_FORWARD(Comp, comp),
                 PIKA_FORWARD(Proj, proj));
@@ -401,14 +400,14 @@ namespace pika { namespace ranges {
 
         // clang-format off
         template <typename Iter, typename Sent,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Comp,
-                    pika::parallel::traits::projected<Proj, Iter>,
-                    pika::parallel::traits::projected<Proj, Iter>
+                    pika::parallel::detail::projected<Proj, Iter>,
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -419,7 +418,7 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<Iter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap<Iter>().call(
+            return pika::parallel::detail::is_heap<Iter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
                 PIKA_FORWARD(Proj, proj));
         }
@@ -433,15 +432,15 @@ namespace pika { namespace ranges {
     private:
         // clang-format off
         template <typename ExPolicy, typename Rng,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, Comp,
-                    pika::parallel::traits::projected_range<Proj, Rng>,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<ExPolicy, Comp,
+                    pika::parallel::detail::projected_range<Proj, Rng>,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -457,22 +456,22 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<iterator_type>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap_until<iterator_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
-                    pika::util::end(rng), PIKA_FORWARD(Comp, comp),
-                    PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::is_heap_until<iterator_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Comp, comp),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename ExPolicy, typename Iter, typename Sent,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<ExPolicy, Comp,
-                    pika::parallel::traits::projected<Proj, Iter>,
-                    pika::parallel::traits::projected<Proj, Iter>
+                pika::parallel::detail::is_indirect_callable<ExPolicy, Comp,
+                    pika::parallel::detail::projected<Proj, Iter>,
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -485,22 +484,22 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<Iter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap_until<Iter>().call(
+            return pika::parallel::detail::is_heap_until<Iter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename Rng,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
-                pika::parallel::traits::is_projected_range<Proj, Rng>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Comp,
-                    pika::parallel::traits::projected_range<Proj, Rng>,
-                    pika::parallel::traits::projected_range<Proj, Rng>
+                    pika::parallel::detail::projected_range<Proj, Rng>,
+                    pika::parallel::detail::projected_range<Proj, Rng>
                 >::value
             )>
         // clang-format on
@@ -515,22 +514,22 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<iterator_type>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap_until<iterator_type>()
-                .call(pika::execution::seq, pika::util::begin(rng),
-                    pika::util::end(rng), PIKA_FORWARD(Comp, comp),
-                    PIKA_FORWARD(Proj, proj));
+            return pika::parallel::detail::is_heap_until<iterator_type>().call(
+                pika::execution::seq, pika::util::begin(rng),
+                pika::util::end(rng), PIKA_FORWARD(Comp, comp),
+                PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename Iter, typename Sent,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = pika::parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
-                pika::parallel::traits::is_indirect_callable<
+                pika::parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Comp,
-                    pika::parallel::traits::projected<Proj, Iter>,
-                    pika::parallel::traits::projected<Proj, Iter>
+                    pika::parallel::detail::projected<Proj, Iter>,
+                    pika::parallel::detail::projected<Proj, Iter>
                 >::value
             )>
         // clang-format on
@@ -541,12 +540,11 @@ namespace pika { namespace ranges {
                 (pika::traits::is_random_access_iterator<Iter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap_until<Iter>().call(
+            return pika::parallel::detail::is_heap_until<Iter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
                 PIKA_FORWARD(Proj, proj));
         }
     } is_heap_until{};
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    //DOXYGEN

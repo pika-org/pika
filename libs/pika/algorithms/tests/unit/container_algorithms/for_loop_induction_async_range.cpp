@@ -36,7 +36,7 @@ void test_for_loop_induction(ExPolicy&& policy)
     std::iota(std::begin(c), std::end(c), gen());
 
     auto f = pika::ranges::for_loop(std::forward<ExPolicy>(policy), c,
-        pika::parallel::induction(0), [&d](iterator it, std::size_t i) {
+        pika::induction(0), [&d](iterator it, std::size_t i) {
             *it = 42;
             d[i] = 42;
         });
@@ -66,7 +66,7 @@ void test_for_loop_induction_stride(ExPolicy&& policy)
     std::iota(std::begin(c), std::end(c), gen());
 
     auto f = pika::ranges::for_loop(std::forward<ExPolicy>(policy), c,
-        pika::parallel::induction(0), pika::parallel::induction(0, 2),
+        pika::induction(0), pika::induction(0, 2),
         [&d](iterator it, std::size_t i, std::size_t j) {
             *it = 42;
             d[i] = 42;
@@ -100,7 +100,7 @@ void test_for_loop_induction_life_out(ExPolicy&& policy)
     std::size_t curr = 0;
 
     auto f = pika::ranges::for_loop(std::forward<ExPolicy>(policy), c,
-        pika::parallel::induction(curr), [&d](iterator it, std::size_t i) {
+        pika::induction(curr), [&d](iterator it, std::size_t i) {
             *it = 42;
             d[i] = 42;
         });
@@ -134,7 +134,7 @@ void test_for_loop_induction_stride_life_out(ExPolicy&& policy)
     std::size_t curr2 = 0;
 
     auto f = pika::ranges::for_loop(std::forward<ExPolicy>(policy), c,
-        pika::parallel::induction(curr1), pika::parallel::induction(curr2, 2),
+        pika::induction(curr1), pika::induction(curr2, 2),
         [&d](iterator it, std::size_t i, std::size_t j) {
             *it = 42;
             d[i] = 42;

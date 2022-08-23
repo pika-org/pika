@@ -23,7 +23,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename ExPolicy>
     struct datapar_find
@@ -266,5 +266,5 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         return datapar_find_if_not<ExPolicy>::call(base_idx, part_begin,
             part_count, tok, PIKA_FORWARD(F, op), PIKA_FORWARD(Proj, proj));
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail
 #endif

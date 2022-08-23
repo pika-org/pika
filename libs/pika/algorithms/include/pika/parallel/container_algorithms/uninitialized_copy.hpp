@@ -325,7 +325,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     inline constexpr struct uninitialized_copy_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_copy_t>
     {
@@ -348,7 +348,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_copy_sent<
+            return pika::parallel::detail::uninitialized_copy_sent<
                 parallel::util::in_out_result<InIter, FwdIter>>()
                 .call(pika::execution::seq, first1, last1, first2, last2);
         }
@@ -375,7 +375,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_copy_sent<
+            return pika::parallel::detail::uninitialized_copy_sent<
                 parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                     last2);
@@ -407,7 +407,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_copy_sent<
+            return pika::parallel::detail::uninitialized_copy_sent<
                 parallel::util::in_out_result<iterator_type1, iterator_type2>>()
                 .call(pika::execution::seq, std::begin(rng1), std::end(rng1),
                     std::begin(rng2), std::end(rng2));
@@ -441,7 +441,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type2>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::uninitialized_copy_sent<
+            return pika::parallel::detail::uninitialized_copy_sent<
                 parallel::util::in_out_result<iterator_type1, iterator_type2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng1),
                     std::end(rng1), std::begin(rng2), std::end(rng2));
@@ -469,8 +469,8 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            std::size_t d = parallel::v1::detail::distance(first2, last2);
-            return pika::parallel::v1::detail::uninitialized_copy_n<
+            std::size_t d = parallel::detail::distance(first2, last2);
+            return pika::parallel::detail::uninitialized_copy_n<
                 parallel::util::in_out_result<InIter, FwdIter>>()
                 .call(pika::execution::seq, first1, count <= d ? count : d,
                     first2);
@@ -497,13 +497,13 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter2>::value,
                 "Requires at least forward iterator.");
 
-            std::size_t d = parallel::v1::detail::distance(first2, last2);
-            return pika::parallel::v1::detail::uninitialized_copy_n<
+            std::size_t d = parallel::detail::distance(first2, last2);
+            return pika::parallel::detail::uninitialized_copy_n<
                 parallel::util::in_out_result<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1,
                     count <= d ? count : d, first2);
         }
     } uninitialized_copy_n{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

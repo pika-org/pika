@@ -15,9 +15,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::detail {
     template <typename Iter, typename Sent, typename F>
     constexpr Iter sequential_generate_helper(Iter first, Sent last, F&& f)
     {
@@ -83,5 +81,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_FORWARD(F, f));
     }
 #endif
-
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

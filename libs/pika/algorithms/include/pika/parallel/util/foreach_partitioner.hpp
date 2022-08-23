@@ -35,8 +35,7 @@
 #include <utility>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util {
+namespace pika::parallel::util {
     namespace detail {
         template <typename Result, typename ExPolicy, typename FwdIter,
             typename F>
@@ -89,7 +88,7 @@ namespace pika { namespace parallel { namespace util {
                 scoped_executor_parameters scoped_params(
                     policy.parameters(), policy.executor());
 
-                FwdIter last = parallel::v1::detail::next(first, count);
+                FwdIter last = parallel::detail::next(first, count);
 
                 std::vector<pika::future<Result>> inititems, workitems;
                 std::list<std::exception_ptr> errors;
@@ -164,7 +163,7 @@ namespace pika { namespace parallel { namespace util {
                     std::make_shared<scoped_executor_parameters>(
                         policy.parameters(), policy.executor());
 
-                FwdIter last = parallel::v1::detail::next(first, count);
+                FwdIter last = parallel::detail::next(first, count);
 
                 std::vector<pika::future<Result>> inititems, workitems;
                 std::list<std::exception_ptr> errors;
@@ -246,4 +245,4 @@ namespace pika { namespace parallel { namespace util {
             detail::foreach_task_static_partitioner>::template apply<Result>
     {
     };
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

@@ -425,8 +425,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::ranges::reduce
     inline constexpr struct reduce_t final
@@ -448,7 +447,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_MOVE(init),
                 PIKA_FORWARD(F, f));
         }
@@ -472,7 +471,7 @@ namespace pika { namespace ranges {
                         range_traits<Rng>::iterator_type>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), PIKA_MOVE(init), PIKA_FORWARD(F, f));
         }
@@ -493,7 +492,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_MOVE(init),
                 std::plus<T>{});
         }
@@ -517,7 +516,7 @@ namespace pika { namespace ranges {
                         range_traits<Rng>::iterator_type>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), PIKA_MOVE(init), std::plus<T>{});
         }
@@ -540,7 +539,7 @@ namespace pika { namespace ranges {
             using value_type =
                 typename std::iterator_traits<FwdIter>::value_type;
 
-            return pika::parallel::v1::detail::reduce<value_type>().call(
+            return pika::parallel::detail::reduce<value_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, value_type{},
                 std::plus<value_type>{});
         }
@@ -567,7 +566,7 @@ namespace pika { namespace ranges {
                 pika::traits::is_forward_iterator<iterator_type>::value,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::reduce<value_type>().call(
+            return pika::parallel::detail::reduce<value_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), value_type{}, std::plus<value_type>{});
         }
@@ -586,7 +585,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<FwdIter>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 pika::execution::seq, first, last, PIKA_MOVE(init),
                 PIKA_FORWARD(F, f));
         }
@@ -607,7 +606,7 @@ namespace pika { namespace ranges {
                         range_traits<Rng>::iterator_type>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), PIKA_MOVE(init), PIKA_FORWARD(F, f));
         }
@@ -625,7 +624,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<FwdIter>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 pika::execution::seq, first, last, PIKA_MOVE(init),
                 std::plus<T>{});
         }
@@ -645,7 +644,7 @@ namespace pika { namespace ranges {
                         range_traits<Rng>::iterator_type>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::reduce<T>().call(
+            return pika::parallel::detail::reduce<T>().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), PIKA_MOVE(init), std::plus<T>{});
         }
@@ -665,7 +664,7 @@ namespace pika { namespace ranges {
             using value_type =
                 typename std::iterator_traits<FwdIter>::value_type;
 
-            return pika::parallel::v1::detail::reduce<value_type>().call(
+            return pika::parallel::detail::reduce<value_type>().call(
                 pika::execution::seq, first, last, value_type{},
                 std::plus<value_type>{});
         }
@@ -688,11 +687,11 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator<iterator_type>::value,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::reduce<value_type>().call(
+            return pika::parallel::detail::reduce<value_type>().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), value_type{}, std::plus<value_type>{});
         }
     } reduce{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif    // DOXYGEN

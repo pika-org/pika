@@ -440,8 +440,8 @@ namespace pika { namespace util { namespace detail {
 
         /// Deduces to a true_type if the mapping maps to zero elements.
         template <typename T, typename M>
-        using is_empty_mapped = spreading::is_empty_spread<typename std::decay<
-            typename invoke_result<M, element_of_t<T>>::type>::type>;
+        using is_empty_mapped = spreading::is_empty_spread<
+            std::decay_t<typename invoke_result<M, element_of_t<T>>::type>>;
 
         /// We are allowed to reuse the container if we map to the same
         /// type we are accepting and when we have

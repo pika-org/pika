@@ -126,126 +126,121 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // destroy
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // provide our own implementation of std::destroy
-        // as some versions of MSVC horribly fail at compiling it for some types
-        // T
-        template <typename Iter, typename Sent>
-        Iter sequential_destroy(Iter first, Sent last)
+    // provide our own implementation of std::destroy
+    // as some versions of MSVC horribly fail at compiling it for some types
+    // T
+    template <typename Iter, typename Sent>
+    Iter sequential_destroy(Iter first, Sent last)
+    {
+        using value_type = typename std::iterator_traits<Iter>::value_type;
+
+        for (/* */; first != last; ++first)
         {
-            using value_type = typename std::iterator_traits<Iter>::value_type;
+            std::addressof(*first)->~value_type();
+        }
+        return first;
+    }
 
-            for (/* */; first != last; ++first)
-            {
-                std::addressof(*first)->~value_type();
-            }
-            return first;
+    ///////////////////////////////////////////////////////////////////////
+    template <typename ExPolicy, typename Iter>
+    typename util::detail::algorithm_result<ExPolicy, Iter>::type
+    parallel_sequential_destroy_n(
+        ExPolicy&& policy, Iter first, std::size_t count)
+    {
+        if (count == 0)
+        {
+            return util::detail::algorithm_result<ExPolicy, Iter>::get(
+                PIKA_MOVE(first));
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename ExPolicy, typename Iter>
-        typename util::detail::algorithm_result<ExPolicy, Iter>::type
-        parallel_sequential_destroy_n(
-            ExPolicy&& policy, Iter first, std::size_t count)
+        return util::foreach_partitioner<ExPolicy>::call(
+            PIKA_FORWARD(ExPolicy, policy), first, count,
+            [](Iter first, std::size_t count, std::size_t) {
+                return util::loop_n<std::decay_t<ExPolicy>>(
+                    first, count, [](Iter it) -> void {
+                        using value_type =
+                            typename std::iterator_traits<Iter>::value_type;
+
+                        std::addressof(*it)->~value_type();
+                    });
+            },
+            util::projection_identity());
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename FwdIter>
+    struct destroy : public detail::algorithm<destroy<FwdIter>, FwdIter>
+    {
+        destroy()
+          : destroy::algorithm("destroy")
         {
-            if (count == 0)
-            {
-                return util::detail::algorithm_result<ExPolicy, Iter>::get(
-                    PIKA_MOVE(first));
-            }
-
-            return util::foreach_partitioner<ExPolicy>::call(
-                PIKA_FORWARD(ExPolicy, policy), first, count,
-                [](Iter first, std::size_t count, std::size_t) {
-                    return util::loop_n<std::decay_t<ExPolicy>>(
-                        first, count, [](Iter it) -> void {
-                            using value_type =
-                                typename std::iterator_traits<Iter>::value_type;
-
-                            std::addressof(*it)->~value_type();
-                        });
-                },
-                util::projection_identity());
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename FwdIter>
-        struct destroy : public detail::algorithm<destroy<FwdIter>, FwdIter>
+        template <typename ExPolicy, typename Iter, typename Sent>
+        static Iter sequential(ExPolicy, Iter first, Sent last)
         {
-            destroy()
-              : destroy::algorithm("destroy")
-            {
-            }
+            return sequential_destroy(first, last);
+        }
 
-            template <typename ExPolicy, typename Iter, typename Sent>
-            static Iter sequential(ExPolicy, Iter first, Sent last)
-            {
-                return sequential_destroy(first, last);
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last)
-            {
-                return parallel_sequential_destroy_n(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+        template <typename ExPolicy, typename Iter, typename Sent>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last)
+        {
+            return parallel_sequential_destroy_n(PIKA_FORWARD(ExPolicy, policy),
+                first, detail::distance(first, last));
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // destroy_n
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // provide our own implementation of std::destroy
-        // as some versions of MSVC horribly fail at compiling it for some
-        // types T
-        template <typename Iter>
-        Iter sequential_destroy_n(Iter first, std::size_t count)
+    // provide our own implementation of std::destroy
+    // as some versions of MSVC horribly fail at compiling it for some
+    // types T
+    template <typename Iter>
+    Iter sequential_destroy_n(Iter first, std::size_t count)
+    {
+        using value_type = typename std::iterator_traits<Iter>::value_type;
+
+        for (/* */; count != 0; (void) ++first, --count)
         {
-            using value_type = typename std::iterator_traits<Iter>::value_type;
-
-            for (/* */; count != 0; (void) ++first, --count)
-            {
-                std::addressof(*first)->~value_type();
-            }
-
-            return first;
+            std::addressof(*first)->~value_type();
         }
 
-        template <typename FwdIter>
-        struct destroy_n : public detail::algorithm<destroy_n<FwdIter>, FwdIter>
+        return first;
+    }
+
+    template <typename FwdIter>
+    struct destroy_n : public detail::algorithm<destroy_n<FwdIter>, FwdIter>
+    {
+        destroy_n()
+          : destroy_n::algorithm("destroy_n")
         {
-            destroy_n()
-              : destroy_n::algorithm("destroy_n")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename Iter>
-            static Iter sequential(ExPolicy, Iter first, std::size_t count)
-            {
-                return sequential_destroy_n(first, count);
-            }
+        template <typename ExPolicy, typename Iter>
+        static Iter sequential(ExPolicy, Iter first, std::size_t count)
+        {
+            return sequential_destroy_n(first, count);
+        }
 
-            template <typename ExPolicy, typename Iter>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, std::size_t count)
-            {
-                return parallel_sequential_destroy_n(
-                    PIKA_FORWARD(ExPolicy, policy), first, count);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+        template <typename ExPolicy, typename Iter>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, std::size_t count)
+        {
+            return parallel_sequential_destroy_n(
+                PIKA_FORWARD(ExPolicy, policy), first, count);
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
 
@@ -271,7 +266,7 @@ namespace pika {
                 "Required at least forward iterator.");
 
             return pika::parallel::util::detail::algorithm_result<ExPolicy>::
-                get(pika::parallel::v1::detail::destroy<FwdIter>().call(
+                get(pika::parallel::detail::destroy<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last));
         }
 
@@ -286,7 +281,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            pika::parallel::v1::detail::destroy<FwdIter>().call(
+            pika::parallel::detail::destroy<FwdIter>().call(
                 pika::execution::seq, first, last);
         }
     } destroy{};
@@ -313,13 +308,13 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return pika::parallel::util::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 
-            return pika::parallel::v1::detail::destroy_n<FwdIter>().call(
+            return pika::parallel::detail::destroy_n<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count));
         }
 
@@ -336,12 +331,12 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return first;
             }
 
-            return pika::parallel::v1::detail::destroy_n<FwdIter>().call(
+            return pika::parallel::detail::destroy_n<FwdIter>().call(
                 pika::execution::seq, first, std::size_t(count));
         }
     } destroy_n{};

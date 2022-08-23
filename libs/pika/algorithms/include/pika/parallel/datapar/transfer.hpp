@@ -21,9 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace util {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     namespace detail {
         template <typename Iterator>
         struct datapar_copy_n
@@ -67,5 +65,5 @@ namespace pika { namespace parallel { namespace util {
     {
         return detail::datapar_copy_n<InIter>::call(first, count, dest);
     }
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util
 #endif

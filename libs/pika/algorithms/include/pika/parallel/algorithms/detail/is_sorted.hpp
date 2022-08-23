@@ -13,8 +13,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
+namespace pika::parallel::detail {
     template <typename Iter, typename Sent, typename Compare,
         typename Proj = pika::parallel::util::projection_identity>
     inline constexpr bool is_sorted_sequential(
@@ -58,5 +57,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             return first;
         }
     }
-
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

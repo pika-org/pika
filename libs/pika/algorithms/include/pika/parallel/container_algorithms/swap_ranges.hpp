@@ -225,8 +225,7 @@ namespace pika { namespace ranges {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter1, typename Iter2>
     using swap_ranges_result = pika::parallel::util::in_in_result<Iter1, Iter2>;
@@ -256,7 +255,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator_v<InIter2>,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::swap_ranges<
+            return pika::parallel::detail::swap_ranges<
                 swap_ranges_result<InIter1, InIter2>>()
                 .call(pika::execution::seq, first1, last1, first2, last2);
         }
@@ -282,7 +281,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter2>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::swap_ranges<
+            return pika::parallel::detail::swap_ranges<
                 swap_ranges_result<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                     last2);
@@ -310,7 +309,7 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_input_iterator_v<iterator_type2>,
                 "Requires at least input iterator.");
 
-            return pika::parallel::v1::detail::swap_ranges<
+            return pika::parallel::detail::swap_ranges<
                 swap_ranges_result<iterator_type1, iterator_type2>>()
                 .call(pika::execution::seq, std::begin(rng1), std::end(rng1),
                     std::begin(rng2), std::end(rng2));
@@ -340,12 +339,12 @@ namespace pika { namespace ranges {
             static_assert(pika::traits::is_forward_iterator_v<iterator_type2>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::swap_ranges<
+            return pika::parallel::detail::swap_ranges<
                 swap_ranges_result<iterator_type1, iterator_type2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng1),
                     std::end(rng1), std::begin(rng2), std::end(rng2));
         }
     } swap_ranges{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

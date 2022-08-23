@@ -24,9 +24,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { namespace util {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     template <typename ExPolicy>
     struct loop_step_t final
       : pika::functional::detail::tag_fallback<loop_step_t<ExPolicy>>
@@ -1283,4 +1281,4 @@ namespace pika { namespace parallel { namespace util {
         }
         return val;
     }
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

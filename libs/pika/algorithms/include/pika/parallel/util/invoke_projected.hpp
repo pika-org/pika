@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace util {
+namespace pika::parallel::util {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Pred, typename Proj>
     struct invoke_projected
@@ -70,4 +70,4 @@ namespace pika { namespace parallel { namespace util {
             return PIKA_INVOKE(pred_, PIKA_FORWARD(T, t), PIKA_FORWARD(T, u));
         }
     };
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

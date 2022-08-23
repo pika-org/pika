@@ -235,7 +235,6 @@ namespace pika {
 #else
 
 #include <pika/config.hpp>
-#include <pika/algorithms/traits/is_value_proxy.hpp>
 #include <pika/algorithms/traits/projected.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/functional/detail/invoke.hpp>
@@ -257,309 +256,263 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
-
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // for_each_n
-    namespace detail {
+    /// \cond NOINTERNAL
+    template <typename F, typename Proj = util::projection_identity>
+    struct invoke_projected
+    {
+        F& f_;
+        Proj& proj_;
 
-        /// \cond NOINTERNAL
-        template <typename F, typename Proj = util::projection_identity>
-        struct invoke_projected
-        {
-            F& f_;
-            Proj& proj_;
-
-            template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                Iter curr)
-            {
-                using value_type = std::decay_t<
-                    typename std::iterator_traits<Iter>::reference>;
-                if constexpr (pika::traits::is_value_proxy_v<value_type>)
-                {
-                    auto tmp = PIKA_INVOKE(proj_, *curr);
-                    PIKA_INVOKE(f_, tmp);
-                }
-                else
-                {
-                    PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr));
-                }
-            }
-        };
-
-        template <typename F>
-        struct invoke_projected<F, util::projection_identity>
-        {
-            PIKA_HOST_DEVICE constexpr invoke_projected(F& f) noexcept
-              : f_(f)
-            {
-            }
-
-            PIKA_HOST_DEVICE constexpr invoke_projected(
-                F& f, util::projection_identity) noexcept
-              : f_(f)
-            {
-            }
-
-            F& f_;
-
-            template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                Iter curr)
-            {
-                using value_type = std::decay_t<
-                    typename std::iterator_traits<Iter>::reference>;
-                if constexpr (pika::traits::is_value_proxy_v<value_type>)
-                {
-                    auto tmp = *curr;
-                    PIKA_INVOKE(f_, tmp);
-                }
-                else
-                {
-                    PIKA_INVOKE(f_, *curr);
-                }
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename ExPolicy, typename F,
-            typename Proj = util::projection_identity>
-        struct for_each_iteration
-        {
-            using execution_policy_type = std::decay_t<ExPolicy>;
-            using fun_type = std::decay_t<F>;
-            using proj_type = Proj;
-
-            fun_type f_;
-            proj_type proj_;
-
-            template <typename F_, typename Proj_>
-            PIKA_HOST_DEVICE for_each_iteration(F_&& f, Proj_&& proj)
-              : f_(PIKA_FORWARD(F_, f))
-              , proj_(PIKA_FORWARD(Proj_, proj))
-            {
-            }
-
-#if !defined(__NVCC__) && !defined(__CUDACC__)
-            for_each_iteration(for_each_iteration const&) = default;
-            for_each_iteration(for_each_iteration&&) = default;
-#else
-            PIKA_HOST_DEVICE for_each_iteration(for_each_iteration const& rhs)
-              : f_(rhs.f_)
-              , proj_(rhs.proj_)
-            {
-            }
-
-            PIKA_HOST_DEVICE for_each_iteration(for_each_iteration&& rhs)
-              : f_(PIKA_MOVE(rhs.f_))
-              , proj_(PIKA_MOVE(rhs.proj_))
-            {
-            }
-#endif
-            for_each_iteration& operator=(for_each_iteration const&) = default;
-            for_each_iteration& operator=(for_each_iteration&&) = default;
-
-            template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                Iter part_begin, std::size_t part_size, std::size_t)
-            {
-                util::loop_n<execution_policy_type>(part_begin, part_size,
-                    invoke_projected<fun_type, proj_type>{f_, proj_});
-            }
-        };
-
-        template <typename ExPolicy, typename F>
-        struct for_each_iteration<ExPolicy, F, util::projection_identity>
-        {
-            using execution_policy_type = std::decay_t<ExPolicy>;
-            using fun_type = std::decay_t<F>;
-
-            fun_type f_;
-
-            template <typename F_,
-                typename Enable = std::enable_if_t<
-                    !std::is_same_v<std::decay_t<F_>, for_each_iteration>>>
-            PIKA_HOST_DEVICE explicit for_each_iteration(F_&& f)
-              : f_(PIKA_FORWARD(F_, f))
-            {
-            }
-
-            template <typename F_, typename Proj_>
-            PIKA_HOST_DEVICE for_each_iteration(F_&& f, Proj_&&)
-              : f_(PIKA_FORWARD(F_, f))
-            {
-            }
-
-#if !defined(__NVCC__) && !defined(__CUDACC__)
-            for_each_iteration(for_each_iteration const&) = default;
-            for_each_iteration(for_each_iteration&&) = default;
-#else
-            PIKA_HOST_DEVICE for_each_iteration(for_each_iteration const& rhs)
-              : f_(rhs.f_)
-            {
-            }
-
-            PIKA_HOST_DEVICE for_each_iteration(for_each_iteration&& rhs)
-              : f_(PIKA_MOVE(rhs.f_))
-            {
-            }
-#endif
-            for_each_iteration& operator=(for_each_iteration const&) = default;
-            for_each_iteration& operator=(for_each_iteration&&) = default;
-
-            template <typename Iter>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                Iter part_begin, std::size_t part_size, std::size_t)
-            {
-                using value_type = std::decay_t<
-                    typename std::iterator_traits<Iter>::reference>;
-                if constexpr (pika::traits::is_value_proxy_v<value_type>)
-                {
-                    util::loop_n<execution_policy_type>(
-                        part_begin, part_size, invoke_projected<F>(f_));
-                }
-                else
-                {
-                    util::loop_n_ind<execution_policy_type>(
-                        part_begin, part_size, f_);
-                }
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
         template <typename Iter>
-        struct for_each_n : public detail::algorithm<for_each_n<Iter>, Iter>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(Iter curr)
         {
-            constexpr for_each_n() noexcept
-              : for_each_n::algorithm("for_each_n")
+            PIKA_INVOKE(f_, PIKA_INVOKE(proj_, *curr));
+        }
+    };
+
+    template <typename F>
+    struct invoke_projected<F, util::projection_identity>
+    {
+        PIKA_HOST_DEVICE constexpr invoke_projected(F& f) noexcept
+          : f_(f)
+        {
+        }
+
+        PIKA_HOST_DEVICE constexpr invoke_projected(
+            F& f, util::projection_identity) noexcept
+          : f_(f)
+        {
+        }
+
+        F& f_;
+
+        template <typename Iter>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(Iter curr)
+        {
+            PIKA_INVOKE(f_, *curr);
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename ExPolicy, typename F,
+        typename Proj = util::projection_identity>
+    struct for_each_iteration
+    {
+        using execution_policy_type = std::decay_t<ExPolicy>;
+        using fun_type = std::decay_t<F>;
+        using proj_type = Proj;
+
+        fun_type f_;
+        proj_type proj_;
+
+        template <typename F_, typename Proj_>
+        PIKA_HOST_DEVICE for_each_iteration(F_&& f, Proj_&& proj)
+          : f_(PIKA_FORWARD(F_, f))
+          , proj_(PIKA_FORWARD(Proj_, proj))
+        {
+        }
+
+#if !defined(__NVCC__) && !defined(__CUDACC__)
+        for_each_iteration(for_each_iteration const&) = default;
+        for_each_iteration(for_each_iteration&&) = default;
+#else
+        PIKA_HOST_DEVICE for_each_iteration(for_each_iteration const& rhs)
+          : f_(rhs.f_)
+          , proj_(rhs.proj_)
+        {
+        }
+
+        PIKA_HOST_DEVICE for_each_iteration(for_each_iteration&& rhs)
+          : f_(PIKA_MOVE(rhs.f_))
+          , proj_(PIKA_MOVE(rhs.proj_))
+        {
+        }
+#endif
+        for_each_iteration& operator=(for_each_iteration const&) = default;
+        for_each_iteration& operator=(for_each_iteration&&) = default;
+
+        template <typename Iter>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
+            Iter part_begin, std::size_t part_size, std::size_t)
+        {
+            util::loop_n<execution_policy_type>(part_begin, part_size,
+                invoke_projected<fun_type, proj_type>{f_, proj_});
+        }
+    };
+
+    template <typename ExPolicy, typename F>
+    struct for_each_iteration<ExPolicy, F, util::projection_identity>
+    {
+        using execution_policy_type = std::decay_t<ExPolicy>;
+        using fun_type = std::decay_t<F>;
+
+        fun_type f_;
+
+        template <typename F_,
+            typename Enable = std::enable_if_t<
+                !std::is_same_v<std::decay_t<F_>, for_each_iteration>>>
+        PIKA_HOST_DEVICE explicit for_each_iteration(F_&& f)
+          : f_(PIKA_FORWARD(F_, f))
+        {
+        }
+
+        template <typename F_, typename Proj_>
+        PIKA_HOST_DEVICE for_each_iteration(F_&& f, Proj_&&)
+          : f_(PIKA_FORWARD(F_, f))
+        {
+        }
+
+#if !defined(__NVCC__) && !defined(__CUDACC__)
+        for_each_iteration(for_each_iteration const&) = default;
+        for_each_iteration(for_each_iteration&&) = default;
+#else
+        PIKA_HOST_DEVICE for_each_iteration(for_each_iteration const& rhs)
+          : f_(rhs.f_)
+        {
+        }
+
+        PIKA_HOST_DEVICE for_each_iteration(for_each_iteration&& rhs)
+          : f_(PIKA_MOVE(rhs.f_))
+        {
+        }
+#endif
+        for_each_iteration& operator=(for_each_iteration const&) = default;
+        for_each_iteration& operator=(for_each_iteration&&) = default;
+
+        template <typename Iter>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
+            Iter part_begin, std::size_t part_size, std::size_t)
+        {
+            util::loop_n_ind<execution_policy_type>(part_begin, part_size, f_);
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Iter>
+    struct for_each_n : public detail::algorithm<for_each_n<Iter>, Iter>
+    {
+        constexpr for_each_n() noexcept
+          : for_each_n::algorithm("for_each_n")
+        {
+        }
+
+        template <typename ExPolicy, typename InIter, typename F, typename Proj>
+        PIKA_HOST_DEVICE static constexpr Iter sequential(
+            ExPolicy&&, InIter first, std::size_t count, F&& f, Proj&& proj)
+        {
+            return util::loop_n<std::decay_t<ExPolicy>>(
+                first, count, invoke_projected<F, std::decay_t<Proj>>{f, proj});
+        }
+
+        template <typename ExPolicy, typename InIter, typename F>
+        PIKA_HOST_DEVICE static constexpr Iter sequential(ExPolicy&&,
+            InIter first, std::size_t count, F&& f, util::projection_identity)
+        {
+            return util::loop_n_ind<std::decay_t<ExPolicy>>(
+                first, count, PIKA_FORWARD(F, f));
+        }
+
+        template <typename ExPolicy, typename FwdIter, typename F,
+            typename Proj = util::projection_identity>
+        static constexpr
+            typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+            parallel(ExPolicy&& policy, FwdIter first, std::size_t count, F&& f,
+                Proj&& proj /* = Proj()*/)
+        {
+            if (count != 0)
             {
+                auto f1 = for_each_iteration<ExPolicy, F, std::decay_t<Proj>>(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
+
+                return util::foreach_partitioner<ExPolicy>::call(
+                    PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_MOVE(f1),
+                    util::projection_identity());
             }
 
-            template <typename ExPolicy, typename InIter, typename F,
-                typename Proj>
-            PIKA_HOST_DEVICE static constexpr Iter sequential(
-                ExPolicy&&, InIter first, std::size_t count, F&& f, Proj&& proj)
-            {
-                return util::loop_n<std::decay_t<ExPolicy>>(first, count,
-                    invoke_projected<F, std::decay_t<Proj>>{f, proj});
-            }
-
-            template <typename ExPolicy, typename InIter, typename F>
-            PIKA_HOST_DEVICE static constexpr Iter sequential(ExPolicy&&,
-                InIter first, std::size_t count, F&& f,
-                util::projection_identity)
-            {
-                return util::loop_n_ind<std::decay_t<ExPolicy>>(
-                    first, count, PIKA_FORWARD(F, f));
-            }
-
-            template <typename ExPolicy, typename FwdIter, typename F,
-                typename Proj = util::projection_identity>
-            static constexpr
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, std::size_t count,
-                    F&& f, Proj&& proj /* = Proj()*/)
-            {
-                if (count != 0)
-                {
-                    auto f1 =
-                        for_each_iteration<ExPolicy, F, std::decay_t<Proj>>(
-                            PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
-
-                    return util::foreach_partitioner<ExPolicy>::call(
-                        PIKA_FORWARD(ExPolicy, policy), first, count,
-                        PIKA_MOVE(f1), util::projection_identity());
-                }
-
-                return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
-                    PIKA_MOVE(first));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
+                PIKA_MOVE(first));
+        }
+    };
+    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     // for_each
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename Iter>
-        struct for_each : public detail::algorithm<for_each<Iter>, Iter>
+    /// \cond NOINTERNAL
+    template <typename Iter>
+    struct for_each : public detail::algorithm<for_each<Iter>, Iter>
+    {
+        constexpr for_each() noexcept
+          : for_each::algorithm("for_each")
         {
-            constexpr for_each() noexcept
-              : for_each::algorithm("for_each")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename InIterB, typename InIterE,
-                typename F, typename Proj>
-            static constexpr InIterB sequential(ExPolicy&& policy,
-                InIterB first, InIterE last, F&& f, Proj&& proj)
+        template <typename ExPolicy, typename InIterB, typename InIterE,
+            typename F, typename Proj>
+        static constexpr InIterB sequential(
+            ExPolicy&& policy, InIterB first, InIterE last, F&& f, Proj&& proj)
+        {
+            if constexpr (pika::traits::is_random_access_iterator_v<InIterB>)
             {
-                if constexpr (pika::traits::is_random_access_iterator_v<
-                                  InIterB>)
-                {
-                    PIKA_UNUSED(policy);
-                    return util::loop_n<std::decay_t<ExPolicy>>(first,
-                        static_cast<std::size_t>(detail::distance(first, last)),
-                        invoke_projected<F, std::decay_t<Proj>>{f, proj});
-                }
-                else
-                {
-                    return util::loop(PIKA_FORWARD(ExPolicy, policy), first,
-                        last, invoke_projected<F, std::decay_t<Proj>>{f, proj});
-                }
+                PIKA_UNUSED(policy);
+                return util::loop_n<std::decay_t<ExPolicy>>(first,
+                    static_cast<std::size_t>(detail::distance(first, last)),
+                    invoke_projected<F, std::decay_t<Proj>>{f, proj});
             }
-
-            template <typename ExPolicy, typename InIterB, typename InIterE,
-                typename F>
-            static constexpr InIterB sequential(ExPolicy&& policy,
-                InIterB first, InIterE last, F&& f, util::projection_identity)
+            else
             {
-                if constexpr (pika::traits::is_random_access_iterator_v<
-                                  InIterB>)
-                {
-                    PIKA_UNUSED(policy);
-                    return util::loop_n_ind<std::decay_t<ExPolicy>>(first,
-                        static_cast<std::size_t>(detail::distance(first, last)),
-                        PIKA_FORWARD(F, f));
-                }
-                else
-                {
-                    return util::loop_ind(PIKA_FORWARD(ExPolicy, policy), first,
-                        last, PIKA_FORWARD(F, f));
-                }
+                return util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
+                    invoke_projected<F, std::decay_t<Proj>>{f, proj});
             }
+        }
 
-            template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
-                typename F, typename Proj>
-            static constexpr typename util::detail::algorithm_result<ExPolicy,
-                FwdIterB>::type
+        template <typename ExPolicy, typename InIterB, typename InIterE,
+            typename F>
+        static constexpr InIterB sequential(ExPolicy&& policy, InIterB first,
+            InIterE last, F&& f, util::projection_identity)
+        {
+            if constexpr (pika::traits::is_random_access_iterator_v<InIterB>)
+            {
+                PIKA_UNUSED(policy);
+                return util::loop_n_ind<std::decay_t<ExPolicy>>(first,
+                    static_cast<std::size_t>(detail::distance(first, last)),
+                    PIKA_FORWARD(F, f));
+            }
+            else
+            {
+                return util::loop_ind(PIKA_FORWARD(ExPolicy, policy), first,
+                    last, PIKA_FORWARD(F, f));
+            }
+        }
+
+        template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
+            typename F, typename Proj>
+        static constexpr
+            typename util::detail::algorithm_result<ExPolicy, FwdIterB>::type
             parallel(ExPolicy&& policy, FwdIterB first, FwdIterE last, F&& f,
                 Proj&& proj)
+        {
+            if (first != last)
             {
-                if (first != last)
-                {
-                    auto f1 =
-                        for_each_iteration<ExPolicy, F, std::decay_t<Proj>>(
-                            PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
+                auto f1 = for_each_iteration<ExPolicy, F, std::decay_t<Proj>>(
+                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
 
-                    return util::foreach_partitioner<ExPolicy>::call(
-                        PIKA_FORWARD(ExPolicy, policy), first,
-                        detail::distance(first, last), PIKA_MOVE(f1),
-                        util::projection_identity());
-                }
-
-                return util::detail::algorithm_result<ExPolicy, FwdIterB>::get(
-                    PIKA_MOVE(first));
+                return util::foreach_partitioner<ExPolicy>::call(
+                    PIKA_FORWARD(ExPolicy, policy), first,
+                    detail::distance(first, last), PIKA_MOVE(f1),
+                    util::projection_identity());
             }
-        };
-        /// \endcond
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+
+            return util::detail::algorithm_result<ExPolicy, FwdIterB>::get(
+                PIKA_MOVE(first));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     // Note: The implementation of the non-segmented algorithms here relies on
     //       tag_fallback_invoke. For this reason the tag_invoke overloads for
     //       the segmented algorithms (and other specializations) take
@@ -586,7 +539,7 @@ namespace pika {
 
             if (first != last)
             {
-                pika::parallel::v1::detail::for_each<InIter>().call(
+                pika::parallel::detail::for_each<InIter>().call(
                     pika::execution::seq, first, last, f,
                     pika::parallel::util::projection_identity());
             }
@@ -617,7 +570,7 @@ namespace pika {
             }
 
             return pika::parallel::util::detail::algorithm_result<ExPolicy>::
-                get(pika::parallel::v1::detail::for_each<FwdIter>().call(
+                get(pika::parallel::detail::for_each<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(F, f),
                     pika::parallel::util::projection_identity()));
@@ -642,12 +595,12 @@ namespace pika {
                 "Requires at least input iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (parallel::v1::detail::is_negative(count))
+            if (parallel::detail::is_negative(count))
             {
                 return first;
             }
 
-            return pika::parallel::v1::detail::for_each_n<InIter>().call(
+            return pika::parallel::detail::for_each_n<InIter>().call(
                 pika::execution::seq, first, std::size_t(count),
                 PIKA_FORWARD(F, f), parallel::util::projection_identity());
         }
@@ -668,14 +621,14 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (parallel::v1::detail::is_negative(count))
+            if (parallel::detail::is_negative(count))
             {
                 using result =
                     parallel::util::detail::algorithm_result<ExPolicy, FwdIter>;
                 return result::get(PIKA_MOVE(first));
             }
 
-            return pika::parallel::v1::detail::for_each_n<FwdIter>().call(
+            return pika::parallel::detail::for_each_n<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
                 PIKA_FORWARD(F, f), parallel::util::projection_identity());
         }
@@ -686,10 +639,10 @@ namespace pika {
 namespace pika::detail {
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_address<
-        parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj>>
+        parallel::detail::for_each_iteration<ExPolicy, F, Proj>>
     {
         static constexpr std::size_t call(
-            parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj> const&
+            parallel::detail::for_each_iteration<ExPolicy, F, Proj> const&
                 f) noexcept
         {
             return get_function_address<std::decay_t<F>>::call(f.f_);
@@ -698,10 +651,10 @@ namespace pika::detail {
 
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_annotation<
-        parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj>>
+        parallel::detail::for_each_iteration<ExPolicy, F, Proj>>
     {
         static constexpr char const* call(
-            parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj> const&
+            parallel::detail::for_each_iteration<ExPolicy, F, Proj> const&
                 f) noexcept
         {
             return get_function_annotation<std::decay_t<F>>::call(f.f_);
@@ -711,10 +664,10 @@ namespace pika::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename ExPolicy, typename F, typename Proj>
     struct get_function_annotation_itt<
-        parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj>>
+        parallel::detail::for_each_iteration<ExPolicy, F, Proj>>
     {
         static util::itt::string_handle call(
-            parallel::v1::detail::for_each_iteration<ExPolicy, F, Proj> const&
+            parallel::detail::for_each_iteration<ExPolicy, F, Proj> const&
                 f) noexcept
         {
             return get_function_annotation_itt<std::decay_t<F>>::call(f.f_);

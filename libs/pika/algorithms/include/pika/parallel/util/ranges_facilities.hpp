@@ -18,9 +18,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace ranges {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::ranges {
     // clang-format off
     template <typename Iter,
         PIKA_CONCEPT_REQUIRES_(
@@ -45,7 +43,7 @@ namespace pika { namespace ranges {
     // clang-format on
     constexpr inline Iter next(Iter first, Sent bound)
     {
-        return pika::parallel::v1::detail::advance_to_sentinel(first, bound);
+        return pika::parallel::detail::advance_to_sentinel(first, bound);
     }
 
     template <typename Iter, typename Sent>
@@ -66,14 +64,13 @@ namespace pika { namespace ranges {
         typename std::iterator_traits<Iter>::difference_type n, Sent bound,
         std::true_type, std::true_type)
     {
-        if (pika::parallel::v1::detail::distance(first, bound) < size_t(n))
+        if (pika::parallel::detail::distance(first, bound) < size_t(n))
         {
-            return pika::parallel::v1::detail::advance_to_sentinel(
-                first, bound);
+            return pika::parallel::detail::advance_to_sentinel(first, bound);
         }
         else
         {
-            pika::parallel::v1::detail::advance(first, n);
+            pika::parallel::detail::advance(first, n);
             return first;
         }
     }
@@ -93,5 +90,4 @@ namespace pika { namespace ranges {
             typename pika::traits::is_sized_sentinel_for<Sent, Iter>{},
             typename pika::traits::is_random_access_iterator<Iter>{});
     }
-
-}}    // namespace pika::ranges
+}    // namespace pika::ranges

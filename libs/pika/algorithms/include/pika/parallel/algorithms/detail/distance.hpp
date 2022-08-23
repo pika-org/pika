@@ -13,7 +13,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
     // provide implementation of std::distance supporting iterators/sentinels
     template <typename InIterB, typename InIterE>
     constexpr inline typename std::iterator_traits<InIterB>::difference_type
@@ -41,4 +41,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
             return offset;
         }
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

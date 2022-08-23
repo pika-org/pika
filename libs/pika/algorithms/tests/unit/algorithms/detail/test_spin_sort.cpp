@@ -23,7 +23,7 @@
 #define NUMELEMS 500000
 #endif
 
-using namespace pika::parallel::v1::detail;
+using namespace pika::parallel::detail;
 using pika::parallel::util::range;
 
 struct xk

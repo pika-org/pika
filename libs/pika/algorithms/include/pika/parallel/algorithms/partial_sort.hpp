@@ -135,111 +135,121 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
-
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // sort
-    namespace detail {
-
-        /// \cond NOINTERNAL
-
-        //////////////////////////////////////////////////////////////////////
-        ///
-        /// \brief Obtain the position of the most significant bit set in N
-        ///
-        /// \param num : Number to examine
-        ///
-        /// \return Position of the first bit set
-        ///
-        inline constexpr unsigned nbits64(std::uint64_t num) noexcept
+    /// \cond NOINTERNAL
+    //////////////////////////////////////////////////////////////////////
+    ///
+    /// \brief Obtain the position of the most significant bit set in N
+    ///
+    /// \param num : Number to examine
+    ///
+    /// \return Position of the first bit set
+    ///
+    inline constexpr unsigned nbits64(std::uint64_t num) noexcept
+    {
+        unsigned nb = 0;
+        if (num >= (1ull << 32))
         {
-            unsigned nb = 0;
-            if (num >= (1ull << 32))
-            {
-                nb += 32;
-                num = (num >> 32);
-            }
-            if (num >= (1ull << 16))
-            {
-                nb += 16;
-                num = (num >> 16);
-            }
-            if (num >= (1ull << 8))
-            {
-                nb += 8;
-                num = (num >> 8);
-            }
-            if (num >= (1ull << 4))
-            {
-                nb += 4;
-                num = (num >> 4);
-            }
-            if (num >= (1ull << 2))
-            {
-                nb += 2;
-                num = (num >> 2);
-            }
-            if (num >= (1ull << 1))
-            {
-                nb += 1;
-                num = (num >> 1);
-            }
-            return nb;
+            nb += 32;
+            num = (num >> 32);
         }
-
-        ///////////////////////////////////////////////////////////////////////
-        ///
-        /// Receive a range between first and last, obtain 9 values
-        /// between the elements  including the first and the previous
-        /// to the last. Obtain the iterator to the mid value and swap
-        /// with the first position
-        //
-        /// \param first    iterator to the first element
-        /// \param last     iterator to the last element
-        /// \param comp     object to Comp two elements
-        ///
-        template <typename Iter, typename Comp>
-        inline constexpr void pivot3(
-            Iter first, Iter last, Comp&& comp) noexcept
+        if (num >= (1ull << 16))
         {
-            auto N2 = (last - first) >> 1;
-            Iter it_val =
-                mid3(first + 1, first + N2, last - 1, PIKA_FORWARD(Comp, comp));
+            nb += 16;
+            num = (num >> 16);
+        }
+        if (num >= (1ull << 8))
+        {
+            nb += 8;
+            num = (num >> 8);
+        }
+        if (num >= (1ull << 4))
+        {
+            nb += 4;
+            num = (num >> 4);
+        }
+        if (num >= (1ull << 2))
+        {
+            nb += 2;
+            num = (num >> 2);
+        }
+        if (num >= (1ull << 1))
+        {
+            nb += 1;
+            num = (num >> 1);
+        }
+        return nb;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///
+    /// Receive a range between first and last, obtain 9 values
+    /// between the elements  including the first and the previous
+    /// to the last. Obtain the iterator to the mid value and swap
+    /// with the first position
+    //
+    /// \param first    iterator to the first element
+    /// \param last     iterator to the last element
+    /// \param comp     object to Comp two elements
+    ///
+    template <typename Iter, typename Comp>
+    inline constexpr void pivot3(Iter first, Iter last, Comp&& comp) noexcept
+    {
+        auto N2 = (last - first) >> 1;
+        Iter it_val =
+            mid3(first + 1, first + N2, last - 1, PIKA_FORWARD(Comp, comp));
 #if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
-            std::ranges::iter_swap(first, it_val);
+        std::ranges::iter_swap(first, it_val);
 #else
-            std::iter_swap(first, it_val);
+        std::iter_swap(first, it_val);
 #endif
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///
+    /// This function obtain a pivot in the range and filter the elements
+    /// according the value of that pivot
+    ///
+    /// \param first : iterator to the first element
+    /// \param end : iterator to the element after the last
+    /// \param comp : object to Comp two elements
+    ///
+    /// \return iterator where is the pivot used in the filtering
+    ///
+    template <typename Iter, typename Comp>
+    constexpr inline Iter filter(Iter first, Iter end, Comp&& comp)
+    {
+        std::int64_t nelem = (end - first);
+        if (nelem > 4096)
+        {
+            pivot9(first, end, comp);
+        }
+        else
+        {
+            pivot3(first, end, comp);
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        ///
-        /// This function obtain a pivot in the range and filter the elements
-        /// according the value of that pivot
-        ///
-        /// \param first : iterator to the first element
-        /// \param end : iterator to the element after the last
-        /// \param comp : object to Comp two elements
-        ///
-        /// \return iterator where is the pivot used in the filtering
-        ///
-        template <typename Iter, typename Comp>
-        constexpr inline Iter filter(Iter first, Iter end, Comp&& comp)
+        typename std::iterator_traits<Iter>::value_type const& pivot = *first;
+
+        Iter c_first = first + 1, c_last = end - 1;
+        while (PIKA_INVOKE(comp, *c_first, pivot))
         {
-            std::int64_t nelem = (end - first);
-            if (nelem > 4096)
-            {
-                pivot9(first, end, comp);
-            }
-            else
-            {
-                pivot3(first, end, comp);
-            }
+            ++c_first;
+        }
+        while (PIKA_INVOKE(comp, pivot, *c_last))
+        {
+            --c_last;
+        }
 
-            typename std::iterator_traits<Iter>::value_type const& pivot =
-                *first;
-
-            Iter c_first = first + 1, c_last = end - 1;
+        while (c_first < c_last)
+        {
+#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
+            std::ranges::iter_swap(c_first++, c_last--);
+#else
+            std::iter_swap(c_first++, c_last--);
+#endif
             while (PIKA_INVOKE(comp, *c_first, pivot))
             {
                 ++c_first;
@@ -248,200 +258,183 @@ namespace pika { namespace parallel { inline namespace v1 {
             {
                 --c_last;
             }
-
-            while (c_first < c_last)
-            {
-#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
-                std::ranges::iter_swap(c_first++, c_last--);
-#else
-                std::iter_swap(c_first++, c_last--);
-#endif
-                while (PIKA_INVOKE(comp, *c_first, pivot))
-                {
-                    ++c_first;
-                }
-                while (PIKA_INVOKE(comp, pivot, *c_last))
-                {
-                    --c_last;
-                }
-            }
-
-#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
-            std::ranges::iter_swap(first, c_last);
-#else
-            std::iter_swap(first, c_last);
-#endif
-            return c_last;
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        ///
-        /// Internal function to divide and sort the ranges
-        //
-        /// \param first : iterator to the first element to be sorted
-        /// \param middle: iterator defining the last element to be sorted
-        /// \param end : iterator to the element after the end in the range
-        /// \param level : level of depth from the top level call
-        /// \param comp : object for to Comp elements
-        ///
-        template <typename Iter, typename Comp>
-        inline void recursive_partial_sort(
-            Iter first, Iter middle, Iter end, std::uint32_t level, Comp&& comp)
+#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
+        std::ranges::iter_swap(first, c_last);
+#else
+        std::iter_swap(first, c_last);
+#endif
+        return c_last;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///
+    /// Internal function to divide and sort the ranges
+    //
+    /// \param first : iterator to the first element to be sorted
+    /// \param middle: iterator defining the last element to be sorted
+    /// \param end : iterator to the element after the end in the range
+    /// \param level : level of depth from the top level call
+    /// \param comp : object for to Comp elements
+    ///
+    template <typename Iter, typename Comp>
+    inline void recursive_partial_sort(
+        Iter first, Iter middle, Iter end, std::uint32_t level, Comp&& comp)
+    {
+        constexpr std::uint32_t nmin = 24;
+        std::int64_t nelem = end - first;
+        std::int64_t nmid = middle - first;
+        if (nelem == 0 || nmid == 0)
         {
-            constexpr std::uint32_t nmin = 24;
-            std::int64_t nelem = end - first;
-            std::int64_t nmid = middle - first;
-            if (nelem == 0 || nmid == 0)
-            {
-                return;
-            }
+            return;
+        }
 
-            if (nelem < nmin)
-            {
-                std::sort(first, end, comp);
-                return;
-            }
+        if (nelem < nmin)
+        {
+            std::sort(first, end, comp);
+            return;
+        }
 
-            if (nmid == 1)
+        if (nmid == 1)
+        {
+            for (Iter it = first + 1; it != end; ++it)
             {
-                for (Iter it = first + 1; it != end; ++it)
+                if (PIKA_INVOKE(comp, *it, *first))
                 {
-                    if (PIKA_INVOKE(comp, *it, *first))
+#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
+                    std::ranges::iter_swap(it, first);
+#else
+                    std::iter_swap(it, first);
+#endif
+                }
+            }
+            return;
+        }
+
+        if (level == 0)
+        {
+            std::make_heap(first, end, comp);
+            std::sort_heap(first, middle, comp);
+            return;
+        }
+
+        Iter c_last = filter(first, end, comp);
+        if (middle >= c_last)
+        {
+            std::sort(first, c_last, comp);
+            if (middle != c_last)
+            {
+                recursive_partial_sort(c_last + 1, middle, end, level - 1,
+                    PIKA_FORWARD(Comp, comp));
+            }
+            return;
+        }
+
+        recursive_partial_sort(
+            first, middle, c_last, level - 1, PIKA_FORWARD(Comp, comp));
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///
+    /// Internal function to divide and sort the ranges
+    ///
+    /// \param first : iterator to the first element
+    /// \param middle: iterator defining the last element to be sorted
+    /// \param end : iterator to the element after the end in the range
+    /// \param level : level of depth from the top level call
+    /// \param comp : object for to Comp elements
+    ///
+    struct sort_thread_helper
+    {
+        template <typename... Ts>
+        decltype(auto) operator()(Ts&&... ts) const
+        {
+            return sort_thread(PIKA_FORWARD(Ts, ts)...);
+        }
+    };
+
+    template <typename ExPolicy, typename Iter, typename Comp>
+    pika::future<Iter> parallel_partial_sort(ExPolicy&& policy, Iter first,
+        Iter middle, Iter last, std::uint32_t level, Comp&& comp = Comp());
+
+    struct parallel_partial_sort_helper
+    {
+        template <typename... Ts>
+        decltype(auto) operator()(Ts&&... ts) const
+        {
+            return parallel_partial_sort(PIKA_FORWARD(Ts, ts)...);
+        }
+    };
+
+    template <typename ExPolicy, typename Iter, typename Comp>
+    pika::future<Iter> parallel_partial_sort(ExPolicy&& policy, Iter first,
+        Iter middle, Iter last, std::uint32_t level, Comp&& comp)
+    {
+        std::int64_t nelem = last - first;
+        std::int64_t nmid = middle - first;
+        PIKA_ASSERT(nelem >= nmid);
+
+        if (nelem == 0 || nmid == 0)
+        {
+            return pika::make_ready_future(last);
+        }
+
+        if (nmid < 4096 || level < 12)
+        {
+            recursive_partial_sort(first, middle, last, level, comp);
+            return pika::make_ready_future(last);
+        }
+
+        Iter c_last = filter(first, last, comp);
+        if (middle >= c_last)
+        {
+            // figure out the chunk size to use
+            std::size_t const cores = execution::processing_units_count(
+                policy.parameters(), policy.executor());
+
+            // number of elements to sort
+            std::size_t chunk_size = execution::get_chunk_size(
+                policy.parameters(), policy.executor(), 0, cores, nelem);
+
+            pika::future<Iter> left = execution::async_execute(
+                policy.executor(), sort_thread_helper(), policy, first, c_last,
+                comp, chunk_size);
+
+            pika::future<Iter> right;
+            if (middle != c_last)
+            {
+                right = execution::async_execute(policy.executor(),
+                    parallel_partial_sort_helper(), policy, c_last + 1, middle,
+                    last, level - 1, comp);
+            }
+            else
+            {
+                right = pika::make_ready_future(last);
+            }
+
+            return pika::dataflow(
+                [last](pika::future<Iter>&& left,
+                    pika::future<Iter>&& right) -> Iter {
+                    if (left.has_exception() || right.has_exception())
                     {
-#if defined(PIKA_HAVE_CXX20_STD_RANGES_ITER_SWAP)
-                        std::ranges::iter_swap(it, first);
-#else
-                        std::iter_swap(it, first);
-#endif
+                        std::list<std::exception_ptr> errors;
+                        if (left.has_exception())
+                            errors.push_back(left.get_exception_ptr());
+                        if (right.has_exception())
+                            errors.push_back(right.get_exception_ptr());
+
+                        throw exception_list(PIKA_MOVE(errors));
                     }
-                }
-                return;
-            }
-
-            if (level == 0)
-            {
-                std::make_heap(first, end, comp);
-                std::sort_heap(first, middle, comp);
-                return;
-            }
-
-            Iter c_last = filter(first, end, comp);
-            if (middle >= c_last)
-            {
-                std::sort(first, c_last, comp);
-                if (middle != c_last)
-                {
-                    recursive_partial_sort(c_last + 1, middle, end, level - 1,
-                        PIKA_FORWARD(Comp, comp));
-                }
-                return;
-            }
-
-            recursive_partial_sort(
-                first, middle, c_last, level - 1, PIKA_FORWARD(Comp, comp));
+                    return last;
+                },
+                PIKA_MOVE(left), PIKA_MOVE(right));
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        ///
-        /// Internal function to divide and sort the ranges
-        ///
-        /// \param first : iterator to the first element
-        /// \param middle: iterator defining the last element to be sorted
-        /// \param end : iterator to the element after the end in the range
-        /// \param level : level of depth from the top level call
-        /// \param comp : object for to Comp elements
-        ///
-        struct sort_thread_helper
-        {
-            template <typename... Ts>
-            decltype(auto) operator()(Ts&&... ts) const
-            {
-                return sort_thread(PIKA_FORWARD(Ts, ts)...);
-            }
-        };
-
-        template <typename ExPolicy, typename Iter, typename Comp>
-        pika::future<Iter> parallel_partial_sort(ExPolicy&& policy, Iter first,
-            Iter middle, Iter last, std::uint32_t level, Comp&& comp = Comp());
-
-        struct parallel_partial_sort_helper
-        {
-            template <typename... Ts>
-            decltype(auto) operator()(Ts&&... ts) const
-            {
-                return parallel_partial_sort(PIKA_FORWARD(Ts, ts)...);
-            }
-        };
-
-        template <typename ExPolicy, typename Iter, typename Comp>
-        pika::future<Iter> parallel_partial_sort(ExPolicy&& policy, Iter first,
-            Iter middle, Iter last, std::uint32_t level, Comp&& comp)
-        {
-            std::int64_t nelem = last - first;
-            std::int64_t nmid = middle - first;
-            PIKA_ASSERT(nelem >= nmid);
-
-            if (nelem == 0 || nmid == 0)
-            {
-                return pika::make_ready_future(last);
-            }
-
-            if (nmid < 4096 || level < 12)
-            {
-                recursive_partial_sort(first, middle, last, level, comp);
-                return pika::make_ready_future(last);
-            }
-
-            Iter c_last = filter(first, last, comp);
-            if (middle >= c_last)
-            {
-                // figure out the chunk size to use
-                std::size_t const cores = execution::processing_units_count(
-                    policy.parameters(), policy.executor());
-
-                // number of elements to sort
-                std::size_t chunk_size = execution::get_chunk_size(
-                    policy.parameters(), policy.executor(), 0, cores, nelem);
-
-                pika::future<Iter> left = execution::async_execute(
-                    policy.executor(), sort_thread_helper(), policy, first,
-                    c_last, comp, chunk_size);
-
-                pika::future<Iter> right;
-                if (middle != c_last)
-                {
-                    right = execution::async_execute(policy.executor(),
-                        parallel_partial_sort_helper(), policy, c_last + 1,
-                        middle, last, level - 1, comp);
-                }
-                else
-                {
-                    right = pika::make_ready_future(last);
-                }
-
-                return pika::dataflow(
-                    [last](pika::future<Iter>&& left,
-                        pika::future<Iter>&& right) -> Iter {
-                        if (left.has_exception() || right.has_exception())
-                        {
-                            std::list<std::exception_ptr> errors;
-                            if (left.has_exception())
-                                errors.push_back(left.get_exception_ptr());
-                            if (right.has_exception())
-                                errors.push_back(right.get_exception_ptr());
-
-                            throw exception_list(PIKA_MOVE(errors));
-                        }
-                        return last;
-                    },
-                    PIKA_MOVE(left), PIKA_MOVE(right));
-            }
-
-            return parallel_partial_sort(PIKA_FORWARD(ExPolicy, policy), first,
-                middle, c_last, level - 1, PIKA_FORWARD(Comp, comp));
-        }
-        /// \endcond NOINTERNAL
-    }    // end namespace detail
+        return parallel_partial_sort(PIKA_FORWARD(ExPolicy, policy), first,
+            middle, c_last, level - 1, PIKA_FORWARD(Comp, comp));
+    }
+    /// \endcond NOINTERNAL
 
     ///////////////////////////////////////////////////////////////////////////
     ///
@@ -457,7 +450,7 @@ namespace pika { namespace parallel { inline namespace v1 {
     template <typename Iter, typename Sent, typename Comp>
     Iter sequential_partial_sort(Iter first, Iter middle, Sent end, Comp&& comp)
     {
-        std::int64_t nelem = parallel::v1::detail::distance(first, end);
+        std::int64_t nelem = parallel::detail::distance(first, end);
         PIKA_ASSERT(nelem >= 0);
 
         std::int64_t nmid = middle - first;
@@ -492,7 +485,7 @@ namespace pika { namespace parallel { inline namespace v1 {
     pika::future<Iter> parallel_partial_sort(
         ExPolicy&& policy, Iter first, Iter middle, Sent end, Comp&& comp)
     {
-        std::int64_t nelem = parallel::v1::detail::distance(first, end);
+        std::int64_t nelem = parallel::detail::distance(first, end);
         PIKA_ASSERT(nelem >= 0);
 
         std::int64_t nmid = middle - first;
@@ -506,7 +499,7 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         }
 
-        std::uint32_t level = parallel::v1::detail::nbits64(nelem) * 2;
+        std::uint32_t level = parallel::detail::nbits64(nelem) * 2;
         return detail::parallel_partial_sort(PIKA_FORWARD(ExPolicy, policy),
             first, middle, first + nelem, level, PIKA_FORWARD(Comp, comp));
     }
@@ -556,17 +549,16 @@ namespace pika { namespace parallel { inline namespace v1 {
             }
         }
     };
-}}}    // namespace pika::parallel::v1
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     inline constexpr struct partial_sort_t final
       : pika::detail::tag_parallel_algorithm<partial_sort_t>
     {
     private:
         // clang-format off
         template <typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter>::value &&
                 pika::detail::is_invocable_v<Comp,
@@ -583,7 +575,7 @@ namespace pika {
                 pika::traits::is_random_access_iterator<RandIter>::value,
                 "Requires at least random access iterator.");
 
-            return parallel::v1::partial_sort<RandIter>().call(
+            return parallel::detail::partial_sort<RandIter>().call(
                 pika::execution::seq, first, middle, last,
                 PIKA_FORWARD(Comp, comp),
                 parallel::util::projection_identity());
@@ -591,7 +583,7 @@ namespace pika {
 
         // clang-format off
         template <typename ExPolicy, typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter>::value &&
@@ -615,7 +607,7 @@ namespace pika {
                 parallel::util::detail::algorithm_result<ExPolicy, RandIter>;
 
             return algorithm_result::get(
-                parallel::v1::partial_sort<RandIter>().call(
+                parallel::detail::partial_sort<RandIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, middle, last,
                     PIKA_FORWARD(Comp, comp),
                     parallel::util::projection_identity()));

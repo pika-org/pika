@@ -8,9 +8,8 @@
 
 #include <pika/config.hpp>
 
-// TODO: Should this be experimental?
 #if defined(PIKA_HAVE_DATAPAR)
-namespace pika { namespace execution { inline namespace v1 {
+namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     struct simd_policy;
 
@@ -32,6 +31,6 @@ namespace pika { namespace execution { inline namespace v1 {
 
     template <typename Executor, typename Parameters>
     struct par_simd_task_policy_shim;
-}}}    // namespace pika::execution::v1
+}    // namespace pika::execution
 
 #endif

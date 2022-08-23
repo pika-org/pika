@@ -873,8 +873,7 @@ namespace pika { namespace ranges {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace ranges {
-
+namespace pika::ranges {
     template <typename I, typename O>
     using inclusive_scan_result = parallel::util::in_out_result<I, O>;
 
@@ -907,9 +906,8 @@ namespace pika { namespace ranges {
 
             using result_type = inclusive_scan_result<InIter, OutIter>;
 
-            return pika::parallel::v1::detail::inclusive_scan<result_type>()
-                .call(pika::execution::seq, first, last, dest,
-                    PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::inclusive_scan<result_type>().call(
+                pika::execution::seq, first, last, dest, PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -939,9 +937,9 @@ namespace pika { namespace ranges {
 
             using result_type = inclusive_scan_result<FwdIter1, FwdIter2>;
 
-            return pika::parallel::v1::detail::inclusive_scan<result_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                    PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::inclusive_scan<result_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -968,9 +966,9 @@ namespace pika { namespace ranges {
             using result_type =
                 inclusive_scan_result<traits::range_iterator_t<Rng>, O>;
 
-            return pika::parallel::v1::detail::inclusive_scan<result_type>()
-                .call(pika::execution::seq, std::begin(rng), std::end(rng),
-                    dest, PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::inclusive_scan<result_type>().call(
+                pika::execution::seq, std::begin(rng), std::end(rng), dest,
+                PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -999,9 +997,9 @@ namespace pika { namespace ranges {
             using result_type =
                 inclusive_scan_result<traits::range_iterator_t<Rng>, O>;
 
-            return pika::parallel::v1::detail::inclusive_scan<result_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng),
-                    std::end(rng), dest, PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::inclusive_scan<result_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), std::begin(rng), std::end(rng),
+                dest, PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -1029,9 +1027,9 @@ namespace pika { namespace ranges {
 
             using result_type = inclusive_scan_result<InIter, OutIter>;
 
-            return pika::parallel::v1::detail::inclusive_scan<result_type>()
-                .call(pika::execution::seq, first, last, dest, PIKA_MOVE(init),
-                    PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::inclusive_scan<result_type>().call(
+                pika::execution::seq, first, last, dest, PIKA_MOVE(init),
+                PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -1061,9 +1059,9 @@ namespace pika { namespace ranges {
 
             using result_type = inclusive_scan_result<FwdIter1, FwdIter2>;
 
-            return pika::parallel::v1::detail::inclusive_scan<result_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                    PIKA_MOVE(init), PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::inclusive_scan<result_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                PIKA_MOVE(init), PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -1092,9 +1090,9 @@ namespace pika { namespace ranges {
             using result_type =
                 inclusive_scan_result<traits::range_iterator_t<Rng>, O>;
 
-            return pika::parallel::v1::detail::inclusive_scan<result_type>()
-                .call(pika::execution::seq, std::begin(rng), std::end(rng),
-                    dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::inclusive_scan<result_type>().call(
+                pika::execution::seq, std::begin(rng), std::end(rng), dest,
+                PIKA_MOVE(init), PIKA_FORWARD(Op, op));
         }
 
         // clang-format off
@@ -1125,11 +1123,11 @@ namespace pika { namespace ranges {
             using result_type =
                 inclusive_scan_result<traits::range_iterator_t<Rng>, O>;
 
-            return pika::parallel::v1::detail::inclusive_scan<result_type>()
-                .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng),
-                    std::end(rng), dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
+            return pika::parallel::detail::inclusive_scan<result_type>().call(
+                PIKA_FORWARD(ExPolicy, policy), std::begin(rng), std::end(rng),
+                dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
         }
     } inclusive_scan{};
-}}    // namespace pika::ranges
+}    // namespace pika::ranges
 
 #endif

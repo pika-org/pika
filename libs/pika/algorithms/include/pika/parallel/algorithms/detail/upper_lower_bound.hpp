@@ -15,9 +15,7 @@
 #include <functional>
 #include <iterator>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::detail {
     template <typename Iter, typename Sent, typename T, typename F,
         typename Proj, typename CancelToken>
     Iter lower_bound(
@@ -132,4 +130,4 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         }
         return first;
     }
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

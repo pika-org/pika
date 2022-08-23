@@ -20,8 +20,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { namespace util {
-
+namespace pika::parallel::util {
     /// \brief Compare the elements pointed by it1 and it2, and if they
     ///        are equals, compare their position, doing a stable comparison
     ///
@@ -333,4 +332,4 @@ namespace pika { namespace parallel { namespace util {
             uninit_full_merge(
                 raux2, vrange_input[pos[1]], vrange_input[pos[0]], comp));
     }
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

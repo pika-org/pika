@@ -17,8 +17,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace pika { namespace parallel { namespace util {
-
+namespace pika::parallel::util {
     /// Merge the ranges in the vector v_input using full_merge4. The v_output
     ///        vector is used as auxiliary memory in the internal process
     ///        The final results is in the dest range.
@@ -167,4 +166,4 @@ namespace pika { namespace parallel { namespace util {
         }
         return (sw) ? v_output[0] : init_move(range_output, v_input[0]);
     }
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util

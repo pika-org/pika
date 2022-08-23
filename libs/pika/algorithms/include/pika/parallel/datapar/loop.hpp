@@ -50,7 +50,7 @@ namespace pika { namespace parallel { namespace util {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
             pika::is_vectorpack_execution_policy<ExPolicy>::value,
             typename traits::vector_pack_type<
-                typename std::decay<Vector>::type::value_type, 1>::type>::type
+                typename std::decay_t<Vector>::value_type, 1>::type>::type
         tag_invoke(pika::parallel::util::detail::accumulate_values_t<ExPolicy>,
             F&& f, Vector const& value)
         {
@@ -108,7 +108,7 @@ namespace pika { namespace parallel { namespace util {
                 using V = typename traits::vector_pack_type<value_type>::type;
 
                 return traits::vector_pack_size<V>::value <=
-                    (std::size_t) parallel::v1::detail::distance(first, last);
+                    (std::size_t) parallel::detail::distance(first, last);
             }
         };
 

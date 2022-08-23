@@ -17,8 +17,8 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v2 {
-    namespace detail {
+namespace pika {
+    namespace parallel::detail {
         /// \cond NOINTERNAL
 
         ///////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ namespace pika { namespace parallel { inline namespace v2 {
             PIKA_HOST_DEVICE
             constexpr void init_iteration(std::size_t index) noexcept
             {
-                curr_ = parallel::v1::detail::next(var_, index);
+                curr_ = parallel::detail::next(var_, index);
             }
 
             PIKA_HOST_DEVICE
@@ -70,7 +70,7 @@ namespace pika { namespace parallel { inline namespace v2 {
             PIKA_HOST_DEVICE
             constexpr void init_iteration(std::size_t index) noexcept
             {
-                curr_ = parallel::v1::detail::next(var_, index);
+                curr_ = parallel::detail::next(var_, index);
             }
 
             PIKA_HOST_DEVICE
@@ -88,8 +88,7 @@ namespace pika { namespace parallel { inline namespace v2 {
             PIKA_HOST_DEVICE
             constexpr void exit_iteration(std::size_t index) noexcept
             {
-                live_out_var_ =
-                    parallel::v1::detail::next(live_out_var_, index);
+                live_out_var_ = parallel::detail::next(live_out_var_, index);
             }
 
         private:
@@ -113,7 +112,7 @@ namespace pika { namespace parallel { inline namespace v2 {
             PIKA_HOST_DEVICE
             constexpr void init_iteration(std::size_t index) noexcept
             {
-                curr_ = parallel::v1::detail::next(var_, stride_ * index);
+                curr_ = parallel::detail::next(var_, stride_ * index);
             }
 
             PIKA_HOST_DEVICE
@@ -125,7 +124,7 @@ namespace pika { namespace parallel { inline namespace v2 {
             PIKA_HOST_DEVICE
             constexpr void next_iteration() noexcept
             {
-                curr_ = parallel::v1::detail::next(curr_, stride_);
+                curr_ = parallel::detail::next(curr_, stride_);
             }
 
             PIKA_HOST_DEVICE
@@ -152,7 +151,7 @@ namespace pika { namespace parallel { inline namespace v2 {
             PIKA_HOST_DEVICE
             constexpr void init_iteration(std::size_t index) noexcept
             {
-                curr_ = parallel::v1::detail::next(var_, stride_ * index);
+                curr_ = parallel::detail::next(var_, stride_ * index);
             }
 
             PIKA_HOST_DEVICE
@@ -164,14 +163,14 @@ namespace pika { namespace parallel { inline namespace v2 {
             PIKA_HOST_DEVICE
             constexpr void next_iteration() noexcept
             {
-                curr_ = parallel::v1::detail::next(curr_, stride_);
+                curr_ = parallel::detail::next(curr_, stride_);
             }
 
             PIKA_HOST_DEVICE
             constexpr void exit_iteration(std::size_t index) noexcept
             {
                 live_out_var_ =
-                    parallel::v1::detail::next(live_out_var_, stride_ * index);
+                    parallel::detail::next(live_out_var_, stride_ * index);
             }
 
         private:
@@ -182,7 +181,7 @@ namespace pika { namespace parallel { inline namespace v2 {
         };
 
         /// \endcond
-    }    // namespace detail
+    }    // namespace parallel::detail
 
     /// The function template returns an induction object of unspecified type
     /// having a value type and encapsulating an initial value \a value of that
@@ -214,18 +213,19 @@ namespace pika { namespace parallel { inline namespace v2 {
     ///          object.
     ///
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::induction_stride_helper<T> induction(
-        T&& value, std::size_t stride)
+    PIKA_FORCEINLINE constexpr parallel::detail::induction_stride_helper<T>
+    induction(T&& value, std::size_t stride)
     {
-        return detail::induction_stride_helper<T>(
+        return parallel::detail::induction_stride_helper<T>(
             PIKA_FORWARD(T, value), stride);
     }
 
     /// \cond NOINTERNAL
     template <typename T>
-    PIKA_FORCEINLINE constexpr detail::induction_helper<T> induction(T&& value)
+    PIKA_FORCEINLINE constexpr parallel::detail::induction_helper<T> induction(
+        T&& value)
     {
-        return detail::induction_helper<T>(PIKA_FORWARD(T, value));
+        return parallel::detail::induction_helper<T>(PIKA_FORWARD(T, value));
     }
     /// \endcond
-}}}    // namespace pika::parallel::v2
+}    // namespace pika

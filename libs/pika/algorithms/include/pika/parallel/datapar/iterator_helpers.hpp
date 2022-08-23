@@ -23,9 +23,7 @@
 #include <type_traits>
 #include <utility>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util { namespace detail {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util::detail {
     template <typename Iter>
     struct is_data_aligned_impl
     {
@@ -719,6 +717,6 @@ namespace pika { namespace parallel { namespace util { namespace detail {
                 PIKA_FORWARD(F, f), it1, it2, dest);
         }
     };
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail
 
 #endif

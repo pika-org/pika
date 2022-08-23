@@ -49,8 +49,7 @@ namespace pika {
     ///           If the range [first, last) contains less than two elements,
     ///           the function always returns true.
     ///
-    template <typename FwdIter,
-        typename Pred = pika::parallel::v1::detail::less>
+    template <typename FwdIter, typename Pred = pika::parallel::detail::less>
     bool is_sorted(FwdIter first, FwdIter last, Pred&& pred = Pred());
 
     /// Determines if the range [first, last) is sorted. Uses pred to
@@ -111,7 +110,7 @@ namespace pika {
     ///           the function always returns true.
     ///
     template <typename ExPolicy, typename FwdIter,
-        typename Pred = pika::parallel::v1::detail::less>
+        typename Pred = pika::parallel::detail::less>
     typename pika::parallel::util::detail::algorithm_result<ExPolicy,
         bool>::type
     is_sorted(
@@ -154,8 +153,7 @@ namespace pika {
     ///           element. If the sequence has less than two elements or the
     ///           sequence is sorted, last is returned.
     ///
-    template <typename FwdIter,
-        typename Pred = pika::parallel::v1::detail::less>
+    template <typename FwdIter, typename Pred = pika::parallel::detail::less>
     FwdIter is_sorted_until(FwdIter first, FwdIter last, Pred&& pred = Pred());
 
     /// Returns the first element in the range [first, last) that is not sorted.
@@ -216,7 +214,7 @@ namespace pika {
     ///           sequence is sorted, last is returned.
     ///
     template <typename ExPolicy, typename FwdIter,
-        typename Pred = pika::parallel::v1::detail::less>
+        typename Pred = pika::parallel::detail::less>
     typename pika::parallel::util::detail::algorithm_result<ExPolicy,
         FwdIter>::type
     is_sorted_until(
@@ -248,186 +246,173 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ////////////////////////////////////////////////////////////////////////////
     // is_sorted
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename FwdIter, typename Sent>
-        struct is_sorted
-          : public detail::algorithm<is_sorted<FwdIter, Sent>, bool>
+    /// \cond NOINTERNAL
+    template <typename FwdIter, typename Sent>
+    struct is_sorted : public detail::algorithm<is_sorted<FwdIter, Sent>, bool>
+    {
+        is_sorted()
+          : is_sorted::algorithm("is_sorted")
         {
-            is_sorted()
-              : is_sorted::algorithm("is_sorted")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename Pred, typename Proj>
-            static bool sequential(
-                ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
-            {
-                return is_sorted_sequential(first, last,
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
-            }
+        template <typename ExPolicy, typename Pred, typename Proj>
+        static bool sequential(
+            ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
+        {
+            return is_sorted_sequential(first, last, PIKA_FORWARD(Pred, pred),
+                PIKA_FORWARD(Proj, proj));
+        }
 
-            template <typename ExPolicy, typename Pred, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
-                Proj&& proj)
-            {
-                using difference_type =
-                    typename std::iterator_traits<FwdIter>::difference_type;
-                using result =
-                    typename util::detail::algorithm_result<ExPolicy, bool>;
+        template <typename ExPolicy, typename Pred, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
+            Proj&& proj)
+        {
+            using difference_type =
+                typename std::iterator_traits<FwdIter>::difference_type;
+            using result =
+                typename util::detail::algorithm_result<ExPolicy, bool>;
 
-                difference_type count = std::distance(first, last);
-                if (count <= 1)
-                    return result::get(true);
+            difference_type count = std::distance(first, last);
+            if (count <= 1)
+                return result::get(true);
 
-                util::invoke_projected<Pred, Proj> pred_projected{
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)};
+            util::invoke_projected<Pred, Proj> pred_projected{
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)};
 
-                util::cancellation_token<> tok;
+            util::cancellation_token<> tok;
 
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [tok, last,
-                              pred_projected = PIKA_MOVE(pred_projected)](
-                              FwdIter part_begin,
-                              std::size_t part_size) mutable -> bool {
-                    FwdIter trail = part_begin++;
-                    util::loop_n<std::decay_t<ExPolicy>>(part_begin,
-                        part_size - 1,
-                        [&trail, &tok, &pred_projected](
-                            FwdIter it) mutable -> void {
-                            if (pika::util::detail::invoke(
-                                    pred_projected, *it, *trail++))
-                            {
-                                tok.cancel();
-                            }
-                        });
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [tok, last, pred_projected = PIKA_MOVE(pred_projected)](
+                          FwdIter part_begin,
+                          std::size_t part_size) mutable -> bool {
+                FwdIter trail = part_begin++;
+                util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size - 1,
+                    [&trail, &tok, &pred_projected](
+                        FwdIter it) mutable -> void {
+                        if (pika::util::detail::invoke(
+                                pred_projected, *it, *trail++))
+                        {
+                            tok.cancel();
+                        }
+                    });
 
-                    FwdIter i = trail++;
-                    // trail now points one past the current grouping
-                    // unless canceled
+                FwdIter i = trail++;
+                // trail now points one past the current grouping
+                // unless canceled
 
-                    if (!tok.was_cancelled() && trail != last)
-                    {
-                        return !pika::util::detail::invoke(
-                            pred_projected, *trail, *i);
-                    }
-                    return !tok.was_cancelled();
-                };
+                if (!tok.was_cancelled() && trail != last)
+                {
+                    return !pika::util::detail::invoke(
+                        pred_projected, *trail, *i);
+                }
+                return !tok.was_cancelled();
+            };
 
-                auto f2 = [](std::vector<pika::future<bool>>&& results) {
-                    return std::all_of(pika::util::begin(results),
-                        pika::util::end(results),
-                        [](pika::future<bool>& val) -> bool {
-                            return val.get();
-                        });
-                };
+            auto f2 = [](std::vector<pika::future<bool>>&& results) {
+                return std::all_of(pika::util::begin(results),
+                    pika::util::end(results),
+                    [](pika::future<bool>& val) -> bool { return val.get(); });
+            };
 
-                return util::partitioner<ExPolicy, bool>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_MOVE(f1),
-                    PIKA_MOVE(f2));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+            return util::partitioner<ExPolicy, bool>::call(
+                PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
+    /// \endcond
 
     ////////////////////////////////////////////////////////////////////////////
     // is_sorted_until
-    namespace detail {
-        /// \cond NOINTERNAL
-        template <typename FwdIter, typename Sent>
-        struct is_sorted_until
-          : public detail::algorithm<is_sorted_until<FwdIter, Sent>, FwdIter>
+    /// \cond NOINTERNAL
+    template <typename FwdIter, typename Sent>
+    struct is_sorted_until
+      : public detail::algorithm<is_sorted_until<FwdIter, Sent>, FwdIter>
+    {
+        is_sorted_until()
+          : is_sorted_until::algorithm("is_sorted_until")
         {
-            is_sorted_until()
-              : is_sorted_until::algorithm("is_sorted_until")
-            {
-            }
+        }
 
-            template <typename ExPolicy, typename Pred, typename Proj>
-            static FwdIter sequential(
-                ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
-            {
-                return is_sorted_until_sequential(first, last,
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
-            }
+        template <typename ExPolicy, typename Pred, typename Proj>
+        static FwdIter sequential(
+            ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
+        {
+            return is_sorted_until_sequential(first, last,
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
+        }
 
-            template <typename ExPolicy, typename Pred, typename Proj>
-            static
-                typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-                parallel(ExPolicy&& policy, FwdIter first, Sent last,
-                    Pred&& pred, Proj&& proj)
-            {
-                using reference =
-                    typename std::iterator_traits<FwdIter>::reference;
-                using difference_type =
-                    typename std::iterator_traits<FwdIter>::difference_type;
-                using result =
-                    typename util::detail::algorithm_result<ExPolicy, FwdIter>;
+        template <typename ExPolicy, typename Pred, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
+            Proj&& proj)
+        {
+            using reference = typename std::iterator_traits<FwdIter>::reference;
+            using difference_type =
+                typename std::iterator_traits<FwdIter>::difference_type;
+            using result =
+                typename util::detail::algorithm_result<ExPolicy, FwdIter>;
 
-                difference_type count = std::distance(first, last);
-                if (count <= 1)
-                    return result::get(PIKA_MOVE(last));
+            difference_type count = std::distance(first, last);
+            if (count <= 1)
+                return result::get(PIKA_MOVE(last));
 
-                util::invoke_projected<Pred, Proj> pred_projected{
-                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)};
+            util::invoke_projected<Pred, Proj> pred_projected{
+                PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)};
 
-                util::cancellation_token<difference_type> tok(count);
+            util::cancellation_token<difference_type> tok(count);
 
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [tok, last,
-                              pred_projected = PIKA_MOVE(pred_projected)](
-                              FwdIter part_begin, std::size_t part_size,
-                              std::size_t base_idx) mutable -> void {
-                    FwdIter trail = part_begin++;
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(++base_idx,
-                        part_begin, part_size - 1, tok,
-                        [&trail, &tok, &pred_projected](
-                            reference& v, std::size_t ind) -> void {
-                            if (pika::util::detail::invoke(
-                                    pred_projected, v, *trail++))
-                            {
-                                tok.cancel(ind);
-                            }
-                        });
-
-                    FwdIter i = trail++;
-
-                    //trail now points one past the current grouping
-                    //unless canceled
-                    if (!tok.was_cancelled(base_idx + part_size) &&
-                        trail != last)
-                    {
-                        if (PIKA_INVOKE(pred_projected, *trail, *i))
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [tok, last, pred_projected = PIKA_MOVE(pred_projected)](
+                          FwdIter part_begin, std::size_t part_size,
+                          std::size_t base_idx) mutable -> void {
+                FwdIter trail = part_begin++;
+                util::loop_idx_n<std::decay_t<ExPolicy>>(++base_idx, part_begin,
+                    part_size - 1, tok,
+                    [&trail, &tok, &pred_projected](
+                        reference& v, std::size_t ind) -> void {
+                        if (pika::util::detail::invoke(
+                                pred_projected, v, *trail++))
                         {
-                            tok.cancel(base_idx + part_size);
+                            tok.cancel(ind);
                         }
-                    }
-                };
-                auto f2 = [first, tok](
-                              std::vector<pika::future<void>>&& data) mutable
-                    -> FwdIter {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
+                    });
 
-                    difference_type loc = tok.get_data();
-                    std::advance(first, loc);
-                    return PIKA_MOVE(first);
-                };
-                return util::partitioner<ExPolicy, FwdIter,
-                    void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
-                    first, count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+                FwdIter i = trail++;
+
+                //trail now points one past the current grouping
+                //unless canceled
+                if (!tok.was_cancelled(base_idx + part_size) && trail != last)
+                {
+                    if (PIKA_INVOKE(pred_projected, *trail, *i))
+                    {
+                        tok.cancel(base_idx + part_size);
+                    }
+                }
+            };
+            auto f2 =
+                [first, tok](
+                    std::vector<pika::future<void>>&& data) mutable -> FwdIter {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
+
+                difference_type loc = tok.get_data();
+                std::advance(first, loc);
+                return PIKA_MOVE(first);
+            };
+            return util::partitioner<ExPolicy, FwdIter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     inline constexpr struct is_sorted_t final
@@ -435,7 +420,7 @@ namespace pika {
     {
     private:
         template <typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
@@ -449,14 +434,13 @@ namespace pika {
         friend bool tag_fallback_invoke(pika::is_sorted_t, FwdIter first,
             FwdIter last, Pred&& pred = Pred())
         {
-            return pika::parallel::v1::detail::is_sorted<FwdIter, FwdIter>()
-                .call(pika::execution::seq, first, last,
-                    PIKA_FORWARD(Pred, pred),
-                    pika::parallel::util::projection_identity());
+            return pika::parallel::detail::is_sorted<FwdIter, FwdIter>().call(
+                pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
+                pika::parallel::util::projection_identity());
         }
 
         template <typename ExPolicy, typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
@@ -473,10 +457,10 @@ namespace pika {
         tag_fallback_invoke(pika::is_sorted_t, ExPolicy&& policy, FwdIter first,
             FwdIter last, Pred&& pred = Pred())
         {
-            return pika::parallel::v1::detail::is_sorted<FwdIter, FwdIter>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    PIKA_FORWARD(Pred, pred),
-                    pika::parallel::util::projection_identity());
+            return pika::parallel::detail::is_sorted<FwdIter, FwdIter>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, last,
+                PIKA_FORWARD(Pred, pred),
+                pika::parallel::util::projection_identity());
         }
     } is_sorted{};
 
@@ -485,7 +469,7 @@ namespace pika {
     {
     private:
         template <typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
@@ -499,15 +483,14 @@ namespace pika {
         friend FwdIter tag_fallback_invoke(pika::is_sorted_until_t,
             FwdIter first, FwdIter last, Pred&& pred = Pred())
         {
-            return pika::parallel::v1::detail::is_sorted_until<FwdIter,
-                FwdIter>()
+            return pika::parallel::detail::is_sorted_until<FwdIter, FwdIter>()
                 .call(pika::execution::seq, first, last,
                     PIKA_FORWARD(Pred, pred),
                     pika::parallel::util::projection_identity());
         }
 
         template <typename ExPolicy, typename FwdIter,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             // clang-format off
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
@@ -524,8 +507,7 @@ namespace pika {
         tag_fallback_invoke(pika::is_sorted_until_t, ExPolicy&& policy,
             FwdIter first, FwdIter last, Pred&& pred = Pred())
         {
-            return pika::parallel::v1::detail::is_sorted_until<FwdIter,
-                FwdIter>()
+            return pika::parallel::detail::is_sorted_until<FwdIter, FwdIter>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred),
                     pika::parallel::util::projection_identity());

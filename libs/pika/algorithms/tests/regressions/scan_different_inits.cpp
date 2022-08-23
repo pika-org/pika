@@ -121,17 +121,17 @@ void test_one(std::vector<int> a)
     PIKA_UNUSED(f_transform_inc);
     PIKA_UNUSED(f_transform_exc);
 
-    pika::parallel::v1::detail::sequential_inclusive_scan(
+    pika::parallel::detail::sequential_inclusive_scan(
         a.begin(), a.end(), b_ans.begin(), 10, fun_add);
-    pika::parallel::v1::detail::sequential_inclusive_scan(
+    pika::parallel::detail::sequential_inclusive_scan(
         a.begin(), a.end(), c_ans.begin(), 10, fun_mult);
-    pika::parallel::v1::detail::sequential_exclusive_scan(
+    pika::parallel::detail::sequential_exclusive_scan(
         a.begin(), a.end(), d_ans.begin(), 10, fun_add);
-    pika::parallel::v1::detail::sequential_exclusive_scan(
+    pika::parallel::detail::sequential_exclusive_scan(
         a.begin(), a.end(), e_ans.begin(), 10, fun_mult);
-    pika::parallel::v1::detail::sequential_transform_inclusive_scan(
+    pika::parallel::detail::sequential_transform_inclusive_scan(
         a.begin(), a.end(), f_ans.begin(), fun_conv, 10, fun_add);
-    pika::parallel::v1::detail::sequential_transform_exclusive_scan(
+    pika::parallel::detail::sequential_transform_exclusive_scan(
         a.begin(), a.end(), g_ans.begin(), fun_conv, 10, fun_add);
 
     PIKA_TEST(std::equal(b.begin(), b.end(), b_ans.begin()));
@@ -171,17 +171,17 @@ void test_async_one(std::vector<int> a)
     Fut_Iter f_transform_exc = pika::transform_exclusive_scan(
         policy, a.begin(), a.end(), g.begin(), 10, fun_add, fun_conv);
 
-    pika::parallel::v1::detail::sequential_inclusive_scan(
+    pika::parallel::detail::sequential_inclusive_scan(
         a.begin(), a.end(), b_ans.begin(), 10, fun_add);
-    pika::parallel::v1::detail::sequential_inclusive_scan(
+    pika::parallel::detail::sequential_inclusive_scan(
         a.begin(), a.end(), c_ans.begin(), 10, fun_mult);
-    pika::parallel::v1::detail::sequential_exclusive_scan(
+    pika::parallel::detail::sequential_exclusive_scan(
         a.begin(), a.end(), d_ans.begin(), 10, fun_add);
-    pika::parallel::v1::detail::sequential_exclusive_scan(
+    pika::parallel::detail::sequential_exclusive_scan(
         a.begin(), a.end(), e_ans.begin(), 10, fun_mult);
-    pika::parallel::v1::detail::sequential_transform_inclusive_scan(
+    pika::parallel::detail::sequential_transform_inclusive_scan(
         a.begin(), a.end(), f_ans.begin(), fun_conv, 10, fun_add);
-    pika::parallel::v1::detail::sequential_transform_exclusive_scan(
+    pika::parallel::detail::sequential_transform_exclusive_scan(
         a.begin(), a.end(), g_ans.begin(), fun_conv, 10, fun_add);
 
     f_inc_add.wait();

@@ -11,8 +11,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace util {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     struct projection_identity
     {
         using is_transparent = std::true_type;
@@ -24,10 +23,9 @@ namespace pika { namespace parallel { namespace util {
             return PIKA_FORWARD(T, val);
         }
     };
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util
 
 namespace pika {
-
     // C++20 introduces std::identity
     using identity = pika::parallel::util::projection_identity;
 }    // namespace pika

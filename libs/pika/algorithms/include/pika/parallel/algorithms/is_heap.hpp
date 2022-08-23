@@ -160,240 +160,231 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // is_heap
-    namespace detail {
+    // sequential is_heap with projection function
+    template <typename Iter, typename Sent, typename Comp, typename Proj>
+    bool sequential_is_heap(Iter first, Sent last, Comp&& comp, Proj&& proj)
+    {
+        using difference_type =
+            typename std::iterator_traits<Iter>::difference_type;
 
-        // sequential is_heap with projection function
-        template <typename Iter, typename Sent, typename Comp, typename Proj>
-        bool sequential_is_heap(Iter first, Sent last, Comp&& comp, Proj&& proj)
+        difference_type count = detail::distance(first, last);
+
+        for (difference_type i = 1; i < count; ++i)
         {
+            if (PIKA_INVOKE(comp, PIKA_INVOKE(proj, *(first + (i - 1) / 2)),
+                    PIKA_INVOKE(proj, *(first + i))))
+                return false;
+        }
+        return true;
+    }
+
+    struct is_heap_helper
+    {
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Comp, typename Proj>
+        typename util::detail::algorithm_result<ExPolicy, bool>::type
+        operator()(
+            ExPolicy&& policy, Iter first, Sent last, Comp&& comp, Proj&& proj)
+        {
+            using result = util::detail::algorithm_result<ExPolicy, bool>;
+            using type = typename std::iterator_traits<Iter>::value_type;
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
 
             difference_type count = detail::distance(first, last);
-
-            for (difference_type i = 1; i < count; ++i)
+            if (count <= 1)
             {
-                if (PIKA_INVOKE(comp, PIKA_INVOKE(proj, *(first + (i - 1) / 2)),
-                        PIKA_INVOKE(proj, *(first + i))))
-                    return false;
+                return result::get(true);
             }
-            return true;
+
+            Iter second = first + 1;
+            --count;
+
+            util::cancellation_token<std::size_t> tok(count);
+
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [tok, first, comp = PIKA_FORWARD(Comp, comp),
+                          proj = PIKA_FORWARD(Proj, proj)](Iter it,
+                          std::size_t part_size,
+                          std::size_t base_idx) mutable -> void {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_size, tok,
+                    [&tok, first, &comp, &proj](
+                        type const& v, std::size_t i) mutable -> void {
+                        if (pika::util::detail::invoke(comp,
+                                pika::util::detail::invoke(
+                                    proj, *(first + i / 2)),
+                                pika::util::detail::invoke(proj, v)))
+                        {
+                            tok.cancel(0);
+                        }
+                    });
+            };
+            auto f2 =
+                [tok](std::vector<pika::future<void>>&& data) mutable -> bool {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
+
+                difference_type find_res =
+                    static_cast<difference_type>(tok.get_data());
+
+                return find_res != 0;
+            };
+
+            return util::partitioner<ExPolicy, bool, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), second, count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
+
+    template <typename RandIter>
+    struct is_heap : public detail::algorithm<is_heap<RandIter>, bool>
+    {
+        is_heap()
+          : is_heap::algorithm("is_heap")
+        {
         }
 
-        struct is_heap_helper
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Comp, typename Proj>
+        static bool sequential(
+            ExPolicy&&, Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Comp, typename Proj>
-            typename util::detail::algorithm_result<ExPolicy, bool>::type
-            operator()(ExPolicy&& policy, Iter first, Sent last, Comp&& comp,
-                Proj&& proj)
-            {
-                using result = util::detail::algorithm_result<ExPolicy, bool>;
-                using type = typename std::iterator_traits<Iter>::value_type;
-                using difference_type =
-                    typename std::iterator_traits<Iter>::difference_type;
+            return sequential_is_heap(first, last, PIKA_FORWARD(Comp, comp),
+                PIKA_FORWARD(Proj, proj));
+        }
 
-                difference_type count = detail::distance(first, last);
-                if (count <= 1)
-                {
-                    return result::get(true);
-                }
-
-                Iter second = first + 1;
-                --count;
-
-                util::cancellation_token<std::size_t> tok(count);
-
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [tok, first, comp = PIKA_FORWARD(Comp, comp),
-                              proj = PIKA_FORWARD(Proj, proj)](Iter it,
-                              std::size_t part_size,
-                              std::size_t base_idx) mutable -> void {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_size, tok,
-                        [&tok, first, &comp, &proj](
-                            type const& v, std::size_t i) mutable -> void {
-                            if (pika::util::detail::invoke(comp,
-                                    pika::util::detail::invoke(
-                                        proj, *(first + i / 2)),
-                                    pika::util::detail::invoke(proj, v)))
-                            {
-                                tok.cancel(0);
-                            }
-                        });
-                };
-                auto f2 = [tok](std::vector<pika::future<void>>&& data) mutable
-                    -> bool {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
-
-                    difference_type find_res =
-                        static_cast<difference_type>(tok.get_data());
-
-                    return find_res != 0;
-                };
-
-                return util::partitioner<ExPolicy, bool, void>::call_with_index(
-                    PIKA_FORWARD(ExPolicy, policy), second, count, 1,
-                    PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-
-        template <typename RandIter>
-        struct is_heap : public detail::algorithm<is_heap<RandIter>, bool>
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Comp, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(
+            ExPolicy&& policy, Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
-            is_heap()
-              : is_heap::algorithm("is_heap")
-            {
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Comp, typename Proj>
-            static bool sequential(
-                ExPolicy&&, Iter first, Sent last, Comp&& comp, Proj&& proj)
-            {
-                return sequential_is_heap(first, last, PIKA_FORWARD(Comp, comp),
-                    PIKA_FORWARD(Proj, proj));
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Comp, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, Comp&& comp,
-                Proj&& proj)
-            {
-                return is_heap_helper()(PIKA_FORWARD(ExPolicy, policy), first,
-                    last, PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
-            }
-        };
-    }    // namespace detail
+            return is_heap_helper()(PIKA_FORWARD(ExPolicy, policy), first, last,
+                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
+        }
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     // is_heap_until
-    namespace detail {
+    // sequential is_heap_until with projection function
+    template <typename Iter, typename Sent, typename Comp, typename Proj>
+    Iter sequential_is_heap_until(
+        Iter first, Sent last, Comp&& comp, Proj&& proj)
+    {
+        using difference_type =
+            typename std::iterator_traits<Iter>::difference_type;
 
-        // sequential is_heap_until with projection function
-        template <typename Iter, typename Sent, typename Comp, typename Proj>
-        Iter sequential_is_heap_until(
-            Iter first, Sent last, Comp&& comp, Proj&& proj)
+        difference_type count = detail::distance(first, last);
+
+        for (difference_type i = 1; i < count; ++i)
         {
+            if (PIKA_INVOKE(comp, PIKA_INVOKE(proj, *(first + (i - 1) / 2)),
+                    PIKA_INVOKE(proj, *(first + i))))
+                return first + i;
+        }
+        return last;
+    }
+
+    struct is_heap_until_helper
+    {
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Comp, typename Proj>
+        typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        operator()(
+            ExPolicy&& policy, Iter first, Sent last, Comp comp, Proj proj)
+        {
+            using result = util::detail::algorithm_result<ExPolicy, Iter>;
+            using type = typename std::iterator_traits<Iter>::value_type;
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
 
             difference_type count = detail::distance(first, last);
-
-            for (difference_type i = 1; i < count; ++i)
+            if (count <= 1)
             {
-                if (PIKA_INVOKE(comp, PIKA_INVOKE(proj, *(first + (i - 1) / 2)),
-                        PIKA_INVOKE(proj, *(first + i))))
-                    return first + i;
+                return result::get(PIKA_MOVE(last));
             }
-            return last;
+
+            Iter second = first + 1;
+            --count;
+
+            util::cancellation_token<std::size_t> tok(count);
+
+            // Note: replacing the invoke() with PIKA_INVOKE()
+            // below makes gcc generate errors
+            auto f1 = [tok, first, comp = PIKA_FORWARD(Comp, comp),
+                          proj = PIKA_FORWARD(Proj, proj)](Iter it,
+                          std::size_t part_size, std::size_t base_idx) mutable {
+                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                    part_size, tok,
+                    [&tok, first, &comp, &proj](
+                        type const& v, std::size_t i) -> void {
+                        if (pika::util::detail::invoke(comp,
+                                pika::util::detail::invoke(
+                                    proj, *(first + i / 2)),
+                                pika::util::detail::invoke(proj, v)))
+                        {
+                            tok.cancel(i);
+                        }
+                    });
+            };
+            auto f2 =
+                [tok, second](
+                    std::vector<pika::future<void>>&& data) mutable -> Iter {
+                // make sure iterators embedded in function object that is
+                // attached to futures are invalidated
+                data.clear();
+
+                difference_type find_res =
+                    static_cast<difference_type>(tok.get_data());
+
+                std::advance(second, find_res);
+
+                return PIKA_MOVE(second);
+            };
+
+            return util::partitioner<ExPolicy, Iter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), second, count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
+        }
+    };
+
+    template <typename RandIter>
+    struct is_heap_until
+      : public detail::algorithm<is_heap_until<RandIter>, RandIter>
+    {
+        is_heap_until()
+          : is_heap_until::algorithm("is_heap_until")
+        {
         }
 
-        struct is_heap_until_helper
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Comp, typename Proj>
+        static Iter sequential(
+            ExPolicy&&, Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Comp, typename Proj>
-            typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            operator()(
-                ExPolicy&& policy, Iter first, Sent last, Comp comp, Proj proj)
-            {
-                using result = util::detail::algorithm_result<ExPolicy, Iter>;
-                using type = typename std::iterator_traits<Iter>::value_type;
-                using difference_type =
-                    typename std::iterator_traits<Iter>::difference_type;
+            return sequential_is_heap_until(first, last,
+                PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
+        }
 
-                difference_type count = detail::distance(first, last);
-                if (count <= 1)
-                {
-                    return result::get(PIKA_MOVE(last));
-                }
-
-                Iter second = first + 1;
-                --count;
-
-                util::cancellation_token<std::size_t> tok(count);
-
-                // Note: replacing the invoke() with PIKA_INVOKE()
-                // below makes gcc generate errors
-                auto f1 = [tok, first, comp = PIKA_FORWARD(Comp, comp),
-                              proj = PIKA_FORWARD(Proj, proj)](Iter it,
-                              std::size_t part_size,
-                              std::size_t base_idx) mutable {
-                    util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                        part_size, tok,
-                        [&tok, first, &comp, &proj](
-                            type const& v, std::size_t i) -> void {
-                            if (pika::util::detail::invoke(comp,
-                                    pika::util::detail::invoke(
-                                        proj, *(first + i / 2)),
-                                    pika::util::detail::invoke(proj, v)))
-                            {
-                                tok.cancel(i);
-                            }
-                        });
-                };
-                auto f2 = [tok, second](
-                              std::vector<pika::future<void>>&& data) mutable
-                    -> Iter {
-                    // make sure iterators embedded in function object that is
-                    // attached to futures are invalidated
-                    data.clear();
-
-                    difference_type find_res =
-                        static_cast<difference_type>(tok.get_data());
-
-                    std::advance(second, find_res);
-
-                    return PIKA_MOVE(second);
-                };
-
-                return util::partitioner<ExPolicy, Iter, void>::call_with_index(
-                    PIKA_FORWARD(ExPolicy, policy), second, count, 1,
-                    PIKA_MOVE(f1), PIKA_MOVE(f2));
-            }
-        };
-
-        template <typename RandIter>
-        struct is_heap_until
-          : public detail::algorithm<is_heap_until<RandIter>, RandIter>
+        template <typename ExPolicy, typename Iter, typename Sent,
+            typename Comp, typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(
+            ExPolicy&& policy, Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
-            is_heap_until()
-              : is_heap_until::algorithm("is_heap_until")
-            {
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Comp, typename Proj>
-            static Iter sequential(
-                ExPolicy&&, Iter first, Sent last, Comp&& comp, Proj&& proj)
-            {
-                return sequential_is_heap_until(first, last,
-                    PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
-            }
-
-            template <typename ExPolicy, typename Iter, typename Sent,
-                typename Comp, typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, Comp&& comp,
-                Proj&& proj)
-            {
-                return is_heap_until_helper()(PIKA_FORWARD(ExPolicy, policy),
-                    first, last, PIKA_FORWARD(Comp, comp),
-                    PIKA_FORWARD(Proj, proj));
-            }
-        };
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+            return is_heap_until_helper()(PIKA_FORWARD(ExPolicy, policy), first,
+                last, PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
+        }
+    };
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::is_heap
     inline constexpr struct is_heap_t final
@@ -402,7 +393,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter>::value &&
@@ -421,7 +412,7 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap<RandIter>().call(
+            return pika::parallel::detail::is_heap<RandIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp),
                 pika::parallel::util::projection_identity{});
@@ -429,7 +420,7 @@ namespace pika {
 
         // clang-format off
         template <typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter>::value &&
                 pika::detail::is_invocable_v<Comp,
@@ -445,7 +436,7 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap<RandIter>().call(
+            return pika::parallel::detail::is_heap<RandIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
                 pika::parallel::util::projection_identity{});
         }
@@ -459,7 +450,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<RandIter>::value &&
@@ -478,7 +469,7 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap_until<RandIter>().call(
+            return pika::parallel::detail::is_heap_until<RandIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp),
                 pika::parallel::util::projection_identity{});
@@ -486,7 +477,7 @@ namespace pika {
 
         // clang-format off
         template <typename RandIter,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<RandIter>::value &&
                 pika::detail::is_invocable_v<Comp,
@@ -502,12 +493,11 @@ namespace pika {
                 (pika::traits::is_random_access_iterator<RandIter>::value),
                 "Requires a random access iterator.");
 
-            return pika::parallel::v1::detail::is_heap_until<RandIter>().call(
+            return pika::parallel::detail::is_heap_until<RandIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
                 pika::parallel::util::projection_identity{});
         }
     } is_heap_until{};
-
 }    // namespace pika
 
 #endif    // DOXYGEN

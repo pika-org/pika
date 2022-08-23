@@ -26,9 +26,8 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 { namespace detail {
+namespace pika::parallel::detail {
     /// \cond NOINTERNAL
-
     ///////////////////////////////////////////////////////////////////////////
     template <typename FwdIter>
     struct set_operations_buffer
@@ -261,6 +260,5 @@ namespace pika { namespace parallel { inline namespace v1 { namespace detail {
         return parallel::util::partitioner<ExPolicy, result_type, void>::call(
             policy, chunks.get(), cores, PIKA_MOVE(f1), PIKA_MOVE(f2));
     }
-
     /// \endcond
-}}}}    // namespace pika::parallel::v1::detail
+}    // namespace pika::parallel::detail

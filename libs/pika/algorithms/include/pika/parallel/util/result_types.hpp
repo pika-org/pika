@@ -20,9 +20,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace util {
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::util {
     template <typename I1, typename I2>
     struct in_in_result
     {
@@ -414,13 +412,13 @@ namespace pika { namespace parallel { namespace util {
                 });
         }
     }    // namespace detail
-}}}      // namespace pika::parallel::util
+}    // namespace pika::parallel::util
 
-namespace pika { namespace ranges {
+namespace pika::ranges {
     using pika::parallel::util::in_fun_result;
     using pika::parallel::util::in_in_out_result;
     using pika::parallel::util::in_in_result;
     using pika::parallel::util::in_out_out_result;
     using pika::parallel::util::in_out_result;
     using pika::parallel::util::min_max_result;
-}}    // namespace pika::ranges
+}    // namespace pika::ranges

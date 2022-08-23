@@ -193,196 +193,185 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // uninitialized_fill
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
+    // provide our own implementation of std::uninitialized_fill as some
+    // versions of MSVC horribly fail at compiling it for some types T
+    template <typename InIter, typename Sent, typename T>
+    InIter std_uninitialized_fill(InIter first, Sent last, T const& value)
+    {
+        using value_type = typename std::iterator_traits<InIter>::value_type;
 
-        // provide our own implementation of std::uninitialized_fill as some
-        // versions of MSVC horribly fail at compiling it for some types T
-        template <typename InIter, typename Sent, typename T>
-        InIter std_uninitialized_fill(InIter first, Sent last, T const& value)
+        InIter current = first;
+        try
         {
-            using value_type =
-                typename std::iterator_traits<InIter>::value_type;
-
-            InIter current = first;
-            try
+            for (/* */; current != last; ++current)
             {
-                for (/* */; current != last; ++current)
-                {
-                    ::new (std::addressof(*current)) value_type(value);
-                }
-                return current;
+                ::new (std::addressof(*current)) value_type(value);
             }
-            catch (...)
-            {
-                for (/* */; first != current; ++first)
-                {
-                    (*first).~value_type();
-                }
-                throw;
-            }
+            return current;
         }
-
-        template <typename InIter, typename T>
-        InIter sequential_uninitialized_fill_n(InIter first, std::size_t count,
-            T const& value,
-            util::cancellation_token<util::detail::no_data>& tok)
+        catch (...)
         {
-            using value_type =
-                typename std::iterator_traits<InIter>::value_type;
+            for (/* */; first != current; ++first)
+            {
+                (*first).~value_type();
+            }
+            throw;
+        }
+    }
 
-            return util::loop_with_cleanup_n_with_token(
-                first, count, tok,
-                [&value](InIter it) -> void {
-                    ::new (std::addressof(*it)) value_type(value);
+    template <typename InIter, typename T>
+    InIter sequential_uninitialized_fill_n(InIter first, std::size_t count,
+        T const& value, util::cancellation_token<util::detail::no_data>& tok)
+    {
+        using value_type = typename std::iterator_traits<InIter>::value_type;
+
+        return util::loop_with_cleanup_n_with_token(
+            first, count, tok,
+            [&value](InIter it) -> void {
+                ::new (std::addressof(*it)) value_type(value);
+            },
+            [](InIter it) -> void { (*it).~value_type(); });
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename ExPolicy, typename Iter, typename T>
+    typename util::detail::algorithm_result<ExPolicy, Iter>::type
+    parallel_sequential_uninitialized_fill_n(
+        ExPolicy&& policy, Iter first, std::size_t count, T const& value)
+    {
+        if (count == 0)
+            return util::detail::algorithm_result<ExPolicy, Iter>::get(
+                PIKA_MOVE(first));
+
+        using partition_result_type = std::pair<Iter, Iter>;
+        using value_type = typename std::iterator_traits<Iter>::value_type;
+
+        util::cancellation_token<util::detail::no_data> tok;
+        return util::partitioner_with_cleanup<ExPolicy, Iter,
+            partition_result_type>::
+            call(
+                PIKA_FORWARD(ExPolicy, policy), first, count,
+                [value, tok](Iter it,
+                    std::size_t part_size) mutable -> partition_result_type {
+                    return std::make_pair(it,
+                        sequential_uninitialized_fill_n(
+                            it, part_size, value, tok));
                 },
-                [](InIter it) -> void { (*it).~value_type(); });
+                // finalize, called once if no error occurred
+                [first, count](
+                    std::vector<pika::future<partition_result_type>>&&
+                        data) mutable -> Iter {
+                    // make sure iterators embedded in function object that is
+                    // attached to futures are invalidated
+                    data.clear();
+
+                    std::advance(first, count);
+                    return first;
+                },
+                // cleanup function, called for each partition which
+                // didn't fail, but only if at least one failed
+                [](partition_result_type&& r) -> void {
+                    while (r.first != r.second)
+                    {
+                        (*r.first).~value_type();
+                        ++r.first;
+                    }
+                });
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Iter>
+    struct uninitialized_fill
+      : public detail::algorithm<uninitialized_fill<Iter>, Iter>
+    {
+        uninitialized_fill()
+          : uninitialized_fill::algorithm("uninitialized_fill")
+        {
         }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename ExPolicy, typename Iter, typename T>
-        typename util::detail::algorithm_result<ExPolicy, Iter>::type
-        parallel_sequential_uninitialized_fill_n(
-            ExPolicy&& policy, Iter first, std::size_t count, T const& value)
+        template <typename ExPolicy, typename Sent, typename T>
+        static Iter sequential(ExPolicy, Iter first, Sent last, T const& value)
         {
-            if (count == 0)
+            return std_uninitialized_fill(first, last, value);
+        }
+
+        template <typename ExPolicy, typename Sent, typename T>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, T const& value)
+        {
+            if (first == last)
                 return util::detail::algorithm_result<ExPolicy, Iter>::get(
                     PIKA_MOVE(first));
 
-            using partition_result_type = std::pair<Iter, Iter>;
-            using value_type = typename std::iterator_traits<Iter>::value_type;
-
-            util::cancellation_token<util::detail::no_data> tok;
-            return util::partitioner_with_cleanup<ExPolicy, Iter,
-                partition_result_type>::
-                call(
-                    PIKA_FORWARD(ExPolicy, policy), first, count,
-                    [value, tok](Iter it, std::size_t part_size) mutable
-                    -> partition_result_type {
-                        return std::make_pair(it,
-                            sequential_uninitialized_fill_n(
-                                it, part_size, value, tok));
-                    },
-                    // finalize, called once if no error occurred
-                    [first, count](
-                        std::vector<pika::future<partition_result_type>>&&
-                            data) mutable -> Iter {
-                        // make sure iterators embedded in function object that is
-                        // attached to futures are invalidated
-                        data.clear();
-
-                        std::advance(first, count);
-                        return first;
-                    },
-                    // cleanup function, called for each partition which
-                    // didn't fail, but only if at least one failed
-                    [](partition_result_type&& r) -> void {
-                        while (r.first != r.second)
-                        {
-                            (*r.first).~value_type();
-                            ++r.first;
-                        }
-                    });
+            return parallel_sequential_uninitialized_fill_n(
+                PIKA_FORWARD(ExPolicy, policy), first,
+                detail::distance(first, last), value);
         }
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Iter>
-        struct uninitialized_fill
-          : public detail::algorithm<uninitialized_fill<Iter>, Iter>
-        {
-            uninitialized_fill()
-              : uninitialized_fill::algorithm("uninitialized_fill")
-            {
-            }
-
-            template <typename ExPolicy, typename Sent, typename T>
-            static Iter sequential(
-                ExPolicy, Iter first, Sent last, T const& value)
-            {
-                return std_uninitialized_fill(first, last, value);
-            }
-
-            template <typename ExPolicy, typename Sent, typename T>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, Sent last, T const& value)
-            {
-                if (first == last)
-                    return util::detail::algorithm_result<ExPolicy, Iter>::get(
-                        PIKA_MOVE(first));
-
-                return parallel_sequential_uninitialized_fill_n(
-                    PIKA_FORWARD(ExPolicy, policy), first,
-                    detail::distance(first, last), value);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
+    };
+    /// \endcond
 
     /////////////////////////////////////////////////////////////////////////////
     // uninitialized_fill_n
-    namespace detail {
-        /// \cond NOINTERNAL
+    /// \cond NOINTERNAL
 
-        // provide our own implementation of std::uninitialized_fill_n as some
-        // versions of MSVC horribly fail at compiling it for some types T
-        template <typename InIter, typename Size, typename T>
-        InIter std_uninitialized_fill_n(
-            InIter first, Size count, T const& value)
+    // provide our own implementation of std::uninitialized_fill_n as some
+    // versions of MSVC horribly fail at compiling it for some types T
+    template <typename InIter, typename Size, typename T>
+    InIter std_uninitialized_fill_n(InIter first, Size count, T const& value)
+    {
+        using value_type = typename std::iterator_traits<InIter>::value_type;
+
+        InIter current = first;
+        try
         {
-            using value_type =
-                typename std::iterator_traits<InIter>::value_type;
+            for (/* */; count > 0; ++current, (void) --count)
+            {
+                ::new (static_cast<void*>(std::addressof(*current)))
+                    value_type(value);
+            }
+            return current;
+        }
+        catch (...)
+        {
+            for (/* */; first != current; ++first)
+            {
+                (*first).~value_type();
+            }
+            throw;
+        }
+    }
 
-            InIter current = first;
-            try
-            {
-                for (/* */; count > 0; ++current, (void) --count)
-                {
-                    ::new (static_cast<void*>(std::addressof(*current)))
-                        value_type(value);
-                }
-                return current;
-            }
-            catch (...)
-            {
-                for (/* */; first != current; ++first)
-                {
-                    (*first).~value_type();
-                }
-                throw;
-            }
+    template <typename Iter>
+    struct uninitialized_fill_n
+      : public detail::algorithm<uninitialized_fill_n<Iter>, Iter>
+    {
+        uninitialized_fill_n()
+          : uninitialized_fill_n::algorithm("uninitialized_fill_n")
+        {
         }
 
-        template <typename Iter>
-        struct uninitialized_fill_n
-          : public detail::algorithm<uninitialized_fill_n<Iter>, Iter>
+        template <typename ExPolicy, typename T>
+        static Iter sequential(
+            ExPolicy, Iter first, std::size_t count, T const& value)
         {
-            uninitialized_fill_n()
-              : uninitialized_fill_n::algorithm("uninitialized_fill_n")
-            {
-            }
+            return std_uninitialized_fill_n(first, count, value);
+        }
 
-            template <typename ExPolicy, typename T>
-            static Iter sequential(
-                ExPolicy, Iter first, std::size_t count, T const& value)
-            {
-                return std_uninitialized_fill_n(first, count, value);
-            }
-
-            template <typename ExPolicy, typename T>
-            static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-            parallel(ExPolicy&& policy, Iter first, std::size_t count,
-                T const& value)
-            {
-                return parallel_sequential_uninitialized_fill_n(
-                    PIKA_FORWARD(ExPolicy, policy), first, count, value);
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+        template <typename ExPolicy, typename T>
+        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
+        parallel(
+            ExPolicy&& policy, Iter first, std::size_t count, T const& value)
+        {
+            return parallel_sequential_uninitialized_fill_n(
+                PIKA_FORWARD(ExPolicy, policy), first, count, value);
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -402,7 +391,7 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
 
-            pika::parallel::v1::detail::uninitialized_fill<FwdIter>().call(
+            pika::parallel::detail::uninitialized_fill<FwdIter>().call(
                 pika::execution::seq, first, last, value);
         }
 
@@ -425,9 +414,8 @@ namespace pika {
                     ExPolicy>::type;
 
             return pika::util::detail::void_guard<result_type>(),
-                   pika::parallel::v1::detail::uninitialized_fill<FwdIter>()
-                       .call(
-                           PIKA_FORWARD(ExPolicy, policy), first, last, value);
+                   pika::parallel::detail::uninitialized_fill<FwdIter>().call(
+                       PIKA_FORWARD(ExPolicy, policy), first, last, value);
         }
 
     } uninitialized_fill{};
@@ -451,13 +439,13 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return first;
             }
 
-            return pika::parallel::v1::detail::uninitialized_fill_n<FwdIter>()
-                .call(pika::execution::seq, first, std::size_t(count), value);
+            return pika::parallel::detail::uninitialized_fill_n<FwdIter>().call(
+                pika::execution::seq, first, std::size_t(count), value);
         }
 
         // clang-format off
@@ -477,15 +465,15 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             // if count is representing a negative value, we do nothing
-            if (pika::parallel::v1::detail::is_negative(count))
+            if (pika::parallel::detail::is_negative(count))
             {
                 return parallel::util::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 
-            return pika::parallel::v1::detail::uninitialized_fill_n<FwdIter>()
-                .call(PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
-                    value);
+            return pika::parallel::detail::uninitialized_fill_n<FwdIter>().call(
+                PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
+                value);
         }
 
     } uninitialized_fill_n{};

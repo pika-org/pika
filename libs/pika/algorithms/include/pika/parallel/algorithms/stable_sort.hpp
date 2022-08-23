@@ -259,90 +259,86 @@ namespace pika {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // stable_sort
-    namespace detail {
-        /// \cond NOINTERNAL
-
-        ///////////////////////////////////////////////////////////////////////
-        // stable_sort
-        template <typename RandomIt>
-        struct stable_sort
-          : public detail::algorithm<stable_sort<RandomIt>, RandomIt>
+    /// \cond NOINTERNAL
+    ///////////////////////////////////////////////////////////////////////
+    // stable_sort
+    template <typename RandomIt>
+    struct stable_sort
+      : public detail::algorithm<stable_sort<RandomIt>, RandomIt>
+    {
+        stable_sort()
+          : stable_sort::algorithm("stable_sort")
         {
-            stable_sort()
-              : stable_sort::algorithm("stable_sort")
+        }
+
+        template <typename ExPolicy, typename Sentinel, typename Compare,
+            typename Proj>
+        static RandomIt sequential(ExPolicy, RandomIt first, Sentinel last,
+            Compare&& comp, Proj&& proj)
+        {
+            using compare_type = util::compare_projected<Compare&, Proj&>;
+
+            auto last_iter = detail::advance_to_sentinel(first, last);
+
+            spin_sort(first, last_iter, compare_type(comp, proj));
+            return last_iter;
+        }
+
+        template <typename ExPolicy, typename Sentinel, typename Compare,
+            typename Proj>
+        static typename util::detail::algorithm_result<ExPolicy, RandomIt>::type
+        parallel(ExPolicy&& policy, RandomIt first, Sentinel last,
+            Compare&& compare, Proj&& proj)
+        {
+            using algorithm_result =
+                util::detail::algorithm_result<ExPolicy, RandomIt>;
+            using compare_type = util::compare_projected<Compare&, Proj&>;
+
+            // number of elements to sort
+            auto last_iter = first;
+            std::size_t count =
+                detail::advance_and_get_distance(last_iter, last);
+
+            // figure out the chunk size to use
+            std::size_t cores = execution::processing_units_count(
+                policy.parameters(), policy.executor());
+
+            std::size_t max_chunks = execution::maximal_number_of_chunks(
+                policy.parameters(), policy.executor(), cores, count);
+
+            std::size_t chunk_size = execution::get_chunk_size(
+                policy.parameters(), policy.executor(),
+                [](std::size_t) { return 0; }, cores, count);
+
+            util::detail::adjust_chunk_size_and_max_chunks(
+                cores, count, max_chunks, chunk_size);
+
+            // we should not get smaller than our sort_limit_per_task
+            chunk_size = (std::max)(chunk_size, stable_sort_limit_per_task);
+
+            try
             {
-            }
+                // call the sort routine and return the right type,
+                // depending on execution policy
+                compare_type comp(compare, proj);
 
-            template <typename ExPolicy, typename Sentinel, typename Compare,
-                typename Proj>
-            static RandomIt sequential(ExPolicy, RandomIt first, Sentinel last,
-                Compare&& comp, Proj&& proj)
+                return algorithm_result::get(
+                    parallel_stable_sort(policy.executor(), first, last_iter,
+                        cores, chunk_size, PIKA_MOVE(comp)));
+            }
+            catch (...)
             {
-                using compare_type = util::compare_projected<Compare&, Proj&>;
-
-                auto last_iter = detail::advance_to_sentinel(first, last);
-
-                spin_sort(first, last_iter, compare_type(comp, proj));
-                return last_iter;
+                return algorithm_result::get(
+                    detail::handle_exception<ExPolicy, RandomIt>::call(
+                        std::current_exception()));
             }
-
-            template <typename ExPolicy, typename Sentinel, typename Compare,
-                typename Proj>
-            static typename util::detail::algorithm_result<ExPolicy,
-                RandomIt>::type
-            parallel(ExPolicy&& policy, RandomIt first, Sentinel last,
-                Compare&& compare, Proj&& proj)
-            {
-                using algorithm_result =
-                    util::detail::algorithm_result<ExPolicy, RandomIt>;
-                using compare_type = util::compare_projected<Compare&, Proj&>;
-
-                // number of elements to sort
-                auto last_iter = first;
-                std::size_t count =
-                    detail::advance_and_get_distance(last_iter, last);
-
-                // figure out the chunk size to use
-                std::size_t cores = execution::processing_units_count(
-                    policy.parameters(), policy.executor());
-
-                std::size_t max_chunks = execution::maximal_number_of_chunks(
-                    policy.parameters(), policy.executor(), cores, count);
-
-                std::size_t chunk_size = execution::get_chunk_size(
-                    policy.parameters(), policy.executor(),
-                    [](std::size_t) { return 0; }, cores, count);
-
-                util::detail::adjust_chunk_size_and_max_chunks(
-                    cores, count, max_chunks, chunk_size);
-
-                // we should not get smaller than our sort_limit_per_task
-                chunk_size = (std::max)(chunk_size, stable_sort_limit_per_task);
-
-                try
-                {
-                    // call the sort routine and return the right type,
-                    // depending on execution policy
-                    compare_type comp(compare, proj);
-
-                    return algorithm_result::get(
-                        parallel_stable_sort(policy.executor(), first,
-                            last_iter, cores, chunk_size, PIKA_MOVE(comp)));
-                }
-                catch (...)
-                {
-                    return algorithm_result::get(
-                        detail::handle_exception<ExPolicy, RandomIt>::call(
-                            std::current_exception()));
-                }
-            }
-        };
-        /// \endcond
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+        }
+    };
+    /// \endcond
+}    // namespace pika::parallel::detail
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
@@ -352,15 +348,15 @@ namespace pika {
     {
         // clang-format off
         template <typename RandomIt,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<RandomIt> &&
-                parallel::traits::is_projected<Proj, RandomIt>::value &&
-                parallel::traits::is_indirect_callable<
+                parallel::detail::is_projected<Proj, RandomIt>::value &&
+                parallel::detail::is_indirect_callable<
                     pika::execution::sequenced_policy, Comp,
-                    parallel::traits::projected<Proj, RandomIt>,
-                    parallel::traits::projected<Proj, RandomIt>
+                    parallel::detail::projected<Proj, RandomIt>,
+                    parallel::detail::projected<Proj, RandomIt>
                 >::value
             )>
         // clang-format on
@@ -370,22 +366,22 @@ namespace pika {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires a random access iterator.");
 
-            pika::parallel::v1::detail::stable_sort<RandomIt>().call(
+            pika::parallel::detail::stable_sort<RandomIt>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
                 PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename ExPolicy, typename RandomIt,
-            typename Comp = pika::parallel::v1::detail::less,
+            typename Comp = pika::parallel::detail::less,
             typename Proj = parallel::util::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<RandomIt> &&
-                parallel::traits::is_projected<Proj, RandomIt>::value &&
-                parallel::traits::is_indirect_callable<ExPolicy, Comp,
-                    parallel::traits::projected<Proj, RandomIt>,
-                    parallel::traits::projected<Proj, RandomIt>
+                parallel::detail::is_projected<Proj, RandomIt>::value &&
+                parallel::detail::is_indirect_callable<ExPolicy, Comp,
+                    parallel::detail::projected<Proj, RandomIt>,
+                    parallel::detail::projected<Proj, RandomIt>
                 >::value
             )>
         // clang-format on
@@ -402,7 +398,7 @@ namespace pika {
                     ExPolicy>::type;
 
             return pika::util::detail::void_guard<result_type>(),
-                   pika::parallel::v1::detail::stable_sort<RandomIt>().call(
+                   pika::parallel::detail::stable_sort<RandomIt>().call(
                        PIKA_FORWARD(ExPolicy, policy), first, last,
                        PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
         }

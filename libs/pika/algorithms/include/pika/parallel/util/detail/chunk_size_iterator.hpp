@@ -20,8 +20,7 @@
 #include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util { namespace detail {
-
+namespace pika::parallel::util::detail {
     template <typename Iterator, typename Enable = void>
     struct chunk_size_iterator_category;
 
@@ -127,23 +126,23 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             if (current_ >= count_)
             {
                 // reached the end of the sequence
-                iterator() = parallel::v1::detail::next(
+                iterator() = parallel::detail::next(
                     iterator(), offset + last_chunk_size_);
                 chunk() = 0;
             }
             else if (current_ == count_ - last_chunk_size_)
             {
                 // reached last chunk
-                iterator() = parallel::v1::detail::next(
-                    iterator(), offset + chunk_size_);
+                iterator() =
+                    parallel::detail::next(iterator(), offset + chunk_size_);
                 chunk() = last_chunk_size_;
             }
             else
             {
                 // normal chunk
                 PIKA_ASSERT(current_ < count_ - last_chunk_size_);
-                iterator() = parallel::v1::detail::next(
-                    iterator(), offset + chunk_size_);
+                iterator() =
+                    parallel::detail::next(iterator(), offset + chunk_size_);
                 chunk() = chunk_size_;
             }
         }
@@ -174,7 +173,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
                 chunk() = chunk_size_;
             }
 
-            iterator() = parallel::v1::detail::next(
+            iterator() = parallel::detail::next(
                 iterator(), -static_cast<std::ptrdiff_t>(offset + chunk()));
         }
 
@@ -319,23 +318,23 @@ namespace pika { namespace parallel { namespace util { namespace detail {
             if (current_ >= count_)
             {
                 // reached the end of the sequence
-                iterator() = parallel::v1::detail::next(
+                iterator() = parallel::detail::next(
                     iterator(), offset + last_chunk_size_);
                 chunk() = 0;
             }
             else if (current_ == count_ - last_chunk_size_)
             {
                 // reached last chunk
-                iterator() = parallel::v1::detail::next(
-                    iterator(), offset + chunk_size_);
+                iterator() =
+                    parallel::detail::next(iterator(), offset + chunk_size_);
                 chunk() = last_chunk_size_;
             }
             else
             {
                 // normal chunk
                 PIKA_ASSERT(current_ < count_ - last_chunk_size_);
-                iterator() = parallel::v1::detail::next(
-                    iterator(), offset + chunk_size_);
+                iterator() =
+                    parallel::detail::next(iterator(), offset + chunk_size_);
                 chunk() = chunk_size_;
             }
         }
@@ -368,7 +367,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
                 chunk() = chunk_size_;
             }
 
-            iterator() = parallel::v1::detail::next(
+            iterator() = parallel::detail::next(
                 iterator(), -static_cast<std::ptrdiff_t>(offset + chunk()));
         }
 
@@ -417,4 +416,4 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         std::size_t count_ = 0;
         std::size_t current_ = 0;
     };
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail

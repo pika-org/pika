@@ -9,7 +9,7 @@
 #include <pika/config.hpp>
 #include <pika/execution/executors/execution_parameters.hpp>
 
-namespace pika { namespace parallel { namespace util { namespace detail {
+namespace pika::parallel::util::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Parameters, typename Executor>
     struct scoped_executor_parameters
@@ -65,4 +65,4 @@ namespace pika { namespace parallel { namespace util { namespace detail {
         Parameters const& params_;
         Executor const& exec_;
     };
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail

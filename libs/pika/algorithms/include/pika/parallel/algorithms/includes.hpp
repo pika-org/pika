@@ -116,194 +116,188 @@ namespace pika {
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { inline namespace v1 {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // includes
-    namespace detail {
-
-        template <typename Iter1, typename Sent1, typename Iter2,
-            typename Sent2, typename F, typename Proj1, typename Proj2,
-            typename CancelToken>
-        bool sequential_includes(Iter1 first1, Sent1 last1, Iter2 first2,
-            Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2, CancelToken& tok)
+    template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
+        typename F, typename Proj1, typename Proj2, typename CancelToken>
+    bool sequential_includes(Iter1 first1, Sent1 last1, Iter2 first2,
+        Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2, CancelToken& tok)
+    {
+        while (first2 != last2)
         {
-            while (first2 != last2)
+            if (tok.was_cancelled())
             {
+                return false;
+            }
+
+            if (first1 == last1)
+            {
+                return false;
+            }
+
+            auto&& value1 = PIKA_INVOKE(proj1, *first1);
+            auto&& value2 = PIKA_INVOKE(proj2, *first2);
+
+            if (PIKA_INVOKE(f, value2, value1))
+            {
+                return false;
+            }
+
+            if (!PIKA_INVOKE(f, value1, value2))
+            {
+                ++first2;
+            }
+
+            ++first1;
+        }
+        return true;
+    }
+
+    template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
+        typename F, typename Proj1, typename Proj2>
+    constexpr bool sequential_includes(Iter1 first1, Sent1 last1, Iter2 first2,
+        Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
+    {
+        while (first2 != last2)
+        {
+            if (first1 == last1)
+            {
+                return false;
+            }
+
+            auto&& value1 = PIKA_INVOKE(proj1, *first1);
+            auto&& value2 = PIKA_INVOKE(proj2, *first2);
+
+            if (PIKA_INVOKE(f, value2, value1))
+            {
+                return false;
+            }
+
+            if (!PIKA_INVOKE(f, value1, value2))
+            {
+                ++first2;
+            }
+
+            ++first1;
+        }
+        return true;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    struct includes : public detail::algorithm<includes, bool>
+    {
+        includes()
+          : includes::algorithm("includes")
+        {
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename F, typename Proj1,
+            typename Proj2>
+        static bool sequential(ExPolicy, Iter1 first1, Sent1 last1,
+            Iter2 first2, Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
+        {
+            return sequential_includes(first1, last1, first2, last2,
+                PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
+                PIKA_FORWARD(Proj2, proj2));
+        }
+
+        template <typename ExPolicy, typename Iter1, typename Sent1,
+            typename Iter2, typename Sent2, typename F, typename Proj1,
+            typename Proj2>
+        static typename util::detail::algorithm_result<ExPolicy, bool>::type
+        parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
+        {
+            if (first1 == last1)
+            {
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    false);
+            }
+            if (first2 == last2)
+            {
+                return util::detail::algorithm_result<ExPolicy, bool>::get(
+                    true);
+            }
+
+            util::cancellation_token<> tok;
+
+            auto f1 = [first1, last1, first2, last2, tok,
+                          f = PIKA_FORWARD(F, f),
+                          proj1 = PIKA_FORWARD(Proj1, proj1),
+                          proj2 = PIKA_FORWARD(Proj2, proj2)](Iter2 part_begin,
+                          std::size_t part_count) mutable -> bool {
+                Iter2 part_end = detail::next(part_begin, part_count);
+
+                auto value = PIKA_INVOKE(proj2, *part_begin);
+                if (first2 != part_begin && part_count > 1)
+                {
+                    part_begin = detail::upper_bound(
+                        part_begin, part_end, value, f, proj2, tok);
+                    if (tok.was_cancelled())
+                    {
+                        return false;
+                    }
+                    if (part_begin == part_end)
+                    {
+                        return true;
+                    }
+                    value = PIKA_INVOKE(proj2, *part_begin);
+                }
+
+                Iter1 low =
+                    detail::lower_bound(first1, last1, value, f, proj1, tok);
                 if (tok.was_cancelled())
                 {
                     return false;
                 }
 
-                if (first1 == last1)
+                if (low == last1 ||
+                    PIKA_INVOKE(f, value, PIKA_INVOKE(proj1, *low)))
                 {
+                    tok.cancel();
                     return false;
                 }
 
-                auto&& value1 = PIKA_INVOKE(proj1, *first1);
-                auto&& value2 = PIKA_INVOKE(proj2, *first2);
-
-                if (PIKA_INVOKE(f, value2, value1))
+                Iter1 high = last1;
+                if (part_end != last2)
                 {
-                    return false;
-                }
+                    auto&& value1 = PIKA_INVOKE(proj2, *part_end);
 
-                if (!PIKA_INVOKE(f, value1, value2))
-                {
-                    ++first2;
-                }
+                    high =
+                        detail::upper_bound(low, last1, value1, f, proj1, tok);
+                    part_end = detail::upper_bound(
+                        part_end, last2, value1, f, proj2, tok);
 
-                ++first1;
-            }
-            return true;
-        }
-
-        template <typename Iter1, typename Sent1, typename Iter2,
-            typename Sent2, typename F, typename Proj1, typename Proj2>
-        constexpr bool sequential_includes(Iter1 first1, Sent1 last1,
-            Iter2 first2, Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
-        {
-            while (first2 != last2)
-            {
-                if (first1 == last1)
-                {
-                    return false;
-                }
-
-                auto&& value1 = PIKA_INVOKE(proj1, *first1);
-                auto&& value2 = PIKA_INVOKE(proj2, *first2);
-
-                if (PIKA_INVOKE(f, value2, value1))
-                {
-                    return false;
-                }
-
-                if (!PIKA_INVOKE(f, value1, value2))
-                {
-                    ++first2;
-                }
-
-                ++first1;
-            }
-            return true;
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        struct includes : public detail::algorithm<includes, bool>
-        {
-            includes()
-              : includes::algorithm("includes")
-            {
-            }
-
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename F, typename Proj1,
-                typename Proj2>
-            static bool sequential(ExPolicy, Iter1 first1, Sent1 last1,
-                Iter2 first2, Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
-            {
-                return sequential_includes(first1, last1, first2, last2,
-                    PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
-                    PIKA_FORWARD(Proj2, proj2));
-            }
-
-            template <typename ExPolicy, typename Iter1, typename Sent1,
-                typename Iter2, typename Sent2, typename F, typename Proj1,
-                typename Proj2>
-            static typename util::detail::algorithm_result<ExPolicy, bool>::type
-            parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
-                Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
-            {
-                if (first1 == last1)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        false);
-                }
-                if (first2 == last2)
-                {
-                    return util::detail::algorithm_result<ExPolicy, bool>::get(
-                        true);
-                }
-
-                util::cancellation_token<> tok;
-
-                auto f1 =
-                    [first1, last1, first2, last2, tok, f = PIKA_FORWARD(F, f),
-                        proj1 = PIKA_FORWARD(Proj1, proj1),
-                        proj2 = PIKA_FORWARD(Proj2, proj2)](Iter2 part_begin,
-                        std::size_t part_count) mutable -> bool {
-                    Iter2 part_end = detail::next(part_begin, part_count);
-
-                    auto value = PIKA_INVOKE(proj2, *part_begin);
-                    if (first2 != part_begin && part_count > 1)
-                    {
-                        part_begin = detail::upper_bound(
-                            part_begin, part_end, value, f, proj2, tok);
-                        if (tok.was_cancelled())
-                        {
-                            return false;
-                        }
-                        if (part_begin == part_end)
-                        {
-                            return true;
-                        }
-                        value = PIKA_INVOKE(proj2, *part_begin);
-                    }
-
-                    Iter1 low = detail::lower_bound(
-                        first1, last1, value, f, proj1, tok);
                     if (tok.was_cancelled())
                     {
                         return false;
                     }
+                }
 
-                    if (low == last1 ||
-                        PIKA_INVOKE(f, value, PIKA_INVOKE(proj1, *low)))
-                    {
-                        tok.cancel();
-                        return false;
-                    }
+                if (!sequential_includes(
+                        low, high, part_begin, part_end, f, proj1, proj2, tok))
+                {
+                    tok.cancel();
+                }
+                return !tok.was_cancelled();
+            };
 
-                    Iter1 high = last1;
-                    if (part_end != last2)
-                    {
-                        auto&& value1 = PIKA_INVOKE(proj2, *part_end);
+            auto f2 = [](std::vector<pika::future<bool>>&& results) {
+                return std::all_of(pika::util::begin(results),
+                    pika::util::end(results),
+                    [](pika::future<bool>& val) { return val.get(); });
+            };
 
-                        high = detail::upper_bound(
-                            low, last1, value1, f, proj1, tok);
-                        part_end = detail::upper_bound(
-                            part_end, last2, value1, f, proj2, tok);
-
-                        if (tok.was_cancelled())
-                        {
-                            return false;
-                        }
-                    }
-
-                    if (!sequential_includes(low, high, part_begin, part_end, f,
-                            proj1, proj2, tok))
-                    {
-                        tok.cancel();
-                    }
-                    return !tok.was_cancelled();
-                };
-
-                auto f2 = [](std::vector<pika::future<bool>>&& results) {
-                    return std::all_of(pika::util::begin(results),
-                        pika::util::end(results),
-                        [](pika::future<bool>& val) { return val.get(); });
-                };
-
-                return util::partitioner<ExPolicy, bool>::call(
-                    PIKA_FORWARD(ExPolicy, policy), first2,
-                    detail::distance(first2, last2), PIKA_MOVE(f1),
-                    PIKA_MOVE(f2));
-            }
-        };
-    }    // namespace detail
-}}}      // namespace pika::parallel::v1
+            return util::partitioner<ExPolicy, bool>::call(
+                PIKA_FORWARD(ExPolicy, policy), first2,
+                detail::distance(first2, last2), PIKA_MOVE(f1), PIKA_MOVE(f2));
+        }
+    };
+}    // namespace pika::parallel::detail
 
 namespace pika {
-
     ///////////////////////////////////////////////////////////////////////////
     // DPO for pika::includes
     inline constexpr struct includes_t final
@@ -312,7 +306,7 @@ namespace pika {
     private:
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
@@ -333,7 +327,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::includes().call(
+            return pika::parallel::detail::includes().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
                 pika::parallel::util::projection_identity(),
@@ -342,7 +336,7 @@ namespace pika {
 
         // clang-format off
         template <typename FwdIter1, typename FwdIter2,
-            typename Pred = pika::parallel::v1::detail::less,
+            typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<FwdIter1>::value &&
                 pika::traits::is_iterator<FwdIter2>::value &&
@@ -360,9 +354,8 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Requires at least forward iterator.");
 
-            return pika::parallel::v1::detail::includes().call(
-                pika::execution::seq, first1, last1, first2, last2,
-                PIKA_FORWARD(Pred, op),
+            return pika::parallel::detail::includes().call(pika::execution::seq,
+                first1, last1, first2, last2, PIKA_FORWARD(Pred, op),
                 pika::parallel::util::projection_identity(),
                 pika::parallel::util::projection_identity());
         }

@@ -35,8 +35,7 @@
 #include <utility>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util {
+namespace pika::parallel::util {
     struct scan_partitioner_normal_tag
     {
     };
@@ -44,7 +43,6 @@ namespace pika { namespace parallel { namespace util {
     {
     };
 
-    ///////////////////////////////////////////////////////////////////////////
     namespace detail {
         ///////////////////////////////////////////////////////////////////////
         // The static partitioner simply spawns one chunk of iterations for
@@ -439,4 +437,4 @@ namespace pika { namespace parallel { namespace util {
             R, Result1, Result2>
     {
     };
-}}}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util
