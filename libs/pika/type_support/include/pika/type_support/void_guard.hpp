@@ -8,7 +8,7 @@
 
 #include <pika/config.hpp>
 
-namespace pika::util::detail {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     // This utility simplifies templates returning compatible types
     //
@@ -29,4 +29,4 @@ namespace pika::util::detail {
         {
         }
     };
-}    // namespace pika::util::detail
+}    // namespace pika::detail

@@ -15,7 +15,7 @@
 
 namespace pika::util::detail {
 #define PIKA_INVOKE_R(R, F, ...)                                               \
-    (::pika::util::detail::void_guard<R>(), PIKA_INVOKE(F, __VA_ARGS__))
+    (::pika::detail::void_guard<R>(), PIKA_INVOKE(F, __VA_ARGS__))
 
     /// Invokes the given callable object f with the content of
     /// the argument pack vs

@@ -902,7 +902,7 @@ namespace pika {
         else
         {
             return f.then(pika::launch::sync, [](pika::future<U>&& f) -> R {
-                return util::detail::void_guard<R>(), f.get();
+                return detail::void_guard<R>(), f.get();
             });
         }
     }
@@ -1199,7 +1199,7 @@ namespace pika {
         {
             return f.then(
                 pika::launch::sync, [](pika::shared_future<U>&& f) -> R {
-                    return util::detail::void_guard<R>(), f.get();
+                    return detail::void_guard<R>(), f.get();
                 });
         }
         // This silences a bogus warning from nvcc about no return from a
