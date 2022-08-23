@@ -538,51 +538,6 @@ function(pika_check_for_cxx_lambda_capture_decltype)
 endfunction()
 
 # ##############################################################################
-function(pika_check_for_builtin_integer_pack)
-  pika_add_config_test(
-    PIKA_WITH_BUILTIN_INTEGER_PACK
-    SOURCE cmake/tests/builtin_integer_pack.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_builtin_make_integer_seq)
-  pika_add_config_test(
-    PIKA_WITH_BUILTIN_MAKE_INTEGER_SEQ
-    SOURCE cmake/tests/builtin_make_integer_seq.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_builtin_make_integer_seq_cuda)
-  pika_add_config_test(
-    PIKA_WITH_BUILTIN_MAKE_INTEGER_SEQ_CUDA
-    SOURCE cmake/tests/builtin_make_integer_seq.cu CUDA
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_builtin_type_pack_element)
-  pika_add_config_test(
-    PIKA_WITH_BUILTIN_TYPE_PACK_ELEMENT
-    SOURCE cmake/tests/builtin_type_pack_element.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_builtin_type_pack_element_cuda)
-  pika_add_config_test(
-    PIKA_WITH_BUILTIN_TYPE_PACK_ELEMENT_CUDA
-    SOURCE cmake/tests/builtin_type_pack_element.cu CUDA
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
 function(pika_check_for_mm_prefetch)
   pika_add_config_test(
     PIKA_WITH_MM_PREFETCH

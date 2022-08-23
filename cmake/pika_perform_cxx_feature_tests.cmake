@@ -101,30 +101,4 @@ function(pika_perform_cxx_feature_tests)
   pika_check_for_cxx_lambda_capture_decltype(
     DEFINITIONS PIKA_HAVE_CXX_LAMBDA_CAPTURE_DECLTYPE
   )
-
-  # Check the availability of certain C++ builtins
-  pika_check_for_builtin_integer_pack(
-    DEFINITIONS PIKA_HAVE_BUILTIN_INTEGER_PACK
-  )
-
-  pika_check_for_builtin_make_integer_seq(
-    DEFINITIONS PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ
-  )
-
-  if(PIKA_WITH_CUDA)
-    pika_check_for_builtin_make_integer_seq_cuda(
-      DEFINITIONS PIKA_HAVE_BUILTIN_MAKE_INTEGER_SEQ_CUDA
-    )
-  endif()
-
-  pika_check_for_builtin_type_pack_element(
-    DEFINITIONS PIKA_HAVE_BUILTIN_TYPE_PACK_ELEMENT
-  )
-
-  if(PIKA_WITH_CUDA)
-    pika_check_for_builtin_type_pack_element_cuda(
-      DEFINITIONS PIKA_HAVE_BUILTIN_TYPE_PACK_ELEMENT_CUDA
-    )
-  endif()
-
 endfunction()
