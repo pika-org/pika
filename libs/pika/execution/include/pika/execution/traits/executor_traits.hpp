@@ -105,7 +105,7 @@ namespace pika { namespace parallel { namespace execution {
         using execution_category = typename T::execution_category;
 
     public:
-        using type = pika::util::detail::detected_or_t<
+        using type = pika::detail::detected_or_t<
             pika::execution::unsequenced_execution_tag, execution_category,
             Executor>;
     };
@@ -119,8 +119,8 @@ namespace pika { namespace parallel { namespace execution {
         using shape_type = typename T::shape_type;
 
     public:
-        using type = pika::util::detail::detected_or_t<std::size_t, shape_type,
-            Executor>;
+        using type =
+            pika::detail::detected_or_t<std::size_t, shape_type, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -133,8 +133,9 @@ namespace pika { namespace parallel { namespace execution {
         using index_type = typename T::index_type;
 
     public:
-        using type = pika::util::detail::detected_or_t<
-            typename executor_shape<Executor>::type, index_type, Executor>;
+        using type =
+            pika::detail::detected_or_t<typename executor_shape<Executor>::type,
+                index_type, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -146,8 +147,9 @@ namespace pika { namespace parallel { namespace execution {
         using parameters_type = typename T::parameters_type;
 
     public:
-        using type = pika::util::detail::detected_or_t<
-            pika::execution::static_chunk_size, parameters_type, Executor>;
+        using type =
+            pika::detail::detected_or_t<pika::execution::static_chunk_size,
+                parameters_type, Executor>;
     };
 
     ///////////////////////////////////////////////////////////////////////////

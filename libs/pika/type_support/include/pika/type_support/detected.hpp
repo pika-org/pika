@@ -11,9 +11,9 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::util::detail {
-    // pika::util::detail::nonesuch is a class type used by
-    // pika::util::detail::detected_t to indicate detection failure.
+namespace pika::detail {
+    // pika::detail::nonesuch is a class type used by
+    // pika::detail::detected_t to indicate detection failure.
     struct nonesuch
     {
         nonesuch() = delete;
@@ -46,7 +46,7 @@ namespace pika::util::detail {
 
     // The alias template detected_t is an alias for Op<Args...> if that
     // template-id is valid; otherwise it is an alias for the class
-    // pika::util::detail::nonesuch.
+    // pika::detail::nonesuch.
     template <template <typename...> class Op, typename... Args>
     using detected_t = typename detector<nonesuch, void, Op, Args...>::type;
 
@@ -77,4 +77,4 @@ namespace pika::util::detail {
     template <typename To, template <typename...> class Op, typename... Args>
     using is_detected_convertible =
         std::is_convertible<detected_t<Op, Args...>, To>;
-}    // namespace pika::util::detail
+}    // namespace pika::detail
