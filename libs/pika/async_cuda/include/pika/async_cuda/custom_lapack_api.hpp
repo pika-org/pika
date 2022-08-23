@@ -10,7 +10,7 @@
 
 #if defined(PIKA_HAVE_HIP)
 
-#include <rocblas.h>
+#include <rocblas/rocblas.h>
 #include <rocsolver.h>
 
 // Use of rocblas when the corresponding rocsolver functions are deprecated
