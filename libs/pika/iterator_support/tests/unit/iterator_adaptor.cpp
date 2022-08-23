@@ -108,8 +108,7 @@ public:
 
     template <typename V2>
     ptr_iterator(const ptr_iterator<V2>& x,
-        typename std::enable_if<std::is_convertible<V2*, V*>::value>::type* =
-            nullptr)
+        std::enable_if_t<std::is_convertible<V2*, V*>::value>* = nullptr)
       : base_adaptor_type(x.base())
     {
     }

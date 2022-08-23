@@ -123,7 +123,7 @@ namespace pika { namespace util {
     template <typename Incrementable, typename CategoryOrTraversal,
         typename Difference>
     class counting_iterator<Incrementable, CategoryOrTraversal, Difference,
-        typename std::enable_if<std::is_integral<Incrementable>::value>::type>
+        std::enable_if_t<std::is_integral<Incrementable>::value>>
       : public detail::counting_iterator_base<Incrementable,
             CategoryOrTraversal, Difference>::type
     {

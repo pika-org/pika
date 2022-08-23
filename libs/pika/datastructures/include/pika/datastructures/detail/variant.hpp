@@ -374,7 +374,7 @@ namespace pika::variant_ns {
       using decay_t = std::decay_t<T>;
 
       template <bool B, typename T = void>
-      using enable_if_t = typename std::enable_if<B, T>::type;
+      using enable_if_t = std::enable_if_t<B, T>;
 
       template <typename T>
       using remove_const_t = typename std::remove_const<T>::type;

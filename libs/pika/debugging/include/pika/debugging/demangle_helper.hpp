@@ -111,8 +111,8 @@ namespace pika::debug::detail {
     }
 
     template <typename T, typename... Args>
-    inline typename std::enable_if<sizeof...(Args) != 0, std::string>::type
-    print_type(const char* delim = "")
+    inline std::enable_if_t<sizeof...(Args) != 0, std::string> print_type(
+        const char* delim = "")
     {
         std::string temp(cxx_type_id<T>::typeid_.type_id());
         return temp + delim + print_type<Args...>(delim);

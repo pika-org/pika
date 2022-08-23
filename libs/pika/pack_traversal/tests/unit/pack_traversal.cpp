@@ -43,7 +43,7 @@ struct all_map_float
 struct my_mapper
 {
     template <typename T,
-        typename std::enable_if<std::is_same<T, int>::value>::type* = nullptr>
+        std::enable_if_t<std::is_same<T, int>::value>* = nullptr>
     float operator()(T el) const
     {
         return float(el + 1.f);
@@ -123,8 +123,7 @@ static void test_mixed_traversal()
 
 struct my_unwrapper
 {
-    template <typename T,
-        typename std::enable_if<is_future<T>::value>::type* = nullptr>
+    template <typename T, std::enable_if_t<is_future<T>::value>* = nullptr>
     auto operator()(T future) const -> typename future_traits<T>::result_type
     {
         return future.get();
@@ -260,7 +259,7 @@ struct mytester
 struct my_int_mapper
 {
     template <typename T,
-        typename std::enable_if<std::is_same<T, int>::value>::type* = nullptr>
+        std::enable_if_t<std::is_same<T, int>::value>* = nullptr>
     float operator()(T el) const
     {
         return float(el + 1.f);
