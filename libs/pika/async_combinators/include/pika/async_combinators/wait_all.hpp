@@ -351,7 +351,7 @@ namespace pika {
                 }
                 else
                 {
-                    using future_type = pika::util::detail::decay_unwrap_t<
+                    using future_type = pika::detail::decay_unwrap_t<
                         typename std::tuple_element<I, Tuple>::type>;
 
                     if constexpr (is_future_or_shared_state_v<future_type>)

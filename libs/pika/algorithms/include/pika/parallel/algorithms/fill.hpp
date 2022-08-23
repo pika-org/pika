@@ -237,7 +237,7 @@ namespace pika {
                 typename pika::parallel::util::detail::algorithm_result<
                     ExPolicy>::type;
 
-            return pika::util::detail::void_guard<result_type>(),
+            return pika::detail::void_guard<result_type>(),
                    pika::parallel::detail::fill<FwdIter>().call(
                        PIKA_FORWARD(ExPolicy, policy), first, last, value);
         }

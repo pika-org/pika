@@ -31,25 +31,25 @@ namespace pika { namespace util {
         {
             // the following type calculations use lazy_conditional to avoid
             // premature instantiations
-            using reference_type = typename util::detail::lazy_conditional<
+            using reference_type = ::pika::detail::lazy_conditional_t<
                 std::is_void<Reference>::value,
                 util::detail::invoke_result<Transformer, Iterator>,
-                ::pika::detail::type_identity<Reference>>::type;
+                ::pika::detail::type_identity<Reference>>;
 
-            using value_type = typename util::detail::lazy_conditional<
-                std::is_void<Value>::value,
-                std::remove_reference<reference_type>,
-                ::pika::detail::type_identity<Value>>::type;
+            using value_type =
+                ::pika::detail::lazy_conditional_t<std::is_void<Value>::value,
+                    std::remove_reference<reference_type>,
+                    ::pika::detail::type_identity<Value>>;
 
-            using iterator_category = typename util::detail::lazy_conditional<
+            using iterator_category = ::pika::detail::lazy_conditional_t<
                 std::is_void<Category>::value,
                 category_iterator_traits_helper<Iterator>,
-                ::pika::detail::type_identity<Category>>::type;
+                ::pika::detail::type_identity<Category>>;
 
-            using difference_type = typename util::detail::lazy_conditional<
+            using difference_type = ::pika::detail::lazy_conditional_t<
                 std::is_void<Difference>::value,
                 difference_type_iterator_traits_helper<Iterator>,
-                ::pika::detail::type_identity<Difference>>::type;
+                ::pika::detail::type_identity<Difference>>;
 
             using type = pika::util::iterator_adaptor<
                 transform_iterator<Iterator, Transformer, Reference, Value,

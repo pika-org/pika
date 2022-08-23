@@ -1092,14 +1092,14 @@ namespace pika {
                         return util::partitioner<ExPolicy>::call(
                             PIKA_FORWARD(ExPolicy, policy), first, size,
                             part_iterations<ExPolicy, F, S>{PIKA_FORWARD(F, f)},
-                            pika::util::detail::empty_function{});
+                            ::pika::detail::empty_function{});
                     }
 
                     return util::partitioner<ExPolicy>::call_with_index(
                         PIKA_FORWARD(ExPolicy, policy), first, size, stride,
                         part_iterations<ExPolicy, F, S>{
                             PIKA_FORWARD(F, f), stride},
-                        pika::util::detail::empty_function{});
+                        ::pika::detail::empty_function{});
                 }
                 else
                 {

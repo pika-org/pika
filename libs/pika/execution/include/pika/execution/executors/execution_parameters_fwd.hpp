@@ -94,7 +94,7 @@ namespace pika { namespace parallel { namespace execution {
             std::size_t cores, std::size_t num_tasks)
         {
             return detail::get_chunk_size_fn_helper<
-                pika::util::detail::decay_unwrap_t<Parameters>,
+                pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
                 PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f), cores,
                 num_tasks);
@@ -130,7 +130,7 @@ namespace pika { namespace parallel { namespace execution {
             std::size_t cores, std::size_t num_tasks)
         {
             return detail::maximal_number_of_chunks_fn_helper<
-                pika::util::detail::decay_unwrap_t<Parameters>,
+                pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
                 PIKA_FORWARD(Executor, exec), cores, num_tasks);
         }
@@ -161,7 +161,7 @@ namespace pika { namespace parallel { namespace execution {
             reset_thread_distribution_t, Parameters&& params, Executor&& exec)
         {
             return detail::reset_thread_distribution_fn_helper<
-                pika::util::detail::decay_unwrap_t<Parameters>,
+                pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
                 PIKA_FORWARD(Executor, exec));
         }
@@ -192,7 +192,7 @@ namespace pika { namespace parallel { namespace execution {
             processing_units_count_t, Parameters&& params, Executor&& exec)
         {
             return detail::processing_units_count_fn_helper<
-                pika::util::detail::decay_unwrap_t<Parameters>,
+                pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
                 PIKA_FORWARD(Executor, exec));
         }
@@ -221,7 +221,7 @@ namespace pika { namespace parallel { namespace execution {
             mark_begin_execution_t, Parameters&& params, Executor&& exec)
         {
             return detail::mark_begin_execution_fn_helper<
-                pika::util::detail::decay_unwrap_t<Parameters>,
+                pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
                 PIKA_FORWARD(Executor, exec));
         }
@@ -250,7 +250,7 @@ namespace pika { namespace parallel { namespace execution {
             mark_end_of_scheduling_t, Parameters&& params, Executor&& exec)
         {
             return detail::mark_end_of_scheduling_fn_helper<
-                pika::util::detail::decay_unwrap_t<Parameters>,
+                pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
                 PIKA_FORWARD(Executor, exec));
         }
@@ -279,7 +279,7 @@ namespace pika { namespace parallel { namespace execution {
             mark_end_execution_t, Parameters&& params, Executor&& exec)
         {
             return detail::mark_end_execution_fn_helper<
-                pika::util::detail::decay_unwrap_t<Parameters>,
+                pika::detail::decay_unwrap_t<Parameters>,
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Parameters, params),
                 PIKA_FORWARD(Executor, exec));
         }

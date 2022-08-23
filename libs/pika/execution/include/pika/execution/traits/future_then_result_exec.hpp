@@ -42,7 +42,7 @@ namespace pika { namespace traits {
                 traits::executor_future_t<Executor, func_result_type, Future>;
 
             // perform unwrapping of future<future<R>>
-            using result_type = util::detail::lazy_conditional_t<
+            using result_type = ::pika::detail::lazy_conditional_t<
                 pika::traits::detail::is_unique_future_v<cont_result>,
                 pika::traits::future_traits<cont_result>,
                 pika::detail::type_identity<cont_result>>;

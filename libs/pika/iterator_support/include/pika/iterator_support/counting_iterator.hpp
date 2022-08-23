@@ -41,12 +41,12 @@ namespace pika { namespace util {
                     typename std::iterator_traits<Iterator>::iterator_category;
             };
 
-            using base_traversal = util::detail::lazy_conditional<
+            using base_traversal = ::pika::detail::lazy_conditional<
                 std::is_integral<Incrementable>::value,
                 ::pika::detail::type_identity<std::random_access_iterator_tag>,
                 iterator_category<Incrementable>>;
 
-            using traversal = util::detail::lazy_conditional_t<
+            using traversal = ::pika::detail::lazy_conditional_t<
                 std::is_void<CategoryOrTraversal>::value, base_traversal,
                 ::pika::detail::type_identity<CategoryOrTraversal>>;
 
@@ -71,12 +71,12 @@ namespace pika { namespace util {
                     typename std::iterator_traits<Iterator>::difference_type;
             };
 
-            using base_difference = util::detail::lazy_conditional<
+            using base_difference = ::pika::detail::lazy_conditional<
                 std::is_integral<Incrementable>::value,
                 integer_difference_type<Incrementable>,
                 iterator_difference_type<Incrementable>>;
 
-            using difference = util::detail::lazy_conditional_t<
+            using difference = ::pika::detail::lazy_conditional_t<
                 std::is_void<Difference>::value, base_difference,
                 ::pika::detail::type_identity<Difference>>;
 

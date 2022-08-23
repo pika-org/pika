@@ -37,7 +37,7 @@ namespace pika {
         template <typename F>
         struct annotated_function
         {
-            using fun_type = util::detail::decay_unwrap_t<F>;
+            using fun_type = detail::decay_unwrap_t<F>;
 
             annotated_function() noexcept
               : name_(nullptr)

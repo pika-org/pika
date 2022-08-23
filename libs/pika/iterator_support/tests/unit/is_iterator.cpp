@@ -284,8 +284,8 @@ void dereference_result()
 
 void equality_result()
 {
-    using pika::traits::detail::equality_result;
-    using pika::traits::detail::equality_result_t;
+    using pika::detail::equality_result;
+    using pika::detail::equality_result_t;
 
     struct A
     {
@@ -310,8 +310,8 @@ void equality_result()
 
 void inequality_result()
 {
-    using pika::traits::detail::inequality_result;
-    using pika::traits::detail::inequality_result_t;
+    using pika::detail::inequality_result;
+    using pika::detail::inequality_result_t;
 
     struct A
     {

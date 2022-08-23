@@ -237,7 +237,7 @@ namespace pika { namespace execution { namespace experimental {
                             // copyable nor movable).
                             op_state.successor_op_state.template emplace<
                                 operation_state_type>(
-                                pika::util::detail::with_result_of([&]() {
+                                pika::detail::with_result_of([&]() {
                                     return pika::execution::experimental::
                                         connect(
                                             pika::util::detail::invoke_fused(

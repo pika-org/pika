@@ -175,16 +175,18 @@ namespace pika { namespace traits {
         template <typename Iter>
         struct bidirectional_concept<Iter,
             std::void_t<typename dereference_result<Iter>::type,
-                equality_result_t<Iter, Iter>, inequality_result_t<Iter, Iter>,
+                ::pika::detail::equality_result_t<Iter, Iter>,
+                ::pika::detail::inequality_result_t<Iter, Iter>,
                 typename predecrement_result<Iter>::type,
                 typename preincrement_result<Iter>::type,
                 typename postdecrement_result<Iter>::type,
                 typename postincrement_result<Iter>::type>>
           : std::integral_constant<bool,
                 std::is_convertible<bool,
-                    equality_result_t<Iter, Iter>>::value &&
+                    ::pika::detail::equality_result_t<Iter, Iter>>::value &&
                     std::is_convertible<bool,
-                        inequality_result_t<Iter, Iter>>::value &&
+                        ::pika::detail::inequality_result_t<Iter,
+                            Iter>>::value &&
                     std::is_same<typename std::add_lvalue_reference<Iter>::type,
                         typename predecrement_result<Iter>::type>::value &&
                     std::is_same<typename std::add_lvalue_reference<Iter>::type,
