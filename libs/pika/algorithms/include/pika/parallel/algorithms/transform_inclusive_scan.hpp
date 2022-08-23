@@ -609,7 +609,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::transform_inclusive_scan
+    // CPO for pika::transform_inclusive_scan
     inline constexpr struct transform_inclusive_scan_t final
       : pika::detail::tag_parallel_algorithm<transform_inclusive_scan_t>
     {

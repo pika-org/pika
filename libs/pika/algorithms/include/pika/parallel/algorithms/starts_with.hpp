@@ -114,7 +114,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::starts_with
+    // CPO for pika::starts_with
     inline constexpr struct starts_with_t final
       : pika::functional::detail::tag_fallback<starts_with_t>
     {

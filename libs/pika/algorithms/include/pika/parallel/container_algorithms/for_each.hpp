@@ -397,7 +397,7 @@ namespace pika::ranges {
     using for_each_n_result = in_fun_result<I, F>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::for_each
+    // CPO for pika::ranges::for_each
     inline constexpr struct for_each_t final
       : pika::detail::tag_parallel_algorithm<for_each_t>
     {
@@ -507,7 +507,7 @@ namespace pika::ranges {
     } for_each{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::for_each_n
+    // CPO for pika::ranges::for_each_n
     inline constexpr struct for_each_n_t final
       : pika::detail::tag_parallel_algorithm<for_each_n_t>
     {

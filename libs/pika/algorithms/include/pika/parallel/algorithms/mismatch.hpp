@@ -426,7 +426,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::mismatch
+    // CPO for pika::mismatch
     inline constexpr struct mismatch_t final
       : pika::detail::tag_parallel_algorithm<mismatch_t>
     {

@@ -158,7 +158,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::move
+    // CPO for pika::move
     inline constexpr struct move_t final
       : pika::detail::tag_parallel_algorithm<move_t>
     {

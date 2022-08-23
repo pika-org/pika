@@ -609,7 +609,7 @@ namespace pika::ranges {
     using subrange_t = pika::util::iterator_range<I, S>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::unique
+    // CPO for pika::ranges::unique
     inline constexpr struct unique_t final
       : pika::detail::tag_parallel_algorithm<unique_t>
     {
@@ -748,7 +748,7 @@ namespace pika::ranges {
     using unique_copy_result = parallel::util::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::unique_copy
+    // CPO for pika::ranges::unique_copy
     inline constexpr struct unique_copy_t final
       : pika::detail::tag_parallel_algorithm<unique_copy_t>
     {

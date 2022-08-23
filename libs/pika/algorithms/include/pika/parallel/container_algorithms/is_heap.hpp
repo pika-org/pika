@@ -304,7 +304,7 @@ namespace pika {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::is_heap
+    // CPO for pika::ranges::is_heap
     inline constexpr struct is_heap_t final
       : pika::detail::tag_parallel_algorithm<is_heap_t>
     {
@@ -425,7 +425,7 @@ namespace pika::ranges {
     } is_heap{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::is_heap_until
+    // CPO for pika::ranges::is_heap_until
     inline constexpr struct is_heap_until_t final
       : pika::detail::tag_parallel_algorithm<is_heap_until_t>
     {

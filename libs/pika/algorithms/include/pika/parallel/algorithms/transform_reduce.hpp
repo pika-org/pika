@@ -635,7 +635,7 @@ namespace pika::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::transform_reduce
+    // CPO for pika::transform_reduce
     inline constexpr struct transform_reduce_t final
       : pika::detail::tag_parallel_algorithm<transform_reduce_t>
     {

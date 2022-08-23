@@ -918,7 +918,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::find
+    // CPO for pika::find
     inline constexpr struct find_t final
       : pika::detail::tag_parallel_algorithm<find_t>
     {
@@ -965,7 +965,7 @@ namespace pika {
     } find{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::find_if
+    // CPO for pika::find_if
     inline constexpr struct find_if_t final
       : pika::detail::tag_parallel_algorithm<find_if_t>
     {
@@ -1016,7 +1016,7 @@ namespace pika {
     } find_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::find_if_not
+    // CPO for pika::find_if_not
     inline constexpr struct find_if_not_t final
       : pika::detail::tag_parallel_algorithm<find_if_not_t>
     {
@@ -1067,7 +1067,7 @@ namespace pika {
     } find_if_not{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::find_end
+    // CPO for pika::find_end
     inline constexpr struct find_end_t final
       : pika::detail::tag_parallel_algorithm<find_end_t>
     {
@@ -1178,7 +1178,7 @@ namespace pika {
     } find_end{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::find_first_of
+    // CPO for pika::find_first_of
     inline constexpr struct find_first_of_t final
       : pika::detail::tag_parallel_algorithm<find_first_of_t>
     {

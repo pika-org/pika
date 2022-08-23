@@ -245,7 +245,7 @@ namespace pika::parallel::detail {
 namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::destroy
+    // CPO for pika::destroy
     inline constexpr struct destroy_t final
       : pika::detail::tag_parallel_algorithm<destroy_t>
     {
@@ -287,7 +287,7 @@ namespace pika {
     } destroy{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::destroy_n
+    // CPO for pika::destroy_n
     inline constexpr struct destroy_n_t final
       : pika::detail::tag_parallel_algorithm<destroy_n_t>
     {

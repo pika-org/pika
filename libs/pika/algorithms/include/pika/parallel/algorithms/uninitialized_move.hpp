@@ -458,7 +458,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::uninitialized_move
+    // CPO for pika::uninitialized_move
     inline constexpr struct uninitialized_move_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_move_t>
     {
@@ -510,7 +510,7 @@ namespace pika {
     } uninitialized_move{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::uninitialized_move_n
+    // CPO for pika::uninitialized_move_n
     inline constexpr struct uninitialized_move_n_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_move_n_t>
     {

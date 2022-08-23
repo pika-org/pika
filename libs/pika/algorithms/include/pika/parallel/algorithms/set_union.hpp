@@ -252,7 +252,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::set_union
+    // CPO for pika::set_union
     inline constexpr struct set_union_t final
       : pika::detail::tag_parallel_algorithm<set_union_t>
     {

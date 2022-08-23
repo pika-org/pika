@@ -403,7 +403,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::make_heap
+    // CPO for pika::make_heap
     inline constexpr struct make_heap_t final
       : pika::detail::tag_parallel_algorithm<make_heap_t>
     {

@@ -693,7 +693,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::merge
+    // CPO for pika::merge
     inline constexpr struct merge_t final
       : pika::detail::tag_parallel_algorithm<merge_t>
     {
@@ -781,7 +781,7 @@ namespace pika {
     } merge{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::inplace_merge
+    // CPO for pika::inplace_merge
     inline constexpr struct inplace_merge_t final
       : pika::detail::tag_parallel_algorithm<inplace_merge_t>
     {

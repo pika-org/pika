@@ -274,7 +274,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::partial_sort
+    // CPO for pika::ranges::partial_sort
     inline constexpr struct partial_sort_t final
       : pika::detail::tag_parallel_algorithm<partial_sort_t>
     {

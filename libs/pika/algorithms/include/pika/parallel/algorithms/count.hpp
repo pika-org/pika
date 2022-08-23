@@ -357,7 +357,7 @@ namespace pika::parallel ::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::count
+    // CPO for pika::count
     inline constexpr struct count_t final
       : pika::detail::tag_parallel_algorithm<count_t>
     {
@@ -409,7 +409,7 @@ namespace pika {
     } count{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::count_if
+    // CPO for pika::count_if
     inline constexpr struct count_if_t final
       : pika::detail::tag_parallel_algorithm<count_if_t>
     {

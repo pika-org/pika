@@ -140,7 +140,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::make_heap
+    // CPO for pika::ranges::make_heap
     inline constexpr struct make_heap_t final
       : pika::detail::tag_parallel_algorithm<make_heap_t>
     {

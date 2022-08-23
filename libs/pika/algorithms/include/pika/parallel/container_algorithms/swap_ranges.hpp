@@ -231,7 +231,7 @@ namespace pika::ranges {
     using swap_ranges_result = pika::parallel::util::in_in_result<Iter1, Iter2>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::swap_ranges
+    // CPO for pika::ranges::swap_ranges
     inline constexpr struct swap_ranges_t final
       : pika::detail::tag_parallel_algorithm<swap_ranges_t>
     {

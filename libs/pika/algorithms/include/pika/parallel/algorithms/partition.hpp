@@ -1551,7 +1551,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::stable_partition
+    // CPO for pika::stable_partition
     inline constexpr struct stable_partition_t final
       : pika::detail::tag_parallel_algorithm<stable_partition_t>
     {
@@ -1607,7 +1607,7 @@ namespace pika {
     } stable_partition{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::partition
+    // CPO for pika::partition
     inline constexpr struct partition_t final
       : pika::detail::tag_parallel_algorithm<partition_t>
     {
@@ -1659,7 +1659,7 @@ namespace pika {
     } partition{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::partition_copy
+    // CPO for pika::partition_copy
     inline constexpr struct partition_copy_t final
       : pika::detail::tag_parallel_algorithm<partition_copy_t>
     {

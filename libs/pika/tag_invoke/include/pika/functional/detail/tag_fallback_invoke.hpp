@@ -12,7 +12,7 @@ namespace pika::functional::detail {
     inline namespace unspecified {
         /// The `pika::functional::detail::tag_fallback_invoke` name defines a constexpr object
         /// that is invocable with one or more arguments. The first argument
-        /// is a 'tag' (typically a DPO). It is only invocable if an overload
+        /// is a 'tag' (typically a CPO). It is only invocable if an overload
         /// of tag_fallback_invoke() that accepts the same arguments could be
         /// found via ADL.
         ///
@@ -222,7 +222,7 @@ namespace pika::functional::detail {
         void tag_fallback_invoke();
 
         ///////////////////////////////////////////////////////////////////////////
-        /// Helper base class implementing the tag_invoke logic for DPOs that fall
+        /// Helper base class implementing the tag_invoke logic for CPOs that fall
         /// back to directly invoke its fallback.
         ///
         /// This base class is in many cases preferable to the plain tag base class.
@@ -284,7 +284,7 @@ namespace pika::functional::detail {
         };
 
         ///////////////////////////////////////////////////////////////////////////
-        // helper base class implementing the tag_invoke logic for DPOs that fall
+        // helper base class implementing the tag_invoke logic for CPOs that fall
         // back to directly invoke its fallback. Either invocation has to be noexcept.
         template <typename Tag>
         struct tag_fallback_noexcept

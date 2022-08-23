@@ -486,7 +486,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::remove_if
+    // CPO for pika::ranges::remove_if
     inline constexpr struct remove_if_t final
       : pika::detail::tag_parallel_algorithm<remove_if_t>
     {
@@ -611,7 +611,7 @@ namespace pika::ranges {
     } remove_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::remove
+    // CPO for pika::ranges::remove
     inline constexpr struct remove_t final
       : pika::detail::tag_parallel_algorithm<remove_t>
     {

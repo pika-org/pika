@@ -341,7 +341,7 @@ namespace pika::ranges {
     using partial_sort_copy_result = parallel::util::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::partial_sort_copy
+    // CPO for pika::ranges::partial_sort_copy
     inline constexpr struct partial_sort_copy_t final
       : pika::detail::tag_parallel_algorithm<partial_sort_copy_t>
     {

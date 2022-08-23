@@ -535,7 +535,7 @@ namespace pika { namespace parallel {
 namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::copy
+    // CPO for pika::copy
     inline constexpr struct copy_t final
       : pika::detail::tag_parallel_algorithm<copy_t>
     {
@@ -577,7 +577,7 @@ namespace pika {
     } copy{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::copy_n
+    // CPO for pika::copy_n
     inline constexpr struct copy_n_t final
       : pika::detail::tag_parallel_algorithm<copy_n_t>
     {
@@ -649,7 +649,7 @@ namespace pika {
     } copy_n{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::copy_if
+    // CPO for pika::copy_if
     inline constexpr struct copy_if_t final
       : pika::detail::tag_parallel_algorithm<copy_if_t>
     {

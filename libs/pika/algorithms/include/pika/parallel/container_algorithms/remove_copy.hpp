@@ -597,7 +597,7 @@ namespace pika::ranges {
     using remove_copy_if_result = pika::parallel::util::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::remove_copy_if
+    // CPO for pika::ranges::remove_copy_if
     inline constexpr struct remove_copy_if_t final
       : pika::detail::tag_parallel_algorithm<remove_copy_if_t>
     {
@@ -727,7 +727,7 @@ namespace pika::ranges {
     } remove_copy_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::remove_copy
+    // CPO for pika::ranges::remove_copy
     inline constexpr struct remove_copy_t final
       : pika::detail::tag_parallel_algorithm<remove_copy_t>
     {

@@ -1092,7 +1092,7 @@ namespace pika::ranges {
     using replace_copy_result = pika::parallel::util::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::replace_if
+    // CPO for pika::ranges::replace_if
     inline constexpr struct replace_if_t final
       : pika::detail::tag_parallel_algorithm<replace_if_t>
     {
@@ -1213,7 +1213,7 @@ namespace pika::ranges {
     } replace_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::replace
+    // CPO for pika::ranges::replace
     inline constexpr struct replace_t final
       : pika::detail::tag_parallel_algorithm<replace_t>
     {
@@ -1338,7 +1338,7 @@ namespace pika::ranges {
     } replace{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::replace_copy_if
+    // CPO for pika::ranges::replace_copy_if
     inline constexpr struct replace_copy_if_t final
       : pika::detail::tag_parallel_algorithm<replace_copy_if_t>
     {
@@ -1486,7 +1486,7 @@ namespace pika::ranges {
     } replace_copy_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::replace_copy
+    // CPO for pika::ranges::replace_copy
     inline constexpr struct replace_copy_t final
       : pika::detail::tag_parallel_algorithm<replace_copy_t>
     {

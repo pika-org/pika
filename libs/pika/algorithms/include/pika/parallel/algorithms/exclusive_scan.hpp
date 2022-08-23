@@ -456,7 +456,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::exclusive_scan
+    // CPO for pika::exclusive_scan
     inline constexpr struct exclusive_scan_t final
       : pika::detail::tag_parallel_algorithm<exclusive_scan_t>
     {

@@ -160,7 +160,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::count
+    // CPO for pika::ranges::count
     inline constexpr struct count_t final
       : pika::detail::tag_parallel_algorithm<count_t>
     {
@@ -280,7 +280,7 @@ namespace pika::ranges {
     } count{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::count_if
+    // CPO for pika::ranges::count_if
     inline constexpr struct count_if_t final
       : pika::detail::tag_parallel_algorithm<count_if_t>
     {

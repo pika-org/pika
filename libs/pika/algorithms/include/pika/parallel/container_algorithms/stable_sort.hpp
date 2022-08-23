@@ -284,7 +284,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::stable_sort
+    // CPO for pika::ranges::stable_sort
     inline constexpr struct stable_sort_t final
       : pika::detail::tag_parallel_algorithm<stable_sort_t>
     {

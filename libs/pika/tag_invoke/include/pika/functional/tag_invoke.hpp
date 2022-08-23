@@ -11,7 +11,7 @@ namespace pika { namespace functional {
     inline namespace unspecified {
         /// The `pika::functional::tag_invoke` name defines a constexpr object
         /// that is invocable with one or more arguments. The first argument
-        /// is a 'tag' (typically a DPO). It is only invocable if an overload
+        /// is a 'tag' (typically a CPO). It is only invocable if an overload
         /// of tag_invoke() that accepts the same arguments could be found via
         /// ADL.
         ///
@@ -214,7 +214,7 @@ namespace pika { namespace functional {
         void tag_invoke();
 
         ///////////////////////////////////////////////////////////////////////////
-        // helper base class implementing the tag_invoke logic for DPOs
+        // helper base class implementing the tag_invoke logic for CPOs
         template <typename Tag>
         struct tag
         {

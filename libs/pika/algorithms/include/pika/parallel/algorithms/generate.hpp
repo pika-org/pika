@@ -228,7 +228,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::generate
+    // CPO for pika::generate
     inline constexpr struct generate_t final
       : pika::detail::tag_parallel_algorithm<generate_t>
     {
@@ -271,7 +271,7 @@ namespace pika {
     } generate{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::generate_n
+    // CPO for pika::generate_n
     inline constexpr struct generate_n_t final
       : pika::detail::tag_parallel_algorithm<generate_n_t>
     {

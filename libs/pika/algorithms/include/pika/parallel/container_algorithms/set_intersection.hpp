@@ -264,7 +264,7 @@ namespace pika::ranges {
     using set_intersection_result = parallel::util::in_in_out_result<I1, I2, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::set_intersection
+    // CPO for pika::ranges::set_intersection
     inline constexpr struct set_intersection_t final
       : pika::detail::tag_parallel_algorithm<set_intersection_t>
     {

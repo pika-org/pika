@@ -342,7 +342,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::stable_sort
+    // CPO for pika::stable_sort
     inline constexpr struct stable_sort_t final
       : pika::detail::tag_parallel_algorithm<stable_sort_t>
     {

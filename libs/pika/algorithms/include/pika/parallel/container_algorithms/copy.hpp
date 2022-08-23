@@ -375,7 +375,7 @@ namespace pika::ranges {
     using copy_if_result = parallel::util::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::copy
+    // CPO for pika::ranges::copy
     inline constexpr struct copy_t final
       : pika::detail::tag_parallel_algorithm<copy_t>
     {
@@ -466,7 +466,7 @@ namespace pika::ranges {
     } copy{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::copy_n
+    // CPO for pika::ranges::copy_n
     inline constexpr struct copy_n_t final
       : pika::detail::tag_parallel_algorithm<copy_n_t>
     {
@@ -533,7 +533,7 @@ namespace pika::ranges {
     } copy_n{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::copy_if
+    // CPO for pika::ranges::copy_if
     inline constexpr struct copy_if_t final
       : pika::detail::tag_parallel_algorithm<copy_if_t>
     {

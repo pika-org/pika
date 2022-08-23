@@ -405,7 +405,7 @@ namespace pika { namespace ranges {
     using merge_result = parallel::util::in_in_out_result<I1, I2, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::merge
+    // CPO for pika::ranges::merge
     inline constexpr struct merge_t final
       : pika::detail::tag_parallel_algorithm<merge_t>
     {
@@ -591,7 +591,7 @@ namespace pika { namespace ranges {
     } merge{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::inplace_merge
+    // CPO for pika::ranges::inplace_merge
     inline constexpr struct inplace_merge_t final
       : pika::detail::tag_parallel_algorithm<inplace_merge_t>
     {

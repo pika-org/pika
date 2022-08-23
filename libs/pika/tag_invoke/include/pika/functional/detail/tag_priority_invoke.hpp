@@ -13,7 +13,7 @@ namespace pika::functional::detail {
     inline namespace unspecified {
         /// The `pika::functional::detail::tag_override_invoke` name defines a constexpr object
         /// that is invocable with one or more arguments. The first argument
-        /// is a 'tag' (typically a DPO). It is only invocable if an overload
+        /// is a 'tag' (typically a CPO). It is only invocable if an overload
         /// of tag_override_invoke() that accepts the same arguments could be
         /// found via ADL.
         ///
@@ -221,7 +221,7 @@ namespace pika::functional::detail {
         void tag_override_invoke();
 
         ///////////////////////////////////////////////////////////////////////////
-        /// Helper base class implementing the tag_invoke logic for DPOs that allow
+        /// Helper base class implementing the tag_invoke logic for CPOs that allow
         /// overriding user-defined tag_invoke overloads with tag_override_invoke,
         /// and that allow setting a fallback with tag_fallback_invoke.
         ///
@@ -284,7 +284,7 @@ namespace pika::functional::detail {
         };
 
         ///////////////////////////////////////////////////////////////////////////
-        // Helper base class implementing the tag_invoke logic for noexcept DPOs
+        // Helper base class implementing the tag_invoke logic for noexcept CPOs
         // that allow overriding user-defined tag_invoke overloads with
         // tag_override_invoke, and that allow setting a fallback with
         // tag_fallback_invoke.

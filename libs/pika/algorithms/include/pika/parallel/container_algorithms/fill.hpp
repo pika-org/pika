@@ -118,7 +118,7 @@ namespace pika {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::fill
+    // CPO for pika::ranges::fill
     inline constexpr struct fill_t final
       : pika::detail::tag_parallel_algorithm<fill_t>
     {
@@ -211,7 +211,7 @@ namespace pika::ranges {
     } fill{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::fill_n
+    // CPO for pika::ranges::fill_n
     inline constexpr struct fill_n_t final
       : pika::detail::tag_parallel_algorithm<fill_n_t>
     {

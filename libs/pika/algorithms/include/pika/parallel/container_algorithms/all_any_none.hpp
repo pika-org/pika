@@ -236,7 +236,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::none_of
+    // CPO for pika::ranges::none_of
     inline constexpr struct none_of_t final
       : pika::detail::tag_parallel_algorithm<none_of_t>
     {
@@ -348,7 +348,7 @@ namespace pika::ranges {
     } none_of{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::any_of
+    // CPO for pika::ranges::any_of
     inline constexpr struct any_of_t final
       : pika::detail::tag_parallel_algorithm<any_of_t>
     {
@@ -460,7 +460,7 @@ namespace pika::ranges {
     } any_of{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::all_of
+    // CPO for pika::ranges::all_of
     inline constexpr struct all_of_t final
       : pika::detail::tag_parallel_algorithm<all_of_t>
     {

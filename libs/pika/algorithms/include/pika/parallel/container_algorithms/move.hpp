@@ -146,7 +146,7 @@ namespace pika::ranges {
     using move_result = parallel::util::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::move
+    // CPO for pika::ranges::move
     inline constexpr struct move_t final
       : pika::detail::tag_parallel_algorithm<move_t>
     {

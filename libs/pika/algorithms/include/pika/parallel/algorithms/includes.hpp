@@ -299,7 +299,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::includes
+    // CPO for pika::includes
     inline constexpr struct includes_t final
       : pika::detail::tag_parallel_algorithm<includes_t>
     {

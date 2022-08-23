@@ -339,7 +339,7 @@ namespace pika::parallel::detail {
 // create new APIs, tag_fallback_invoke overloads.
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::rotate
+    // CPO for pika::rotate
     inline constexpr struct rotate_t final
       : pika::detail::tag_parallel_algorithm<rotate_t>
     {
@@ -389,7 +389,7 @@ namespace pika {
     } rotate{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::rotate_copy
+    // CPO for pika::rotate_copy
     inline constexpr struct rotate_copy_t final
       : pika::detail::tag_parallel_algorithm<rotate_copy_t>
     {
