@@ -345,28 +345,24 @@ namespace pika {
             for (startup_function_type& f :
                 detail::global_pre_startup_functions)
             {
-                add_pre_startup_function(PIKA_MOVE(f));
+                add_pre_startup_function(f);
             }
-            detail::global_pre_startup_functions.clear();
 
             for (startup_function_type& f : detail::global_startup_functions)
             {
-                add_startup_function(PIKA_MOVE(f));
+                add_startup_function(f);
             }
-            detail::global_startup_functions.clear();
 
             for (shutdown_function_type& f :
                 detail::global_pre_shutdown_functions)
             {
-                add_pre_shutdown_function(PIKA_MOVE(f));
+                add_pre_shutdown_function(f);
             }
-            detail::global_pre_shutdown_functions.clear();
 
             for (shutdown_function_type& f : detail::global_shutdown_functions)
             {
-                add_shutdown_function(PIKA_MOVE(f));
+                add_shutdown_function(f);
             }
-            detail::global_shutdown_functions.clear();
         }
         catch (std::exception const& e)
         {
@@ -1828,38 +1824,26 @@ namespace pika {
 
     void runtime::add_pre_startup_function(startup_function_type f)
     {
-        if (!f.empty())
-        {
-            std::lock_guard<std::mutex> l(mtx_);
-            pre_startup_functions_.push_back(PIKA_MOVE(f));
-        }
+        std::lock_guard<std::mutex> l(mtx_);
+        pre_startup_functions_.push_back(PIKA_MOVE(f));
     }
 
     void runtime::add_startup_function(startup_function_type f)
     {
-        if (!f.empty())
-        {
-            std::lock_guard<std::mutex> l(mtx_);
-            startup_functions_.push_back(PIKA_MOVE(f));
-        }
+        std::lock_guard<std::mutex> l(mtx_);
+        startup_functions_.push_back(PIKA_MOVE(f));
     }
 
     void runtime::add_pre_shutdown_function(shutdown_function_type f)
     {
-        if (!f.empty())
-        {
-            std::lock_guard<std::mutex> l(mtx_);
-            pre_shutdown_functions_.push_back(PIKA_MOVE(f));
-        }
+        std::lock_guard<std::mutex> l(mtx_);
+        pre_shutdown_functions_.push_back(PIKA_MOVE(f));
     }
 
     void runtime::add_shutdown_function(shutdown_function_type f)
     {
-        if (!f.empty())
-        {
-            std::lock_guard<std::mutex> l(mtx_);
-            shutdown_functions_.push_back(PIKA_MOVE(f));
-        }
+        std::lock_guard<std::mutex> l(mtx_);
+        shutdown_functions_.push_back(PIKA_MOVE(f));
     }
 
     /// Register an external OS-thread with pika
