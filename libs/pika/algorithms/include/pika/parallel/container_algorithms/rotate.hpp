@@ -402,7 +402,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::rotate
+    // CPO for pika::ranges::rotate
     inline constexpr struct rotate_t final
       : pika::detail::tag_parallel_algorithm<rotate_t>
     {
@@ -502,7 +502,7 @@ namespace pika::ranges {
     } rotate{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::rotate_copy
+    // CPO for pika::ranges::rotate_copy
     template <typename I, typename O>
     using rotate_copy_result = pika::parallel::util::in_out_result<I, O>;
 

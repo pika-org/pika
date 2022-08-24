@@ -403,7 +403,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::remove_if
+    // CPO for pika::remove_if
     inline constexpr struct remove_if_t final
       : pika::detail::tag_parallel_algorithm<remove_if_t>
     {
@@ -455,7 +455,7 @@ namespace pika {
     } remove_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::remove
+    // CPO for pika::remove
     inline constexpr struct remove_t final
       : pika::detail::tag_parallel_algorithm<remove_t>
     {

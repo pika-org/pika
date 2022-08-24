@@ -263,7 +263,7 @@ namespace pika::ranges {
     using set_difference_result = parallel::util::in_out_result<I1, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::set_difference
+    // CPO for pika::ranges::set_difference
     inline constexpr struct set_difference_t final
       : pika::detail::tag_parallel_algorithm<set_difference_t>
     {

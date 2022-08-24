@@ -872,7 +872,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::unique
+    // CPO for pika::unique
     inline constexpr struct unique_t final
       : pika::detail::tag_parallel_algorithm<unique_t>
     {
@@ -928,7 +928,7 @@ namespace pika {
     } unique{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::unique_copy
+    // CPO for pika::unique_copy
     inline constexpr struct unique_copy_t final
       : pika::detail::tag_parallel_algorithm<unique_copy_t>
     {

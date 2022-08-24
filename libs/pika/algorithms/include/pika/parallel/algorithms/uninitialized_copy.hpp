@@ -446,7 +446,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::uninitialized_copy
+    // CPO for pika::uninitialized_copy
     inline constexpr struct uninitialized_copy_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_copy_t>
     {
@@ -498,7 +498,7 @@ namespace pika {
     } uninitialized_copy{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::uninitialized_copy_n
+    // CPO for pika::uninitialized_copy_n
     inline constexpr struct uninitialized_copy_n_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_copy_n_t>
     {

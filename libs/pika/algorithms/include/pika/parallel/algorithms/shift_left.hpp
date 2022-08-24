@@ -215,7 +215,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::shift_left
+    // CPO for pika::shift_left
     inline constexpr struct shift_left_t final
       : pika::functional::detail::tag_fallback<shift_left_t>
     {

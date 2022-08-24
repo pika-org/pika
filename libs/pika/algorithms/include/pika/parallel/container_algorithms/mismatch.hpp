@@ -233,7 +233,7 @@ namespace pika::ranges {
     using mismatch_result = pika::parallel::util::in_in_result<Iter1, Iter2>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::mismatch
+    // CPO for pika::ranges::mismatch
     inline constexpr struct mismatch_t final
       : pika::detail::tag_parallel_algorithm<mismatch_t>
     {

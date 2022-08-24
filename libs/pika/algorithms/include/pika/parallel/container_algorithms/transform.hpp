@@ -414,7 +414,7 @@ namespace pika::ranges {
     using binary_transform_result = parallel::util::in_in_out_result<I1, I2, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::transform
+    // CPO for pika::ranges::transform
     inline constexpr struct transform_t final
       : pika::detail::tag_parallel_algorithm<transform_t>
     {

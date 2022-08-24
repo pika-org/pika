@@ -385,7 +385,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::remove_copy_if
+    // CPO for pika::remove_copy_if
     inline constexpr struct remove_copy_if_t final
       : pika::detail::tag_parallel_algorithm<remove_copy_if_t>
     {
@@ -450,7 +450,7 @@ namespace pika {
     } remove_copy_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::remove_copy
+    // CPO for pika::remove_copy
     inline constexpr struct remove_copy_t final
       : pika::detail::tag_parallel_algorithm<remove_copy_t>
     {

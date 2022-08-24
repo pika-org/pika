@@ -345,7 +345,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::partial_sort_copy
+    // CPO for pika::partial_sort_copy
     inline constexpr struct partial_sort_copy_t final
       : pika::detail::tag_parallel_algorithm<partial_sort_copy_t>
     {

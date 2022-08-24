@@ -261,7 +261,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::set_symmetric_difference
+    // CPO for pika::set_symmetric_difference
     inline constexpr struct set_symmetric_difference_t final
       : pika::detail::tag_parallel_algorithm<set_symmetric_difference_t>
     {

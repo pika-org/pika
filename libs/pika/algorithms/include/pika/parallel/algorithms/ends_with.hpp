@@ -220,7 +220,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ends_with
+    // CPO for pika::ends_with
     inline constexpr struct ends_with_t final
       : pika::functional::detail::tag_fallback<ends_with_t>
     {

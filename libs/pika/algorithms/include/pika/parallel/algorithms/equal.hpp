@@ -381,7 +381,7 @@ namespace pika::parallel ::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::equal
+    // CPO for pika::equal
     inline constexpr struct equal_t final
       : pika::detail::tag_parallel_algorithm<equal_t>
     {

@@ -432,7 +432,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::none_of
+    // CPO for pika::none_of
     inline constexpr struct none_of_t final
       : pika::detail::tag_parallel_algorithm<none_of_t>
     {
@@ -476,7 +476,7 @@ namespace pika {
     } none_of{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::any_of
+    // CPO for pika::any_of
     inline constexpr struct any_of_t final
       : pika::detail::tag_parallel_algorithm<any_of_t>
     {
@@ -520,7 +520,7 @@ namespace pika {
     } any_of{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::all_of
+    // CPO for pika::all_of
     inline constexpr struct all_of_t final
       : pika::detail::tag_parallel_algorithm<all_of_t>
     {

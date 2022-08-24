@@ -538,7 +538,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::find
+    // CPO for pika::ranges::find
     inline constexpr struct find_t final
       : pika::detail::tag_parallel_algorithm<find_t>
     {
@@ -643,7 +643,7 @@ namespace pika::ranges {
     } find{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::find_if
+    // CPO for pika::ranges::find_if
     inline constexpr struct find_if_t final
       : pika::detail::tag_parallel_algorithm<find_if_t>
     {
@@ -758,7 +758,7 @@ namespace pika::ranges {
     } find_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::find_if_not
+    // CPO for pika::ranges::find_if_not
     inline constexpr struct find_if_not_t final
       : pika::detail::tag_parallel_algorithm<find_if_not_t>
     {
@@ -873,7 +873,7 @@ namespace pika::ranges {
     } find_if_not{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::find_end
+    // CPO for pika::ranges::find_end
     inline constexpr struct find_end_t final
       : pika::detail::tag_parallel_algorithm<find_end_t>
     {
@@ -1018,7 +1018,7 @@ namespace pika::ranges {
     } find_end{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::find_first_of
+    // CPO for pika::ranges::find_first_of
     inline constexpr struct find_first_of_t final
       : pika::detail::tag_parallel_algorithm<find_first_of_t>
     {

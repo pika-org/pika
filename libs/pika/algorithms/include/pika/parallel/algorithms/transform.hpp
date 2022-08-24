@@ -758,7 +758,7 @@ namespace pika::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::transform
+    // CPO for pika::transform
     inline constexpr struct transform_t final
       : pika::detail::tag_parallel_algorithm<transform_t>
     {

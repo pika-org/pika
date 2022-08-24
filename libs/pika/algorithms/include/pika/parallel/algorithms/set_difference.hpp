@@ -251,7 +251,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::set_difference
+    // CPO for pika::set_difference
     inline constexpr struct set_difference_t final
       : pika::detail::tag_parallel_algorithm<set_difference_t>
     {

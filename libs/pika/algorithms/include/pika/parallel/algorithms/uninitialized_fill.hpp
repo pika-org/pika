@@ -375,7 +375,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::uninitialized_fill
+    // CPO for pika::uninitialized_fill
     inline constexpr struct uninitialized_fill_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_fill_t>
     {
@@ -421,7 +421,7 @@ namespace pika {
     } uninitialized_fill{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::uninitialized_fill_n
+    // CPO for pika::uninitialized_fill_n
     inline constexpr struct uninitialized_fill_n_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_fill_n_t>
     {

@@ -226,7 +226,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::equal
+    // CPO for pika::equal
     inline constexpr struct equal_t final
       : pika::detail::tag_parallel_algorithm<equal_t>
     {

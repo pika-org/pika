@@ -289,7 +289,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::copy
+    // CPO for pika::ranges::copy
     inline constexpr struct starts_with_t final
       : pika::functional::detail::tag_fallback<starts_with_t>
     {

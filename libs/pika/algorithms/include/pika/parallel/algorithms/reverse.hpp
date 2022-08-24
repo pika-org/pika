@@ -314,7 +314,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::reverse
+    // CPO for pika::reverse
     inline constexpr struct reverse_t final
       : pika::detail::tag_parallel_algorithm<reverse_t>
     {
@@ -359,7 +359,7 @@ namespace pika {
     } reverse{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::reverse_copy
+    // CPO for pika::reverse_copy
     inline constexpr struct reverse_copy_t final
       : pika::detail::tag_parallel_algorithm<reverse_copy_t>
     {

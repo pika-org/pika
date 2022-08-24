@@ -264,7 +264,7 @@ namespace pika::ranges {
     using set_union_result = parallel::util::in_in_out_result<I1, I2, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::set_union
+    // CPO for pika::ranges::set_union
     inline constexpr struct set_union_t final
       : pika::detail::tag_parallel_algorithm<set_union_t>
     {

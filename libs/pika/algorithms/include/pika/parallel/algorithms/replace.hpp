@@ -756,7 +756,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::replace_if
+    // CPO for pika::replace_if
     inline constexpr struct replace_if_t final
       : pika::detail::tag_parallel_algorithm<replace_if_t>
     {
@@ -813,7 +813,7 @@ namespace pika {
     } replace_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::replace
+    // CPO for pika::replace
     inline constexpr struct replace_t final
       : pika::detail::tag_parallel_algorithm<replace_t>
     {
@@ -865,7 +865,7 @@ namespace pika {
     } replace{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::replace_copy_if
+    // CPO for pika::replace_copy_if
     inline constexpr struct replace_copy_if_t final
       : pika::detail::tag_parallel_algorithm<replace_copy_if_t>
     {
@@ -935,7 +935,7 @@ namespace pika {
     } replace_copy_if{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::replace_copy
+    // CPO for pika::replace_copy
     inline constexpr struct replace_copy_t final
       : pika::detail::tag_parallel_algorithm<replace_copy_t>
     {

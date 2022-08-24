@@ -370,7 +370,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::uninitialized_value_construct
+    // CPO for pika::uninitialized_value_construct
     inline constexpr struct uninitialized_value_construct_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_value_construct_t>
     {
@@ -417,7 +417,7 @@ namespace pika {
     } uninitialized_value_construct{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::uninitialized_value_construct_n
+    // CPO for pika::uninitialized_value_construct_n
     inline constexpr struct uninitialized_value_construct_n_t final
       : pika::detail::tag_parallel_algorithm<uninitialized_value_construct_n_t>
     {

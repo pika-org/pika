@@ -221,7 +221,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::swap_ranges
+    // CPO for pika::swap_ranges
     inline constexpr struct swap_ranges_t final
       : pika::detail::tag_parallel_algorithm<swap_ranges_t>
     {

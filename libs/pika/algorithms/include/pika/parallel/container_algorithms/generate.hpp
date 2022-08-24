@@ -198,7 +198,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::generate
+    // CPO for pika::ranges::generate
     inline constexpr struct generate_t final
       : pika::detail::tag_parallel_algorithm<generate_t>
     {
@@ -285,7 +285,7 @@ namespace pika::ranges {
     } generate{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::generate_n
+    // CPO for pika::ranges::generate_n
     inline constexpr struct generate_n_t final
       : pika::detail::tag_parallel_algorithm<generate_n_t>
     {

@@ -427,7 +427,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::reduce
+    // CPO for pika::ranges::reduce
     inline constexpr struct reduce_t final
       : pika::detail::tag_parallel_algorithm<reduce_t>
     {

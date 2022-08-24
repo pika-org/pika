@@ -284,7 +284,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::sort
+    // CPO for pika::ranges::sort
     inline constexpr struct sort_t final
       : pika::detail::tag_parallel_algorithm<sort_t>
     {

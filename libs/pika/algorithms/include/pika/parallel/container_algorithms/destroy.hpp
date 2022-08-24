@@ -127,7 +127,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::destroy
+    // CPO for pika::ranges::destroy
     inline constexpr struct destroy_t final
       : pika::detail::tag_parallel_algorithm<destroy_t>
     {
@@ -211,7 +211,7 @@ namespace pika::ranges {
     } destroy{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::destroy_n
+    // CPO for pika::ranges::destroy_n
     inline constexpr struct destroy_n_t final
       : pika::detail::tag_parallel_algorithm<destroy_n_t>
     {

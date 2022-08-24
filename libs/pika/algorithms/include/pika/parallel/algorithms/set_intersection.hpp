@@ -229,7 +229,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::set_intersection
+    // CPO for pika::set_intersection
     inline constexpr struct set_intersection_t final
       : pika::detail::tag_parallel_algorithm<set_intersection_t>
     {

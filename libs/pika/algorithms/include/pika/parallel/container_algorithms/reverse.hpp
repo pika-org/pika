@@ -387,7 +387,7 @@ namespace pika::ranges {
     using reverse_copy_result = pika::parallel::util::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::reverse
+    // CPO for pika::ranges::reverse
     inline constexpr struct reverse_t final
       : pika::detail::tag_parallel_algorithm<reverse_t>
     {
@@ -476,7 +476,7 @@ namespace pika::ranges {
     } reverse{};
 
     ///////////////////////////////////////////////////////////////////////////
-    // DPO for pika::ranges::reverse_copy
+    // CPO for pika::ranges::reverse_copy
     inline constexpr struct reverse_copy_t final
       : pika::detail::tag_parallel_algorithm<reverse_copy_t>
     {
