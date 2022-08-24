@@ -16,6 +16,10 @@ set(init_runtime_headers
 
 set(init_runtime_sources init_logging.cpp init_runtime.cpp scoped_finalize.cpp)
 
+if(PIKA_WITH_GPU_SUPPORT)
+    set(extra_deps pika_async_cuda)
+endif()
+
 include(pika_add_module)
 pika_add_module(
   pika init_runtime
@@ -35,5 +39,6 @@ pika_add_module(
     pika_schedulers
     pika_threading_base
     pika_timing
+    ${extra_deps}
   CMAKE_SUBDIRS examples tests
 )

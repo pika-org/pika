@@ -13,6 +13,7 @@
 #include <pika/functional/unique_function.hpp>
 
 namespace pika {
+    /// TODO: This should be std::function
     /// The type of a function which is registered to be executed as a
     /// shutdown or pre-shutdown function.
     using shutdown_function_type = util::detail::unique_function<void()>;

@@ -35,4 +35,7 @@ namespace pika::cuda::experimental::detail {
 
     PIKA_EXPORT void register_polling(pika::threads::thread_pool_base& pool);
     PIKA_EXPORT void unregister_polling(pika::threads::thread_pool_base& pool);
+
+    PIKA_EXPORT void init_polling_thread();
+    PIKA_EXPORT void finalize_polling_thread();
 }    // namespace pika::cuda::experimental::detail

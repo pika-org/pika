@@ -449,6 +449,7 @@ namespace pika {
         void wait_finalize();
 
         void call_startup_functions(bool pre_startup);
+        void call_shutdown_functions(bool pre_shutdown);
 
         std::list<startup_function_type> pre_startup_functions_;
         std::list<startup_function_type> startup_functions_;

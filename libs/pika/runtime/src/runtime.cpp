@@ -351,6 +351,8 @@ namespace pika {
 
             for (startup_function_type& f : detail::global_startup_functions)
             {
+                // TODO: Copy, don't move. If the runtime is restarted the
+                // startup function will not be used next time around.
                 add_startup_function(PIKA_MOVE(f));
             }
             detail::global_startup_functions.clear();
@@ -1155,6 +1157,24 @@ namespace pika {
         }
     }
 
+    void runtime::call_shutdown_functions(bool pre_shutdown)
+    {
+        if (pre_shutdown)
+        {
+            for (shutdown_function_type& f : pre_shutdown_functions_)
+            {
+                f();
+            }
+        }
+        else
+        {
+            for (shutdown_function_type& f : shutdown_functions_)
+            {
+                f();
+            }
+        }
+    }
+
     namespace detail {
         void handle_print_bind(std::size_t num_threads)
         {
@@ -1476,12 +1496,16 @@ namespace pika {
         }
         else
         {
+            call_shutdown_functions(true);
+
             thread_manager_->stop(blocking);    // wait for thread manager
 
             deinit_global_data();
 
             // this disables all logging from the main thread
             deinit_tss_helper("main-thread", 0);
+
+            call_shutdown_functions(false);
 
             LRT_(info).format("runtime: stopped all services");
         }
@@ -1491,6 +1515,8 @@ namespace pika {
     void runtime::stop_helper(
         bool blocking, std::condition_variable& cond, std::mutex& mtx)
     {
+        call_shutdown_functions(true);
+
         // wait for thread manager to exit
         thread_manager_->stop(blocking);    // wait for thread manager
 
@@ -1498,6 +1524,8 @@ namespace pika {
 
         // this disables all logging from the main thread
         deinit_tss_helper("main-thread", 0);
+
+        call_shutdown_functions(false);
 
         LRT_(info).format("runtime: stopped all services");
 

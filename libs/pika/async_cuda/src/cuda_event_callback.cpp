@@ -26,6 +26,8 @@
 #include <utility>
 #include <vector>
 
+#include <iostream>
+
 namespace pika::cuda::experimental::detail {
 #if defined(PIKA_DEBUG)
     std::atomic<std::size_t>& get_register_polling_count()
@@ -265,19 +267,6 @@ namespace pika::cuda::experimental::detail {
         return holder;
     }
 
-    void add_event_callback(event_callback_function_type&& f,
-        cudaStream_t stream, pika::execution::thread_priority priority)
-    {
-        get_cuda_event_queue_holder().add_to_event_callback_queue(
-            std::move(f), stream, priority);
-    }
-
-    void add_event_callback(
-        event_callback_function_type&& f, cuda_stream const& stream)
-    {
-        add_event_callback(std::move(f), stream.get(), stream.get_priority());
-    }
-
     pika::threads::policies::detail::polling_status poll()
     {
         return get_cuda_event_queue_holder().poll();
@@ -286,6 +275,65 @@ namespace pika::cuda::experimental::detail {
     std::size_t get_work_count()
     {
         return get_cuda_event_queue_holder().get_work_count();
+    }
+
+    static std::thread polling_thread;
+    static bool stop = false;
+    static std::condition_variable cond;
+    static std::mutex mtx;
+
+    void init_polling_thread()
+    {
+        std::cerr << "initializing CUDA polling thread\n";
+        PIKA_ASSERT(!polling_thread.joinable());
+
+        polling_thread = std::thread([]() {
+            while (!stop || get_work_count() != 0)
+            {
+                poll();
+
+                {
+                    std::unique_lock l{mtx};
+                    cond.wait(l, []() { return stop || get_work_count() > 0; });
+                }
+            }
+        });
+    }
+
+    void finalize_polling_thread()
+    {
+        std::cerr << "joining CUDA polling thread\n";
+        PIKA_ASSERT(polling_thread.joinable());
+
+        {
+            std::unique_lock l{mtx};
+            stop = true;
+            cond.notify_one();
+        }
+
+        polling_thread.join();
+        stop = false;
+    }
+
+    void add_event_callback(event_callback_function_type&& f,
+        cudaStream_t stream, pika::execution::thread_priority priority)
+    {
+        get_cuda_event_queue_holder().add_to_event_callback_queue(
+            std::move(f), stream, priority);
+
+        cond.notify_one();
+
+    }
+
+    void add_event_callback(
+        event_callback_function_type&& f, cuda_stream const& stream)
+    {
+        add_event_callback(std::move(f), stream.get(), stream.get_priority());
+    }
+
+    pika::threads::policies::detail::polling_status dummy_poll()
+    {
+        return pika::threads::policies::detail::polling_status::idle;
     }
 
     // -------------------------------------------------------------
@@ -297,7 +345,7 @@ namespace pika::cuda::experimental::detail {
         cud_debug.debug(debug::detail::str<>("enable polling"));
         auto* sched = pool.get_scheduler();
         sched->set_cuda_polling_functions(
-            &pika::cuda::experimental::detail::poll, &get_work_count);
+            &pika::cuda::experimental::detail::dummy_poll, &get_work_count);
     }
 
     // -------------------------------------------------------------

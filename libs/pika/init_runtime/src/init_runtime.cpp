@@ -46,6 +46,11 @@
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
 
+#if defined(PIKA_HAVE_GPU_SUPPORT)
+// TODO: Temporary, register this through global instead.
+#include <pika/async_cuda/detail/cuda_event_callback.hpp>
+#endif
+
 #if defined(__bgq__)
 #include <cstdlib>
 #endif
@@ -331,6 +336,13 @@ namespace pika {
             detail::command_line_handling& cfg, startup_function_type startup,
             shutdown_function_type shutdown)
         {
+#if defined(PIKA_HAVE_GPU_SUPPORT)
+            pika::register_pre_startup_function(
+                pika::cuda::experimental::detail::init_polling_thread);
+            pika::register_shutdown_function(
+                pika::cuda::experimental::detail::finalize_polling_thread);
+#endif
+
             if (blocking)
             {
                 return run(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup),
