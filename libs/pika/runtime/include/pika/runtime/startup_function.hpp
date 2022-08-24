@@ -10,13 +10,14 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/functional/unique_function.hpp>
+
+#include <functional>
 
 namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     /// The type of a function which is registered to be executed as a
     /// startup or pre-startup function.
-    using startup_function_type = util::detail::unique_function<void()>;
+    using startup_function_type = std::function<void()>;
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Add a function to be executed by a pika thread before pika_main

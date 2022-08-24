@@ -10,12 +10,13 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/functional/unique_function.hpp>
+
+#include <functional>
 
 namespace pika {
     /// The type of a function which is registered to be executed as a
     /// shutdown or pre-shutdown function.
-    using shutdown_function_type = util::detail::unique_function<void()>;
+    using shutdown_function_type = std::function<void()>;
 
     /// \brief Add a function to be executed by a pika thread during
     /// \a pika::finalize() but guaranteed before any shutdown function is
