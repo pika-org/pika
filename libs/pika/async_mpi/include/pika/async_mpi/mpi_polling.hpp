@@ -40,6 +40,9 @@ namespace pika::mpi::experimental {
         PIKA_EXPORT void register_polling(pika::threads::thread_pool_base&);
         PIKA_EXPORT void unregister_polling(pika::threads::thread_pool_base&);
 
+        PIKA_EXPORT void init_polling_thread();
+        PIKA_EXPORT void finalize_polling_thread();
+
         // -----------------------------------------------------------------
         // an MPI error handling type that we can use to intercept
         // MPI errors if we enable the error handler

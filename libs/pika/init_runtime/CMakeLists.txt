@@ -16,8 +16,13 @@ set(init_runtime_headers
 
 set(init_runtime_sources init_logging.cpp init_runtime.cpp scoped_finalize.cpp)
 
+set(extra_deps)
+if(PIKA_WITH_MPI)
+    list(APPEND extra_deps pika_async_mpi)
+endif()
+
 if(PIKA_WITH_GPU_SUPPORT)
-    set(extra_deps pika_async_cuda)
+    list(APPEND extra_deps pika_async_cuda)
 endif()
 
 include(pika_add_module)

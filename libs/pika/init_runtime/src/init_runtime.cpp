@@ -51,6 +51,11 @@
 #include <pika/async_cuda/detail/cuda_event_callback.hpp>
 #endif
 
+#if defined(PIKA_HAVE_MPI)
+// TODO: Temporary, register this through global instead.
+#include <pika/async_mpi/mpi_polling.hpp>
+#endif
+
 #if defined(__bgq__)
 #include <cstdlib>
 #endif
@@ -341,6 +346,13 @@ namespace pika {
                 pika::cuda::experimental::detail::init_polling_thread);
             pika::register_shutdown_function(
                 pika::cuda::experimental::detail::finalize_polling_thread);
+#endif
+
+#if defined(PIKA_HAVE_MPI)
+            pika::register_pre_startup_function(
+                pika::mpi::experimental::detail::init_polling_thread);
+            pika::register_shutdown_function(
+                pika::mpi::experimental::detail::finalize_polling_thread);
 #endif
 
             if (blocking)

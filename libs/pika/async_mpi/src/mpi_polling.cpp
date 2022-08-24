@@ -211,29 +211,6 @@ namespace pika::mpi::experimental {
         }
 #endif
 
-        void add_request_callback(
-            request_callback_function_type&& callback, MPI_Request request)
-        {
-            PIKA_ASSERT_MSG(get_register_polling_count() != 0,
-                "MPI event polling has not been enabled on any pool. Make sure "
-                "that MPI event polling is enabled on at least one thread "
-                "pool.");
-
-            // Eagerly check if request already completed. If it did, call the
-            // callback immediately.
-            int flag = 0;
-            int result = MPI_Test(&request, &flag, MPI_STATUS_IGNORE);
-            if (flag)
-            {
-                mpi_debug.debug(debug::detail::str<>("eager poll"), "success");
-                PIKA_INVOKE(PIKA_MOVE(callback), result);
-                return;
-            }
-
-            add_to_request_callback_queue(
-                request_callback{request, PIKA_MOVE(callback)});
-        }
-
         // an MPI error handling type that we can use to intercept
         // MPI errors if we enable the error handler
         MPI_Errhandler pika_mpi_errhandler = 0;
@@ -259,6 +236,76 @@ namespace pika::mpi::experimental {
         size_t get_num_requests_in_flight()
         {
             return detail::mpi_data_.in_flight_;
+        }
+
+        size_t get_work_count()
+        {
+            return mpi_data_.active_request_vector_size_ +
+                mpi_data_.request_queue_size_;
+        }
+
+        static std::thread polling_thread;
+        static bool stop = false;
+        static std::condition_variable cond;
+        static std::mutex mtx;
+
+        void init_polling_thread()
+        {
+            std::cerr << "initializing MPI polling thread\n";
+            PIKA_ASSERT(!polling_thread.joinable());
+
+            polling_thread = std::thread([]() {
+                while (!stop || get_work_count() != 0)
+                {
+                    poll();
+
+                    {
+                        std::unique_lock l{mtx};
+                        cond.wait(
+                            l, []() { return stop || get_work_count() > 0; });
+                    }
+                }
+            });
+        }
+
+        void finalize_polling_thread()
+        {
+            std::cerr << "joining MPI polling thread\n";
+            PIKA_ASSERT(polling_thread.joinable());
+
+            {
+                std::unique_lock l{mtx};
+                stop = true;
+                cond.notify_one();
+            }
+
+            polling_thread.join();
+            stop = false;
+        }
+
+        void add_request_callback(
+            request_callback_function_type&& callback, MPI_Request request)
+        {
+            PIKA_ASSERT_MSG(get_register_polling_count() != 0,
+                "MPI event polling has not been enabled on any pool. Make sure "
+                "that MPI event polling is enabled on at least one thread "
+                "pool.");
+
+            // Eagerly check if request already completed. If it did, call the
+            // callback immediately.
+            int flag = 0;
+            int result = MPI_Test(&request, &flag, MPI_STATUS_IGNORE);
+            if (flag)
+            {
+                mpi_debug.debug(debug::detail::str<>("eager poll"), "success");
+                PIKA_INVOKE(PIKA_MOVE(callback), result);
+                return;
+            }
+
+            add_to_request_callback_queue(
+                request_callback{request, PIKA_MOVE(callback)});
+
+            cond.notify_one();
         }
 
         // set an error handler for communicators that will be called
@@ -422,10 +469,9 @@ namespace pika::mpi::experimental {
                 polling_status::busy;
         }
 
-        size_t get_work_count()
+        pika::threads::policies::detail::polling_status dummy_poll()
         {
-            return mpi_data_.active_request_vector_size_ +
-                mpi_data_.request_queue_size_;
+            return pika::threads::policies::detail::polling_status::idle;
         }
 
         // -------------------------------------------------------------
@@ -437,7 +483,7 @@ namespace pika::mpi::experimental {
             mpi_debug.debug(debug::detail::str<>("enable polling"));
             auto* sched = pool.get_scheduler();
             sched->set_mpi_polling_functions(
-                &pika::mpi::experimental::detail::poll, &get_work_count);
+                &pika::mpi::experimental::detail::dummy_poll, &get_work_count);
         }
 
         // -------------------------------------------------------------
