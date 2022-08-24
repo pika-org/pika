@@ -1155,6 +1155,24 @@ namespace pika {
         }
     }
 
+    void runtime::call_shutdown_functions(bool pre_shutdown)
+    {
+        if (pre_shutdown)
+        {
+            for (shutdown_function_type& f : pre_shutdown_functions_)
+            {
+                f();
+            }
+        }
+        else
+        {
+            for (shutdown_function_type& f : shutdown_functions_)
+            {
+                f();
+            }
+        }
+    }
+
     namespace detail {
         void handle_print_bind(std::size_t num_threads)
         {
@@ -1448,6 +1466,8 @@ namespace pika {
     {
         LRT_(warning).format("runtime: about to stop services");
 
+        call_shutdown_functions(true);
+
         // execute all on_exit functions whenever the first thread calls this
         this->runtime::stopping();
 
@@ -1485,6 +1505,8 @@ namespace pika {
 
             LRT_(info).format("runtime: stopped all services");
         }
+
+        call_shutdown_functions(false);
     }
 
     // Second step in termination: shut down all services.
