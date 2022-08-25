@@ -62,6 +62,11 @@ namespace NS_DEBUG {
         std::ostream&, std::int64_t const&, int);
     template PIKA_EXPORT void print_dec(
         std::ostream&, std::uint64_t const&, int);
+#if defined(__APPLE__)
+    // Explicit instantiation necessary to solve undefined symbol for MacOS
+    template PIKA_EXPORT void print_dec(
+        std::ostream&, unsigned long const&, int);
+#endif
 
     template PIKA_EXPORT void print_dec(
         std::ostream&, std::atomic<int> const&, int);
