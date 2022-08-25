@@ -271,7 +271,7 @@ namespace pika::parallel::detail {
 
             auto f1 = [r](FwdIterB part_begin, std::size_t part_size) -> T {
                 T val = *part_begin;
-                return util::accumulate_n(
+                return util::detail::accumulate_n(
                     ++part_begin, --part_size, PIKA_MOVE(val), r);
             };
 
@@ -281,8 +281,9 @@ namespace pika::parallel::detail {
                 pika::unwrapping([init = PIKA_FORWARD(T_, init),
                                      r = PIKA_FORWARD(Reduce, r)](
                                      std::vector<T>&& results) -> T {
-                    return util::accumulate_n(pika::util::begin(results),
-                        pika::util::size(results), init, r);
+                    return util::detail::accumulate_n(
+                        pika::util::begin(results), pika::util::size(results),
+                        init, r);
                 }));
         }
     };

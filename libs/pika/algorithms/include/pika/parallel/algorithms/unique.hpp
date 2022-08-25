@@ -579,7 +579,8 @@ namespace pika::parallel::detail {
                 // below makes gcc generate errors
 
                 // MSVC complains if pred or proj is captured by ref below
-                util::loop_n<std::decay_t<ExPolicy>>(++part_begin, part_size,
+                util::detail::loop_n<std::decay_t<ExPolicy>>(++part_begin,
+                    part_size,
                     [base, pred, proj](zip_iterator it) mutable -> void {
                         bool f = pika::util::detail::invoke(pred,
                             pika::util::detail::invoke(proj, *base),
@@ -613,7 +614,7 @@ namespace pika::parallel::detail {
                 if (dest == get<0>(part_begin.get_iterator_tuple()))
                 {
                     // Self-assignment must be detected.
-                    util::loop_n<execution_policy_type>(
+                    util::detail::loop_n<execution_policy_type>(
                         part_begin, part_size, [&dest](zip_iterator it) {
                             if (!get<1>(*it))
                             {
@@ -627,7 +628,7 @@ namespace pika::parallel::detail {
                 else
                 {
                     // Self-assignment can't be performed.
-                    util::loop_n<execution_policy_type>(
+                    util::detail::loop_n<execution_policy_type>(
                         part_begin, part_size, [&dest](zip_iterator it) {
                             if (!get<1>(*it))
                                 *dest++ = PIKA_MOVE(get<0>(*it));
@@ -812,7 +813,7 @@ namespace pika::parallel::detail {
                 std::size_t curr = 0;
 
                 // MSVC complains if pred or proj is captured by ref below
-                util::loop_n<std::decay_t<ExPolicy>>(
+                util::detail::loop_n<std::decay_t<ExPolicy>>(
                     ++part_begin, part_size, [&](zip_iterator it) mutable {
                         bool f = PIKA_INVOKE(pred, PIKA_INVOKE(proj, *base),
                             PIKA_INVOKE(proj, get<0>(*it)));
@@ -831,7 +832,7 @@ namespace pika::parallel::detail {
                           std::size_t val) mutable -> void {
                 PIKA_UNUSED(flags);
                 std::advance(dest, val);
-                util::loop_n<std::decay_t<ExPolicy>>(
+                util::detail::loop_n<std::decay_t<ExPolicy>>(
                     ++part_begin, part_size, [&dest](zip_iterator it) mutable {
                         if (!get<1>(*it))
                             *dest++ = get<0>(*it);

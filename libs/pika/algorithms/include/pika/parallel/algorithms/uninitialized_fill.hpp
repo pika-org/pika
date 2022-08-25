@@ -229,7 +229,7 @@ namespace pika::parallel::detail {
     {
         using value_type = typename std::iterator_traits<InIter>::value_type;
 
-        return util::loop_with_cleanup_n_with_token(
+        return util::detail::loop_with_cleanup_n_with_token(
             first, count, tok,
             [&value](InIter it) -> void {
                 ::new (std::addressof(*it)) value_type(value);

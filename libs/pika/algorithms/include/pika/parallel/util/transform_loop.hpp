@@ -19,28 +19,25 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::parallel::util {
-    namespace detail {
-        template <typename Iter>
-        struct transform_loop
+namespace pika::parallel::util::detail {
+    template <typename Iter>
+    struct transform_loop_impl
+    {
+        template <typename InIterB, typename InIterE, typename OutIter,
+            typename F>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr util::in_out_result<
+            InIterB, OutIter>
+        call(InIterB first, InIterE last, OutIter dest, F&& f)
         {
-            template <typename InIterB, typename InIterE, typename OutIter,
-                typename F>
-            PIKA_HOST_DEVICE
-                PIKA_FORCEINLINE static constexpr util::in_out_result<InIterB,
-                    OutIter>
-                call(InIterB first, InIterE last, OutIter dest, F&& f)
+            for (/* */; first != last; (void) ++first, ++dest)
             {
-                for (/* */; first != last; (void) ++first, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, first);
-                }
-
-                return util::in_out_result<InIterB, OutIter>{
-                    PIKA_MOVE(first), PIKA_MOVE(dest)};
+                *dest = PIKA_INVOKE(f, first);
             }
-        };
-    }    // namespace detail
+
+            return util::in_out_result<InIterB, OutIter>{
+                PIKA_MOVE(first), PIKA_MOVE(dest)};
+        }
+    };
 
     struct transform_loop_t final
       : pika::functional::detail::tag_fallback<transform_loop_t>
@@ -50,10 +47,10 @@ namespace pika::parallel::util {
             typename OutIter, typename F>
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr util::in_out_result<IterB, OutIter>
-            tag_fallback_invoke(pika::parallel::util::transform_loop_t,
-                ExPolicy&&, IterB it, IterE end, OutIter dest, F&& f)
+            tag_fallback_invoke(transform_loop_t, ExPolicy&&, IterB it,
+                IterE end, OutIter dest, F&& f)
         {
-            return detail::transform_loop<IterB>::call(
+            return transform_loop_impl<IterB>::call(
                 it, end, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -68,34 +65,29 @@ namespace pika::parallel::util {
         transform_loop(
             ExPolicy&& policy, IterB it, IterE end, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_loop_t{}(
+        return transform_loop_t{}(
             PIKA_FORWARD(ExPolicy, policy), it, end, dest, PIKA_FORWARD(F, f));
     }
 #endif
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-
-        template <typename Iter>
-        struct transform_loop_ind
+    template <typename Iter>
+    struct transform_loop_ind_impl
+    {
+        template <typename InIterB, typename InIterE, typename OutIter,
+            typename F>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr util::in_out_result<
+            InIterB, OutIter>
+        call(InIterB first, InIterE last, OutIter dest, F&& f)
         {
-            template <typename InIterB, typename InIterE, typename OutIter,
-                typename F>
-            PIKA_HOST_DEVICE
-                PIKA_FORCEINLINE static constexpr util::in_out_result<InIterB,
-                    OutIter>
-                call(InIterB first, InIterE last, OutIter dest, F&& f)
+            for (/* */; first != last; (void) ++first, ++dest)
             {
-                for (/* */; first != last; (void) ++first, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, *first);
-                }
-
-                return util::in_out_result<InIterB, OutIter>{
-                    PIKA_MOVE(first), PIKA_MOVE(dest)};
+                *dest = PIKA_INVOKE(f, *first);
             }
-        };
-    }    // namespace detail
+
+            return util::in_out_result<InIterB, OutIter>{
+                PIKA_MOVE(first), PIKA_MOVE(dest)};
+        }
+    };
 
     struct transform_loop_ind_t final
       : pika::functional::detail::tag_fallback<transform_loop_ind_t>
@@ -105,10 +97,10 @@ namespace pika::parallel::util {
             typename OutIter, typename F>
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr util::in_out_result<IterB, OutIter>
-            tag_fallback_invoke(pika::parallel::util::transform_loop_ind_t,
-                ExPolicy&&, IterB it, IterE end, OutIter dest, F&& f)
+            tag_fallback_invoke(transform_loop_ind_t, ExPolicy&&, IterB it,
+                IterE end, OutIter dest, F&& f)
         {
-            return detail::transform_loop_ind<IterB>::call(
+            return transform_loop_ind_impl<IterB>::call(
                 it, end, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -124,51 +116,49 @@ namespace pika::parallel::util {
         transform_loop_ind(
             ExPolicy&& policy, IterB it, IterE end, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_loop_ind_t{}(
+        return transform_loop_ind_t{}(
             PIKA_FORWARD(ExPolicy, policy), it, end, dest, PIKA_FORWARD(F, f));
     }
 #endif
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-
-        template <typename Iter1, typename Iter2>
-        struct transform_binary_loop
+    template <typename Iter1, typename Iter2>
+    struct transform_binary_loop_impl
+    {
+        template <typename InIter1B, typename InIter1E, typename InIter2,
+            typename OutIter, typename F>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr util::in_in_out_result<InIter1B,
+                InIter2, OutIter>
+            call(InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
+                F&& f)
         {
-            template <typename InIter1B, typename InIter1E, typename InIter2,
-                typename OutIter, typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr util::
-                in_in_out_result<InIter1B, InIter2, OutIter>
-                call(InIter1B first1, InIter1E last1, InIter2 first2,
-                    OutIter dest, F&& f)
+            for (/* */; first1 != last1; (void) ++first1, ++first2, ++dest)
             {
-                for (/* */; first1 != last1; (void) ++first1, ++first2, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, first1, first2);
-                }
-
-                return util::in_in_out_result<InIter1B, InIter2, OutIter>{
-                    PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)};
+                *dest = PIKA_INVOKE(f, first1, first2);
             }
 
-            template <typename InIter1B, typename InIter1E, typename InIter2,
-                typename OutIter, typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr util::
-                in_in_out_result<InIter1B, InIter2, OutIter>
-                call(InIter1B first1, InIter1E last1, InIter2 first2,
-                    InIter2 last2, OutIter dest, F&& f)
-            {
-                for (/* */; first1 != last1 && first2 != last2;
-                     (void) ++first1, ++first2, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, first1, first2);
-                }
+            return util::in_in_out_result<InIter1B, InIter2, OutIter>{
+                PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)};
+        }
 
-                return util::in_in_out_result<InIter1B, InIter2, OutIter>{
-                    first1, first2, dest};
+        template <typename InIter1B, typename InIter1E, typename InIter2,
+            typename OutIter, typename F>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr util::in_in_out_result<InIter1B,
+                InIter2, OutIter>
+            call(InIter1B first1, InIter1E last1, InIter2 first2, InIter2 last2,
+                OutIter dest, F&& f)
+        {
+            for (/* */; first1 != last1 && first2 != last2;
+                 (void) ++first1, ++first2, ++dest)
+            {
+                *dest = PIKA_INVOKE(f, first1, first2);
             }
-        };
-    }    // namespace detail
+
+            return util::in_in_out_result<InIter1B, InIter2, OutIter>{
+                first1, first2, dest};
+        }
+    };
 
     template <typename ExPolicy>
     struct transform_binary_loop_t final
@@ -181,12 +171,11 @@ namespace pika::parallel::util {
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr util::in_in_out_result<InIter1B, InIter2,
                 OutIter>
-            tag_fallback_invoke(
-                pika::parallel::util::transform_binary_loop_t<ExPolicy>,
+            tag_fallback_invoke(transform_binary_loop_t<ExPolicy>,
                 InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
                 F&& f)
         {
-            return detail::transform_binary_loop<InIter1B, InIter2>::call(
+            return transform_binary_loop_impl<InIter1B, InIter2>::call(
                 first1, last1, first2, dest, PIKA_FORWARD(F, f));
         }
 
@@ -195,12 +184,11 @@ namespace pika::parallel::util {
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr util::in_in_out_result<InIter1B,
                 InIter2B, OutIter>
-            tag_fallback_invoke(
-                pika::parallel::util::transform_binary_loop_t<ExPolicy>,
+            tag_fallback_invoke(transform_binary_loop_t<ExPolicy>,
                 InIter1B first1, InIter1E last1, InIter2B first2,
                 InIter2E last2, OutIter dest, F&& f)
         {
-            return detail::transform_binary_loop<InIter1B, InIter2B>::call(
+            return transform_binary_loop_impl<InIter1B, InIter2B>::call(
                 first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -217,7 +205,7 @@ namespace pika::parallel::util {
     transform_binary_loop(
         InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_binary_loop_t<ExPolicy>{}(
+        return transform_binary_loop_t<ExPolicy>{}(
             first1, last1, first2, dest, PIKA_FORWARD(F, f));
     }
 
@@ -228,51 +216,49 @@ namespace pika::parallel::util {
     transform_binary_loop(InIter1B first1, InIter1E last1, InIter2B first2,
         InIter2E last2, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_binary_loop_t<ExPolicy>{}(
+        return transform_binary_loop_t<ExPolicy>{}(
             first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));
     }
 #endif
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-
-        template <typename Iter1, typename Iter2>
-        struct transform_binary_loop_ind
+    template <typename Iter1, typename Iter2>
+    struct transform_binary_loop_ind_impl
+    {
+        template <typename InIter1B, typename InIter1E, typename InIter2,
+            typename OutIter, typename F>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr util::in_in_out_result<InIter1B,
+                InIter2, OutIter>
+            call(InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
+                F&& f)
         {
-            template <typename InIter1B, typename InIter1E, typename InIter2,
-                typename OutIter, typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr util::
-                in_in_out_result<InIter1B, InIter2, OutIter>
-                call(InIter1B first1, InIter1E last1, InIter2 first2,
-                    OutIter dest, F&& f)
+            for (/* */; first1 != last1; (void) ++first1, ++first2, ++dest)
             {
-                for (/* */; first1 != last1; (void) ++first1, ++first2, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, *first1, *first2);
-                }
-
-                return util::in_in_out_result<InIter1B, InIter2, OutIter>{
-                    PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)};
+                *dest = PIKA_INVOKE(f, *first1, *first2);
             }
 
-            template <typename InIter1B, typename InIter1E, typename InIter2,
-                typename OutIter, typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr util::
-                in_in_out_result<InIter1B, InIter2, OutIter>
-                call(InIter1B first1, InIter1E last1, InIter2 first2,
-                    InIter2 last2, OutIter dest, F&& f)
-            {
-                for (/* */; first1 != last1 && first2 != last2;
-                     (void) ++first1, ++first2, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, *first1, *first2);
-                }
+            return util::in_in_out_result<InIter1B, InIter2, OutIter>{
+                PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)};
+        }
 
-                return util::in_in_out_result<InIter1B, InIter2, OutIter>{
-                    first1, first2, dest};
+        template <typename InIter1B, typename InIter1E, typename InIter2,
+            typename OutIter, typename F>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr util::in_in_out_result<InIter1B,
+                InIter2, OutIter>
+            call(InIter1B first1, InIter1E last1, InIter2 first2, InIter2 last2,
+                OutIter dest, F&& f)
+        {
+            for (/* */; first1 != last1 && first2 != last2;
+                 (void) ++first1, ++first2, ++dest)
+            {
+                *dest = PIKA_INVOKE(f, *first1, *first2);
             }
-        };
-    }    // namespace detail
+
+            return util::in_in_out_result<InIter1B, InIter2, OutIter>{
+                first1, first2, dest};
+        }
+    };
 
     template <typename ExPolicy>
     struct transform_binary_loop_ind_t final
@@ -285,12 +271,11 @@ namespace pika::parallel::util {
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr util::in_in_out_result<InIter1B, InIter2,
                 OutIter>
-            tag_fallback_invoke(
-                pika::parallel::util::transform_binary_loop_ind_t<ExPolicy>,
+            tag_fallback_invoke(transform_binary_loop_ind_t<ExPolicy>,
                 InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
                 F&& f)
         {
-            return detail::transform_binary_loop_ind<InIter1B, InIter2>::call(
+            return transform_binary_loop_ind_impl<InIter1B, InIter2>::call(
                 first1, last1, first2, dest, PIKA_FORWARD(F, f));
         }
 
@@ -299,12 +284,11 @@ namespace pika::parallel::util {
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr util::in_in_out_result<InIter1B,
                 InIter2B, OutIter>
-            tag_fallback_invoke(
-                pika::parallel::util::transform_binary_loop_ind_t<ExPolicy>,
+            tag_fallback_invoke(transform_binary_loop_ind_t<ExPolicy>,
                 InIter1B first1, InIter1E last1, InIter2B first2,
                 InIter2E last2, OutIter dest, F&& f)
         {
-            return detail::transform_binary_loop_ind<InIter1B, InIter2B>::call(
+            return transform_binary_loop_ind_impl<InIter1B, InIter2B>::call(
                 first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -321,7 +305,7 @@ namespace pika::parallel::util {
     transform_binary_loop_ind(
         InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_binary_loop_ind_t<ExPolicy>{}(
+        return transform_binary_loop_ind_t<ExPolicy>{}(
             first1, last1, first2, dest, PIKA_FORWARD(F, f));
     }
 
@@ -332,81 +316,77 @@ namespace pika::parallel::util {
     transform_binary_loop_ind(InIter1B first1, InIter1E last1, InIter2B first2,
         InIter2E last2, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_binary_loop_ind_t<ExPolicy>{}(
+        return transform_binary_loop_ind_t<ExPolicy>{}(
             first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));
     }
 #endif
 
-    namespace detail {
-
-        template <typename Iter>
-        struct transform_loop_n
+    template <typename Iter>
+    struct transform_loop_n_impl
+    {
+        template <typename InIter, typename OutIter, typename F>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr std::pair<InIter, OutIter>
+            call(InIter it, std::size_t num, OutIter dest, F&& f,
+                std::false_type)
         {
-            template <typename InIter, typename OutIter, typename F>
-            PIKA_HOST_DEVICE
-                PIKA_FORCEINLINE static constexpr std::pair<InIter, OutIter>
-                call(InIter it, std::size_t num, OutIter dest, F&& f,
-                    std::false_type)
+            std::size_t count(num & std::size_t(-4));                  // -V112
+            for (std::size_t i = 0; i < count; (void) ++it, i += 4)    // -V112
             {
-                std::size_t count(num & std::size_t(-4));    // -V112
-                for (std::size_t i = 0; i < count;
-                     (void) ++it, i += 4)    // -V112
-                {
-                    *dest++ = PIKA_INVOKE(f, it);
-                    *dest++ = PIKA_INVOKE(f, ++it);
-                    *dest++ = PIKA_INVOKE(f, ++it);
-                    *dest++ = PIKA_INVOKE(f, ++it);
-                }
-                for (/**/; count < num; (void) ++count, ++it, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, it);
-                }
-
-                return std::make_pair(PIKA_MOVE(it), PIKA_MOVE(dest));
+                *dest++ = PIKA_INVOKE(f, it);
+                *dest++ = PIKA_INVOKE(f, ++it);
+                *dest++ = PIKA_INVOKE(f, ++it);
+                *dest++ = PIKA_INVOKE(f, ++it);
+            }
+            for (/**/; count < num; (void) ++count, ++it, ++dest)
+            {
+                *dest = PIKA_INVOKE(f, it);
             }
 
-            template <typename InIter, typename OutIter, typename F>
-            PIKA_HOST_DEVICE
-                PIKA_FORCEINLINE static constexpr std::pair<InIter, OutIter>
-                call(InIter it, std::size_t num, OutIter dest, F&& f,
-                    std::true_type)
+            return std::make_pair(PIKA_MOVE(it), PIKA_MOVE(dest));
+        }
+
+        template <typename InIter, typename OutIter, typename F>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr std::pair<InIter, OutIter>
+            call(
+                InIter it, std::size_t num, OutIter dest, F&& f, std::true_type)
+        {
+            while (num >= 4)
             {
-                while (num >= 4)
-                {
-                    *dest++ = PIKA_INVOKE(f, it);
-                    *dest++ = PIKA_INVOKE(f, it + 1);
-                    *dest++ = PIKA_INVOKE(f, it + 2);
-                    *dest++ = PIKA_INVOKE(f, it + 3);
+                *dest++ = PIKA_INVOKE(f, it);
+                *dest++ = PIKA_INVOKE(f, it + 1);
+                *dest++ = PIKA_INVOKE(f, it + 2);
+                *dest++ = PIKA_INVOKE(f, it + 3);
 
-                    it += 4;
-                    num -= 4;
-                }
-
-                switch (num)
-                {
-                case 3:
-                    *dest++ = PIKA_INVOKE(f, it);
-                    *dest++ = PIKA_INVOKE(f, it + 1);
-                    *dest++ = PIKA_INVOKE(f, it + 2);
-                    break;
-
-                case 2:
-                    *dest++ = PIKA_INVOKE(f, it);
-                    *dest++ = PIKA_INVOKE(f, it + 1);
-                    break;
-
-                case 1:
-                    *dest++ = PIKA_INVOKE(f, it);
-                    break;
-
-                default:
-                    break;
-                }
-
-                return std::make_pair(it + num, PIKA_MOVE(dest));
+                it += 4;
+                num -= 4;
             }
-        };
-    }    // namespace detail
+
+            switch (num)
+            {
+            case 3:
+                *dest++ = PIKA_INVOKE(f, it);
+                *dest++ = PIKA_INVOKE(f, it + 1);
+                *dest++ = PIKA_INVOKE(f, it + 2);
+                break;
+
+            case 2:
+                *dest++ = PIKA_INVOKE(f, it);
+                *dest++ = PIKA_INVOKE(f, it + 1);
+                break;
+
+            case 1:
+                *dest++ = PIKA_INVOKE(f, it);
+                break;
+
+            default:
+                break;
+            }
+
+            return std::make_pair(it + num, PIKA_MOVE(dest));
+        }
+    };
 
     template <typename ExPolicy>
     struct transform_loop_n_t final
@@ -416,13 +396,12 @@ namespace pika::parallel::util {
         template <typename Iter, typename OutIter, typename F>
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr std::pair<Iter, OutIter>
-            tag_fallback_invoke(
-                pika::parallel::util::transform_loop_n_t<ExPolicy>, Iter it,
+            tag_fallback_invoke(transform_loop_n_t<ExPolicy>, Iter it,
                 std::size_t count, OutIter dest, F&& f)
         {
             using pred = pika::traits::is_random_access_iterator<Iter>;
 
-            return detail::transform_loop_n<Iter>::call(
+            return transform_loop_n_impl<Iter>::call(
                 it, count, dest, PIKA_FORWARD(F, f), pred());
         }
     };
@@ -436,81 +415,77 @@ namespace pika::parallel::util {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr std::pair<Iter, OutIter>
     transform_loop_n(Iter it, std::size_t count, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_loop_n_t<ExPolicy>{}(
+        return transform_loop_n_t<ExPolicy>{}(
             it, count, dest, PIKA_FORWARD(F, f));
     }
 #endif
 
-    namespace detail {
-
-        template <typename Iter>
-        struct transform_loop_n_ind
+    template <typename Iter>
+    struct transform_loop_n_ind_impl
+    {
+        template <typename InIter, typename OutIter, typename F>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr std::pair<InIter, OutIter>
+            call(InIter it, std::size_t num, OutIter dest, F&& f,
+                std::false_type)
         {
-            template <typename InIter, typename OutIter, typename F>
-            PIKA_HOST_DEVICE
-                PIKA_FORCEINLINE static constexpr std::pair<InIter, OutIter>
-                call(InIter it, std::size_t num, OutIter dest, F&& f,
-                    std::false_type)
+            std::size_t count(num & std::size_t(-4));                  // -V112
+            for (std::size_t i = 0; i < count; (void) ++it, i += 4)    // -V112
             {
-                std::size_t count(num & std::size_t(-4));    // -V112
-                for (std::size_t i = 0; i < count;
-                     (void) ++it, i += 4)    // -V112
-                {
-                    *dest++ = PIKA_INVOKE(f, *it);
-                    *dest++ = PIKA_INVOKE(f, *(++it));
-                    *dest++ = PIKA_INVOKE(f, *(++it));
-                    *dest++ = PIKA_INVOKE(f, *(++it));
-                }
-                for (/**/; count < num; (void) ++count, ++it, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, *it);
-                }
-
-                return std::make_pair(PIKA_MOVE(it), PIKA_MOVE(dest));
+                *dest++ = PIKA_INVOKE(f, *it);
+                *dest++ = PIKA_INVOKE(f, *(++it));
+                *dest++ = PIKA_INVOKE(f, *(++it));
+                *dest++ = PIKA_INVOKE(f, *(++it));
+            }
+            for (/**/; count < num; (void) ++count, ++it, ++dest)
+            {
+                *dest = PIKA_INVOKE(f, *it);
             }
 
-            template <typename InIter, typename OutIter, typename F>
-            PIKA_HOST_DEVICE
-                PIKA_FORCEINLINE static constexpr std::pair<InIter, OutIter>
-                call(InIter it, std::size_t num, OutIter dest, F&& f,
-                    std::true_type)
+            return std::make_pair(PIKA_MOVE(it), PIKA_MOVE(dest));
+        }
+
+        template <typename InIter, typename OutIter, typename F>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr std::pair<InIter, OutIter>
+            call(
+                InIter it, std::size_t num, OutIter dest, F&& f, std::true_type)
+        {
+            while (num >= 4)
             {
-                while (num >= 4)
-                {
-                    *dest++ = PIKA_INVOKE(f, *it);
-                    *dest++ = PIKA_INVOKE(f, *(it + 1));
-                    *dest++ = PIKA_INVOKE(f, *(it + 2));
-                    *dest++ = PIKA_INVOKE(f, *(it + 3));
+                *dest++ = PIKA_INVOKE(f, *it);
+                *dest++ = PIKA_INVOKE(f, *(it + 1));
+                *dest++ = PIKA_INVOKE(f, *(it + 2));
+                *dest++ = PIKA_INVOKE(f, *(it + 3));
 
-                    it += 4;
-                    num -= 4;
-                }
-
-                switch (num)
-                {
-                case 3:
-                    *dest++ = PIKA_INVOKE(f, *it);
-                    *dest++ = PIKA_INVOKE(f, *(it + 1));
-                    *dest++ = PIKA_INVOKE(f, *(it + 2));
-                    break;
-
-                case 2:
-                    *dest++ = PIKA_INVOKE(f, *it);
-                    *dest++ = PIKA_INVOKE(f, *(it + 1));
-                    break;
-
-                case 1:
-                    *dest++ = PIKA_INVOKE(f, *it);
-                    break;
-
-                default:
-                    break;
-                }
-
-                return std::make_pair(it + num, PIKA_MOVE(dest));
+                it += 4;
+                num -= 4;
             }
-        };
-    }    // namespace detail
+
+            switch (num)
+            {
+            case 3:
+                *dest++ = PIKA_INVOKE(f, *it);
+                *dest++ = PIKA_INVOKE(f, *(it + 1));
+                *dest++ = PIKA_INVOKE(f, *(it + 2));
+                break;
+
+            case 2:
+                *dest++ = PIKA_INVOKE(f, *it);
+                *dest++ = PIKA_INVOKE(f, *(it + 1));
+                break;
+
+            case 1:
+                *dest++ = PIKA_INVOKE(f, *it);
+                break;
+
+            default:
+                break;
+            }
+
+            return std::make_pair(it + num, PIKA_MOVE(dest));
+        }
+    };
 
     template <typename ExPolicy>
     struct transform_loop_n_ind_t final
@@ -520,13 +495,12 @@ namespace pika::parallel::util {
         template <typename Iter, typename OutIter, typename F>
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr std::pair<Iter, OutIter>
-            tag_fallback_invoke(
-                pika::parallel::util::transform_loop_n_ind_t<ExPolicy>, Iter it,
+            tag_fallback_invoke(transform_loop_n_ind_t<ExPolicy>, Iter it,
                 std::size_t count, OutIter dest, F&& f)
         {
             using pred = pika::traits::is_random_access_iterator<Iter>;
 
-            return detail::transform_loop_n_ind<Iter>::call(
+            return transform_loop_n_ind_impl<Iter>::call(
                 it, count, dest, PIKA_FORWARD(F, f), pred());
         }
     };
@@ -540,44 +514,39 @@ namespace pika::parallel::util {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr std::pair<Iter, OutIter>
     transform_loop_n_ind(Iter it, std::size_t count, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_loop_n_ind_t<ExPolicy>{}(
+        return transform_loop_n_ind_t<ExPolicy>{}(
             it, count, dest, PIKA_FORWARD(F, f));
     }
 #endif
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-
-        template <typename Iter1, typename Inter2>
-        struct transform_binary_loop_n
+    template <typename Iter1, typename Inter2>
+    struct transform_binary_loop_n_impl
+    {
+        template <typename InIter1, typename InIter2, typename OutIter,
+            typename F>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr std::tuple<InIter1,
+            InIter2, OutIter>
+        call(InIter1 first1, std::size_t num, InIter2 first2, OutIter dest,
+            F&& f)
         {
-            template <typename InIter1, typename InIter2, typename OutIter,
-                typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr std::tuple<
-                InIter1, InIter2, OutIter>
-            call(InIter1 first1, std::size_t num, InIter2 first2, OutIter dest,
-                F&& f)
+            std::size_t count(num & std::size_t(-4));    // -V112
+            for (std::size_t i = 0; i < count;
+                 (void) ++first1, ++first2, i += 4)    // -V112
             {
-                std::size_t count(num & std::size_t(-4));    // -V112
-                for (std::size_t i = 0; i < count;
-                     (void) ++first1, ++first2, i += 4)    // -V112
-                {
-                    *dest++ = PIKA_INVOKE(f, first1, first2);
-                    *dest++ = PIKA_INVOKE(f, ++first1, ++first2);
-                    *dest++ = PIKA_INVOKE(f, ++first1, ++first2);
-                    *dest++ = PIKA_INVOKE(f, ++first1, ++first2);
-                }
-                for (/**/; count < num;
-                     (void) ++count, ++first1, ++first2, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, first1, first2);
-                }
-
-                return std::make_tuple(
-                    PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest));
+                *dest++ = PIKA_INVOKE(f, first1, first2);
+                *dest++ = PIKA_INVOKE(f, ++first1, ++first2);
+                *dest++ = PIKA_INVOKE(f, ++first1, ++first2);
+                *dest++ = PIKA_INVOKE(f, ++first1, ++first2);
             }
-        };
-    }    // namespace detail
+            for (/**/; count < num; (void) ++count, ++first1, ++first2, ++dest)
+            {
+                *dest = PIKA_INVOKE(f, first1, first2);
+            }
+
+            return std::make_tuple(
+                PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest));
+        }
+    };
 
     template <typename ExPolicy>
     struct transform_binary_loop_n_t final
@@ -589,12 +558,11 @@ namespace pika::parallel::util {
             typename F>
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr std::tuple<InIter1, InIter2, OutIter>
-            tag_fallback_invoke(
-                pika::parallel::util::transform_binary_loop_n_t<ExPolicy>,
+            tag_fallback_invoke(transform_binary_loop_n_t<ExPolicy>,
                 InIter1 first1, std::size_t count, InIter2 first2, OutIter dest,
                 F&& f)
         {
-            return detail::transform_binary_loop_n<InIter1, InIter2>::call(
+            return transform_binary_loop_n_impl<InIter1, InIter2>::call(
                 first1, count, first2, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -611,44 +579,39 @@ namespace pika::parallel::util {
         transform_binary_loop_n(InIter1 first1, std::size_t count,
             InIter2 first2, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_binary_loop_n_t<ExPolicy>{}(
+        return transform_binary_loop_n_t<ExPolicy>{}(
             first1, count, first2, dest, PIKA_FORWARD(F, f));
     }
 #endif
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-
-        template <typename Iter1, typename Inter2>
-        struct transform_binary_loop_ind_n
+    template <typename Iter1, typename Inter2>
+    struct transform_binary_loop_ind_n_impl
+    {
+        template <typename InIter1, typename InIter2, typename OutIter,
+            typename F>
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr std::tuple<InIter1,
+            InIter2, OutIter>
+        call(InIter1 first1, std::size_t num, InIter2 first2, OutIter dest,
+            F&& f)
         {
-            template <typename InIter1, typename InIter2, typename OutIter,
-                typename F>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr std::tuple<
-                InIter1, InIter2, OutIter>
-            call(InIter1 first1, std::size_t num, InIter2 first2, OutIter dest,
-                F&& f)
+            std::size_t count(num & std::size_t(-4));    // -V112
+            for (std::size_t i = 0; i < count;
+                 (void) ++first1, ++first2, i += 4)    // -V112
             {
-                std::size_t count(num & std::size_t(-4));    // -V112
-                for (std::size_t i = 0; i < count;
-                     (void) ++first1, ++first2, i += 4)    // -V112
-                {
-                    *dest++ = PIKA_INVOKE(f, *first1, *first2);
-                    *dest++ = PIKA_INVOKE(f, *(++first1), *(++first2));
-                    *dest++ = PIKA_INVOKE(f, *(++first1), *(++first2));
-                    *dest++ = PIKA_INVOKE(f, *(++first1), *(++first2));
-                }
-                for (/**/; count < num;
-                     (void) ++count, ++first1, ++first2, ++dest)
-                {
-                    *dest = PIKA_INVOKE(f, *first1, *first2);
-                }
-
-                return std::make_tuple(
-                    PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest));
+                *dest++ = PIKA_INVOKE(f, *first1, *first2);
+                *dest++ = PIKA_INVOKE(f, *(++first1), *(++first2));
+                *dest++ = PIKA_INVOKE(f, *(++first1), *(++first2));
+                *dest++ = PIKA_INVOKE(f, *(++first1), *(++first2));
             }
-        };
-    }    // namespace detail
+            for (/**/; count < num; (void) ++count, ++first1, ++first2, ++dest)
+            {
+                *dest = PIKA_INVOKE(f, *first1, *first2);
+            }
+
+            return std::make_tuple(
+                PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest));
+        }
+    };
 
     template <typename ExPolicy>
     struct transform_binary_loop_ind_n_t final
@@ -660,12 +623,11 @@ namespace pika::parallel::util {
             typename F>
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr std::tuple<InIter1, InIter2, OutIter>
-            tag_fallback_invoke(
-                pika::parallel::util::transform_binary_loop_ind_n_t<ExPolicy>,
+            tag_fallback_invoke(transform_binary_loop_ind_n_t<ExPolicy>,
                 InIter1 first1, std::size_t count, InIter2 first2, OutIter dest,
                 F&& f)
         {
-            return detail::transform_binary_loop_ind_n<InIter1, InIter2>::call(
+            return transform_binary_loop_ind_n_impl<InIter1, InIter2>::call(
                 first1, count, first2, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -682,8 +644,8 @@ namespace pika::parallel::util {
         transform_binary_loop_ind_n(InIter1 first1, std::size_t count,
             InIter2 first2, OutIter dest, F&& f)
     {
-        return pika::parallel::util::transform_binary_loop_ind_n_t<ExPolicy>{}(
+        return transform_binary_loop_ind_n_t<ExPolicy>{}(
             first1, count, first2, dest, PIKA_FORWARD(F, f));
     }
 #endif
-}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util::detail

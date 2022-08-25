@@ -30,10 +30,11 @@ namespace pika::parallel::detail {
         using iterator_type = std::decay_t<Iterator>;
         using value_type =
             typename std::iterator_traits<iterator_type>::value_type;
-        using V =
-            typename pika::parallel::traits::vector_pack_type<value_type>::type;
+        using V = typename pika::parallel::traits::detail::vector_pack_type<
+            value_type>::type;
 
-        static constexpr std::size_t size = traits::vector_pack_size<V>::value;
+        static constexpr std::size_t size =
+            traits::detail::vector_pack_size<V>::value;
 
         template <typename Iter, typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static typename std::enable_if_t<
@@ -54,7 +55,8 @@ namespace pika::parallel::detail {
                  len_v -= size, len -= size)
             {
                 auto tmp = f.template operator()<V>();
-                traits::vector_pack_store<V, value_type>::aligned(tmp, first);
+                traits::detail::vector_pack_store<V, value_type>::aligned(
+                    tmp, first);
                 std::advance(first, size);
             }
 

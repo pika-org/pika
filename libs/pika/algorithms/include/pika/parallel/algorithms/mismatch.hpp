@@ -282,7 +282,7 @@ namespace pika::parallel::detail {
                           proj2 = PIKA_FORWARD(Proj2, proj2)](zip_iterator it,
                           std::size_t part_count,
                           std::size_t base_idx) mutable -> void {
-                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                     part_count, tok,
                     [&f, &proj1, &proj2, &tok](
                         reference t, std::size_t i) mutable -> void {
@@ -389,7 +389,7 @@ namespace pika::parallel::detail {
             auto f1 = [tok, f = PIKA_FORWARD(F, f)](zip_iterator it,
                           std::size_t part_count,
                           std::size_t base_idx) mutable -> void {
-                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                     part_count, tok,
                     [&f, &tok](reference t, std::size_t i) mutable -> void {
                         if (!pika::util::detail::invoke(

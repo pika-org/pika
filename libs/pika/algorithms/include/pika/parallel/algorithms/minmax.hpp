@@ -406,7 +406,7 @@ namespace pika::parallel::detail {
         auto smallest = it;
 
         element_type value = PIKA_INVOKE(proj, *smallest);
-        util::loop_n<std::decay_t<ExPolicy>>(
+        util::detail::loop_n<std::decay_t<ExPolicy>>(
             ++it, count - 1, [&](FwdIter const& curr) -> void {
                 element_type curr_value = PIKA_INVOKE(proj, *curr);
                 if (PIKA_INVOKE(f, curr_value, value))
@@ -442,7 +442,7 @@ namespace pika::parallel::detail {
                 typename std::iterator_traits<decltype(smallest)>::value_type;
 
             element_type value = PIKA_INVOKE(proj, *smallest);
-            util::loop_n<std::decay_t<ExPolicy>>(
+            util::detail::loop_n<std::decay_t<ExPolicy>>(
                 ++it, count - 1, [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, **curr);
                     if (PIKA_INVOKE(f, curr_value, value))
@@ -474,7 +474,7 @@ namespace pika::parallel::detail {
             auto smallest = first;
 
             element_type value = PIKA_INVOKE(proj, *smallest);
-            util::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
+            util::detail::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
                 [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, *curr);
                     if (PIKA_INVOKE(f, curr_value, value))
@@ -534,7 +534,7 @@ namespace pika::parallel::detail {
         auto largest = it;
 
         element_type value = PIKA_INVOKE(proj, *largest);
-        util::loop_n<std::decay_t<ExPolicy>>(
+        util::detail::loop_n<std::decay_t<ExPolicy>>(
             ++it, count - 1, [&](FwdIter const& curr) -> void {
                 element_type curr_value = PIKA_INVOKE(proj, *curr);
                 if (!PIKA_INVOKE(f, curr_value, value))
@@ -570,7 +570,7 @@ namespace pika::parallel::detail {
                 typename std::iterator_traits<decltype(largest)>::value_type;
 
             element_type value = PIKA_INVOKE(proj, *largest);
-            util::loop_n<std::decay_t<ExPolicy>>(
+            util::detail::loop_n<std::decay_t<ExPolicy>>(
                 ++it, count - 1, [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, **curr);
                     if (!PIKA_INVOKE(f, curr_value, value))
@@ -602,7 +602,7 @@ namespace pika::parallel::detail {
             auto largest = first;
 
             element_type value = PIKA_INVOKE(proj, *largest);
-            util::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
+            util::detail::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
                 [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, *curr);
                     if (!PIKA_INVOKE(f, curr_value, value))
@@ -663,7 +663,7 @@ namespace pika::parallel::detail {
 
         element_type min_value = PIKA_INVOKE(proj, *it);
         element_type max_value = min_value;
-        util::loop_n<std::decay_t<ExPolicy>>(
+        util::detail::loop_n<std::decay_t<ExPolicy>>(
             ++it, count - 1, [&](FwdIter const& curr) -> void {
                 element_type curr_value = PIKA_INVOKE(proj, *curr);
                 if (PIKA_INVOKE(f, curr_value, min_value))
@@ -707,7 +707,7 @@ namespace pika::parallel::detail {
 
             element_type min_value = PIKA_INVOKE(proj, *result.min);
             element_type max_value = PIKA_INVOKE(proj, *result.max);
-            util::loop_n<std::decay_t<ExPolicy>>(
+            util::detail::loop_n<std::decay_t<ExPolicy>>(
                 ++it, count - 1, [&](PairIter const& curr) -> void {
                     element_type curr_min_value = PIKA_INVOKE(proj, *curr->min);
                     if (PIKA_INVOKE(f, curr_min_value, min_value))
@@ -749,7 +749,7 @@ namespace pika::parallel::detail {
 
             element_type min_value = PIKA_INVOKE(proj, *min);
             element_type max_value = PIKA_INVOKE(proj, *max);
-            util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
+            util::detail::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
                 [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, *curr);
                     if (PIKA_INVOKE(f, curr_value, min_value))

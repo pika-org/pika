@@ -49,8 +49,8 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok,
             T const& val, Proj&& proj)
         {
-            util::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
-                [&val, &proj, &tok](auto& v, std::size_t i) -> void {
+            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
+                tok, [&val, &proj, &tok](auto& v, std::size_t i) -> void {
                     if (PIKA_INVOKE(proj, v) == val)
                     {
                         tok.cancel(i);
@@ -110,8 +110,8 @@ namespace pika::parallel::detail {
             sequential_find_if_t<ExPolicy>, FwdIter part_begin,
             std::size_t part_count, Token& tok, F&& op, Proj&& proj)
         {
-            util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count, tok,
-                [&op, &tok, &proj](auto const& curr) {
+            util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count,
+                tok, [&op, &tok, &proj](auto const& curr) {
                     if (PIKA_INVOKE(op, PIKA_INVOKE(proj, *curr)))
                     {
                         tok.cancel();
@@ -125,8 +125,8 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
             Proj&& proj)
         {
-            util::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
-                [&f, &proj, &tok](auto& v, std::size_t i) -> void {
+            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
+                tok, [&f, &proj, &tok](auto& v, std::size_t i) -> void {
                     if (PIKA_INVOKE(f, PIKA_INVOKE(proj, v)))
                     {
                         tok.cancel(i);
@@ -196,8 +196,8 @@ namespace pika::parallel::detail {
             sequential_find_if_not_t<ExPolicy>, FwdIter part_begin,
             std::size_t part_count, Token& tok, F&& op, Proj&& proj)
         {
-            util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count, tok,
-                [&op, &tok, &proj](auto const& curr) {
+            util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count,
+                tok, [&op, &tok, &proj](auto const& curr) {
                     if (!PIKA_INVOKE(op, PIKA_INVOKE(proj, *curr)))
                     {
                         tok.cancel();
@@ -211,8 +211,8 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
             Proj&& proj)
         {
-            util::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
-                [&f, &proj, &tok](auto& v, std::size_t i) -> void {
+            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
+                tok, [&f, &proj, &tok](auto& v, std::size_t i) -> void {
                     if (!PIKA_INVOKE(f, PIKA_INVOKE(proj, v)))
                     {
                         tok.cancel(i);

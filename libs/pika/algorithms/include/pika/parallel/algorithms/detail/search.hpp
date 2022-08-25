@@ -108,8 +108,8 @@ namespace pika::parallel::detail {
                           std::size_t base_idx) mutable -> void {
                 FwdIter curr = it;
 
-                pika::parallel::util::loop_idx_n<std::decay_t<ExPolicy>>(
-                    base_idx, it, part_size, tok,
+                pika::parallel::util::detail::loop_idx_n<
+                    std::decay_t<ExPolicy>>(base_idx, it, part_size, tok,
                     [diff, count, s_first, &tok, &curr,
                         op = PIKA_FORWARD(Pred, op),
                         proj1 = PIKA_FORWARD(Proj1, proj1),
@@ -210,7 +210,7 @@ namespace pika::parallel::detail {
                           std::size_t base_idx) mutable -> void {
                 FwdIter curr = it;
 
-                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                     part_size, tok,
                     [count, diff, s_first, &tok, &curr,
                         op = PIKA_FORWARD(Pred, op),

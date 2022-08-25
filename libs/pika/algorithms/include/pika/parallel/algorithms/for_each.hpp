@@ -338,7 +338,7 @@ namespace pika::parallel::detail {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
             Iter part_begin, std::size_t part_size, std::size_t)
         {
-            util::loop_n<execution_policy_type>(part_begin, part_size,
+            util::detail::loop_n<execution_policy_type>(part_begin, part_size,
                 invoke_projected<fun_type, proj_type>{f_, proj_});
         }
     };
@@ -386,7 +386,8 @@ namespace pika::parallel::detail {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
             Iter part_begin, std::size_t part_size, std::size_t)
         {
-            util::loop_n_ind<execution_policy_type>(part_begin, part_size, f_);
+            util::detail::loop_n_ind<execution_policy_type>(
+                part_begin, part_size, f_);
         }
     };
 
@@ -403,7 +404,7 @@ namespace pika::parallel::detail {
         PIKA_HOST_DEVICE static constexpr Iter sequential(
             ExPolicy&&, InIter first, std::size_t count, F&& f, Proj&& proj)
         {
-            return util::loop_n<std::decay_t<ExPolicy>>(
+            return util::detail::loop_n<std::decay_t<ExPolicy>>(
                 first, count, invoke_projected<F, std::decay_t<Proj>>{f, proj});
         }
 
@@ -411,7 +412,7 @@ namespace pika::parallel::detail {
         PIKA_HOST_DEVICE static constexpr Iter sequential(ExPolicy&&,
             InIter first, std::size_t count, F&& f, util::projection_identity)
         {
-            return util::loop_n_ind<std::decay_t<ExPolicy>>(
+            return util::detail::loop_n_ind<std::decay_t<ExPolicy>>(
                 first, count, PIKA_FORWARD(F, f));
         }
 
@@ -457,14 +458,14 @@ namespace pika::parallel::detail {
             if constexpr (pika::traits::is_random_access_iterator_v<InIterB>)
             {
                 PIKA_UNUSED(policy);
-                return util::loop_n<std::decay_t<ExPolicy>>(first,
+                return util::detail::loop_n<std::decay_t<ExPolicy>>(first,
                     static_cast<std::size_t>(detail::distance(first, last)),
                     invoke_projected<F, std::decay_t<Proj>>{f, proj});
             }
             else
             {
-                return util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
-                    invoke_projected<F, std::decay_t<Proj>>{f, proj});
+                return util::detail::loop(PIKA_FORWARD(ExPolicy, policy), first,
+                    last, invoke_projected<F, std::decay_t<Proj>>{f, proj});
             }
         }
 
@@ -476,14 +477,14 @@ namespace pika::parallel::detail {
             if constexpr (pika::traits::is_random_access_iterator_v<InIterB>)
             {
                 PIKA_UNUSED(policy);
-                return util::loop_n_ind<std::decay_t<ExPolicy>>(first,
+                return util::detail::loop_n_ind<std::decay_t<ExPolicy>>(first,
                     static_cast<std::size_t>(detail::distance(first, last)),
                     PIKA_FORWARD(F, f));
             }
             else
             {
-                return util::loop_ind(PIKA_FORWARD(ExPolicy, policy), first,
-                    last, PIKA_FORWARD(F, f));
+                return util::detail::loop_ind(PIKA_FORWARD(ExPolicy, policy),
+                    first, last, PIKA_FORWARD(F, f));
             }
         }
 

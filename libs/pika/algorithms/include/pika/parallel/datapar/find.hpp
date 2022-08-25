@@ -36,10 +36,11 @@ namespace pika::parallel::detail {
             int offset = 0;
             util::cancellation_token<> tok;
 
-            auto ret = util::loop_n<ExPolicy>(first, std::distance(first, last),
-                tok, [&offset, &val, &tok, &proj](auto const& curr) {
+            auto ret = util::detail::loop_n<ExPolicy>(first,
+                std::distance(first, last), tok,
+                [&offset, &val, &tok, &proj](auto const& curr) {
                     auto msk = PIKA_INVOKE(proj, *curr) == val;
-                    offset = pika::parallel::traits::find_first_of(msk);
+                    offset = pika::parallel::traits::detail::find_first_of(msk);
                     if (offset != -1)
                     {
                         tok.cancel();
@@ -56,10 +57,11 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok,
             T const& val, Proj&& proj)
         {
-            util::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
-                [&val, &proj, &tok](auto& v, std::size_t i) -> void {
+            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
+                tok, [&val, &proj, &tok](auto& v, std::size_t i) -> void {
                     auto msk = PIKA_INVOKE(proj, v) == val;
-                    int offset = pika::parallel::traits::find_first_of(msk);
+                    int offset =
+                        pika::parallel::traits::detail::find_first_of(msk);
                     if (offset != -1)
                         tok.cancel(i + offset);
                 });
@@ -100,10 +102,11 @@ namespace pika::parallel::detail {
             int offset = 0;
             util::cancellation_token<> tok;
 
-            auto ret = util::loop_n<ExPolicy>(first, std::distance(first, last),
-                tok, [&offset, &pred, &tok, &proj](auto const& curr) {
+            auto ret = util::detail::loop_n<ExPolicy>(first,
+                std::distance(first, last), tok,
+                [&offset, &pred, &tok, &proj](auto const& curr) {
                     auto msk = PIKA_INVOKE(pred, PIKA_INVOKE(proj, *curr));
-                    offset = pika::parallel::traits::find_first_of(msk);
+                    offset = pika::parallel::traits::detail::find_first_of(msk);
                     if (offset != -1)
                     {
                         tok.cancel();
@@ -119,10 +122,10 @@ namespace pika::parallel::detail {
         static inline constexpr void call(FwdIter part_begin,
             std::size_t part_count, Token& tok, F&& op, Proj&& proj)
         {
-            util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count, tok,
-                [&op, &tok, &proj](auto const& curr) {
+            util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count,
+                tok, [&op, &tok, &proj](auto const& curr) {
                     auto msk = PIKA_INVOKE(op, PIKA_INVOKE(proj, *curr));
-                    if (pika::parallel::traits::any_of(msk))
+                    if (pika::parallel::traits::detail::any_of(msk))
                     {
                         tok.cancel();
                     }
@@ -134,10 +137,11 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
             Proj&& proj)
         {
-            util::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
-                [&f, &proj, &tok](auto& v, std::size_t i) -> void {
+            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
+                tok, [&f, &proj, &tok](auto& v, std::size_t i) -> void {
                     auto msk = PIKA_INVOKE(f, PIKA_INVOKE(proj, v));
-                    int offset = pika::parallel::traits::find_first_of(msk);
+                    int offset =
+                        pika::parallel::traits::detail::find_first_of(msk);
                     if (offset != -1)
                         tok.cancel(i + offset);
                 });
@@ -188,17 +192,17 @@ namespace pika::parallel::detail {
             int offset = 0;
             util::cancellation_token<> tok;
 
-            auto ret =
-                util::loop_n<ExPolicy>(first, std::distance(first, last), tok,
-                    [&offset, &pred, &tok, &proj](
-                        auto const& curr) mutable -> void {
-                        auto msk = !PIKA_INVOKE(pred, PIKA_INVOKE(proj, *curr));
-                        offset = pika::parallel::traits::find_first_of(msk);
-                        if (offset != -1)
-                        {
-                            tok.cancel();
-                        }
-                    });
+            auto ret = util::detail::loop_n<ExPolicy>(first,
+                std::distance(first, last), tok,
+                [&offset, &pred, &tok, &proj](
+                    auto const& curr) mutable -> void {
+                    auto msk = !PIKA_INVOKE(pred, PIKA_INVOKE(proj, *curr));
+                    offset = pika::parallel::traits::detail::find_first_of(msk);
+                    if (offset != -1)
+                    {
+                        tok.cancel();
+                    }
+                });
 
             if (tok.was_cancelled())
                 std::advance(ret, offset);
@@ -209,10 +213,10 @@ namespace pika::parallel::detail {
         static inline constexpr void call(FwdIter part_begin,
             std::size_t part_count, Token& tok, F&& op, Proj&& proj)
         {
-            util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count, tok,
-                [&op, &tok, &proj](auto const& curr) {
+            util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count,
+                tok, [&op, &tok, &proj](auto const& curr) {
                     auto msk = !PIKA_INVOKE(op, PIKA_INVOKE(proj, *curr));
-                    if (pika::parallel::traits::any_of(msk))
+                    if (pika::parallel::traits::detail::any_of(msk))
                     {
                         tok.cancel();
                     }
@@ -224,10 +228,11 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
             Proj&& proj)
         {
-            util::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
-                [&f, &proj, &tok](auto& v, std::size_t i) -> void {
+            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
+                tok, [&f, &proj, &tok](auto& v, std::size_t i) -> void {
                     auto msk = !PIKA_INVOKE(f, PIKA_INVOKE(proj, v));
-                    int offset = pika::parallel::traits::find_first_of(msk);
+                    int offset =
+                        pika::parallel::traits::detail::find_first_of(msk);
                     if (offset != -1)
                         tok.cancel(i + offset);
                 });

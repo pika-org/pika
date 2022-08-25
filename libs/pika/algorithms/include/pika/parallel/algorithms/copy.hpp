@@ -476,7 +476,8 @@ namespace pika { namespace parallel {
                     // below makes gcc generate errors
 
                     // MSVC complains if proj is captured by ref below
-                    util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
+                    util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin,
+                        part_size,
                         [&pred, proj, &curr](zip_iterator it) mutable -> void {
                             bool f = pika::util::detail::invoke(pred,
                                 pika::util::detail::invoke(proj, get<0>(*it)));
@@ -491,8 +492,8 @@ namespace pika { namespace parallel {
                               std::size_t part_size, std::size_t val) mutable {
                     PIKA_UNUSED(flags);
                     std::advance(dest, val);
-                    util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
-                        [&dest](zip_iterator it) mutable {
+                    util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin,
+                        part_size, [&dest](zip_iterator it) mutable {
                             if (get<1>(*it))
                                 *dest++ = get<0>(*it);
                         });

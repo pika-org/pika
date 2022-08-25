@@ -11,12 +11,12 @@
 #include <cstddef>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace traits {
+namespace pika::parallel::traits::detail {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE std::size_t count_bits(bool value)
     {
         return value ? 1 : 0;
     }
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits::detail
 
 #if defined(PIKA_HAVE_DATAPAR)
 
