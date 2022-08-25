@@ -1,3 +1,6 @@
 ---
 exclude_paths:
   - "tools/perftests_ci/**"
+  - ".jenkins/cscs-ault/env-hipcc.sh"
+  - ".jenkins/cscs-ault/env-common.sh"
+  - ".jenkins/cscs-ault/slurm-constraint-hipcc.sh"

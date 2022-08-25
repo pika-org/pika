@@ -140,6 +140,7 @@ int main()
         double* d_A = nullptr; /* device copy of A */
         double* d_B = nullptr; /* device copy of B */
         int* d_info = nullptr; /* error info */
+        int* d_piv = nullptr;  /* device vector of pivot indices */
 #if defined(PIKA_HAVE_CUDA)
         int lwork = 0;            /* size of workspace */
         double* d_work = nullptr; /* device workspace for getrf */
@@ -162,6 +163,7 @@ int main()
             cudaMalloc((void**) &d_A, sizeof(double) * lda * m));
         cu::check_cuda_error(cudaMalloc((void**) &d_B, sizeof(double) * m));
         cu::check_cuda_error(cudaMalloc((void**) &d_info, sizeof(int)));
+        cu::check_cuda_error(cudaMalloc((void**) &d_piv, m * sizeof(int)));
 
         cu::check_cuda_error(cudaMemcpy(
             d_A, A, sizeof(double) * lda * m, cudaMemcpyHostToDevice));
@@ -179,10 +181,10 @@ int main()
         // step 4: LU factorization
 #if defined(PIKA_HAVE_CUDA)
         cu::check_cusolver_error(cusolverDnDgetrf(
-            handle.get(), m, m, d_A, lda, d_work, nullptr, d_info));
+            handle.get(), m, m, d_A, lda, d_work, d_piv, d_info));
 #else
         cu::check_cusolver_error(
-            cusolverDnDgetrf(handle.get(), m, m, d_A, lda, nullptr, d_info));
+            cusolverDnDgetrf(handle.get(), m, m, d_A, lda, d_piv, d_info));
 #endif
         cu::check_cuda_error(cudaDeviceSynchronize());
         cu::check_cuda_error(cudaMemcpy(
@@ -202,11 +204,11 @@ int main()
 #if defined(PIKA_HAVE_CUDA)
         cu::check_cusolver_error(
             cusolverDnDgetrs(handle.get(), CUBLAS_OP_N, m, 1, /* nrhs */
-                d_A, lda, nullptr, d_B, ldb, d_info));
+                d_A, lda, d_piv, d_B, ldb, d_info));
 #else
         cu::check_cusolver_error(
             cusolverDnDgetrs(handle.get(), CUBLAS_OP_N, m, 1, /* nrhs */
-                d_A, lda, nullptr, d_B, ldb));
+                d_A, lda, d_piv, d_B, ldb));
 #endif
         cu::check_cuda_error(cudaDeviceSynchronize());
         cu::check_cuda_error(
@@ -220,6 +222,7 @@ int main()
         cu::check_cuda_error(cudaFree(d_A));
         cu::check_cuda_error(cudaFree(d_B));
         cu::check_cuda_error(cudaFree(d_info));
+        cu::check_cuda_error(cudaFree(d_piv));
 #if defined(PIKA_HAVE_CUDA)
         cu::check_cuda_error(cudaFree(d_work));
 #endif

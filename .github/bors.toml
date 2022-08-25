@@ -36,16 +36,17 @@ status = [
   "ci/circleci: tests.unit.container_algorithms",
 
   # Jenkins
-  "jenkins/cscs/cce-cuda-debug",
-  "jenkins/cscs/clang-11-debug",
-  "jenkins/cscs/clang-12-debug",
-  "jenkins/cscs/clang-13-debug",
-  "jenkins/cscs/clang-14-cuda-debug",
-  "jenkins/cscs/gcc-9-debug",
-  "jenkins/cscs/gcc-10-apex-debug",
-  "jenkins/cscs/gcc-11-debug",
-  "jenkins/cscs/gcc-12-debug",
-  "jenkins/cscs/gcc-cuda-debug",
+  "jenkins/cscs-daint/cce-cuda-debug",
+  "jenkins/cscs-daint/clang-11-debug",
+  "jenkins/cscs-daint/clang-12-debug",
+  "jenkins/cscs-daint/clang-13-debug",
+  "jenkins/cscs-daint/clang-14-cuda-debug",
+  "jenkins/cscs-daint/gcc-9-debug",
+  "jenkins/cscs-daint/gcc-10-apex-debug",
+  "jenkins/cscs-daint/gcc-11-debug",
+  "jenkins/cscs-daint/gcc-12-debug",
+  "jenkins/cscs-daint/gcc-cuda-debug",
+  "jenkins/cscs-ault/hipcc-release",
 ]
 required_approvals = 0
 delete_merged_branches = true
