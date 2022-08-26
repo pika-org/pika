@@ -29,9 +29,9 @@ if(PIKA_WITH_HIP AND NOT TARGET roc::rocblas)
 
   enable_language(HIP)
 
-  find_package(rocblas REQUIRED HINTS $ENV{ROCBLAS_ROOT})
-  find_package(rocsolver REQUIRED HINTS $ENV{ROCSOLVER_ROOT})
-  find_package(hipblas REQUIRED HINTS $ENV{HIPBLAS_ROOT} CONFIG)
+  find_package(rocblas REQUIRED)
+  find_package(rocsolver REQUIRED)
+  find_package(hipblas REQUIRED CONFIG)
 
   if(NOT PIKA_FIND_PACKAGE)
     pika_add_config_define(PIKA_HAVE_HIP)
