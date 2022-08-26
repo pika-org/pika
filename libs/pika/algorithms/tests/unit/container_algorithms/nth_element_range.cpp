@@ -44,12 +44,11 @@ void test_nth_element_sent(IteratorTag)
     auto rand_index = std::rand() % SIZE;
 
     auto result = pika::ranges::nth_element(iterator(std::begin(c)),
-        iterator(std::begin(c) + rand_index), sentinel{std::end(c) - 1});
+        iterator(std::begin(c) + rand_index), sentinel{std::end(c)});
 
-    PIKA_TEST(result == iterator(std::end(c) - 1));
+    PIKA_TEST(result == iterator(std::end(c)));
 
-    std::nth_element(
-        std::begin(d), std::begin(d) + rand_index, std::end(d) - 1);
+    std::nth_element(std::begin(d), std::begin(d) + rand_index, std::end(d));
 
     PIKA_TEST_EQ(*(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
 
@@ -82,12 +81,11 @@ void test_nth_element_sent(ExPolicy policy, IteratorTag)
     auto rand_index = std::rand() % SIZE;
 
     auto result = pika::ranges::nth_element(policy, iterator(std::begin(c)),
-        iterator(std::begin(c) + rand_index), sentinel{std::end(c) - 1});
+        iterator(std::begin(c) + rand_index), sentinel{std::end(c)});
 
-    PIKA_TEST(result == iterator(std::end(c) - 1));
+    PIKA_TEST(result == iterator(std::end(c)));
 
-    std::nth_element(
-        std::begin(d), std::begin(d) + rand_index, std::end(d) - 1);
+    std::nth_element(std::begin(d), std::begin(d) + rand_index, std::end(d));
 
     PIKA_TEST_EQ(*(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
 
@@ -96,7 +94,7 @@ void test_nth_element_sent(ExPolicy policy, IteratorTag)
         PIKA_TEST_LTE(c[k], c[rand_index]);
     }
 
-    for (int k = rand_index + 1; k < SIZE - 1; k++)
+    for (int k = rand_index + 1; k < SIZE; k++)
     {
         PIKA_TEST_LTE(c[rand_index], c[k]);
     }
