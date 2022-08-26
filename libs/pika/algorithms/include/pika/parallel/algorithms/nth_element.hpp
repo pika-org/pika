@@ -259,6 +259,11 @@ namespace pika::parallel::detail {
             ExPolicy&& policy, RandomIt first, RandomIt nth, Sent last,
             Pred&& pred, Proj&& proj)
         {
+            auto end = detail::advance_to_sentinel(first, last);
+            auto nelem = end - first;
+
+            PIKA_ASSERT(0 <= nelem && first <= nth && (nth - first) <= nelem);
+
             using value_type =
                 typename std::iterator_traits<RandomIt>::value_type;
 
