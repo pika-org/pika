@@ -244,7 +244,14 @@ namespace pika::parallel::detail {
             PIKA_ASSERT(0 <= nelem && first <= nth && (nth - first) <= nelem);
 
             if (nelem == 0)
+            {
                 return first;
+            }
+
+            if (nth == last)
+            {
+                return nth;
+            }
 
             uint32_t level = detail::nbits64(nelem) * 2;
             detail::nth_element_seq(first, nth, end, level,
