@@ -57,7 +57,16 @@ void test_only_one_upgrade_lock_permitted()
                     simultaneous_running_count, max_simultaneous_running));
         }
 
-        pika::this_thread::yield();
+        // Wait for one of the threads to signal that it is unblocked
+        {
+            std::unique_lock<mutex_type> lk(unblocked_count_mutex);
+            unblocked_condition.wait(
+                lk, [&]() { return unblocked_count >= 1u; });
+        }
+
+        // Wait a moment to see if the second thread gets the lock concurrently
+        // (it should not)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         CHECK_LOCKED_VALUE_EQUAL(unblocked_count_mutex, unblocked_count, 1u);
 
