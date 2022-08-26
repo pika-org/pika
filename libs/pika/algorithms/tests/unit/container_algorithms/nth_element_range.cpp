@@ -36,30 +36,78 @@ void test_nth_element_sent(IteratorTag)
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
     using sentinel = test::sentinel_from_iterator<iterator>;
 
-    std::vector<std::size_t> c(SIZE);
-    std::iota(c.begin(), c.end(), 1);
-    std::shuffle(c.begin(), c.end(), gen);
-    std::vector<std::size_t> d = c;
-
-    auto rand_index = std::rand() % SIZE;
-
-    auto result = pika::ranges::nth_element(iterator(std::begin(c)),
-        iterator(std::begin(c) + rand_index), sentinel{std::end(c)});
-
-    PIKA_TEST(result == iterator(std::end(c)));
-
-    std::nth_element(std::begin(d), std::begin(d) + rand_index, std::end(d));
-
-    PIKA_TEST_EQ(*(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
-
-    for (int k = 0; k < rand_index; k++)
     {
-        PIKA_TEST_LTE(c[k], c[rand_index]);
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+
+        auto rand_index = std::rand() % SIZE;
+
+        auto result = pika::ranges::nth_element(iterator(std::begin(c)),
+            iterator(std::begin(c) + rand_index), sentinel{std::end(c)});
+
+        PIKA_TEST(result == iterator(std::end(c)));
+
+        std::nth_element(
+            std::begin(d), std::begin(d) + rand_index, std::end(d));
+
+        PIKA_TEST_EQ(
+            *(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
+
+        for (int k = 0; k < rand_index; k++)
+        {
+            PIKA_TEST_LTE(c[k], c[rand_index]);
+        }
+
+        for (int k = rand_index + 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[rand_index], c[k]);
+        }
     }
 
-    for (int k = rand_index + 1; k < SIZE; k++)
+    // Explicitly test nth == std::begin(c)
     {
-        PIKA_TEST_LTE(c[rand_index], c[k]);
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+
+        auto result = pika::ranges::nth_element(iterator(std::begin(c)),
+            iterator(std::begin(c)), sentinel{std::end(c)});
+
+        PIKA_TEST(result == iterator(std::end(c)));
+
+        std::nth_element(std::begin(d), std::begin(d), std::end(d));
+
+        PIKA_TEST_EQ(*std::begin(c), *std::begin(d));
+
+        for (int k = 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[0], c[k]);
+        }
+    }
+
+    // Explicitly test nth == std::end(c)
+    {
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+        std::vector<std::size_t> orig = c;
+
+        auto result = pika::ranges::nth_element(iterator(std::begin(c)),
+            iterator(std::end(c)), sentinel{std::end(c)});
+
+        PIKA_TEST(result == iterator(std::end(c)));
+
+        std::nth_element(std::begin(d), std::end(d), std::end(d));
+
+        for (int k = 0; k < SIZE; k++)
+        {
+            PIKA_TEST_EQ(c[k], d[k]);
+            PIKA_TEST_EQ(c[k], orig[k]);
+        }
     }
 }
 
@@ -73,58 +121,154 @@ void test_nth_element_sent(ExPolicy policy, IteratorTag)
     using iterator = test::test_iterator<base_iterator, IteratorTag>;
     using sentinel = test::sentinel_from_iterator<iterator>;
 
-    std::vector<std::size_t> c(SIZE);
-    std::iota(c.begin(), c.end(), 1);
-    std::shuffle(c.begin(), c.end(), gen);
-    std::vector<std::size_t> d = c;
-
-    auto rand_index = std::rand() % SIZE;
-
-    auto result = pika::ranges::nth_element(policy, iterator(std::begin(c)),
-        iterator(std::begin(c) + rand_index), sentinel{std::end(c)});
-
-    PIKA_TEST(result == iterator(std::end(c)));
-
-    std::nth_element(std::begin(d), std::begin(d) + rand_index, std::end(d));
-
-    PIKA_TEST_EQ(*(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
-
-    for (int k = 0; k < rand_index; k++)
     {
-        PIKA_TEST_LTE(c[k], c[rand_index]);
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+
+        auto rand_index = std::rand() % SIZE;
+
+        auto result = pika::ranges::nth_element(policy, iterator(std::begin(c)),
+            iterator(std::begin(c) + rand_index), sentinel{std::end(c)});
+
+        PIKA_TEST(result == iterator(std::end(c)));
+
+        std::nth_element(
+            std::begin(d), std::begin(d) + rand_index, std::end(d));
+
+        PIKA_TEST_EQ(
+            *(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
+
+        for (int k = 0; k < rand_index; k++)
+        {
+            PIKA_TEST_LTE(c[k], c[rand_index]);
+        }
+
+        for (int k = rand_index + 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[rand_index], c[k]);
+        }
     }
 
-    for (int k = rand_index + 1; k < SIZE; k++)
+    // Explicitly test nth == std::begin(c): the smallest element should be
+    // first
     {
-        PIKA_TEST_LTE(c[rand_index], c[k]);
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+
+        auto result = pika::ranges::nth_element(policy, iterator(std::begin(c)),
+            iterator(std::begin(c)), sentinel{std::end(c)});
+
+        PIKA_TEST(result == iterator(std::end(c)));
+
+        std::nth_element(std::begin(d), std::begin(d), std::end(d));
+
+        PIKA_TEST_EQ(*std::begin(c), *std::begin(d));
+
+        for (int k = 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[0], c[k]);
+        }
+    }
+
+    // Explicitly test nth == std::end(c): nothing should be done to the input
+    {
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+        std::vector<std::size_t> orig = c;
+
+        auto result = pika::ranges::nth_element(policy, iterator(std::begin(c)),
+            iterator(std::end(c)), sentinel{std::end(c)});
+
+        PIKA_TEST(result == iterator(std::end(c)));
+
+        std::nth_element(std::begin(d), std::end(d), std::end(d));
+
+        for (int k = 0; k < SIZE; k++)
+        {
+            PIKA_TEST_EQ(c[k], d[k]);
+            PIKA_TEST_EQ(c[k], orig[k]);
+        }
     }
 }
 
 template <typename IteratorTag>
 void test_nth_element(IteratorTag)
 {
-    std::vector<std::size_t> c(SIZE);
-    std::generate(
-        std::begin(c), std::end(c), []() { return std::rand() % SIZE; });
-    std::vector<std::size_t> d = c;
-
-    auto rand_index = std::rand() % SIZE;
-
-    auto result = pika::ranges::nth_element(c, std::begin(c) + rand_index);
-    PIKA_TEST(result == std::end(c));
-
-    std::nth_element(std::begin(d), std::begin(d) + rand_index, std::end(d));
-
-    PIKA_TEST_EQ(*(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
-
-    for (int k = 0; k < rand_index; k++)
     {
-        PIKA_TEST_LTE(c[k], c[rand_index]);
+        std::vector<std::size_t> c(SIZE);
+        std::generate(
+            std::begin(c), std::end(c), []() { return std::rand() % SIZE; });
+        std::vector<std::size_t> d = c;
+
+        auto rand_index = std::rand() % SIZE;
+
+        auto result = pika::ranges::nth_element(c, std::begin(c) + rand_index);
+        PIKA_TEST(result == std::end(c));
+
+        std::nth_element(
+            std::begin(d), std::begin(d) + rand_index, std::end(d));
+
+        PIKA_TEST_EQ(
+            *(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
+
+        for (int k = 0; k < rand_index; k++)
+        {
+            PIKA_TEST_LTE(c[k], c[rand_index]);
+        }
+
+        for (int k = rand_index + 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[rand_index], c[k]);
+        }
     }
 
-    for (int k = rand_index + 1; k < SIZE; k++)
+    // Explicitly test nth == std::begin(c): the smallest element should be
+    // first
     {
-        PIKA_TEST_LTE(c[rand_index], c[k]);
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+
+        auto result = pika::ranges::nth_element(c, std::begin(c));
+
+        PIKA_TEST(result == std::end(c));
+
+        std::nth_element(std::begin(d), std::begin(d), std::end(d));
+
+        PIKA_TEST_EQ(*std::begin(c), *std::begin(d));
+
+        for (int k = 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[0], c[k]);
+        }
+    }
+
+    // Explicitly test nth == std::end(c): nothing should be done to the input
+    {
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+        std::vector<std::size_t> orig = c;
+
+        auto result = pika::ranges::nth_element(c, std::end(c));
+
+        PIKA_TEST(result == std::end(c));
+
+        std::nth_element(std::begin(d), std::end(d), std::end(d));
+
+        for (int k = 0; k < SIZE; k++)
+        {
+            PIKA_TEST_EQ(c[k], d[k]);
+            PIKA_TEST_EQ(c[k], orig[k]);
+        }
     }
 }
 
@@ -134,29 +278,76 @@ void test_nth_element(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    std::vector<std::size_t> c(SIZE);
-    std::generate(
-        std::begin(c), std::end(c), []() { return std::rand() % SIZE; });
-    std::vector<std::size_t> d = c;
-
-    auto rand_index = std::rand() % SIZE;
-
-    auto result =
-        pika::ranges::nth_element(policy, c, std::begin(c) + rand_index);
-    PIKA_TEST(result == std::end(c));
-
-    std::nth_element(std::begin(d), std::begin(d) + rand_index, std::end(d));
-
-    PIKA_TEST_EQ(*(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
-
-    for (int k = 0; k < rand_index; k++)
     {
-        PIKA_TEST_LTE(c[k], c[rand_index]);
+        std::vector<std::size_t> c(SIZE);
+        std::generate(
+            std::begin(c), std::end(c), []() { return std::rand() % SIZE; });
+        std::vector<std::size_t> d = c;
+
+        auto rand_index = std::rand() % SIZE;
+
+        auto result =
+            pika::ranges::nth_element(policy, c, std::begin(c) + rand_index);
+        PIKA_TEST(result == std::end(c));
+
+        std::nth_element(
+            std::begin(d), std::begin(d) + rand_index, std::end(d));
+
+        PIKA_TEST_EQ(
+            *(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
+
+        for (int k = 0; k < rand_index; k++)
+        {
+            PIKA_TEST_LTE(c[k], c[rand_index]);
+        }
+
+        for (int k = rand_index + 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[rand_index], c[k]);
+        }
     }
 
-    for (int k = rand_index + 1; k < SIZE; k++)
+    // Explicitly test nth == std::begin(c): the smallest element should be
+    // first
     {
-        PIKA_TEST_LTE(c[rand_index], c[k]);
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+
+        auto result = pika::ranges::nth_element(policy, c, std::begin(c));
+
+        PIKA_TEST(result == std::end(c));
+
+        std::nth_element(std::begin(d), std::begin(d), std::end(d));
+
+        PIKA_TEST_EQ(*std::begin(c), *std::begin(d));
+
+        for (int k = 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[0], c[k]);
+        }
+    }
+
+    // Explicitly test nth == std::end(c): nothing should be done to the input
+    {
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+        std::vector<std::size_t> orig = c;
+
+        auto result = pika::ranges::nth_element(policy, c, std::end(c));
+
+        PIKA_TEST(result == std::end(c));
+
+        std::nth_element(std::begin(d), std::end(d), std::end(d));
+
+        for (int k = 0; k < SIZE; k++)
+        {
+            PIKA_TEST_EQ(c[k], d[k]);
+            PIKA_TEST_EQ(c[k], orig[k]);
+        }
     }
 }
 
@@ -166,31 +357,80 @@ void test_nth_element_async(ExPolicy policy, IteratorTag)
     static_assert(pika::is_execution_policy<ExPolicy>::value,
         "pika::is_execution_policy<ExPolicy>::value");
 
-    std::vector<std::size_t> c(SIZE);
-    std::generate(
-        std::begin(c), std::end(c), []() { return std::rand() % SIZE; });
-    std::vector<std::size_t> d = c;
-
-    auto rand_index = std::rand() % SIZE;
-
-    auto result =
-        pika::ranges::nth_element(policy, c, std::begin(c) + rand_index);
-    result.wait();
-
-    PIKA_TEST(result.get() == std::end(c));
-
-    std::nth_element(std::begin(d), std::begin(d) + rand_index, std::end(d));
-
-    PIKA_TEST_EQ(*(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
-
-    for (int k = 0; k < rand_index; k++)
     {
-        PIKA_TEST_LTE(c[k], c[rand_index]);
+        std::vector<std::size_t> c(SIZE);
+        std::generate(
+            std::begin(c), std::end(c), []() { return std::rand() % SIZE; });
+        std::vector<std::size_t> d = c;
+
+        auto rand_index = std::rand() % SIZE;
+
+        auto result =
+            pika::ranges::nth_element(policy, c, std::begin(c) + rand_index);
+        result.wait();
+
+        PIKA_TEST(result.get() == std::end(c));
+
+        std::nth_element(
+            std::begin(d), std::begin(d) + rand_index, std::end(d));
+
+        PIKA_TEST_EQ(
+            *(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
+
+        for (int k = 0; k < rand_index; k++)
+        {
+            PIKA_TEST_LTE(c[k], c[rand_index]);
+        }
+
+        for (int k = rand_index + 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[rand_index], c[k]);
+        }
     }
 
-    for (int k = rand_index + 1; k < SIZE; k++)
+    // Explicitly test nth == std::begin(c): the smallest element should be
+    // first
     {
-        PIKA_TEST_LTE(c[rand_index], c[k]);
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+
+        auto result = pika::ranges::nth_element(policy, c, std::begin(c));
+        result.wait();
+
+        PIKA_TEST(result.get() == std::end(c));
+
+        std::nth_element(std::begin(d), std::begin(d), std::end(d));
+
+        PIKA_TEST_EQ(*std::begin(c), *std::begin(d));
+
+        for (int k = 1; k < SIZE; k++)
+        {
+            PIKA_TEST_LTE(c[0], c[k]);
+        }
+    }
+
+    // Explicitly test nth == std::end(c): nothing should be done to the input
+    {
+        std::vector<std::size_t> c(SIZE);
+        std::iota(c.begin(), c.end(), 1);
+        std::shuffle(c.begin(), c.end(), gen);
+        std::vector<std::size_t> d = c;
+        std::vector<std::size_t> orig = c;
+
+        auto result = pika::ranges::nth_element(policy, c, std::end(c));
+        result.wait();
+
+        PIKA_TEST(result.get() == std::end(c));
+
+        std::nth_element(std::begin(d), std::end(d), std::end(d));
+
+        for (int k = 0; k < SIZE; k++)
+        {
+            PIKA_TEST_EQ(c[k], d[k]);
+            PIKA_TEST_EQ(c[k], orig[k]);
+        }
     }
 }
 
