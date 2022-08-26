@@ -239,12 +239,12 @@ namespace pika::parallel::detail {
             Sent last, Pred&& pred, Proj&& proj)
         {
             auto end = detail::advance_to_sentinel(first, last);
-
             auto nelem = end - first;
+
+            PIKA_ASSERT(0 <= nelem && first <= nth && (nth - first) <= nelem);
+
             if (nelem == 0)
                 return first;
-            PIKA_ASSERT(nelem >= 0 && (nth - first + 1) > 0 &&
-                (nth - first + 1) <= nelem);
 
             uint32_t level = detail::nbits64(nelem) * 2;
             detail::nth_element_seq(first, nth, end, level,
