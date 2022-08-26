@@ -10,7 +10,7 @@
 
 #if defined(PIKA_HAVE_HIP)
 
-#include <hipblas.h>
+#include <hipblas/hipblas.h>
 
 #define cublasCreate hipblasCreate
 #define cublasDestroy hipblasDestroy
