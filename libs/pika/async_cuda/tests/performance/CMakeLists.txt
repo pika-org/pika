@@ -6,12 +6,12 @@
 
 set(benchmarks cuda_scheduler_throughput synchronize)
 
-set(synchronize_CUDA ON)
+set(synchronize_GPU ON)
 set(cuda_scheduler_throughput_PARAMETERS THREADS 1)
 
 foreach(benchmark ${benchmarks})
 
-  if(${${benchmark}_CUDA})
+  if(${${benchmark}_GPU})
     set(sources ${benchmark}.cu)
   else()
     set(sources ${benchmark}.cpp)

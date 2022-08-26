@@ -8,7 +8,7 @@
 function(pika_add_executable name)
   # retrieve arguments
   set(options
-      CUDA
+      GPU
       EXCLUDE_FROM_ALL
       EXCLUDE_FROM_DEFAULT_BUILD
       AUTOGLOB
@@ -208,7 +208,7 @@ function(pika_add_executable name)
     endif()
   endif()
 
-  if(${name}_CUDA)
+  if(${name}_GPU)
     if(PIKA_WITH_HIP)
       set_target_properties(${name} PROPERTIES LANGUAGE HIP)
     else()
