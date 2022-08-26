@@ -46,17 +46,17 @@ void test_nth_element(IteratorTag)
         std::nth_element(
             std::begin(d), std::begin(d) + rand_index, std::end(d));
 
-        PIKA_TEST(
-            *(std::begin(c) + rand_index) == *(std::begin(d) + rand_index));
+        PIKA_TEST_EQ(
+            *(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
 
         for (int k = 0; k < rand_index; k++)
         {
-            PIKA_TEST(c[k] <= c[rand_index]);
+            PIKA_TEST_LTE(c[k], c[rand_index]);
         }
 
         for (int k = rand_index + 1; k < SIZE; k++)
         {
-            PIKA_TEST(c[k] >= c[rand_index]);
+            PIKA_TEST_LTE(c[rand_index], c[k]);
         }
     }
 
@@ -125,17 +125,17 @@ void test_nth_element(ExPolicy policy, IteratorTag)
         std::nth_element(
             std::begin(d), std::begin(d) + rand_index, std::end(d));
 
-        PIKA_TEST(
-            *(std::begin(c) + rand_index) == *(std::begin(d) + rand_index));
+        PIKA_TEST_EQ(
+            *(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
 
         for (int k = 0; k < rand_index; k++)
         {
-            PIKA_TEST(c[k] <= c[rand_index]);
+            PIKA_TEST_LTE(c[k], c[rand_index]);
         }
 
         for (int k = rand_index + 1; k < SIZE; k++)
         {
-            PIKA_TEST(c[k] >= c[rand_index]);
+            PIKA_TEST_LTE(c[rand_index], c[k]);
         }
     }
 
@@ -202,17 +202,17 @@ void test_nth_element_async(ExPolicy p, IteratorTag)
             std::begin(d), std::begin(d) + rand_index, std::end(d));
 
         actual.wait();
-        PIKA_TEST(
-            *(std::begin(c) + rand_index) == *(std::begin(d) + rand_index));
+        PIKA_TEST_EQ(
+            *(std::begin(c) + rand_index), *(std::begin(d) + rand_index));
 
         for (int k = 0; k < rand_index; k++)
         {
-            PIKA_TEST(c[k] <= c[rand_index]);
+            PIKA_TEST_LTE(c[k], c[rand_index]);
         }
 
         for (int k = rand_index + 1; k < SIZE; k++)
         {
-            PIKA_TEST(c[k] >= c[rand_index]);
+            PIKA_TEST_LTE(c[rand_index], c[k]);
         }
     }
 
