@@ -28,9 +28,9 @@ namespace pika::parallel::detail {
         }
         else
         {
-            for (/**/; first != last; ++first)
+            while (first != last)
             {
-                /**/;
+                ++first;
             }
             return first;
         }
