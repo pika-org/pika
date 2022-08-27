@@ -33,7 +33,7 @@ void test_for_each_prefetching(ExPolicy&& policy, IteratorTag)
     std::vector<std::size_t> range(10007);
     std::iota(range.begin(), range.end(), 0);
 
-    auto ctx = pika::parallel::util::make_prefetcher_context(
+    auto ctx = pika::parallel::util::detail::make_prefetcher_context(
         range.begin(), range.end(), prefetch_distance_factor, c);
 
     pika::for_each(std::forward<ExPolicy>(policy), ctx.begin(), ctx.end(),
@@ -57,7 +57,7 @@ void test_for_each_prefetching_async(ExPolicy&& p, IteratorTag)
     std::vector<std::size_t> range(10007);
     std::iota(range.begin(), range.end(), 0);
 
-    auto ctx = pika::parallel::util::make_prefetcher_context(
+    auto ctx = pika::parallel::util::detail::make_prefetcher_context(
         range.begin(), range.end(), prefetch_distance_factor, c);
 
     auto f = pika::for_each(std::forward<ExPolicy>(p), ctx.begin(), ctx.end(),
@@ -86,7 +86,7 @@ void test_for_each_prefetching_exception(ExPolicy policy, IteratorTag)
     std::vector<std::size_t> range(10007);
     std::iota(range.begin(), range.end(), 0);
 
-    auto ctx = pika::parallel::util::make_prefetcher_context(
+    auto ctx = pika::parallel::util::detail::make_prefetcher_context(
         range.begin(), range.end(), prefetch_distance_factor, c);
 
     bool caught_exception = false;
@@ -119,7 +119,7 @@ void test_for_each_prefetching_exception_async(ExPolicy p, IteratorTag)
     std::vector<std::size_t> range(10007);
     std::iota(range.begin(), range.end(), 0);
 
-    auto ctx = pika::parallel::util::make_prefetcher_context(
+    auto ctx = pika::parallel::util::detail::make_prefetcher_context(
         range.begin(), range.end(), prefetch_distance_factor, c);
 
     bool caught_exception = false;
@@ -160,7 +160,7 @@ void test_for_each_prefetching_bad_alloc(ExPolicy policy, IteratorTag)
     std::vector<std::size_t> range(10007);
     std::iota(range.begin(), range.end(), 0);
 
-    auto ctx = pika::parallel::util::make_prefetcher_context(
+    auto ctx = pika::parallel::util::detail::make_prefetcher_context(
         range.begin(), range.end(), prefetch_distance_factor, c);
 
     bool caught_exception = false;
@@ -192,7 +192,7 @@ void test_for_each_prefetching_bad_alloc_async(ExPolicy p, IteratorTag)
     std::vector<std::size_t> range(10007);
     std::iota(range.begin(), range.end(), 0);
 
-    auto ctx = pika::parallel::util::make_prefetcher_context(
+    auto ctx = pika::parallel::util::detail::make_prefetcher_context(
         range.begin(), range.end(), prefetch_distance_factor, c);
 
     bool caught_exception = false;

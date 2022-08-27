@@ -61,8 +61,8 @@ namespace pika::parallel::detail {
     template <typename Proj, typename ValueType, typename Enable = void>
     struct projected_result_of_vector_pack_
       : pika::util::detail::invoke_result<Proj,
-            typename pika::parallel::traits::vector_pack_load<
-                typename pika::parallel::traits::vector_pack_type<
+            typename pika::parallel::traits::detail::vector_pack_load<
+                typename pika::parallel::traits::detail::vector_pack_type<
                     ValueType>::type,
                 ValueType>::value_type&>
     {

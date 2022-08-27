@@ -290,7 +290,7 @@ namespace pika::parallel::detail {
             operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             auto iters = part_begin.get_iterator_tuple();
-            return util::transform_loop_n<execution_policy_type>(
+            return util::detail::transform_loop_n<execution_policy_type>(
                 std::get<0>(iters), part_size, std::get<1>(iters),
                 transform_projected<F, Proj>(f_, proj_));
         }
@@ -336,7 +336,7 @@ namespace pika::parallel::detail {
             operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             auto iters = part_begin.get_iterator_tuple();
-            return util::transform_loop_n_ind<execution_policy_type>(
+            return util::detail::transform_loop_n_ind<execution_policy_type>(
                 std::get<0>(iters), part_size, std::get<1>(iters), f_);
         }
     };
@@ -357,8 +357,8 @@ namespace pika::parallel::detail {
         sequential(ExPolicy&& policy, InIterB first, InIterE last, OutIter dest,
             F&& f, Proj&& proj)
         {
-            return util::transform_loop(PIKA_FORWARD(ExPolicy, policy), first,
-                last, dest, transform_projected<F, Proj>(f, proj));
+            return util::detail::transform_loop(PIKA_FORWARD(ExPolicy, policy),
+                first, last, dest, transform_projected<F, Proj>(f, proj));
         }
 
         // sequential execution without projection
@@ -368,8 +368,9 @@ namespace pika::parallel::detail {
         sequential(ExPolicy&& policy, InIterB first, InIterE last, OutIter dest,
             F&& f, util::projection_identity)
         {
-            return util::transform_loop_ind(PIKA_FORWARD(ExPolicy, policy),
-                first, last, dest, PIKA_FORWARD(F, f));
+            return util::detail::transform_loop_ind(
+                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                PIKA_FORWARD(F, f));
         }
 
         template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
@@ -476,7 +477,7 @@ namespace pika::parallel::detail {
             operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             auto iters = part_begin.get_iterator_tuple();
-            return util::transform_binary_loop_n<execution_policy_type>(
+            return util::detail::transform_binary_loop_n<execution_policy_type>(
                 std::get<0>(iters), part_size, std::get<1>(iters),
                 std::get<2>(iters),
                 transform_binary_projected<F_, Proj1, Proj2>{
@@ -532,9 +533,9 @@ namespace pika::parallel::detail {
             operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             auto iters = part_begin.get_iterator_tuple();
-            return util::transform_binary_loop_ind_n<execution_policy_type>(
-                std::get<0>(iters), part_size, std::get<1>(iters),
-                std::get<2>(iters), f_);
+            return util::detail::transform_binary_loop_ind_n<
+                execution_policy_type>(std::get<0>(iters), part_size,
+                std::get<1>(iters), std::get<2>(iters), f_);
         }
     };
 
@@ -555,8 +556,8 @@ namespace pika::parallel::detail {
             ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
             OutIter dest, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
-            return util::transform_binary_loop<ExPolicy>(first1, last1, first2,
-                dest,
+            return util::detail::transform_binary_loop<ExPolicy>(first1, last1,
+                first2, dest,
                 transform_binary_projected<F, Proj1, Proj2>{f, proj1, proj2});
         }
 
@@ -568,7 +569,7 @@ namespace pika::parallel::detail {
             OutIter dest, F&& f, util::projection_identity,
             util::projection_identity)
         {
-            return util::transform_binary_loop_ind<ExPolicy>(
+            return util::detail::transform_binary_loop_ind<ExPolicy>(
                 first1, last1, first2, dest, f);
         }
 
@@ -623,8 +624,8 @@ namespace pika::parallel::detail {
             ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
             InIter2 last2, OutIter dest, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
-            return util::transform_binary_loop<ExPolicy>(first1, last1, first2,
-                last2, dest,
+            return util::detail::transform_binary_loop<ExPolicy>(first1, last1,
+                first2, last2, dest,
                 transform_binary_projected<F, Proj1, Proj2>{f, proj1, proj2});
         }
 
@@ -636,7 +637,7 @@ namespace pika::parallel::detail {
             InIter2 last2, OutIter dest, F&& f, util::projection_identity,
             util::projection_identity)
         {
-            return util::transform_binary_loop_ind<ExPolicy>(
+            return util::detail::transform_binary_loop_ind<ExPolicy>(
                 first1, last1, first2, last2, dest, f);
         }
 

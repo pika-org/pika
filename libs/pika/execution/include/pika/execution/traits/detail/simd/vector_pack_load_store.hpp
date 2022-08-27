@@ -16,11 +16,7 @@
 
 #include <experimental/simd>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace traits {
-    ///////////////////////////////////////////////////////////////////////////
-
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::traits::detail {
     template <typename V, typename ValueType, typename Enable>
     struct vector_pack_load
     {
@@ -55,6 +51,6 @@ namespace pika { namespace parallel { namespace traits {
                 std::addressof(*iter), std::experimental::element_aligned);
         }
     };
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits::detail
 
 #endif

@@ -332,7 +332,8 @@ namespace pika::parallel::detail {
             using reference = typename std::iterator_traits<Iter>::reference;
 
             T val = PIKA_INVOKE(convert_, *part_begin);
-            return util::accumulate_n(++part_begin, --part_size, PIKA_MOVE(val),
+            return util::detail::accumulate_n(++part_begin, --part_size,
+                PIKA_MOVE(val),
                 [PIKA_CXX20_CAPTURE_THIS(=)](
                     T const& res, reference next) mutable -> T {
                     return PIKA_INVOKE(
@@ -384,8 +385,9 @@ namespace pika::parallel::detail {
                 pika::unwrapping([init = PIKA_FORWARD(T_, init),
                                      r = PIKA_FORWARD(Reduce, r)](
                                      std::vector<T>&& results) mutable -> T {
-                    return util::accumulate_n(pika::util::begin(results),
-                        pika::util::size(results), init, r);
+                    return util::detail::accumulate_n(
+                        pika::util::begin(results), pika::util::size(results),
+                        init, r);
                 }));
         }
     };
@@ -443,20 +445,21 @@ namespace pika::parallel::detail {
             }
 
             // check whether we should apply vectorization
-            if (!util::loop_optimization<ExPolicy>(first1, last1))
+            if (!util::detail::loop_optimization<ExPolicy>(first1, last1))
             {
-                util::loop2<ExPolicy>(std::false_type(), first1, last1, first2,
+                util::detail::loop2<ExPolicy>(std::false_type(), first1, last1,
+                    first2,
                     transform_reduce_binary_partition<Op1, Op2, T>{
                         PIKA_FORWARD(Op1, op1), PIKA_FORWARD(Op2, op2), init});
                 return init;
             }
 
             // loop_step properly advances the iterators
-            auto part_sum = util::loop_step<ExPolicy>(std::true_type(),
+            auto part_sum = util::detail::loop_step<ExPolicy>(std::true_type(),
                 transform_reduce_binary_indirect<Op2>{op2}, first1, first2);
 
-            std::pair<Iter, Iter2> p = util::loop2<ExPolicy>(std::true_type(),
-                first1, last1, first2,
+            std::pair<Iter, Iter2> p = util::detail::loop2<ExPolicy>(
+                std::true_type(), first1, last1, first2,
                 transform_reduce_binary_partition<Op1, Op2, decltype(part_sum)>{
                     op1, op2, part_sum});
 
@@ -472,7 +475,7 @@ namespace pika::parallel::detail {
             // handle the remainder directly
             if (p.first != last1)
             {
-                util::loop2<ExPolicy>(std::false_type(), p.first, last1,
+                util::detail::loop2<ExPolicy>(std::false_type(), p.first, last1,
                     p.second,
                     transform_reduce_binary_partition<Op1, Op2,
                         decltype(result)>{PIKA_FORWARD(Op1, op1),
@@ -510,13 +513,15 @@ namespace pika::parallel::detail {
                 Iter last1 = it1;
                 std::advance(last1, part_size);
 
-                if (!util::loop_optimization<ExPolicy>(it1, last1))
+                if (!util::detail::loop_optimization<ExPolicy>(it1, last1))
                 {
                     // loop_step properly advances the iterators
-                    auto result = util::loop_step<ExPolicy>(std::false_type(),
+                    auto result = util::detail::loop_step<ExPolicy>(
+                        std::false_type(),
                         transform_reduce_binary_indirect<Op2>{op2}, it1, it2);
 
-                    util::loop2<ExPolicy>(std::false_type(), it1, last1, it2,
+                    util::detail::loop2<ExPolicy>(std::false_type(), it1, last1,
+                        it2,
                         transform_reduce_binary_partition<Op1, Op2,
                             decltype(result)>{PIKA_FORWARD(Op1, op1),
                             PIKA_FORWARD(Op2, op2), result});
@@ -525,13 +530,14 @@ namespace pika::parallel::detail {
                 }
 
                 // loop_step properly advances the iterators
-                auto part_sum = util::loop_step<ExPolicy>(std::true_type(),
-                    transform_reduce_binary_indirect<Op2>{op2}, it1, it2);
+                auto part_sum =
+                    util::detail::loop_step<ExPolicy>(std::true_type(),
+                        transform_reduce_binary_indirect<Op2>{op2}, it1, it2);
 
-                std::pair<Iter, Iter2> p =
-                    util::loop2<ExPolicy>(std::true_type(), it1, last1, it2,
-                        transform_reduce_binary_partition<Op1, Op2,
-                            decltype(part_sum)>{op1, op2, part_sum});
+                std::pair<Iter, Iter2> p = util::detail::loop2<ExPolicy>(
+                    std::true_type(), it1, last1, it2,
+                    transform_reduce_binary_partition<Op1, Op2,
+                        decltype(part_sum)>{op1, op2, part_sum});
 
                 // this is to support vectorization, it will call op1
                 // for each of the elements of a value-pack
@@ -545,8 +551,8 @@ namespace pika::parallel::detail {
                 // handle the remainder directly
                 if (p.first != last1)
                 {
-                    util::loop2<ExPolicy>(std::false_type(), p.first, last1,
-                        p.second,
+                    util::detail::loop2<ExPolicy>(std::false_type(), p.first,
+                        last1, p.second,
                         transform_reduce_binary_partition<Op1, Op2,
                             decltype(result)>{PIKA_FORWARD(Op1, op1),
                             PIKA_FORWARD(Op2, op2), result});

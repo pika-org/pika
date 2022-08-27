@@ -31,7 +31,7 @@
 #endif
 #endif
 
-namespace pika::parallel::util {
+namespace pika::parallel::util::detail {
     namespace prefetching {
         template <typename Itr, typename... Ts>
         class prefetching_iterator
@@ -352,7 +352,7 @@ namespace pika::parallel::util {
         template <typename ExPolicy, typename Itr, typename... Ts, typename F>
         PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr prefetching_iterator<Itr, Ts...>
-            tag_invoke(pika::parallel::util::loop_n_t<ExPolicy>,
+            tag_invoke(pika::parallel::util::detail::loop_n_t<ExPolicy>,
                 prefetching_iterator<Itr, Ts...> it, std::size_t count, F&& f)
         {
             return loop_n_helper::call(
@@ -437,7 +437,7 @@ namespace pika::parallel::util {
         template <typename ExPolicy, typename Itr, typename... Ts, typename F>
         PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr prefetching_iterator<Itr, Ts...>
-            tag_invoke(pika::parallel::util::loop_n_ind_t<ExPolicy>,
+            tag_invoke(pika::parallel::util::detail::loop_n_ind_t<ExPolicy>,
                 prefetching_iterator<Itr, Ts...> it, std::size_t count, F&& f)
         {
             return loop_n_ind_helper::call(
@@ -464,127 +464,123 @@ namespace pika::parallel::util {
             base_begin, base_end, PIKA_MOVE(ranges), p_factor);
     }
 
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Itr, typename... Ts>
-        struct loop<prefetching::prefetching_iterator<Itr, Ts...>>
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Itr, typename... Ts>
+    struct loop_impl<prefetching::prefetching_iterator<Itr, Ts...>>
+    {
+        using iterator_type = prefetching::prefetching_iterator<Itr, Ts...>;
+        using type = typename iterator_type::base_iterator;
+        using index_pack_type =
+            typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type;
+
+        template <typename End, typename F>
+        static iterator_type call(iterator_type it, End end, F&& f)
         {
-            using iterator_type = prefetching::prefetching_iterator<Itr, Ts...>;
-            using type = typename iterator_type::base_iterator;
-            using index_pack_type =
-                typename pika::util::detail::make_index_pack<sizeof...(
-                    Ts)>::type;
-
-            template <typename End, typename F>
-            static iterator_type call(iterator_type it, End end, F&& f)
+            for (/**/; it != end; ++it)
             {
-                for (/**/; it != end; ++it)
-                {
-                    Itr base = it.base();
-                    std::size_t j = it.index();
+                Itr base = it.base();
+                std::size_t j = it.index();
 
-                    // different versions of clang-format do different things
-                    // clang-format off
+                // different versions of clang-format do different things
+                // clang-format off
                     std::size_t last = (std::min) (it.index() + it.chunk_size(),
                         it.range_size());
-                    // clang-format on
+                // clang-format on
 
-                    for (/**/; j != last; (void) ++j, ++base)
-                        f(base);
+                for (/**/; j != last; (void) ++j, ++base)
+                    f(base);
 
-                    if (j != it.range_size())
-                        prefetch_containers(it.ranges(), index_pack_type(), j);
-                }
-                return it;
+                if (j != it.range_size())
+                    prefetch_containers(it.ranges(), index_pack_type(), j);
             }
+            return it;
+        }
 
-            template <typename End, typename CancelToken, typename F>
-            static iterator_type call(
-                iterator_type it, End end, CancelToken& tok, F&& f)
-            {
-                for (/**/; it != end; ++it)
-                {
-                    if (tok.was_cancelled())
-                        break;
-
-                    Itr base = it.base();
-                    std::size_t j = it.index();
-
-                    // different versions of clang-format do different things
-                    // clang-format off
-                    std::size_t last = (std::min) (it.index() + it.chunk_size(),
-                        it.range_size());
-                    // clang-format on
-
-                    for (/**/; j != last; (void) ++j, ++base)
-                        f(base);
-
-                    if (j != it.range_size())
-                        prefetch_containers(it.ranges(), index_pack_type(), j);
-                }
-                return it;
-            }
-        };
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename Itr, typename... Ts>
-        struct loop_ind<prefetching::prefetching_iterator<Itr, Ts...>>
+        template <typename End, typename CancelToken, typename F>
+        static iterator_type call(
+            iterator_type it, End end, CancelToken& tok, F&& f)
         {
-            using iterator_type = prefetching::prefetching_iterator<Itr, Ts...>;
-            using type = typename iterator_type::base_iterator;
-            using index_pack_type =
-                typename pika::util::detail::make_index_pack<sizeof...(
-                    Ts)>::type;
-
-            template <typename End, typename F>
-            static iterator_type call(iterator_type it, End end, F&& f)
+            for (/**/; it != end; ++it)
             {
-                for (/**/; it != end; ++it)
-                {
-                    Itr base = it.base();
-                    std::size_t j = it.index();
+                if (tok.was_cancelled())
+                    break;
 
-                    // different versions of clang-format do different things
-                    // clang-format off
+                Itr base = it.base();
+                std::size_t j = it.index();
+
+                // different versions of clang-format do different things
+                // clang-format off
                     std::size_t last = (std::min) (it.index() + it.chunk_size(),
                         it.range_size());
-                    // clang-format on
+                // clang-format on
 
-                    for (/**/; j != last; (void) ++j, ++base)
-                        f(*base);
+                for (/**/; j != last; (void) ++j, ++base)
+                    f(base);
 
-                    if (j != it.range_size())
-                        prefetch_containers(it.ranges(), index_pack_type(), j);
-                }
-                return it;
+                if (j != it.range_size())
+                    prefetch_containers(it.ranges(), index_pack_type(), j);
             }
+            return it;
+        }
+    };
 
-            template <typename End, typename CancelToken, typename F>
-            static iterator_type call(
-                iterator_type it, End end, CancelToken& tok, F&& f)
+    ///////////////////////////////////////////////////////////////////////
+    template <typename Itr, typename... Ts>
+    struct loop_ind_impl<prefetching::prefetching_iterator<Itr, Ts...>>
+    {
+        using iterator_type = prefetching::prefetching_iterator<Itr, Ts...>;
+        using type = typename iterator_type::base_iterator;
+        using index_pack_type =
+            typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type;
+
+        template <typename End, typename F>
+        static iterator_type call(iterator_type it, End end, F&& f)
+        {
+            for (/**/; it != end; ++it)
             {
-                for (/**/; it != end; ++it)
-                {
-                    if (tok.was_cancelled())
-                        break;
+                Itr base = it.base();
+                std::size_t j = it.index();
 
-                    Itr base = it.base();
-                    std::size_t j = it.index();
-
-                    // different versions of clang-format do different things
-                    // clang-format off
+                // different versions of clang-format do different things
+                // clang-format off
                     std::size_t last = (std::min) (it.index() + it.chunk_size(),
                         it.range_size());
-                    // clang-format on
+                // clang-format on
 
-                    for (/**/; j != last; (void) ++j, ++base)
-                        f(*base);
+                for (/**/; j != last; (void) ++j, ++base)
+                    f(*base);
 
-                    if (j != it.range_size())
-                        prefetch_containers(it.ranges(), index_pack_type(), j);
-                }
-                return it;
+                if (j != it.range_size())
+                    prefetch_containers(it.ranges(), index_pack_type(), j);
             }
-        };
-    }    // namespace detail
-}    // namespace pika::parallel::util
+            return it;
+        }
+
+        template <typename End, typename CancelToken, typename F>
+        static iterator_type call(
+            iterator_type it, End end, CancelToken& tok, F&& f)
+        {
+            for (/**/; it != end; ++it)
+            {
+                if (tok.was_cancelled())
+                    break;
+
+                Itr base = it.base();
+                std::size_t j = it.index();
+
+                // different versions of clang-format do different things
+                // clang-format off
+                    std::size_t last = (std::min) (it.index() + it.chunk_size(),
+                        it.range_size());
+                // clang-format on
+
+                for (/**/; j != last; (void) ++j, ++base)
+                    f(*base);
+
+                if (j != it.range_size())
+                    prefetch_containers(it.ranges(), index_pack_type(), j);
+            }
+            return it;
+        }
+    };
+}    // namespace pika::parallel::util::detail

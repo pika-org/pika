@@ -287,8 +287,8 @@ namespace pika::parallel ::detail {
                           proj1 = PIKA_FORWARD(Proj1, proj1),
                           proj2 = PIKA_FORWARD(Proj2, proj2)](zip_iterator it,
                           std::size_t part_count) mutable -> bool {
-                util::loop_n<std::decay_t<ExPolicy>>(it, part_count, tok,
-                    [&f, &proj1, &proj2, &tok](zip_iterator const& curr) {
+                util::detail::loop_n<std::decay_t<ExPolicy>>(it, part_count,
+                    tok, [&f, &proj1, &proj2, &tok](zip_iterator const& curr) {
                         reference t = *curr;
                         if (!pika::util::detail::invoke(f,
                                 pika::util::detail::invoke(
@@ -355,8 +355,8 @@ namespace pika::parallel ::detail {
             util::cancellation_token<> tok;
             auto f1 = [f, tok](zip_iterator it,
                           std::size_t part_count) mutable -> bool {
-                util::loop_n<std::decay_t<ExPolicy>>(it, part_count, tok,
-                    [&f, &tok](zip_iterator const& curr) mutable -> void {
+                util::detail::loop_n<std::decay_t<ExPolicy>>(it, part_count,
+                    tok, [&f, &tok](zip_iterator const& curr) mutable -> void {
                         reference t = *curr;
                         if (!PIKA_INVOKE(f, std::get<0>(t), std::get<1>(t)))
                         {

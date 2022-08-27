@@ -228,7 +228,7 @@ namespace pika::parallel ::detail {
             operator()(Iter part_begin, std::size_t part_size)
         {
             typename std::iterator_traits<Iter>::difference_type ret = 0;
-            util::loop_n<execution_policy_type>(part_begin, part_size,
+            util::detail::loop_n<execution_policy_type>(part_begin, part_size,
                 pika::util::detail::bind_back(*this, std::ref(ret)));
             return ret;
         }
@@ -237,8 +237,8 @@ namespace pika::parallel ::detail {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(Iter curr,
             typename std::iterator_traits<Iter>::difference_type& ret)
         {
-            ret +=
-                traits::count_bits(PIKA_INVOKE(op_, PIKA_INVOKE(proj_, *curr)));
+            ret += traits::detail::count_bits(
+                PIKA_INVOKE(op_, PIKA_INVOKE(proj_, *curr)));
         }
     };
 
@@ -263,7 +263,7 @@ namespace pika::parallel ::detail {
 
             typename std::iterator_traits<InIterB>::difference_type ret = 0;
 
-            util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
+            util::detail::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
                 pika::util::detail::bind_back(PIKA_MOVE(f1), std::ref(ret)));
 
             return ret;
@@ -289,9 +289,9 @@ namespace pika::parallel ::detail {
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping([](std::vector<difference_type>&& results) {
-                    return util::accumulate_n(pika::util::begin(results),
-                        pika::util::size(results), difference_type(0),
-                        std::plus<difference_type>());
+                    return util::detail::accumulate_n(
+                        pika::util::begin(results), pika::util::size(results),
+                        difference_type(0), std::plus<difference_type>());
                 }));
         }
     };
@@ -320,7 +320,7 @@ namespace pika::parallel ::detail {
 
             typename std::iterator_traits<InIterB>::difference_type ret = 0;
 
-            util::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
+            util::detail::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
                 pika::util::detail::bind_back(PIKA_MOVE(f1), std::ref(ret)));
 
             return ret;
@@ -346,9 +346,9 @@ namespace pika::parallel ::detail {
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping([](std::vector<difference_type>&& results) {
-                    return util::accumulate_n(pika::util::begin(results),
-                        pika::util::size(results), difference_type(0),
-                        std::plus<difference_type>());
+                    return util::detail::accumulate_n(
+                        pika::util::begin(results), pika::util::size(results),
+                        difference_type(0), std::plus<difference_type>());
                 }));
         }
     };

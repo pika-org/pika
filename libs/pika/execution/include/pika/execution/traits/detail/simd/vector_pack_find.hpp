@@ -13,8 +13,7 @@
 
 #include <experimental/simd>
 
-namespace pika { namespace parallel { namespace traits {
-    ///////////////////////////////////////////////////////////////////////
+namespace pika::parallel::traits::detail {
     template <typename T, typename Abi>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE int find_first_of(
         std::experimental::simd_mask<T, Abi> const& msk)
@@ -25,6 +24,6 @@ namespace pika { namespace parallel { namespace traits {
         }
         return -1;
     }
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits::detail
 
 #endif

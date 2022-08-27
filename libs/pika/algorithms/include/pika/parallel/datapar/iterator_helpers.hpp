@@ -31,7 +31,8 @@ namespace pika::parallel::util::detail {
         {
             using value_type = typename std::iterator_traits<Iter>::value_type;
             return (reinterpret_cast<std::uintptr_t>(std::addressof(*it)) &
-                       (traits::vector_pack_alignment<value_type>::value -
+                       (traits::detail::vector_pack_alignment<
+                            value_type>::value -
                            1)) == 0;
         }
     };
@@ -55,10 +56,10 @@ namespace pika::parallel::util::detail {
             value2_type;
 
         typedef std::integral_constant<bool,
-            traits::vector_pack_size<value1_type>::value ==
-                    traits::vector_pack_size<value2_type>::value &&
-                traits::vector_pack_alignment<value1_type>::value ==
-                    traits::vector_pack_alignment<value2_type>::value>
+            traits::detail::vector_pack_size<value1_type>::value ==
+                    traits::detail::vector_pack_size<value2_type>::value &&
+                traits::detail::vector_pack_alignment<value1_type>::value ==
+                    traits::detail::vector_pack_alignment<value2_type>::value>
             type;
     };
 
@@ -95,13 +96,15 @@ namespace pika::parallel::util::detail {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
         store_on_exit(Iter const& iter)
-          : value_(traits::vector_pack_load<V, value_type>::aligned(iter))
+          : value_(
+                traits::detail::vector_pack_load<V, value_type>::aligned(iter))
           , iter_(iter)
         {
         }
         ~store_on_exit()
         {
-            traits::vector_pack_store<V, value_type>::aligned(value_, iter_);
+            traits::detail::vector_pack_store<V, value_type>::aligned(
+                value_, iter_);
         }
 
         pack_type* operator&()
@@ -126,7 +129,8 @@ namespace pika::parallel::util::detail {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
         store_on_exit(Iter const& iter)
-          : value_(traits::vector_pack_load<V, value_type>::aligned(iter))
+          : value_(
+                traits::detail::vector_pack_load<V, value_type>::aligned(iter))
         {
         }
 
@@ -150,13 +154,15 @@ namespace pika::parallel::util::detail {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
         store_on_exit_unaligned(Iter const& iter)
-          : value_(traits::vector_pack_load<V, value_type>::unaligned(iter))
+          : value_(traits::detail::vector_pack_load<V, value_type>::unaligned(
+                iter))
           , iter_(iter)
         {
         }
         ~store_on_exit_unaligned()
         {
-            traits::vector_pack_store<V, value_type>::unaligned(value_, iter_);
+            traits::detail::vector_pack_store<V, value_type>::unaligned(
+                value_, iter_);
         }
 
         pack_type* operator&()
@@ -181,7 +187,8 @@ namespace pika::parallel::util::detail {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
         store_on_exit_unaligned(Iter const& iter)
-          : value_(traits::vector_pack_load<V, value_type>::unaligned(iter))
+          : value_(traits::detail::vector_pack_load<V, value_type>::unaligned(
+                iter))
         {
         }
 
@@ -203,25 +210,27 @@ namespace pika::parallel::util::detail {
     {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
-        typedef typename traits::vector_pack_type<value_type, 1>::type V1;
-        using V = typename traits::vector_pack_type<value_type>::type;
+        typedef
+            typename traits::detail::vector_pack_type<value_type, 1>::type V1;
+        using V = typename traits::detail::vector_pack_type<value_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(F&& f, Iter& it)
         {
-            V1 tmp(traits::vector_pack_load<V1, value_type>::aligned(it));
+            V1 tmp(
+                traits::detail::vector_pack_load<V1, value_type>::aligned(it));
             PIKA_INVOKE(f, &tmp);
-            traits::vector_pack_store<V1, value_type>::aligned(tmp, it);
+            traits::detail::vector_pack_store<V1, value_type>::aligned(tmp, it);
             ++it;
         }
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void callv(F&& f, Iter& it)
         {
-            V tmp(traits::vector_pack_load<V, value_type>::aligned(it));
+            V tmp(traits::detail::vector_pack_load<V, value_type>::aligned(it));
             PIKA_INVOKE(f, &tmp);
-            traits::vector_pack_store<V, value_type>::aligned(tmp, it);
-            std::advance(it, traits::vector_pack_size<V>::value);
+            traits::detail::vector_pack_store<V, value_type>::aligned(tmp, it);
+            std::advance(it, traits::detail::vector_pack_size<V>::value);
         }
     };
 
@@ -231,25 +240,27 @@ namespace pika::parallel::util::detail {
     {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
-        typedef typename traits::vector_pack_type<value_type, 1>::type V1;
-        using V = typename traits::vector_pack_type<value_type>::type;
+        typedef
+            typename traits::detail::vector_pack_type<value_type, 1>::type V1;
+        using V = typename traits::detail::vector_pack_type<value_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(F&& f, Iter& it)
         {
-            V1 tmp(traits::vector_pack_load<V1, value_type>::aligned(it));
+            V1 tmp(
+                traits::detail::vector_pack_load<V1, value_type>::aligned(it));
             PIKA_INVOKE(f, tmp);
-            traits::vector_pack_store<V1, value_type>::aligned(tmp, it);
+            traits::detail::vector_pack_store<V1, value_type>::aligned(tmp, it);
             ++it;
         }
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void callv(F&& f, Iter& it)
         {
-            V tmp(traits::vector_pack_load<V, value_type>::aligned(it));
+            V tmp(traits::detail::vector_pack_load<V, value_type>::aligned(it));
             PIKA_INVOKE(f, tmp);
-            traits::vector_pack_store<V, value_type>::aligned(tmp, it);
-            std::advance(it, traits::vector_pack_size<V>::value);
+            traits::detail::vector_pack_store<V, value_type>::aligned(tmp, it);
+            std::advance(it, traits::detail::vector_pack_size<V>::value);
         }
     };
 
@@ -259,25 +270,27 @@ namespace pika::parallel::util::detail {
     {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
-        typedef typename traits::vector_pack_type<value_type, 1>::type V1;
-        using V = typename traits::vector_pack_type<value_type>::type;
+        typedef
+            typename traits::detail::vector_pack_type<value_type, 1>::type V1;
+        using V = typename traits::detail::vector_pack_type<value_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(
             F&& f, Iter& it, std::size_t base_idx)
         {
-            V1 tmp(traits::vector_pack_load<V1, value_type>::aligned(it));
+            V1 tmp(
+                traits::detail::vector_pack_load<V1, value_type>::aligned(it));
             PIKA_INVOKE(f, tmp, base_idx);
-            traits::vector_pack_store<V1, value_type>::aligned(tmp, it);
+            traits::detail::vector_pack_store<V1, value_type>::aligned(tmp, it);
         }
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void callv(
             F&& f, Iter& it, std::size_t base_idx)
         {
-            V tmp(traits::vector_pack_load<V, value_type>::aligned(it));
+            V tmp(traits::detail::vector_pack_load<V, value_type>::aligned(it));
             PIKA_INVOKE(f, tmp, base_idx);
-            traits::vector_pack_store<V, value_type>::aligned(tmp, it);
+            traits::detail::vector_pack_store<V, value_type>::aligned(tmp, it);
         }
     };
 
@@ -287,25 +300,27 @@ namespace pika::parallel::util::detail {
     {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
-        typedef typename traits::vector_pack_type<value_type, 1>::type V1;
-        using V = typename traits::vector_pack_type<value_type>::type;
+        typedef
+            typename traits::detail::vector_pack_type<value_type, 1>::type V1;
+        using V = typename traits::detail::vector_pack_type<value_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(F&& f, Iter& it)
         {
-            V1 tmp(traits::vector_pack_load<V1, value_type>::aligned(it));
+            V1 tmp(
+                traits::detail::vector_pack_load<V1, value_type>::aligned(it));
             PIKA_INVOKE(f, &tmp);
-            traits::vector_pack_store<V1, value_type>::aligned(tmp, it);
+            traits::detail::vector_pack_store<V1, value_type>::aligned(tmp, it);
         }
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static std::size_t callv(
             F&& f, Iter& it)
         {
-            V tmp(traits::vector_pack_load<V, value_type>::aligned(it));
+            V tmp(traits::detail::vector_pack_load<V, value_type>::aligned(it));
             PIKA_INVOKE(f, &tmp);
-            traits::vector_pack_store<V, value_type>::aligned(tmp, it);
-            return traits::vector_pack_size<V>::value;
+            traits::detail::vector_pack_store<V, value_type>::aligned(tmp, it);
+            return traits::detail::vector_pack_size<V>::value;
         }
     };
 
@@ -317,8 +332,8 @@ namespace pika::parallel::util::detail {
         static typename pika::util::detail::invoke_result<F, V1*, V2*>::type
         call_aligned(F&& f, Iter1& it1, Iter2& it2)
         {
-            static_assert(traits::vector_pack_size<V1>::value ==
-                    traits::vector_pack_size<V2>::value,
+            static_assert(traits::detail::vector_pack_size<V1>::value ==
+                    traits::detail::vector_pack_size<V2>::value,
                 "the sizes of the vector-packs should be equal");
 
             typedef
@@ -326,11 +341,13 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<Iter2>::value_type value_type2;
 
-            V1 tmp1(traits::vector_pack_load<V1, value_type1>::aligned(it1));
-            V2 tmp2(traits::vector_pack_load<V2, value_type2>::aligned(it2));
+            V1 tmp1(traits::detail::vector_pack_load<V1, value_type1>::aligned(
+                it1));
+            V2 tmp2(traits::detail::vector_pack_load<V2, value_type2>::aligned(
+                it2));
 
-            std::advance(it1, traits::vector_pack_size<V1>::value);
-            std::advance(it2, traits::vector_pack_size<V2>::value);
+            std::advance(it1, traits::detail::vector_pack_size<V1>::value);
+            std::advance(it2, traits::detail::vector_pack_size<V2>::value);
 
             return PIKA_INVOKE(PIKA_FORWARD(F, f), &tmp1, &tmp2);
         }
@@ -339,8 +356,8 @@ namespace pika::parallel::util::detail {
         static typename pika::util::detail::invoke_result<F, V1*, V2*>::type
         call_unaligned(F&& f, Iter1& it1, Iter2& it2)
         {
-            static_assert(traits::vector_pack_size<V1>::value ==
-                    traits::vector_pack_size<V2>::value,
+            static_assert(traits::detail::vector_pack_size<V1>::value ==
+                    traits::detail::vector_pack_size<V2>::value,
                 "the sizes of the vector-packs should be equal");
 
             typedef
@@ -348,11 +365,15 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<Iter2>::value_type value_type2;
 
-            V1 tmp1(traits::vector_pack_load<V1, value_type1>::unaligned(it1));
-            V2 tmp2(traits::vector_pack_load<V2, value_type2>::unaligned(it2));
+            V1 tmp1(
+                traits::detail::vector_pack_load<V1, value_type1>::unaligned(
+                    it1));
+            V2 tmp2(
+                traits::detail::vector_pack_load<V2, value_type2>::unaligned(
+                    it2));
 
-            std::advance(it1, traits::vector_pack_size<V1>::value);
-            std::advance(it2, traits::vector_pack_size<V2>::value);
+            std::advance(it1, traits::detail::vector_pack_size<V1>::value);
+            std::advance(it2, traits::detail::vector_pack_size<V2>::value);
 
             return PIKA_INVOKE(PIKA_FORWARD(F, f), &tmp1, &tmp2);
         }
@@ -364,11 +385,13 @@ namespace pika::parallel::util::detail {
         using value1_type = typename std::iterator_traits<Iter1>::value_type;
         using value2_type = typename std::iterator_traits<Iter2>::value_type;
 
-        typedef typename traits::vector_pack_type<value1_type, 1>::type V11;
-        typedef typename traits::vector_pack_type<value2_type, 1>::type V12;
+        typedef
+            typename traits::detail::vector_pack_type<value1_type, 1>::type V11;
+        typedef
+            typename traits::detail::vector_pack_type<value2_type, 1>::type V12;
 
-        using V1 = typename traits::vector_pack_type<value1_type>::type;
-        using V2 = typename traits::vector_pack_type<value2_type>::type;
+        using V1 = typename traits::detail::vector_pack_type<value1_type>::type;
+        using V2 = typename traits::detail::vector_pack_type<value2_type>::type;
 
         template <typename F>
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static
@@ -406,13 +429,13 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            V tmp(traits::vector_pack_load<V, value_type>::aligned(it));
+            V tmp(traits::detail::vector_pack_load<V, value_type>::aligned(it));
 
             auto ret = PIKA_INVOKE(f, &tmp);
-            traits::vector_pack_store<decltype(ret), value_type>::aligned(
-                ret, dest);
+            traits::detail::vector_pack_store<decltype(ret),
+                value_type>::aligned(ret, dest);
 
-            std::advance(it, traits::vector_pack_size<V>::value);
+            std::advance(it, traits::detail::vector_pack_size<V>::value);
             std::advance(dest, ret.size());
         }
 
@@ -423,13 +446,14 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            V tmp(traits::vector_pack_load<V, value_type>::unaligned(it));
+            V tmp(
+                traits::detail::vector_pack_load<V, value_type>::unaligned(it));
 
             auto ret = PIKA_INVOKE(f, &tmp);
-            traits::vector_pack_store<decltype(ret), value_type>::unaligned(
-                ret, dest);
+            traits::detail::vector_pack_store<decltype(ret),
+                value_type>::unaligned(ret, dest);
 
-            std::advance(it, traits::vector_pack_size<V>::value);
+            std::advance(it, traits::detail::vector_pack_size<V>::value);
             std::advance(dest, ret.size());
         }
     };
@@ -444,13 +468,13 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            V tmp(traits::vector_pack_load<V, value_type>::aligned(it));
+            V tmp(traits::detail::vector_pack_load<V, value_type>::aligned(it));
 
             auto ret = PIKA_INVOKE(f, tmp);
-            traits::vector_pack_store<decltype(ret), value_type>::aligned(
-                ret, dest);
+            traits::detail::vector_pack_store<decltype(ret),
+                value_type>::aligned(ret, dest);
 
-            std::advance(it, traits::vector_pack_size<V>::value);
+            std::advance(it, traits::detail::vector_pack_size<V>::value);
             std::advance(dest, ret.size());
         }
 
@@ -461,13 +485,14 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            V tmp(traits::vector_pack_load<V, value_type>::unaligned(it));
+            V tmp(
+                traits::detail::vector_pack_load<V, value_type>::unaligned(it));
 
             auto ret = PIKA_INVOKE(f, tmp);
-            traits::vector_pack_store<decltype(ret), value_type>::unaligned(
-                ret, dest);
+            traits::detail::vector_pack_store<decltype(ret),
+                value_type>::unaligned(ret, dest);
 
-            std::advance(it, traits::vector_pack_size<V>::value);
+            std::advance(it, traits::detail::vector_pack_size<V>::value);
             std::advance(dest, ret.size());
         }
     };
@@ -480,8 +505,8 @@ namespace pika::parallel::util::detail {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_aligned(
             F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
-            static_assert(traits::vector_pack_size<V1>::value ==
-                    traits::vector_pack_size<V2>::value,
+            static_assert(traits::detail::vector_pack_size<V1>::value ==
+                    traits::detail::vector_pack_size<V2>::value,
                 "the sizes of the vector-packs should be equal");
 
             typedef
@@ -489,15 +514,17 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value_type2;
 
-            V1 tmp1(traits::vector_pack_load<V1, value_type1>::aligned(it1));
-            V2 tmp2(traits::vector_pack_load<V2, value_type2>::aligned(it2));
+            V1 tmp1(traits::detail::vector_pack_load<V1, value_type1>::aligned(
+                it1));
+            V2 tmp2(traits::detail::vector_pack_load<V2, value_type2>::aligned(
+                it2));
 
             auto ret = PIKA_INVOKE(f, &tmp1, &tmp2);
-            traits::vector_pack_store<decltype(ret), value_type1>::aligned(
-                ret, dest);
+            traits::detail::vector_pack_store<decltype(ret),
+                value_type1>::aligned(ret, dest);
 
-            std::advance(it1, traits::vector_pack_size<V1>::value);
-            std::advance(it2, traits::vector_pack_size<V2>::value);
+            std::advance(it1, traits::detail::vector_pack_size<V1>::value);
+            std::advance(it2, traits::detail::vector_pack_size<V2>::value);
             std::advance(dest, ret.size());
         }
 
@@ -506,8 +533,8 @@ namespace pika::parallel::util::detail {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_unaligned(
             F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
-            static_assert(traits::vector_pack_size<V1>::value ==
-                    traits::vector_pack_size<V2>::value,
+            static_assert(traits::detail::vector_pack_size<V1>::value ==
+                    traits::detail::vector_pack_size<V2>::value,
                 "the sizes of the vector-packs should be equal");
 
             typedef
@@ -515,15 +542,19 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value_type2;
 
-            V1 tmp1(traits::vector_pack_load<V1, value_type1>::unaligned(it1));
-            V2 tmp2(traits::vector_pack_load<V2, value_type2>::unaligned(it2));
+            V1 tmp1(
+                traits::detail::vector_pack_load<V1, value_type1>::unaligned(
+                    it1));
+            V2 tmp2(
+                traits::detail::vector_pack_load<V2, value_type2>::unaligned(
+                    it2));
 
             auto ret = PIKA_INVOKE(f, &tmp1, &tmp2);
-            traits::vector_pack_store<decltype(ret), value_type1>::unaligned(
-                ret, dest);
+            traits::detail::vector_pack_store<decltype(ret),
+                value_type1>::unaligned(ret, dest);
 
-            std::advance(it1, traits::vector_pack_size<V1>::value);
-            std::advance(it2, traits::vector_pack_size<V2>::value);
+            std::advance(it1, traits::detail::vector_pack_size<V1>::value);
+            std::advance(it2, traits::detail::vector_pack_size<V2>::value);
             std::advance(dest, ret.size());
         }
     };
@@ -536,8 +567,8 @@ namespace pika::parallel::util::detail {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_aligned(
             F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
-            static_assert(traits::vector_pack_size<V1>::value ==
-                    traits::vector_pack_size<V2>::value,
+            static_assert(traits::detail::vector_pack_size<V1>::value ==
+                    traits::detail::vector_pack_size<V2>::value,
                 "the sizes of the vector-packs should be equal");
 
             typedef
@@ -545,15 +576,17 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value_type2;
 
-            V1 tmp1(traits::vector_pack_load<V1, value_type1>::aligned(it1));
-            V2 tmp2(traits::vector_pack_load<V2, value_type2>::aligned(it2));
+            V1 tmp1(traits::detail::vector_pack_load<V1, value_type1>::aligned(
+                it1));
+            V2 tmp2(traits::detail::vector_pack_load<V2, value_type2>::aligned(
+                it2));
 
             auto ret = PIKA_INVOKE(f, tmp1, tmp2);
-            traits::vector_pack_store<decltype(ret), value_type1>::aligned(
-                ret, dest);
+            traits::detail::vector_pack_store<decltype(ret),
+                value_type1>::aligned(ret, dest);
 
-            std::advance(it1, traits::vector_pack_size<V1>::value);
-            std::advance(it2, traits::vector_pack_size<V2>::value);
+            std::advance(it1, traits::detail::vector_pack_size<V1>::value);
+            std::advance(it2, traits::detail::vector_pack_size<V2>::value);
             std::advance(dest, ret.size());
         }
 
@@ -562,8 +595,8 @@ namespace pika::parallel::util::detail {
         PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_unaligned(
             F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
-            static_assert(traits::vector_pack_size<V1>::value ==
-                    traits::vector_pack_size<V2>::value,
+            static_assert(traits::detail::vector_pack_size<V1>::value ==
+                    traits::detail::vector_pack_size<V2>::value,
                 "the sizes of the vector-packs should be equal");
 
             typedef
@@ -571,15 +604,19 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value_type2;
 
-            V1 tmp1(traits::vector_pack_load<V1, value_type1>::unaligned(it1));
-            V2 tmp2(traits::vector_pack_load<V2, value_type2>::unaligned(it2));
+            V1 tmp1(
+                traits::detail::vector_pack_load<V1, value_type1>::unaligned(
+                    it1));
+            V2 tmp2(
+                traits::detail::vector_pack_load<V2, value_type2>::unaligned(
+                    it2));
 
             auto ret = PIKA_INVOKE(f, tmp1, tmp2);
-            traits::vector_pack_store<decltype(ret), value_type1>::unaligned(
-                ret, dest);
+            traits::detail::vector_pack_store<decltype(ret),
+                value_type1>::unaligned(ret, dest);
 
-            std::advance(it1, traits::vector_pack_size<V1>::value);
-            std::advance(it2, traits::vector_pack_size<V2>::value);
+            std::advance(it1, traits::detail::vector_pack_size<V1>::value);
+            std::advance(it2, traits::detail::vector_pack_size<V2>::value);
             std::advance(dest, ret.size());
         }
     };
@@ -593,7 +630,9 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            typedef typename traits::vector_pack_type<value_type, 1>::type V1;
+            typedef
+                typename traits::detail::vector_pack_type<value_type, 1>::type
+                    V1;
 
             invoke_vectorized_inout1<V1>::call_unaligned(
                 PIKA_FORWARD(F, f), it, dest);
@@ -609,8 +648,12 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value_type2;
 
-            typedef typename traits::vector_pack_type<value_type1, 1>::type V1;
-            typedef typename traits::vector_pack_type<value_type2, 1>::type V2;
+            typedef
+                typename traits::detail::vector_pack_type<value_type1, 1>::type
+                    V1;
+            typedef
+                typename traits::detail::vector_pack_type<value_type2, 1>::type
+                    V2;
 
             invoke_vectorized_inout2<V1, V2>::call_unaligned(
                 PIKA_FORWARD(F, f), it1, it2, dest);
@@ -624,7 +667,8 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            using V = typename traits::vector_pack_type<value_type>::type;
+            using V =
+                typename traits::detail::vector_pack_type<value_type>::type;
 
             PIKA_ASSERT(is_data_aligned(it) && is_data_aligned(dest));
             invoke_vectorized_inout1<V>::call_aligned(
@@ -641,8 +685,10 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value2_type;
 
-            using V1 = typename traits::vector_pack_type<value1_type>::type;
-            using V2 = typename traits::vector_pack_type<value2_type>::type;
+            using V1 =
+                typename traits::detail::vector_pack_type<value1_type>::type;
+            using V2 =
+                typename traits::detail::vector_pack_type<value2_type>::type;
 
             PIKA_ASSERT(is_data_aligned(it1) && is_data_aligned(it2) &&
                 is_data_aligned(dest));
@@ -660,7 +706,9 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            typedef typename traits::vector_pack_type<value_type, 1>::type V1;
+            typedef
+                typename traits::detail::vector_pack_type<value_type, 1>::type
+                    V1;
 
             invoke_vectorized_inout1_ind<V1>::call_unaligned(
                 PIKA_FORWARD(F, f), it, dest);
@@ -676,8 +724,12 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value_type2;
 
-            typedef typename traits::vector_pack_type<value_type1, 1>::type V1;
-            typedef typename traits::vector_pack_type<value_type2, 1>::type V2;
+            typedef
+                typename traits::detail::vector_pack_type<value_type1, 1>::type
+                    V1;
+            typedef
+                typename traits::detail::vector_pack_type<value_type2, 1>::type
+                    V2;
 
             invoke_vectorized_inout2_ind<V1, V2>::call_unaligned(
                 PIKA_FORWARD(F, f), it1, it2, dest);
@@ -691,7 +743,8 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
 
-            using V = typename traits::vector_pack_type<value_type>::type;
+            using V =
+                typename traits::detail::vector_pack_type<value_type>::type;
 
             PIKA_ASSERT(is_data_aligned(it) && is_data_aligned(dest));
             invoke_vectorized_inout1_ind<V>::call_aligned(
@@ -708,8 +761,10 @@ namespace pika::parallel::util::detail {
             typedef
                 typename std::iterator_traits<InIter2>::value_type value2_type;
 
-            using V1 = typename traits::vector_pack_type<value1_type>::type;
-            using V2 = typename traits::vector_pack_type<value2_type>::type;
+            using V1 =
+                typename traits::detail::vector_pack_type<value1_type>::type;
+            using V2 =
+                typename traits::detail::vector_pack_type<value2_type>::type;
 
             PIKA_ASSERT(is_data_aligned(it1) && is_data_aligned(it2) &&
                 is_data_aligned(dest));

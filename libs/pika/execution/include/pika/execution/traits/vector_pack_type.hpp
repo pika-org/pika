@@ -13,10 +13,7 @@
 #include <cstddef>
 #include <tuple>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace traits {
-    ///////////////////////////////////////////////////////////////////////////
-    // exposition only
+namespace pika::parallel::traits::detail {
     template <typename T, std::size_t N = 0, typename Abi = void>
     struct vector_pack_type;
 
@@ -27,13 +24,12 @@ namespace pika { namespace parallel { namespace traits {
         using type = std::tuple<typename vector_pack_type<T, N, Abi>::type...>;
     };
 
-    ///////////////////////////////////////////////////////////////////////////
     template <typename T, typename NewT>
     struct rebind_pack
     {
         using type = typename vector_pack_type<T>::type;
     };
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits::detail
 
 #if !defined(__CUDACC__)
 #include <pika/execution/traits/detail/simd/vector_pack_type.hpp>

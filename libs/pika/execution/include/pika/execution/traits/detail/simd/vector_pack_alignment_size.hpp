@@ -15,9 +15,7 @@
 
 #include <experimental/simd>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace traits {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::traits::detail {
     template <typename T>
     struct is_vector_pack<std::experimental::native_simd<T>> : std::true_type
     {
@@ -120,6 +118,6 @@ namespace pika { namespace parallel { namespace traits {
         static std::size_t const value = std::experimental::simd<T,
             std::experimental::simd_abi::fixed_size<1>>::size();
     };
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits::detail
 
 #endif

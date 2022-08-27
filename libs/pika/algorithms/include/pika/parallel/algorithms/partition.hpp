@@ -1480,7 +1480,8 @@ namespace pika::parallel::detail {
                 std::size_t true_count = 0;
 
                 // MSVC complains if pred or proj is captured by ref below
-                util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
+                util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin,
+                    part_size,
                     [pred, proj, &true_count](zip_iterator it) mutable -> void {
                         bool f = pika::util::detail::invoke(pred,
                             pika::util::detail::invoke(proj, get<0>(*it)));
@@ -1509,7 +1510,8 @@ namespace pika::parallel::detail {
                 std::advance(dest_true, count_true);
                 std::advance(dest_false, count_false);
 
-                util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
+                util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin,
+                    part_size,
                     [&dest_true, &dest_false](zip_iterator it) mutable {
                         if (get<1>(*it))
                             *dest_true++ = get<0>(*it);

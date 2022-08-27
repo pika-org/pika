@@ -45,7 +45,7 @@ namespace pika::parallel::detail {
 
             using pika::util::make_zip_iterator;
             using std::get;
-            util::loop_n<std::decay_t<ExPolicy>>(
+            util::detail::loop_n<std::decay_t<ExPolicy>>(
                 make_zip_iterator(first, prev, dest), count,
                 [op](auto&& it) mutable {
                     get<2>(*it) = PIKA_INVOKE(op, get<0>(*it), get<1>(*it));

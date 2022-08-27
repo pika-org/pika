@@ -60,30 +60,28 @@ namespace pika::parallel::util::detail {
     };
 }    // namespace pika::parallel::util::detail
 
-namespace pika::parallel::traits {
-    namespace detail {
-        template <typename Tuple, typename... Iter, std::size_t... Is>
-        Tuple aligned_pack(pika::util::zip_iterator<Iter...> const& iter,
-            pika::util::detail::index_pack<Is...>)
-        {
-            auto const& t = iter.get_iterator_tuple();
-            return std::make_tuple(
-                vector_pack_load<typename std::tuple_element<Is, Tuple>::type,
-                    typename std::iterator_traits<Iter>::value_type>::
-                    aligned(std::get<Is>(t))...);
-        }
+namespace pika::parallel::traits::detail {
+    template <typename Tuple, typename... Iter, std::size_t... Is>
+    Tuple aligned_pack(pika::util::zip_iterator<Iter...> const& iter,
+        pika::util::detail::index_pack<Is...>)
+    {
+        auto const& t = iter.get_iterator_tuple();
+        return std::make_tuple(
+            vector_pack_load<typename std::tuple_element<Is, Tuple>::type,
+                typename std::iterator_traits<Iter>::value_type>::
+                aligned(std::get<Is>(t))...);
+    }
 
-        template <typename Tuple, typename... Iter, std::size_t... Is>
-        Tuple unaligned_pack(pika::util::zip_iterator<Iter...> const& iter,
-            pika::util::detail::index_pack<Is...>)
-        {
-            auto const& t = iter.get_iterator_tuple();
-            return std::make_tuple(
-                vector_pack_load<typename std::tuple_element<Is, Tuple>::type,
-                    typename std::iterator_traits<Iter>::value_type>::
-                    unaligned(std::get<Is>(t))...);
-        }
-    }    // namespace detail
+    template <typename Tuple, typename... Iter, std::size_t... Is>
+    Tuple unaligned_pack(pika::util::zip_iterator<Iter...> const& iter,
+        pika::util::detail::index_pack<Is...>)
+    {
+        auto const& t = iter.get_iterator_tuple();
+        return std::make_tuple(
+            vector_pack_load<typename std::tuple_element<Is, Tuple>::type,
+                typename std::iterator_traits<Iter>::value_type>::
+                unaligned(std::get<Is>(t))...);
+    }
 
     template <typename... Vector, typename ValueType>
     struct vector_pack_load<std::tuple<Vector...>, ValueType>
@@ -106,36 +104,33 @@ namespace pika::parallel::traits {
         }
     };
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        template <typename Tuple, typename... Iter, std::size_t... Is>
-        void aligned_pack(Tuple& value,
-            pika::util::zip_iterator<Iter...> const& iter,
-            pika::util::detail::index_pack<Is...>)
-        {
-            auto const& t = iter.get_iterator_tuple();
-            int const sequencer[] = {0,
-                (vector_pack_store<typename std::tuple_element<Is, Tuple>::type,
-                     typename std::iterator_traits<Iter>::value_type>::
-                        aligned(std::get<Is>(value), std::get<Is>(t)),
-                    0)...};
-            (void) sequencer;
-        }
+    template <typename Tuple, typename... Iter, std::size_t... Is>
+    void aligned_pack(Tuple& value,
+        pika::util::zip_iterator<Iter...> const& iter,
+        pika::util::detail::index_pack<Is...>)
+    {
+        auto const& t = iter.get_iterator_tuple();
+        int const sequencer[] = {0,
+            (vector_pack_store<typename std::tuple_element<Is, Tuple>::type,
+                 typename std::iterator_traits<Iter>::value_type>::
+                    aligned(std::get<Is>(value), std::get<Is>(t)),
+                0)...};
+        (void) sequencer;
+    }
 
-        template <typename Tuple, typename... Iter, std::size_t... Is>
-        void unaligned_pack(Tuple& value,
-            pika::util::zip_iterator<Iter...> const& iter,
-            pika::util::detail::index_pack<Is...>)
-        {
-            auto const& t = iter.get_iterator_tuple();
-            int const sequencer[] = {0,
-                (vector_pack_store<typename std::tuple_element<Is, Tuple>::type,
-                     typename std::iterator_traits<Iter>::value_type>::
-                        unaligned(std::get<Is>(value), std::get<Is>(t)),
-                    0)...};
-            (void) sequencer;
-        }
-    }    // namespace detail
+    template <typename Tuple, typename... Iter, std::size_t... Is>
+    void unaligned_pack(Tuple& value,
+        pika::util::zip_iterator<Iter...> const& iter,
+        pika::util::detail::index_pack<Is...>)
+    {
+        auto const& t = iter.get_iterator_tuple();
+        int const sequencer[] = {0,
+            (vector_pack_store<typename std::tuple_element<Is, Tuple>::type,
+                 typename std::iterator_traits<Iter>::value_type>::
+                    unaligned(std::get<Is>(value), std::get<Is>(t)),
+                0)...};
+        (void) sequencer;
+    }
 
     template <typename... Vector, typename ValueType>
     struct vector_pack_store<std::tuple<Vector...>, ValueType>
@@ -156,6 +151,6 @@ namespace pika::parallel::traits {
                 pika::util::detail::make_index_pack<sizeof...(Iter)>());
         }
     };
-}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits::detail
 
 #endif

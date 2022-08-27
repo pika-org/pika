@@ -27,8 +27,9 @@ namespace pika::parallel::detail {
             util::detail::iterator_datapar_compatible<Iter>::value, Iter>::type
         call(ExPolicy&& policy, Iter first, Sent last, T const& val)
         {
-            pika::parallel::util::loop_ind(PIKA_FORWARD(ExPolicy, policy),
-                first, last, [&val](auto& v) { v = val; });
+            pika::parallel::util::detail::loop_ind(
+                PIKA_FORWARD(ExPolicy, policy), first, last,
+                [&val](auto& v) { v = val; });
             return first;
         }
     };
@@ -53,7 +54,7 @@ namespace pika::parallel::detail {
             util::detail::iterator_datapar_compatible<Iter>::value, Iter>::type
         call(ExPolicy&&, Iter first, std::size_t count, T const& val)
         {
-            pika::parallel::util::loop_n_ind<std::decay_t<ExPolicy>>(
+            pika::parallel::util::detail::loop_n_ind<std::decay_t<ExPolicy>>(
                 first, count, [&val](auto& v) { v = val; });
             return first;
         }

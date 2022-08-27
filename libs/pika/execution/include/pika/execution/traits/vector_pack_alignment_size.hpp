@@ -15,9 +15,7 @@
 #include <tuple>
 #include <type_traits>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace traits {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::traits::detail {
     template <typename T, typename Enable = void>
     struct is_vector_pack : std::false_type
     {
@@ -66,7 +64,7 @@ namespace pika { namespace parallel { namespace traits {
 
         static std::size_t const value = vector_pack_size<pack_type>::value;
     };
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits::detail
 
 #if !defined(__CUDACC__)
 #include <pika/execution/traits/detail/simd/vector_pack_alignment_size.hpp>

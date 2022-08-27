@@ -16,39 +16,34 @@
 #include <cstddef>
 #include <type_traits>
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace traits {
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        template <typename T, std::size_t N, typename Abi>
-        struct vector_pack_type
-        {
-            using type = std::experimental::fixed_size_simd<T, N>;
-        };
+namespace pika::parallel::traits::detail {
+    template <typename T, std::size_t N, typename Abi>
+    struct vector_pack_type_impl
+    {
+        using type = std::experimental::fixed_size_simd<T, N>;
+    };
 
-        template <typename T, typename Abi>
-        struct vector_pack_type<T, 0, Abi>
-        {
-            typedef typename std::conditional<std::is_void<Abi>::value,
-                std::experimental::simd_abi::native<T>, Abi>::type abi_type;
+    template <typename T, typename Abi>
+    struct vector_pack_type_impl<T, 0, Abi>
+    {
+        typedef typename std::conditional<std::is_void<Abi>::value,
+            std::experimental::simd_abi::native<T>, Abi>::type abi_type;
 
-            using type = std::experimental::simd<T, abi_type>;
-        };
+        using type = std::experimental::simd<T, abi_type>;
+    };
 
-        template <typename T, typename Abi>
-        struct vector_pack_type<T, 1, Abi>
-        {
-            typedef std::experimental::simd<T,
-                std::experimental::simd_abi::scalar>
-                type;
-        };
-    }    // namespace detail
+    template <typename T, typename Abi>
+    struct vector_pack_type_impl<T, 1, Abi>
+    {
+        typedef std::experimental::simd<T, std::experimental::simd_abi::scalar>
+            type;
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename T, std::size_t N, typename Abi>
-    struct vector_pack_type : detail::vector_pack_type<T, N, Abi>
+    struct vector_pack_type : vector_pack_type_impl<T, N, Abi>
     {
     };
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits::detail
 
 #endif

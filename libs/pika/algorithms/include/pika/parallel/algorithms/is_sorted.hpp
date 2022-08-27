@@ -291,7 +291,8 @@ namespace pika::parallel::detail {
                           FwdIter part_begin,
                           std::size_t part_size) mutable -> bool {
                 FwdIter trail = part_begin++;
-                util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size - 1,
+                util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin,
+                    part_size - 1,
                     [&trail, &tok, &pred_projected](
                         FwdIter it) mutable -> void {
                         if (pika::util::detail::invoke(
@@ -372,8 +373,8 @@ namespace pika::parallel::detail {
                           FwdIter part_begin, std::size_t part_size,
                           std::size_t base_idx) mutable -> void {
                 FwdIter trail = part_begin++;
-                util::loop_idx_n<std::decay_t<ExPolicy>>(++base_idx, part_begin,
-                    part_size - 1, tok,
+                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(++base_idx,
+                    part_begin, part_size - 1, tok,
                     [&trail, &tok, &pred_projected](
                         reference& v, std::size_t ind) -> void {
                         if (pika::util::detail::invoke(

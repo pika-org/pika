@@ -917,7 +917,7 @@ namespace pika {
                 B part_begin, std::size_t part_steps)
             {
                 PIKA_ASSERT(stride_ == 1);
-                parallel::util::loop_n<std::decay_t<ExPolicy>>(
+                parallel::util::detail::loop_n<std::decay_t<ExPolicy>>(
                     part_begin, part_steps, f_);
             }
 
@@ -927,7 +927,7 @@ namespace pika {
             {
                 if (stride_ == 1)
                 {
-                    parallel::util::loop_n<std::decay_t<ExPolicy>>(
+                    parallel::util::detail::loop_n<std::decay_t<ExPolicy>>(
                         part_begin, part_steps, f_);
                 }
                 else if (stride_ > 0)
@@ -981,7 +981,7 @@ namespace pika {
             {
                 if (stride == 1)
                 {
-                    parallel::util::loop_n<std::decay_t<ExPolicy>>(
+                    parallel::util::detail::loop_n<std::decay_t<ExPolicy>>(
                         first, count, PIKA_FORWARD(F, f));
                 }
                 else if (stride > 0)

@@ -10,9 +10,7 @@
 
 #if defined(PIKA_HAVE_DATAPAR)
 
-///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace traits {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::traits::detail {
     template <typename V, typename NewT>
     struct rebind_pack;
 
@@ -22,7 +20,7 @@ namespace pika { namespace parallel { namespace traits {
 
     template <typename V, typename ValueType, typename Enable = void>
     struct vector_pack_store;
-}}}    // namespace pika::parallel::traits
+}    // namespace pika::parallel::traits::detail
 
 #if !defined(__CUDACC__)
 #include <pika/execution/traits/detail/simd/vector_pack_load_store.hpp>

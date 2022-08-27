@@ -258,7 +258,7 @@ namespace pika::parallel::detail {
         using value_type = typename std::iterator_traits<InIter2>::value_type;
 
         return util::in_out_result<InIter1, InIter2>{std::next(first, count),
-            util::loop_with_cleanup_n_with_token(
+            util::detail::loop_with_cleanup_n_with_token(
                 first, count, dest, tok,
                 [](InIter1 it, InIter2 dest) -> void {
                     ::new (std::addressof(*dest)) value_type(PIKA_MOVE(*it));

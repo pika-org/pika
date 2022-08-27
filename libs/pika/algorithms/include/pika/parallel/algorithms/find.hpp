@@ -442,7 +442,7 @@ namespace pika::parallel::detail {
             auto f1 = [val, proj = PIKA_FORWARD(Proj, proj), tok](Iter it,
                           std::size_t part_size,
                           std::size_t base_idx) mutable -> void {
-                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                     part_size, tok,
                     [&val, &proj, &tok](
                         type& v, std::size_t i) mutable -> void {
@@ -521,7 +521,7 @@ namespace pika::parallel::detail {
             auto f1 = [f = PIKA_FORWARD(F, f), proj = PIKA_FORWARD(Proj, proj),
                           tok](Iter it, std::size_t part_size,
                           std::size_t base_idx) mutable -> void {
-                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                     part_size, tok,
                     [&f, &proj, &tok](type& v, std::size_t i) mutable -> void {
                         if (pika::util::detail::invoke(
@@ -600,7 +600,7 @@ namespace pika::parallel::detail {
             auto f1 = [f = PIKA_FORWARD(F, f), proj = PIKA_FORWARD(Proj, proj),
                           tok](Iter it, std::size_t part_size,
                           std::size_t base_idx) mutable -> void {
-                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                     part_size, tok,
                     [&f, &proj, &tok](type& v, std::size_t i) mutable -> void {
                         if (!pika::util::detail::invoke(
@@ -749,7 +749,7 @@ namespace pika::parallel::detail {
                           proj2 = PIKA_FORWARD(Proj2, proj2)](Iter1 it,
                           std::size_t part_size,
                           std::size_t base_idx) mutable -> void {
-                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                     part_size, tok,
                     [=, &tok, &op, &proj1, &proj2](
                         auto t, std::size_t i) mutable -> void {
@@ -872,7 +872,7 @@ namespace pika::parallel::detail {
                           proj2 = PIKA_FORWARD(Proj2, proj2)](FwdIter it,
                           std::size_t part_size,
                           std::size_t base_idx) mutable -> void {
-                util::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
+                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
                     part_size, tok,
                     [&tok, &s_first, &s_last, &op, &proj1, &proj2](
                         reference v, std::size_t i) mutable -> void {

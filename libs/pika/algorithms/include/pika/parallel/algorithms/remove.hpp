@@ -309,8 +309,8 @@ namespace pika::parallel::detail {
                           zip_iterator part_begin,
                           std::size_t part_size) -> std::size_t {
                 // MSVC complains if pred or proj is captured by ref below
-                util::loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
-                    [pred, proj](zip_iterator it) mutable {
+                util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin,
+                    part_size, [pred, proj](zip_iterator it) mutable {
                         bool f = pika::util::detail::invoke(pred,
                             pika::util::detail::invoke(proj, get<0>(*it)));
 
@@ -349,7 +349,7 @@ namespace pika::parallel::detail {
                 if (dest == get<0>(part_begin.get_iterator_tuple()))
                 {
                     // Self-assignment must be detected.
-                    util::loop_n<execution_policy_type>(
+                    util::detail::loop_n<execution_policy_type>(
                         part_begin, part_size, [&dest](zip_iterator it) {
                             if (!get<1>(*it))
                             {
@@ -363,7 +363,7 @@ namespace pika::parallel::detail {
                 else
                 {
                     // Self-assignment can't be performed.
-                    util::loop_n<execution_policy_type>(
+                    util::detail::loop_n<execution_policy_type>(
                         part_begin, part_size, [&dest](zip_iterator it) {
                             if (!get<1>(*it))
                                 *dest++ = PIKA_MOVE(get<0>(*it));
