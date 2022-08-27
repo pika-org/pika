@@ -17,13 +17,34 @@ namespace pika::cuda::experimental {
         {
             switch (error)
             {
+#ifdef PIKA_HAVE_CUDA
             case CUBLAS_STATUS_SUCCESS:
                 return "CUBLAS_STATUS_SUCCESS";
             case CUBLAS_STATUS_INVALID_VALUE:
                 return "CUBLAS_STATUS_INVALID_VALUE";
             case CUBLAS_STATUS_INTERNAL_ERROR:
                 return "CUBLAS_STATUS_INTERNAL_ERROR";
-#ifdef PIKA_HAVE_HIP
+            case CUBLAS_STATUS_ALLOC_FAILED:
+                return "CUBLAS_STATUS_ALLOC_FAILED";
+            case CUBLAS_STATUS_ARCH_MISMATCH:
+                return "CUBLAS_STATUS_ARCH_MISMATCH";
+            case CUBLAS_STATUS_EXECUTION_FAILED:
+                return "CUBLAS_STATUS_EXECUTION_FAILED";
+            case CUBLAS_STATUS_LICENSE_ERROR:
+                return "CUBLAS_STATUS_LICENSE_ERROR";
+            case CUBLAS_STATUS_MAPPING_ERROR:
+                return "CUBLAS_STATUS_MAPPING_ERROR";
+            case CUBLAS_STATUS_NOT_INITIALIZED:
+                return "CUBLAS_STATUS_NOT_INITIALIZED";
+            case CUBLAS_STATUS_NOT_SUPPORTED:
+                return "CUBLAS_STATUS_NOT_SUPPORTED";
+#else
+            case rocblas_status_success:
+                return "rocblas_status_success";
+            case rocblas_status_invalid_value:
+                return "rocblas_status_invalid_value";
+            case rocblas_status_internal_error:
+                return "rocblas_status_internal_error";
             case rocblas_status_check_numerics_fail:
                 return "rocblas_status_check_numerics_fail";
             case rocblas_status_continue:
@@ -46,21 +67,6 @@ namespace pika::cuda::experimental {
                 return "rocblas_status_size_query_mismatch";
             case rocblas_status_size_unchanged:
                 return "rocblas_status_size_unchanged";
-#else
-            case CUBLAS_STATUS_ALLOC_FAILED:
-                return "CUBLAS_STATUS_ALLOC_FAILED";
-            case CUBLAS_STATUS_ARCH_MISMATCH:
-                return "CUBLAS_STATUS_ARCH_MISMATCH";
-            case CUBLAS_STATUS_EXECUTION_FAILED:
-                return "CUBLAS_STATUS_EXECUTION_FAILED";
-            case CUBLAS_STATUS_LICENSE_ERROR:
-                return "CUBLAS_STATUS_LICENSE_ERROR";
-            case CUBLAS_STATUS_MAPPING_ERROR:
-                return "CUBLAS_STATUS_MAPPING_ERROR";
-            case CUBLAS_STATUS_NOT_INITIALIZED:
-                return "CUBLAS_STATUS_NOT_INITIALIZED";
-            case CUBLAS_STATUS_NOT_SUPPORTED:
-                return "CUBLAS_STATUS_NOT_SUPPORTED";
 #endif
             }
             return "<unknown>";
