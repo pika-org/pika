@@ -73,7 +73,7 @@ namespace pika::detail {
         void check_pu_offset() const;
         void check_pu_step() const;
 
-        bool handle_arguments(util::manage_config& cfgmap,
+        bool handle_arguments(detail::manage_config& cfgmap,
             pika::program_options::variables_map& vm,
             std::vector<std::string>& ini_config);
 

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace pika { namespace util {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     inline std::string trim_whitespace(std::string const& s)
     {
@@ -43,4 +43,4 @@ namespace pika { namespace util {
             config_.insert(map_type::value_type(key, value));
         }
     }
-}}    // namespace pika::util
+}    // namespace pika::detail

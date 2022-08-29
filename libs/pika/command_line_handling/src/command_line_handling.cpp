@@ -111,7 +111,7 @@ namespace pika::detail {
         return "file(" + dest + ")";
     }
 
-    std::string handle_queuing(util::manage_config& cfgmap,
+    std::string handle_queuing(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::string const& default_)
     {
         // command line options is used preferred
@@ -122,7 +122,7 @@ namespace pika::detail {
         return cfgmap.get_value<std::string>("pika.scheduler", default_);
     }
 
-    std::string handle_affinity(util::manage_config& cfgmap,
+    std::string handle_affinity(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::string const& default_)
     {
         // command line options is used preferred
@@ -133,7 +133,7 @@ namespace pika::detail {
         return cfgmap.get_value<std::string>("pika.affinity", default_);
     }
 
-    std::string handle_affinity_bind(util::manage_config& cfgmap,
+    std::string handle_affinity_bind(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::string const& default_)
     {
         // command line options is used preferred
@@ -157,7 +157,7 @@ namespace pika::detail {
         return cfgmap.get_value<std::string>("pika.bind", default_);
     }
 
-    std::size_t handle_pu_step(util::manage_config& cfgmap,
+    std::size_t handle_pu_step(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::size_t default_)
     {
         // command line options is used preferred
@@ -168,7 +168,7 @@ namespace pika::detail {
         return cfgmap.get_value<std::size_t>("pika.pu_step", default_);
     }
 
-    std::size_t handle_pu_offset(util::manage_config& cfgmap,
+    std::size_t handle_pu_offset(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::size_t default_)
     {
         // command line options is used preferred
@@ -179,7 +179,7 @@ namespace pika::detail {
         return cfgmap.get_value<std::size_t>("pika.pu_offset", default_);
     }
 
-    std::size_t handle_numa_sensitive(util::manage_config& cfgmap,
+    std::size_t handle_numa_sensitive(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::size_t default_)
     {
         if (vm.count("pika:numa-sensitive") != 0)
@@ -243,7 +243,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////
-    std::size_t handle_num_threads(util::manage_config& cfgmap,
+    std::size_t handle_num_threads(detail::manage_config& cfgmap,
         pika::util::runtime_configuration const& rtcfg,
         pika::program_options::variables_map& vm, bool use_process_mask)
     {
@@ -344,7 +344,7 @@ namespace pika::detail {
         return threads;
     }
 
-    std::size_t handle_num_cores(util::manage_config& cfgmap,
+    std::size_t handle_num_cores(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::size_t num_threads,
         bool use_process_mask)
     {
@@ -437,7 +437,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    bool command_line_handling::handle_arguments(util::manage_config& cfgmap,
+    bool command_line_handling::handle_arguments(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm,
         std::vector<std::string>& ini_config)
     {
@@ -830,7 +830,7 @@ namespace pika::detail {
         // separate command line arguments from configuration settings
         std::vector<std::string> args = preprocess_config_settings(argc, argv);
 
-        util::manage_config cfgmap(ini_config_);
+        detail::manage_config cfgmap(ini_config_);
 
         // insert the pre-configured ini settings before loading modules
         for (std::string const& e : ini_config_)

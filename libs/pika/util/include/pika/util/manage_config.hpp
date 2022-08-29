@@ -15,7 +15,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace util {
+namespace pika::detail {
     struct PIKA_EXPORT manage_config
     {
         using map_type = std::map<std::string, std::string>;
@@ -35,6 +35,6 @@ namespace pika { namespace util {
 
         map_type config_;
     };
-}}    // namespace pika::util
+}    // namespace pika::detail
 
 #include <pika/config/warnings_suffix.hpp>
