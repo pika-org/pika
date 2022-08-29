@@ -9,7 +9,7 @@
 
 #include <ios>
 
-namespace pika { namespace util {
+namespace pika::detail {
 
     // this is taken from the Boost.Io library
     class ios_flags_saver
@@ -46,4 +46,4 @@ namespace pika { namespace util {
         state_type& s_save_;
         aspect_type const a_save_;
     };
-}}    // namespace pika::util
+}    // namespace pika::detail

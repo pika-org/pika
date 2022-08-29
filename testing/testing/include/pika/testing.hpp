@@ -64,7 +64,7 @@ namespace pika { namespace util {
                 if (!t)
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::util::ios_flags_saver ifs(stream_);
+                    pika::detail::ios_flags_saver ifs(stream_);
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "'"
                             << std::endl;
@@ -83,7 +83,7 @@ namespace pika { namespace util {
                 if (!(t == u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::util::ios_flags_saver ifs(stream_);
+                    pika::detail::ios_flags_saver ifs(stream_);
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "': "
                             << "'" << t << "' != '" << u << "'" << std::endl;
@@ -103,7 +103,7 @@ namespace pika { namespace util {
                 if (!(t != u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::util::ios_flags_saver ifs(stream_);
+                    pika::detail::ios_flags_saver ifs(stream_);
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "': "
                             << "'" << t << "' != '" << u << "'" << std::endl;
@@ -122,7 +122,7 @@ namespace pika { namespace util {
                 if (!(t < u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::util::ios_flags_saver ifs(stream_);
+                    pika::detail::ios_flags_saver ifs(stream_);
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "': "
                             << "'" << t << "' >= '" << u << "'" << std::endl;
@@ -142,7 +142,7 @@ namespace pika { namespace util {
                 if (!(t <= u))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::util::ios_flags_saver ifs(stream_);
+                    pika::detail::ios_flags_saver ifs(stream_);
                     stream_ << file << "(" << line << "): " << msg
                             << " failed in function '" << function << "': "
                             << "'" << t << "' > '" << u << "'" << std::endl;
@@ -162,7 +162,7 @@ namespace pika { namespace util {
                 if (!(t >= u && t <= v))
                 {
                     std::lock_guard<mutex_type> l(mutex_);
-                    pika::util::ios_flags_saver ifs(stream_);
+                    pika::detail::ios_flags_saver ifs(stream_);
                     if (!(t >= u))
                     {
                         stream_ << file << "(" << line << "): " << msg

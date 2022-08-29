@@ -124,13 +124,13 @@ namespace pika { namespace util {
 
         if (sanity_tests == 0 && test_tests == 0)
         {
-            pika::util::ios_flags_saver ifs(stream);
+            pika::detail::ios_flags_saver ifs(stream);
             stream << "No tests run. Did you forget to add tests?" << std::endl;
             return 1;
         }
         else if (sanity_failures == 0 && test_failures == 0)
         {
-            pika::util::ios_flags_saver ifs(stream);
+            pika::detail::ios_flags_saver ifs(stream);
             stream << "All tests passed. Ran " << sanity_tests
                    << " sanity check"    //-V128
                    << ((sanity_tests == 1) ? " and " : "s and ") << test_tests
@@ -139,7 +139,7 @@ namespace pika { namespace util {
         }
         else
         {
-            pika::util::ios_flags_saver ifs(stream);
+            pika::detail::ios_flags_saver ifs(stream);
             stream << "Tests failed. " << sanity_failures << "/" << sanity_tests
                    << " sanity check"    //-V128
                    << ((sanity_tests == 1) ? " and " : "s and ")
