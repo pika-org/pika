@@ -329,7 +329,7 @@ namespace pika::threads::coroutines {
         public:
             static std::uint64_t get_stack_recycle_count(bool reset) noexcept
             {
-                return util::get_and_reset_value(
+                return detail::get_and_reset_value(
                     get_stack_recycle_counter(), reset);
             }
 #endif

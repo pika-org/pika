@@ -301,13 +301,13 @@ namespace pika::threads::coroutines {
         public:
             static std::uint64_t get_stack_unbind_count(bool reset)
             {
-                return util::get_and_reset_value(
+                return detail::get_and_reset_value(
                     get_stack_unbind_counter(), reset);
             }
 
             static std::uint64_t get_stack_recycle_count(bool reset)
             {
-                return util::get_and_reset_value(
+                return detail::get_and_reset_value(
                     get_stack_recycle_counter(), reset);
             }
 #endif
