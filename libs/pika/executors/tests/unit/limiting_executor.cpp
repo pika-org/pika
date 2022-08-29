@@ -88,10 +88,23 @@ void test_limit()
         std::cout << "Reached end of launch with futures = " << futures.size()
                   << std::endl;
     }
-    // the executors should block until all tasks have completed
+    // The executors should block until all tasks have completed
     auto not_ready = std::count_if(
         futures.begin(), futures.end(), [](auto& f) { return !f.is_ready(); });
-    // so all futures should be ready;
+    // so almost all futures should be ready. The discrepancy comes from the
+    // internal wrapper signaling completion to the limiting executor after the
+    // callable passed to async has returned, but before the future is marked
+    // ready (which happens when the internal wrapper returns from its own call
+    // operator). At most num_worker_threads - 1 futures may still be running on
+    // other worker threads because all others would have finished already. If
+    // we wait a little longer all should be ready (although the required wait
+    // is unbounded and depends on other work on the system).
+    PIKA_TEST_LTE(static_cast<std::size_t>(not_ready),
+        pika::get_num_worker_threads() - 1);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    not_ready = std::count_if(
+        futures.begin(), futures.end(), [](auto& f) { return !f.is_ready(); });
     PIKA_TEST_EQ(not_ready, 0);
 
     // the max counters should not exceed the limit set
