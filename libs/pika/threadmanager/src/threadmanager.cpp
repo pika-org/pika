@@ -89,53 +89,53 @@ namespace pika { namespace threads {
         std::size_t thread_offset = 0;
 
         std::size_t max_background_threads =
-            pika::util::get_entry_as<std::size_t>(rtcfg_,
+            pika::detail::get_entry_as<std::size_t>(rtcfg_,
                 "pika.max_background_threads",
                 (std::numeric_limits<std::size_t>::max)());
         std::size_t const max_idle_loop_count =
-            pika::util::get_entry_as<std::int64_t>(
+            pika::detail::get_entry_as<std::int64_t>(
                 rtcfg_, "pika.max_idle_loop_count", PIKA_IDLE_LOOP_COUNT_MAX);
         std::size_t const max_busy_loop_count =
-            pika::util::get_entry_as<std::int64_t>(
+            pika::detail::get_entry_as<std::int64_t>(
                 rtcfg_, "pika.max_busy_loop_count", PIKA_BUSY_LOOP_COUNT_MAX);
 
         std::int64_t const max_thread_count =
-            pika::util::get_entry_as<std::int64_t>(rtcfg_,
+            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
                 "pika.thread_queue.max_thread_count",
                 PIKA_THREAD_QUEUE_MAX_THREAD_COUNT);
         std::int64_t const min_tasks_to_steal_pending =
-            pika::util::get_entry_as<std::int64_t>(rtcfg_,
+            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
                 "pika.thread_queue.min_tasks_to_steal_pending",
                 PIKA_THREAD_QUEUE_MIN_TASKS_TO_STEAL_PENDING);
         std::int64_t const min_tasks_to_steal_staged =
-            pika::util::get_entry_as<std::int64_t>(rtcfg_,
+            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
                 "pika.thread_queue.min_tasks_to_steal_staged",
                 PIKA_THREAD_QUEUE_MIN_TASKS_TO_STEAL_STAGED);
         std::int64_t const min_add_new_count =
-            pika::util::get_entry_as<std::int64_t>(rtcfg_,
+            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
                 "pika.thread_queue.min_add_new_count",
                 PIKA_THREAD_QUEUE_MIN_ADD_NEW_COUNT);
         std::int64_t const max_add_new_count =
-            pika::util::get_entry_as<std::int64_t>(rtcfg_,
+            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
                 "pika.thread_queue.max_add_new_count",
                 PIKA_THREAD_QUEUE_MAX_ADD_NEW_COUNT);
         std::int64_t const min_delete_count =
-            pika::util::get_entry_as<std::int64_t>(rtcfg_,
+            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
                 "pika.thread_queue.min_delete_count",
                 PIKA_THREAD_QUEUE_MIN_DELETE_COUNT);
         std::int64_t const max_delete_count =
-            pika::util::get_entry_as<std::int64_t>(rtcfg_,
+            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
                 "pika.thread_queue.max_delete_count",
                 PIKA_THREAD_QUEUE_MAX_DELETE_COUNT);
         std::int64_t const max_terminated_threads =
-            pika::util::get_entry_as<std::int64_t>(rtcfg_,
+            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
                 "pika.thread_queue.max_terminated_threads",
                 PIKA_THREAD_QUEUE_MAX_TERMINATED_THREADS);
         std::int64_t const init_threads_count =
-            pika::util::get_entry_as<std::int64_t>(rtcfg_,
+            pika::detail::get_entry_as<std::int64_t>(rtcfg_,
                 "pika.thread_queue.init_threads_count",
                 PIKA_THREAD_QUEUE_INIT_THREADS_COUNT);
-        double const max_idle_backoff_time = pika::util::get_entry_as<double>(
+        double const max_idle_backoff_time = pika::detail::get_entry_as<double>(
             rtcfg_, "pika.max_idle_backoff_time", PIKA_IDLE_BACKOFF_TIME_MAX);
 
         std::ptrdiff_t small_stacksize =
@@ -181,8 +181,9 @@ namespace pika { namespace threads {
                 max_background_threads, max_idle_loop_count,
                 max_busy_loop_count);
 
-            std::size_t numa_sensitive = pika::util::get_entry_as<std::size_t>(
-                rtcfg_, "pika.numa_sensitive", 0);
+            std::size_t numa_sensitive =
+                pika::detail::get_entry_as<std::size_t>(
+                    rtcfg_, "pika.numa_sensitive", 0);
 
             switch (sched_type)
             {
@@ -233,7 +234,7 @@ namespace pika { namespace threads {
                 // set parameters for scheduler and pool instantiation and
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
-                    pika::util::get_entry_as<std::size_t>(rtcfg_,
+                    pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
                 detail::check_num_high_priority_queues(
@@ -273,7 +274,7 @@ namespace pika { namespace threads {
                 // set parameters for scheduler and pool instantiation and
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
-                    pika::util::get_entry_as<std::size_t>(rtcfg_,
+                    pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
                 detail::check_num_high_priority_queues(
@@ -345,7 +346,7 @@ namespace pika { namespace threads {
                 // set parameters for scheduler and pool instantiation and
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
-                    pika::util::get_entry_as<std::size_t>(rtcfg_,
+                    pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
                 detail::check_num_high_priority_queues(
@@ -383,7 +384,7 @@ namespace pika { namespace threads {
                 // set parameters for scheduler and pool instantiation and
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
-                    pika::util::get_entry_as<std::size_t>(rtcfg_,
+                    pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
                 detail::check_num_high_priority_queues(
@@ -429,7 +430,7 @@ namespace pika { namespace threads {
                 // set parameters for scheduler and pool instantiation and
                 // perform compatibility checks
                 std::size_t num_high_priority_queues =
-                    pika::util::get_entry_as<std::size_t>(rtcfg_,
+                    pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
                 detail::check_num_high_priority_queues(
@@ -1067,8 +1068,9 @@ namespace pika { namespace threads {
 
     void threadmanager::wait()
     {
-        std::size_t shutdown_check_count = util::get_entry_as<std::size_t>(
-            rtcfg_, "pika.shutdown_check_count", 10);
+        std::size_t shutdown_check_count =
+            ::pika::detail::get_entry_as<std::size_t>(
+                rtcfg_, "pika.shutdown_check_count", 10);
         pika::util::detail::yield_while_count(
             [this]() { return is_busy(); }, shutdown_check_count);
     }

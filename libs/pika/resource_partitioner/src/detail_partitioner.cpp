@@ -681,8 +681,8 @@ namespace pika { namespace resource { namespace detail {
 
             // Make sure the total number of requested threads does not exceed
             // the number of threads requested on the command line
-            std::size_t num_threads =
-                util::get_entry_as<std::size_t>(rtcfg_, "pika.os_threads", 0);
+            std::size_t num_threads = ::pika::detail::get_entry_as<std::size_t>(
+                rtcfg_, "pika.os_threads", 0);
             PIKA_ASSERT(num_threads != 0);
 
             if (detail::init_pool_data::num_threads_overall > num_threads)
@@ -804,7 +804,7 @@ namespace pika { namespace resource { namespace detail {
         // threads to create (if no over-subscription is allowed)
         PIKA_ASSERT(mode_ & mode_allow_oversubscription ||
             num_threads ==
-                util::get_entry_as<std::size_t>(
+                ::pika::detail::get_entry_as<std::size_t>(
                     rtcfg_, "pika.os_threads", std::size_t(-1)));
 
         return num_threads;

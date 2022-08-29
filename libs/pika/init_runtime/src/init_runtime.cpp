@@ -445,17 +445,17 @@ namespace pika {
 
                     pika::detail::affinity_data affinity_data{};
                     affinity_data.init(
-                        pika::util::get_entry_as<std::size_t>(
+                        pika::detail::get_entry_as<std::size_t>(
                             cmdline.rtcfg_, "pika.os_threads", 0),
-                        pika::util::get_entry_as<std::size_t>(
+                        pika::detail::get_entry_as<std::size_t>(
                             cmdline.rtcfg_, "pika.cores", 0),
-                        pika::util::get_entry_as<std::size_t>(
+                        pika::detail::get_entry_as<std::size_t>(
                             cmdline.rtcfg_, "pika.pu_offset", 0),
-                        pika::util::get_entry_as<std::size_t>(
+                        pika::detail::get_entry_as<std::size_t>(
                             cmdline.rtcfg_, "pika.pu_step", 0),
                         0, cmdline.rtcfg_.get_entry("pika.affinity", ""),
                         cmdline.rtcfg_.get_entry("pika.bind", ""),
-                        !pika::util::get_entry_as<bool>(
+                        !pika::detail::get_entry_as<bool>(
                             cmdline.rtcfg_, "pika.ignore_process_mask", false));
 
                     pika::resource::partitioner rp =
