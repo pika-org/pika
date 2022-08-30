@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace pika { namespace util {
+namespace pika::detail {
     // helper function for counter evaluation
     inline std::uint64_t get_and_reset_value(
         std::uint64_t& value, bool reset) noexcept
@@ -47,4 +47,4 @@ namespace pika { namespace util {
 
         return result;
     }
-}}    // namespace pika::util
+}    // namespace pika::detail

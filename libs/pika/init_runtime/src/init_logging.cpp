@@ -871,7 +871,7 @@ namespace pika { namespace util {
 
         void warn_if_logging_requested(runtime_configuration& ini)
         {
-            using util::get_entry_as;
+            using detail::get_entry_as;
 
             // warn if logging is requested
             if (get_entry_as<int>(ini, "pika.logging.level", -1) > 0 ||

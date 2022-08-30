@@ -419,7 +419,7 @@ namespace pika { namespace util {
 #if PIKA_HAVE_ITTNOTIFY != 0
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::util::get_entry_as<int>(*sec, "use_itt_notify", 0) !=
+            return pika::detail::get_entry_as<int>(*sec, "use_itt_notify", 0) !=
                 0;
         }
 #endif
@@ -432,7 +432,7 @@ namespace pika { namespace util {
 #ifdef PIKA_HAVE_VERIFY_LOCKS
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::util::get_entry_as<int>(*sec, "lock_detection", 0) !=
+            return pika::detail::get_entry_as<int>(*sec, "lock_detection", 0) !=
                 0;
         }
 #endif
@@ -446,10 +446,10 @@ namespace pika { namespace util {
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
 #ifdef PIKA_DEBUG
-            return pika::util::get_entry_as<int>(
+            return pika::detail::get_entry_as<int>(
                        *sec, "minimal_deadlock_detection", 1) != 0;
 #else
-            return pika::util::get_entry_as<int>(
+            return pika::detail::get_entry_as<int>(
                        *sec, "minimal_deadlock_detection", 0) != 0;
 #endif
         }
@@ -472,10 +472,10 @@ namespace pika { namespace util {
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
 #ifdef PIKA_DEBUG
-            return pika::util::get_entry_as<int>(
+            return pika::detail::get_entry_as<int>(
                        *sec, "spinlock_deadlock_detection", 1) != 0;
 #else
-            return pika::util::get_entry_as<int>(
+            return pika::detail::get_entry_as<int>(
                        *sec, "spinlock_deadlock_detection", 0) != 0;
 #endif
         }
@@ -498,7 +498,7 @@ namespace pika { namespace util {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::util::get_entry_as<std::size_t>(*sec,
+            return pika::detail::get_entry_as<std::size_t>(*sec,
                 "spinlock_deadlock_detection_limit",
                 PIKA_SPINLOCK_DEADLOCK_DETECTION_LIMIT);
         }
@@ -514,7 +514,7 @@ namespace pika { namespace util {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::util::get_entry_as<std::size_t>(*sec,
+            return pika::detail::get_entry_as<std::size_t>(*sec,
                 "spinlock_deadlock_warning_limit",
                 PIKA_SPINLOCK_DEADLOCK_WARNING_LIMIT);
         }
@@ -528,7 +528,7 @@ namespace pika { namespace util {
     {
         if (util::section const* sec = get_section("pika"); nullptr != sec)
         {
-            return pika::util::get_entry_as<std::size_t>(
+            return pika::detail::get_entry_as<std::size_t>(
                 *sec, "trace_depth", PIKA_HAVE_THREAD_BACKTRACE_DEPTH);
         }
         return PIKA_HAVE_THREAD_BACKTRACE_DEPTH;
@@ -541,7 +541,7 @@ namespace pika { namespace util {
             num_os_threads = 1;
             if (util::section const* sec = get_section("pika"); nullptr != sec)
             {
-                num_os_threads = pika::util::get_entry_as<std::uint32_t>(
+                num_os_threads = pika::detail::get_entry_as<std::uint32_t>(
                     *sec, "os_threads", 1);
             }
         }
@@ -564,7 +564,7 @@ namespace pika { namespace util {
         if (util::section const* sec = get_section("pika.threadpools");
             nullptr != sec)
         {
-            return pika::util::get_entry_as<std::size_t>(
+            return pika::detail::get_entry_as<std::size_t>(
                 *sec, std::string(poolname) + "_size", 2);
         }
         return 2;    // the default size for all pools is 2
@@ -593,8 +593,8 @@ namespace pika { namespace util {
         if (util::section const* sec = get_section("pika.stacks");
             nullptr != sec)
         {
-            return pika::util::get_entry_as<int>(*sec, "use_guard_pages", 1) !=
-                0;
+            return pika::detail::get_entry_as<int>(
+                       *sec, "use_guard_pages", 1) != 0;
         }
         return true;    // default is true
     }

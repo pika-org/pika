@@ -964,7 +964,7 @@ namespace pika::threads::detail {
     void topology::print_affinity_mask(std::ostream& os, std::size_t num_thread,
         mask_cref_type m, const std::string& pool_name) const
     {
-        pika::util::ios_flags_saver ifs(os);
+        pika::detail::ios_flags_saver ifs(os);
         bool first = true;
 
         for (std::size_t i = 0; i != num_of_pus_; ++i)

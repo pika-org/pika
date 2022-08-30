@@ -13,27 +13,27 @@
 #include <string>
 #include <type_traits>
 
-namespace pika { namespace util {
+namespace pika::detail {
 
     template <typename DestType, typename Config,
-        typename std::enable_if<!std::is_same<DestType, std::string>::value,
-            bool>::type = false>
+        std::enable_if_t<!std::is_same<DestType, std::string>::value, bool> =
+            false>
     DestType get_entry_as(
         Config const& config, std::string const& key, DestType const& dflt)
     {
         std::string const& entry = config.get_entry(key, "");
         if (entry.empty())
             return dflt;
-        return from_string<DestType>(entry, dflt);
+        return util::from_string<DestType>(entry, dflt);
     }
 
     template <typename DestType, typename Config,
-        typename std::enable_if<std::is_same<DestType, std::string>::value,
-            bool>::type = false>
+        std::enable_if_t<std::is_same<DestType, std::string>::value, bool> =
+            false>
     DestType get_entry_as(
         Config const& config, std::string const& key, DestType const& dflt)
     {
         return config.get_entry(key, dflt);
     }
 
-}}    // namespace pika::util
+}    // namespace pika::detail

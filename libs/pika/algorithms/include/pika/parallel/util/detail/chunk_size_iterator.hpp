@@ -11,7 +11,6 @@
 #include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/iterator_support/iterator_facade.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
-#include <pika/util/min.hpp>
 
 #include <algorithm>
 #include <cstddef>
@@ -78,7 +77,7 @@ namespace pika::parallel::util::detail {
         PIKA_HOST_DEVICE chunk_size_iterator(Iterator it,
             std::size_t chunk_size, std::size_t count = 0,
             std::size_t current = 0)
-          : data_(it, (pika::detail::min)(chunk_size, count))
+          : data_(it, (std::min)(chunk_size, count))
           , chunk_size_(chunk_size)
           , last_chunk_size_(get_last_chunk_size(count, chunk_size))
           , count_(count)
@@ -259,7 +258,7 @@ namespace pika::parallel::util::detail {
         PIKA_HOST_DEVICE chunk_size_idx_iterator(Iterator it,
             std::size_t chunk_size, std::size_t count = 0,
             std::size_t current = 0, std::size_t base_idx = 0)
-          : data_(it, (pika::detail::min)(chunk_size, count), base_idx)
+          : data_(it, (std::min)(chunk_size, count), base_idx)
           , chunk_size_(chunk_size)
           , last_chunk_size_(get_last_chunk_size(count, chunk_size))
           , count_(count)

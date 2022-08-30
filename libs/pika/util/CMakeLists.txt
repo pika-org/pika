@@ -5,14 +5,9 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(util_headers
-    pika/util/detail/reserve.hpp
-    pika/util/get_and_reset_value.hpp
-    pika/util/get_entry_as.hpp
-    pika/util/insert_checked.hpp
-    pika/util/ios_flags_saver.hpp
+    pika/util/detail/reserve.hpp pika/util/get_and_reset_value.hpp
+    pika/util/get_entry_as.hpp pika/util/ios_flags_saver.hpp
     pika/util/manage_config.hpp
-    pika/util/max.hpp
-    pika/util/min.hpp
 )
 
 set(util_sources manage_config.cpp)

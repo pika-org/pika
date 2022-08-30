@@ -520,12 +520,13 @@ namespace pika { namespace threads { namespace policies {
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
         std::uint64_t get_creation_time(bool reset)
         {
-            return util::get_and_reset_value(add_new_time_, reset);
+            return ::pika::detail::get_and_reset_value(add_new_time_, reset);
         }
 
         std::uint64_t get_cleanup_time(bool reset)
         {
-            return util::get_and_reset_value(cleanup_terminated_time_, reset);
+            return ::pika::detail::get_and_reset_value(
+                cleanup_terminated_time_, reset);
         }
 #endif
 
@@ -573,7 +574,7 @@ namespace pika { namespace threads { namespace policies {
 #ifdef PIKA_HAVE_THREAD_STEALING_COUNTS
         std::int64_t get_num_pending_misses(bool reset)
         {
-            return util::get_and_reset_value(pending_misses_, reset);
+            return ::pika::detail::get_and_reset_value(pending_misses_, reset);
         }
 
         void increment_num_pending_misses(std::size_t num = 1)
@@ -583,7 +584,8 @@ namespace pika { namespace threads { namespace policies {
 
         std::int64_t get_num_pending_accesses(bool reset)
         {
-            return util::get_and_reset_value(pending_accesses_, reset);
+            return ::pika::detail::get_and_reset_value(
+                pending_accesses_, reset);
         }
 
         void increment_num_pending_accesses(std::size_t num = 1)
@@ -593,7 +595,8 @@ namespace pika { namespace threads { namespace policies {
 
         std::int64_t get_num_stolen_from_pending(bool reset)
         {
-            return util::get_and_reset_value(stolen_from_pending_, reset);
+            return ::pika::detail::get_and_reset_value(
+                stolen_from_pending_, reset);
         }
 
         void increment_num_stolen_from_pending(std::size_t num = 1)
@@ -603,7 +606,8 @@ namespace pika { namespace threads { namespace policies {
 
         std::int64_t get_num_stolen_from_staged(bool reset)
         {
-            return util::get_and_reset_value(stolen_from_staged_, reset);
+            return ::pika::detail::get_and_reset_value(
+                stolen_from_staged_, reset);
         }
 
         void increment_num_stolen_from_staged(std::size_t num = 1)
@@ -613,7 +617,8 @@ namespace pika { namespace threads { namespace policies {
 
         std::int64_t get_num_stolen_to_pending(bool reset)
         {
-            return util::get_and_reset_value(stolen_to_pending_, reset);
+            return ::pika::detail::get_and_reset_value(
+                stolen_to_pending_, reset);
         }
 
         void increment_num_stolen_to_pending(std::size_t num = 1)
@@ -623,7 +628,8 @@ namespace pika { namespace threads { namespace policies {
 
         std::int64_t get_num_stolen_to_staged(bool reset)
         {
-            return util::get_and_reset_value(stolen_to_staged_, reset);
+            return ::pika::detail::get_and_reset_value(
+                stolen_to_staged_, reset);
         }
 
         void increment_num_stolen_to_staged(std::size_t num = 1)

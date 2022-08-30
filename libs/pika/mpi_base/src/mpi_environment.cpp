@@ -127,8 +127,8 @@ namespace pika { namespace util {
         int required = MPI_THREAD_SINGLE;
         int minimal = MPI_THREAD_SINGLE;
 #if defined(PIKA_HAVE_MPI_MULTITHREADED)
-        required =
-            (get_entry_as(rtcfg, "pika.parcel.mpi.multithreaded", 1) != 0) ?
+        required = (pika::detail::get_entry_as(
+                        rtcfg, "pika.parcel.mpi.multithreaded", 1) != 0) ?
             MPI_THREAD_MULTIPLE :
             MPI_THREAD_SINGLE;
 
