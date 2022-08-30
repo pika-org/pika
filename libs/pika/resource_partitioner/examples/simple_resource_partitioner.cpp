@@ -71,19 +71,19 @@ int pika_main(pika::program_options::variables_map&)
         pika::execution::thread_priority::critical);
     pika::execution::parallel_executor normal_priority_executor;
 
-    pika::execution::parallel_executor mpi_executor;
+    pika::execution::parallel_executor pool_executor;
     // create an executor on the mpi pool
     if (use_pools)
     {
         // get executors
         pika::execution::parallel_executor mpi_exec(
             &pika::resource::get_thread_pool(pool_name));
-        mpi_executor = mpi_exec;
+        pool_executor = mpi_exec;
         std::cout << "\n[pika_main] got mpi executor " << std::endl;
     }
     else
     {
-        mpi_executor = high_priority_executor;
+        pool_executor = high_priority_executor;
     }
 
     // print partition characteristics
@@ -100,13 +100,14 @@ int pika_main(pika::program_options::variables_map&)
     print_system_characteristics();
 
     // use executor to schedule work on custom pool
-    pika::future<void> future_1 = pika::async(mpi_executor, &do_stuff, 5, true);
+    pika::future<void> future_1 =
+        pika::async(pool_executor, &do_stuff, 5, true);
 
     pika::future<void> future_2 = future_1.then(
-        mpi_executor, [](pika::future<void>&&) { do_stuff(5, true); });
+        pool_executor, [](pika::future<void>&&) { do_stuff(5, true); });
 
-    pika::future<void> future_3 = future_2.then(mpi_executor,
-        [mpi_executor, high_priority_executor, async_count](
+    pika::future<void> future_3 = future_2.then(pool_executor,
+        [pool_executor, high_priority_executor, async_count](
             pika::future<void>&&) mutable {
             pika::future<void> future_4, future_5;
             for (std::size_t i = 0; i < async_count; i++)
@@ -114,7 +115,7 @@ int pika_main(pika::program_options::variables_map&)
                 if (i % 2 == 0)
                 {
                     future_4 = pika::async(
-                        mpi_executor, &do_stuff, async_count, false);
+                        pool_executor, &do_stuff, async_count, false);
                 }
                 else
                 {
@@ -168,9 +169,9 @@ int pika_main(pika::program_options::variables_map&)
               << std::endl;
     thread_set.clear();
 
-    // test a parallel algorithm on mpi_executor
-    pika::for_loop_strided(pika::execution::par.with(fixed).on(mpi_executor), 0,
-        loop_count, 1, [&](std::size_t i) {
+    // test a parallel algorithm on pool_executor
+    pika::for_loop_strided(pika::execution::par.with(fixed).on(pool_executor),
+        0, loop_count, 1, [&](std::size_t i) {
             std::lock_guard<pika::lcos::local::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
@@ -190,7 +191,7 @@ int pika_main(pika::program_options::variables_map&)
     // test a parallel algorithm on custom pool with high priority
     pika::for_loop_strided(
         pika::execution::par.with(fixed /*, high_priority_async_policy*/)
-            .on(mpi_executor),
+            .on(pool_executor),
         0, loop_count, 1, [&](std::size_t i) {
             std::lock_guard<pika::lcos::local::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
