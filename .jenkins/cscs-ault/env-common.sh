@@ -6,8 +6,8 @@
 
 
 export SPACK_ROOT="/apps/ault/SSD/pika/spack"
-export SPACK_USER_CONFIG_PATH="${SPACK_ROOT}/../spack-user-config"
-export SPACK_USER_CACHE_PATH="${SCRATCH}/spack-user-cache-jenkins/pika-cache"
+test -z "$SPACK_USER_CONFIG_PATH" && export SPACK_USER_CONFIG_PATH="${SPACK_ROOT}/../spack-user-config"
+test -z "$SPACK_USER_CACHE_PATH" && export SPACK_USER_CACHE_PATH="${SCRATCH}/spack-user-cache-jenkins/pika-cache"
 source "${SPACK_ROOT}/share/spack/setup-env.sh"
 
 spack load ccache@4.5.1 %gcc@10.2.0
