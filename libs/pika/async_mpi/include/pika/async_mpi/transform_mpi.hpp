@@ -120,8 +120,8 @@ namespace pika::mpi::experimental {
             };
 
             template <typename... Ts>
-            requires is_mpi_request_invocable_v<F,
-                Ts...> using invoke_result_helper =
+            requires is_mpi_request_invocable_v<F, Ts...>
+            using invoke_result_helper =
                 pika::execution::experimental::completion_signatures<
                     typename result_type_signature_helper<
                         mpi_request_invoke_result_t<F, Ts...>>::type>;
