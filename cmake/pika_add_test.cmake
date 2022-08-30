@@ -64,7 +64,7 @@ function(pika_add_test category name)
     set(args ${args} "--pika:bind=none")
   endif()
 
-  set(args "${${name}_UNPARSED_ARGUMENTS}" ${args})
+  set(args "${${name}_ARGS}" "${${name}_UNPARSED_ARGUMENTS}" ${args})
 
   set(_script_location ${PROJECT_BINARY_DIR})
 
