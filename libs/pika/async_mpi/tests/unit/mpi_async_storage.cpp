@@ -67,9 +67,9 @@ struct test_options
 {
     std::uint64_t local_storage_MB;
     std::uint64_t transfer_size_B;
-    std::uint64_t threads;
-    std::uint64_t num_seconds;
-    std::uint64_t in_flight_limit;
+    std::uint32_t threads;
+    std::uint32_t num_seconds;
+    std::uint32_t in_flight_limit;
 
     bool warmup;
     bool final;
@@ -235,7 +235,8 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_recv = &local_recv_storage[memory_offset_recv];
             auto rsnd = ex::just(buffer_to_recv, options.transfer_size_B,
                             MPI_UNSIGNED_CHAR, recv_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Irecv) | ex::then([&](int result) {
+                mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive) |
+                ex::then([&](int result) {
                     --recvs_in_flight;
                     nws_deb<5>.debug(deb::str<>("recv complete"),
                         "recv in flight", recvs_in_flight, "send in flight",
@@ -258,7 +259,8 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_send = &local_send_storage[memory_offset_send];
             auto ssnd = ex::just(buffer_to_send, options.transfer_size_B,
                             MPI_UNSIGNED_CHAR, send_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Isend) | ex::then([&](int result) {
+                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send) |
+                ex::then([&](int result) {
                     --sends_in_flight;
                     nws_deb<5>.debug(deb::str<>("send complete"),
                         "recv in flight", recvs_in_flight, "send in flight",
@@ -386,21 +388,15 @@ int pika_main(pika::program_options::variables_map& vm)
     options.transfer_size_B =
         static_cast<std::uint64_t>(vm["transferKB"].as<double>() * 1024);
     options.local_storage_MB = vm["localMB"].as<std::uint64_t>();
-    options.num_seconds = vm["seconds"].as<std::uint64_t>();
-    options.in_flight_limit = vm["in-flight-limit"].as<std::uint64_t>();
+    options.num_seconds = vm["seconds"].as<std::uint32_t>();
+    options.in_flight_limit = vm["in-flight-limit"].as<std::uint32_t>();
     options.threads = pika::get_os_thread_count();
     options.warmup = false;
     options.final = false;
 
-    size_t throttling = mpi::detail::get_max_requests_in_flight();
-    if (throttling == size_t(-1))
-    {
-        mpi::detail::set_max_requests_in_flight(options.in_flight_limit);
-    }
-    else
-    {
-        options.in_flight_limit = throttling;
-    }
+    mpi::set_max_requests_in_flight(options.in_flight_limit);
+    nws_deb<1>.debug("set_max_requests_in_flight", rank,
+        deb::dec<04>(options.in_flight_limit));
 
     nws_deb<1>.debug("Allocating local storage on rank", rank, "MB",
         deb::dec<03>(options.local_storage_MB));
@@ -529,14 +525,15 @@ int main(int argc, char* argv[])
     cmdline.add_options()("no-mpi-pool", pika::program_options::bool_switch(),
         "Disable the MPI pool.");
 
+    cmdline.add_options()("in-flight-limit",
+        pika::program_options::value<std::uint32_t>()->default_value(
+            mpi::get_max_requests_in_flight()),
+        "Apply a limit to the number of messages in flight.");
+
     cmdline.add_options()("localMB",
         pika::program_options::value<std::uint64_t>()->default_value(256),
         "Sets the storage capacity (in MB) on each node.\n"
         "The total storage will be num_ranks * localMB");
-
-    cmdline.add_options()("in-flight-limit",
-        pika::program_options::value<std::uint64_t>()->default_value(256),
-        "Apply a limit to then number of messages in flight.");
 
     cmdline.add_options()("transferKB",
         pika::program_options::value<double>()->default_value(512),
@@ -544,7 +541,7 @@ int main(int argc, char* argv[])
         "Each put/get IOP will be this size");
 
     cmdline.add_options()("seconds",
-        pika::program_options::value<std::uint64_t>()->default_value(5),
+        pika::program_options::value<std::uint32_t>()->default_value(5),
         "The number of seconds to run each iteration for.\n");
 
     nws_deb<6>.debug(3, "Calling pika::init");
