@@ -517,7 +517,7 @@ namespace pika::mpi::experimental {
     std::uint32_t set_max_requests_in_flight(
         std::uint32_t N, std::optional<stream_type> s)
     {
-        if (s == std::nullopt)
+        if (!s)
         {
             // start from 1
             for (size_t i = 1; i < detail::mpi_data_.default_queues_.size();
@@ -540,7 +540,7 @@ namespace pika::mpi::experimental {
 
     std::uint32_t get_max_requests_in_flight(std::optional<stream_type> s)
     {
-        if (s == std::nullopt)
+        if (!s)
         {
             return detail::mpi_data_.default_queues_[0].limit_;
         }
