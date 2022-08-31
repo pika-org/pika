@@ -235,8 +235,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_recv = &local_recv_storage[memory_offset_recv];
             auto rsnd = ex::just(buffer_to_recv, options.transfer_size_B,
                             MPI_UNSIGNED_CHAR, recv_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(
-                    MPI_Irecv, /*mpi::mpi_stream::*/ mpi::receive_stream) |
+                mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive) |
                 ex::then([&](int result) {
                     --recvs_in_flight;
                     nws_deb<5>.debug(deb::str<>("recv complete"),
@@ -260,8 +259,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_send = &local_send_storage[memory_offset_send];
             auto ssnd = ex::just(buffer_to_send, options.transfer_size_B,
                             MPI_UNSIGNED_CHAR, send_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(
-                    MPI_Isend, mpi::/*mpi_stream::*/ send_stream) |
+                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send) |
                 ex::then([&](int result) {
                     --sends_in_flight;
                     nws_deb<5>.debug(deb::str<>("send complete"),
@@ -396,7 +394,7 @@ int pika_main(pika::program_options::variables_map& vm)
     options.warmup = false;
     options.final = false;
 
-    mpi::detail::set_max_requests_in_flight(options.in_flight_limit);
+    mpi::set_max_requests_in_flight(options.in_flight_limit);
     nws_deb<1>.debug("set_max_requests_in_flight", rank,
         deb::dec<04>(options.in_flight_limit));
 
@@ -529,7 +527,7 @@ int main(int argc, char* argv[])
 
     cmdline.add_options()("in-flight-limit",
         pika::program_options::value<std::uint32_t>()->default_value(
-            mpi::detail::get_max_requests_in_flight(mpi::stream_index(-1))),
+            mpi::get_max_requests_in_flight()),
         "Apply a limit to the number of messages in flight.");
 
     cmdline.add_options()("localMB",

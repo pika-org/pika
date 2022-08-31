@@ -104,7 +104,7 @@ namespace pika::mpi::experimental {
         {
             std::decay_t<Sender> sender;
             std::decay_t<F> f;
-            stream_index stream;
+            stream_type stream;
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
             template <typename T>
@@ -172,7 +172,7 @@ namespace pika::mpi::experimental {
             {
                 std::decay_t<Receiver> receiver;
                 std::decay_t<F> f;
-                stream_index stream;
+                stream_type stream;
 
                 struct transform_mpi_receiver
                 {
@@ -216,8 +216,7 @@ namespace pika::mpi::experimental {
                                     mpi_request_invoke_result_t<F, Ts...>;
 
                                 // throttle if too many "in flight"
-                                detail::wait_for_throttling_snd(
-                                    r.op_state.stream);
+                                detail::wait_for_throttling(r.op_state.stream);
 
                                 if constexpr (std::is_void_v<
                                                   invoke_result_type>)
@@ -346,7 +345,7 @@ namespace pika::mpi::experimental {
 
                 template <typename Receiver_, typename F_, typename Sender_>
                 operation_state(Receiver_&& receiver, F_&& f, Sender_&& sender,
-                    stream_index s)
+                    stream_type s)
                   : receiver(PIKA_FORWARD(Receiver_, receiver))
                   , f(PIKA_FORWARD(F_, f))
                   , stream{s}
@@ -389,47 +388,29 @@ namespace pika::mpi::experimental {
       : pika::functional::detail::tag_fallback<transform_mpi_t>
     {
     private:
-        // if the user did not specify an mpi stream
-        template <typename Sender, typename F,
-            PIKA_CONCEPT_REQUIRES_(
-                pika::execution::experimental::is_sender_v<Sender>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            transform_mpi_t, Sender&& sender, F&& f)
-        {
-            return transform_mpi_detail::transform_mpi_sender<Sender, F>{
-                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f),
-                mpi::experimental::default_stream};
-        }
-
-        // if the user did specify an mpi stream
         template <typename Sender, typename F,
             PIKA_CONCEPT_REQUIRES_(
                 pika::execution::experimental::is_sender_v<Sender>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
             transform_mpi_t, Sender&& sender, F&& f,
-            mpi::experimental::stream_index s)
+            mpi::experimental::stream_type s =
+                mpi::experimental::stream_type::automatic)
         {
             return transform_mpi_detail::transform_mpi_sender<Sender, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f), s};
         }
 
         //
-        // tag invoke overloads for mpi_transform
+        // tag invoke overload for mpi_transform
         //
         template <typename F>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            transform_mpi_t, F&& f)
+            transform_mpi_t, F&& f,
+            mpi::experimental::stream_type s =
+                mpi::experimental::stream_type::automatic)
         {
             return ::pika::execution::experimental::detail::partial_algorithm<
-                transform_mpi_t, F>{PIKA_FORWARD(F, f)};
-        }
-
-        template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            transform_mpi_t, F&& f, mpi::experimental::stream_index s)
-        {
-            return ::pika::execution::experimental::detail::partial_algorithm<
-                transform_mpi_t, F, mpi::experimental::stream_index>{
+                transform_mpi_t, F, mpi::experimental::stream_type>{
                 PIKA_FORWARD(F, f), s};
         }
 

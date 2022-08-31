@@ -8,30 +8,18 @@ set(tests algorithm_transform_mpi mpi_ring_async_sender_receiver
           mpi_async_storage
 )
 
+# cmake-format: off
 set(mpi_ring_async_sender_receiver_PARAMETERS
-    ARGS
-    "--in-flight-limit=32"
-    THREADS
-    4
-    LOCALITIES
-    2
-    RUNWRAPPER
-    mpi
+    ARGS "--in-flight-limit=32"
+    THREADS 4 LOCALITIES 2 RUNWRAPPER mpi
 )
 
 set(mpi_async_storage_PARAMETERS
     ARGS
-    "--in-flight-limit=256"
-    "--localMB=256"
-    "--transferKB=1024"
-    "--seconds=1"
-    THREADS
-    4
-    LOCALITIES
-    2
-    RUNWRAPPER
-    mpi
+        "--in-flight-limit=256" "--localMB=256" "--transferKB=1024" "--seconds=1"
+    THREADS 4 LOCALITIES 2 RUNWRAPPER mpi
 )
+# cmake-format: on
 
 set(algorithm_transform_mpi_PARAMETERS LOCALITIES 2 RUNWRAPPER mpi)
 set(algorithm_transform_mpi_DEPENDENCIES pika_execution_test_utilities)
