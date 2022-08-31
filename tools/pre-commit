@@ -14,9 +14,10 @@
 # To use this hook, you must have clang-format and cmake-format
 # installed on your system
 
-# To install this hook, copy this file to your git hooks as follows
-# cp tools/pre-commit .git/hooks/pre-commit
-# chmod +x .git/hooks/pre-commit
+# To install this hook, symlink this hook to your git hooks as follows
+# (note that the extra ../../ in the path is because git runs the hook
+# from the .git/hooks directory, so the symlink has to be redirected)
+# ln -s -f ../../tools/pre-commit .git/hooks/pre-commit
 
 # @todo : add support for the pika inspect tool to be run as well
 
