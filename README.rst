@@ -33,7 +33,7 @@ pika requires:
   * `clang <https://clang.llvm.org>`_ 11 or greater
   * MSVC is may work but it is not tested
 
-* `CMake <https://cmake.org>`_ 3.18.0 or greater
+* `CMake <https://cmake.org>`_ 3.22.0 or greater
 * `header-only Boost <https://boost.org>`_ 1.71.0 or greater
 * `hwloc <https://www-lb.open-mpi.org/projects/hwloc/>`_ 1.11.5 or greater
 
