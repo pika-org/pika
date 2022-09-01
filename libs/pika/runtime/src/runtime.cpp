@@ -325,7 +325,7 @@ namespace pika {
     {
         notifier_ = PIKA_MOVE(notifier);
 
-        thread_manager_.reset(new pika::threads::threadmanager(
+        thread_manager_.reset(new pika::threads::detail::threadmanager(
             rtcfg_, notifier_, network_background_callback));
     }
 
@@ -948,7 +948,7 @@ namespace pika { namespace util {
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads {
-    threadmanager& get_thread_manager()
+    detail::threadmanager& get_thread_manager()
     {
         return get_runtime().get_thread_manager();
     }
@@ -1581,7 +1581,7 @@ namespace pika {
         return false;
     }
 
-    pika::threads::threadmanager& runtime::get_thread_manager()
+    pika::threads::detail::threadmanager& runtime::get_thread_manager()
     {
         return *thread_manager_;
     }

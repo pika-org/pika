@@ -150,7 +150,7 @@ namespace pika {
         /// \cond NOINTERNAL
         // The function get_thread_manager returns a reference to the
         // current thread manager.
-        PIKA_EXPORT threadmanager& get_thread_manager();
+        PIKA_EXPORT detail::threadmanager& get_thread_manager();
         /// \endcond
 
         /// \cond NOINTERNAL

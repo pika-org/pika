@@ -42,26 +42,24 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace threads {
-    namespace detail {
-        void check_num_high_priority_queues(
-            std::size_t num_threads, std::size_t num_high_priority_queues)
+namespace pika::threads::detail {
+    void check_num_high_priority_queues(
+        std::size_t num_threads, std::size_t num_high_priority_queues)
+    {
+        if (num_high_priority_queues > num_threads)
         {
-            if (num_high_priority_queues > num_threads)
-            {
-                throw pika::detail::command_line_error(
-                    "Invalid command line option: "
-                    "number of high priority threads ("
-                    "--pika:high-priority-threads), should not be larger "
-                    "than number of threads (--pika:threads)");
-            }
+            throw pika::detail::command_line_error(
+                "Invalid command line option: "
+                "number of high priority threads ("
+                "--pika:high-priority-threads), should not be larger "
+                "than number of threads (--pika:threads)");
         }
-    }    // namespace detail
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     threadmanager::threadmanager(pika::util::runtime_configuration& rtcfg,
         notification_policy_type& notifier,
-        detail::network_background_callback_type network_background_callback)
+        network_background_callback_type network_background_callback)
       : rtcfg_(rtcfg)
       , notifier_(notifier)
       , network_background_callback_(network_background_callback)
@@ -237,7 +235,7 @@ namespace pika { namespace threads {
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
-                detail::check_num_high_priority_queues(
+                check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
@@ -277,7 +275,7 @@ namespace pika { namespace threads {
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
-                detail::check_num_high_priority_queues(
+                check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
@@ -349,7 +347,7 @@ namespace pika { namespace threads {
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
-                detail::check_num_high_priority_queues(
+                check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
@@ -387,7 +385,7 @@ namespace pika { namespace threads {
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
-                detail::check_num_high_priority_queues(
+                check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
@@ -433,7 +431,7 @@ namespace pika { namespace threads {
                     pika::detail::get_entry_as<std::size_t>(rtcfg_,
                         "pika.thread_queue.high_priority_queues",
                         thread_pool_init.num_threads_);
-                detail::check_num_high_priority_queues(
+                check_num_high_priority_queues(
                     thread_pool_init.num_threads_, num_high_priority_queues);
 
                 // instantiate the scheduler
@@ -616,8 +614,7 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    std::int64_t threadmanager::get_thread_count(
-        detail::thread_schedule_state state,
+    std::int64_t threadmanager::get_thread_count(thread_schedule_state state,
         execution::thread_priority priority, std::size_t num_thread, bool reset)
     {
         std::int64_t total_count = 0;
@@ -645,10 +642,10 @@ namespace pika { namespace threads {
         return total_count;
     }
 
-    detail::mask_type threadmanager::get_idle_core_mask()
+    mask_type threadmanager::get_idle_core_mask()
     {
-        detail::mask_type mask = detail::mask_type();
-        detail::resize(mask, detail::hardware_concurrency());
+        mask_type mask = mask_type();
+        resize(mask, hardware_concurrency());
 
         std::lock_guard<mutex_type> lk(mtx_);
 
@@ -676,8 +673,8 @@ namespace pika { namespace threads {
     ///////////////////////////////////////////////////////////////////////////
     // Enumerate all matching threads
     bool threadmanager::enumerate_threads(
-        util::detail::function<bool(detail::thread_id_type)> const& f,
-        detail::thread_schedule_state state) const
+        util::detail::function<bool(thread_id_type)> const& f,
+        thread_schedule_state state) const
     {
         std::lock_guard<mutex_type> lk(mtx_);
         bool result = true;
@@ -722,11 +719,11 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void threadmanager::register_thread(detail::thread_init_data& data,
-        detail::thread_id_ref_type& id, error_code& ec)
+    void threadmanager::register_thread(
+        thread_init_data& data, thread_id_ref_type& id, error_code& ec)
     {
         thread_pool_base* pool = nullptr;
-        auto thrd_data = detail::get_self_id_data();
+        auto thrd_data = get_self_id_data();
         if (thrd_data)
         {
             pool = thrd_data->get_scheduler_base()->get_parent_pool();
@@ -739,11 +736,11 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    detail::thread_id_ref_type threadmanager::register_work(
-        detail::thread_init_data& data, error_code& ec)
+    thread_id_ref_type threadmanager::register_work(
+        thread_init_data& data, error_code& ec)
     {
         thread_pool_base* pool = nullptr;
-        auto thrd_data = detail::get_self_id_data();
+        auto thrd_data = get_self_id_data();
         if (thrd_data)
         {
             pool = thrd_data->get_scheduler_base()->get_parent_pool();
@@ -1119,4 +1116,4 @@ namespace pika { namespace threads {
             }
         }
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

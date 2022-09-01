@@ -39,7 +39,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// The \a thread-manager class is the central instance of management for
     /// all (non-depleted) threads
@@ -58,9 +58,8 @@ namespace pika { namespace threads {
 
         threadmanager(pika::util::runtime_configuration& rtcfg_,
             notification_policy_type& notifier,
-            detail::network_background_callback_type
-                network_background_callback =
-                    detail::network_background_callback_type());
+            network_background_callback_type network_background_callback =
+                network_background_callback_type());
         ~threadmanager();
 
         void init();
@@ -96,8 +95,8 @@ namespace pika { namespace threads {
         ///               information is used for logging purposes mainly, but
         ///               might be useful for debugging as well. This parameter
         ///               is optional and defaults to an empty string.
-        detail::thread_id_ref_type register_work(
-            detail::thread_init_data& data, error_code& ec = throws);
+        thread_id_ref_type register_work(
+            thread_init_data& data, error_code& ec = throws);
 
         /// The function \a register_thread adds a new work item to the thread
         /// manager. It creates a new \a thread, adds it to the internal
@@ -115,8 +114,8 @@ namespace pika { namespace threads {
         ///               information is used for logging purposes mainly, but
         ///               might be useful for debugging as well. This parameter
         ///               is optional and defaults to an empty string.
-        void register_thread(detail::thread_init_data& data,
-            detail::thread_id_ref_type& id, error_code& ec = throws);
+        void register_thread(thread_init_data& data, thread_id_ref_type& id,
+            error_code& ec = throws);
 
         /// \brief  Run the thread manager's work queue. This function
         ///         instantiates the specified number of OS threads in each
@@ -164,23 +163,21 @@ namespace pika { namespace threads {
         ///
         /// \note This function lock the internal OS lock in the thread manager
         std::int64_t get_thread_count(
-            detail::thread_schedule_state state =
-                detail::thread_schedule_state::unknown,
+            thread_schedule_state state = thread_schedule_state::unknown,
             execution::thread_priority priority =
                 execution::thread_priority::default_,
             std::size_t num_thread = std::size_t(-1), bool reset = false);
 
         std::int64_t get_idle_core_count();
 
-        detail::mask_type get_idle_core_mask();
+        mask_type get_idle_core_mask();
 
         std::int64_t get_background_thread_count();
 
         // Enumerate all matching threads
         bool enumerate_threads(
-            util::detail::function<bool(detail::thread_id_type)> const& f,
-            detail::thread_schedule_state state =
-                detail::thread_schedule_state::unknown) const;
+            util::detail::function<bool(thread_id_type)> const& f,
+            thread_schedule_state state = thread_schedule_state::unknown) const;
 
         // \brief Abort all threads which are in suspended state. This will set
         //        the state of all suspended threads to \a pending while
@@ -236,12 +233,10 @@ namespace pika { namespace threads {
     public:
         /// Returns the mask identifying all processing units used by this
         /// thread manager.
-        detail::mask_type get_used_processing_units() const
+        mask_type get_used_processing_units() const
         {
-            detail::mask_type total_used_processing_punits =
-                detail::mask_type();
-            threads::detail::resize(
-                total_used_processing_punits, detail::hardware_concurrency());
+            mask_type total_used_processing_punits = mask_type();
+            resize(total_used_processing_punits, hardware_concurrency());
 
             for (auto& pool_iter : pools_)
             {
@@ -252,7 +247,7 @@ namespace pika { namespace threads {
             return total_used_processing_punits;
         }
 
-        detail::hwloc_bitmap_ptr get_pool_numa_bitmap(
+        hwloc_bitmap_ptr get_pool_numa_bitmap(
             const std::string& pool_name) const
         {
             return get_pool(pool_name).get_numa_domain_bitmap();
@@ -303,12 +298,12 @@ namespace pika { namespace threads {
 
         void init_tss(std::size_t global_thread_num)
         {
-            detail::set_global_thread_num_tss(global_thread_num);
+            set_global_thread_num_tss(global_thread_num);
         }
 
         void deinit_tss()
         {
-            detail::set_global_thread_num_tss(std::size_t(-1));
+            set_global_thread_num_tss(std::size_t(-1));
         }
 
     public:
@@ -334,32 +329,32 @@ namespace pika { namespace threads {
 
         std::int64_t get_thread_count_unknown(bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::unknown,
+            return get_thread_count(thread_schedule_state::unknown,
                 execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_active(bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::active,
+            return get_thread_count(thread_schedule_state::active,
                 execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_pending(bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::pending,
+            return get_thread_count(thread_schedule_state::pending,
                 execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_suspended(bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::suspended,
+            return get_thread_count(thread_schedule_state::suspended,
                 execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_terminated(bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::terminated,
+            return get_thread_count(thread_schedule_state::terminated,
                 execution::thread_priority::default_, std::size_t(-1), reset);
         }
         std::int64_t get_thread_count_staged(bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::staged,
+            return get_thread_count(thread_schedule_state::staged,
                 execution::thread_priority::default_, std::size_t(-1), reset);
         }
 
@@ -402,8 +397,8 @@ namespace pika { namespace threads {
         pool_vector pools_;
 
         notification_policy_type& notifier_;
-        detail::network_background_callback_type network_background_callback_;
+        network_background_callback_type network_background_callback_;
     };
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>
