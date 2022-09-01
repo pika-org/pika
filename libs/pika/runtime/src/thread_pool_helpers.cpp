@@ -6,7 +6,7 @@
 
 #include <pika/config.hpp>
 #include <pika/modules/resource_partitioner.hpp>
-#include <pika/modules/threadmanager.hpp>
+#include <pika/modules/thread_manager.hpp>
 #include <pika/runtime/runtime.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
 #include <pika/topology/cpu_mask.hpp>

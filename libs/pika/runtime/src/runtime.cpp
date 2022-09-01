@@ -17,7 +17,7 @@
 #include <pika/itt_notify/thread_name.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/logging.hpp>
-#include <pika/modules/threadmanager.hpp>
+#include <pika/modules/thread_manager.hpp>
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
 #include <pika/runtime/debugging.hpp>
@@ -325,7 +325,7 @@ namespace pika {
     {
         notifier_ = PIKA_MOVE(notifier);
 
-        thread_manager_.reset(new pika::threads::threadmanager(
+        thread_manager_.reset(new pika::threads::detail::thread_manager(
             rtcfg_, notifier_, network_background_callback));
     }
 
@@ -335,7 +335,7 @@ namespace pika {
 
         try
         {
-            // now create all threadmanager pools
+            // now create all thread_manager pools
             thread_manager_->create_pools();
 
             // this initializes the used_processing_units_ mask
@@ -718,7 +718,7 @@ namespace pika {
     void report_error(std::size_t num_thread, std::exception_ptr const& e)
     {
         // Early and late exceptions
-        if (!threads::threadmanager_is(state_running))
+        if (!threads::thread_manager_is(state_running))
         {
             pika::runtime* rt = pika::get_runtime_ptr();
             if (rt)
@@ -734,7 +734,7 @@ namespace pika {
     void report_error(std::exception_ptr const& e)
     {
         // Early and late exceptions
-        if (!threads::threadmanager_is(state_running))
+        if (!threads::thread_manager_is(state_running))
         {
             pika::runtime* rt = pika::get_runtime_ptr();
             if (rt)
@@ -948,7 +948,7 @@ namespace pika { namespace util {
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads {
-    threadmanager& get_thread_manager()
+    detail::thread_manager& get_thread_manager()
     {
         return get_runtime().get_thread_manager();
     }
@@ -1336,7 +1336,7 @@ namespace pika {
 
         // start the thread manager
         thread_manager_->run();
-        lbt_ << "(1st stage) runtime::start: started threadmanager";
+        lbt_ << "(1st stage) runtime::start: started thread_manager";
         // }}}
 
         // {{{ launch main
@@ -1581,7 +1581,7 @@ namespace pika {
         return false;
     }
 
-    pika::threads::threadmanager& runtime::get_thread_manager()
+    pika::threads::detail::thread_manager& runtime::get_thread_manager()
     {
         return *thread_manager_;
     }
@@ -1604,7 +1604,7 @@ namespace pika {
 
         // Early and late exceptions, errors outside of pika-threads
         if (!threads::detail::get_self_ptr() ||
-            !threads::threadmanager_is(state_running))
+            !threads::thread_manager_is(state_running))
         {
             // report the error to the local console
             if (report_exception)

@@ -12,7 +12,7 @@
 #include <pika/debugging/backtrace.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/logging.hpp>
-#include <pika/modules/threadmanager.hpp>
+#include <pika/modules/thread_manager.hpp>
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
 #include <pika/runtime/debugging.hpp>

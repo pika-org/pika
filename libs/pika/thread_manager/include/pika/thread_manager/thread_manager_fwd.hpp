@@ -8,10 +8,10 @@
 
 #include <pika/config.hpp>
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
 
     // The thread-manager class is the central instance of management for
     // all (non-depleted) threads
-    class PIKA_EXPORT threadmanager;
+    class PIKA_EXPORT thread_manager;
 
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

@@ -9,8 +9,8 @@
 
 #include <pika/functional/bind.hpp>
 #include <pika/init.hpp>
+#include <pika/modules/thread_manager.hpp>
 #include <pika/modules/threading.hpp>
-#include <pika/modules/threadmanager.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 #include <pika/synchronization/mutex.hpp>
 #include <pika/testing.hpp>

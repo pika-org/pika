@@ -10,7 +10,7 @@
 #include <pika/functional.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/format.hpp>
-#include <pika/modules/threadmanager.hpp>
+#include <pika/modules/thread_manager.hpp>
 #include <pika/modules/timing.hpp>
 
 #include <cstdint>

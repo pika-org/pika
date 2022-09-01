@@ -9,36 +9,36 @@ include(pika_option)
 
 if(PIKA_WITH_TESTS)
   if(PIKA_WITH_TESTS_UNIT)
-    pika_add_pseudo_target(tests.unit.modules.threadmanager)
+    pika_add_pseudo_target(tests.unit.modules.thread_manager)
     pika_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.threadmanager
+      tests.unit.modules tests.unit.modules.thread_manager
     )
     add_subdirectory(unit)
   endif()
 
   if(PIKA_WITH_TESTS_REGRESSIONS)
-    pika_add_pseudo_target(tests.regressions.modules.threadmanager)
+    pika_add_pseudo_target(tests.regressions.modules.thread_manager)
     pika_add_pseudo_dependencies(
-      tests.regressions.modules tests.regressions.modules.threadmanager
+      tests.regressions.modules tests.regressions.modules.thread_manager
     )
     add_subdirectory(regressions)
   endif()
 
   if(PIKA_WITH_TESTS_BENCHMARKS)
-    pika_add_pseudo_target(tests.performance.modules.threadmanager)
+    pika_add_pseudo_target(tests.performance.modules.thread_manager)
     pika_add_pseudo_dependencies(
-      tests.performance.modules tests.performance.modules.threadmanager
+      tests.performance.modules tests.performance.modules.thread_manager
     )
     add_subdirectory(performance)
   endif()
 
   if(PIKA_WITH_TESTS_HEADERS)
     pika_add_header_tests(
-      modules.threadmanager
-      HEADERS ${threadmanager_headers}
+      modules.thread_manager
+      HEADERS ${thread_manager_headers}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       NOLIBS
-      DEPENDENCIES pika_threadmanager
+      DEPENDENCIES pika_thread_manager
     )
   endif()
 endif()

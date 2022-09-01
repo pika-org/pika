@@ -7,14 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <pika/config.hpp>
-#include <pika/modules/threadmanager.hpp>
+#include <pika/modules/thread_manager.hpp>
 #include <pika/runtime/runtime.hpp>
 #include <pika/runtime/state.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads {
     // return whether thread manager is in the state described by st
-    bool threadmanager_is(state st)
+    bool thread_manager_is(state st)
     {
         pika::runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
@@ -24,7 +24,7 @@ namespace pika { namespace threads {
         }
         return (rt->get_thread_manager().status() == st);
     }
-    bool threadmanager_is_at_least(state st)
+    bool thread_manager_is_at_least(state st)
     {
         pika::runtime* rt = get_runtime_ptr();
         if (nullptr == rt)

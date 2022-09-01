@@ -6,18 +6,18 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(threadmanager_headers pika/modules/threadmanager.hpp
-                          pika/threadmanager/threadmanager_fwd.hpp
+set(thread_manager_headers pika/modules/thread_manager.hpp
+                           pika/thread_manager/thread_manager_fwd.hpp
 )
 
-set(threadmanager_sources threadmanager.cpp)
+set(thread_manager_sources thread_manager.cpp)
 
 include(pika_add_module)
 pika_add_module(
-  pika threadmanager
+  pika thread_manager
   GLOBAL_HEADER_GEN OFF
-  SOURCES ${threadmanager_sources}
-  HEADERS ${threadmanager_headers}
+  SOURCES ${thread_manager_sources}
+  HEADERS ${thread_manager_headers}
   MODULE_DEPENDENCIES
     pika_program_options
     pika_resource_partitioner

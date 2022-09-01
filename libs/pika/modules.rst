@@ -67,7 +67,7 @@ Core modules
    /libs/core/thread_support/docs/index.rst
    /libs/core/threading/docs/index.rst
    /libs/core/threading_base/docs/index.rst
-   /libs/core/threadmanager/docs/index.rst
+   /libs/core/thread_manager/docs/index.rst
    /libs/core/timing/docs/index.rst
    /libs/core/topology/docs/index.rst
    /libs/core/type_support/docs/index.rst

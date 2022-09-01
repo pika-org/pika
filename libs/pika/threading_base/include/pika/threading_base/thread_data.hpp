@@ -91,7 +91,7 @@ namespace pika::threads::detail {
         ///
         /// \note           This function will be seldom used directly. Most of
         ///                 the time the state of a thread will be retrieved
-        ///                 by using the function \a threadmanager#get_state.
+        ///                 by using the function \a thread_manager#get_state.
         thread_state get_state(
             std::memory_order order = std::memory_order_acquire) const noexcept
         {
@@ -104,11 +104,11 @@ namespace pika::threads::detail {
         ///
         /// \note           This function will be seldom used directly. Most of
         ///                 the time the state of a thread will have to be
-        ///                 changed using the threadmanager. Moreover,
+        ///                 changed using the thread_manager. Moreover,
         ///                 changing the thread state using this function does
         ///                 not change its scheduling status. It only sets the
         ///                 thread's status word. To change the thread's
-        ///                 scheduling status \a threadmanager#set_state should
+        ///                 scheduling status \a thread_manager#set_state should
         ///                 be used.
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         thread_state set_state(thread_schedule_state state,
@@ -167,11 +167,11 @@ namespace pika::threads::detail {
         ///
         /// \note           This function will be seldom used directly. Most of
         ///                 the time the state of a thread will have to be
-        ///                 changed using the threadmanager. Moreover,
+        ///                 changed using the thread_manager. Moreover,
         ///                 changing the thread state using this function does
         ///                 not change its scheduling status. It only sets the
         ///                 thread's status word. To change the thread's
-        ///                 scheduling status \a threadmanager#set_state should
+        ///                 scheduling status \a thread_manager#set_state should
         ///                 be used.
         ///
         /// \returns This function returns \a true if the state has been
@@ -222,7 +222,7 @@ namespace pika::threads::detail {
         ///
         /// \note           This function will be seldom used directly. Most of
         ///                 the time the state of a thread will have to be
-        ///                 changed using the threadmanager.
+        ///                 changed using the thread_manager.
         thread_restart_state set_state_ex(
             thread_restart_state new_state) noexcept
         {
