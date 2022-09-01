@@ -8,7 +8,7 @@ include(pika_export_targets)
 
 function(pika_add_module libname modulename)
   # Retrieve arguments
-  set(options CUDA CONFIG_FILES)
+  set(options CONFIG_FILES)
   set(one_value_args GLOBAL_HEADER_GEN)
   set(multi_value_args
       SOURCES

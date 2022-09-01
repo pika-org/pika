@@ -8,7 +8,7 @@
 function(pika_add_executable name)
   # retrieve arguments
   set(options
-      CUDA
+      GPU
       EXCLUDE_FROM_ALL
       EXCLUDE_FROM_DEFAULT_BUILD
       AUTOGLOB
@@ -176,7 +176,7 @@ function(pika_add_executable name)
     foreach(source ${${name}_SOURCES})
       get_filename_component(extension ${source} EXT)
       if(${extension} STREQUAL ".cu")
-        set_source_files_properties(${source} PROPERTIES LANGUAGE CXX)
+        set_source_files_properties(${source} PROPERTIES LANGUAGE HIP)
       endif()
     endforeach()
   endif()
@@ -208,8 +208,12 @@ function(pika_add_executable name)
     endif()
   endif()
 
-  if(${name}_CUDA)
-    set_target_properties(${name} PROPERTIES LANGUAGE CUDA)
+  if(${name}_GPU)
+    if(PIKA_WITH_HIP)
+      set_target_properties(${name} PROPERTIES LANGUAGE HIP)
+    else()
+      set_target_properties(${name} PROPERTIES LANGUAGE CUDA)
+    endif()
   endif()
 
   set_target_properties(

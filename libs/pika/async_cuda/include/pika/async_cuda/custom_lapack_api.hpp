@@ -10,8 +10,8 @@
 
 #if defined(PIKA_HAVE_HIP)
 
-#include <rocblas.h>
-#include <rocsolver.h>
+#include <rocblas/rocblas.h>
+#include <rocsolver/rocsolver.h>
 
 // Use of rocblas when the corresponding rocsolver functions are deprecated
 #define cusolverDnCreate rocblas_create_handle

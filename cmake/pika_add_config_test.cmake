@@ -15,7 +15,7 @@ set(PIKA_ADDCONFIGTEST_LOADED TRUE)
 include(CheckLibraryExists)
 
 function(pika_add_config_test variable)
-  set(options FILE EXECUTE CUDA)
+  set(options FILE EXECUTE GPU)
   set(one_value_args SOURCE ROOT CMAKECXXFEATURE CHECK_CXXSTD)
   set(multi_value_args
       CXXFLAGS
@@ -46,7 +46,7 @@ function(pika_add_config_test variable)
   set(_run_msg)
   # Check CMake feature tests if the user didn't override the value of this
   # variable:
-  if(NOT DEFINED ${variable} AND NOT ${variable}_CUDA)
+  if(NOT DEFINED ${variable} AND NOT ${variable}_GPU)
     if(${variable}_CMAKECXXFEATURE)
       # We don't have to run our own feature test if there is a corresponding
       # cmake feature test and cmake reports the feature is supported on this
@@ -75,7 +75,7 @@ function(pika_add_config_test variable)
         set(test_source "${PROJECT_SOURCE_DIR}/${${variable}_SOURCE}")
       endif()
     else()
-      if(${variable}_CUDA)
+      if(${variable}_GPU)
         set(test_source
             "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/config_tests/${variable_lc}.cu"
         )
