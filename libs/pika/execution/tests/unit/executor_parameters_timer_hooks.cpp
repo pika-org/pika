@@ -104,9 +104,19 @@ void test_timer_hooks()
     timer_hooks_parameters pacs("time_hooks");
 
     chunk_size_test_seq(pacs);
+    // There is a small probability of the hooks being run on the thread setting
+    // a future ready after the future has been set to ready. In those cases the
+    // hooks still get called but they may not have been called by the time we
+    // check the counts here. To account for this occasionally happening we
+    // sleep here for a short time to further decrease the chance of false
+    // positives. This still doesn't guarantee no false positives, but it's
+    // harmless when they happen.
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     PIKA_TEST_EQ(pacs.count_, std::size_t(8));
 
     chunk_size_test_par(pacs);
+    // This sleep is here for the same reason as the one above.
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     PIKA_TEST_EQ(pacs.count_, std::size_t(16));
 }
 
