@@ -64,7 +64,7 @@ set(_pika_modules
     thread_support
     threading
     threading_base
-    threadmanager
+    thread_manager
     timing
     topology
     type_support

@@ -64,7 +64,7 @@ pika_add_module(
     pika_runtime_configuration
     pika_threading
     pika_threading_base
-    pika_threadmanager
+    pika_thread_manager
     pika_timing
     pika_topology
   CMAKE_SUBDIRS examples tests

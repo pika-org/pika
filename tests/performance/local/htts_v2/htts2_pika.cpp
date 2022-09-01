@@ -184,7 +184,7 @@ private:
 
         // The use of an atomic and live waiting here does not add any noticeable
         // overhead, as compared to the more complicated continuation-style
-        // detection method that checks the threadmanager internal counters
+        // detection method that checks the thread_manager internal counters
         // (I've measured). Using this technique is preferable as it is more
         // comparable to the other implementations (especially qthreads).
         //        do {

@@ -14,13 +14,13 @@
 #include <pika/modules/errors.hpp>
 #include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
+#include <pika/thread_manager/thread_manager_fwd.hpp>
 #include <pika/thread_pools/scheduled_thread_pool.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_init_data.hpp>
 #include <pika/threading_base/thread_num_tss.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
-#include <pika/threadmanager/threadmanager_fwd.hpp>
 #include <pika/topology/cpu_mask.hpp>
 
 #include <atomic>
@@ -43,7 +43,7 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     /// The \a thread-manager class is the central instance of management for
     /// all (non-depleted) threads
-    class threadmanager
+    class thread_manager
     {
     private:
         // we use a simple mutex to protect the data members of the
@@ -56,11 +56,11 @@ namespace pika::threads::detail {
         using scheduler_type = threads::policies::scheduler_base;
         using pool_vector = std::vector<pool_type>;
 
-        threadmanager(pika::util::runtime_configuration& rtcfg_,
+        thread_manager(pika::util::runtime_configuration& rtcfg_,
             notification_policy_type& notifier,
             network_background_callback_type network_background_callback =
                 network_background_callback_type());
-        ~threadmanager();
+        ~thread_manager();
 
         void init();
         void create_pools();

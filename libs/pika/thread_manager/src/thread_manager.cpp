@@ -17,7 +17,7 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>
-#include <pika/modules/threadmanager.hpp>
+#include <pika/modules/thread_manager.hpp>
 #include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
 #include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
@@ -57,7 +57,7 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    threadmanager::threadmanager(pika::util::runtime_configuration& rtcfg,
+    thread_manager::thread_manager(pika::util::runtime_configuration& rtcfg,
         notification_policy_type& notifier,
         network_background_callback_type network_background_callback)
       : rtcfg_(rtcfg)
@@ -67,11 +67,11 @@ namespace pika::threads::detail {
         using std::placeholders::_1;
         using std::placeholders::_3;
 
-        // Add callbacks local to threadmanager.
+        // Add callbacks local to thread_manager.
         notifier.add_on_start_thread_callback(
-            util::detail::bind(&threadmanager::init_tss, this, _1));
+            util::detail::bind(&thread_manager::init_tss, this, _1));
         notifier.add_on_stop_thread_callback(
-            util::detail::bind(&threadmanager::deinit_tss, this));
+            util::detail::bind(&thread_manager::deinit_tss, this));
 
         auto& rp = pika::resource::get_partitioner();
         notifier.add_on_start_thread_callback(util::detail::bind(
@@ -80,7 +80,7 @@ namespace pika::threads::detail {
             &resource::detail::partitioner::unassign_pu, std::ref(rp), _3, _1));
     }
 
-    void threadmanager::create_pools()
+    void thread_manager::create_pools()
     {
         auto& rp = pika::resource::get_partitioner();
         size_t num_pools = rp.get_num_pools();
@@ -511,9 +511,9 @@ namespace pika::threads::detail {
         }
     }
 
-    threadmanager::~threadmanager() {}
+    thread_manager::~thread_manager() {}
 
-    void threadmanager::init()
+    void thread_manager::init()
     {
         auto& rp = pika::resource::get_partitioner();
         std::size_t threads_offset = 0;
@@ -528,7 +528,7 @@ namespace pika::threads::detail {
         }
     }
 
-    void threadmanager::print_pools(std::ostream& os)
+    void thread_manager::print_pools(std::ostream& os)
     {
         os << "The thread-manager owns " << pools_.size()    //  -V128
            << " pool(s) : \n";
@@ -539,13 +539,13 @@ namespace pika::threads::detail {
         }
     }
 
-    thread_pool_base& threadmanager::default_pool() const
+    thread_pool_base& thread_manager::default_pool() const
     {
         PIKA_ASSERT(!pools_.empty());
         return *pools_[0];
     }
 
-    thread_pool_base& threadmanager::get_pool(
+    thread_pool_base& thread_manager::get_pool(
         std::string const& pool_name) const
     {
         // if the given pool_name is default, we don't need to look for it
@@ -569,22 +569,23 @@ namespace pika::threads::detail {
 
         //! FIXME Add names of available pools?
         PIKA_THROW_EXCEPTION(pika::error::bad_parameter,
-            "threadmanager::get_pool",
+            "thread_manager::get_pool",
             "the resource partitioner does not own a thread pool named '{}'.\n",
             pool_name);
     }
 
-    thread_pool_base& threadmanager::get_pool(pool_id_type const& pool_id) const
+    thread_pool_base& thread_manager::get_pool(
+        pool_id_type const& pool_id) const
     {
         return get_pool(pool_id.name());
     }
 
-    thread_pool_base& threadmanager::get_pool(std::size_t thread_index) const
+    thread_pool_base& thread_manager::get_pool(std::size_t thread_index) const
     {
         return get_pool(threads_lookup_[thread_index]);
     }
 
-    bool threadmanager::pool_exists(std::string const& pool_name) const
+    bool thread_manager::pool_exists(std::string const& pool_name) const
     {
         // if the given pool_name is default, we don't need to look for it
         // we must always return pool 0
@@ -608,13 +609,13 @@ namespace pika::threads::detail {
         return false;
     }
 
-    bool threadmanager::pool_exists(std::size_t pool_index) const
+    bool thread_manager::pool_exists(std::size_t pool_index) const
     {
         return pool_index < pools_.size();
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    std::int64_t threadmanager::get_thread_count(thread_schedule_state state,
+    std::int64_t thread_manager::get_thread_count(thread_schedule_state state,
         execution::thread_priority priority, std::size_t num_thread, bool reset)
     {
         std::int64_t total_count = 0;
@@ -629,7 +630,7 @@ namespace pika::threads::detail {
         return total_count;
     }
 
-    std::int64_t threadmanager::get_idle_core_count()
+    std::int64_t thread_manager::get_idle_core_count()
     {
         std::int64_t total_count = 0;
         std::lock_guard<mutex_type> lk(mtx_);
@@ -642,7 +643,7 @@ namespace pika::threads::detail {
         return total_count;
     }
 
-    mask_type threadmanager::get_idle_core_mask()
+    mask_type thread_manager::get_idle_core_mask()
     {
         mask_type mask = mask_type();
         resize(mask, hardware_concurrency());
@@ -657,7 +658,7 @@ namespace pika::threads::detail {
         return mask;
     }
 
-    std::int64_t threadmanager::get_background_thread_count()
+    std::int64_t thread_manager::get_background_thread_count()
     {
         std::int64_t total_count = 0;
         std::lock_guard<mutex_type> lk(mtx_);
@@ -672,7 +673,7 @@ namespace pika::threads::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     // Enumerate all matching threads
-    bool threadmanager::enumerate_threads(
+    bool thread_manager::enumerate_threads(
         util::detail::function<bool(thread_id_type)> const& f,
         thread_schedule_state state) const
     {
@@ -691,7 +692,7 @@ namespace pika::threads::detail {
     // Abort all threads which are in suspended state. This will set
     // the state of all suspended threads to \a pending while
     // supplying the wait_abort extended state flag
-    void threadmanager::abort_all_suspended_threads()
+    void thread_manager::abort_all_suspended_threads()
     {
         std::lock_guard<mutex_type> lk(mtx_);
         for (auto& pool_iter : pools_)
@@ -705,7 +706,7 @@ namespace pika::threads::detail {
     // have been terminated but which are still held in the queue
     // of terminated threads. Some schedulers might not do anything
     // here.
-    bool threadmanager::cleanup_terminated(bool delete_all)
+    bool thread_manager::cleanup_terminated(bool delete_all)
     {
         std::lock_guard<mutex_type> lk(mtx_);
         bool result = true;
@@ -719,7 +720,7 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void threadmanager::register_thread(
+    void thread_manager::register_thread(
         thread_init_data& data, thread_id_ref_type& id, error_code& ec)
     {
         thread_pool_base* pool = nullptr;
@@ -736,7 +737,7 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    thread_id_ref_type threadmanager::register_work(
+    thread_id_ref_type thread_manager::register_work(
         thread_init_data& data, error_code& ec)
     {
         thread_pool_base* pool = nullptr;
@@ -755,7 +756,7 @@ namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     constexpr std::size_t all_threads = std::size_t(-1);
 
-    std::int64_t threadmanager::get_queue_length(bool reset)
+    std::int64_t thread_manager::get_queue_length(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -764,7 +765,7 @@ namespace pika::threads::detail {
     }
 
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
-    std::int64_t threadmanager::get_average_thread_wait_time(bool reset)
+    std::int64_t thread_manager::get_average_thread_wait_time(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -773,7 +774,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_average_task_wait_time(bool reset)
+    std::int64_t thread_manager::get_average_task_wait_time(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -782,7 +783,7 @@ namespace pika::threads::detail {
     }
 #endif
 
-    std::int64_t threadmanager::get_cumulative_duration(bool reset)
+    std::int64_t thread_manager::get_cumulative_duration(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -792,7 +793,7 @@ namespace pika::threads::detail {
 
 #if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
-    std::int64_t threadmanager::get_background_work_duration(bool reset)
+    std::int64_t thread_manager::get_background_work_duration(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -801,7 +802,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_background_overhead(bool reset)
+    std::int64_t thread_manager::get_background_overhead(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -809,7 +810,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_background_send_duration(bool reset)
+    std::int64_t thread_manager::get_background_send_duration(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -818,7 +819,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_background_send_overhead(bool reset)
+    std::int64_t thread_manager::get_background_send_overhead(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -827,7 +828,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_background_receive_duration(bool reset)
+    std::int64_t thread_manager::get_background_receive_duration(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -836,7 +837,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_background_receive_overhead(bool reset)
+    std::int64_t thread_manager::get_background_receive_overhead(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -847,7 +848,7 @@ namespace pika::threads::detail {
 #endif    // PIKA_HAVE_BACKGROUND_THREAD_COUNTERS
 
 #ifdef PIKA_HAVE_THREAD_IDLE_RATES
-    std::int64_t threadmanager::avg_idle_rate(bool reset)
+    std::int64_t thread_manager::avg_idle_rate(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -856,7 +857,7 @@ namespace pika::threads::detail {
     }
 
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
-    std::int64_t threadmanager::avg_creation_idle_rate(bool reset)
+    std::int64_t thread_manager::avg_creation_idle_rate(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -864,7 +865,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::avg_cleanup_idle_rate(bool reset)
+    std::int64_t thread_manager::avg_cleanup_idle_rate(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -875,7 +876,7 @@ namespace pika::threads::detail {
 #endif
 
 #ifdef PIKA_HAVE_THREAD_CUMULATIVE_COUNTS
-    std::int64_t threadmanager::get_executed_threads(bool reset)
+    std::int64_t thread_manager::get_executed_threads(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -883,7 +884,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_executed_thread_phases(bool reset)
+    std::int64_t thread_manager::get_executed_thread_phases(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -892,7 +893,7 @@ namespace pika::threads::detail {
     }
 
 #ifdef PIKA_HAVE_THREAD_IDLE_RATES
-    std::int64_t threadmanager::get_thread_duration(bool reset)
+    std::int64_t thread_manager::get_thread_duration(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -900,7 +901,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_thread_phase_duration(bool reset)
+    std::int64_t thread_manager::get_thread_phase_duration(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -908,7 +909,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_thread_overhead(bool reset)
+    std::int64_t thread_manager::get_thread_overhead(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -916,7 +917,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_thread_phase_overhead(bool reset)
+    std::int64_t thread_manager::get_thread_phase_overhead(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -924,7 +925,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_cumulative_thread_duration(bool reset)
+    std::int64_t thread_manager::get_cumulative_thread_duration(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -933,7 +934,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_cumulative_thread_overhead(bool reset)
+    std::int64_t thread_manager::get_cumulative_thread_overhead(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -945,7 +946,7 @@ namespace pika::threads::detail {
 #endif
 
 #ifdef PIKA_HAVE_THREAD_STEALING_COUNTS
-    std::int64_t threadmanager::get_num_pending_misses(bool reset)
+    std::int64_t thread_manager::get_num_pending_misses(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -953,7 +954,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_num_pending_accesses(bool reset)
+    std::int64_t thread_manager::get_num_pending_accesses(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -961,7 +962,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_num_stolen_from_pending(bool reset)
+    std::int64_t thread_manager::get_num_stolen_from_pending(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -970,7 +971,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_num_stolen_from_staged(bool reset)
+    std::int64_t thread_manager::get_num_stolen_from_staged(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -978,7 +979,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_num_stolen_to_pending(bool reset)
+    std::int64_t thread_manager::get_num_stolen_to_pending(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -986,7 +987,7 @@ namespace pika::threads::detail {
         return result;
     }
 
-    std::int64_t threadmanager::get_num_stolen_to_staged(bool reset)
+    std::int64_t thread_manager::get_num_stolen_to_staged(bool reset)
     {
         std::int64_t result = 0;
         for (auto const& pool_iter : pools_)
@@ -996,7 +997,7 @@ namespace pika::threads::detail {
 #endif
 
     ///////////////////////////////////////////////////////////////////////////
-    bool threadmanager::run()
+    bool thread_manager::run()
     {
         std::unique_lock<mutex_type> lk(mtx_);
 
@@ -1031,7 +1032,7 @@ namespace pika::threads::detail {
         return true;
     }
 
-    void threadmanager::stop(bool blocking)
+    void thread_manager::stop(bool blocking)
     {
         LTM_(info).format("stop: blocking({})", blocking ? "true" : "false");
 
@@ -1043,7 +1044,7 @@ namespace pika::threads::detail {
         deinit_tss();
     }
 
-    bool threadmanager::is_busy()
+    bool thread_manager::is_busy()
     {
         bool busy = false;
         for (auto& pool_iter : pools_)
@@ -1053,7 +1054,7 @@ namespace pika::threads::detail {
         return busy;
     }
 
-    bool threadmanager::is_idle()
+    bool thread_manager::is_idle()
     {
         bool idle = true;
         for (auto& pool_iter : pools_)
@@ -1063,7 +1064,7 @@ namespace pika::threads::detail {
         return idle;
     }
 
-    void threadmanager::wait()
+    void thread_manager::wait()
     {
         std::size_t shutdown_check_count =
             ::pika::detail::get_entry_as<std::size_t>(
@@ -1072,7 +1073,7 @@ namespace pika::threads::detail {
             [this]() { return is_busy(); }, shutdown_check_count);
     }
 
-    void threadmanager::suspend()
+    void thread_manager::suspend()
     {
         wait();
 
@@ -1096,7 +1097,7 @@ namespace pika::threads::detail {
         }
     }
 
-    void threadmanager::resume()
+    void thread_manager::resume()
     {
         if (threads::detail::get_self_ptr())
         {

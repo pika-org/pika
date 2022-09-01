@@ -26,8 +26,8 @@
 #include <pika/runtime/startup_function.hpp>
 #include <pika/runtime/thread_hooks.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
+#include <pika/thread_manager/thread_manager_fwd.hpp>
 #include <pika/threading_base/scheduler_base.hpp>
-#include <pika/threadmanager/threadmanager_fwd.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -150,7 +150,7 @@ namespace pika {
         /// \cond NOINTERNAL
         // The function get_thread_manager returns a reference to the
         // current thread manager.
-        PIKA_EXPORT detail::threadmanager& get_thread_manager();
+        PIKA_EXPORT detail::thread_manager& get_thread_manager();
         /// \endcond
 
         /// \cond NOINTERNAL

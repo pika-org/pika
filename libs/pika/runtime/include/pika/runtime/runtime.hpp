@@ -11,7 +11,7 @@
 #include <pika/assert.hpp>
 #include <pika/futures/future.hpp>
 #include <pika/modules/program_options.hpp>
-#include <pika/modules/threadmanager.hpp>
+#include <pika/modules/thread_manager.hpp>
 #include <pika/modules/topology.hpp>
 #include <pika/runtime/os_thread_type.hpp>
 #include <pika/runtime/runtime_fwd.hpp>
@@ -219,7 +219,7 @@ namespace pika {
 
         /// \brief Allow access to the thread manager instance used by the pika
         ///        runtime.
-        virtual pika::threads::detail::threadmanager& get_thread_manager();
+        virtual pika::threads::detail::thread_manager& get_thread_manager();
 
         /// \brief Returns a string of the locality endpoints (usable in debug output)
         virtual std::string here() const;
@@ -419,7 +419,7 @@ namespace pika {
         std::exception_ptr exception_;
 
         notification_policy_type notifier_;
-        std::unique_ptr<pika::threads::detail::threadmanager> thread_manager_;
+        std::unique_ptr<pika::threads::detail::thread_manager> thread_manager_;
 
     private:
         /// \brief Helper function to stop the runtime.

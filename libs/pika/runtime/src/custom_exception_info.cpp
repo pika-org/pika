@@ -13,8 +13,8 @@
 #include <pika/modules/errors.hpp>
 #include <pika/modules/format.hpp>
 #include <pika/modules/logging.hpp>
+#include <pika/modules/thread_manager.hpp>
 #include <pika/modules/threading.hpp>
-#include <pika/modules/threadmanager.hpp>
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/custom_exception_info.hpp>
 #include <pika/runtime/debugging.hpp>
@@ -408,7 +408,7 @@ namespace pika {
                 threads::detail::get_self_ptr();
             if (nullptr != self)
             {
-                if (threads::threadmanager_is(state_running))
+                if (threads::thread_manager_is(state_running))
                     shepherd = pika::get_worker_thread_num();
 
                 thread_id = threads::detail::get_self_id();
