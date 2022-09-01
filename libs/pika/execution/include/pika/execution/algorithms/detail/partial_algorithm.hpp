@@ -24,7 +24,7 @@ namespace pika {
         Ts...>
     {
     private:
-        pika::util::detail::member_pack_for<Ts...> ts;
+        pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts;
 
     public:
         template <typename... Ts_>
