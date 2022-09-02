@@ -267,7 +267,7 @@ namespace pika::parallel::detail {
             Pred&& pred, Proj&& proj)
         {
             auto end = detail::advance_to_sentinel(first, last);
-            auto nelem = end - first;
+            [[maybe_unused]] auto nelem = end - first;
 
             PIKA_ASSERT(0 <= nelem && first <= nth && (nth - first) <= nelem);
 

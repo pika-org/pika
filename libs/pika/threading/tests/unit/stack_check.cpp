@@ -78,7 +78,12 @@ int pika_main()
         std::ptrdiff_t stack_now = std::get<2>(i);
         std::cout << "stack remaining 0x" << std::hex << stack_now << "\n";
 #if defined(PIKA_HAVE_THREADS_GET_STACK_POINTER)
+#if defined(PIKA_DEBUG)
         PIKA_TEST_LT(current_stack, stack_now);
+#else
+        // In release builds some stack variables may get optimized away.
+        PIKA_TEST_LTE(current_stack, stack_now);
+#endif
 #endif
         current_stack = stack_now;
         my_stack_info.pop();

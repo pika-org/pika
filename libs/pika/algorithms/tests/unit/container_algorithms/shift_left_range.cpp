@@ -55,8 +55,20 @@ void test_shift_left_sent(IteratorTag)
         std::begin(c) + ((std::size_t) ARR_SIZE - n - 1), std::begin(d)));
 
     // ensure shift by more than n does not crash
+    // GCC warns about out-of-bounds reads/writes that would happen if the
+    // shift implementation would attempt to actually do the shift with n =
+    // ARR_SIZE + 1. However, that path is not taken for n >= ARR_SIZE so these
+    // warnings are false positives.
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overread"
+#endif
     pika::ranges::shift_left(std::begin(c),
         sentinel<std::size_t>{*std::rbegin(c)}, (std::size_t)(ARR_SIZE + 1));
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+#pragma GCC diagnostic push
+#endif
 }
 
 template <typename ExPolicy, typename IteratorTag>
@@ -90,8 +102,20 @@ void test_shift_left_sent(ExPolicy policy, IteratorTag)
         std::begin(c) + ((std::size_t) ARR_SIZE - n - 1), std::begin(d)));
 
     // ensure shift by more than n does not crash
+    // GCC warns about out-of-bounds reads/writes that would happen if the
+    // shift implementation would attempt to actually do the shift with n =
+    // ARR_SIZE + 1. However, that path is not taken for n >= ARR_SIZE so these
+    // warnings are false positives.
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overread"
+#endif
     pika::ranges::shift_left(policy, std::begin(c),
         sentinel<std::size_t>{*std::rbegin(c)}, (std::size_t)(ARR_SIZE + 1));
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+#pragma GCC diagnostic pop
+#endif
 }
 
 template <typename IteratorTag>
