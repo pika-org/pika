@@ -269,8 +269,7 @@ namespace pika::threads::detail {
             }
         }
 
-        void add_remove_scheduler_mode(
-            threads::scheduler_mode to_add_mode,
+        void add_remove_scheduler_mode(threads::scheduler_mode to_add_mode,
             threads::scheduler_mode to_remove_mode)
         {
             for (auto& pool_iter : pools_)

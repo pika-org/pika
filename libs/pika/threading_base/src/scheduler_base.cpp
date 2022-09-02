@@ -71,8 +71,7 @@ namespace pika::threads {
     void scheduler_base::idle_callback(std::size_t num_thread)
     {
 #if defined(PIKA_HAVE_THREAD_MANAGER_IDLE_BACKOFF)
-        if (mode_.data_.load(std::memory_order_relaxed) &
-            enable_idle_backoff)
+        if (mode_.data_.load(std::memory_order_relaxed) & enable_idle_backoff)
         {
             // Put this thread to sleep for some time, additionally it gets
             // woken up on new work.
@@ -106,8 +105,7 @@ namespace pika::threads {
     void scheduler_base::do_some_work(std::size_t)
     {
 #if defined(PIKA_HAVE_THREAD_MANAGER_IDLE_BACKOFF)
-        if (mode_.data_.load(std::memory_order_relaxed) &
-            enable_idle_backoff)
+        if (mode_.data_.load(std::memory_order_relaxed) & enable_idle_backoff)
         {
             cond_.notify_all();
         }

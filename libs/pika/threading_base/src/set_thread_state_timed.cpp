@@ -159,8 +159,7 @@ namespace pika::threads::detail {
 
     /// Set a timer to set the state of the given \a thread to the given
     /// new value after it expired (at the given time)
-    thread_id_ref_type set_thread_state_timed(
-        scheduler_base* scheduler,
+    thread_id_ref_type set_thread_state_timed(scheduler_base* scheduler,
         pika::chrono::steady_time_point const& abs_time,
         thread_id_type const& thrd, thread_schedule_state newstate,
         thread_restart_state newstate_ex, execution::thread_priority priority,

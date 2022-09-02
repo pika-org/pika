@@ -355,8 +355,7 @@ namespace pika::threads {
                 return false;
             }
 
-            bool numa_stealing =
-                has_scheduler_mode(enable_stealing_numa);
+            bool numa_stealing = has_scheduler_mode(enable_stealing_numa);
             if (!numa_stealing)
             {
                 // steal work items: first try to steal from other cores in
@@ -725,8 +724,7 @@ namespace pika::threads {
                 return true;
             }
 
-            bool numa_stealing_ =
-                has_scheduler_mode(enable_stealing_numa);
+            bool numa_stealing_ = has_scheduler_mode(enable_stealing_numa);
             // limited or no stealing across domains
             if (!numa_stealing_)
             {
@@ -906,8 +904,7 @@ namespace pika::threads {
             else
                 first_mask = core_mask;
 
-            bool numa_stealing =
-                has_scheduler_mode(enable_stealing_numa);
+            bool numa_stealing = has_scheduler_mode(enable_stealing_numa);
             if (numa_stealing &&
                 ::pika::threads::detail::any(first_mask & core_mask))
             {

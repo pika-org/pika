@@ -63,8 +63,7 @@ namespace pika { namespace resource { namespace detail {
     }
 
     init_pool_data::init_pool_data(std::string const& name,
-        scheduler_function create_func,
-        pika::threads::scheduler_mode mode)
+        scheduler_function create_func, pika::threads::scheduler_mode mode)
       : pool_name_(name)
       , scheduling_policy_(user_defined)
       , num_threads_(0)
@@ -241,12 +240,11 @@ namespace pika { namespace resource { namespace detail {
             rtcfg_.get_entry("pika.default_scheduler_mode", std::string());
         if (!default_scheduler_mode_str.empty())
         {
-            default_scheduler_mode_ = threads::scheduler_mode(
-                pika::util::from_string<std::size_t>(
+            default_scheduler_mode_ =
+                threads::scheduler_mode(pika::util::from_string<std::size_t>(
                     default_scheduler_mode_str));
-            PIKA_ASSERT_MSG(
-                (default_scheduler_mode_ &
-                    ~threads::scheduler_mode::all_flags) == 0,
+            PIKA_ASSERT_MSG((default_scheduler_mode_ &
+                                ~threads::scheduler_mode::all_flags) == 0,
                 "pika.default_scheduler_mode contains unknown scheduler "
                 "modes");
         }

@@ -111,8 +111,7 @@ int main(int argc, char* argv[])
         // setup the default pool with a numa/binding aware scheduler
         rp.create_thread_pool("default",
             pika::resource::scheduling_policy::shared_priority,
-            pika::threads::scheduler_mode(
-                pika::threads::default_mode));
+            pika::threads::scheduler_mode(pika::threads::default_mode));
     };
 
     return pika::init(pika_main, argc, argv, init_args);

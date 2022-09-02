@@ -56,8 +56,7 @@ int main(int argc, char* argv[])
         // Explicitly disable elasticity if it is in defaults
         rp.create_thread_pool("default",
             pika::resource::scheduling_policy::local_priority_fifo,
-            pika::threads::scheduler_mode(
-                pika::threads::default_mode &
+            pika::threads::scheduler_mode(pika::threads::default_mode &
                 ~pika::threads::enable_elasticity));
     };
 

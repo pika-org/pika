@@ -58,8 +58,7 @@ namespace executor_example {
         template <typename Parameters>
         static void mark_end_execution(Parameters&&)
         {
-            pika::threads::add_scheduler_mode(
-                pika::threads::enable_stealing);
+            pika::threads::add_scheduler_mode(pika::threads::enable_stealing);
         }
     };
 

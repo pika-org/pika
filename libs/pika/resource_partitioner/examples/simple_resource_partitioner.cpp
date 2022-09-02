@@ -33,8 +33,7 @@ static std::string const pool_name = "mpi";
 
 // ------------------------------------------------------------------------
 // this is our custom scheduler type
-using numa_scheduler =
-    pika::threads::shared_priority_queue_scheduler<>;
+using numa_scheduler = pika::threads::shared_priority_queue_scheduler<>;
 using namespace pika::threads;
 using pika::threads::scheduler_mode;
 
@@ -224,8 +223,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
     {
         // we use unspecified as the scheduler type and it will be set according to
         // the --pika:queuing=xxx option or default.
-        std::uint32_t deft =
-            pika::threads::scheduler_mode::default_mode;
+        std::uint32_t deft = pika::threads::scheduler_mode::default_mode;
         rp.create_thread_pool(pool_name,
             pika::resource::scheduling_policy::shared_priority,
             pika::threads::scheduler_mode(deft));

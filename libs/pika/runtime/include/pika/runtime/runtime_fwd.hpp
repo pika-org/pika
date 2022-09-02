@@ -158,17 +158,14 @@ namespace pika {
         PIKA_EXPORT void reset_thread_distribution();
 
         /// Set the new scheduler mode
-        PIKA_EXPORT void set_scheduler_mode(
-            threads::scheduler_mode new_mode);
+        PIKA_EXPORT void set_scheduler_mode(threads::scheduler_mode new_mode);
 
         /// Add the given flags to the scheduler mode
-        PIKA_EXPORT void add_scheduler_mode(
-            threads::scheduler_mode to_add);
+        PIKA_EXPORT void add_scheduler_mode(threads::scheduler_mode to_add);
 
         /// Add/remove the given flags to the scheduler mode
         PIKA_EXPORT void add_remove_scheduler_mode(
-            threads::scheduler_mode to_add,
-            threads::scheduler_mode to_remove);
+            threads::scheduler_mode to_add, threads::scheduler_mode to_remove);
 
         /// Remove the given flags from the scheduler mode
         PIKA_EXPORT void remove_scheduler_mode(

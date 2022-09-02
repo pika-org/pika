@@ -358,8 +358,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
 int pika_main(pika::program_options::variables_map& vm)
 {
     // Disable idle backoff on the default pool
-    pika::threads::remove_scheduler_mode(
-        pika::threads::enable_idle_backoff);
+    pika::threads::remove_scheduler_mode(pika::threads::enable_idle_backoff);
 
     pika::util::mpi_environment mpi_env;
     pika::runtime* rt = pika::get_runtime_ptr();

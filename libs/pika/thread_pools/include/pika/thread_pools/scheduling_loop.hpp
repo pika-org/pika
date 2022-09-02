@@ -54,10 +54,9 @@ namespace pika { namespace threads { namespace detail {
             get_thread_state_name(old_state), get_thread_state_name(new_state));
     }
 
-    inline void write_state_log_warning(
-        scheduler_base const& scheduler, std::size_t num_thread,
-        thread_id_ref_type const& thrd, thread_schedule_state state,
-        char const* info)
+    inline void write_state_log_warning(scheduler_base const& scheduler,
+        std::size_t num_thread, thread_id_ref_type const& thrd,
+        thread_schedule_state state, char const* info)
     {
         LTM_(warning).format("scheduling_loop state change failed: pool({}), "
                              "scheduler({}), worker thread ({}), thread({}), "
@@ -652,8 +651,7 @@ namespace pika { namespace threads { namespace detail {
             // - fast idle mode off: only after normal stealing has failed for
             //                       a while
             bool enable_stealing_staged = enable_stealing;
-            if (!scheduler.SchedulingPolicy::has_scheduler_mode(
-                    fast_idle_mode))
+            if (!scheduler.SchedulingPolicy::has_scheduler_mode(fast_idle_mode))
             {
                 enable_stealing_staged = enable_stealing_staged &&
                     idle_loop_count > params.max_idle_loop_count_ / 2;

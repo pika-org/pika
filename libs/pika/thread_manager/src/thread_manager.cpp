@@ -145,12 +145,12 @@ namespace pika::threads::detail {
         std::ptrdiff_t huge_stacksize =
             rtcfg_.get_stack_size(execution::thread_stacksize::huge);
 
-        thread_queue_init_parameters thread_queue_init(
-            max_thread_count, min_tasks_to_steal_pending,
-            min_tasks_to_steal_staged, min_add_new_count, max_add_new_count,
-            min_delete_count, max_delete_count, max_terminated_threads,
-            init_threads_count, max_idle_backoff_time, small_stacksize,
-            medium_stacksize, large_stacksize, huge_stacksize);
+        thread_queue_init_parameters thread_queue_init(max_thread_count,
+            min_tasks_to_steal_pending, min_tasks_to_steal_staged,
+            min_add_new_count, max_add_new_count, min_delete_count,
+            max_delete_count, max_terminated_threads, init_threads_count,
+            max_idle_backoff_time, small_stacksize, medium_stacksize,
+            large_stacksize, huge_stacksize);
 
         // instantiate the pools
         for (size_t i = 0; i != num_pools; i++)
@@ -202,8 +202,7 @@ namespace pika::threads::detail {
             case resource::local:
             {
                 // instantiate the scheduler
-                using local_sched_type =
-                    pika::threads::local_queue_scheduler<>;
+                using local_sched_type = pika::threads::local_queue_scheduler<>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -240,8 +239,8 @@ namespace pika::threads::detail {
 
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::local_priority_queue_scheduler<
-                        std::mutex, pika::threads::lockfree_fifo>;
+                    pika::threads::local_priority_queue_scheduler<std::mutex,
+                        pika::threads::lockfree_fifo>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -280,8 +279,8 @@ namespace pika::threads::detail {
 
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::local_priority_queue_scheduler<
-                        std::mutex, pika::threads::lockfree_lifo>;
+                    pika::threads::local_priority_queue_scheduler<std::mutex,
+                        pika::threads::lockfree_lifo>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -390,8 +389,8 @@ namespace pika::threads::detail {
 
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::local_priority_queue_scheduler<
-                        std::mutex, pika::threads::lockfree_fifo>;
+                    pika::threads::local_priority_queue_scheduler<std::mutex,
+                        pika::threads::lockfree_fifo>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -436,8 +435,8 @@ namespace pika::threads::detail {
 
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::local_priority_queue_scheduler<
-                        std::mutex, pika::threads::lockfree_lifo>;
+                    pika::threads::local_priority_queue_scheduler<std::mutex,
+                        pika::threads::lockfree_lifo>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,

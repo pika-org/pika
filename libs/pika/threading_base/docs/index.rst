@@ -22,4 +22,3 @@ defines the base classes for schedulers and thread pools:
 
 See the :ref:`API reference <modules_thread_data_api>` of this module for more
 details.
-

@@ -167,8 +167,7 @@ void test_scheduler(
     init_args.rp_callback = [scheduler](auto& rp,
                                 pika::program_options::variables_map const&) {
         rp.create_thread_pool("worker", scheduler,
-            pika::threads::scheduler_mode(
-                pika::threads::default_mode |
+            pika::threads::scheduler_mode(pika::threads::default_mode |
                 pika::threads::enable_elasticity));
 
         std::size_t const worker_pool_threads = max_threads - 1;

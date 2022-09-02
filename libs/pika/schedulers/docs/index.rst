@@ -24,4 +24,3 @@ specifying a custom scheduler for a thread pool.
 
 See the :ref:`API reference <modules_schedulers_api>` of this module for more
 details.
-
