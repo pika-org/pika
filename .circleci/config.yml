@@ -606,8 +606,8 @@ jobs:
               rm cmake.tar.gz
             cmake --version
             # Install pika dependencies
-            sudo apt install clang ninja-build libboost-regex-dev libhwloc-dev \
-            mpi-default-dev -y
+            sudo apt install clang ninja-build libboost-regex-dev \
+            libboost-context-dev libhwloc-dev mpi-default-dev -y
             mkdir build
           working_directory: /home/circleci/project
       - run:
