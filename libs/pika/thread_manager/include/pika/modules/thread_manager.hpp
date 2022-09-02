@@ -51,9 +51,9 @@ namespace pika::threads::detail {
         using mutex_type = std::mutex;
 
     public:
-        using notification_policy_type = threads::policies::callback_notifier;
+        using notification_policy_type = threads::callback_notifier;
         using pool_type = std::unique_ptr<thread_pool_base>;
-        using scheduler_type = threads::policies::scheduler_base;
+        using scheduler_type = threads::scheduler_base;
         using pool_vector = std::vector<pool_type>;
 
         thread_manager(pika::util::runtime_configuration& rtcfg_,
@@ -253,7 +253,7 @@ namespace pika::threads::detail {
             return get_pool(pool_name).get_numa_domain_bitmap();
         }
 
-        void set_scheduler_mode(threads::policies::scheduler_mode mode)
+        void set_scheduler_mode(threads::scheduler_mode mode)
         {
             for (auto& pool_iter : pools_)
             {
@@ -261,7 +261,7 @@ namespace pika::threads::detail {
             }
         }
 
-        void add_scheduler_mode(threads::policies::scheduler_mode mode)
+        void add_scheduler_mode(threads::scheduler_mode mode)
         {
             for (auto& pool_iter : pools_)
             {
@@ -270,8 +270,8 @@ namespace pika::threads::detail {
         }
 
         void add_remove_scheduler_mode(
-            threads::policies::scheduler_mode to_add_mode,
-            threads::policies::scheduler_mode to_remove_mode)
+            threads::scheduler_mode to_add_mode,
+            threads::scheduler_mode to_remove_mode)
         {
             for (auto& pool_iter : pools_)
             {
@@ -280,7 +280,7 @@ namespace pika::threads::detail {
             }
         }
 
-        void remove_scheduler_mode(threads::policies::scheduler_mode mode)
+        void remove_scheduler_mode(threads::scheduler_mode mode)
         {
             for (auto& pool_iter : pools_)
             {

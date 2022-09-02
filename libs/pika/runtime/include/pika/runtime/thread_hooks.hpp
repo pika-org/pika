@@ -21,7 +21,7 @@ namespace pika {
     ///
     /// \note This function can be called before the pika runtime is initialized.
     ///
-    PIKA_EXPORT threads::policies::callback_notifier::on_startstop_type
+    PIKA_EXPORT threads::callback_notifier::on_startstop_type
     get_thread_on_start_func();
 
     /// Retrieve the currently installed stop handler function. This is a
@@ -35,7 +35,7 @@ namespace pika {
     ///
     /// \note This function can be called before the pika runtime is initialized.
     ///
-    PIKA_EXPORT threads::policies::callback_notifier::on_startstop_type
+    PIKA_EXPORT threads::callback_notifier::on_startstop_type
     get_thread_on_stop_func();
 
     /// Retrieve the currently installed error handler function. This is a
@@ -49,7 +49,7 @@ namespace pika {
     ///
     /// \note This function can be called before the pika runtime is initialized.
     ///
-    PIKA_EXPORT threads::policies::callback_notifier::on_error_type
+    PIKA_EXPORT threads::callback_notifier::on_error_type
     get_thread_on_error_func();
 
     /// Set the currently installed start handler function. This is a
@@ -67,9 +67,9 @@ namespace pika {
     ///
     /// \note This function can be called before the pika runtime is initialized.
     ///
-    PIKA_EXPORT threads::policies::callback_notifier::on_startstop_type
+    PIKA_EXPORT threads::callback_notifier::on_startstop_type
     register_thread_on_start_func(
-        threads::policies::callback_notifier::on_startstop_type&& f);
+        threads::callback_notifier::on_startstop_type&& f);
 
     /// Set the currently installed stop handler function. This is a
     /// function that will be called by pika for each newly created thread that
@@ -86,9 +86,9 @@ namespace pika {
     ///
     /// \note This function can be called before the pika runtime is initialized.
     ///
-    PIKA_EXPORT threads::policies::callback_notifier::on_startstop_type
+    PIKA_EXPORT threads::callback_notifier::on_startstop_type
     register_thread_on_stop_func(
-        threads::policies::callback_notifier::on_startstop_type&& f);
+        threads::callback_notifier::on_startstop_type&& f);
 
     /// Set the currently installed error handler function. This is a
     /// function that will be called by pika for each newly created thread that
@@ -105,7 +105,7 @@ namespace pika {
     ///
     /// \note This function can be called before the pika runtime is initialized.
     ///
-    PIKA_EXPORT threads::policies::callback_notifier::on_error_type
+    PIKA_EXPORT threads::callback_notifier::on_error_type
     register_thread_on_error_func(
-        threads::policies::callback_notifier::on_error_type&& f);
+        threads::callback_notifier::on_error_type&& f);
 }    // namespace pika

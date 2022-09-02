@@ -45,7 +45,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
     ///////////////////////////////////////////////////////////////////////////
     // // Queue back-end interface:
     //
@@ -1272,4 +1272,4 @@ namespace pika { namespace threads { namespace policies {
         PendingQueuing, StagedQueuing, TerminatedQueuing>::task_description>
         thread_queue<Mutex, PendingQueuing, StagedQueuing,
             TerminatedQueuing>::task_description_alloc_;
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

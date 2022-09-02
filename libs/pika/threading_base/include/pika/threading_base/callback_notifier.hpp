@@ -16,7 +16,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads::policies {
+namespace pika::threads {
     class PIKA_EXPORT callback_notifier
     {
     public:
@@ -93,6 +93,6 @@ namespace pika::threads::policies {
         on_error_type on_error_;
     };
 
-}    // namespace pika::threads::policies
+}    // namespace pika::threads
 
 #include <pika/config/warnings_suffix.hpp>

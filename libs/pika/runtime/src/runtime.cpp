@@ -260,10 +260,10 @@ namespace pika {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::policies::callback_notifier::on_startstop_type
+    threads::callback_notifier::on_startstop_type
         global_on_start_func;
-    threads::policies::callback_notifier::on_startstop_type global_on_stop_func;
-    threads::policies::callback_notifier::on_error_type global_on_error_func;
+    threads::callback_notifier::on_startstop_type global_on_stop_func;
+    threads::callback_notifier::on_error_type global_on_error_func;
 
     ///////////////////////////////////////////////////////////////////////////
     runtime::runtime(pika::util::runtime_configuration& rtcfg, bool initialize)
@@ -492,48 +492,48 @@ namespace pika {
         return diff < 0LL ? 0ULL : static_cast<std::uint64_t>(diff);
     }
 
-    threads::policies::callback_notifier::on_startstop_type
+    threads::callback_notifier::on_startstop_type
     runtime::on_start_func() const
     {
         return on_start_func_;
     }
 
-    threads::policies::callback_notifier::on_startstop_type
+    threads::callback_notifier::on_startstop_type
     runtime::on_stop_func() const
     {
         return on_stop_func_;
     }
 
-    threads::policies::callback_notifier::on_error_type runtime::on_error_func()
+    threads::callback_notifier::on_error_type runtime::on_error_func()
         const
     {
         return on_error_func_;
     }
 
-    threads::policies::callback_notifier::on_startstop_type
+    threads::callback_notifier::on_startstop_type
     runtime::on_start_func(
-        threads::policies::callback_notifier::on_startstop_type&& f)
+        threads::callback_notifier::on_startstop_type&& f)
     {
-        threads::policies::callback_notifier::on_startstop_type newf =
+        threads::callback_notifier::on_startstop_type newf =
             PIKA_MOVE(f);
         std::swap(on_start_func_, newf);
         return newf;
     }
 
-    threads::policies::callback_notifier::on_startstop_type
+    threads::callback_notifier::on_startstop_type
     runtime::on_stop_func(
-        threads::policies::callback_notifier::on_startstop_type&& f)
+        threads::callback_notifier::on_startstop_type&& f)
     {
-        threads::policies::callback_notifier::on_startstop_type newf =
+        threads::callback_notifier::on_startstop_type newf =
             PIKA_MOVE(f);
         std::swap(on_stop_func_, newf);
         return newf;
     }
 
-    threads::policies::callback_notifier::on_error_type runtime::on_error_func(
-        threads::policies::callback_notifier::on_error_type&& f)
+    threads::callback_notifier::on_error_type runtime::on_error_func(
+        threads::callback_notifier::on_error_type&& f)
     {
-        threads::policies::callback_notifier::on_error_type newf = PIKA_MOVE(f);
+        threads::callback_notifier::on_error_type newf = PIKA_MOVE(f);
         std::swap(on_error_func_, newf);
         return newf;
     }
@@ -571,7 +571,7 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::policies::callback_notifier::on_startstop_type
+    threads::callback_notifier::on_startstop_type
     get_thread_on_start_func()
     {
         runtime* rt = get_runtime_ptr();
@@ -585,7 +585,7 @@ namespace pika {
         }
     }
 
-    threads::policies::callback_notifier::on_startstop_type
+    threads::callback_notifier::on_startstop_type
     get_thread_on_stop_func()
     {
         runtime* rt = get_runtime_ptr();
@@ -599,7 +599,7 @@ namespace pika {
         }
     }
 
-    threads::policies::callback_notifier::on_error_type
+    threads::callback_notifier::on_error_type
     get_thread_on_error_func()
     {
         runtime* rt = get_runtime_ptr();
@@ -613,9 +613,9 @@ namespace pika {
         }
     }
 
-    threads::policies::callback_notifier::on_startstop_type
+    threads::callback_notifier::on_startstop_type
     register_thread_on_start_func(
-        threads::policies::callback_notifier::on_startstop_type&& f)
+        threads::callback_notifier::on_startstop_type&& f)
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
@@ -623,15 +623,15 @@ namespace pika {
             return rt->on_start_func(PIKA_MOVE(f));
         }
 
-        threads::policies::callback_notifier::on_startstop_type newf =
+        threads::callback_notifier::on_startstop_type newf =
             PIKA_MOVE(f);
         std::swap(global_on_start_func, newf);
         return newf;
     }
 
-    threads::policies::callback_notifier::on_startstop_type
+    threads::callback_notifier::on_startstop_type
     register_thread_on_stop_func(
-        threads::policies::callback_notifier::on_startstop_type&& f)
+        threads::callback_notifier::on_startstop_type&& f)
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
@@ -639,15 +639,15 @@ namespace pika {
             return rt->on_stop_func(PIKA_MOVE(f));
         }
 
-        threads::policies::callback_notifier::on_startstop_type newf =
+        threads::callback_notifier::on_startstop_type newf =
             PIKA_MOVE(f);
         std::swap(global_on_stop_func, newf);
         return newf;
     }
 
-    threads::policies::callback_notifier::on_error_type
+    threads::callback_notifier::on_error_type
     register_thread_on_error_func(
-        threads::policies::callback_notifier::on_error_type&& f)
+        threads::callback_notifier::on_error_type&& f)
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
@@ -655,7 +655,7 @@ namespace pika {
             return rt->on_error_func(PIKA_MOVE(f));
         }
 
-        threads::policies::callback_notifier::on_error_type newf = PIKA_MOVE(f);
+        threads::callback_notifier::on_error_type newf = PIKA_MOVE(f);
         std::swap(global_on_error_func, newf);
         return newf;
     }
@@ -973,25 +973,25 @@ namespace pika { namespace threads {
         get_runtime().get_thread_manager().reset_thread_distribution();
     }
 
-    void set_scheduler_mode(threads::policies::scheduler_mode m)
+    void set_scheduler_mode(threads::scheduler_mode m)
     {
         get_runtime().get_thread_manager().set_scheduler_mode(m);
     }
 
-    void add_scheduler_mode(threads::policies::scheduler_mode m)
+    void add_scheduler_mode(threads::scheduler_mode m)
     {
         get_runtime().get_thread_manager().add_scheduler_mode(m);
     }
 
     void add_remove_scheduler_mode(
-        threads::policies::scheduler_mode to_add_mode,
-        threads::policies::scheduler_mode to_remove_mode)
+        threads::scheduler_mode to_add_mode,
+        threads::scheduler_mode to_remove_mode)
     {
         get_runtime().get_thread_manager().add_remove_scheduler_mode(
             to_add_mode, to_remove_mode);
     }
 
-    void remove_scheduler_mode(threads::policies::scheduler_mode m)
+    void remove_scheduler_mode(threads::scheduler_mode m)
     {
         get_runtime().get_thread_manager().remove_scheduler_mode(m);
     }
@@ -1681,7 +1681,7 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::policies::callback_notifier runtime::get_notification_policy(
+    threads::callback_notifier runtime::get_notification_policy(
         char const* prefix, os_thread_type type)
     {
         using report_error_t =
@@ -1884,7 +1884,7 @@ namespace pika {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::policies::callback_notifier get_notification_policy(
+    threads::callback_notifier get_notification_policy(
         char const* prefix)
     {
         return get_runtime().get_notification_policy(

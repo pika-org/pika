@@ -14,7 +14,7 @@
 #include <pika/threading_base/thread_init_data.hpp>
 
 namespace pika::threads::detail {
-    thread_id_ref_type create_work(policies::scheduler_base* scheduler,
+    thread_id_ref_type create_work(scheduler_base* scheduler,
         thread_init_data& data, error_code& ec)
     {
         // verify parameters

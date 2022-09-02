@@ -20,7 +20,7 @@ namespace pika { namespace threads {
     /// \note Can only be called from an pika thread. Use
     ///       resume_processing_unit_cb or to resume the processing unit from
     ///       outside pika. Requires that the pool has
-    ///       threads::policies::enable_elasticity set.
+    ///       threads::enable_elasticity set.
     ///
     /// \param virt_core [in] The processing unit on the the pool to be resumed.
     ///                  The processing units are indexed starting from 0.
@@ -33,7 +33,7 @@ namespace pika { namespace threads {
     /// Resumes the given processing unit. Takes a callback as a parameter which
     /// will be called when the processing unit has been resumed.
     ///
-    /// \note Requires that the pool has threads::policies::enable_elasticity
+    /// \note Requires that the pool has threads::enable_elasticity
     ///       set.
     ///
     /// \param callback  [in] Callback which is called when the processing
@@ -52,7 +52,7 @@ namespace pika { namespace threads {
     /// \note Can only be called from an pika thread. Use
     ///       suspend_processing_unit_cb or to suspend the processing unit from
     ///       outside pika. Requires that the pool has
-    ///       threads::policies::enable_elasticity set.
+    ///       threads::enable_elasticity set.
     ///
     /// \param virt_core [in] The processing unit on the the pool to be
     ///                  suspended. The processing units are indexed starting
@@ -69,7 +69,7 @@ namespace pika { namespace threads {
     /// which will be called when the processing unit has been suspended.
     ///
     /// \note Requires that the pool has
-    ///       threads::policies::enable_elasticity set.
+    ///       threads::enable_elasticity set.
     ///
     /// \param callback  [in] Callback which is called when the processing
     ///                  unit has been suspended.

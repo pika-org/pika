@@ -34,9 +34,9 @@ static std::string const pool_name = "mpi";
 // ------------------------------------------------------------------------
 // this is our custom scheduler type
 using numa_scheduler =
-    pika::threads::policies::shared_priority_queue_scheduler<>;
-using namespace pika::threads::policies;
-using pika::threads::policies::scheduler_mode;
+    pika::threads::shared_priority_queue_scheduler<>;
+using namespace pika::threads;
+using pika::threads::scheduler_mode;
 
 // ------------------------------------------------------------------------
 // dummy function we will call using async
@@ -225,10 +225,10 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
         // we use unspecified as the scheduler type and it will be set according to
         // the --pika:queuing=xxx option or default.
         std::uint32_t deft =
-            pika::threads::policies::scheduler_mode::default_mode;
+            pika::threads::scheduler_mode::default_mode;
         rp.create_thread_pool(pool_name,
             pika::resource::scheduling_policy::shared_priority,
-            pika::threads::policies::scheduler_mode(deft));
+            pika::threads::scheduler_mode(deft));
         // add N pus to network pool
         int count = 0;
         for (pika::resource::numa_domain const& d : rp.numa_domains())
@@ -249,7 +249,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 
         rp.create_thread_pool("default",
             pika::resource::scheduling_policy::unspecified,
-            pika::threads::policies::scheduler_mode(deft));
+            pika::threads::scheduler_mode(deft));
     }
 }
 

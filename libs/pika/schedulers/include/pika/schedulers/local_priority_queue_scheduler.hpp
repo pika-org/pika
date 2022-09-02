@@ -39,7 +39,7 @@
 // TODO: add branch prediction and function heat
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
     using default_local_priority_queue_scheduler_terminated_queue =
@@ -1349,7 +1349,7 @@ namespace pika { namespace threads { namespace policies {
             });
 
             // check for the rest and if we are NUMA aware
-            if (has_scheduler_mode(policies::enable_stealing_numa) &&
+            if (has_scheduler_mode(enable_stealing_numa) &&
                 ::pika::threads::detail::any(first_mask & pu_mask))
             {
                 iterate([&](std::size_t other_num_thread) {
@@ -1411,6 +1411,6 @@ namespace pika { namespace threads { namespace policies {
             std::vector<std::size_t>>>
             victim_threads_;
     };
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads
 
 #include <pika/config/warnings_suffix.hpp>

@@ -16,7 +16,7 @@
 #include <cstddef>
 
 namespace pika::threads::detail {
-    void create_thread(policies::scheduler_base* scheduler,
+    void create_thread(scheduler_base* scheduler,
         thread_init_data& data, thread_id_ref_type& id, error_code& ec)
     {
         // verify parameters

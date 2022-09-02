@@ -13,6 +13,6 @@
 
 namespace pika::threads::detail {
     PIKA_EXPORT thread_id_ref_type create_work(
-        policies::scheduler_base* scheduler, thread_init_data& data,
+        scheduler_base* scheduler, thread_init_data& data,
         error_code& ec = throws);
 }    // namespace pika::threads::detail

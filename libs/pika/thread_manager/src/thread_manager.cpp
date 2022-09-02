@@ -145,7 +145,7 @@ namespace pika::threads::detail {
         std::ptrdiff_t huge_stacksize =
             rtcfg_.get_stack_size(execution::thread_stacksize::huge);
 
-        policies::thread_queue_init_parameters thread_queue_init(
+        thread_queue_init_parameters thread_queue_init(
             max_thread_count, min_tasks_to_steal_pending,
             min_tasks_to_steal_staged, min_add_new_count, max_add_new_count,
             min_delete_count, max_delete_count, max_terminated_threads,
@@ -158,7 +158,7 @@ namespace pika::threads::detail {
             std::string name = rp.get_pool_name(i);
             resource::scheduling_policy sched_type = rp.which_scheduler(name);
             std::size_t num_threads_in_pool = rp.get_num_threads(i);
-            policies::scheduler_mode scheduler_mode = rp.get_scheduler_mode(i);
+            scheduler_mode scheduler_mode = rp.get_scheduler_mode(i);
 
             // make sure the first thread-pool that gets instantiated is the default one
             if (i == 0)
@@ -203,7 +203,7 @@ namespace pika::threads::detail {
             {
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::policies::local_queue_scheduler<>;
+                    pika::threads::local_queue_scheduler<>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -217,7 +217,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    policies::enable_stealing_numa, !numa_sensitive);
+                    enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -240,8 +240,8 @@ namespace pika::threads::detail {
 
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::policies::local_priority_queue_scheduler<
-                        std::mutex, pika::threads::policies::lockfree_fifo>;
+                    pika::threads::local_priority_queue_scheduler<
+                        std::mutex, pika::threads::lockfree_fifo>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -255,7 +255,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    policies::enable_stealing_numa, !numa_sensitive);
+                    enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -280,8 +280,8 @@ namespace pika::threads::detail {
 
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::policies::local_priority_queue_scheduler<
-                        std::mutex, pika::threads::policies::lockfree_lifo>;
+                    pika::threads::local_priority_queue_scheduler<
+                        std::mutex, pika::threads::lockfree_lifo>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -295,7 +295,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    policies::enable_stealing_numa, !numa_sensitive);
+                    enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -315,7 +315,7 @@ namespace pika::threads::detail {
             {
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::policies::static_queue_scheduler<>;
+                    pika::threads::static_queue_scheduler<>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -329,7 +329,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    policies::enable_stealing_numa, !numa_sensitive);
+                    enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -352,7 +352,7 @@ namespace pika::threads::detail {
 
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::policies::static_priority_queue_scheduler<>;
+                    pika::threads::static_priority_queue_scheduler<>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -366,7 +366,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    policies::enable_stealing_numa, !numa_sensitive);
+                    enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -390,8 +390,8 @@ namespace pika::threads::detail {
 
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::policies::local_priority_queue_scheduler<
-                        std::mutex, pika::threads::policies::lockfree_fifo>;
+                    pika::threads::local_priority_queue_scheduler<
+                        std::mutex, pika::threads::lockfree_fifo>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -406,7 +406,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    policies::enable_stealing_numa, !numa_sensitive);
+                    enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -436,8 +436,8 @@ namespace pika::threads::detail {
 
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::policies::local_priority_queue_scheduler<
-                        std::mutex, pika::threads::policies::lockfree_lifo>;
+                    pika::threads::local_priority_queue_scheduler<
+                        std::mutex, pika::threads::lockfree_lifo>;
 
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_,
@@ -452,7 +452,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    policies::enable_stealing_numa, !numa_sensitive);
+                    enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -472,7 +472,7 @@ namespace pika::threads::detail {
             {
                 // instantiate the scheduler
                 using local_sched_type =
-                    pika::threads::policies::shared_priority_queue_scheduler<>;
+                    pika::threads::shared_priority_queue_scheduler<>;
                 local_sched_type::init_parameter_type init(
                     thread_pool_init.num_threads_, {1, 1, 1},
                     thread_pool_init.affinity_data_, thread_queue_init,
@@ -485,7 +485,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    policies::enable_stealing_numa, !numa_sensitive);
+                    enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -1023,7 +1023,7 @@ namespace pika::threads::detail {
             }
 
             // set all states of all schedulers to "running"
-            policies::scheduler_base* sched = pool_iter->get_scheduler();
+            scheduler_base* sched = pool_iter->get_scheduler();
             if (sched)
                 sched->set_all_states(state_running);
         }

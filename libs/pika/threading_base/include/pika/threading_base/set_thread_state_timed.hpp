@@ -21,7 +21,7 @@ namespace pika::threads::detail {
     /// Set a timer to set the state of the given \a thread to the given
     /// new value after it expired (at the given time)
     PIKA_EXPORT thread_id_ref_type set_thread_state_timed(
-        policies::scheduler_base* scheduler,
+        scheduler_base* scheduler,
         pika::chrono::steady_time_point const& abs_time,
         thread_id_type const& thrd, thread_schedule_state newstate,
         thread_restart_state newstate_ex, execution::thread_priority priority,
@@ -29,7 +29,7 @@ namespace pika::threads::detail {
         std::atomic<bool>* started, bool retry_on_active, error_code& ec);
 
     inline thread_id_ref_type set_thread_state_timed(
-        policies::scheduler_base* scheduler,
+        scheduler_base* scheduler,
         pika::chrono::steady_time_point const& abs_time,
         thread_id_type const& id, std::atomic<bool>* started,
         bool retry_on_active, error_code& ec)
@@ -43,7 +43,7 @@ namespace pika::threads::detail {
     // Set a timer to set the state of the given \a thread to the given
     // new value after it expired (after the given duration)
     inline thread_id_ref_type set_thread_state_timed(
-        policies::scheduler_base* scheduler,
+        scheduler_base* scheduler,
         pika::chrono::steady_duration const& rel_time,
         thread_id_type const& thrd, thread_schedule_state newstate,
         thread_restart_state newstate_ex, execution::thread_priority priority,
@@ -56,7 +56,7 @@ namespace pika::threads::detail {
     }
 
     inline thread_id_ref_type set_thread_state_timed(
-        policies::scheduler_base* scheduler,
+        scheduler_base* scheduler,
         pika::chrono::steady_duration const& rel_time,
         thread_id_type const& thrd, std::atomic<bool>* started,
         bool retry_on_active, error_code& ec)

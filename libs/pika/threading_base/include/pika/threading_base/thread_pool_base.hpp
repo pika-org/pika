@@ -117,10 +117,10 @@ namespace pika { namespace threads {
     {
         std::string const& name_;
         std::size_t index_;
-        policies::scheduler_mode mode_;
+        scheduler_mode mode_;
         std::size_t num_threads_;
         std::size_t thread_offset_;
-        pika::threads::policies::callback_notifier& notifier_;
+        pika::threads::callback_notifier& notifier_;
         pika::detail::affinity_data const& affinity_data_;
         pika::threads::detail::network_background_callback_type const&
             network_background_callback_;
@@ -131,9 +131,9 @@ namespace pika { namespace threads {
 
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         thread_pool_init_parameters(std::string const& name, std::size_t index,
-            policies::scheduler_mode mode, std::size_t num_threads,
+            scheduler_mode mode, std::size_t num_threads,
             std::size_t thread_offset,
-            pika::threads::policies::callback_notifier& notifier,
+            pika::threads::callback_notifier& notifier,
             pika::detail::affinity_data const& affinity_data,
             pika::threads::detail::network_background_callback_type const&
                 network_background_callback =
@@ -261,7 +261,7 @@ namespace pika { namespace threads {
             return thread_offset_;
         }
 
-        virtual policies::scheduler_base* get_scheduler() const
+        virtual scheduler_base* get_scheduler() const
         {
             return nullptr;
         }
@@ -553,7 +553,7 @@ namespace pika { namespace threads {
         double timestamp_scale_;
 
         // callback functions to invoke at start, stop, and error
-        threads::policies::callback_notifier& notifier_;
+        threads::callback_notifier& notifier_;
         /// \endcond
     };
 

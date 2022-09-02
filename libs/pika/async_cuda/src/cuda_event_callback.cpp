@@ -58,9 +58,9 @@ namespace pika::cuda::experimental::detail {
         // that have been added to the lockfree queue. If an event from the
         // queue is not ready it is added to the vector of events for later
         // checking.
-        pika::threads::policies::detail::polling_status poll()
+        pika::threads::detail::polling_status poll()
         {
-            using pika::threads::policies::detail::polling_status;
+            using pika::threads::detail::polling_status;
 
             // Don't poll if another thread is already polling
             std::unique_lock<mutex_type> lk(vector_mtx, std::try_to_lock);
@@ -141,7 +141,7 @@ namespace pika::cuda::experimental::detail {
                 }
             }
 
-            using pika::threads::policies::detail::polling_status;
+            using pika::threads::detail::polling_status;
             return event_callback_vector.empty() ? polling_status::idle :
                                                    polling_status::busy;
         }
@@ -224,12 +224,12 @@ namespace pika::cuda::experimental::detail {
     class cuda_event_queue_holder
     {
     public:
-        pika::threads::policies::detail::polling_status poll()
+        pika::threads::detail::polling_status poll()
         {
             auto hp_status = hp_queue.poll();
             auto np_status = np_queue.poll();
 
-            using pika::threads::policies::detail::polling_status;
+            using pika::threads::detail::polling_status;
 
             return np_status == polling_status::busy ||
                     hp_status == polling_status::busy ?
@@ -278,7 +278,7 @@ namespace pika::cuda::experimental::detail {
         add_event_callback(std::move(f), stream.get(), stream.get_priority());
     }
 
-    pika::threads::policies::detail::polling_status poll()
+    pika::threads::detail::polling_status poll()
     {
         return get_cuda_event_queue_holder().poll();
     }

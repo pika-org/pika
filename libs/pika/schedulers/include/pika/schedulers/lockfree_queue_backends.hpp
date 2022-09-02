@@ -26,7 +26,7 @@
 #include <cstdint>
 #include <utility>
 
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
 
     struct lockfree_fifo;
 
@@ -336,4 +336,4 @@ namespace pika { namespace threads { namespace policies {
 
 #endif    // PIKA_HAVE_CXX11_STD_ATOMIC_128BIT
 
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

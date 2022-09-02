@@ -37,7 +37,7 @@
 // TODO: add branch prediction and function heat
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
     using default_local_queue_scheduler_terminated_queue = lockfree_lifo;
@@ -356,7 +356,7 @@ namespace pika { namespace threads { namespace policies {
             }
 
             bool numa_stealing =
-                has_scheduler_mode(policies::enable_stealing_numa);
+                has_scheduler_mode(enable_stealing_numa);
             if (!numa_stealing)
             {
                 // steal work items: first try to steal from other cores in
@@ -726,7 +726,7 @@ namespace pika { namespace threads { namespace policies {
             }
 
             bool numa_stealing_ =
-                has_scheduler_mode(policies::enable_stealing_numa);
+                has_scheduler_mode(enable_stealing_numa);
             // limited or no stealing across domains
             if (!numa_stealing_)
             {
@@ -907,7 +907,7 @@ namespace pika { namespace threads { namespace policies {
                 first_mask = core_mask;
 
             bool numa_stealing =
-                has_scheduler_mode(policies::enable_stealing_numa);
+                has_scheduler_mode(enable_stealing_numa);
             if (numa_stealing &&
                 ::pika::threads::detail::any(first_mask & core_mask))
             {
@@ -941,6 +941,6 @@ namespace pika { namespace threads { namespace policies {
         std::vector<::pika::threads::detail::mask_type>
             outside_numa_domain_masks_;
     };
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads
 
 #include <pika/config/warnings_suffix.hpp>

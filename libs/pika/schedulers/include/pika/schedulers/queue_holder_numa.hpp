@@ -48,7 +48,7 @@ namespace pika {
 }
 
 // ------------------------------------------------------------////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
     // ----------------------------------------------------------------
     // Helper class to hold a set of thread queue holders.
     // ----------------------------------------------------------------
@@ -312,4 +312,4 @@ namespace pika { namespace threads { namespace policies {
         {
         }
     };
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

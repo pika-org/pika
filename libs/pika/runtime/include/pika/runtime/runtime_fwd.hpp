@@ -159,20 +159,20 @@ namespace pika {
 
         /// Set the new scheduler mode
         PIKA_EXPORT void set_scheduler_mode(
-            threads::policies::scheduler_mode new_mode);
+            threads::scheduler_mode new_mode);
 
         /// Add the given flags to the scheduler mode
         PIKA_EXPORT void add_scheduler_mode(
-            threads::policies::scheduler_mode to_add);
+            threads::scheduler_mode to_add);
 
         /// Add/remove the given flags to the scheduler mode
         PIKA_EXPORT void add_remove_scheduler_mode(
-            threads::policies::scheduler_mode to_add,
-            threads::policies::scheduler_mode to_remove);
+            threads::scheduler_mode to_add,
+            threads::scheduler_mode to_remove);
 
         /// Remove the given flags from the scheduler mode
         PIKA_EXPORT void remove_scheduler_mode(
-            threads::policies::scheduler_mode to_remove);
+            threads::scheduler_mode to_remove);
 
         /// Get the global topology instance
         PIKA_EXPORT detail::topology const& get_topology();

@@ -77,14 +77,14 @@ void measure_function_futures_create_thread_hierarchical_placement(
         sched->get_description())
     {
         sched->add_remove_scheduler_mode(
-            pika::threads::policies::scheduler_mode(
-                pika::threads::policies::assign_work_thread_parent),
-            pika::threads::policies::scheduler_mode(
-                pika::threads::policies::enable_stealing |
-                pika::threads::policies::enable_stealing_numa |
-                pika::threads::policies::assign_work_round_robin |
-                pika::threads::policies::steal_after_local |
-                pika::threads::policies::steal_high_priority_first));
+            pika::threads::scheduler_mode(
+                pika::threads::assign_work_thread_parent),
+            pika::threads::scheduler_mode(
+                pika::threads::enable_stealing |
+                pika::threads::enable_stealing_numa |
+                pika::threads::assign_work_round_robin |
+                pika::threads::steal_after_local |
+                pika::threads::steal_high_priority_first));
     }
     auto const desc = pika::util::detail::thread_description();
     auto prio = pika::execution::thread_priority::normal;

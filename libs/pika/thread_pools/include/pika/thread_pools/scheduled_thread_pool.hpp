@@ -51,7 +51,7 @@ namespace pika::threads::detail {
 
         void print_pool(std::ostream& os) override;
 
-        threads::policies::scheduler_base* get_scheduler() const override
+        threads::scheduler_base* get_scheduler() const override
         {
             return sched_.get();
         }

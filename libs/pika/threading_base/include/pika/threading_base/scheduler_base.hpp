@@ -37,7 +37,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads::policies {
+namespace pika::threads {
     namespace detail {
         enum class polling_status
         {
@@ -441,6 +441,6 @@ namespace pika::threads::policies {
 
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream& os, scheduler_base const& scheduler);
-}    // namespace pika::threads::policies
+}    // namespace pika::threads
 
 #include <pika/config/warnings_suffix.hpp>

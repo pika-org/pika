@@ -29,8 +29,8 @@ static int pool_threads = 0;
 
 // this is our custom scheduler type
 using high_priority_sched =
-    pika::threads::policies::shared_priority_queue_scheduler<>;
-using pika::threads::policies::scheduler_mode;
+    pika::threads::shared_priority_queue_scheduler<>;
+using pika::threads::scheduler_mode;
 
 // Force an instantiation of the pool type templated on our custom scheduler
 // we need this to ensure that the pool has the generated member functions needed
@@ -229,7 +229,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
     // a user supplied scheduler attached
     rp.create_thread_pool(CUSTOM_POOL_NAME,
         [](pika::threads::thread_pool_init_parameters init,
-            pika::threads::policies::thread_queue_init_parameters
+            pika::threads::thread_queue_init_parameters
                 thread_queue_init)
             -> std::unique_ptr<pika::threads::thread_pool_base> {
             std::cout << "User defined scheduler creation callback "

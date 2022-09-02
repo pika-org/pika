@@ -140,7 +140,7 @@ namespace pika { namespace resource {
     ///////////////////////////////////////////////////////////////////////////
     void partitioner::create_thread_pool(std::string const& name,
         scheduling_policy sched /*= scheduling_policy::unspecified*/,
-        pika::threads::policies::scheduler_mode mode)
+        pika::threads::scheduler_mode mode)
     {
         partitioner_.create_thread_pool(name, sched, mode);
     }
