@@ -609,12 +609,12 @@ jobs:
             sudo apt install clang ninja-build libboost-regex-dev \
             libboost-context-dev libhwloc-dev mpi-default-dev -y
             mkdir build
-          working_directory: /home/circleci/project
+          working_directory: $HOME/project
       - run:
           name: Configure pika Arm64
           command: |
             cmake \
-                /home/circleci/project/pika \
+                $HOME/project/pika \
                 -G "Ninja" \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DCMAKE_CXX_COMPILER=clang++ \
@@ -639,14 +639,19 @@ jobs:
                 -DPIKA_WITH_STACKTRACES_STATIC_SYMBOLS=On \
                 -DPIKA_WITH_STACKTRACES_DEMANGLE_SYMBOLS=Off \
                 -DPIKA_WITH_TESTS_DEBUG_LOG=On \
-                -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=/build/debug-log-arm.txt \
+                -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=$HOME/project/build/debug-log-arm.txt \
                 -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=On
-          working_directory: /home/circleci/project/build
+          working_directory: $HOME/project/build
       - run:
           name: Build pika Arm64
           command: |
             ninja -k 0 pika
-          working_directory: /home/circleci/project/build
+          working_directory: $HOME/project/build
+      - run:
+          name: Build tests Arm64
+          command: |
+            ninja -k 0 tests
+          working_directory: $HOME/project/build
 
 workflows:
   version: 2
