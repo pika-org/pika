@@ -53,7 +53,7 @@ namespace pika::threads::detail {
     public:
         using notification_policy_type = threads::callback_notifier;
         using pool_type = std::unique_ptr<thread_pool_base>;
-        using scheduler_type = threads::scheduler_base;
+        using scheduler_type = threads::detail::scheduler_base;
         using pool_vector = std::vector<pool_type>;
 
         thread_manager(pika::util::runtime_configuration& rtcfg_,

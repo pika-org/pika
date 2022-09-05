@@ -34,7 +34,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
+namespace pika::threads::detail {
     scheduler_base::scheduler_base(std::size_t num_threads,
         char const* description, thread_queue_init_parameters thread_queue_init,
         scheduler_mode mode)
@@ -429,4 +429,4 @@ namespace pika::threads {
 
         return os;
     }
-}    // namespace pika::threads
+}    // namespace pika::threads::detail

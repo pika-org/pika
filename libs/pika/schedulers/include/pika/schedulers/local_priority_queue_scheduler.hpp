@@ -62,7 +62,8 @@ namespace pika::threads {
         typename StagedQueuing = lockfree_fifo,
         typename TerminatedQueuing =
             default_local_priority_queue_scheduler_terminated_queue>
-    class PIKA_EXPORT local_priority_queue_scheduler : public scheduler_base
+    class PIKA_EXPORT local_priority_queue_scheduler
+      : public detail::scheduler_base
     {
     public:
         using has_periodic_maintenance = std::false_type;
@@ -113,7 +114,7 @@ namespace pika::threads {
 
         local_priority_queue_scheduler(init_parameter_type const& init,
             bool deferred_initialization = true)
-          : scheduler_base(
+          : detail::scheduler_base(
                 init.num_queues_, init.description_, init.thread_queue_init_)
           , curr_queue_(0)
           , affinity_data_(init.affinity_data_)

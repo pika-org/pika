@@ -261,7 +261,7 @@ namespace pika { namespace threads {
             return thread_offset_;
         }
 
-        virtual scheduler_base* get_scheduler() const
+        virtual detail::scheduler_base* get_scheduler() const
         {
             return nullptr;
         }

@@ -36,8 +36,11 @@ namespace pika::detail::external_timer {
 #endif
 }    // namespace pika::detail::external_timer
 
-namespace pika::threads {
+namespace pika::threads::detail {
     struct scheduler_base;
+}    // namespace pika::threads::detail
+
+namespace pika::threads {
 
     class PIKA_EXPORT thread_pool_base;
 

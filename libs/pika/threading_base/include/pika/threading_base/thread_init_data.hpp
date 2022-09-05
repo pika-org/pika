@@ -115,7 +115,7 @@ namespace pika::threads::detail {
             thread_schedule_state initial_state_ =
                 thread_schedule_state::pending,
             bool run_now_ = false,
-            ::pika::threads::scheduler_base* scheduler_base_ = nullptr)
+            ::pika::threads::detail::scheduler_base* scheduler_base_ = nullptr)
           : func(PIKA_FORWARD(F, f))
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
           , description(desc)
@@ -170,6 +170,6 @@ namespace pika::threads::detail {
         thread_schedule_state initial_state;
         bool run_now;
 
-        ::pika::threads::scheduler_base* scheduler_base;
+        ::pika::threads::detail::scheduler_base* scheduler_base;
     };
 }    // namespace pika::threads::detail

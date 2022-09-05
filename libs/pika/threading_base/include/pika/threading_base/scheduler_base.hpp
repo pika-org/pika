@@ -37,17 +37,15 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
-    namespace detail {
-        enum class polling_status
-        {
-            /// Signals that a polling function currently has no more work to do
-            idle = 0,
-            /// Signals that a polling function still has outstanding work to
-            /// poll for
-            busy = 1
-        };
-    }
+namespace pika::threads::detail {
+    enum class polling_status
+    {
+        /// Signals that a polling function currently has no more work to do
+        idle = 0,
+        /// Signals that a polling function still has outstanding work to
+        /// poll for
+        busy = 1
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     /// The scheduler_base defines the interface to be implemented by all
@@ -298,12 +296,12 @@ namespace pika::threads {
             return thread_queue_init_.small_stacksize_;
         }
 
-        using polling_function_ptr = detail::polling_status (*)();
+        using polling_function_ptr = polling_status (*)();
         using polling_work_count_function_ptr = std::size_t (*)();
 
-        static detail::polling_status null_polling_function()
+        static polling_status null_polling_function()
         {
-            return detail::polling_status::idle;
+            return polling_status::idle;
         }
 
         static std::size_t null_polling_work_count_function()
@@ -343,21 +341,21 @@ namespace pika::threads {
                 &null_polling_work_count_function, std::memory_order_relaxed);
         }
 
-        detail::polling_status custom_polling_function() const
+        polling_status custom_polling_function() const
         {
-            detail::polling_status status = detail::polling_status::idle;
+            polling_status status = polling_status::idle;
 #if defined(PIKA_HAVE_MODULE_ASYNC_MPI)
             if ((*polling_function_mpi_.load(std::memory_order_relaxed))() ==
-                detail::polling_status::busy)
+                polling_status::busy)
             {
-                status = detail::polling_status::busy;
+                status = polling_status::busy;
             }
 #endif
 #if defined(PIKA_HAVE_MODULE_ASYNC_CUDA)
             if ((*polling_function_cuda_.load(std::memory_order_relaxed))() ==
-                detail::polling_status::busy)
+                polling_status::busy)
             {
-                status = detail::polling_status::busy;
+                status = polling_status::busy;
             }
 #endif
             return status;
@@ -441,6 +439,6 @@ namespace pika::threads {
 
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream& os, scheduler_base const& scheduler);
-}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>

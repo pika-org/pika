@@ -93,7 +93,7 @@ namespace pika::threads {
     ///
     /// Warning: PendingQueuing lifo causes lockup on termination
     template <typename Mutex = std::mutex>
-    class shared_priority_queue_scheduler : public scheduler_base
+    class shared_priority_queue_scheduler : public detail::scheduler_base
     {
     public:
         using has_periodic_maintenance = std::false_type;
@@ -138,7 +138,7 @@ namespace pika::threads {
         using init_parameter_type = init_parameter;
 
         explicit shared_priority_queue_scheduler(init_parameter const& init)
-          : scheduler_base(init.num_worker_threads_, init.description_,
+          : detail::scheduler_base(init.num_worker_threads_, init.description_,
                 init.thread_queue_init_)
           , d_lookup_(pika::threads::detail::hardware_concurrency())
           , q_lookup_(pika::threads::detail::hardware_concurrency())
@@ -170,7 +170,7 @@ namespace pika::threads {
         /// and then sets some flags we need later for scheduling
         void set_scheduler_mode(scheduler_mode mode) override
         {
-            scheduler_base::set_scheduler_mode(mode);
+            detail::scheduler_base::set_scheduler_mode(mode);
             round_robin_ = mode & assign_work_round_robin;
             steal_hp_first_ = mode & steal_high_priority_first;
             core_stealing_ = mode & enable_stealing;
