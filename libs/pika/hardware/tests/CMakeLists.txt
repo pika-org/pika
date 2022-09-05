@@ -41,6 +41,7 @@ if(PIKA_WITH_TESTS)
         "pika/hardware/timestamp/linux_x86_64.hpp"
         "pika/hardware/timestamp/linux_generic.hpp"
         "pika/hardware/timestamp/bgq.hpp"
+        "pika/hardware/timestamp/cuda.hpp"
       NOLIBS
       DEPENDENCIES pika_hardware
     )
