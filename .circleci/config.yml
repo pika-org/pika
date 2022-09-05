@@ -37,9 +37,13 @@ convert_xml: &convert_xml
     when: always
     command: |
         mkdir -p ${CIRCLE_JOB}
+        curl \
+          https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
+          --fail -o $HOME/conv.xsl
         xsltproc \
-          /pika/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
+          $HOME/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
           > ${CIRCLE_JOB}/Test.xml
+
 
 move_core_dump: &move_core_dump
     name: Moving core dumps
@@ -76,18 +80,10 @@ jobs:
     steps:
       - checkout:
           path: /pika/source
-      - run:
-          name: Downloading CTest XML to Junit XML
-          command: |
-              curl \
-                https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
-                --fail \
-                -o /pika/conv.xsl
       - persist_to_workspace:
           root: /pika
           paths:
             - ./source
-            - ./conv.xsl
 
   # Check circular dependencies with cpp-dependencies tool
   check_circular_deps:
@@ -607,7 +603,7 @@ jobs:
             cmake --version
             # Install pika dependencies
             sudo apt install clang ninja-build libboost-regex-dev \
-            libboost-context-dev libhwloc-dev mpi-default-dev -y
+            libboost-context-dev libhwloc-dev mpi-default-dev xsltproc -y
             mkdir build
           working_directory: $HOME/project
       - run:
@@ -660,8 +656,12 @@ jobs:
               ctest \
                 -j4 \
                 --timeout 120 \
+                -T test \
                 --no-compress-output \
                 --output-on-failure
+          working_directory: $HOME/project/build
+      - run:
+          <<: *convert_xml
           working_directory: $HOME/project/build
 
 workflows:
@@ -736,6 +736,7 @@ workflows:
             - tests.regressions
             - tests.performance
             - tests.headers
+
   build-and-test-arm64:
     jobs:
       - arm64_build:
