@@ -354,7 +354,7 @@ jobs:
           command: |
               ulimit -c unlimited
               ctest \
-                -j2 \
+                -j4 \
                 --timeout 60 \
                 -T test \
                 --no-compress-output \
@@ -651,6 +651,17 @@ jobs:
           name: Build tests Arm64
           command: |
             ninja -k 0 tests
+          working_directory: $HOME/project/build
+      - run:
+          name: Running tests Arm64
+          when: always
+          command: |
+              ulimit -c unlimited
+              ctest \
+                -j4 \
+                --timeout 120 \
+                --no-compress-output \
+                --output-on-failure
           working_directory: $HOME/project/build
 
 workflows:
