@@ -722,4 +722,5 @@ workflows:
             - tests.headers
   build-and-test-arm64:
     jobs:
-      - arm64_build
+      - arm64_build:
+          <<: *branch_filter

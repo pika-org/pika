@@ -39,6 +39,7 @@ status = [
   # "ci/circleci: tests.unit",
   "ci/circleci: tests.unit.algorithms",
   "ci/circleci: tests.unit.container_algorithms",
+  "ci/circleci: arm64_build",
 
   # Jenkins
   "jenkins/cscs-daint/cce-cuda-debug",
