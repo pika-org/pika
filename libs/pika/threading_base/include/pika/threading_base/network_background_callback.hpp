@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace pika { namespace threads { namespace detail {
+namespace pika::threads::detail {
 #if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
     using network_background_callback_type =
@@ -21,4 +21,4 @@ namespace pika { namespace threads { namespace detail {
     using network_background_callback_type =
         util::detail::function<bool(std::size_t)>;
 #endif
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail
