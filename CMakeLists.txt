@@ -1498,15 +1498,12 @@ else()
     OR "${__target_arch}" STREQUAL "armv5"
     OR "${__target_arch}" STREQUAL "armv6"
     OR "${__target_arch}" STREQUAL "armv7"
+    OR "${__target_arch}" STREQUAL "arm64"
+    OR "${__target_arch}" STREQUAL "ppc"
+    OR "${__target_arch}" STREQUAL "ppc64"
+    OR "${__target_arch}" STREQUAL "bgq"
+    OR "${__target_arch}" STREQUAL "s390x"
   )
-    set(__has_timestamp_support ON)
-  elseif("${__target_arch}" STREQUAL "ppc" OR "${__target_arch}" STREQUAL
-                                              "ppc64"
-  )
-    set(__has_timestamp_support ON)
-  elseif("${__target_arch}" STREQUAL "bgq")
-    set(__has_timestamp_support ON)
-  elseif("${__target_arch}" STREQUAL "s390x")
     set(__has_timestamp_support ON)
   endif()
 
