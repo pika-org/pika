@@ -720,4 +720,6 @@ workflows:
             - tests.regressions
             - tests.performance
             - tests.headers
+  build-and-test-arm64:
+    jobs:
       - arm64_build
