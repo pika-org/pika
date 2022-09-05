@@ -611,7 +611,7 @@ jobs:
             mkdir build
           working_directory: $HOME/project
       - run:
-          name: Configure pika Arm64
+          name: Configuring pika Arm64
           command: |
             cmake \
                 $HOME/project/pika \
@@ -643,12 +643,12 @@ jobs:
                 -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=On
           working_directory: $HOME/project/build
       - run:
-          name: Build pika Arm64
+          name: Building pika Arm64
           command: |
             ninja -k 0 pika
           working_directory: $HOME/project/build
       - run:
-          name: Build tests Arm64
+          name: Building tests Arm64
           command: |
             ninja -k 0 tests
           working_directory: $HOME/project/build
