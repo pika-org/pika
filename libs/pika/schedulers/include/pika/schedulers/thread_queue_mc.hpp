@@ -47,7 +47,7 @@ namespace pika {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
 
     class thread_queue_mc
     {
@@ -369,4 +369,4 @@ namespace pika { namespace threads { namespace policies {
 #endif
     };
 
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

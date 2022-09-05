@@ -260,12 +260,11 @@ int pika_main(pika::program_options::variables_map& vm)
         if (disable_stealing)
         {
             pika::threads::remove_scheduler_mode(
-                pika::threads::policies::enable_stealing);
+                pika::threads::enable_stealing);
         }
         if (fast_idle_mode)
         {
-            pika::threads::add_scheduler_mode(
-                pika::threads::policies::fast_idle_mode);
+            pika::threads::add_scheduler_mode(pika::threads::fast_idle_mode);
         }
 
         // results
@@ -388,13 +387,11 @@ int pika_main(pika::program_options::variables_map& vm)
 
         if (disable_stealing)
         {
-            pika::threads::add_scheduler_mode(
-                pika::threads::policies::enable_stealing);
+            pika::threads::add_scheduler_mode(pika::threads::enable_stealing);
         }
         if (fast_idle_mode)
         {
-            pika::threads::remove_scheduler_mode(
-                pika::threads::policies::fast_idle_mode);
+            pika::threads::remove_scheduler_mode(pika::threads::fast_idle_mode);
         }
 
         if (csvoutput)

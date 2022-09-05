@@ -8,7 +8,7 @@
 #include <pika/config.hpp>
 #include <pika/schedulers/maintain_queue_wait_times.hpp>
 
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
     static bool maintain_queue_wait_times_enabled = false;
 
@@ -22,4 +22,4 @@ namespace pika { namespace threads { namespace policies {
         return maintain_queue_wait_times_enabled;
     }
 #endif
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

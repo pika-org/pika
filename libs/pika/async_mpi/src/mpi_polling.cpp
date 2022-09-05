@@ -348,9 +348,9 @@ namespace pika::mpi::experimental {
         // Background progress function for MPI async operations
         // Checks for completed MPI_Requests and sets mpi::experimental::future
         // ready when found
-        pika::threads::policies::detail::polling_status poll()
+        pika::threads::detail::polling_status poll()
         {
-            using pika::threads::policies::detail::polling_status;
+            using pika::threads::detail::polling_status;
 
             if (detail::mpi_data_.in_flight_.load(std::memory_order_relaxed) ==
                 0)

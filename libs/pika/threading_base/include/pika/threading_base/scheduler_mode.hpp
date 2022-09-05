@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
     /// This enumeration describes the possible modes of a scheduler.
     enum scheduler_mode : std::uint32_t
     {
@@ -86,4 +86,4 @@ namespace pika { namespace threads { namespace policies {
             enable_idle_backoff
         // clang-format on
     };
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

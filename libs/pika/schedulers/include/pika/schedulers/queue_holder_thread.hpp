@@ -49,7 +49,7 @@ namespace pika {
 }
 
 // ------------------------------------------------------------
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
 
     // apply the modulo operator only when needed
     // (i.e. when the input is greater than the ceiling)
@@ -1087,4 +1087,4 @@ namespace pika { namespace threads { namespace policies {
     template <typename QueueType>
     pika::detail::internal_allocator<threads::detail::thread_data>
         queue_holder_thread<QueueType>::thread_alloc_;
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

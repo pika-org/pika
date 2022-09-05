@@ -14,9 +14,9 @@ schedulers
 This module provides schedulers used by thread pools in the
 :ref:`modules_thread_pools` module. There are currently three main schedulers:
 
-* :cpp:class:`pika::threads::policies::local_priority_queue_scheduler`
-* :cpp:class:`pika::threads::policies::static_priority_queue_scheduler`
-* :cpp:class:`pika::threads::policies::shared_priority_queue_scheduler`
+* :cpp:class:`pika::threads::local_priority_queue_scheduler`
+* :cpp:class:`pika::threads::static_priority_queue_scheduler`
+* :cpp:class:`pika::threads::shared_priority_queue_scheduler`
 
 Other schedulers are specializations or variations of the above schedulers. See
 the examples of the :ref:`modules_resource_partitioner` module for examples of
@@ -24,4 +24,3 @@ specifying a custom scheduler for a thread pool.
 
 See the :ref:`API reference <modules_schedulers_api>` of this module for more
 details.
-

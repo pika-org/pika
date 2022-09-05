@@ -150,8 +150,8 @@ namespace pika { namespace resource {
         // Create one of the predefined thread pools
         PIKA_EXPORT void create_thread_pool(std::string const& name,
             scheduling_policy sched = scheduling_policy::unspecified,
-            pika::threads::policies::scheduler_mode =
-                pika::threads::policies::scheduler_mode::default_mode);
+            pika::threads::scheduler_mode =
+                pika::threads::scheduler_mode::default_mode);
 
         // Create a custom thread pool with a callback function
         PIKA_EXPORT void create_thread_pool(

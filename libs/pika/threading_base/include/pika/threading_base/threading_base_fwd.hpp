@@ -37,9 +37,7 @@ namespace pika::detail::external_timer {
 }    // namespace pika::detail::external_timer
 
 namespace pika::threads {
-    namespace policies {
-        struct scheduler_base;
-    }
+    struct scheduler_base;
 
     class PIKA_EXPORT thread_pool_base;
 

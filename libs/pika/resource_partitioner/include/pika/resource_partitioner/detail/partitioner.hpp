@@ -52,10 +52,10 @@ namespace pika { namespace resource { namespace detail {
 
     private:
         init_pool_data(const std::string& name, scheduling_policy policy,
-            pika::threads::policies::scheduler_mode mode);
+            pika::threads::scheduler_mode mode);
 
         init_pool_data(std::string const& name, scheduler_function create_func,
-            pika::threads::policies::scheduler_mode mode);
+            pika::threads::scheduler_mode mode);
 
         std::string pool_name_;
         scheduling_policy scheduling_policy_;
@@ -68,7 +68,7 @@ namespace pika { namespace resource { namespace detail {
 
         // counter for number of threads bound to this pool
         std::size_t num_threads_;
-        pika::threads::policies::scheduler_mode mode_;
+        pika::threads::scheduler_mode mode_;
         scheduler_function create_function_;
     };
 
@@ -86,8 +86,8 @@ namespace pika { namespace resource { namespace detail {
         // create a thread_pool
         void create_thread_pool(std::string const& name,
             scheduling_policy sched = scheduling_policy::unspecified,
-            pika::threads::policies::scheduler_mode =
-                pika::threads::policies::scheduler_mode::default_mode);
+            pika::threads::scheduler_mode =
+                pika::threads::scheduler_mode::default_mode);
 
         // create a thread_pool with a callback function for creating a custom
         // scheduler
@@ -144,7 +144,7 @@ namespace pika { namespace resource { namespace detail {
         std::size_t get_num_threads(std::string const& pool_name) const;
         std::size_t get_num_threads(std::size_t pool_index) const;
 
-        pika::threads::policies::scheduler_mode get_scheduler_mode(
+        pika::threads::scheduler_mode get_scheduler_mode(
             std::size_t pool_index) const;
 
         std::string const& get_pool_name(std::size_t index) const;
@@ -240,6 +240,6 @@ namespace pika { namespace resource { namespace detail {
         // topology information
         threads::detail::topology& topo_;
 
-        threads::policies::scheduler_mode default_scheduler_mode_;
+        threads::scheduler_mode default_scheduler_mode_;
     };
 }}}    // namespace pika::resource::detail

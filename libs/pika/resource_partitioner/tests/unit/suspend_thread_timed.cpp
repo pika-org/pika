@@ -121,9 +121,8 @@ void test_scheduler(
                   << std::endl;
 
         rp.create_thread_pool("default", scheduler,
-            pika::threads::policies::scheduler_mode(
-                pika::threads::policies::default_mode |
-                pika::threads::policies::enable_elasticity));
+            pika::threads::scheduler_mode(pika::threads::default_mode |
+                pika::threads::enable_elasticity));
     };
 
     PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);

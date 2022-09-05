@@ -72,7 +72,7 @@ namespace pika::mpi::experimental {
         // -----------------------------------------------------------------
         // Background progress function for MPI async operations
         // Checks for completed MPI_Requests and sets ready state in waiting receivers
-        PIKA_EXPORT pika::threads::policies::detail::polling_status poll();
+        PIKA_EXPORT pika::threads::detail::polling_status poll();
     }    // namespace detail
 
     // -----------------------------------------------------------------

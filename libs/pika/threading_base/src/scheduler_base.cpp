@@ -34,7 +34,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
     scheduler_base::scheduler_base(std::size_t num_threads,
         char const* description, thread_queue_init_parameters thread_queue_init,
         scheduler_mode mode)
@@ -71,8 +71,7 @@ namespace pika { namespace threads { namespace policies {
     void scheduler_base::idle_callback(std::size_t num_thread)
     {
 #if defined(PIKA_HAVE_THREAD_MANAGER_IDLE_BACKOFF)
-        if (mode_.data_.load(std::memory_order_relaxed) &
-            policies::enable_idle_backoff)
+        if (mode_.data_.load(std::memory_order_relaxed) & enable_idle_backoff)
         {
             // Put this thread to sleep for some time, additionally it gets
             // woken up on new work.
@@ -106,8 +105,7 @@ namespace pika { namespace threads { namespace policies {
     void scheduler_base::do_some_work(std::size_t)
     {
 #if defined(PIKA_HAVE_THREAD_MANAGER_IDLE_BACKOFF)
-        if (mode_.data_.load(std::memory_order_relaxed) &
-            policies::enable_idle_backoff)
+        if (mode_.data_.load(std::memory_order_relaxed) & enable_idle_backoff)
         {
             cond_.notify_all();
         }
@@ -153,7 +151,7 @@ namespace pika { namespace threads { namespace policies {
         bool allow_fallback)
     {
         if (mode_.data_.load(std::memory_order_relaxed) &
-            threads::policies::enable_elasticity)
+            threads::enable_elasticity)
         {
             std::size_t states_size = states_.size();
 
@@ -431,4 +429,4 @@ namespace pika { namespace threads { namespace policies {
 
         return os;
     }
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

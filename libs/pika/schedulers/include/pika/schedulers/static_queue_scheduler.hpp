@@ -30,7 +30,7 @@
 // TODO: add branch prediction and function heat
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
     using default_static_queue_scheduler_terminated_queue = lockfree_lifo;
@@ -152,6 +152,6 @@ namespace pika { namespace threads { namespace policies {
             return result;
         }
     };
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads
 
 #include <pika/config/warnings_suffix.hpp>

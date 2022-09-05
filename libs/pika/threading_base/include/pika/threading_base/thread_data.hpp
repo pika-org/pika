@@ -492,7 +492,7 @@ namespace pika::threads::detail {
 
         void destroy_thread() override;
 
-        policies::scheduler_base* get_scheduler_base() const noexcept
+        scheduler_base* get_scheduler_base() const noexcept
         {
             return scheduler_base_;
         }
@@ -617,7 +617,7 @@ namespace pika::threads::detail {
         std::forward_list<util::detail::function<void()>> exit_funcs_;
 
         // reference to scheduler which created/manages this thread
-        policies::scheduler_base* scheduler_base_;
+        scheduler_base* scheduler_base_;
         std::size_t last_worker_thread_num_;
 
         std::ptrdiff_t stacksize_;

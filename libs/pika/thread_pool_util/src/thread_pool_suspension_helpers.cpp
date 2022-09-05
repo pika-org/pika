@@ -27,8 +27,7 @@ namespace pika { namespace threads {
                 "cannot call resume_processing_unit from outside pika, use"
                 "resume_processing_unit_cb instead");
         }
-        else if (!pool.get_scheduler()->has_scheduler_mode(
-                     policies::enable_elasticity))
+        else if (!pool.get_scheduler()->has_scheduler_mode(enable_elasticity))
         {
             return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
                 pika::error::invalid_status, "resume_processing_unit",
@@ -45,8 +44,7 @@ namespace pika { namespace threads {
         util::detail::function<void(void)> callback, std::size_t virt_core,
         error_code& ec)
     {
-        if (!pool.get_scheduler()->has_scheduler_mode(
-                policies::enable_elasticity))
+        if (!pool.get_scheduler()->has_scheduler_mode(enable_elasticity))
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status,
                 "resume_processing_unit_cb",
@@ -81,16 +79,14 @@ namespace pika { namespace threads {
                 "cannot call suspend_processing_unit from outside pika, use"
                 "suspend_processing_unit_cb instead");
         }
-        if (!pool.get_scheduler()->has_scheduler_mode(
-                policies::enable_elasticity))
+        if (!pool.get_scheduler()->has_scheduler_mode(enable_elasticity))
         {
             return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
                 pika::error::invalid_status, "suspend_processing_unit",
                 "this thread pool does not support suspending "
                 "processing units"));
         }
-        if (!pool.get_scheduler()->has_scheduler_mode(
-                policies::enable_stealing) &&
+        if (!pool.get_scheduler()->has_scheduler_mode(enable_stealing) &&
             pika::this_thread::get_pool() == &pool)
         {
             return pika::make_exceptional_future<void>(PIKA_GET_EXCEPTION(
@@ -108,8 +104,7 @@ namespace pika { namespace threads {
         util::detail::function<void(void)> callback, std::size_t virt_core,
         error_code& ec)
     {
-        if (!pool.get_scheduler()->has_scheduler_mode(
-                policies::enable_elasticity))
+        if (!pool.get_scheduler()->has_scheduler_mode(enable_elasticity))
         {
             PIKA_THROWS_IF(ec, pika::error::invalid_status,
                 "suspend_processing_unit_cb",
@@ -126,8 +121,7 @@ namespace pika { namespace threads {
 
         if (threads::detail::get_self_ptr())
         {
-            if (!pool.get_scheduler()->has_scheduler_mode(
-                    policies::enable_stealing) &&
+            if (!pool.get_scheduler()->has_scheduler_mode(enable_stealing) &&
                 pika::this_thread::get_pool() == &pool)
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status,

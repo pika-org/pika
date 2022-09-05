@@ -48,7 +48,7 @@ namespace pika { namespace resource { namespace detail {
     std::size_t init_pool_data::num_threads_overall = 0;
 
     init_pool_data::init_pool_data(std::string const& name,
-        scheduling_policy sched, pika::threads::policies::scheduler_mode mode)
+        scheduling_policy sched, pika::threads::scheduler_mode mode)
       : pool_name_(name)
       , scheduling_policy_(sched)
       , num_threads_(0)
@@ -63,8 +63,7 @@ namespace pika { namespace resource { namespace detail {
     }
 
     init_pool_data::init_pool_data(std::string const& name,
-        scheduler_function create_func,
-        pika::threads::policies::scheduler_mode mode)
+        scheduler_function create_func, pika::threads::scheduler_mode mode)
       : pool_name_(name)
       , scheduling_policy_(user_defined)
       , num_threads_(0)
@@ -213,7 +212,7 @@ namespace pika { namespace resource { namespace detail {
       , first_core_(std::size_t(-1))
       , mode_(mode_default)
       , topo_(threads::detail::create_topology())
-      , default_scheduler_mode_(threads::policies::scheduler_mode::default_mode)
+      , default_scheduler_mode_(threads::scheduler_mode::default_mode)
     {
         // allow only one partitioner instance
         if (++instance_number_counter_ > 1)
@@ -241,12 +240,11 @@ namespace pika { namespace resource { namespace detail {
             rtcfg_.get_entry("pika.default_scheduler_mode", std::string());
         if (!default_scheduler_mode_str.empty())
         {
-            default_scheduler_mode_ = threads::policies::scheduler_mode(
-                pika::util::from_string<std::size_t>(
+            default_scheduler_mode_ =
+                threads::scheduler_mode(pika::util::from_string<std::size_t>(
                     default_scheduler_mode_str));
-            PIKA_ASSERT_MSG(
-                (default_scheduler_mode_ &
-                    ~threads::policies::scheduler_mode::all_flags) == 0,
+            PIKA_ASSERT_MSG((default_scheduler_mode_ &
+                                ~threads::scheduler_mode::all_flags) == 0,
                 "pika.default_scheduler_mode contains unknown scheduler "
                 "modes");
         }
@@ -570,7 +568,7 @@ namespace pika { namespace resource { namespace detail {
 
     // create a new thread_pool
     void partitioner::create_thread_pool(std::string const& pool_name,
-        scheduling_policy sched, pika::threads::policies::scheduler_mode mode)
+        scheduling_policy sched, pika::threads::scheduler_mode mode)
     {
         if (pool_name.empty())
         {
@@ -828,7 +826,7 @@ namespace pika { namespace resource { namespace detail {
         return get_pool_data(l, pool_name).num_threads_;
     }
 
-    pika::threads::policies::scheduler_mode partitioner::get_scheduler_mode(
+    pika::threads::scheduler_mode partitioner::get_scheduler_mode(
         std::size_t pool_index) const
     {
         std::unique_lock<mutex_type> l(mtx_);

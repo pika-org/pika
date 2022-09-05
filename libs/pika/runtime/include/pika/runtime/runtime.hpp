@@ -57,7 +57,7 @@ namespace pika {
     public:
         /// Generate a new notification policy instance for the given thread
         /// name prefix
-        using notification_policy_type = threads::policies::callback_notifier;
+        using notification_policy_type = threads::callback_notifier;
         virtual notification_policy_type get_notification_policy(
             char const* prefix, os_thread_type type);
 

@@ -8,7 +8,7 @@
 #include <pika/config.hpp>
 #include <pika/schedulers/deadlock_detection.hpp>
 
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
     static bool minimal_deadlock_detection_enabled = false;
 
@@ -22,4 +22,4 @@ namespace pika { namespace threads { namespace policies {
         return minimal_deadlock_detection_enabled;
     }
 #endif
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

@@ -63,7 +63,7 @@ namespace pika {
 }    // namespace pika
 
 // ------------------------------------------------------------
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
     /// Holds core/queue ratios used by schedulers.
     struct core_ratios
     {
@@ -171,10 +171,10 @@ namespace pika { namespace threads { namespace policies {
         void set_scheduler_mode(scheduler_mode mode) override
         {
             scheduler_base::set_scheduler_mode(mode);
-            round_robin_ = mode & policies::assign_work_round_robin;
-            steal_hp_first_ = mode & policies::steal_high_priority_first;
-            core_stealing_ = mode & policies::enable_stealing;
-            numa_stealing_ = mode & policies::enable_stealing_numa;
+            round_robin_ = mode & assign_work_round_robin;
+            steal_hp_first_ = mode & steal_high_priority_first;
+            core_stealing_ = mode & enable_stealing;
+            numa_stealing_ = mode & enable_stealing_numa;
             // clang-format off
             DEBUG(spq_deb<5>,debug(debug::detail::str<>("scheduler_mode")
                 , round_robin_ ? "round_robin" : "thread parent"
@@ -1441,6 +1441,6 @@ namespace pika { namespace threads { namespace policies {
         // used in thread pool checks
         std::size_t pool_index_;
     };
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads
 
 #include <pika/config/warnings_suffix.hpp>

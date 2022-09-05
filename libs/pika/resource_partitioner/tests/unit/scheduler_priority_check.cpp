@@ -60,20 +60,18 @@ int pika_main(variables_map& vm)
         std::cout << "Setting shared-priority mode flags" << std::endl;
         sched->add_remove_scheduler_mode(
             // add these flags
-            pika::threads::policies::scheduler_mode(
-                pika::threads::policies::enable_stealing |
-                pika::threads::policies::enable_stealing_numa |
-                pika::threads::policies::assign_work_round_robin |
-                pika::threads::policies::steal_high_priority_first),
+            pika::threads::scheduler_mode(pika::threads::enable_stealing |
+                pika::threads::enable_stealing_numa |
+                pika::threads::assign_work_round_robin |
+                pika::threads::steal_high_priority_first),
             // remove these flags
-            pika::threads::policies::scheduler_mode(
-                pika::threads::policies::assign_work_thread_parent |
-                pika::threads::policies::steal_after_local |
-                pika::threads::policies::do_background_work |
-                pika::threads::policies::reduce_thread_priority |
-                pika::threads::policies::delay_exit |
-                pika::threads::policies::fast_idle_mode |
-                pika::threads::policies::enable_elasticity));
+            pika::threads::scheduler_mode(
+                pika::threads::assign_work_thread_parent |
+                pika::threads::steal_after_local |
+                pika::threads::do_background_work |
+                pika::threads::reduce_thread_priority |
+                pika::threads::delay_exit | pika::threads::fast_idle_mode |
+                pika::threads::enable_elasticity));
     }
 
     // setup executors for different task priorities on the pools

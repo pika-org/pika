@@ -24,7 +24,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
 
     ///////////////////////////////////////////////////////////////////////////////
     namespace detail {
@@ -146,4 +146,4 @@ namespace pika { namespace threads { namespace policies {
         }
     }    // namespace detail
 
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads

@@ -22,7 +22,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads { namespace policies {
+namespace pika::threads {
     ///////////////////////////////////////////////////////////////////////////
 #if defined(PIKA_HAVE_CXX11_STD_ATOMIC_128BIT)
     using default_static_priority_queue_scheduler_terminated_queue =
@@ -61,8 +61,8 @@ namespace pika { namespace threads { namespace policies {
           : base_type(init, deferred_initialization)
         {
             // disable thread stealing to begin with
-            this->remove_scheduler_mode(scheduler_mode(
-                policies::enable_stealing | policies::enable_stealing_numa));
+            this->remove_scheduler_mode(
+                scheduler_mode(enable_stealing | enable_stealing_numa));
         }
 
         void set_scheduler_mode(scheduler_mode mode) override
@@ -78,6 +78,6 @@ namespace pika { namespace threads { namespace policies {
             return "static_priority_queue_scheduler";
         }
     };
-}}}    // namespace pika::threads::policies
+}    // namespace pika::threads
 
 #include <pika/config/warnings_suffix.hpp>

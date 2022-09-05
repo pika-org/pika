@@ -239,7 +239,7 @@ namespace pika {
             }
 #endif
 #ifdef PIKA_HAVE_THREAD_MINIMAL_DEADLOCK_DETECTION
-            threads::policies::set_minimal_deadlock_detection_enabled(
+            threads::set_minimal_deadlock_detection_enabled(
                 cmdline.rtcfg_.enable_minimal_deadlock_detection());
 #endif
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
