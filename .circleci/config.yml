@@ -645,7 +645,7 @@ jobs:
       - run:
           name: Build pika Arm64
           command: |
-            ninja -j4 -k 0 pika
+            ninja -k 0 pika
           working_directory: /home/circleci/project/build
 
 workflows:
