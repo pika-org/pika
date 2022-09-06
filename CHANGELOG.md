@@ -4,6 +4,33 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.8.0 (2022-09-07)
+
+### New features
+
+- The `PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION` option can now be enabled together with `PIKA_WITH_CUDA` (with clang as the device compiler) and `PIKA_WITH_HIP`. ([#330](https://github.com/pika-org/pika/pull/330))
+- CMake options related to tests and examples now use `cmake_dependent_option` where appropriate. This means that options like `PIKA_WITH_TESTS_UNIT` will correctly be enabled when reconfiguring with `PIKA_WITH_TESTS=ON` even if pika was initially configured with `PIKA_WITH_TESTS=OFF`. ([#356](https://github.com/pika-org/pika/pull/356))
+- `pika::finalize` no longer has to be called on a pika thread. ([#366](https://github.com/pika-org/pika/pull/366))
+
+### Breaking changes
+
+- Removed `operator|` overloads for `sync_wait` and `start_detached` to align the implementation with P2300. ([#346](https://github.com/pika-org/pika/pull/346))
+- Removed `parallel_executor_aggregated`. ([#372](https://github.com/pika-org/pika/pull/372))
+- Moved more internal functionality into the `detail` namespace. ([#374](https://github.com/pika-org/pika/pull/374), [#377](https://github.com/pika-org/pika/pull/377), [#379](https://github.com/pika-org/pika/pull/379), [#386](https://github.com/pika-org/pika/pull/386), [#400](https://github.com/pika-org/pika/pull/400), [#411](https://github.com/pika-org/pika/pull/411), [#420](https://github.com/pika-org/pika/pull/420), [#428](https://github.com/pika-org/pika/pull/428), [#429](https://github.com/pika-org/pika/pull/429))
+- Allow compiling only device code with `hipcc` when `PIKA_WITH_HIP` is enabled instead of requiring `hipcc` to be used for host code as well. The `PIKA_WITH_HIP` option now has to be enabled explicitly like CUDA support instead of being automatically detected with `hipcc` set as the C++ compiler. ([#402](https://github.com/pika-org/pika/pull/402))
+
+### Bugfixes
+
+- Fixed handling of reference types in `ensure_started` and `let_error`. ([#338](https://github.com/pika-org/pika/pull/338))
+- Fixed compilation for powerpc. ([#341](https://github.com/pika-org/pika/pull/341))
+- Correctly set the stream in `cusolver_handle::set_stream`. ([#344](https://github.com/pika-org/pika/pull/344))
+- Fix the `--pika:ignore-process-mask` command line option. It was previously being ignored. ([#355](https://github.com/pika-org/pika/pull/355))
+- Fix a visibility issue in the `program_options` implementation. ([#359](https://github.com/pika-org/pika/pull/359))
+- Change detection of builtins to be more robust against mixing compilers. ([#390](https://github.com/pika-org/pika/pull/390))
+- Fixed compilation for arm64. ([#393](https://github.com/pika-org/pika/pull/393))
+- Only check for `CMAKE_CUDA_STANDARD` and `PIKA_WITH_CXX_STANDARD` when building pika itself. This could previously lead to false positive configuration errors. ([#396](https://github.com/pika-org/pika/pull/396))
+- Fix compilation on macOS with `PIKA_WITH_MPI` enabled. ([#405](https://github.com/pika-org/pika/pull/405))
+
 ## 0.7.0 (2022-08-03)
 
 ### New features
