@@ -68,8 +68,7 @@ pika is configured using CMake variables. The most important variables are:
   Can be set to ``tcmalloc``, ``jemalloc``, ``mimalloc``, or ``system``. Setting
   it to ``system`` can be useful in debug builds.
 * ``PIKA_WITH_CUDA``: Enable CUDA support.
-* ``PIKA_WITH_HIP``: Enable HIP support. To enable this set the compiler to
-  ``hipcc`` instead of setting the variable explicitly.
+* ``PIKA_WITH_HIP``: Enable HIP support.
 * ``PIKA_WITH_MPI``: Enable MPI support.
 * ``PIKA_WITH_GENERIC_CONTEXT_COROUTINES``: Enable the use of Boost.Context for
   fiber context switching. This has to be enabled on non-Linux and non-x86
