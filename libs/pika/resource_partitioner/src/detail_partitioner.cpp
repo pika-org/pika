@@ -244,7 +244,8 @@ namespace pika { namespace resource { namespace detail {
                 threads::scheduler_mode(pika::util::from_string<std::size_t>(
                     default_scheduler_mode_str));
             PIKA_ASSERT_MSG((default_scheduler_mode_ &
-                                ~threads::scheduler_mode::all_flags) == 0,
+                                ~threads::scheduler_mode::all_flags) ==
+                    threads::scheduler_mode{},
                 "pika.default_scheduler_mode contains unknown scheduler "
                 "modes");
         }

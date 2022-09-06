@@ -15,7 +15,6 @@
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
 #include <pika/thread_pool_util/thread_pool_suspension_helpers.hpp>
-#include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
 
 #include <atomic>

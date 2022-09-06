@@ -6,11 +6,13 @@
 
 #pragma once
 
+#include <pika/config.hpp>
+
 #include <cstdint>
 
 namespace pika::threads {
     /// This enumeration describes the possible modes of a scheduler.
-    enum scheduler_mode : std::uint32_t
+    enum class scheduler_mode : std::uint32_t
     {
         /// As the name suggests, this option can be used to disable all other
         /// options.
@@ -86,4 +88,13 @@ namespace pika::threads {
             enable_idle_backoff
         // clang-format on
     };
+
+    PIKA_EXPORT scheduler_mode operator&(
+        scheduler_mode sched1, scheduler_mode sched2);
+
+    PIKA_EXPORT scheduler_mode operator|(
+        scheduler_mode sched1, scheduler_mode sched2);
+
+    PIKA_EXPORT scheduler_mode operator~(scheduler_mode sched);
+
 }    // namespace pika::threads

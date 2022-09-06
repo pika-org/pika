@@ -461,7 +461,8 @@ namespace pika { namespace threads { namespace detail {
         // needs to
         // be done in order to give the parcel pool threads higher
         // priority
-        if (get_scheduler()->has_scheduler_mode(reduce_thread_priority))
+        if (get_scheduler()->has_scheduler_mode(
+                scheduler_mode::reduce_thread_priority))
         {
             topo.reduce_thread_priority(ec);
             if (ec)
@@ -528,7 +529,8 @@ namespace pika { namespace threads { namespace detail {
                     nullptr, nullptr, max_background_threads_,
                     max_idle_loop_count_, max_busy_loop_count_);
 
-                if (get_scheduler()->has_scheduler_mode(do_background_work) &&
+                if (get_scheduler()->has_scheduler_mode(
+                        scheduler_mode::do_background_work) &&
                     network_background_callback_)
                 {
 #if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \

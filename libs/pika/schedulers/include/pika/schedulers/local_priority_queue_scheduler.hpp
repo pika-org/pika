@@ -1350,7 +1350,7 @@ namespace pika::threads {
             });
 
             // check for the rest and if we are NUMA aware
-            if (has_scheduler_mode(enable_stealing_numa) &&
+            if (has_scheduler_mode(scheduler_mode::enable_stealing_numa) &&
                 ::pika::threads::detail::any(first_mask & pu_mask))
             {
                 iterate([&](std::size_t other_num_thread) {

@@ -115,14 +115,14 @@ void test_scheduler(
 {
     pika::init_params init_args;
 
+    using ::pika::threads::scheduler_mode;
     init_args.cfg = {"pika.os_threads=" + std::to_string(max_threads)};
     init_args.rp_callback = [scheduler](auto& rp) {
         std::cout << "\nCreating pool with scheduler " << scheduler
                   << std::endl;
 
         rp.create_thread_pool("default", scheduler,
-            pika::threads::scheduler_mode(pika::threads::default_mode |
-                pika::threads::enable_elasticity));
+            scheduler_mode::default_mode | scheduler_mode::enable_elasticity);
     };
 
     PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);

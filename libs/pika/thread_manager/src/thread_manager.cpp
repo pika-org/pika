@@ -216,7 +216,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    enable_stealing_numa, !numa_sensitive);
+                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -254,7 +254,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    enable_stealing_numa, !numa_sensitive);
+                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -294,7 +294,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    enable_stealing_numa, !numa_sensitive);
+                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -328,7 +328,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    enable_stealing_numa, !numa_sensitive);
+                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -365,7 +365,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    enable_stealing_numa, !numa_sensitive);
+                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -405,7 +405,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    enable_stealing_numa, !numa_sensitive);
+                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -451,7 +451,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    enable_stealing_numa, !numa_sensitive);
+                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
@@ -484,7 +484,7 @@ namespace pika::threads::detail {
                 sched->set_scheduler_mode(thread_pool_init.mode_);
                 // conditionally set/unset this flag
                 sched->update_scheduler_mode(
-                    enable_stealing_numa, !numa_sensitive);
+                    scheduler_mode::enable_stealing_numa, !numa_sensitive);
 
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(

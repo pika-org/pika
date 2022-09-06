@@ -51,6 +51,7 @@ set(threading_base_sources
     reset_backtrace.cpp
     reset_lco_description.cpp
     scheduler_base.cpp
+    scheduler_mode.cpp
     set_thread_state.cpp
     set_thread_state_timed.cpp
     thread_data.cpp

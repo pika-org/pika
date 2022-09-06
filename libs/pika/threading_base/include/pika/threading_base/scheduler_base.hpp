@@ -60,7 +60,7 @@ namespace pika::threads::detail {
 
         scheduler_base(std::size_t num_threads, char const* description = "",
             thread_queue_init_parameters thread_queue_init = {},
-            scheduler_mode mode = nothing_special);
+            scheduler_mode mode = scheduler_mode::nothing_special);
 
         virtual ~scheduler_base() = default;
 
@@ -125,7 +125,8 @@ namespace pika::threads::detail {
         // get/set scheduler mode
         bool has_scheduler_mode(scheduler_mode mode) const
         {
-            return (mode_.data_.load(std::memory_order_relaxed) & mode) != 0;
+            return (mode_.data_.load(std::memory_order_relaxed) & mode) !=
+                scheduler_mode{};
         }
 
         // set mode flags that control scheduler behaviour
