@@ -113,7 +113,8 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 }}}}    // namespace pika::threads::coroutines::detail
 
 #elif (defined(__linux) || defined(linux) || defined(__linux__)) &&            \
-    !defined(__bgq__) && !defined(__powerpc__) && !defined(__s390x__)
+    !defined(__bgq__) && !defined(__powerpc__) && !defined(__s390x__) &&       \
+    !defined(__arm__) && !defined(__arm64__) && !defined(__aarch64__)
 
 #include <pika/coroutines/detail/context_linux_x86.hpp>
 namespace pika { namespace threads { namespace coroutines { namespace detail {
@@ -122,7 +123,8 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 }}}}    // namespace pika::threads::coroutines::detail
 
 #elif defined(_POSIX_VERSION) || defined(__bgq__) || defined(__powerpc__) ||   \
-    defined(__s390x__)
+    defined(__s390x__) || defined(__arm__) || defined(__arm64__) ||            \
+    defined(__aarch64__)
 
 #include <pika/coroutines/detail/context_posix.hpp>
 namespace pika { namespace threads { namespace coroutines { namespace detail {
@@ -140,6 +142,8 @@ namespace pika { namespace threads { namespace coroutines { namespace detail {
 
 #else
 
-#error No default_context_impl available for this system
+#error No default context switching implementation available for this system. \
+    Your platform may be supported with the CMake option \
+    PIKA_WITH_GENERIC_CONTEXT_COROUTINES=ON (requires Boost.Context).
 
 #endif    // PIKA_HAVE_GENERIC_CONTEXT_COROUTINES

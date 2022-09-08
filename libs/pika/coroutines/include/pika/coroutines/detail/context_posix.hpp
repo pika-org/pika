@@ -285,8 +285,7 @@ namespace pika::threads::coroutines {
 
 #define COROUTINE_STACKOVERFLOW_ADDR_EPSILON 1000UL
 
-            static void sigsegv_handler(
-                int signum, siginfo_t* infoptr, void* ctxptr)
+            static void sigsegv_handler(int, siginfo_t* infoptr, void* ctxptr)
             {
                 ucontext_t* uc_ctx = static_cast<ucontext_t*>(ctxptr);
                 char* sigsegv_ptr = static_cast<char*>(infoptr->si_addr);
