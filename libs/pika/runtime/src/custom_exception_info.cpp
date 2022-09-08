@@ -389,7 +389,8 @@ namespace pika {
                 state rts_state = rt->get_state();
                 state_name = pika::detail::get_runtime_state_name(rts_state);
 
-                if (rts_state >= state_initialized && rts_state < state_stopped)
+                if (rts_state >= state::initialized &&
+                    rts_state < state::stopped)
                 {
                     hostname = get_runtime().here();
                 }
@@ -408,7 +409,7 @@ namespace pika {
                 threads::detail::get_self_ptr();
             if (nullptr != self)
             {
-                if (threads::thread_manager_is(state_running))
+                if (threads::thread_manager_is(state::running))
                     shepherd = pika::get_worker_thread_num();
 
                 thread_id = threads::detail::get_self_id();

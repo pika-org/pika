@@ -169,7 +169,7 @@ namespace pika::threads::detail {
                  ++thread_num)
             {
                 if (sched_->Scheduler::get_state(thread_num).load() ==
-                    state_running)
+                    state::running)
                 {
                     ++active_os_thread_count;
                 }

@@ -20,7 +20,7 @@ namespace pika { namespace threads {
         if (nullptr == rt)
         {
             // we're probably either starting or stopping
-            return st <= state_starting || st >= state_stopping;
+            return st <= state::starting || st >= state::stopping;
         }
         return (rt->get_thread_manager().status() == st);
     }

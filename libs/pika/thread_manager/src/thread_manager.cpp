@@ -1011,7 +1011,7 @@ namespace pika::threads::detail {
                 rp.get_num_threads(pool_iter->get_pool_name());
 
             if (pool_iter->get_os_thread_count() != 0 ||
-                pool_iter->has_reached_state(state_running))
+                pool_iter->has_reached_state(state::running))
             {
                 return true;    // do nothing if already running
             }
@@ -1024,7 +1024,7 @@ namespace pika::threads::detail {
             // set all states of all schedulers to "running"
             scheduler_base* sched = pool_iter->get_scheduler();
             if (sched)
-                sched->set_all_states(state_running);
+                sched->set_all_states(state::running);
         }
 
         LTM_(info).format("run: running");

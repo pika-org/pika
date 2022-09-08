@@ -10,25 +10,27 @@
 
 #include <pika/config.hpp>
 
+#include <cstdint>
+
 namespace pika {
-    enum state
+    enum class state : std::int8_t
     {
-        state_invalid = -1,
-        state_initialized = 0,
-        first_valid_runtime_state = state_initialized,
-        state_pre_startup = 1,
-        state_startup = 2,
-        state_pre_main = 3,
-        state_starting = 4,
-        state_running = 5,
-        state_suspended = 6,
-        state_pre_sleep = 7,
-        state_sleeping = 8,
-        state_pre_shutdown = 9,
-        state_shutdown = 10,
-        state_stopping = 11,
-        state_terminating = 12,
-        state_stopped = 13,
-        last_valid_runtime_state = state_stopped
+        invalid = -1,
+        initialized = 0,
+        first_valid_runtime = initialized,
+        pre_startup = 1,
+        startup = 2,
+        pre_main = 3,
+        starting = 4,
+        running = 5,
+        suspended = 6,
+        pre_sleep = 7,
+        sleeping = 8,
+        pre_shutdown = 9,
+        shutdown = 10,
+        stopping = 11,
+        terminating = 12,
+        stopped = 13,
+        last_valid_runtime = stopped
     };
 }

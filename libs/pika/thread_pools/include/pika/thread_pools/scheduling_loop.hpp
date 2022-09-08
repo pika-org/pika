@@ -639,7 +639,7 @@ namespace pika { namespace threads { namespace detail {
 
             // Get the next pika thread from the queue
             bool running =
-                this_state.load(std::memory_order_relaxed) < state_pre_sleep;
+                this_state.load(std::memory_order_relaxed) < state::pre_sleep;
 
             // extract the stealing mode once per loop iteration
             bool enable_stealing =
@@ -927,7 +927,7 @@ namespace pika { namespace threads { namespace detail {
                         scheduler.SchedulingPolicy::get_queue_length(
                             num_thread) == 0;
 
-                    if (this_state.load() == state_pre_sleep)
+                    if (this_state.load() == state::pre_sleep)
                     {
                         if (can_exit)
                         {
@@ -972,7 +972,7 @@ namespace pika { namespace threads { namespace detail {
                                 }
                                 else
                                 {
-                                    this_state.store(state_stopped);
+                                    this_state.store(state::stopped);
                                     break;
                                 }
                             }
@@ -1039,7 +1039,7 @@ namespace pika { namespace threads { namespace detail {
             }
 
             // something went badly wrong, give up
-            if (PIKA_UNLIKELY(this_state.load() == state_terminating))
+            if (PIKA_UNLIKELY(this_state.load() == state::terminating))
                 break;
 
             if (busy_loop_count > params.max_busy_loop_count_)
@@ -1092,7 +1092,7 @@ namespace pika { namespace threads { namespace detail {
                 // break if we were idling after 'may_exit'
                 if (may_exit)
                 {
-                    PIKA_ASSERT(this_state.load() != state_pre_sleep);
+                    PIKA_ASSERT(this_state.load() != state::pre_sleep);
 
                     if (background_thread)
                     {
@@ -1127,7 +1127,7 @@ namespace pika { namespace threads { namespace detail {
 
                         if (can_exit)
                         {
-                            this_state.store(state_stopped);
+                            this_state.store(state::stopped);
                             break;
                         }
                     }

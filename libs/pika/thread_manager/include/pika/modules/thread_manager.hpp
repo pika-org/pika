@@ -148,7 +148,7 @@ namespace pika::threads::detail {
         //! least advanced thread pool
         state status() const
         {
-            pika::state result(last_valid_runtime_state);
+            pika::state result(state::last_valid_runtime);
 
             for (auto& pool_iter : pools_)
             {
