@@ -9,7 +9,12 @@ name: Linux CI (Coverage)
 on:
   push:
     branches:
+      # Development and release branches
       - main
+      - release**
+      # Bors branches
+      - trying
+      - staging
 
 jobs:
   build:

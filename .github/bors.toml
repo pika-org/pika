@@ -53,6 +53,9 @@ status = [
   "jenkins/cscs-daint/gcc-12-debug",
   "jenkins/cscs-daint/gcc-cuda-debug",
   "jenkins/cscs-ault/hipcc-release",
+
+  # Codacy
+  "Codacy Static Code Analysis"
 ]
 required_approvals = 0
 delete_merged_branches = true
