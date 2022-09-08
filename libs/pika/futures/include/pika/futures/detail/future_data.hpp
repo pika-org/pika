@@ -562,25 +562,6 @@ namespace pika { namespace lcos { namespace detail {
                 [&](std::exception_ptr ep) { set_exception(PIKA_MOVE(ep)); });
         }
 
-        // helper functions for setting data (if successful) or the error (if
-        // non-successful)
-        template <typename T>
-        void set_remote_data(T&& result)
-        {
-            pika::detail::try_catch_exception_ptr(
-                [&]() {
-                    using naked_type = std::decay_t<T>;
-
-                    using get_remote_result_type =
-                        traits::get_remote_result<result_type, naked_type>;
-
-                    // store the value
-                    set_value(
-                        get_remote_result_type::call(PIKA_FORWARD(T, result)));
-                },
-                [&](std::exception_ptr ep) { set_exception(PIKA_MOVE(ep)); });
-        }
-
         // trigger the future with the given error condition
         void set_error(error e, char const* f, char const* msg)
         {
