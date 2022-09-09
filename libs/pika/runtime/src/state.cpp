@@ -13,18 +13,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace pika { namespace threads {
-    // return whether thread manager is in the state described by st
-    bool thread_manager_is(state st)
+    // return whether thread manager is in the runtime_state described by st
+    bool thread_manager_is(runtime_state st)
     {
         pika::runtime* rt = get_runtime_ptr();
         if (nullptr == rt)
         {
             // we're probably either starting or stopping
-            return st <= state::starting || st >= state::stopping;
+            return st <= runtime_state::starting ||
+                st >= runtime_state::stopping;
         }
         return (rt->get_thread_manager().status() == st);
     }
-    bool thread_manager_is_at_least(state st)
+    bool thread_manager_is_at_least(runtime_state st)
     {
         pika::runtime* rt = get_runtime_ptr();
         if (nullptr == rt)

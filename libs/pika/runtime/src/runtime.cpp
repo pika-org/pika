@@ -232,28 +232,29 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     namespace strings {
         char const* const runtime_state_names[] = {
-            "state::invalid",         // -1
-            "state::initialized",     // 0
-            "state::pre_startup",     // 1
-            "state::startup",         // 2
-            "state::pre_main",        // 3
-            "state::starting",        // 4
-            "state::running",         // 5
-            "state::suspended",       // 6
-            "state::pre_sleep",       // 7
-            "state::sleeping",        // 8
-            "state::pre_shutdown",    // 9
-            "state::shutdown",        // 10
-            "state::stopping",        // 11
-            "state::terminating",     // 12
-            "state::stopped"          // 13
+            "runtime_state::invalid",         // -1
+            "runtime_state::initialized",     // 0
+            "runtime_state::pre_startup",     // 1
+            "runtime_state::startup",         // 2
+            "runtime_state::pre_main",        // 3
+            "runtime_state::starting",        // 4
+            "runtime_state::running",         // 5
+            "runtime_state::suspended",       // 6
+            "runtime_state::pre_sleep",       // 7
+            "runtime_state::sleeping",        // 8
+            "runtime_state::pre_shutdown",    // 9
+            "runtime_state::shutdown",        // 10
+            "runtime_state::stopping",        // 11
+            "runtime_state::terminating",     // 12
+            "runtime_state::stopped"          // 13
         };
     }
 
     namespace detail {
-        char const* get_runtime_state_name(state st)
+        char const* get_runtime_state_name(runtime_state st)
         {
-            if (st < state::invalid || st >= state::last_valid_runtime)
+            if (st < runtime_state::invalid ||
+                st >= runtime_state::last_valid_runtime)
                 return "invalid (value out of bounds)";
             return strings::runtime_state_names[static_cast<std::int8_t>(st) +
                 1];
@@ -271,7 +272,7 @@ namespace pika {
       , instance_number_(++instance_number_counter_)
       , thread_support_(new util::thread_mapper)
       , topology_(resource::get_partitioner().get_topology())
-      , state_(state::invalid)
+      , state_(runtime_state::invalid)
       , on_start_func_(global_on_start_func)
       , on_stop_func_(global_on_stop_func)
       , on_error_func_(global_on_error_func)
@@ -304,7 +305,7 @@ namespace pika {
       , instance_number_(++instance_number_counter_)
       , thread_support_(new util::thread_mapper)
       , topology_(resource::get_partitioner().get_topology())
-      , state_(state::invalid)
+      , state_(runtime_state::invalid)
       , on_start_func_(global_on_start_func)
       , on_stop_func_(global_on_stop_func)
       , on_error_func_(global_on_error_func)
@@ -376,7 +377,7 @@ namespace pika {
         }
 
         // set state to initialized
-        set_state(state::initialized);
+        set_state(runtime_state::initialized);
     }
 
     runtime::~runtime()
@@ -404,12 +405,12 @@ namespace pika {
 
     void runtime::starting()
     {
-        state_.store(state::pre_main);
+        state_.store(runtime_state::pre_main);
     }
 
     void runtime::stopping()
     {
-        state_.store(state::stopped);
+        state_.store(runtime_state::stopped);
 
         using value_type = util::detail::function<void()>;
 
@@ -420,7 +421,7 @@ namespace pika {
 
     bool runtime::stopped() const
     {
-        return state_.load() == state::stopped;
+        return state_.load() == runtime_state::stopped;
     }
 
     pika::util::runtime_configuration& runtime::get_config()
@@ -438,7 +439,7 @@ namespace pika {
         return static_cast<std::size_t>(instance_number_);
     }
 
-    state runtime::get_state() const
+    runtime_state runtime::get_state() const
     {
         return state_.load();
     }
@@ -448,7 +449,7 @@ namespace pika {
         return topology_;
     }
 
-    void runtime::set_state(state s)
+    void runtime::set_state(runtime_state s)
     {
         LPROGRESS_ << pika::detail::get_runtime_state_name(s);
         state_.store(s);
@@ -703,7 +704,7 @@ namespace pika {
     void report_error(std::size_t num_thread, std::exception_ptr const& e)
     {
         // Early and late exceptions
-        if (!threads::thread_manager_is(state::running))
+        if (!threads::thread_manager_is(runtime_state::running))
         {
             pika::runtime* rt = pika::get_runtime_ptr();
             if (rt)
@@ -719,7 +720,7 @@ namespace pika {
     void report_error(std::exception_ptr const& e)
     {
         // Early and late exceptions
-        if (!threads::thread_manager_is(state::running))
+        if (!threads::thread_manager_is(runtime_state::running))
         {
             pika::runtime* rt = pika::get_runtime_ptr();
             if (rt)
@@ -870,7 +871,7 @@ namespace pika {
     {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
-            return rt->get_state() == state::running;
+            return rt->get_state() == runtime_state::running;
         return false;
     }
 
@@ -880,7 +881,7 @@ namespace pika {
         {
             runtime* rt = get_runtime_ptr();
             if (nullptr != rt)
-                return rt->get_state() == state::stopped;
+                return rt->get_state() == runtime_state::stopped;
         }
         return true;    // assume stopped
     }
@@ -890,8 +891,8 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (!detail::exit_called && nullptr != rt)
         {
-            state st = rt->get_state();
-            return st >= state::shutdown;
+            runtime_state st = rt->get_state();
+            return st >= runtime_state::shutdown;
         }
         return true;    // assume stopped
     }
@@ -908,13 +909,13 @@ namespace pika {
     bool is_starting()
     {
         runtime* rt = get_runtime_ptr();
-        return nullptr != rt ? rt->get_state() <= state::startup : true;
+        return nullptr != rt ? rt->get_state() <= runtime_state::startup : true;
     }
 
     bool is_pre_startup()
     {
         runtime* rt = get_runtime_ptr();
-        return nullptr != rt ? rt->get_state() < state::startup : true;
+        return nullptr != rt ? rt->get_state() < runtime_state::startup : true;
     }
 }    // namespace pika
 
@@ -1040,7 +1041,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
         {
-            if (rt->get_state() > state::pre_startup)
+            if (rt->get_state() > runtime_state::pre_startup)
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "register_pre_startup_function",
@@ -1060,7 +1061,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
         {
-            if (rt->get_state() > state::startup)
+            if (rt->get_state() > runtime_state::startup)
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "register_startup_function",
@@ -1080,7 +1081,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
         {
-            if (rt->get_state() > state::pre_shutdown)
+            if (rt->get_state() > runtime_state::pre_shutdown)
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "register_pre_shutdown_function",
@@ -1100,7 +1101,7 @@ namespace pika {
         runtime* rt = get_runtime_ptr();
         if (nullptr != rt)
         {
-            if (rt->get_state() > state::shutdown)
+            if (rt->get_state() > runtime_state::shutdown)
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                     "register_shutdown_function",
@@ -1119,7 +1120,7 @@ namespace pika {
     {
         if (pre_startup)
         {
-            set_state(state::pre_startup);
+            set_state(runtime_state::pre_startup);
             for (startup_function_type& f : pre_startup_functions_)
             {
                 f();
@@ -1127,7 +1128,7 @@ namespace pika {
         }
         else
         {
-            set_state(state::startup);
+            set_state(runtime_state::startup);
             for (startup_function_type& f : startup_functions_)
             {
                 f();
@@ -1232,7 +1233,7 @@ namespace pika {
                     lbt_ << "runtime::run_helper: bootstrap "
                             "aborted, bailing out";
 
-                    set_state(state::running);
+                    set_state(runtime_state::running);
                     finalize(-1.0);
 
                     return threads::detail::thread_result_type(
@@ -1251,7 +1252,7 @@ namespace pika {
             }
 
             lbt_ << "(4th stage) runtime::run_helper: bootstrap complete";
-            set_state(state::running);
+            set_state(runtime_state::running);
 
             // Now, execute the user supplied thread function (pika_main)
             if (!!func)
@@ -1349,8 +1350,9 @@ namespace pika {
         }
         else
         {
-            // wait for at least state::running
-            util::yield_while([this]() { return get_state() < state::running; },
+            // wait for at least runtime_state::running
+            util::yield_while(
+                [this]() { return get_state() < runtime_state::running; },
                 "runtime::start");
         }
 
@@ -1511,12 +1513,12 @@ namespace pika {
     {
         LRT_(info).format("runtime: about to suspend runtime");
 
-        if (state_.load() == state::sleeping)
+        if (state_.load() == runtime_state::sleeping)
         {
             return 0;
         }
 
-        if (state_.load() != state::running)
+        if (state_.load() != runtime_state::running)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status,
                 "runtime::suspend",
@@ -1526,7 +1528,7 @@ namespace pika {
 
         thread_manager_->suspend();
 
-        set_state(state::sleeping);
+        set_state(runtime_state::sleeping);
 
         return 0;
     }
@@ -1535,12 +1537,12 @@ namespace pika {
     {
         LRT_(info).format("runtime: about to resume runtime");
 
-        if (state_.load() == state::running)
+        if (state_.load() == runtime_state::running)
         {
             return 0;
         }
 
-        if (state_.load() != state::sleeping)
+        if (state_.load() != runtime_state::sleeping)
         {
             PIKA_THROW_EXCEPTION(pika::error::invalid_status, "runtime::resume",
                 "Can only resume runtime from suspended state");
@@ -1549,7 +1551,7 @@ namespace pika {
 
         thread_manager_->resume();
 
-        set_state(state::running);
+        set_state(runtime_state::running);
 
         return 0;
     }
@@ -1588,7 +1590,7 @@ namespace pika {
 
         // Early and late exceptions, errors outside of pika-threads
         if (!threads::detail::get_self_ptr() ||
-            !threads::thread_manager_is(state::running))
+            !threads::thread_manager_is(runtime_state::running))
         {
             // report the error to the local console
             if (report_exception)
@@ -1618,7 +1620,7 @@ namespace pika {
 
     void runtime::rethrow_exception()
     {
-        if (state_.load() > state::running)
+        if (state_.load() > runtime_state::running)
         {
             std::lock_guard<std::mutex> l(mtx_);
             if (exception_)
@@ -1877,7 +1879,7 @@ namespace pika {
     std::uint32_t get_locality_id(error_code& ec)
     {
         runtime* rt = get_runtime_ptr();
-        if (nullptr == rt || rt->get_state() == state::invalid)
+        if (nullptr == rt || rt->get_state() == runtime_state::invalid)
         {
             // same as naming::invalid_locality_id
             return ~static_cast<std::uint32_t>(0);

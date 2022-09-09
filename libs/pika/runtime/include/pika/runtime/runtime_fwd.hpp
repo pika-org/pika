@@ -82,7 +82,7 @@ namespace pika {
     ///
     /// This function returns whether the runtime system is currently being
     /// started or not, e.g. whether the current state of the runtime system is
-    /// \a pika::state::startup
+    /// \a pika:runtime_state::startup
     ///
     /// \note   This function needs to be executed on a pika-thread. It will
     ///         return false otherwise.
@@ -100,7 +100,7 @@ namespace pika {
     ///
     /// This function returns whether the runtime system is currently running
     /// or not, e.g.  whether the current state of the runtime system is
-    /// \a pika::state::running
+    /// \a pika:runtime_state::running
     ///
     /// \note   This function needs to be executed on a pika-thread. It will
     ///         return false otherwise.
@@ -111,7 +111,7 @@ namespace pika {
     ///
     /// This function returns whether the runtime system is currently stopped
     /// or not, e.g.  whether the current state of the runtime system is
-    /// \a pika::state::stopped
+    /// \a pika:runtime_state::stopped
     ///
     /// \note   This function needs to be executed on a pika-thread. It will
     ///         return false otherwise.
@@ -122,7 +122,7 @@ namespace pika {
     ///
     /// This function returns whether the runtime system is currently being
     /// shut down or not, e.g.  whether the current state of the runtime system
-    /// is \a pika::state::stopped or \a pika::state::shutdown
+    /// is \a pika:runtime_state::stopped or \a pika:runtime_state::shutdown
     ///
     /// \note   This function needs to be executed on a pika-thread. It will
     ///         return false otherwise.

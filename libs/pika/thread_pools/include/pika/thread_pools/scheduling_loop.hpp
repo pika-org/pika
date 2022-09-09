@@ -586,7 +586,8 @@ namespace pika { namespace threads { namespace detail {
     void scheduling_loop(std::size_t num_thread, SchedulingPolicy& scheduler,
         scheduling_counters& counters, scheduling_callbacks& params)
     {
-        std::atomic<pika::state>& this_state = scheduler.get_state(num_thread);
+        std::atomic<pika::runtime_state>& this_state =
+            scheduler.get_state(num_thread);
 
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
         util::itt::stack_context ctx;    // helper for itt support
@@ -638,8 +639,8 @@ namespace pika { namespace threads { namespace detail {
             thread_id_ref_type thrd = PIKA_MOVE(next_thrd);
 
             // Get the next pika thread from the queue
-            bool running =
-                this_state.load(std::memory_order_relaxed) < state::pre_sleep;
+            bool running = this_state.load(std::memory_order_relaxed) <
+                runtime_state::pre_sleep;
 
             // extract the stealing mode once per loop iteration
             bool enable_stealing =
@@ -926,7 +927,7 @@ namespace pika { namespace threads { namespace detail {
                         scheduler.SchedulingPolicy::get_queue_length(
                             num_thread) == 0;
 
-                    if (this_state.load() == state::pre_sleep)
+                    if (this_state.load() == runtime_state::pre_sleep)
                     {
                         if (can_exit)
                         {
@@ -971,7 +972,7 @@ namespace pika { namespace threads { namespace detail {
                                 }
                                 else
                                 {
-                                    this_state.store(state::stopped);
+                                    this_state.store(runtime_state::stopped);
                                     break;
                                 }
                             }
@@ -1038,7 +1039,7 @@ namespace pika { namespace threads { namespace detail {
             }
 
             // something went badly wrong, give up
-            if (PIKA_UNLIKELY(this_state.load() == state::terminating))
+            if (PIKA_UNLIKELY(this_state.load() == runtime_state::terminating))
                 break;
 
             if (busy_loop_count > params.max_busy_loop_count_)
@@ -1091,7 +1092,7 @@ namespace pika { namespace threads { namespace detail {
                 // break if we were idling after 'may_exit'
                 if (may_exit)
                 {
-                    PIKA_ASSERT(this_state.load() != state::pre_sleep);
+                    PIKA_ASSERT(this_state.load() != runtime_state::pre_sleep);
 
                     if (background_thread)
                     {
@@ -1126,7 +1127,7 @@ namespace pika { namespace threads { namespace detail {
 
                         if (can_exit)
                         {
-                            this_state.store(state::stopped);
+                            this_state.store(runtime_state::stopped);
                             break;
                         }
                     }

@@ -13,7 +13,7 @@
 #include <cstdint>
 
 namespace pika {
-    enum class state : std::int8_t
+    enum class runtime_state : std::int8_t
     {
         invalid = -1,
         initialized = 0,

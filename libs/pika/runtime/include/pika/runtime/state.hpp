@@ -15,6 +15,6 @@
 namespace pika { namespace threads {
 
     // return whether thread manager is in the state described by 'mask'
-    PIKA_EXPORT bool thread_manager_is(state st);
-    PIKA_EXPORT bool thread_manager_is_at_least(state st);
+    PIKA_EXPORT bool thread_manager_is(runtime_state st);
+    PIKA_EXPORT bool thread_manager_is_at_least(runtime_state st);
 }}    // namespace pika::threads

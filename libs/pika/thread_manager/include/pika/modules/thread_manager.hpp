@@ -146,13 +146,13 @@ namespace pika::threads::detail {
         /// \brief Return whether the thread manager is still running
         //! This returns the "minimal state", i.e. the state of the
         //! least advanced thread pool
-        state status() const
+        runtime_state status() const
         {
-            pika::state result(state::last_valid_runtime);
+            pika::runtime_state result(runtime_state::last_valid_runtime);
 
             for (auto& pool_iter : pools_)
             {
-                pika::state s = pool_iter->get_state();
+                pika::runtime_state s = pool_iter->get_state();
                 result = (std::min)(result, s);
             }
 
