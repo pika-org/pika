@@ -228,7 +228,8 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
     // a user supplied scheduler attached
     rp.create_thread_pool(CUSTOM_POOL_NAME,
         [](pika::threads::detail::thread_pool_init_parameters init,
-            pika::threads::thread_queue_init_parameters thread_queue_init)
+            pika::threads::detail::thread_queue_init_parameters
+                thread_queue_init)
             -> std::unique_ptr<pika::threads::detail::thread_pool_base> {
             std::cout << "User defined scheduler creation callback "
                       << std::endl;

@@ -107,7 +107,7 @@ namespace pika::threads {
             init_parameter(std::size_t num_worker_threads,
                 const core_ratios& cores_per_queue,
                 pika::detail::affinity_data const& affinity_data,
-                const thread_queue_init_parameters& thread_queue_init,
+                const detail::thread_queue_init_parameters& thread_queue_init,
                 char const* description = "shared_priority_queue_scheduler")
               : num_worker_threads_(num_worker_threads)
               , cores_per_queue_(cores_per_queue)
@@ -131,7 +131,7 @@ namespace pika::threads {
 
             std::size_t num_worker_threads_;
             core_ratios cores_per_queue_;
-            thread_queue_init_parameters thread_queue_init_;
+            detail::thread_queue_init_parameters thread_queue_init_;
             pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
@@ -1443,7 +1443,7 @@ namespace pika::threads {
 
         pika::detail::affinity_data const& affinity_data_;
 
-        const thread_queue_init_parameters queue_parameters_;
+        const detail::thread_queue_init_parameters queue_parameters_;
 
         // used to make sure the scheduler is only initialized once on a thread
         std::mutex init_mutex;

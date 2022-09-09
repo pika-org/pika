@@ -13,7 +13,7 @@
 #include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
+namespace pika::threads::detail {
     struct thread_queue_init_parameters
     {
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
@@ -76,4 +76,4 @@ namespace pika::threads {
         std::ptrdiff_t const huge_stacksize_;
         std::ptrdiff_t const nostack_stacksize_;
     };
-}    // namespace pika::threads
+}    // namespace pika::threads::detail

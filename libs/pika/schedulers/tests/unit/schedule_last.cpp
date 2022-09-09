@@ -48,7 +48,8 @@ void test_scheduler(int argc, char* argv[])
         rp.create_thread_pool("default",
             [](pika::threads::detail::thread_pool_init_parameters
                     thread_pool_init,
-                pika::threads::thread_queue_init_parameters thread_queue_init)
+                pika::threads::detail::thread_queue_init_parameters
+                    thread_queue_init)
                 -> std::unique_ptr<pika::threads::detail::thread_pool_base> {
                 typename Scheduler::init_parameter_type init(
                     thread_pool_init.num_threads_,

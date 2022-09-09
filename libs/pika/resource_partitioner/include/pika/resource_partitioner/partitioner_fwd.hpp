@@ -52,7 +52,7 @@ namespace pika { namespace resource {
     using scheduler_function = util::detail::function<
         std::unique_ptr<pika::threads::detail::thread_pool_base>(
             pika::threads::detail::thread_pool_init_parameters,
-            pika::threads::thread_queue_init_parameters)>;
+            pika::threads::detail::thread_queue_init_parameters)>;
 
     // Choose same names as in command-line options except with _ instead of
     // -.

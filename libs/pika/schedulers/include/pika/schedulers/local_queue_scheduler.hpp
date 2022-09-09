@@ -66,7 +66,7 @@ namespace pika::threads {
         {
             init_parameter(std::size_t num_queues,
                 pika::detail::affinity_data const& affinity_data,
-                thread_queue_init_parameters thread_queue_init = {},
+                detail::thread_queue_init_parameters thread_queue_init = {},
                 char const* description = "local_queue_scheduler")
               : num_queues_(num_queues)
               , thread_queue_init_(thread_queue_init)
@@ -86,7 +86,7 @@ namespace pika::threads {
             }
 
             std::size_t num_queues_;
-            thread_queue_init_parameters thread_queue_init_;
+            detail::thread_queue_init_parameters thread_queue_init_;
             pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
