@@ -228,7 +228,8 @@ namespace pika { namespace ranges {
 namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter1, typename Iter2>
-    using swap_ranges_result = pika::parallel::util::in_in_result<Iter1, Iter2>;
+    using swap_ranges_result =
+        pika::parallel::util::detail::in_in_result<Iter1, Iter2>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::swap_ranges

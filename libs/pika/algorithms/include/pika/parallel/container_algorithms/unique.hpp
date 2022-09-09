@@ -35,7 +35,7 @@ namespace pika { namespace ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -99,7 +99,7 @@ namespace pika { namespace ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -168,7 +168,7 @@ namespace pika { namespace ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -230,7 +230,7 @@ namespace pika { namespace ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -309,7 +309,7 @@ namespace pika { namespace ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -381,7 +381,7 @@ namespace pika { namespace ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -459,7 +459,7 @@ namespace pika { namespace ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -525,7 +525,7 @@ namespace pika { namespace ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -617,7 +617,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename FwdIter, typename Sent,
             typename Pred = ranges::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter> &&
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value &&
@@ -635,7 +635,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::util::make_subrange<FwdIter, Sent>(
+            return pika::parallel::util::detail::make_subrange<FwdIter, Sent>(
                 pika::parallel::detail::unique<FwdIter>().call(
                     pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
                     PIKA_FORWARD(Proj, proj)),
@@ -645,7 +645,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename Pred = ranges::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<FwdIter> &&
@@ -666,7 +666,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::util::make_subrange<FwdIter, Sent>(
+            return pika::parallel::util::detail::make_subrange<FwdIter, Sent>(
                 pika::parallel::detail::unique<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
@@ -676,7 +676,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng,
             typename Pred = ranges::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
@@ -696,7 +696,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<iterator_type>,
                 "Requires at least input iterator.");
 
-            return pika::parallel::util::make_subrange<
+            return pika::parallel::util::detail::make_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
                 pika::parallel::detail::unique<
@@ -710,7 +710,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng,
             typename Pred = ranges::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
@@ -732,7 +732,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<iterator_type>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::util::make_subrange<
+            return pika::parallel::util::detail::make_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
                 pika::parallel::detail::unique<
@@ -745,7 +745,7 @@ namespace pika::ranges {
     } unique{};
 
     template <typename I, typename O>
-    using unique_copy_result = parallel::util::in_out_result<I, O>;
+    using unique_copy_result = parallel::util::detail::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::unique_copy
@@ -756,7 +756,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename InIter, typename Sent, typename O,
             typename Pred = ranges::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<InIter> &&
                 pika::traits::is_sentinel_for<Sent, InIter>::value &&
@@ -785,7 +785,7 @@ namespace pika::ranges {
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename O,
             typename Pred = ranges::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<FwdIter> &&
@@ -816,7 +816,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng, typename O,
             typename Pred = ranges::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
@@ -846,7 +846,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng, typename O,
             typename Pred = ranges::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&

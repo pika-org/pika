@@ -13,7 +13,7 @@
 #include <functional>
 #include <vector>
 
-using namespace pika::parallel::util;
+using namespace pika::parallel::util::detail;
 
 // template <typename Iter, typename Sent>
 // std::ostream& operator<<(std::ostream& out, range<Iter, Sent> R)
@@ -72,7 +72,7 @@ void test1(void)
     RC = RA;
 
     //              test of move
-    RB = pika::parallel::util::init_move(RB, RA);
+    RB = init_move(RB, RA);
     for (std::uint32_t i = 0; i < 10; ++i)
         PIKA_TEST(B[i] == i);
 
@@ -92,7 +92,7 @@ void test1(void)
     };
 
     using fIter = typename std::vector<forensic>::iterator;
-    using frange_t = pika::parallel::util::range<fIter>;
+    using frange_t = range<fIter>;
 
     char K[160];
     forensic* PAux = reinterpret_cast<forensic*>(&K[0]);
@@ -101,11 +101,11 @@ void test1(void)
     for (uint32_t i = 0; i < 10; ++i)
         V.emplace_back(i);
 
-    F1 = pika::parallel::util::uninit_move(F1, frange_t(V.begin(), V.end()));
+    F1 = uninit_move(F1, frange_t(V.begin(), V.end()));
     for (uint32_t i = 0; i < 10; ++i)
         PIKA_TEST(PAux[i].N == i);
 
-    pika::parallel::util::destroy_range(F1);
+    destroy_range(F1);
 }
 
 void test2()

@@ -126,7 +126,8 @@ namespace pika {
 
 namespace pika::parallel::detail {
     template <typename Iter1, typename Iter2>
-    using swap_ranges_result = pika::parallel::util::in_in_result<Iter1, Iter2>;
+    using swap_ranges_result =
+        pika::parallel::util::detail::in_in_result<Iter1, Iter2>;
 
     ///////////////////////////////////////////////////////////////////////////
     // swap ranges
@@ -147,7 +148,7 @@ namespace pika::parallel::detail {
                 using std::get;
                 std::swap(get<0>(t), get<1>(t));
             },
-            util::projection_identity()));
+            util::detail::projection_identity()));
     }
 
     template <typename IterPair>
@@ -198,7 +199,7 @@ namespace pika::parallel::detail {
         parallel(
             ExPolicy&& policy, FwdIter1 first1, Sent last1, FwdIter2 first2)
         {
-            return util::get_in2_element(
+            return util::detail::get_in2_element(
                 parallel_swap_ranges(PIKA_FORWARD(ExPolicy, policy), first1,
                     first2, detail::distance(first1, last1)));
         }

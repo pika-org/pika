@@ -30,7 +30,7 @@ namespace pika {
     ///                     overload of \a none_of requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -77,7 +77,7 @@ namespace pika {
     ///           otherwise. It returns true if the range is empty.
     ///
     template <typename ExPolicy, typename FwdIter, typename F,
-        typename Proj = util::projection_identity>
+        typename Proj = util::detail::projection_identity>
     typename util::detail::algorithm_result<ExPolicy, bool>::type
     none_of(ExPolicy&& policy, FwdIter first, FwdIter last, F&& f,
         Proj&& proj = Proj());
@@ -100,7 +100,7 @@ namespace pika {
     ///                     overload of \a any_of requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -147,7 +147,7 @@ namespace pika {
     ///           false otherwise. It returns false if the range is empty.
     ///
     template <typename ExPolicy, typename FwdIter, typename F,
-        typename Proj = util::projection_identity>
+        typename Proj = util::detail::projection_identity>
     typename util::detail::algorithm_result<ExPolicy, bool>::type
     any_of(ExPolicy&& policy, FwdIter first, FwdIter last, F&& f,
         Proj&& proj = Proj());
@@ -170,7 +170,7 @@ namespace pika {
     ///                     overload of \a all_of requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -217,7 +217,7 @@ namespace pika {
     ///           otherwise. It returns true if the range is empty.
     ///
     template <typename ExPolicy, typename FwdIter, typename F,
-        typename Proj = util::projection_identity>
+        typename Proj = util::detail::projection_identity>
     typename util::detail::algorithm_result<ExPolicy, bool>::type
     all_of(ExPolicy&& policy, FwdIter first, FwdIter last, F&& f,
         Proj&& proj = Proj());
@@ -269,8 +269,9 @@ namespace pika::parallel::detail {
             ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
         {
             return detail::sequential_find_if<ExPolicy>(first, last,
-                       util::invoke_projected<F, Proj>(PIKA_FORWARD(F, f),
-                           PIKA_FORWARD(Proj, proj))) == last;
+                       util::detail::invoke_projected<F, Proj>(
+                           PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj))) ==
+                last;
         }
 
         template <typename ExPolicy, typename FwdIter, typename Sent,
@@ -296,7 +297,7 @@ namespace pika::parallel::detail {
                 return !tok.was_cancelled();
             };
 
-            return util::partitioner<ExPolicy, bool>::call(
+            return util::detail::partitioner<ExPolicy, bool>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 [](std::vector<pika::future<bool>>&& results) {
@@ -328,8 +329,9 @@ namespace pika::parallel::detail {
             ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
         {
             return detail::sequential_find_if<ExPolicy>(first, last,
-                       util::invoke_projected<F, Proj>(PIKA_FORWARD(F, f),
-                           PIKA_FORWARD(Proj, proj))) != last;
+                       util::detail::invoke_projected<F, Proj>(
+                           PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj))) !=
+                last;
         }
 
         template <typename ExPolicy, typename FwdIter, typename Sent,
@@ -355,7 +357,7 @@ namespace pika::parallel::detail {
                 return tok.was_cancelled();
             };
 
-            return util::partitioner<ExPolicy, bool>::call(
+            return util::detail::partitioner<ExPolicy, bool>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 [](std::vector<pika::future<bool>>&& results) {
@@ -413,7 +415,7 @@ namespace pika::parallel::detail {
                 return !tok.was_cancelled();
             };
 
-            return util::partitioner<ExPolicy, bool>::call(
+            return util::detail::partitioner<ExPolicy, bool>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 [](std::vector<pika::future<bool>>&& results) {
@@ -454,7 +456,7 @@ namespace pika {
 
             return pika::parallel::detail::none_of().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -471,7 +473,7 @@ namespace pika {
 
             return pika::parallel::detail::none_of().call(pika::execution::seq,
                 first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
     } none_of{};
 
@@ -498,7 +500,7 @@ namespace pika {
 
             return pika::parallel::detail::any_of().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -515,7 +517,7 @@ namespace pika {
 
             return pika::parallel::detail::any_of().call(pika::execution::seq,
                 first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
     } any_of{};
 
@@ -542,7 +544,7 @@ namespace pika {
 
             return pika::parallel::detail::all_of().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -559,7 +561,7 @@ namespace pika {
 
             return pika::parallel::detail::all_of().call(pika::execution::seq,
                 first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
     } all_of{};
 }    // namespace pika

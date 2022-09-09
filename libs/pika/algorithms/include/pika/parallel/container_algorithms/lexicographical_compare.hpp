@@ -39,9 +39,9 @@ namespace pika { namespace ranges {
     ///                     meet the requirements of \a CopyConstructible. This defaults
     ///                     to std::less<>
     /// \tparam Proj1       The type of an optional projection function for FwdIter1. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     /// \tparam Proj2       The type of an optional projection function for FwdIter2. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first1       Refers to the beginning of the sequence of elements
     ///                     of the first range the algorithm will be applied to.
@@ -99,8 +99,8 @@ namespace pika { namespace ranges {
     ///           range [first2, last2), it returns false.
     template <typename InIter1, typename Sent1, typename InIter2,
         typename Sent2,
-        typename Proj1 = pika::parallel::util::projection_identity,
-        typename Proj2 = pika::parallel::util::projection_identity,
+        typename Proj1 = pika::parallel::util::detail::projection_identity,
+        typename Proj2 = pika::parallel::util::detail::projection_identity,
         typename Pred = detail::less>
     bool lexicographical_compare(InIter1 first1, Sent1 last1, InIter2 first2,
         Sent2 last2, Pred&& pred = Pred(), Proj1&& proj1 = Proj1(),
@@ -136,9 +136,9 @@ namespace pika { namespace ranges {
     ///                     meet the requirements of \a CopyConstructible. This defaults
     ///                     to std::less<>
     /// \tparam Proj1       The type of an optional projection function for FwdIter1. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     /// \tparam Proj2       The type of an optional projection function for FwdIter2. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -199,8 +199,8 @@ namespace pika { namespace ranges {
 
     template <typename ExPolicy, typename FwdIter1, typename Sent1,
         typename FwdIter2, typename Sent2,
-        typename Proj1 = pika::parallel::util::projection_identity,
-        typename Proj2 = pika::parallel::util::projection_identity,
+        typename Proj1 = pika::parallel::util::detail::projection_identity,
+        typename Proj2 = pika::parallel::util::detail::projection_identity,
         typename Pred = detail::less>
     typename parallel::util::detail::algorithm_result<ExPolicy, bool>::type
     lexicographical_compare(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
@@ -227,9 +227,9 @@ namespace pika { namespace ranges {
     ///                     meet the requirements of \a CopyConstructible. This defaults
     ///                     to std::less<>
     /// \tparam Proj1       The type of an optional projection function for elements of the first range.
-    ///                     This defaults to \a util::projection_identity
+    ///                     This defaults to \a util::detail::projection_identity
     /// \tparam Proj2       The type of an optional projection function for elements of the second range.
-    ///                     This defaults to \a util::projection_identity
+    ///                     This defaults to \a util::detail::projection_identity
     ///
     /// \param rng1         Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -270,8 +270,8 @@ namespace pika { namespace ranges {
     ///           it returns false.
     ///           range [first2, last2), it returns false.
     template <typename Rng1, typename Rng2,
-        typename Proj1 = pika::parallel::util::projection_identity,
-        typename Proj2 = pika::parallel::util::projection_identity,
+        typename Proj1 = pika::parallel::util::detail::projection_identity,
+        typename Proj2 = pika::parallel::util::detail::projection_identity,
         typename Pred = detail::less>
     bool lexicographical_compare(Rng1&& rng1, Rng2&& rng2, Pred&& pred = Pred(),
         Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
@@ -300,9 +300,9 @@ namespace pika { namespace ranges {
     ///                     meet the requirements of \a CopyConstructible. This defaults
     ///                     to std::less<>
     /// \tparam Proj1       The type of an optional projection function for elements of the first range.
-    ///                     This defaults to \a util::projection_identity
+    ///                     This defaults to \a util::detail::projection_identity
     /// \tparam Proj2       The type of an optional projection function for elements of the second range.
-    ///                     This defaults to \a util::projection_identity
+    ///                     This defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -358,8 +358,8 @@ namespace pika { namespace ranges {
     ///           range [first2, last2), it returns false.
 
     template <typename ExPolicy, typename Rng1, typename Rng2,
-        typename Proj1 = pika::parallel::util::projection_identity,
-        typename Proj2 = pika::parallel::util::projection_identity,
+        typename Proj1 = pika::parallel::util::detail::projection_identity,
+        typename Proj2 = pika::parallel::util::detail::projection_identity,
         typename Pred = detail::less>
     typename parallel::util::detail::algorithm_result<ExPolicy, bool>::type
     lexicographical_compare(ExPolicy&& policy, Rng1&& rng1, Rng2&& rng2,
@@ -391,8 +391,8 @@ namespace pika::ranges {
     private:
         // clang-format off
         template <typename InIter1, typename Sent1, typename InIter2, typename Sent2,
-            typename Proj1 = pika::parallel::util::projection_identity,
-            typename Proj2 = pika::parallel::util::projection_identity,
+            typename Proj1 = pika::parallel::util::detail::projection_identity,
+            typename Proj2 = pika::parallel::util::detail::projection_identity,
             typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter1>::value &&
@@ -427,8 +427,8 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename Sent1,
             typename FwdIter2, typename Sent2,
-            typename Proj1 = pika::parallel::util::projection_identity,
-            typename Proj2 = pika::parallel::util::projection_identity,
+            typename Proj1 = pika::parallel::util::detail::projection_identity,
+            typename Proj2 = pika::parallel::util::detail::projection_identity,
             typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
@@ -465,8 +465,8 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename Rng1, typename Rng2,
-            typename Proj1 = pika::parallel::util::projection_identity,
-            typename Proj2 = pika::parallel::util::projection_identity,
+            typename Proj1 = pika::parallel::util::detail::projection_identity,
+            typename Proj2 = pika::parallel::util::detail::projection_identity,
             typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng1>::value &&
@@ -505,8 +505,8 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Rng1, typename Rng2,
-            typename Proj1 = pika::parallel::util::projection_identity,
-            typename Proj2 = pika::parallel::util::projection_identity,
+            typename Proj1 = pika::parallel::util::detail::projection_identity,
+            typename Proj2 = pika::parallel::util::detail::projection_identity,
             typename Pred = pika::parallel::detail::less,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&

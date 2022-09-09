@@ -158,7 +158,7 @@ namespace pika::parallel::detail {
                 PIKA_MOVE(first));
         }
 
-        return util::foreach_partitioner<ExPolicy>::call(
+        return util::detail::foreach_partitioner<ExPolicy>::call(
             PIKA_FORWARD(ExPolicy, policy), first, count,
             [](Iter first, std::size_t count, std::size_t) {
                 return util::detail::loop_n<std::decay_t<ExPolicy>>(
@@ -169,7 +169,7 @@ namespace pika::parallel::detail {
                         std::addressof(*it)->~value_type();
                     });
             },
-            util::projection_identity());
+            util::detail::projection_identity());
     }
 
     ///////////////////////////////////////////////////////////////////////

@@ -41,10 +41,11 @@ namespace pika::parallel::util {
     };
 
     template <typename Compare>
-    struct compare_projected<Compare, util::projection_identity>
+    struct compare_projected<Compare, util::detail::projection_identity>
     {
         template <typename Compare_>
-        constexpr compare_projected(Compare_&& comp, util::projection_identity)
+        constexpr compare_projected(
+            Compare_&& comp, util::detail::projection_identity)
           : comp_(PIKA_FORWARD(Compare_, comp))
         {
         }
@@ -85,11 +86,11 @@ namespace pika::parallel::util {
     };
 
     template <typename Compare, typename Proj2>
-    struct compare_projected<Compare, util::projection_identity, Proj2>
+    struct compare_projected<Compare, util::detail::projection_identity, Proj2>
     {
         template <typename Compare_, typename Proj2_>
         constexpr compare_projected(
-            Compare_&& comp, util::projection_identity, Proj2_&& proj2)
+            Compare_&& comp, util::detail::projection_identity, Proj2_&& proj2)
           : comp_(PIKA_FORWARD(Compare_, comp))
           , proj2_(PIKA_FORWARD(Proj2_, proj2))
         {
@@ -107,11 +108,11 @@ namespace pika::parallel::util {
     };
 
     template <typename Compare, typename Proj1>
-    struct compare_projected<Compare, Proj1, util::projection_identity>
+    struct compare_projected<Compare, Proj1, util::detail::projection_identity>
     {
         template <typename Compare_, typename Proj1_>
         constexpr compare_projected(
-            Compare_&& comp, Proj1_&& proj1, util::projection_identity)
+            Compare_&& comp, Proj1_&& proj1, util::detail::projection_identity)
           : comp_(PIKA_FORWARD(Compare_, comp))
           , proj1_(PIKA_FORWARD(Proj1_, proj1))
         {
@@ -129,12 +130,13 @@ namespace pika::parallel::util {
     };
 
     template <typename Compare>
-    struct compare_projected<Compare, util::projection_identity,
-        util::projection_identity>
+    struct compare_projected<Compare, util::detail::projection_identity,
+        util::detail::projection_identity>
     {
         template <typename Compare_>
-        constexpr compare_projected(Compare_&& comp, util::projection_identity,
-            util::projection_identity)
+        constexpr compare_projected(Compare_&& comp,
+            util::detail::projection_identity,
+            util::detail::projection_identity)
           : comp_(PIKA_FORWARD(Compare_, comp))
         {
         }

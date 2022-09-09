@@ -84,12 +84,12 @@ namespace pika::parallel::detail {
         typename Sent2, typename Iter3, typename F, typename Proj1,
         typename Proj2, typename Combiner, typename SetOp>
     typename util::detail::algorithm_result<ExPolicy,
-        util::in_in_out_result<Iter1, Iter2, Iter3>>::type
+        util::detail::in_in_out_result<Iter1, Iter2, Iter3>>::type
     set_operation(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
         Sent2 last2, Iter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2,
         Combiner&& combiner, SetOp&& setop)
     {
-        using result_type = util::in_in_out_result<Iter1, Iter2, Iter3>;
+        using result_type = util::detail::in_in_out_result<Iter1, Iter2, Iter3>;
 
         using difference_type1 =
             typename std::iterator_traits<Iter1>::difference_type;
@@ -232,7 +232,7 @@ namespace pika::parallel::detail {
             }
 
             // finally, copy data to destination
-            parallel::util::
+            parallel::util::detail::
                 foreach_partitioner<pika::execution::parallel_policy>::call(
                     pika::execution::par, chunks.get(), cores,
                     [buffer, dest](
@@ -257,8 +257,9 @@ namespace pika::parallel::detail {
         };
 
         // fill the buffer piecewise
-        return parallel::util::partitioner<ExPolicy, result_type, void>::call(
-            policy, chunks.get(), cores, PIKA_MOVE(f1), PIKA_MOVE(f2));
+        return parallel::util::detail::partitioner<ExPolicy, result_type,
+            void>::call(policy, chunks.get(), cores, PIKA_MOVE(f1),
+            PIKA_MOVE(f2));
     }
     /// \endcond
 }    // namespace pika::parallel::detail

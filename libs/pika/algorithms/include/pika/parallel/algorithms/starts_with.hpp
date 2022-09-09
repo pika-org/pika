@@ -33,18 +33,19 @@
 namespace pika::parallel::detail {
     template <typename FwdIter1, typename FwdIter2, typename Sent2>
     bool get_starts_with_result(
-        util::in_in_result<FwdIter1, FwdIter2>&& p, Sent2 last2)
+        util::detail::in_in_result<FwdIter1, FwdIter2>&& p, Sent2 last2)
     {
         return p.in2 == last2;
     }
 
     template <typename FwdIter1, typename FwdIter2, typename Sent2>
     pika::future<bool> get_starts_with_result(
-        pika::future<util::in_in_result<FwdIter1, FwdIter2>>&& f, Sent2 last2)
+        pika::future<util::detail::in_in_result<FwdIter1, FwdIter2>>&& f,
+        Sent2 last2)
     {
         return pika::make_future<bool>(PIKA_MOVE(f),
             [last2 = PIKA_MOVE(last2)](
-                util::in_in_result<FwdIter1, FwdIter2>&& p) -> bool {
+                util::detail::in_in_result<FwdIter1, FwdIter2>&& p) -> bool {
                 return p.in2 == last2;
             });
     }
@@ -74,7 +75,7 @@ namespace pika::parallel::detail {
             auto end_first = std::next(first1, dist2);
             return detail::get_starts_with_result<Iter1, Iter2, Sent2>(
                 pika::parallel::detail::mismatch_binary<
-                    util::in_in_result<Iter1, Iter2>>()
+                    util::detail::in_in_result<Iter1, Iter2>>()
                     .call(pika::execution::seq, PIKA_MOVE(first1),
                         PIKA_MOVE(end_first), PIKA_MOVE(first2), last2,
                         PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
@@ -102,7 +103,7 @@ namespace pika::parallel::detail {
             auto end_first = std::next(first1, dist2);
             return detail::get_starts_with_result<FwdIter1, FwdIter2, Sent2>(
                 detail::mismatch_binary<
-                    util::in_in_result<FwdIter1, FwdIter2>>()
+                    util::detail::in_in_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first1, end_first,
                         first2, last2, PIKA_FORWARD(Pred, pred),
                         PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2)),
@@ -122,8 +123,8 @@ namespace pika {
         // clang-format off
         template <typename InIter1, typename InIter2,
             typename Pred = pika::parallel::detail::equal_to,
-            typename Proj1 = parallel::util::projection_identity,
-            typename Proj2 = parallel::util::projection_identity,
+            typename Proj1 = parallel::util::detail::projection_identity,
+            typename Proj2 = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter1>::value &&
                 pika::traits::is_iterator<InIter2>::value &&
@@ -153,8 +154,8 @@ namespace pika {
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
             typename Pred = ranges::equal_to,
-            typename Proj1 = parallel::util::projection_identity,
-            typename Proj2 = parallel::util::projection_identity,
+            typename Proj1 = parallel::util::detail::projection_identity,
+            typename Proj2 = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&

@@ -33,7 +33,7 @@ namespace pika {
     ///                     overload of \a partition requires \a Pred to meet
     ///                     the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -96,7 +96,7 @@ namespace pika {
     ///                     overload of \a partition requires \a Pred to meet
     ///                     the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -166,7 +166,7 @@ namespace pika {
     ///                     overload of \a partition requires \a Pred to meet
     ///                     the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -225,7 +225,7 @@ namespace pika {
     ///                     overload of \a partition requires \a Pred to meet
     ///                     the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -295,7 +295,7 @@ namespace pika {
     ///                     overload of \a transform requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -359,7 +359,7 @@ namespace pika {
     ///                     overload of \a transform requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -431,7 +431,7 @@ namespace pika {
     ///                     overload of \a transform requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -491,7 +491,7 @@ namespace pika {
     ///                     overload of \a transform requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -572,7 +572,7 @@ namespace pika {
     ///                     overload of \a partition_copy requires \a Pred to
     ///                     meet the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -656,7 +656,7 @@ namespace pika {
     ///                     overload of \a partition_copy requires \a Pred to
     ///                     meet the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -748,7 +748,7 @@ namespace pika {
     ///                     overload of \a partition_copy requires \a Pred to
     ///                     meet the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -830,7 +830,7 @@ namespace pika {
     ///                     overload of \a partition_copy requires \a Pred to
     ///                     meet the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -916,7 +916,8 @@ namespace pika {
 
 namespace pika::ranges {
     template <typename I, typename O1, typename O2>
-    using partition_copy_result = parallel::util::in_out_out_result<I, O1, O2>;
+    using partition_copy_result =
+        parallel::util::detail::in_out_out_result<I, O1, O2>;
 
     inline constexpr struct partition_t final
       : pika::detail::tag_parallel_algorithm<partition_t>
@@ -924,7 +925,7 @@ namespace pika::ranges {
     private:
         // clang-format off
         template <typename Rng, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 parallel::detail::is_projected_range_v<Proj, Rng> &&
@@ -942,7 +943,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<iterator>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::util::make_subrange<
+            return pika::parallel::util::detail::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
                 pika::parallel::detail::partition<iterator>().call(
@@ -954,7 +955,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Rng, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&
@@ -973,7 +974,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<iterator>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::util::make_subrange<
+            return pika::parallel::util::detail::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
                 pika::parallel::detail::partition<iterator>().call(
@@ -985,7 +986,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename FwdIter, typename Sent, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter> &&
                 pika::traits::is_sentinel_for_v<Sent, FwdIter> &&
@@ -1001,7 +1002,8 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::util::make_subrange<FwdIter, FwdIter>(
+            return pika::parallel::util::detail::make_subrange<FwdIter,
+                FwdIter>(
                 pika::parallel::detail::partition<FwdIter>().call(
                     pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
                     PIKA_FORWARD(Proj, proj)),
@@ -1011,7 +1013,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter> &&
@@ -1028,7 +1030,8 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::util::make_subrange<FwdIter, FwdIter>(
+            return pika::parallel::util::detail::make_subrange<FwdIter,
+                FwdIter>(
                 pika::parallel::detail::partition<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
@@ -1042,7 +1045,7 @@ namespace pika::ranges {
     private:
         // clang-format off
         template <typename Rng, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 parallel::detail::is_projected_range_v<Proj, Rng> &&
@@ -1060,7 +1063,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_bidirectional_iterator_v<iterator>,
                 "Requires at least bidirectional iterator.");
 
-            return pika::parallel::util::make_subrange<
+            return pika::parallel::util::detail::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
                 pika::parallel::detail::stable_partition<iterator>().call2(
@@ -1072,7 +1075,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Rng, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&
@@ -1095,7 +1098,7 @@ namespace pika::ranges {
                 pika::is_sequenced_execution_policy_v<ExPolicy> ||
                     !pika::traits::is_random_access_iterator_v<iterator>>;
 
-            return pika::parallel::util::make_subrange<
+            return pika::parallel::util::detail::make_subrange<
                 typename pika::traits::range_iterator<Rng>::type,
                 typename pika::traits::range_sentinel<Rng>::type>(
                 pika::parallel::detail::stable_partition<iterator>().call2(
@@ -1107,7 +1110,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename BidirIter, typename Sent, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<BidirIter> &&
                 pika::traits::is_sentinel_for_v<Sent, BidirIter> &&
@@ -1123,7 +1126,8 @@ namespace pika::ranges {
             static_assert(pika::traits::is_bidirectional_iterator_v<BidirIter>,
                 "Requires at least bidirectional iterator.");
 
-            return pika::parallel::util::make_subrange<BidirIter, BidirIter>(
+            return pika::parallel::util::detail::make_subrange<BidirIter,
+                BidirIter>(
                 pika::parallel::detail::stable_partition<BidirIter>().call2(
                     pika::execution::seq, std::true_type{}, first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
@@ -1133,7 +1137,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename BidirIter, typename Sent,
             typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<BidirIter> &&
@@ -1153,7 +1157,8 @@ namespace pika::ranges {
             using is_seq = std::integral_constant<bool,
                 !pika::traits::is_random_access_iterator_v<BidirIter>>;
 
-            return pika::parallel::util::make_subrange<BidirIter, BidirIter>(
+            return pika::parallel::util::detail::make_subrange<BidirIter,
+                BidirIter>(
                 pika::parallel::detail::stable_partition<BidirIter>().call2(
                     PIKA_FORWARD(ExPolicy, policy), is_seq(), first, last,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)),
@@ -1168,7 +1173,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng, typename OutIter2,
             typename OutIter3, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range_v<Rng> &&
                 pika::traits::is_iterator_v<OutIter2> &&
@@ -1191,7 +1196,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_input_iterator_v<iterator>,
                 "Requires at least input iterator.");
 
-            return parallel::util::make_in_out_out_result(
+            return parallel::util::detail::make_in_out_out_result(
                 parallel::detail::partition_copy<result_type>().call(
                     pika::execution::seq, pika::util::begin(rng),
                     pika::util::end(rng), dest_true, dest_false,
@@ -1201,7 +1206,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng, typename FwdIter2,
             typename FwdIter3, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&
@@ -1225,7 +1230,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<iterator>,
                 "Requires at least forward iterator.");
 
-            return parallel::util::make_in_out_out_result(
+            return parallel::util::detail::make_in_out_out_result(
                 parallel::detail::partition_copy<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng), dest_true, dest_false,
@@ -1235,7 +1240,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename InIter, typename Sent, typename OutIter2,
             typename OutIter3, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<InIter> &&
                 pika::traits::is_sentinel_for<Sent, InIter>::value &&
@@ -1257,7 +1262,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_input_iterator_v<InIter>,
                 "Requires at least input iterator.");
 
-            return parallel::util::make_in_out_out_result(
+            return parallel::util::detail::make_in_out_out_result(
                 parallel::detail::partition_copy<result_type>().call(
                     pika::execution::seq, first, last, dest_true, dest_false,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
@@ -1266,7 +1271,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename OutIter2, typename OutIter3, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter> &&
@@ -1290,7 +1295,7 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return parallel::util::make_in_out_out_result(
+            return parallel::util::detail::make_in_out_out_result(
                 parallel::detail::partition_copy<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest_true,
                     dest_false, PIKA_FORWARD(Pred, pred),

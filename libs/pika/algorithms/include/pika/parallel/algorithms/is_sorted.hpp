@@ -280,7 +280,7 @@ namespace pika::parallel::detail {
             if (count <= 1)
                 return result::get(true);
 
-            util::invoke_projected<Pred, Proj> pred_projected{
+            util::detail::invoke_projected<Pred, Proj> pred_projected{
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)};
 
             util::cancellation_token<> tok;
@@ -320,7 +320,7 @@ namespace pika::parallel::detail {
                     [](pika::future<bool>& val) -> bool { return val.get(); });
             };
 
-            return util::partitioner<ExPolicy, bool>::call(
+            return util::detail::partitioner<ExPolicy, bool>::call(
                 PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_MOVE(f1),
                 PIKA_MOVE(f2));
         }
@@ -362,7 +362,7 @@ namespace pika::parallel::detail {
             if (count <= 1)
                 return result::get(PIKA_MOVE(last));
 
-            util::invoke_projected<Pred, Proj> pred_projected{
+            util::detail::invoke_projected<Pred, Proj> pred_projected{
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)};
 
             util::cancellation_token<difference_type> tok(count);
@@ -407,9 +407,9 @@ namespace pika::parallel::detail {
                 std::advance(first, loc);
                 return PIKA_MOVE(first);
             };
-            return util::partitioner<ExPolicy, FwdIter, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
-                PIKA_MOVE(f2));
+            return util::detail::partitioner<ExPolicy, FwdIter,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), first,
+                count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
     /// \endcond
@@ -437,7 +437,7 @@ namespace pika {
         {
             return pika::parallel::detail::is_sorted<FwdIter, FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity());
         }
 
         template <typename ExPolicy, typename FwdIter,
@@ -461,7 +461,7 @@ namespace pika {
             return pika::parallel::detail::is_sorted<FwdIter, FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity());
         }
     } is_sorted{};
 
@@ -487,7 +487,7 @@ namespace pika {
             return pika::parallel::detail::is_sorted_until<FwdIter, FwdIter>()
                 .call(pika::execution::seq, first, last,
                     PIKA_FORWARD(Pred, pred),
-                    pika::parallel::util::projection_identity());
+                    pika::parallel::util::detail::projection_identity());
         }
 
         template <typename ExPolicy, typename FwdIter,
@@ -511,7 +511,7 @@ namespace pika {
             return pika::parallel::detail::is_sorted_until<FwdIter, FwdIter>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred),
-                    pika::parallel::util::projection_identity());
+                    pika::parallel::util::detail::projection_identity());
         }
     } is_sorted_until{};
 }    // namespace pika

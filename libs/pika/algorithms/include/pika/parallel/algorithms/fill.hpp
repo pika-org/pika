@@ -172,7 +172,7 @@ namespace pika::parallel::detail {
 
             return for_each_n<FwdIter>().call(PIKA_FORWARD(ExPolicy, policy),
                 first, detail::distance(first, last), fill_iteration<T>{val},
-                util::projection_identity());
+                util::detail::projection_identity());
         }
     };
     /// \endcond
@@ -204,7 +204,7 @@ namespace pika::parallel::detail {
             return for_each_n<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, count,
                 [val](auto& v) -> void { v = val; },
-                util::projection_identity());
+                util::detail::projection_identity());
         }
     };
     /// \endcond

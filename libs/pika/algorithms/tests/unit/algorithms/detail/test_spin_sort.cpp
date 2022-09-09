@@ -24,7 +24,7 @@
 #endif
 
 using namespace pika::parallel::detail;
-using pika::parallel::util::range;
+using pika::parallel::util::detail::range;
 
 struct xk
 {

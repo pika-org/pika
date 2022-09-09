@@ -15,7 +15,7 @@
 
 namespace pika::parallel::detail {
     template <typename Iter, typename Sent, typename Compare,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     inline constexpr bool is_sorted_sequential(
         Iter first, Sent last, Compare&& comp, Proj&& proj = Proj())
     {
@@ -34,7 +34,7 @@ namespace pika::parallel::detail {
     }
 
     template <typename Iter, typename Sent, typename Compare,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     inline constexpr Iter is_sorted_until_sequential(
         Iter first, Sent last, Compare&& comp, Proj&& proj = Proj())
     {

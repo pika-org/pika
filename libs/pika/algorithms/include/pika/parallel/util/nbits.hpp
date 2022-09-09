@@ -11,7 +11,7 @@
 
 #include <cstdint>
 
-namespace pika::parallel::util {
+namespace pika::parallel::util::detail {
     inline constexpr std::uint32_t const tmsb[256] = {0, 1, 2, 2, 3, 3, 3, 3, 4,
         4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6,
         6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -56,4 +56,4 @@ namespace pika::parallel::util {
         }
         return tmsb[num >> Pos] + Pos;
     }
-}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util::detail

@@ -159,7 +159,7 @@ namespace pika::parallel::detail {
             ExPolicy, InIter first, Sent_ last, Pred&& pred, Proj&& proj)
         {
             return std::adjacent_find(first, last,
-                util::invoke_projected<Pred, Proj>(
+                util::detail::invoke_projected<Pred, Proj>(
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
         }
 
@@ -185,7 +185,7 @@ namespace pika::parallel::detail {
             difference_type count = std::distance(first, last);
             util::cancellation_token<difference_type> tok(count);
 
-            util::invoke_projected<Pred, Proj> pred_projected{
+            util::detail::invoke_projected<Pred, Proj> pred_projected{
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)};
 
             auto f1 = [pred_projected = PIKA_MOVE(pred_projected), tok](
@@ -215,8 +215,8 @@ namespace pika::parallel::detail {
                 return PIKA_MOVE(first);
             };
 
-            return util::partitioner<ExPolicy, FwdIter, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy),
+            return util::detail::partitioner<ExPolicy, FwdIter,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
                 pika::util::make_zip_iterator(first, next), count - 1, 1,
                 PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
@@ -244,7 +244,7 @@ namespace pika {
 
             return parallel::detail::adjacent_find<InIter, InIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -266,7 +266,7 @@ namespace pika {
             return parallel::detail::adjacent_find<FwdIter, FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
     } adjacent_find{};
 }    // namespace pika

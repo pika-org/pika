@@ -121,7 +121,7 @@ namespace pika {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -175,7 +175,7 @@ namespace pika {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity.
+    ///                     defaults to \a util::detail::projection_identity.
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -486,7 +486,7 @@ namespace pika {
         // clang-format off
         template <typename RandomIt,
             typename Comp = pika::parallel::detail::less,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<RandomIt> &&
                 parallel::detail::is_projected<Proj, RandomIt>::value &&
@@ -511,7 +511,7 @@ namespace pika {
         // clang-format off
         template <typename ExPolicy, typename RandomIt,
             typename Comp = pika::parallel::detail::less,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<RandomIt> &&

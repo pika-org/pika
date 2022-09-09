@@ -143,7 +143,7 @@ namespace pika {
 
 namespace pika::ranges {
     template <typename I, typename O>
-    using move_result = parallel::util::in_out_result<I, O>;
+    using move_result = parallel::util::detail::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::move

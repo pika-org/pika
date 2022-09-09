@@ -822,7 +822,8 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     template <typename I, typename O>
-    using transform_inclusive_scan_result = parallel::util::in_out_result<I, O>;
+    using transform_inclusive_scan_result =
+        parallel::util::detail::in_out_result<I, O>;
 
     inline constexpr struct transform_inclusive_scan_t final
       : pika::detail::tag_parallel_algorithm<transform_inclusive_scan_t>

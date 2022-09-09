@@ -275,7 +275,7 @@ namespace pika::parallel::detail {
                     ++part_begin, --part_size, PIKA_MOVE(val), r);
             };
 
-            return util::partitioner<ExPolicy, T>::call(
+            return util::detail::partitioner<ExPolicy, T>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping([init = PIKA_FORWARD(T_, init),

@@ -47,7 +47,7 @@ namespace pika { namespace ranges {
     /// order in the calling thread.
     ///
     /// \returns  The \a exclusive_scan algorithm returns \a
-    ///           util::in_out_result<InIter, OutIter>.
+    ///           util::detail::in_out_result<InIter, OutIter>.
     ///           The \a exclusive_scan algorithm returns an input iterator to
     ///           the point denoted by the sentinel and an output iterator
     ///           to the element in the destination range, one past the last
@@ -111,11 +111,11 @@ namespace pika { namespace ranges {
     /// within each thread.
     ///
     /// \returns  The \a exclusive_scan algorithm returns a
-    ///           \a pika::future<util::in_out_result<FwdIter1, FwdIter2>> if
+    ///           \a pika::future<util::detail::in_out_result<FwdIter1, FwdIter2>> if
     ///           the execution policy is of type
     ///           \a sequenced_task_policy or
     ///           \a parallel_task_policy and
-    ///           returns \a util::in_out_result<FwdIter1, FwdIter2> otherwise.
+    ///           returns \a util::detail::in_out_result<FwdIter1, FwdIter2> otherwise.
     ///           The \a exclusive_scan algorithm returns an input iterator to
     ///           the point denoted by the sentinel and an output iterator
     ///           to the element in the destination range, one past the last
@@ -187,7 +187,7 @@ namespace pika { namespace ranges {
     /// order in the calling thread.
     ///
     /// \returns  The \a exclusive_scan algorithm returns \a
-    ///           util::in_out_result<InIter, OutIter>.
+    ///           util::detail::in_out_result<InIter, OutIter>.
     ///           The \a exclusive_scan algorithm returns an input iterator to
     ///           the point denoted by the sentinel and an output iterator
     ///           to the element in the destination range, one past the last
@@ -271,11 +271,11 @@ namespace pika { namespace ranges {
     /// within each thread.
     ///
     /// \returns  The \a exclusive_scan algorithm returns a
-    ///           \a pika::future<util::in_out_result<FwdIter1, FwdIter2>> if
+    ///           \a pika::future<util::detail::in_out_result<FwdIter1, FwdIter2>> if
     ///           the execution policy is of type
     ///           \a sequenced_task_policy or
     ///           \a parallel_task_policy and
-    ///           returns \a util::in_out_result<FwdIter1, FwdIter2> otherwise.
+    ///           returns \a util::detail::in_out_result<FwdIter1, FwdIter2> otherwise.
     ///           The \a exclusive_scan algorithm returns an input iterator to
     ///           the point denoted by the sentinel and an output iterator
     ///           to the element in the destination range, one past the last
@@ -328,7 +328,7 @@ namespace pika { namespace ranges {
     /// order in the calling thread.
     ///
     /// \returns  The \a exclusive_scan algorithm returns
-    ///           \a util::in_out_result<traits::range_iterator_t<Rng>, O>
+    ///           \a util::detail::in_out_result<traits::range_iterator_t<Rng>, O>
     ///           The \a exclusive_scan algorithm returns an input iterator to
     ///           the point denoted by the sentinel and an output iterator
     ///           to the element in the destination range, one past the last
@@ -388,12 +388,12 @@ namespace pika { namespace ranges {
     /// within each thread.
     ///
     /// \returns  The \a exclusive_scan algorithm returns a
-    ///           \a pika::future<util::in_out_result
+    ///           \a pika::future<util::detail::in_out_result
     ///           <traits::range_iterator_t<Rng>, O>>
     ///           if the execution policy is of type
     ///           \a sequenced_task_policy or
     ///           \a parallel_task_policy and
-    ///           returns \a util::in_out_result
+    ///           returns \a util::detail::in_out_result
     ///           <traits::range_iterator_t<Rng>, O>
     ///           otherwise.
     ///           The \a exclusive_scan algorithm returns an input iterator to
@@ -461,7 +461,7 @@ namespace pika { namespace ranges {
     /// order in the calling thread.
     ///
     /// \returns  The \a exclusive_scan algorithm returns
-    ///           \a util::in_out_result<traits::range_iterator_t<Rng>, O>
+    ///           \a util::detail::in_out_result<traits::range_iterator_t<Rng>, O>
     ///           The \a exclusive_scan algorithm returns an input iterator to
     ///           the point denoted by the sentinel and an output iterator
     ///           to the element in the destination range, one past the last
@@ -538,12 +538,12 @@ namespace pika { namespace ranges {
     /// within each thread.
     ///
     /// \returns  The \a exclusive_scan algorithm returns a
-    ///           \a pika::future<util::in_out_result
+    ///           \a pika::future<util::detail::in_out_result
     ///           <traits::range_iterator_t<Rng>, O>>
     ///           if the execution policy is of type
     ///           \a sequenced_task_policy or
     ///           \a parallel_task_policy and
-    ///           returns \a util::in_out_result
+    ///           returns \a util::detail::in_out_result
     ///           <traits::range_iterator_t<Rng>, O>
     ///           otherwise.
     ///           The \a exclusive_scan algorithm returns an input iterator to
@@ -589,7 +589,7 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     template <typename I, typename O>
-    using exclusive_scan_result = parallel::util::in_out_result<I, O>;
+    using exclusive_scan_result = parallel::util::detail::in_out_result<I, O>;
 
     inline constexpr struct exclusive_scan_t final
       : pika::detail::tag_parallel_algorithm<exclusive_scan_t>

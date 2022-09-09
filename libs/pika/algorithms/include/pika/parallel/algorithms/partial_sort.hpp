@@ -578,7 +578,7 @@ namespace pika {
             return parallel::detail::partial_sort<RandIter>().call(
                 pika::execution::seq, first, middle, last,
                 PIKA_FORWARD(Comp, comp),
-                parallel::util::projection_identity());
+                parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -610,7 +610,7 @@ namespace pika {
                 parallel::detail::partial_sort<RandIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, middle, last,
                     PIKA_FORWARD(Comp, comp),
-                    parallel::util::projection_identity()));
+                    parallel::util::detail::projection_identity()));
         }
     } partial_sort{};
 }    // namespace pika

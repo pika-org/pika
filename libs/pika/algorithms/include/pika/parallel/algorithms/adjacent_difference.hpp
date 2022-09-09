@@ -240,7 +240,7 @@ namespace pika::parallel::detail {
             };
 
             using pika::util::make_zip_iterator;
-            return util::partitioner<ExPolicy, FwdIter2, void>::call(
+            return util::detail::partitioner<ExPolicy, FwdIter2, void>::call(
                 PIKA_FORWARD(ExPolicy, policy),
                 make_zip_iterator(first, prev, dest), count, PIKA_MOVE(f1),
                 PIKA_MOVE(f2));

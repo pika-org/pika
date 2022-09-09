@@ -164,13 +164,14 @@ namespace pika::parallel::detail {
 
         if constexpr (pika::traits::is_random_access_iterator_v<FwdIter>)
         {
-            return parallel::util::get_second_element(
-                util::move_n(mid, dist - n, PIKA_MOVE(first)));
+            return parallel::util::detail::get_second_element(
+                util::detail::move_n(mid, dist - n, PIKA_MOVE(first)));
         }
         else
         {
-            return parallel::util::get_second_element(
-                util::move(PIKA_MOVE(mid), PIKA_MOVE(last), PIKA_MOVE(first)));
+            return parallel::util::detail::get_second_element(
+                util::detail::move(
+                    PIKA_MOVE(mid), PIKA_MOVE(last), PIKA_MOVE(first)));
         }
     }
 

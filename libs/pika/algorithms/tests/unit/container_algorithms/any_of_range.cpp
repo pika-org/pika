@@ -20,7 +20,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename IteratorTag,
-    typename Proj = pika::parallel::util::projection_identity>
+    typename Proj = pika::parallel::util::detail::projection_identity>
 void test_any_of_seq(IteratorTag, Proj proj = Proj())
 {
     std::size_t iseq[] = {0, 23, 10007};
@@ -41,7 +41,7 @@ void test_any_of_seq(IteratorTag, Proj proj = Proj())
 }
 
 template <typename ExPolicy, typename IteratorTag,
-    typename Proj = pika::parallel::util::projection_identity>
+    typename Proj = pika::parallel::util::detail::projection_identity>
 void test_any_of(ExPolicy&& policy, IteratorTag, Proj proj = Proj())
 {
     static_assert(pika::is_execution_policy<ExPolicy>::value,
@@ -65,7 +65,7 @@ void test_any_of(ExPolicy&& policy, IteratorTag, Proj proj = Proj())
 }
 
 template <typename ExPolicy, typename IteratorTag,
-    typename Proj = pika::parallel::util::projection_identity>
+    typename Proj = pika::parallel::util::detail::projection_identity>
 void test_any_of_async(ExPolicy p, IteratorTag, Proj proj = Proj())
 {
     std::size_t iseq[] = {0, 23, 10007};

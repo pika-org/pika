@@ -53,10 +53,10 @@ namespace pika { namespace ranges {
     ///                     to std::less<>
     /// \tparam Proj1       The type of an optional projection function to be
     ///                     used for elements of the first range. This defaults
-    ///                     to \a util::projection_identity
+    ///                     to \a util::detail::projection_identity
     /// \tparam Proj2       The type of an optional projection function to be
     ///                     used for elements of the second range. This defaults
-    ///                     to \a util::projection_identity
+    ///                     to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -114,8 +114,8 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename Iter1, typename Sent, typename Iter2,
         typename Sent2, typename Iter3, typename Comp = pika::ranges::less,
-        typename Proj1 = util::projection_identity,
-        typename Proj2 = util::projection_identity>
+        typename Proj1 = util::detail::projection_identity,
+        typename Proj2 = util::detail::projection_identity>
     typename util::detail::algorithm_result<ExPolicy,
         pika::ranges::merge_result<Iter1, Iter2, Iter3>>::type
     merge(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
@@ -154,10 +154,10 @@ namespace pika { namespace ranges {
     ///                     to std::less<>
     /// \tparam Proj1       The type of an optional projection function to be
     ///                     used for elements of the first range. This defaults
-    ///                     to \a util::projection_identity
+    ///                     to \a util::detail::projection_identity
     /// \tparam Proj2       The type of an optional projection function to be
     ///                     used for elements of the second range. This defaults
-    ///                     to \a util::projection_identity
+    ///                     to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -211,8 +211,8 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename Rng1, typename Rng2,
         typename RandIter3, typename Comp = pika::ranges::less,
-        typename Proj1 = util::projection_identity,
-        typename Proj2 = util::projection_identity>
+        typename Proj1 = util::detail::projection_identity,
+        typename Proj2 = util::detail::projection_identity>
     typename util::detail::algorithm_result<ExPolicy,
         pika::ranges::merge_result<
             typename pika::traits::range_iterator<Rng1>::type,
@@ -248,7 +248,7 @@ namespace pika { namespace ranges {
     ///                     to meet the requirements of \a CopyConstructible.
     ///                     This defaults to std::less<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -296,7 +296,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename Iter, typename Sent,
         typename Comp = pika::ranges::less,
-        typename Proj = util::projection_identity>
+        typename Proj = util::detail::projection_identity>
     typename util::detail::algorithm_result<ExPolicy, Iter>::type
     inplace_merge(ExPolicy&& policy, Iter first, Iter middle, Sent last,
         Comp&& comp = Comp(), Proj&& proj = Proj());
@@ -326,7 +326,7 @@ namespace pika { namespace ranges {
     ///                     to meet the requirements of \a CopyConstructible.
     ///                     This defaults to std::less<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -372,7 +372,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename Rng, typename RandIter,
         typename Comp = pika::ranges::less,
-        typename Proj = util::projection_identity>
+        typename Proj = util::detail::projection_identity>
     typename util::detail::algorithm_result<ExPolicy, RandIter>::type
     inplace_merge(ExPolicy&& policy, Rng&& rng, RandIter middle,
         Comp&& comp = Comp(), Proj&& proj = Proj());
@@ -402,7 +402,7 @@ namespace pika { namespace ranges {
 namespace pika { namespace ranges {
 
     template <typename I1, typename I2, typename O>
-    using merge_result = parallel::util::in_in_out_result<I1, I2, O>;
+    using merge_result = parallel::util::detail::in_in_out_result<I1, I2, O>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::merge
@@ -413,8 +413,8 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng1, typename Rng2,
             typename Iter3, typename Comp = pika::ranges::less,
-            typename Proj1 = pika::parallel::util::projection_identity,
-            typename Proj2 = pika::parallel::util::projection_identity,
+            typename Proj1 = pika::parallel::util::detail::projection_identity,
+            typename Proj2 = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng1>::value &&
@@ -464,8 +464,8 @@ namespace pika { namespace ranges {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3,
             typename Comp = pika::ranges::less,
-            typename Proj1 = pika::parallel::util::projection_identity,
-            typename Proj2 = pika::parallel::util::projection_identity,
+            typename Proj1 = pika::parallel::util::detail::projection_identity,
+            typename Proj2 = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_sentinel_for<Sent1, Iter1>::value &&
@@ -504,8 +504,8 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename Rng1, typename Rng2,
             typename Iter3, typename Comp = pika::ranges::less,
-            typename Proj1 = pika::parallel::util::projection_identity,
-            typename Proj2 = pika::parallel::util::projection_identity,
+            typename Proj1 = pika::parallel::util::detail::projection_identity,
+            typename Proj2 = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng1>::value &&
                 pika::parallel::detail::is_projected_range<Proj1, Rng1>::value &&
@@ -554,8 +554,8 @@ namespace pika { namespace ranges {
         template <typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3,
             typename Comp = pika::ranges::less,
-            typename Proj1 = pika::parallel::util::projection_identity,
-            typename Proj2 = pika::parallel::util::projection_identity,
+            typename Proj1 = pika::parallel::util::detail::projection_identity,
+            typename Proj2 = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_sentinel_for<Sent1, Iter1>::value &&
                 pika::parallel::detail::is_projected<Proj1, Iter1>::value &&
@@ -599,7 +599,7 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng, typename Iter,
             typename Comp = pika::ranges::less,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
@@ -635,7 +635,7 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp = pika::ranges::less,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
@@ -662,7 +662,7 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename Rng, typename Iter,
             typename Comp = pika::ranges::less,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
@@ -696,7 +696,7 @@ namespace pika { namespace ranges {
         // clang-format off
         template <typename Iter, typename Sent,
             typename Comp = pika::ranges::less,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_sentinel_for<Sent, Iter>::value &&
                 pika::parallel::detail::is_projected<Proj, Iter>::value &&

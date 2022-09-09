@@ -69,7 +69,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename T, typename Proj = util::projection_identity>
+        typename T, typename Proj = util::detail::projection_identity>
     inline constexpr std::enable_if_t<
         pika::is_vectorpack_execution_policy<ExPolicy>::value, Iterator>
     tag_invoke(sequential_find_t<ExPolicy>, Iterator first, Sentinel last,
@@ -149,7 +149,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename Pred, typename Proj = util::projection_identity>
+        typename Pred, typename Proj = util::detail::projection_identity>
     inline constexpr std::enable_if_t<
         pika::is_vectorpack_execution_policy<ExPolicy>::value, Iterator>
     tag_invoke(sequential_find_if_t<ExPolicy>, Iterator first, Sentinel last,
@@ -240,7 +240,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename Pred, typename Proj = util::projection_identity>
+        typename Pred, typename Proj = util::detail::projection_identity>
     inline constexpr std::enable_if_t<
         pika::is_vectorpack_execution_policy<ExPolicy>::value, Iterator>
     tag_invoke(sequential_find_if_not_t<ExPolicy>, Iterator first,

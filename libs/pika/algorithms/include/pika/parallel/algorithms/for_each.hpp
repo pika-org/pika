@@ -260,7 +260,7 @@ namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // for_each_n
     /// \cond NOINTERNAL
-    template <typename F, typename Proj = util::projection_identity>
+    template <typename F, typename Proj = util::detail::projection_identity>
     struct invoke_projected
     {
         F& f_;
@@ -274,7 +274,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename F>
-    struct invoke_projected<F, util::projection_identity>
+    struct invoke_projected<F, util::detail::projection_identity>
     {
         PIKA_HOST_DEVICE constexpr invoke_projected(F& f) noexcept
           : f_(f)
@@ -282,7 +282,7 @@ namespace pika::parallel::detail {
         }
 
         PIKA_HOST_DEVICE constexpr invoke_projected(
-            F& f, util::projection_identity) noexcept
+            F& f, util::detail::projection_identity) noexcept
           : f_(f)
         {
         }
@@ -298,7 +298,7 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename ExPolicy, typename F,
-        typename Proj = util::projection_identity>
+        typename Proj = util::detail::projection_identity>
     struct for_each_iteration
     {
         using execution_policy_type = std::decay_t<ExPolicy>;
@@ -344,7 +344,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename ExPolicy, typename F>
-    struct for_each_iteration<ExPolicy, F, util::projection_identity>
+    struct for_each_iteration<ExPolicy, F, util::detail::projection_identity>
     {
         using execution_policy_type = std::decay_t<ExPolicy>;
         using fun_type = std::decay_t<F>;
@@ -410,14 +410,15 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename F>
         PIKA_HOST_DEVICE static constexpr Iter sequential(ExPolicy&&,
-            InIter first, std::size_t count, F&& f, util::projection_identity)
+            InIter first, std::size_t count, F&& f,
+            util::detail::projection_identity)
         {
             return util::detail::loop_n_ind<std::decay_t<ExPolicy>>(
                 first, count, PIKA_FORWARD(F, f));
         }
 
         template <typename ExPolicy, typename FwdIter, typename F,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static constexpr
             typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
             parallel(ExPolicy&& policy, FwdIter first, std::size_t count, F&& f,
@@ -428,9 +429,9 @@ namespace pika::parallel::detail {
                 auto f1 = for_each_iteration<ExPolicy, F, std::decay_t<Proj>>(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
 
-                return util::foreach_partitioner<ExPolicy>::call(
+                return util::detail::foreach_partitioner<ExPolicy>::call(
                     PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_MOVE(f1),
-                    util::projection_identity());
+                    util::detail::projection_identity());
             }
 
             return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
@@ -472,7 +473,7 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename InIterB, typename InIterE,
             typename F>
         static constexpr InIterB sequential(ExPolicy&& policy, InIterB first,
-            InIterE last, F&& f, util::projection_identity)
+            InIterE last, F&& f, util::detail::projection_identity)
         {
             if constexpr (pika::traits::is_random_access_iterator_v<InIterB>)
             {
@@ -500,10 +501,10 @@ namespace pika::parallel::detail {
                 auto f1 = for_each_iteration<ExPolicy, F, std::decay_t<Proj>>(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
 
-                return util::foreach_partitioner<ExPolicy>::call(
+                return util::detail::foreach_partitioner<ExPolicy>::call(
                     PIKA_FORWARD(ExPolicy, policy), first,
                     detail::distance(first, last), PIKA_MOVE(f1),
-                    util::projection_identity());
+                    util::detail::projection_identity());
             }
 
             return util::detail::algorithm_result<ExPolicy, FwdIterB>::get(
@@ -542,7 +543,7 @@ namespace pika {
             {
                 pika::parallel::detail::for_each<InIter>().call(
                     pika::execution::seq, first, last, f,
-                    pika::parallel::util::projection_identity());
+                    pika::parallel::util::detail::projection_identity());
             }
             return PIKA_FORWARD(F, f);
         }
@@ -574,7 +575,7 @@ namespace pika {
                 get(pika::parallel::detail::for_each<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(F, f),
-                    pika::parallel::util::projection_identity()));
+                    pika::parallel::util::detail::projection_identity()));
         }
     } for_each{};
 
@@ -603,7 +604,8 @@ namespace pika {
 
             return pika::parallel::detail::for_each_n<InIter>().call(
                 pika::execution::seq, first, std::size_t(count),
-                PIKA_FORWARD(F, f), parallel::util::projection_identity());
+                PIKA_FORWARD(F, f),
+                parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -631,7 +633,8 @@ namespace pika {
 
             return pika::parallel::detail::for_each_n<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, std::size_t(count),
-                PIKA_FORWARD(F, f), parallel::util::projection_identity());
+                PIKA_FORWARD(F, f),
+                parallel::util::detail::projection_identity());
         }
     } for_each_n{};
 }    // namespace pika

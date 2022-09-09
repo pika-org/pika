@@ -1089,13 +1089,13 @@ namespace pika {
                 {
                     if (stride == 1)
                     {
-                        return util::partitioner<ExPolicy>::call(
+                        return util::detail::partitioner<ExPolicy>::call(
                             PIKA_FORWARD(ExPolicy, policy), first, size,
                             part_iterations<ExPolicy, F, S>{PIKA_FORWARD(F, f)},
                             ::pika::detail::empty_function{});
                     }
 
-                    return util::partitioner<ExPolicy>::call_with_index(
+                    return util::detail::partitioner<ExPolicy>::call_with_index(
                         PIKA_FORWARD(ExPolicy, policy), first, size, stride,
                         part_iterations<ExPolicy, F, S>{
                             PIKA_FORWARD(F, f), stride},
@@ -1110,8 +1110,8 @@ namespace pika {
                     args_type args =
                         std::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
 
-                    return util::partitioner<ExPolicy>::call_with_index(policy,
-                        first, size, stride,
+                    return util::detail::partitioner<ExPolicy>::call_with_index(
+                        policy, first, size, stride,
                         part_iterations<ExPolicy, F, S, args_type>{
                             PIKA_FORWARD(F, f), stride, args},
                         [=](std::vector<pika::future<void>>&&) mutable -> void {

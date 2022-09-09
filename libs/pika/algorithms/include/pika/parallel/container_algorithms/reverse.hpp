@@ -382,9 +382,10 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     /// `reverse_copy_result` is equivalent to
-    /// `pika::parallel::util::in_out_result`
+    /// `pika::parallel::util::detail::in_out_result`
     template <typename I, typename O>
-    using reverse_copy_result = pika::parallel::util::in_out_result<I, O>;
+    using reverse_copy_result =
+        pika::parallel::util::detail::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::reverse
@@ -500,7 +501,7 @@ namespace pika::ranges {
                 "Required at least output iterator.");
 
             return parallel::detail::reverse_copy<
-                pika::parallel::util::in_out_result<Iter, OutIter>>()
+                pika::parallel::util::detail::in_out_result<Iter, OutIter>>()
                 .call(pika::execution::sequenced_policy{}, first, last, result);
         }
 
@@ -525,7 +526,7 @@ namespace pika::ranges {
                 "Required at least output iterator.");
 
             return parallel::detail::reverse_copy<
-                pika::parallel::util::in_out_result<
+                pika::parallel::util::detail::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type,
                     OutIter>>()
                 .call(pika::execution::sequenced_policy{},
@@ -554,7 +555,7 @@ namespace pika::ranges {
                 "Required at least forward iterator.");
 
             return parallel::detail::reverse_copy<
-                pika::parallel::util::in_out_result<Iter, FwdIter>>()
+                pika::parallel::util::detail::in_out_result<Iter, FwdIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, result);
         }
 
@@ -582,7 +583,7 @@ namespace pika::ranges {
                 "Required at least output iterator.");
 
             return parallel::detail::reverse_copy<
-                pika::parallel::util::in_out_result<
+                pika::parallel::util::detail::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type,
                     OutIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
