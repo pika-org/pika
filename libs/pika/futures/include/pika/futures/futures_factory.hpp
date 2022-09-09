@@ -105,7 +105,7 @@ namespace pika { namespace lcos { namespace local {
                         threads::detail::make_thread_function_nullary(
                             util::detail::deferred_call(
                                 &base_type::run_impl, PIKA_MOVE(this_))),
-                        util::detail::thread_description(f_, annotation),
+                        ::pika::detail::thread_description(f_, annotation),
                         policy.priority(),
                         execution::thread_schedule_hint(
                             static_cast<std::int16_t>(get_worker_thread_num())),
@@ -121,7 +121,7 @@ namespace pika { namespace lcos { namespace local {
                     threads::detail::make_thread_function_nullary(
                         util::detail::deferred_call(
                             &base_type::run_impl, PIKA_MOVE(this_))),
-                    util::detail::thread_description(f_, annotation),
+                    ::pika::detail::thread_description(f_, annotation),
                     policy.priority(), policy.hint(), policy.stacksize(),
                     threads::detail::thread_schedule_state::pending);
 

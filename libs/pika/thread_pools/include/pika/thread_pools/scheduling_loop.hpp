@@ -463,7 +463,7 @@ namespace pika { namespace threads { namespace detail {
                 return thread_result_type(
                     thread_schedule_state::terminated, invalid_thread_id);
             },
-            pika::util::detail::thread_description("background_work"),
+            pika::detail::thread_description("background_work"),
             execution::thread_priority::high_recursive, schedulehint,
             execution::thread_stacksize::large,
             // Create in suspended to prevent the thread from being scheduled
@@ -747,10 +747,9 @@ namespace pika { namespace threads { namespace detail {
                                 task_annotation
                                     << "pika/task:" << thrd << "/"
                                     << (desc.kind() ==
-                                                   pika::util::detail::
-                                                       thread_description::
-                                                           data_type::
-                                                               data_type_description ?
+                                                   pika::detail::thread_description::
+                                                       data_type::
+                                                           data_type_description ?
                                                desc.get_description() :
                                                "<unknown>");
                                 auto task_annotation_str =

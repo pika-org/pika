@@ -252,34 +252,35 @@ namespace pika::threads::detail {
         }
 
 #if !defined(PIKA_HAVE_THREAD_DESCRIPTION)
-        util::detail::thread_description get_description() const
+        ::pika::detail::thread_description get_description() const
         {
-            return util::detail::thread_description("<unknown>");
-        }
-        util::detail::thread_description set_description(
-            util::detail::thread_description /*value*/)
-        {
-            return util::detail::thread_description("<unknown>");
+            return ::pika::detail::thread_description("<unknown>");
         }
 
-        util::detail::thread_description get_lco_description() const
+        ::pika::detail::thread_description set_description(
+            ::pika::detail::thread_description /*value*/)
         {
-            return util::detail::thread_description("<unknown>");
+            return ::pika::detail::thread_description("<unknown>");
         }
-        util::detail::thread_description set_lco_description(
-            util::detail::thread_description /*value*/)
+
+        ::pika::detail::thread_description get_lco_description() const
         {
-            return util::detail::thread_description("<unknown>");
+            return ::pika::detail::thread_description("<unknown>");
+        }
+        ::pika::detail::thread_description set_lco_description(
+            ::pika::detail::thread_description /*value*/)
+        {
+            return ::pika::detail::thread_description("<unknown>");
         }
 #else
-        util::detail::thread_description get_description() const
+        ::pika::detail::thread_description get_description() const
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return description_;
         }
-        util::detail::thread_description set_description(
-            util::detail::thread_description value)
+        ::pika::detail::thread_description set_description(
+            ::pika::detail::thread_description value)
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
@@ -287,14 +288,14 @@ namespace pika::threads::detail {
             return value;
         }
 
-        util::detail::thread_description get_lco_description() const
+        ::pika::detail::thread_description get_lco_description() const
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return lco_description_;
         }
-        util::detail::thread_description set_lco_description(
-            util::detail::thread_description value)
+        ::pika::detail::thread_description set_lco_description(
+            ::pika::detail::thread_description value)
         {
             std::lock_guard<pika::util::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
@@ -584,8 +585,8 @@ namespace pika::threads::detail {
         ///////////////////////////////////////////////////////////////////////
         // Debugging/logging information
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
-        util::detail::thread_description description_;
-        util::detail::thread_description lco_description_;
+        ::pika::detail::thread_description description_;
+        ::pika::detail::thread_description lco_description_;
 #endif
 
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE

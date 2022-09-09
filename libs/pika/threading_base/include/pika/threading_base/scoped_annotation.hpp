@@ -160,7 +160,7 @@ namespace pika {
                 std::enable_if_t<!std::is_same_v<std::decay_t<F>, std::string>>>
         explicit scoped_annotation(F&& f)
         {
-            pika::util::detail::thread_description desc(f);
+            pika::detail::thread_description desc(f);
 
             auto* self = pika::threads::detail::get_self_ptr();
             if (self != nullptr)
@@ -194,7 +194,7 @@ namespace pika {
 #endif
         }
 
-        pika::util::detail::thread_description desc_;
+        pika::detail::thread_description desc_;
     };
 #endif
 

@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::util::detail {
+namespace pika::detail {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
     ///////////////////////////////////////////////////////////////////////////
     struct thread_description
@@ -257,7 +257,7 @@ namespace pika::util::detail {
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream&, thread_description const&);
     PIKA_EXPORT std::string as_string(thread_description const& desc);
-}    // namespace pika::util::detail
+}    // namespace pika::detail
 
 namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
@@ -280,19 +280,19 @@ namespace pika::threads::detail {
     ///                   throw but returns the result code using the
     ///                   parameter \a ec. Otherwise it throws an instance
     ///                   of pika#exception.
-    PIKA_EXPORT util::detail::thread_description get_thread_description(
+    PIKA_EXPORT ::pika::detail::thread_description get_thread_description(
         thread_id_type const& id, error_code& ec = throws);
-    PIKA_EXPORT util::detail::thread_description set_thread_description(
+    PIKA_EXPORT ::pika::detail::thread_description set_thread_description(
         thread_id_type const& id,
-        util::detail::thread_description const& desc =
-            util::detail::thread_description(),
+        ::pika::detail::thread_description const& desc =
+            ::pika::detail::thread_description(),
         error_code& ec = throws);
 
-    PIKA_EXPORT util::detail::thread_description get_thread_lco_description(
+    PIKA_EXPORT ::pika::detail::thread_description get_thread_lco_description(
         thread_id_type const& id, error_code& ec = throws);
-    PIKA_EXPORT util::detail::thread_description set_thread_lco_description(
+    PIKA_EXPORT ::pika::detail::thread_description set_thread_lco_description(
         thread_id_type const& id,
-        util::detail::thread_description const& desc =
-            util::detail::thread_description(),
+        ::pika::detail::thread_description const& desc =
+            ::pika::detail::thread_description(),
         error_code& ec = throws);
 }    // namespace pika::threads::detail

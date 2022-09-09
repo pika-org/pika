@@ -297,7 +297,7 @@ void function_futures_create_thread(std::uint64_t count, bool csv)
     };
     auto const thread_func =
         pika::threads::detail::thread_function_nullary<decltype(func)>{func};
-    auto const desc = pika::util::detail::thread_description();
+    auto const desc = pika::detail::thread_description();
     auto const prio = pika::execution::thread_priority::normal;
     auto const hint = pika::execution::thread_schedule_hint();
     auto const stack_size = pika::execution::thread_stacksize::small_;
@@ -348,7 +348,7 @@ void function_futures_create_thread_hierarchical_placement(
     };
     auto const thread_func =
         pika::threads::detail::thread_function_nullary<decltype(func)>{func};
-    auto const desc = pika::util::detail::thread_description();
+    auto const desc = pika::detail::thread_description();
     auto prio = pika::execution::thread_priority::normal;
     auto const stack_size = pika::execution::thread_stacksize::small_;
     auto const num_threads = pika::get_num_worker_threads();

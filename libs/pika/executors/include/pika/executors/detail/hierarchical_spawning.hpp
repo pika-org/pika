@@ -42,7 +42,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         pika::future<typename detail::bulk_function_result<F, S, Ts...>::type>>
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     hierarchical_bulk_async_execute_helper(
-        pika::util::detail::thread_description const& desc,
+        pika::detail::thread_description const& desc,
         threads::thread_pool_base* pool, std::size_t first_thread,
         std::size_t num_threads, std::size_t hierarchical_threshold,
         Launch policy, F&& f, S const& shape, Ts&&... ts)
@@ -121,7 +121,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         std::size_t hierarchical_threshold, Launch policy, F&& f,
         S const& shape, Ts&&... ts)
     {
-        pika::util::detail::thread_description const desc(f,
+        pika::detail::thread_description const desc(f,
             "pika::parallel::execution::detail::hierarchical_bulk_async_"
             "execute_"
             "helper");

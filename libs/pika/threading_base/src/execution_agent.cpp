@@ -178,7 +178,7 @@ namespace pika::threads::detail {
         {
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
             reset_lco_description desc(
-                id.noref(), util::detail::thread_description(desc));
+                id.noref(), ::pika::detail::thread_description(desc));
 #endif
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
             reset_backtrace bt(id);

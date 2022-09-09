@@ -18,7 +18,7 @@
 
 namespace pika::detail::external_timer {
     std::shared_ptr<task_wrapper> new_task(
-        pika::util::detail::thread_description const& description,
+        pika::detail::thread_description const& description,
         std::uint32_t /* parent_locality_id */,
         threads::detail::thread_id_type parent_task)
     {
@@ -29,7 +29,7 @@ namespace pika::detail::external_timer {
         }
 
         if (description.kind() ==
-            pika::util::detail::thread_description::data_type_description)
+            pika::detail::thread_description::data_type_description)
         {
             return external_timer::new_task(
                 description.get_description(), UINTMAX_MAX, parent_wrapper);
@@ -37,7 +37,7 @@ namespace pika::detail::external_timer {
         else
         {
             PIKA_ASSERT(description.kind() ==
-                pika::util::detail::thread_description::data_type_address);
+                pika::detail::thread_description::data_type_address);
             return external_timer::new_task(
                 description.get_address(), UINTMAX_MAX, parent_wrapper);
         }
@@ -45,7 +45,7 @@ namespace pika::detail::external_timer {
 
     std::shared_ptr<task_wrapper> update_task(
         std::shared_ptr<task_wrapper> wrapper,
-        pika::util::detail::thread_description const& description)
+        pika::detail::thread_description const& description)
     {
         if (wrapper == nullptr)
         {
@@ -54,7 +54,7 @@ namespace pika::detail::external_timer {
             return external_timer::new_task(description, 0, parent_task);
         }
         else if (description.kind() ==
-            pika::util::detail::thread_description::data_type_description)
+            pika::detail::thread_description::data_type_description)
         {
             // Disambiguate the call by making a temporary string object
             return external_timer::update_task(
@@ -63,7 +63,7 @@ namespace pika::detail::external_timer {
         else
         {
             PIKA_ASSERT(description.kind() ==
-                pika::util::detail::thread_description::data_type_address);
+                pika::detail::thread_description::data_type_address);
             return external_timer::update_task(
                 wrapper, description.get_address());
         }

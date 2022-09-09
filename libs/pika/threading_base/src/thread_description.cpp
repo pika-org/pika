@@ -15,7 +15,7 @@
 #include <ostream>
 #include <string>
 
-namespace pika::util::detail {
+namespace pika::detail {
     std::ostream& operator<<(std::ostream& os, thread_description const& d)
     {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
@@ -38,8 +38,7 @@ namespace pika::util::detail {
     std::string as_string(thread_description const& desc)
     {
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-        if (desc.kind() ==
-            util::detail::thread_description::data_type_description)
+        if (desc.kind() == detail::thread_description::data_type_description)
             return desc ? desc.get_description() : "<unknown>";
 
         return pika::util::format("address: {:#x}", desc.get_address());
@@ -89,26 +88,26 @@ namespace pika::util::detail {
         PIKA_UNUSED(altname);
 #endif
     }
-}    // namespace pika::util::detail
+}    // namespace pika::detail
 
 namespace pika::threads::detail {
-    util::detail::thread_description get_thread_description(
+    ::pika::detail::thread_description get_thread_description(
         thread_id_type const& id, error_code& /* ec */)
     {
         return id ? get_thread_id_data(id)->get_description() :
-                    util::detail::thread_description("<unknown>");
+                    ::pika::detail::thread_description("<unknown>");
     }
 
-    util::detail::thread_description set_thread_description(
-        thread_id_type const& id, util::detail::thread_description const& desc,
-        error_code& ec)
+    ::pika::detail::thread_description set_thread_description(
+        thread_id_type const& id,
+        ::pika::detail::thread_description const& desc, error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
         {
             PIKA_THROWS_IF(ec, pika::error::null_thread_id,
                 "pika::threads::detail::set_thread_description",
                 "null thread id encountered");
-            return util::detail::thread_description();
+            return ::pika::detail::thread_description();
         }
         if (&ec != &throws)
             ec = make_success_code();
@@ -117,7 +116,7 @@ namespace pika::threads::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    util::detail::thread_description get_thread_lco_description(
+    ::pika::detail::thread_description get_thread_lco_description(
         thread_id_type const& id, error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
@@ -134,9 +133,9 @@ namespace pika::threads::detail {
         return get_thread_id_data(id)->get_lco_description();
     }
 
-    util::detail::thread_description set_thread_lco_description(
-        thread_id_type const& id, util::detail::thread_description const& desc,
-        error_code& ec)
+    ::pika::detail::thread_description set_thread_lco_description(
+        thread_id_type const& id,
+        ::pika::detail::thread_description const& desc, error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
         {

@@ -86,7 +86,7 @@ void measure_function_futures_create_thread_hierarchical_placement(
                 pika::threads::scheduler_mode::steal_after_local |
                 pika::threads::scheduler_mode::steal_high_priority_first));
     }
-    auto const desc = pika::util::detail::thread_description();
+    auto const desc = pika::detail::thread_description();
     auto prio = pika::execution::thread_priority::normal;
     auto const stack_size = pika::execution::thread_stacksize::small_;
     auto const num_threads = pika::get_num_worker_threads();

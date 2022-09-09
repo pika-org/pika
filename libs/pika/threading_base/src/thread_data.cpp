@@ -200,7 +200,7 @@ namespace pika::threads::detail {
 
 #ifdef PIKA_HAVE_THREAD_DESCRIPTION
         description_ = init_data.description;
-        lco_description_ = util::detail::thread_description();
+        lco_description_ = ::pika::detail::thread_description();
 #endif
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
         parent_locality_id_ = init_data.parent_locality_id;

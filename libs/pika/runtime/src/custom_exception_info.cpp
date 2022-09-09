@@ -403,7 +403,7 @@ namespace pika {
 
             std::size_t shepherd = std::size_t(-1);
             threads::detail::thread_id_type thread_id;
-            util::detail::thread_description thread_name;
+            detail::thread_description thread_name;
 
             threads::detail::thread_self* self =
                 threads::detail::get_self_ptr();
@@ -428,8 +428,7 @@ namespace pika {
                 pika::detail::throw_shepherd(shepherd),
                 pika::detail::throw_thread_id(
                     reinterpret_cast<std::size_t>(thread_id.get())),
-                pika::detail::throw_thread_name(
-                    util::detail::as_string(thread_name)),
+                pika::detail::throw_thread_name(detail::as_string(thread_name)),
                 pika::detail::throw_function(func),
                 pika::detail::throw_file(file), pika::detail::throw_line(line),
                 pika::detail::throw_env(env),

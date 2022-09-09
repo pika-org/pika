@@ -275,8 +275,7 @@ namespace pika { namespace execution { namespace experimental {
                     queues_.resize(num_threads_);
                 }
 
-                pika::util::detail::thread_description desc(
-                    "fork_join_executor");
+                pika::detail::thread_description desc("fork_join_executor");
                 for (std::size_t t = 0; t < num_threads_; ++t)
                 {
                     if (t == main_thread_)

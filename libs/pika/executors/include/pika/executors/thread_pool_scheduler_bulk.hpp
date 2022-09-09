@@ -416,7 +416,7 @@ namespace pika::thread_pool_bulk_detail {
                     // bulk for thread_pool_scheduler we must currently be
                     // running on a pika thread.
                     PIKA_ASSERT(pika::threads::detail::get_self_id());
-                    pika::util::detail::thread_description desc =
+                    pika::detail::thread_description desc =
                         pika::threads::detail::get_thread_description(
                             pika::threads::detail::get_self_id());
 

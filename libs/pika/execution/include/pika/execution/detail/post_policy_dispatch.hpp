@@ -32,7 +32,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     {
         template <typename F, typename... Ts>
         static void call(launch::fork_policy const& policy,
-            pika::util::detail::thread_description const& desc,
+            pika::detail::thread_description const& desc,
             threads::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
             threads::detail::thread_init_data data(
@@ -65,8 +65,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
 
         template <typename F, typename... Ts>
         static void call(launch::fork_policy const& policy,
-            pika::util::detail::thread_description const& desc, F&& f,
-            Ts&&... ts)
+            pika::detail::thread_description const& desc, F&& f, Ts&&... ts)
         {
             call(policy, desc, threads::detail::get_self_or_default_pool(),
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
@@ -78,7 +77,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     {
         template <typename F, typename... Ts>
         static void call(launch::sync_policy const&,
-            pika::util::detail::thread_description const& /* desc */,
+            pika::detail::thread_description const& /* desc */,
             threads::thread_pool_base* /* pool */, F&& f, Ts&&... ts)
         {
             pika::detail::call_sync(
@@ -87,7 +86,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
 
         template <typename F, typename... Ts>
         static void call(launch::sync_policy const& /* policy */,
-            pika::util::detail::thread_description const& /* desc */, F&& f,
+            pika::detail::thread_description const& /* desc */, F&& f,
             Ts&&... ts) noexcept
         {
             pika::detail::call_sync(
@@ -100,7 +99,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     {
         template <typename F, typename... Ts>
         static void call(Policy const& policy,
-            pika::util::detail::thread_description const& desc,
+            pika::detail::thread_description const& desc,
             threads::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
             if (policy == launch::sync)
@@ -131,8 +130,7 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
 
         template <typename F, typename... Ts>
         static void call(Policy const& policy,
-            pika::util::detail::thread_description const& desc, F&& f,
-            Ts&&... ts)
+            pika::detail::thread_description const& desc, F&& f, Ts&&... ts)
         {
             if (policy == launch::sync)
             {

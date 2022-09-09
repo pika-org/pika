@@ -25,7 +25,7 @@ int pika_main()
     pika::ranges::for_each(pika::execution::par, c,
         pika::annotated_function(
             [](int) -> void {
-                pika::util::detail::thread_description desc(
+                pika::detail::thread_description desc(
                     pika::threads::detail::get_thread_description(
                         pika::threads::detail::get_self_id()));
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)

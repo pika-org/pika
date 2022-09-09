@@ -357,7 +357,7 @@ namespace pika::this_thread {
     threads::detail::thread_restart_state suspend(
         threads::detail::thread_schedule_state state,
         threads::detail::thread_id_type nextid,
-        util::detail::thread_description const& description, error_code& ec)
+        detail::thread_description const& description, error_code& ec)
     {
         // let the thread manager do other things while waiting
         threads::detail::thread_self& self = threads::detail::get_self();
@@ -430,7 +430,7 @@ namespace pika::this_thread {
     threads::detail::thread_restart_state suspend(
         pika::chrono::steady_time_point const& abs_time,
         threads::detail::thread_id_type nextid,
-        util::detail::thread_description const& description, error_code& ec)
+        detail::thread_description const& description, error_code& ec)
     {
         // schedule a thread waking us up at_time
         threads::detail::thread_self& self = threads::detail::get_self();

@@ -168,10 +168,11 @@ PIKA_EXPORT void itt_metadata_add(___itt_domain* domain, ___itt_id* id,
     ___itt_string_handle* key, void const* data) noexcept;
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::detail {
 
     struct thread_description;
-}}    // namespace pika::util
+
+}    // namespace pika::detail
 
 namespace pika { namespace util { namespace itt {
 
@@ -645,10 +646,11 @@ inline constexpr void itt_metadata_add(
 }
 
 //////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util {
+namespace pika::detail {
 
     struct thread_description;
-}}    // namespace pika::util
+
+}    // namespace pika::detail
 
 namespace pika { namespace util { namespace itt {
 
