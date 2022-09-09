@@ -29,220 +29,218 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::this_thread::experimental {
-    namespace sync_wait_detail {
-        struct sync_wait_error_visitor
+namespace pika::sync_wait_detail {
+    struct sync_wait_error_visitor
+    {
+        void operator()(std::exception_ptr ep) const
         {
-            void operator()(std::exception_ptr ep) const
-            {
-                std::rethrow_exception(ep);
-            }
+            std::rethrow_exception(ep);
+        }
 
-            template <typename Error>
-            void operator()(Error& error) const
-            {
-                throw error;
-            }
-        };
-
-        template <typename Sender>
-        struct sync_wait_receiver_impl
+        template <typename Error>
+        void operator()(Error& error) const
         {
-            struct sync_wait_receiver_type;
-        };
+            throw error;
+        }
+    };
 
-        template <typename Sender>
-        using sync_wait_receiver =
-            typename sync_wait_receiver_impl<Sender>::sync_wait_receiver_type;
+    template <typename Sender>
+    struct sync_wait_receiver_impl
+    {
+        struct sync_wait_receiver_type;
+    };
 
-        template <typename Sender>
-        struct sync_wait_receiver_impl<Sender>::sync_wait_receiver_type
-        {
+    template <typename Sender>
+    using sync_wait_receiver =
+        typename sync_wait_receiver_impl<Sender>::sync_wait_receiver_type;
+
+    template <typename Sender>
+    struct sync_wait_receiver_impl<Sender>::sync_wait_receiver_type
+    {
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-            // value and error_types of the predecessor sender
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
-            using predecessor_value_types =
-                pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env, Tuple,
-                    Variant>;
+        // value and error_types of the predecessor sender
+        template <template <typename...> class Tuple,
+            template <typename...> class Variant>
+        using predecessor_value_types =
+            pika::execution::experimental::value_types_of_t<Sender,
+                pika::execution::experimental::detail::empty_env, Tuple,
+                Variant>;
 
-            template <template <typename...> class Variant>
-            using predecessor_error_types =
-                pika::execution::experimental::error_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env, Variant>;
+        template <template <typename...> class Variant>
+        using predecessor_error_types =
+            pika::execution::experimental::error_types_of_t<Sender,
+                pika::execution::experimental::detail::empty_env, Variant>;
 
-            // The type of the single void or non-void result that we store. If
-            // there are multiple variants or multiple values sync_wait will
-            // fail to compile.
-            using result_type = std::decay_t<pika::execution::experimental::
-                    detail::single_result_t<predecessor_value_types<
-                        pika::util::detail::pack, pika::util::detail::pack>>>;
+        // The type of the single void or non-void result that we store. If
+        // there are multiple variants or multiple values sync_wait will
+        // fail to compile.
+        using result_type =
+            std::decay_t<pika::execution::experimental::detail::single_result_t<
+                predecessor_value_types<pika::util::detail::pack,
+                    pika::util::detail::pack>>>;
 
-            // Constant to indicate if the type of the result from the
-            // predecessor sender is void or not
-            static constexpr bool is_void_result = std::is_void_v<result_type>;
+        // Constant to indicate if the type of the result from the
+        // predecessor sender is void or not
+        static constexpr bool is_void_result = std::is_void_v<result_type>;
 
-            // Dummy type to indicate that set_value with void has been called
-            struct void_value_type
-            {
-            };
+        // Dummy type to indicate that set_value with void has been called
+        struct void_value_type
+        {
+        };
 
-            // The type of the value to store in the variant, void_value_type if
-            // result_type is void, or result_type if it is not
-            using value_type = std::conditional_t<is_void_result,
-                void_value_type, result_type>;
+        // The type of the value to store in the variant, void_value_type if
+        // result_type is void, or result_type if it is not
+        using value_type =
+            std::conditional_t<is_void_result, void_value_type, result_type>;
 
-            // The type of errors to store in the variant. This in itself is a
-            // variant.
-            using error_type =
-                pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    pika::util::detail::transform_t<
-                        predecessor_error_types<pika::detail::variant>,
-                        std::decay>,
-                    std::exception_ptr>>;
+        // The type of errors to store in the variant. This in itself is a
+        // variant.
+        using error_type =
+            pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                pika::util::detail::transform_t<
+                    predecessor_error_types<pika::detail::variant>, std::decay>,
+                std::exception_ptr>>;
 #else
-            // value and error_types of the predecessor sender
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
-            using predecessor_value_types =
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template value_types<Tuple, Variant>;
+        // value and error_types of the predecessor sender
+        template <template <typename...> class Tuple,
+            template <typename...> class Variant>
+        using predecessor_value_types =
+            typename pika::execution::experimental::sender_traits<
+                Sender>::template value_types<Tuple, Variant>;
 
-            template <template <typename...> class Variant>
-            using predecessor_error_types =
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template error_types<Variant>;
+        template <template <typename...> class Variant>
+        using predecessor_error_types =
+            typename pika::execution::experimental::sender_traits<
+                Sender>::template error_types<Variant>;
 
-            // The type of the single void or non-void result that we store. If
-            // there are multiple variants or multiple values sync_wait will
-            // fail to compile.
-            using result_type = std::decay_t<pika::execution::experimental::
-                    detail::single_result_t<predecessor_value_types<
-                        pika::util::detail::pack, pika::util::detail::pack>>>;
+        // The type of the single void or non-void result that we store. If
+        // there are multiple variants or multiple values sync_wait will
+        // fail to compile.
+        using result_type =
+            std::decay_t<pika::execution::experimental::detail::single_result_t<
+                predecessor_value_types<pika::util::detail::pack,
+                    pika::util::detail::pack>>>;
 
-            // Constant to indicate if the type of the result from the
-            // predecessor sender is void or not
-            static constexpr bool is_void_result = std::is_void_v<result_type>;
+        // Constant to indicate if the type of the result from the
+        // predecessor sender is void or not
+        static constexpr bool is_void_result = std::is_void_v<result_type>;
 
-            // Dummy type to indicate that set_value with void has been called
-            struct void_value_type
-            {
-            };
+        // Dummy type to indicate that set_value with void has been called
+        struct void_value_type
+        {
+        };
 
-            // The type of the value to store in the variant, void_value_type if
-            // result_type is void, or result_type if it is not
-            using value_type = std::conditional_t<is_void_result,
-                void_value_type, result_type>;
+        // The type of the value to store in the variant, void_value_type if
+        // result_type is void, or result_type if it is not
+        using value_type =
+            std::conditional_t<is_void_result, void_value_type, result_type>;
 
-            // The type of errors to store in the variant. This in itself is a
-            // variant.
-            using error_type =
-                pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    pika::util::detail::transform_t<
-                        predecessor_error_types<pika::detail::variant>,
-                        std::decay>,
-                    std::exception_ptr>>;
+        // The type of errors to store in the variant. This in itself is a
+        // variant.
+        using error_type =
+            pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                pika::util::detail::transform_t<
+                    predecessor_error_types<pika::detail::variant>, std::decay>,
+                std::exception_ptr>>;
 #endif
 
-            // We use a spinlock here to allow taking the lock on non-pika threads.
-            using mutex_type = pika::lcos::local::spinlock;
+        // We use a spinlock here to allow taking the lock on non-pika threads.
+        using mutex_type = pika::lcos::local::spinlock;
 
-            struct shared_state
+        struct shared_state
+        {
+            pika::lcos::local::condition_variable cond_var;
+            mutex_type mtx;
+            std::atomic<bool> set_called = false;
+            pika::detail::variant<pika::detail::monostate, error_type,
+                value_type>
+                value;
+
+            void wait()
             {
-                pika::lcos::local::condition_variable cond_var;
-                mutex_type mtx;
-                std::atomic<bool> set_called = false;
-                pika::detail::variant<pika::detail::monostate, error_type,
-                    value_type>
-                    value;
-
-                void wait()
+                if (!set_called)
                 {
+                    std::unique_lock<mutex_type> l(mtx);
                     if (!set_called)
                     {
-                        std::unique_lock<mutex_type> l(mtx);
-                        if (!set_called)
-                        {
-                            cond_var.wait(l);
-                        }
+                        cond_var.wait(l);
                     }
                 }
+            }
 
-                auto get_value()
+            auto get_value()
+            {
+                if (pika::detail::holds_alternative<value_type>(value))
                 {
-                    if (pika::detail::holds_alternative<value_type>(value))
+                    if constexpr (is_void_result)
                     {
-                        if constexpr (is_void_result)
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            return PIKA_MOVE(
-                                pika::detail::get<value_type>(value));
-                        }
+                        return;
                     }
-                    else if (pika::detail::holds_alternative<error_type>(value))
+                    else
                     {
-                        pika::detail::visit(sync_wait_error_visitor{},
-                            pika::detail::get<error_type>(value));
+                        return PIKA_MOVE(pika::detail::get<value_type>(value));
                     }
-
-                    // If the variant holds a pika::detail::monostate something has gone
-                    // wrong and we terminate
-                    PIKA_UNREACHABLE;
                 }
-            };
+                else if (pika::detail::holds_alternative<error_type>(value))
+                {
+                    pika::detail::visit(sync_wait_error_visitor{},
+                        pika::detail::get<error_type>(value));
+                }
 
-            shared_state& state;
-
-            void signal_set_called() noexcept
-            {
-                std::unique_lock<mutex_type> l(state.mtx);
-                state.set_called = true;
-                [[maybe_unused]] pika::util::ignore_while_checking<decltype(l)>
-                    il(&l);
-
-                state.cond_var.notify_one();
-            }
-
-            template <typename Error>
-            friend void tag_invoke(pika::execution::experimental::set_error_t,
-                sync_wait_receiver_type&& r, Error&& error) noexcept
-            {
-                r.state.value.template emplace<error_type>(
-                    PIKA_FORWARD(Error, error));
-                r.signal_set_called();
-            }
-
-            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                sync_wait_receiver_type&& r) noexcept
-            {
-                r.signal_set_called();
-            }
-
-            template <typename... Us,
-                typename =
-                    std::enable_if_t<(is_void_result && sizeof...(Us) == 0) ||
-                        (!is_void_result && sizeof...(Us) == 1)>>
-            friend void tag_invoke(pika::execution::experimental::set_value_t,
-                sync_wait_receiver_type&& r, Us&&... us) noexcept
-            {
-                r.state.value.template emplace<value_type>(
-                    PIKA_FORWARD(Us, us)...);
-                r.signal_set_called();
-            }
-
-            friend constexpr pika::execution::experimental::detail::empty_env
-            tag_invoke(pika::execution::experimental::get_env_t,
-                sync_wait_receiver_type const&) noexcept
-            {
-                return {};
+                // If the variant holds a pika::detail::monostate something has gone
+                // wrong and we terminate
+                PIKA_UNREACHABLE;
             }
         };
-    }    // namespace sync_wait_detail
 
+        shared_state& state;
+
+        void signal_set_called() noexcept
+        {
+            std::unique_lock<mutex_type> l(state.mtx);
+            state.set_called = true;
+            [[maybe_unused]] pika::util::ignore_while_checking<decltype(l)> il(
+                &l);
+
+            state.cond_var.notify_one();
+        }
+
+        template <typename Error>
+        friend void tag_invoke(pika::execution::experimental::set_error_t,
+            sync_wait_receiver_type&& r, Error&& error) noexcept
+        {
+            r.state.value.template emplace<error_type>(
+                PIKA_FORWARD(Error, error));
+            r.signal_set_called();
+        }
+
+        friend void tag_invoke(pika::execution::experimental::set_stopped_t,
+            sync_wait_receiver_type&& r) noexcept
+        {
+            r.signal_set_called();
+        }
+
+        template <typename... Us,
+            typename =
+                std::enable_if_t<(is_void_result && sizeof...(Us) == 0) ||
+                    (!is_void_result && sizeof...(Us) == 1)>>
+        friend void tag_invoke(pika::execution::experimental::set_value_t,
+            sync_wait_receiver_type&& r, Us&&... us) noexcept
+        {
+            r.state.value.template emplace<value_type>(PIKA_FORWARD(Us, us)...);
+            r.signal_set_called();
+        }
+
+        friend constexpr pika::execution::experimental::detail::empty_env
+        tag_invoke(pika::execution::experimental::get_env_t,
+            sync_wait_receiver_type const&) noexcept
+        {
+            return {};
+        }
+    };
+}    // namespace pika::sync_wait_detail
+
+namespace pika::this_thread::experimental {
     inline constexpr struct sync_wait_t final
       : pika::functional::detail::tag_fallback<sync_wait_t>
     {

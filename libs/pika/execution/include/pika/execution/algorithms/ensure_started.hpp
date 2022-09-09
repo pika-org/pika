@@ -42,117 +42,164 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::execution::experimental {
-    namespace ensure_started_detail {
-        template <typename Receiver>
-        struct error_visitor
-        {
-            PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+namespace pika::ensure_started_detail {
+    template <typename Receiver>
+    struct error_visitor
+    {
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-            template <typename Error>
-            void operator()(Error&& error)
-            {
-                pika::execution::experimental::set_error(
-                    PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
-            }
+        template <typename Error>
+        void operator()(Error&& error)
+        {
+            pika::execution::experimental::set_error(
+                PIKA_MOVE(receiver), PIKA_FORWARD(Error, error));
+        }
+    };
+
+    template <typename Receiver>
+    struct value_visitor
+    {
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+
+        void operator()(std::monostate)
+        {
+            PIKA_UNREACHABLE;
+        }
+
+        template <typename Ts>
+        void operator()(Ts&& ts)
+        {
+            pika::util::detail::invoke_fused(
+                pika::util::detail::bind_front(
+                    pika::execution::experimental::set_value,
+                    PIKA_MOVE(receiver)),
+                PIKA_FORWARD(Ts, ts));
+        }
+    };
+
+    template <typename Sender, typename Allocator>
+    struct ensure_started_sender_impl
+    {
+        struct ensure_started_sender_type;
+    };
+
+    template <typename Sender, typename Allocator>
+    using ensure_started_sender = typename ensure_started_sender_impl<Sender,
+        Allocator>::ensure_started_sender_type;
+
+    template <typename Sender, typename Allocator>
+    struct ensure_started_sender_impl<Sender,
+        Allocator>::ensure_started_sender_type
+    {
+        struct ensure_started_sender_tag
+        {
         };
 
-        template <typename Receiver>
-        struct value_visitor
+        using allocator_type = Allocator;
+
+        template <typename Tuple>
+        struct value_types_helper
         {
-            PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
-
-            void operator()(std::monostate)
-            {
-                PIKA_UNREACHABLE;
-            }
-
-            template <typename Ts>
-            void operator()(Ts&& ts)
-            {
-                pika::util::detail::invoke_fused(
-                    pika::util::detail::bind_front(
-                        pika::execution::experimental::set_value,
-                        PIKA_MOVE(receiver)),
-                    PIKA_FORWARD(Ts, ts));
-            }
+            using type = pika::util::detail::transform_t<Tuple, std::decay>;
         };
 
-        template <typename Sender, typename Allocator>
-        struct ensure_started_sender_impl
-        {
-            struct ensure_started_sender_type;
-        };
+        template <template <typename...> class Tuple,
+            template <typename...> class Variant>
+        using value_types = pika::util::detail::transform_t<
+            typename pika::execution::experimental::sender_traits<
+                Sender>::template value_types<Tuple, Variant>,
+            value_types_helper>;
 
-        template <typename Sender, typename Allocator>
-        using ensure_started_sender =
-            typename ensure_started_sender_impl<Sender,
-                Allocator>::ensure_started_sender_type;
+        template <template <typename...> class Variant>
+        using error_types =
+            pika::util::detail::unique_t<pika::util::detail::prepend_t<
+                pika::util::detail::transform_t<
+                    typename pika::execution::experimental::sender_traits<
+                        Sender>::template error_types<Variant>,
+                    std::decay>,
+                std::exception_ptr>>;
 
-        template <typename Sender, typename Allocator>
-        struct ensure_started_sender_impl<Sender,
-            Allocator>::ensure_started_sender_type
+        static constexpr bool sends_done = false;
+
+        struct shared_state
         {
-            struct ensure_started_sender_tag
+            struct ensure_started_receiver;
+
+            using allocator_type = typename std::allocator_traits<
+                Allocator>::template rebind_alloc<shared_state>;
+            PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
+            using mutex_type = pika::lcos::local::spinlock;
+            mutex_type mtx;
+            pika::util::atomic_count reference_count{0};
+            std::atomic<bool> start_called{false};
+            std::atomic<bool> predecessor_done{false};
+
+            using operation_state_type =
+                std::decay_t<pika::execution::experimental::connect_result_t<
+                    Sender, ensure_started_receiver>>;
+            // We store the operation state in an optional so that we can
+            // reset it as soon as the the ensure_started_receiver has been
+            // signaled.  This is useful to ensure that resources held by
+            // the predecessor work is released as soon as possible.
+            std::optional<operation_state_type> os;
+
+            struct done_type
             {
             };
-
-            using allocator_type = Allocator;
-
             template <typename Tuple>
             struct value_types_helper
             {
                 using type = pika::util::detail::transform_t<Tuple, std::decay>;
             };
-
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
-            using value_types = pika::util::detail::transform_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template value_types<Tuple, Variant>,
-                value_types_helper>;
-
-            template <template <typename...> class Variant>
-            using error_types =
+            using value_type = pika::util::detail::prepend_t<
+                pika::util::detail::transform_t<
+                    typename pika::execution::experimental::sender_traits<
+                        Sender>::template value_types<std::tuple,
+                        pika::detail::variant>,
+                    value_types_helper>,
+                pika::detail::monostate>;
+            using error_type =
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                    pika::util::detail::transform_t<
-                        typename pika::execution::experimental::sender_traits<
-                            Sender>::template error_types<Variant>,
-                        std::decay>,
-                    std::exception_ptr>>;
+                    error_types<pika::detail::variant>, std::exception_ptr>>;
+            pika::detail::variant<pika::detail::monostate, done_type,
+                error_type, value_type>
+                v;
 
-            static constexpr bool sends_done = false;
+            using continuation_type =
+                pika::util::detail::unique_function<void()>;
+            std::optional<continuation_type> continuation;
 
-            struct shared_state
+            struct ensure_started_receiver
             {
-                struct ensure_started_receiver;
+                pika::intrusive_ptr<shared_state> state;
 
-                using allocator_type = typename std::allocator_traits<
-                    Allocator>::template rebind_alloc<shared_state>;
-                PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
-                using mutex_type = pika::lcos::local::spinlock;
-                mutex_type mtx;
-                pika::util::atomic_count reference_count{0};
-                std::atomic<bool> start_called{false};
-                std::atomic<bool> predecessor_done{false};
-
-                using operation_state_type = std::decay_t<
-                    connect_result_t<Sender, ensure_started_receiver>>;
-                // We store the operation state in an optional so that we can
-                // reset it as soon as the the ensure_started_receiver has been
-                // signaled.  This is useful to ensure that resources held by
-                // the predecessor work is released as soon as possible.
-                std::optional<operation_state_type> os;
-
-                struct done_type
+                template <typename Error>
+                friend void tag_invoke(
+                    pika::execution::experimental::set_error_t,
+                    ensure_started_receiver&& r, Error&& error) noexcept
                 {
+                    r.state->v.template emplace<error_type>(
+                        error_type(PIKA_FORWARD(Error, error)));
+                    r.state->set_predecessor_done();
+                }
+
+                friend void tag_invoke(
+                    pika::execution::experimental::set_stopped_t,
+                    ensure_started_receiver&& r) noexcept
+                {
+                    r.state->set_predecessor_done();
                 };
+
+                // These typedefs are duplicated from the parent struct. The
+                // parent typedefs are not instantiated early enough for use
+                // here.
                 template <typename Tuple>
                 struct value_types_helper
                 {
                     using type =
                         pika::util::detail::transform_t<Tuple, std::decay>;
                 };
+
                 using value_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         typename pika::execution::experimental::sender_traits<
@@ -160,196 +207,163 @@ namespace pika::execution::experimental {
                             pika::detail::variant>,
                         value_types_helper>,
                     pika::detail::monostate>;
-                using error_type =
-                    pika::util::detail::unique_t<pika::util::detail::prepend_t<
-                        error_types<pika::detail::variant>,
-                        std::exception_ptr>>;
-                pika::detail::variant<pika::detail::monostate, done_type,
-                    error_type, value_type>
-                    v;
 
-                using continuation_type =
-                    pika::util::detail::unique_function<void()>;
-                std::optional<continuation_type> continuation;
-
-                struct ensure_started_receiver
+                template <typename... Ts>
+                friend auto tag_invoke(
+                    pika::execution::experimental::set_value_t,
+                    ensure_started_receiver&& r, Ts&&... ts) noexcept
+                    -> decltype(std::declval<pika::detail::variant<
+                                    pika::detail::monostate, value_type>>()
+                                    .template emplace<value_type>(
+                                        std::make_tuple<>(
+                                            PIKA_FORWARD(Ts, ts)...)),
+                        void())
                 {
-                    pika::intrusive_ptr<shared_state> state;
+                    r.state->v.template emplace<value_type>(
+                        std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
+                    r.state->set_predecessor_done();
+                }
+            };
 
-                    template <typename Error>
-                    friend void tag_invoke(set_error_t,
-                        ensure_started_receiver&& r, Error&& error) noexcept
-                    {
-                        r.state->v.template emplace<error_type>(
-                            error_type(PIKA_FORWARD(Error, error)));
-                        r.state->set_predecessor_done();
-                    }
+            template <typename Sender_,
+                typename = std::enable_if_t<
+                    !std::is_same<std::decay_t<Sender_>, shared_state>::value>>
+            shared_state(Sender_&& sender, allocator_type const& alloc)
+              : alloc(alloc)
+            {
+                os.emplace(pika::detail::with_result_of([&]() {
+                    return pika::execution::experimental::connect(
+                        PIKA_FORWARD(Sender_, sender),
+                        ensure_started_receiver{this});
+                }));
+            }
 
-                    friend void tag_invoke(
-                        set_stopped_t, ensure_started_receiver&& r) noexcept
-                    {
-                        r.state->set_predecessor_done();
-                    };
+            template <typename Receiver>
+            struct done_error_value_visitor
+            {
+                PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
 
-                    // These typedefs are duplicated from the parent struct. The
-                    // parent typedefs are not instantiated early enough for use
-                    // here.
-                    template <typename Tuple>
-                    struct value_types_helper
-                    {
-                        using type =
-                            pika::util::detail::transform_t<Tuple, std::decay>;
-                    };
-
-                    using value_type = pika::util::detail::prepend_t<
-                        pika::util::detail::transform_t<
-                            typename pika::execution::experimental::
-                                sender_traits<Sender>::template value_types<
-                                    std::tuple, pika::detail::variant>,
-                            value_types_helper>,
-                        pika::detail::monostate>;
-
-                    template <typename... Ts>
-                    friend auto tag_invoke(set_value_t,
-                        ensure_started_receiver&& r, Ts&&... ts) noexcept
-                        -> decltype(std::declval<pika::detail::variant<
-                                        pika::detail::monostate, value_type>>()
-                                        .template emplace<value_type>(
-                                            std::make_tuple<>(
-                                                PIKA_FORWARD(Ts, ts)...)),
-                            void())
-                    {
-                        r.state->v.template emplace<value_type>(
-                            std::make_tuple<>(PIKA_FORWARD(Ts, ts)...));
-                        r.state->set_predecessor_done();
-                    }
-                };
-
-                template <typename Sender_,
-                    typename = std::enable_if_t<!std::is_same<
-                        std::decay_t<Sender_>, shared_state>::value>>
-                shared_state(Sender_&& sender, allocator_type const& alloc)
-                  : alloc(alloc)
+                template <typename T,
+                    typename = std::enable_if_t<std::is_same_v<std::decay_t<T>,
+                                                    pika::detail::monostate> &&
+                        !std::is_same_v<std::decay_t<T>, value_type>>>
+                [[noreturn]] void operator()(T&&) const
                 {
-                    os.emplace(pika::detail::with_result_of([&]() {
-                        return pika::execution::experimental::connect(
-                            PIKA_FORWARD(Sender_, sender),
-                            ensure_started_receiver{this});
-                    }));
+                    PIKA_UNREACHABLE;
                 }
 
-                template <typename Receiver>
-                struct done_error_value_visitor
+                void operator()(done_type)
                 {
-                    PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
-
-                    template <typename T,
-                        typename =
-                            std::enable_if_t<std::is_same_v<std::decay_t<T>,
-                                                 pika::detail::monostate> &&
-                                !std::is_same_v<std::decay_t<T>, value_type>>>
-                    [[noreturn]] void operator()(T&&) const
-                    {
-                        PIKA_UNREACHABLE;
-                    }
-
-                    void operator()(done_type)
-                    {
-                        pika::execution::experimental::set_stopped(
-                            PIKA_MOVE(receiver));
-                    }
-
-                    void operator()(error_type&& error)
-                    {
-                        pika::detail::visit(
-                            error_visitor<Receiver>{
-                                PIKA_FORWARD(Receiver, receiver)},
-                            PIKA_MOVE(error));
-                    }
-
-                    template <typename T,
-                        typename =
-                            std::enable_if_t<!std::is_same_v<std::decay_t<T>,
-                                                 pika::detail::monostate> &&
-                                std::is_same_v<std::decay_t<T>, value_type>>>
-                    void operator()(T&& t)
-                    {
-                        pika::detail::visit(
-                            value_visitor<Receiver>{
-                                PIKA_FORWARD(Receiver, receiver)},
-                            PIKA_FORWARD(T, t));
-                    }
-                };
-
-                void set_predecessor_done()
-                {
-                    // We reset the operation state as soon as the predecessor
-                    // is done to release any resources held by it. Any values
-                    // sent by the predecessor have already been stored in the
-                    // shared state by now.
-                    os.reset();
-
-                    predecessor_done = true;
-
-                    {
-                        // We require taking the lock here to synchronize with
-                        // threads attempting to add continuations to the vector
-                        // of continuations. However, it is enough to take it
-                        // once and release it immediately.
-                        //
-                        // Without the lock we may not see writes to the vector.
-                        // With the lock threads attempting to add continuations
-                        // will either:
-                        // - See predecessor_done = true in which case they will
-                        //   call the continuation directly without adding it to
-                        //   the vector of continuations. Accessing the vector
-                        //   below without the lock is safe in this case because
-                        //   the vector is not modified.
-                        // - See predecessor_done = false and proceed to take
-                        //   the lock. If they see predecessor_done after taking
-                        //   the lock they can again release the lock and call
-                        //   the continuation directly. Accessing the vector
-                        //   without the lock is again safe because the vector
-                        //   is not modified.
-                        // - See predecessor_done = false and proceed to take
-                        //   the lock. If they see predecessor_done is still
-                        //   false after taking the lock, they will proceed to
-                        //   add a continuation to the vector. Since they keep
-                        //   the lock they can safely write to the vector. This
-                        //   thread will not proceed past the lock until they
-                        //   have finished writing to the vector.
-                        //
-                        // Importantly, once this thread has taken and released
-                        // this lock, threads attempting to add continuations to
-                        // the vector must see predecessor_done = true after
-                        // taking the lock in their threads and will not add
-                        // continuations to the vector.
-                        std::unique_lock<mutex_type> l{mtx};
-                    }
-
-                    if (continuation)
-                    {
-                        continuation.value()();
-                        continuation.reset();
-                    }
+                    pika::execution::experimental::set_stopped(
+                        PIKA_MOVE(receiver));
                 }
 
-                template <typename Receiver>
-                void add_continuation(Receiver& receiver) = delete;
-
-                template <typename Receiver>
-                void add_continuation(Receiver&& receiver)
+                void operator()(error_type&& error)
                 {
-                    PIKA_ASSERT(!continuation.has_value());
+                    pika::detail::visit(error_visitor<Receiver>{PIKA_FORWARD(
+                                            Receiver, receiver)},
+                        PIKA_MOVE(error));
+                }
+
+                template <typename T,
+                    typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>,
+                                                    pika::detail::monostate> &&
+                        std::is_same_v<std::decay_t<T>, value_type>>>
+                void operator()(T&& t)
+                {
+                    pika::detail::visit(value_visitor<Receiver>{PIKA_FORWARD(
+                                            Receiver, receiver)},
+                        PIKA_FORWARD(T, t));
+                }
+            };
+
+            void set_predecessor_done()
+            {
+                // We reset the operation state as soon as the predecessor
+                // is done to release any resources held by it. Any values
+                // sent by the predecessor have already been stored in the
+                // shared state by now.
+                os.reset();
+
+                predecessor_done = true;
+
+                {
+                    // We require taking the lock here to synchronize with
+                    // threads attempting to add continuations to the vector
+                    // of continuations. However, it is enough to take it
+                    // once and release it immediately.
+                    //
+                    // Without the lock we may not see writes to the vector.
+                    // With the lock threads attempting to add continuations
+                    // will either:
+                    // - See predecessor_done = true in which case they will
+                    //   call the continuation directly without adding it to
+                    //   the vector of continuations. Accessing the vector
+                    //   below without the lock is safe in this case because
+                    //   the vector is not modified.
+                    // - See predecessor_done = false and proceed to take
+                    //   the lock. If they see predecessor_done after taking
+                    //   the lock they can again release the lock and call
+                    //   the continuation directly. Accessing the vector
+                    //   without the lock is again safe because the vector
+                    //   is not modified.
+                    // - See predecessor_done = false and proceed to take
+                    //   the lock. If they see predecessor_done is still
+                    //   false after taking the lock, they will proceed to
+                    //   add a continuation to the vector. Since they keep
+                    //   the lock they can safely write to the vector. This
+                    //   thread will not proceed past the lock until they
+                    //   have finished writing to the vector.
+                    //
+                    // Importantly, once this thread has taken and released
+                    // this lock, threads attempting to add continuations to
+                    // the vector must see predecessor_done = true after
+                    // taking the lock in their threads and will not add
+                    // continuations to the vector.
+                    std::unique_lock<mutex_type> l{mtx};
+                }
+
+                if (continuation)
+                {
+                    continuation.value()();
+                    continuation.reset();
+                }
+            }
+
+            template <typename Receiver>
+            void add_continuation(Receiver& receiver) = delete;
+
+            template <typename Receiver>
+            void add_continuation(Receiver&& receiver)
+            {
+                PIKA_ASSERT(!continuation.has_value());
+
+                if (predecessor_done)
+                {
+                    // If we read predecessor_done here it means that one of
+                    // set_error/set_stopped/set_value has been called and
+                    // values/errors have been stored into the shared state.
+                    // We can trigger the continuation directly.
+                    // TODO: Should this preserve the scheduler? It does not
+                    // if we call set_* inline.
+                    pika::detail::visit(
+                        done_error_value_visitor<Receiver>{
+                            PIKA_FORWARD(Receiver, receiver)},
+                        PIKA_MOVE(v));
+                }
+                else
+                {
+                    // If predecessor_done is false, we have to take the
+                    // lock to potentially store the continuation.
+                    std::unique_lock<mutex_type> l{mtx};
 
                     if (predecessor_done)
                     {
-                        // If we read predecessor_done here it means that one of
-                        // set_error/set_stopped/set_value has been called and
-                        // values/errors have been stored into the shared state.
-                        // We can trigger the continuation directly.
-                        // TODO: Should this preserve the scheduler? It does not
-                        // if we call set_* inline.
+                        // By the time the lock has been taken,
+                        // predecessor_done might already be true and we can
+                        // release the lock early and call the continuation
+                        // directly again.
+                        l.unlock();
                         pika::detail::visit(
                             done_error_value_visitor<Receiver>{
                                 PIKA_FORWARD(Receiver, receiver)},
@@ -357,150 +371,133 @@ namespace pika::execution::experimental {
                     }
                     else
                     {
-                        // If predecessor_done is false, we have to take the
-                        // lock to potentially store the continuation.
-                        std::unique_lock<mutex_type> l{mtx};
-
-                        if (predecessor_done)
-                        {
-                            // By the time the lock has been taken,
-                            // predecessor_done might already be true and we can
-                            // release the lock early and call the continuation
-                            // directly again.
-                            l.unlock();
-                            pika::detail::visit(
-                                done_error_value_visitor<Receiver>{
-                                    PIKA_FORWARD(Receiver, receiver)},
-                                PIKA_MOVE(v));
-                        }
-                        else
-                        {
-                            // If predecessor_done is still false, we store the
-                            // continuation. This has to be done while holding
-                            // the lock since predecessor signalling completion
-                            // may otherwise not see the continuation.
-                            continuation.emplace(
-                                [this,
-                                    receiver = PIKA_FORWARD(
-                                        Receiver, receiver)]() mutable {
-                                    pika::detail::visit(
-                                        done_error_value_visitor<Receiver>{
-                                            PIKA_MOVE(receiver)},
-                                        PIKA_MOVE(v));
-                                });
-                        }
+                        // If predecessor_done is still false, we store the
+                        // continuation. This has to be done while holding
+                        // the lock since predecessor signalling completion
+                        // may otherwise not see the continuation.
+                        continuation.emplace(
+                            [this,
+                                receiver = PIKA_FORWARD(
+                                    Receiver, receiver)]() mutable {
+                                pika::detail::visit(
+                                    done_error_value_visitor<Receiver>{
+                                        PIKA_MOVE(receiver)},
+                                    PIKA_MOVE(v));
+                            });
                     }
                 }
+            }
 
-                void start() & noexcept
+            void start() & noexcept
+            {
+                if (!start_called.exchange(true))
                 {
-                    if (!start_called.exchange(true))
-                    {
-                        PIKA_ASSERT(os.has_value());
-                        pika::execution::experimental::start(os.value());
-                    }
+                    PIKA_ASSERT(os.has_value());
+                    pika::execution::experimental::start(os.value());
                 }
+            }
 
-                friend void intrusive_ptr_add_ref(shared_state* p)
+            friend void intrusive_ptr_add_ref(shared_state* p)
+            {
+                ++p->reference_count;
+            }
+
+            friend void intrusive_ptr_release(shared_state* p)
+            {
+                if (--p->reference_count == 0)
                 {
-                    ++p->reference_count;
+                    allocator_type other_alloc(p->alloc);
+                    std::allocator_traits<allocator_type>::destroy(
+                        other_alloc, p);
+                    std::allocator_traits<allocator_type>::deallocate(
+                        other_alloc, p, 1);
                 }
+            }
+        };
 
-                friend void intrusive_ptr_release(shared_state* p)
-                {
-                    if (--p->reference_count == 0)
-                    {
-                        allocator_type other_alloc(p->alloc);
-                        std::allocator_traits<allocator_type>::destroy(
-                            other_alloc, p);
-                        std::allocator_traits<allocator_type>::deallocate(
-                            other_alloc, p, 1);
-                    }
-                }
-            };
+        pika::intrusive_ptr<shared_state> state;
 
+        template <typename Sender_>
+        ensure_started_sender_type(Sender_&& sender, Allocator const& allocator)
+        {
+            using allocator_type = Allocator;
+            using other_allocator = typename std::allocator_traits<
+                allocator_type>::template rebind_alloc<shared_state>;
+            using allocator_traits = std::allocator_traits<other_allocator>;
+            using unique_ptr = std::unique_ptr<shared_state,
+                pika::detail::allocator_deleter<other_allocator>>;
+
+            other_allocator alloc(allocator);
+            unique_ptr p(allocator_traits::allocate(alloc, 1),
+                pika::detail::allocator_deleter<other_allocator>{alloc});
+
+            new (p.get())
+                shared_state{PIKA_FORWARD(Sender_, sender), allocator};
+            state = p.release();
+
+            state->start();
+        }
+
+        ensure_started_sender_type(ensure_started_sender_type const&) = default;
+        ensure_started_sender_type& operator=(
+            ensure_started_sender_type const&) = default;
+        ensure_started_sender_type(ensure_started_sender_type&&) = default;
+        ensure_started_sender_type& operator=(
+            ensure_started_sender_type&&) = default;
+
+        template <typename Receiver>
+        struct operation_state
+        {
+            PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             pika::intrusive_ptr<shared_state> state;
 
-            template <typename Sender_>
-            ensure_started_sender_type(
-                Sender_&& sender, Allocator const& allocator)
+            template <typename Receiver_>
+            operation_state(
+                Receiver_&& receiver, pika::intrusive_ptr<shared_state> state)
+              : receiver(PIKA_FORWARD(Receiver_, receiver))
+              , state(PIKA_MOVE(state))
             {
-                using allocator_type = Allocator;
-                using other_allocator = typename std::allocator_traits<
-                    allocator_type>::template rebind_alloc<shared_state>;
-                using allocator_traits = std::allocator_traits<other_allocator>;
-                using unique_ptr = std::unique_ptr<shared_state,
-                    pika::detail::allocator_deleter<other_allocator>>;
-
-                other_allocator alloc(allocator);
-                unique_ptr p(allocator_traits::allocate(alloc, 1),
-                    pika::detail::allocator_deleter<other_allocator>{alloc});
-
-                new (p.get())
-                    shared_state{PIKA_FORWARD(Sender_, sender), allocator};
-                state = p.release();
-
-                state->start();
             }
 
-            ensure_started_sender_type(
-                ensure_started_sender_type const&) = default;
-            ensure_started_sender_type& operator=(
-                ensure_started_sender_type const&) = default;
-            ensure_started_sender_type(ensure_started_sender_type&&) = default;
-            ensure_started_sender_type& operator=(
-                ensure_started_sender_type&&) = default;
+            operation_state(operation_state&&) = delete;
+            operation_state& operator=(operation_state&&) = delete;
+            operation_state(operation_state const&) = delete;
+            operation_state& operator=(operation_state const&) = delete;
 
-            template <typename Receiver>
-            struct operation_state
+            friend void tag_invoke(pika::execution::experimental::start_t,
+                operation_state& os) noexcept
             {
-                PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
-                pika::intrusive_ptr<shared_state> state;
-
-                template <typename Receiver_>
-                operation_state(Receiver_&& receiver,
-                    pika::intrusive_ptr<shared_state> state)
-                  : receiver(PIKA_FORWARD(Receiver_, receiver))
-                  , state(PIKA_MOVE(state))
-                {
-                }
-
-                operation_state(operation_state&&) = delete;
-                operation_state& operator=(operation_state&&) = delete;
-                operation_state(operation_state const&) = delete;
-                operation_state& operator=(operation_state const&) = delete;
-
-                friend void tag_invoke(start_t, operation_state& os) noexcept
-                {
-                    os.state->add_continuation(PIKA_MOVE(os.receiver));
-                }
-            };
-
-            template <typename Receiver>
-            friend operation_state<Receiver> tag_invoke(
-                connect_t, ensure_started_sender_type&& s, Receiver&& receiver)
-            {
-                return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
+                os.state->add_continuation(PIKA_MOVE(os.receiver));
             }
         };
 
-        template <typename Sender, typename Enable = void>
-        struct is_ensure_started_sender_impl : std::false_type
+        template <typename Receiver>
+        friend operation_state<Receiver> tag_invoke(
+            pika::execution::experimental::connect_t,
+            ensure_started_sender_type&& s, Receiver&& receiver)
         {
-        };
+            return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
+        }
+    };
 
-        template <typename Sender>
-        struct is_ensure_started_sender_impl<Sender,
-            std::void_t<typename Sender::ensure_started_sender_tag>>
-          : std::true_type
-        {
-        };
+    template <typename Sender, typename Enable = void>
+    struct is_ensure_started_sender_impl : std::false_type
+    {
+    };
 
-        template <typename Sender>
-        inline constexpr bool is_ensure_started_sender_v =
-            is_ensure_started_sender_impl<std::decay_t<Sender>>::value;
-    }    // namespace ensure_started_detail
+    template <typename Sender>
+    struct is_ensure_started_sender_impl<Sender,
+        std::void_t<typename Sender::ensure_started_sender_tag>>
+      : std::true_type
+    {
+    };
 
+    template <typename Sender>
+    inline constexpr bool is_ensure_started_sender_v =
+        is_ensure_started_sender_impl<std::decay_t<Sender>>::value;
+}    // namespace pika::ensure_started_detail
+
+namespace pika::execution::experimental {
     inline constexpr struct ensure_started_t final
       : pika::functional::detail::tag_fallback<ensure_started_t>
     {
