@@ -40,7 +40,7 @@ void test_scheduler(
 
     pika::start(nullptr, argc, argv, init_args);
 
-    pika::threads::thread_pool_base& default_pool =
+    pika::threads::detail::thread_pool_base& default_pool =
         pika::resource::get_thread_pool("default");
     std::size_t const default_pool_threads =
         pika::resource::get_num_threads("default");

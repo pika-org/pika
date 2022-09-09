@@ -93,7 +93,7 @@ namespace pika { namespace lcos { namespace local {
         protected:
             // run in a separate thread
             threads::detail::thread_id_ref_type apply(
-                threads::thread_pool_base* pool, const char* annotation,
+                threads::detail::thread_pool_base* pool, const char* annotation,
                 launch policy, error_code& ec) override
             {
                 this->check_started();
@@ -236,7 +236,7 @@ namespace pika { namespace lcos { namespace local {
         protected:
             // run in a separate thread
             threads::detail::thread_id_ref_type apply(
-                threads::thread_pool_base* pool, const char* annotation,
+                threads::detail::thread_pool_base* pool, const char* annotation,
                 launch policy, error_code& ec) override
             {
                 if (exec_)
@@ -736,7 +736,7 @@ namespace pika { namespace lcos { namespace local {
         }
 
         threads::detail::thread_id_ref_type apply(
-            threads::thread_pool_base* pool,
+            threads::detail::thread_pool_base* pool,
             const char* annotation = "futures_factory::apply",
             launch policy = launch::async, error_code& ec = throws) const
         {

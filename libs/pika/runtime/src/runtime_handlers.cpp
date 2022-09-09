@@ -129,7 +129,7 @@ namespace pika { namespace detail {
     }
 #endif
 
-    threads::thread_pool_base* get_default_pool()
+    threads::detail::thread_pool_base* get_default_pool()
     {
         pika::runtime* rt = get_runtime_ptr();
         if (rt == nullptr)

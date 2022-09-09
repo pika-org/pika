@@ -127,7 +127,7 @@ namespace pika { namespace execution { namespace experimental {
 
             // Members that are used for all parallel regions executed through
             // this executor.
-            threads::thread_pool_base* pool_ = nullptr;
+            threads::detail::thread_pool_base* pool_ = nullptr;
             execution::thread_priority priority_ =
                 execution::thread_priority::default_;
             execution::thread_stacksize stacksize_ =

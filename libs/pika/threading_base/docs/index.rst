@@ -18,7 +18,7 @@ for stackful and stackless threads:
 :cpp:class:`pika::threads::thread_data_stackless`. In addition, the module
 defines the base classes for schedulers and thread pools:
 :cpp:class:`pika::threads::detail::scheduler_base` and
-:cpp:class:`pika::threads::thread_pool_base`.
+:cpp:class:`pika::threads::detail::thread_pool_base`.
 
 See the :ref:`API reference <modules_thread_data_api>` of this module for more
 details.

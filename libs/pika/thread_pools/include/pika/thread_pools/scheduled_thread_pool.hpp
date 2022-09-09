@@ -41,7 +41,7 @@ namespace pika::threads::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
-    class scheduled_thread_pool : public pika::threads::thread_pool_base
+    class scheduled_thread_pool : public pika::threads::detail::thread_pool_base
     {
     public:
         ///////////////////////////////////////////////////////////////////

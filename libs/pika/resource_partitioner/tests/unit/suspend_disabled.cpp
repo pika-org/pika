@@ -25,7 +25,7 @@ int pika_main()
 
     try
     {
-        pika::threads::thread_pool_base& tp =
+        pika::threads::detail::thread_pool_base& tp =
             pika::resource::get_thread_pool("default");
 
         // Use .get() to throw exception

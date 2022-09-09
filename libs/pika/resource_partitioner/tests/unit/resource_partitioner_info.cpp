@@ -29,7 +29,7 @@ int pika_main()
     PIKA_TEST_EQ(std::string("default"), pika::resource::get_pool_name(0));
 
     {
-        pika::threads::thread_pool_base& pool =
+        pika::threads::detail::thread_pool_base& pool =
             pika::resource::get_thread_pool(0);
         PIKA_TEST_EQ(std::size_t(0), pool.get_pool_index());
         PIKA_TEST_EQ(std::string("default"), pool.get_pool_name());
@@ -37,7 +37,7 @@ int pika_main()
     }
 
     {
-        pika::threads::thread_pool_base& pool =
+        pika::threads::detail::thread_pool_base& pool =
             pika::resource::get_thread_pool("default");
         PIKA_TEST_EQ(std::size_t(0), pool.get_pool_index());
         PIKA_TEST_EQ(std::string("default"), pool.get_pool_name());

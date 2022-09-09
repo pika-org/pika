@@ -328,7 +328,7 @@ namespace pika::threads::detail {
         return get_thread_id_data(id)->set_backtrace(bt);
     }
 
-    threads::thread_pool_base* get_pool(
+    threads::detail::thread_pool_base* get_pool(
         thread_id_type const& id, error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
@@ -529,7 +529,7 @@ namespace pika::this_thread {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::thread_pool_base* get_pool(error_code& ec)
+    threads::detail::thread_pool_base* get_pool(error_code& ec)
     {
         return threads::detail::get_pool(threads::detail::get_self_id(), ec);
     }

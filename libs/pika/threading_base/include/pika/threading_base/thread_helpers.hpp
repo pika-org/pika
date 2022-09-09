@@ -412,7 +412,7 @@ namespace pika::threads::detail {
     ///         If this function is called while the thread-manager is not
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
-    PIKA_EXPORT threads::thread_pool_base* get_pool(
+    PIKA_EXPORT threads::detail::thread_pool_base* get_pool(
         thread_id_type const& id, error_code& ec = throws);
 }    // namespace pika::threads::detail
 
@@ -610,7 +610,8 @@ namespace pika::this_thread {
     ///         If this function is called while the thread-manager is not
     ///         running, it will throw an \a pika#exception with an error code of
     ///         \a pika#invalid_status.
-    PIKA_EXPORT threads::thread_pool_base* get_pool(error_code& ec = throws);
+    PIKA_EXPORT threads::detail::thread_pool_base* get_pool(
+        error_code& ec = throws);
 
     /// \cond NOINTERNAL
     // returns the remaining available stack space

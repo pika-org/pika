@@ -138,7 +138,7 @@ namespace pika { namespace execution {
         }
 
         constexpr explicit parallel_policy_executor(
-            threads::thread_pool_base* pool,
+            threads::detail::thread_pool_base* pool,
             execution::thread_priority priority =
                 execution::thread_priority::default_,
             execution::thread_stacksize stacksize =
@@ -335,7 +335,7 @@ namespace pika { namespace execution {
         /// \cond NOINTERNAL
         static constexpr std::size_t hierarchical_threshold_default_ = 6;
 
-        threads::thread_pool_base* pool_;
+        threads::detail::thread_pool_base* pool_;
         Policy policy_;
         std::size_t hierarchical_threshold_ = hierarchical_threshold_default_;
         char const* annotation_ = nullptr;

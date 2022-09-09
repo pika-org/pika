@@ -33,7 +33,7 @@ int pika_main()
 
     PIKA_TEST_EQ(std::size_t(max_threads - 1), num_threads);
 
-    pika::threads::thread_pool_base& tp =
+    pika::threads::detail::thread_pool_base& tp =
         pika::resource::get_thread_pool("worker");
 
     {

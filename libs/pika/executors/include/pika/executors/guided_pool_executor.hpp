@@ -264,7 +264,7 @@ namespace pika { namespace parallel { namespace execution {
 
     public:
         guided_pool_executor(
-            threads::thread_pool_base* pool, bool hp_sync = false)
+            threads::detail::thread_pool_base* pool, bool hp_sync = false)
           : pool_(pool)
           , priority_(pika::execution::thread_priority::default_)
           , stacksize_(pika::execution::thread_stacksize::default_)
@@ -272,7 +272,7 @@ namespace pika { namespace parallel { namespace execution {
         {
         }
 
-        guided_pool_executor(threads::thread_pool_base* pool,
+        guided_pool_executor(threads::detail::thread_pool_base* pool,
             pika::execution::thread_stacksize stacksize, bool hp_sync = false)
           : pool_(pool)
           , priority_(pika::execution::thread_priority::default_)
@@ -281,7 +281,7 @@ namespace pika { namespace parallel { namespace execution {
         {
         }
 
-        guided_pool_executor(threads::thread_pool_base* pool,
+        guided_pool_executor(threads::detail::thread_pool_base* pool,
             pika::execution::thread_priority priority,
             pika::execution::thread_stacksize stacksize =
                 pika::execution::thread_stacksize::default_,
@@ -512,7 +512,7 @@ namespace pika { namespace parallel { namespace execution {
         }
 
     private:
-        threads::thread_pool_base* pool_;
+        threads::detail::thread_pool_base* pool_;
         pika::execution::thread_priority priority_;
         pika::execution::thread_stacksize stacksize_;
         pool_numa_hint<Tag> hint_;
@@ -527,21 +527,23 @@ namespace pika { namespace parallel { namespace execution {
     struct guided_pool_executor_shim
     {
     public:
-        guided_pool_executor_shim(
-            bool guided, threads::thread_pool_base* pool, bool hp_sync = false)
+        guided_pool_executor_shim(bool guided,
+            threads::detail::thread_pool_base* pool, bool hp_sync = false)
           : guided_(guided)
           , guided_exec_(pool, hp_sync)
         {
         }
 
-        guided_pool_executor_shim(bool guided, threads::thread_pool_base* pool,
+        guided_pool_executor_shim(bool guided,
+            threads::detail::thread_pool_base* pool,
             pika::execution::thread_stacksize stacksize, bool hp_sync = false)
           : guided_(guided)
           , guided_exec_(pool, hp_sync, stacksize)
         {
         }
 
-        guided_pool_executor_shim(bool guided, threads::thread_pool_base* pool,
+        guided_pool_executor_shim(bool guided,
+            threads::detail::thread_pool_base* pool,
             pika::execution::thread_priority priority,
             pika::execution::thread_stacksize stacksize =
                 pika::execution::thread_stacksize::default_,

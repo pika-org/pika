@@ -64,13 +64,13 @@ namespace pika::threads::detail {
 
         virtual ~scheduler_base() = default;
 
-        threads::thread_pool_base* get_parent_pool() const
+        threads::detail::thread_pool_base* get_parent_pool() const
         {
             PIKA_ASSERT(parent_pool_ != nullptr);
             return parent_pool_;
         }
 
-        void set_parent_pool(threads::thread_pool_base* p)
+        void set_parent_pool(threads::detail::thread_pool_base* p)
         {
             PIKA_ASSERT(parent_pool_ == nullptr);
             parent_pool_ = p;
@@ -407,7 +407,7 @@ namespace pika::threads::detail {
         thread_queue_init_parameters thread_queue_init_;
 
         // the pool that owns this scheduler
-        threads::thread_pool_base* parent_pool_;
+        threads::detail::thread_pool_base* parent_pool_;
 
         std::atomic<std::int64_t> background_thread_count_;
 

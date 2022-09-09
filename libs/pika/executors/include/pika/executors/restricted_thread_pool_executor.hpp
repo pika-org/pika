@@ -175,7 +175,7 @@ namespace pika { namespace parallel { namespace execution {
         /// \endcond
 
     private:
-        threads::thread_pool_base* pool_ = nullptr;
+        threads::detail::thread_pool_base* pool_ = nullptr;
 
         pika::execution::thread_priority priority_ =
             pika::execution::thread_priority::default_;

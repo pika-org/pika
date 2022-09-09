@@ -48,8 +48,10 @@ namespace pika::mpi::experimental {
 
         PIKA_EXPORT void add_request_callback(
             request_callback_function_type&&, MPI_Request, stream_type);
-        PIKA_EXPORT void register_polling(pika::threads::thread_pool_base&);
-        PIKA_EXPORT void unregister_polling(pika::threads::thread_pool_base&);
+        PIKA_EXPORT void register_polling(
+            pika::threads::detail::thread_pool_base&);
+        PIKA_EXPORT void unregister_polling(
+            pika::threads::detail::thread_pool_base&);
 
         // -----------------------------------------------------------------
         // an MPI error handling type that we can use to intercept

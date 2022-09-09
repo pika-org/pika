@@ -19,7 +19,7 @@
 int pika_main()
 {
     std::size_t num_threads = pika::resource::get_num_threads("default");
-    pika::threads::thread_pool_base& tp =
+    pika::threads::detail::thread_pool_base& tp =
         pika::resource::get_thread_pool("default");
 
     auto used_pu_mask = tp.get_used_processing_units();
