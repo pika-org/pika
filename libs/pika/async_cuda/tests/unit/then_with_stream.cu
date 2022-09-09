@@ -64,10 +64,14 @@ struct dummy
         ++cublas_void_calls;
     }
 
+#if !defined(PIKA_HAVE_HIP)
+    // cusolverDnHandle_t and cublasHandle_t are the same so this results in a
+    // redefinition with HIP.
     void operator()(cusolverDnHandle_t) const
     {
         ++cusolver_void_calls;
     }
+#endif
 
     double operator()(int x) const
     {
@@ -88,11 +92,13 @@ struct dummy
         return x + 1;
     }
 
+#if !defined(PIKA_HAVE_HIP)
     double operator()(cusolverDnHandle_t, int x) const
     {
         ++cusolver_int_calls;
         return x + 1;
     }
+#endif
 
     int operator()(double x) const
     {
@@ -113,11 +119,13 @@ struct dummy
         return x + 1;
     }
 
+#if !defined(PIKA_HAVE_HIP)
     int operator()(cusolverDnHandle_t, double x) const
     {
         ++cusolver_double_calls;
         return x + 1;
     }
+#endif
 };
 
 std::atomic<std::size_t> dummy::host_void_calls{0};
@@ -440,15 +448,25 @@ int pika_main()
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
+#if !defined(PIKA_HAVE_HIP)
         PIKA_TEST_EQ(dummy::cusolver_void_calls.load(), std::size_t(0));
+#endif
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(2));
         PIKA_TEST_EQ(dummy::stream_int_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(1));
+#if !defined(PIKA_HAVE_HIP)
         PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(0));
+#endif
         PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
+#if defined(PIKA_HAVE_HIP)
+        // rocblas_handle and rocsolver_handle being the same, the call to
+        // then_with_cusolver results in a increment of the cublas overload.
+        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
+#else
         PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(1));
+#endif
     }
 
     {
@@ -463,15 +481,25 @@ int pika_main()
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
+#if !defined(PIKA_HAVE_HIP)
         PIKA_TEST_EQ(dummy::cusolver_void_calls.load(), std::size_t(0));
+#endif
         PIKA_TEST_EQ(dummy::host_int_calls.load(), std::size_t(2));
         PIKA_TEST_EQ(dummy::stream_int_calls.load(), std::size_t(0));
+#if defined(PIKA_HAVE_HIP)
+        // rocblas_handle and rocsolver_handle being the same, the call to
+        // then_with_cusolver results in a increment of the cublas overload.
+        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(1));
+#else
         PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(1));
+#endif
         PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
         PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
+#if !defined(PIKA_HAVE_HIP)
         PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
+#endif
     }
 
     return pika::finalize();
