@@ -36,6 +36,7 @@ struct tss_value_t
     {
         std::unique_lock<pika::lcos::local::spinlock> lock(tss_mutex);
         --tss_instances;
+        pika::util::ignore_while_checking il(&lock);
         p.set_value();
     }
     pika::lcos::local::promise<void> p;
