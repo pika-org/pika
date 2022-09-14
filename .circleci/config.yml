@@ -605,12 +605,12 @@ jobs:
             sudo apt install clang ninja-build libboost-regex-dev \
             libboost-context-dev libhwloc-dev mpi-default-dev xsltproc -y
             mkdir build
-          working_directory: $HOME/project
       - run:
           name: Configuring pika Arm64
           command: |
             cmake \
-                $HOME/project/pika \
+                ./pika \
+                -Bbuild \
                 -G "Ninja" \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DCMAKE_CXX_COMPILER=clang++ \
@@ -637,29 +637,28 @@ jobs:
                 -DPIKA_WITH_TESTS_DEBUG_LOG=On \
                 -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=$HOME/project/build/debug-log-arm.txt \
                 -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=On
-          working_directory: $HOME/project/build
       - run:
           name: Building pika Arm64
           command: |
+            cd build
             ninja -k 0 pika
-          working_directory: $HOME/project/build
       - run:
           name: Building tests Arm64
           command: |
+            cd build
             ninja -k 0 tests
-          working_directory: $HOME/project/build
       - run:
           name: Running tests Arm64
           when: always
           command: |
-              ulimit -c unlimited
-              ctest \
-                -j4 \
-                --timeout 400 \
-                -T test \
-                --no-compress-output \
-                --output-on-failure
-          working_directory: $HOME/project/build
+            cd build
+            ulimit -c unlimited
+            ctest \
+              -j4 \
+              --timeout 400 \
+              -T test \
+              --no-compress-output \
+              --output-on-failure
       - run:
           <<: *convert_xml
           working_directory: $HOME/project/build
