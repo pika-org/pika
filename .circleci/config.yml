@@ -635,7 +635,7 @@ jobs:
                 -DPIKA_WITH_STACKTRACES_STATIC_SYMBOLS=On \
                 -DPIKA_WITH_STACKTRACES_DEMANGLE_SYMBOLS=Off \
                 -DPIKA_WITH_TESTS_DEBUG_LOG=On \
-                -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=$HOME/project/build/debug-log-arm.txt \
+                -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=$HOME/project/build/debug-log.txt \
                 -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=On
       - run:
           name: Building pika Arm64
@@ -661,7 +661,17 @@ jobs:
               --output-on-failure
       - run:
           <<: *convert_xml
-          working_directory: $HOME/project/build
+          working_directory: /home/circleci/project/build
+      - run:
+          <<: *move_core_dump
+          working_directory: /home/circleci/project/build
+      - run:
+          <<: *move_debug_log
+          working_directory: /home/circleci/project/build
+      - store_test_results:
+          path: build/arm64_build
+      - store_artifacts:
+          path: build/arm64_build
 
 workflows:
   version: 2
