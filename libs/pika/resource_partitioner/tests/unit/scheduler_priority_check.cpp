@@ -57,23 +57,22 @@ int pika_main(variables_map& vm)
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
     {
+        using ::pika::threads::scheduler_mode;
         std::cout << "Setting shared-priority mode flags" << std::endl;
         sched->add_remove_scheduler_mode(
             // add these flags
-            pika::threads::scheduler_mode(
-                pika::threads::scheduler_mode::enable_stealing |
-                pika::threads::scheduler_mode::enable_stealing_numa |
-                pika::threads::scheduler_mode::assign_work_round_robin |
-                pika::threads::scheduler_mode::steal_high_priority_first),
+            scheduler_mode::enable_stealing |
+            scheduler_mode::enable_stealing_numa |
+            scheduler_mode::assign_work_round_robin |
+            scheduler_mode::steal_high_priority_first,
             // remove these flags
-            pika::threads::scheduler_mode(
-                pika::threads::scheduler_mode::assign_work_thread_parent |
-                pika::threads::scheduler_mode::steal_after_local |
-                pika::threads::scheduler_mode::do_background_work |
-                pika::threads::scheduler_mode::reduce_thread_priority |
-                pika::threads::scheduler_mode::delay_exit |
-                pika::threads::scheduler_mode::fast_idle_mode |
-                pika::threads::scheduler_mode::enable_elasticity));
+            scheduler_mode::assign_work_thread_parent |
+            scheduler_mode::steal_after_local |
+            scheduler_mode::do_background_work |
+            scheduler_mode::reduce_thread_priority |
+            scheduler_mode::delay_exit |
+            scheduler_mode::fast_idle_mode |
+            scheduler_mode::enable_elasticity);
     }
 
     // setup executors for different task priorities on the pools

@@ -162,17 +162,16 @@ void function_futures_limiting_executor(
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
     {
+        using ::pika::threads::scheduler_mode;
         sched->add_remove_scheduler_mode(
             // add these flags
-            pika::threads::scheduler_mode(
-                pika::threads::scheduler_mode::enable_stealing |
-                pika::threads::scheduler_mode::enable_stealing_numa |
-                pika::threads::scheduler_mode::assign_work_round_robin |
-                pika::threads::scheduler_mode::steal_after_local),
+            scheduler_mode::enable_stealing |
+            scheduler_mode::enable_stealing_numa |
+            scheduler_mode::assign_work_round_robin |
+            scheduler_mode::steal_after_local,
             // remove these flags
-            pika::threads::scheduler_mode(
-                pika::threads::scheduler_mode::assign_work_thread_parent |
-                pika::threads::scheduler_mode::steal_high_priority_first));
+            scheduler_mode::assign_work_thread_parent |
+            scheduler_mode::steal_high_priority_first);
     }
 
     // test a parallel algorithm on custom pool with high priority
@@ -332,15 +331,16 @@ void function_futures_create_thread_hierarchical_placement(
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
     {
+        using ::pika::threads::scheduler_mode;
         sched->add_remove_scheduler_mode(
-            pika::threads::scheduler_mode(
-                pika::threads::scheduler_mode::assign_work_thread_parent),
-            pika::threads::scheduler_mode(
-                pika::threads::scheduler_mode::enable_stealing |
-                pika::threads::scheduler_mode::enable_stealing_numa |
-                pika::threads::scheduler_mode::assign_work_round_robin |
-                pika::threads::scheduler_mode::steal_after_local |
-                pika::threads::scheduler_mode::steal_high_priority_first));
+                // add
+                scheduler_mode::assign_work_thread_parent,
+                // remove
+                scheduler_mode::enable_stealing |
+                scheduler_mode::enable_stealing_numa |
+                scheduler_mode::assign_work_round_robin |
+                scheduler_mode::steal_after_local |
+                scheduler_mode::steal_high_priority_first);
     }
     auto const func = [&l]() {
         null_function();
