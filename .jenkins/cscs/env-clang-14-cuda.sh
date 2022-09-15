@@ -15,6 +15,14 @@ spack_arch="cray-cnl7-haswell"
 spack_spec="pika@main arch=${spack_arch} %${spack_compiler} +cuda malloc=system cxxstd=${cxx_std} +p2300 ^boost@${boost_version} ^cuda@${cuda_version} +allow-unsupported-compilers ^hwloc@${hwloc_version}"
 
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
+configure_extra_options+=" -DPIKA_WITH_CUDA=ON"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 configure_extra_options+=" -DPIKA_WITH_P2300_REFERENCE_IMPLEMENTATION=ON"
+configure_extra_options+=" -DCMAKE_CUDA_COMPILER=c++"
+configure_extra_options+=" -DCMAKE_CUDA_ARCHITECTURES=60"
+
+# The build unit test with pika in Debug and the hello_world project in Debug
+# mode hangs on this configuration. Release-Debug, Debug-Release, and
+# Release-Release do not hang.
+configure_extra_options+=" -DPIKA_WITH_TESTS_EXTERNAL_BUILD=OFF"

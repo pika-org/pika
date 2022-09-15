@@ -5,11 +5,6 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
-
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(PIKA_WITH_CLANG_CUDA ON)
-  endif()
-
   # Check and set CUDA standard
   if(NOT PIKA_FIND_PACKAGE)
     if(DEFINED CMAKE_CUDA_STANDARD AND NOT CMAKE_CUDA_STANDARD STREQUAL
@@ -27,6 +22,10 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
   set(CMAKE_CUDA_EXTENSIONS OFF)
 
   enable_language(CUDA)
+
+  if(CMAKE_CUDA_COMPILER_ID STREQUAL "Clang")
+    set(PIKA_WITH_CLANG_CUDA ON)
+  endif()
 
   if(NOT PIKA_FIND_PACKAGE)
     # The cmake variables are supposed to be cached no need to redefine them
