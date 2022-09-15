@@ -82,10 +82,10 @@ void measure_function_futures_create_thread_hierarchical_placement(
             scheduler_mode::assign_work_thread_parent,
             // remove
             scheduler_mode::enable_stealing |
-            scheduler_mode::enable_stealing_numa |
-            scheduler_mode::assign_work_round_robin |
-            scheduler_mode::steal_after_local |
-            scheduler_mode::steal_high_priority_first);
+                scheduler_mode::enable_stealing_numa |
+                scheduler_mode::assign_work_round_robin |
+                scheduler_mode::steal_after_local |
+                scheduler_mode::steal_high_priority_first);
     }
     auto const desc = pika::detail::thread_description();
     auto prio = pika::execution::thread_priority::normal;
