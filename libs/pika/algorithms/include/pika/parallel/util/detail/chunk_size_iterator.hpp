@@ -72,7 +72,7 @@ namespace pika::parallel::util::detail {
         }
 
     public:
-        PIKA_HOST_DEVICE chunk_size_iterator() = default;
+        chunk_size_iterator() = default;
 
         PIKA_HOST_DEVICE chunk_size_iterator(Iterator it,
             std::size_t chunk_size, std::size_t count = 0,
@@ -253,7 +253,7 @@ namespace pika::parallel::util::detail {
         }
 
     public:
-        PIKA_HOST_DEVICE chunk_size_idx_iterator() = default;
+        chunk_size_idx_iterator() = default;
 
         PIKA_HOST_DEVICE chunk_size_idx_iterator(Iterator it,
             std::size_t chunk_size, std::size_t count = 0,

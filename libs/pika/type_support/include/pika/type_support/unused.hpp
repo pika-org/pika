@@ -24,8 +24,7 @@ namespace pika::util::detail {
     ///////////////////////////////////////////////////////////////////////////
     struct unused_type
     {
-        constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type() noexcept =
-            default;
+        constexpr PIKA_FORCEINLINE unused_type() noexcept = default;
 
         constexpr PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type(
             unused_type const&) noexcept
