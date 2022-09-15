@@ -33,347 +33,352 @@
 #include <utility>
 #include <vector>
 
-namespace pika::execution::experimental {
-    namespace when_all_vector_detail {
-        template <typename Sender>
-        struct when_all_vector_sender_impl
+namespace pika::when_all_vector_detail {
+    template <typename Sender>
+    struct when_all_vector_sender_impl
+    {
+        struct when_all_vector_sender_type;
+    };
+
+    template <typename Sender>
+    using when_all_vector_sender = typename when_all_vector_sender_impl<
+        Sender>::when_all_vector_sender_type;
+
+    template <typename Sender>
+    struct when_all_vector_sender_impl<Sender>::when_all_vector_sender_type
+    {
+        using senders_type = std::vector<Sender>;
+        senders_type senders;
+
+        explicit constexpr when_all_vector_sender_type(senders_type&& senders)
+          : senders(PIKA_MOVE(senders))
         {
-            struct when_all_vector_sender_type;
-        };
+        }
 
-        template <typename Sender>
-        using when_all_vector_sender = typename when_all_vector_sender_impl<
-            Sender>::when_all_vector_sender_type;
-
-        template <typename Sender>
-        struct when_all_vector_sender_impl<Sender>::when_all_vector_sender_type
+        explicit constexpr when_all_vector_sender_type(
+            senders_type const& senders)
+          : senders(senders)
         {
-            using senders_type = std::vector<Sender>;
-            senders_type senders;
-
-            explicit constexpr when_all_vector_sender_type(
-                senders_type&& senders)
-              : senders(PIKA_MOVE(senders))
-            {
-            }
-
-            explicit constexpr when_all_vector_sender_type(
-                senders_type const& senders)
-              : senders(senders)
-            {
-            }
+        }
 
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
-            // We expect a single value type or nothing from the predecessor
-            // sender type
-            using element_value_type = detail::single_result_t<pika::execution::
-                    experimental::value_types_of_t<Sender, detail::empty_env,
-                        pika::util::detail::pack, pika::util::detail::pack>>;
+        // We expect a single value type or nothing from the predecessor
+        // sender type
+        using element_value_type =
+            pika::execution::experimental::detail::single_result_t<
+                pika::execution::experimental::value_types_of_t<Sender,
+                    pika::execution::experimental::detail::empty_env,
+                    pika::util::detail::pack, pika::util::detail::pack>>;
 
-            static constexpr bool is_void_value_type =
-                std::is_void_v<element_value_type>;
+        static constexpr bool is_void_value_type =
+            std::is_void_v<element_value_type>;
 
-            // This is a helper empty type for the case that nothing is sent
-            // from the predecessors
-            struct void_value_type
-            {
-            };
+        // This is a helper empty type for the case that nothing is sent
+        // from the predecessors
+        struct void_value_type
+        {
+        };
 
-            // This sender sends a single vector of the type sent by the
-            // predecessor senders or nothing if the predecessor senders send
-            // nothing
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
-            using value_types = Variant<std::conditional_t<is_void_value_type,
-                Tuple<>, Tuple<std::vector<element_value_type>>>>;
+        // This sender sends a single vector of the type sent by the
+        // predecessor senders or nothing if the predecessor senders send
+        // nothing
+        template <template <typename...> class Tuple,
+            template <typename...> class Variant>
+        using value_types = Variant<std::conditional_t<is_void_value_type,
+            Tuple<>, Tuple<std::vector<element_value_type>>>>;
 
-            // This sender sends any error types sent by the predecessor senders
-            // or std::exception_ptr
-            template <template <typename...> class Variant>
-            using error_types = pika::util::detail::unique_concat_t<
-                pika::execution::experimental::error_types_of_t<Sender,
-                    detail::empty_env, Variant>,
-                Variant<std::exception_ptr>>;
+        // This sender sends any error types sent by the predecessor senders
+        // or std::exception_ptr
+        template <template <typename...> class Variant>
+        using error_types = pika::util::detail::unique_concat_t<
+            pika::execution::experimental::error_types_of_t<Sender,
+                pika::execution::experimental::detail::empty_env, Variant>,
+            Variant<std::exception_ptr>>;
 
-            static constexpr bool sends_done = false;
+        static constexpr bool sends_done = false;
 
-            using completion_signatures =
-                pika::execution::experimental::completion_signatures<
-                    std::conditional_t<is_void_value_type, set_value_t(),
-                        set_value_t(std::vector<element_value_type>)>,
-                    set_error_t(std::exception_ptr)>;
+        using completion_signatures =
+            pika::execution::experimental::completion_signatures<
+                std::conditional_t<is_void_value_type,
+                    pika::execution::experimental::set_value_t(),
+                    pika::execution::experimental::set_value_t(
+                        std::vector<element_value_type>)>,
+                pika::execution::experimental::set_error_t(std::exception_ptr)>;
 #else
-            // We expect a single value type or nothing from the predecessor
-            // sender type
-            using element_value_type = detail::single_result_t<
+        // We expect a single value type or nothing from the predecessor
+        // sender type
+        using element_value_type =
+            pika::execution::experimental::detail::single_result_t<
                 typename pika::execution::experimental::sender_traits<
                     Sender>::template value_types<pika::util::detail::pack,
                     pika::util::detail::pack>>;
 
-            static constexpr bool is_void_value_type =
-                std::is_void_v<element_value_type>;
+        static constexpr bool is_void_value_type =
+            std::is_void_v<element_value_type>;
 
-            // This is a helper empty type for the case that nothing is sent
-            // from the predecessors
-            struct void_value_type
-            {
-            };
+        // This is a helper empty type for the case that nothing is sent
+        // from the predecessors
+        struct void_value_type
+        {
+        };
 
-            // This sender sends a single vector of the type sent by the
-            // predecessor senders or nothing if the predecessor senders send
-            // nothing
-            template <template <typename...> class Tuple,
-                template <typename...> class Variant>
-            using value_types = Variant<std::conditional_t<is_void_value_type,
-                Tuple<>, Tuple<std::vector<element_value_type>>>>;
+        // This sender sends a single vector of the type sent by the
+        // predecessor senders or nothing if the predecessor senders send
+        // nothing
+        template <template <typename...> class Tuple,
+            template <typename...> class Variant>
+        using value_types = Variant<std::conditional_t<is_void_value_type,
+            Tuple<>, Tuple<std::vector<element_value_type>>>>;
 
-            // This sender sends any error types sent by the predecessor senders
-            // or std::exception_ptr
-            template <template <typename...> class Variant>
-            using error_types = pika::util::detail::unique_concat_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template error_types<Variant>,
-                Variant<std::exception_ptr>>;
+        // This sender sends any error types sent by the predecessor senders
+        // or std::exception_ptr
+        template <template <typename...> class Variant>
+        using error_types = pika::util::detail::unique_concat_t<
+            typename pika::execution::experimental::sender_traits<
+                Sender>::template error_types<Variant>,
+            Variant<std::exception_ptr>>;
 
-            static constexpr bool sends_done = false;
+        static constexpr bool sends_done = false;
 #endif
 
-            template <typename Receiver>
-            struct operation_state
+        template <typename Receiver>
+        struct operation_state
+        {
+            struct when_all_vector_receiver
             {
-                struct when_all_vector_receiver
-                {
-                    operation_state& op_state;
-                    std::size_t const i;
+                operation_state& op_state;
+                std::size_t const i;
 
-                    template <typename Error>
-                    friend void tag_invoke(set_error_t,
-                        when_all_vector_receiver&& r, Error&& error) noexcept
+                template <typename Error>
+                friend void tag_invoke(
+                    pika::execution::experimental::set_error_t,
+                    when_all_vector_receiver&& r, Error&& error) noexcept
+                {
+                    if (!r.op_state.set_stopped_error_called.exchange(true))
                     {
-                        if (!r.op_state.set_stopped_error_called.exchange(true))
+                        try
                         {
-                            try
+                            r.op_state.error = PIKA_FORWARD(Error, error);
+                        }
+                        catch (...)
+                        {
+                            // NOLINTNEXTLINE(bugprone-throw-keyword-missing)
+                            r.op_state.error = std::current_exception();
+                        }
+                    }
+
+                    r.op_state.finish();
+                }
+
+                friend void tag_invoke(
+                    pika::execution::experimental::set_stopped_t,
+                    when_all_vector_receiver&& r) noexcept
+                {
+                    r.op_state.set_stopped_error_called = true;
+                    r.op_state.finish();
+                };
+
+                template <typename... Ts>
+                friend void tag_invoke(
+                    pika::execution::experimental::set_value_t,
+                    when_all_vector_receiver&& r, Ts&&... ts) noexcept
+                {
+                    if (!r.op_state.set_stopped_error_called)
+                    {
+                        try
+                        {
+                            // We only have something to store if the
+                            // predecessor sends the single value that it
+                            // should send. We have nothing to store for
+                            // predecessor senders that send nothing.
+                            if constexpr (sizeof...(Ts) == 1)
                             {
-                                r.op_state.error = PIKA_FORWARD(Error, error);
+                                r.op_state.ts[r.i].emplace(
+                                    PIKA_FORWARD(Ts, ts)...);
                             }
-                            catch (...)
+                        }
+                        catch (...)
+                        {
+                            if (!r.op_state.set_stopped_error_called.exchange(
+                                    true))
                             {
                                 // NOLINTNEXTLINE(bugprone-throw-keyword-missing)
                                 r.op_state.error = std::current_exception();
                             }
                         }
-
-                        r.op_state.finish();
                     }
 
-                    friend void tag_invoke(
-                        set_stopped_t, when_all_vector_receiver&& r) noexcept
-                    {
-                        r.op_state.set_stopped_error_called = true;
-                        r.op_state.finish();
-                    };
-
-                    template <typename... Ts>
-                    friend void tag_invoke(set_value_t,
-                        when_all_vector_receiver&& r, Ts&&... ts) noexcept
-                    {
-                        if (!r.op_state.set_stopped_error_called)
-                        {
-                            try
-                            {
-                                // We only have something to store if the
-                                // predecessor sends the single value that it
-                                // should send. We have nothing to store for
-                                // predecessor senders that send nothing.
-                                if constexpr (sizeof...(Ts) == 1)
-                                {
-                                    r.op_state.ts[r.i].emplace(
-                                        PIKA_FORWARD(Ts, ts)...);
-                                }
-                            }
-                            catch (...)
-                            {
-                                if (!r.op_state.set_stopped_error_called
-                                         .exchange(true))
-                                {
-                                    // NOLINTNEXTLINE(bugprone-throw-keyword-missing)
-                                    r.op_state.error = std::current_exception();
-                                }
-                            }
-                        }
-
-                        r.op_state.finish();
-                    }
-
-                    friend constexpr pika::execution::experimental::detail::
-                        empty_env
-                        tag_invoke(pika::execution::experimental::get_env_t,
-                            when_all_vector_receiver const&) noexcept
-                    {
-                        return {};
-                    }
-                };
-
-                std::size_t const num_predecessors;
-                std::decay_t<Receiver> receiver;
-
-                // Number of predecessor senders that have not yet called any of
-                // the set signals.
-                std::atomic<std::size_t> predecessors_remaining{
-                    num_predecessors};
-
-                // The values sent by the predecessor senders are stored in a
-                // vector of optional or the dummy type void_value_type if the
-                // predecessor senders send nothing
-                using value_types_storage_type =
-                    std::conditional_t<is_void_value_type, void_value_type,
-                        std::vector<std::optional<element_value_type>>>;
-                value_types_storage_type ts;
-
-                // The first error sent by any predecessor sender is stored in a
-                // optional of a variant of the error_types
-                using error_types_storage_type =
-                    std::optional<error_types<pika::detail::variant>>;
-                error_types_storage_type error;
-
-                // Set to true when set_stopped or set_error has been called
-                std::atomic<bool> set_stopped_error_called{false};
-
-                // The operation states are stored in an array of optionals of
-                // the operation states to handle the non-movability and
-                // non-copyability of them
-                using operation_state_type =
-                    pika::execution::experimental::connect_result_t<Sender,
-                        when_all_vector_receiver>;
-                using operation_states_storage_type =
-                    std::unique_ptr<std::optional<operation_state_type>[]>;
-                operation_states_storage_type op_states = nullptr;
-
-                template <typename Receiver_>
-                operation_state(
-                    Receiver_&& receiver, std::vector<Sender>&& senders)
-                  : num_predecessors(senders.size())
-                  , receiver(PIKA_FORWARD(Receiver_, receiver))
-                {
-                    op_states =
-                        std::make_unique<std::optional<operation_state_type>[]>(
-                            num_predecessors);
-                    std::size_t i = 0;
-                    for (auto&& sender : senders)
-                    {
-                        op_states[i].emplace(
-                            pika::detail::with_result_of([&]() {
-                                return pika::execution::experimental::connect(
-                                    PIKA_MOVE(sender),
-                                    when_all_vector_receiver{*this, i});
-                            }));
-                        ++i;
-                    }
-
-                    if constexpr (!is_void_value_type)
-                    {
-                        ts.resize(num_predecessors);
-                    }
+                    r.op_state.finish();
                 }
 
-                operation_state(operation_state&&) = delete;
-                operation_state& operator=(operation_state&&) = delete;
-                operation_state(operation_state const&) = delete;
-                operation_state& operator=(operation_state const&) = delete;
-
-                void finish() noexcept
+                friend constexpr pika::execution::experimental::detail::
+                    empty_env
+                    tag_invoke(pika::execution::experimental::get_env_t,
+                        when_all_vector_receiver const&) noexcept
                 {
-                    if (--predecessors_remaining == 0)
-                    {
-                        if (!set_stopped_error_called)
-                        {
-                            if constexpr (is_void_value_type)
-                            {
-                                pika::execution::experimental::set_value(
-                                    PIKA_MOVE(receiver));
-                            }
-                            else
-                            {
-                                std::vector<element_value_type> values;
-                                values.reserve(num_predecessors);
-                                for (auto&& t : ts)
-                                {
-                                    values.push_back(PIKA_MOVE(t.value()));
-                                }
-                                pika::execution::experimental::set_value(
-                                    PIKA_MOVE(receiver), PIKA_MOVE(values));
-                            }
-                        }
-                        else if (error)
-                        {
-                            pika::detail::visit(
-                                [this](auto&& error) {
-                                    pika::execution::experimental::set_error(
-                                        PIKA_MOVE(receiver),
-                                        PIKA_FORWARD(decltype(error), error));
-                                },
-                                PIKA_MOVE(error.value()));
-                        }
-                        else
-                        {
-                            pika::execution::experimental::set_stopped(
-                                PIKA_MOVE(receiver));
-                        }
-                    }
-                }
-
-                friend void tag_invoke(start_t, operation_state& os) noexcept
-                {
-                    // If there are no predecessors we can signal the
-                    // continuation as soon as start is called.
-                    if (os.num_predecessors == 0)
-                    {
-                        // If the predecessor sender type sends nothing, we also
-                        // send nothing to the continuation.
-                        if constexpr (is_void_value_type)
-                        {
-                            pika::execution::experimental::set_value(
-                                PIKA_MOVE(os.receiver));
-                        }
-                        // If the predecessor sender type sends something we
-                        // send an empty vector of that type to the continuation.
-                        else
-                        {
-                            pika::execution::experimental::set_value(
-                                PIKA_MOVE(os.receiver),
-                                std::vector<element_value_type>{});
-                        }
-                    }
-                    // Otherwise we start all the operation states and wait for
-                    // the predecessors to signal completion.
-                    else
-                    {
-                        for (std::size_t i = 0; i < os.num_predecessors; ++i)
-                        {
-                            pika::execution::experimental::start(
-                                os.op_states.get()[i].value());
-                        }
-                    }
+                    return {};
                 }
             };
 
-            template <typename Receiver>
-            friend auto tag_invoke(
-                connect_t, when_all_vector_sender_type&& s, Receiver&& receiver)
+            std::size_t const num_predecessors;
+            std::decay_t<Receiver> receiver;
+
+            // Number of predecessor senders that have not yet called any of
+            // the set signals.
+            std::atomic<std::size_t> predecessors_remaining{num_predecessors};
+
+            // The values sent by the predecessor senders are stored in a
+            // vector of optional or the dummy type void_value_type if the
+            // predecessor senders send nothing
+            using value_types_storage_type =
+                std::conditional_t<is_void_value_type, void_value_type,
+                    std::vector<std::optional<element_value_type>>>;
+            value_types_storage_type ts;
+
+            // The first error sent by any predecessor sender is stored in a
+            // optional of a variant of the error_types
+            using error_types_storage_type =
+                std::optional<error_types<pika::detail::variant>>;
+            error_types_storage_type error;
+
+            // Set to true when set_stopped or set_error has been called
+            std::atomic<bool> set_stopped_error_called{false};
+
+            // The operation states are stored in an array of optionals of
+            // the operation states to handle the non-movability and
+            // non-copyability of them
+            using operation_state_type =
+                pika::execution::experimental::connect_result_t<Sender,
+                    when_all_vector_receiver>;
+            using operation_states_storage_type =
+                std::unique_ptr<std::optional<operation_state_type>[]>;
+            operation_states_storage_type op_states = nullptr;
+
+            template <typename Receiver_>
+            operation_state(Receiver_&& receiver, std::vector<Sender>&& senders)
+              : num_predecessors(senders.size())
+              , receiver(PIKA_FORWARD(Receiver_, receiver))
             {
-                return operation_state<Receiver>(
-                    PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.senders));
+                op_states =
+                    std::make_unique<std::optional<operation_state_type>[]>(
+                        num_predecessors);
+                std::size_t i = 0;
+                for (auto&& sender : senders)
+                {
+                    op_states[i].emplace(pika::detail::with_result_of([&]() {
+                        return pika::execution::experimental::connect(
+                            PIKA_MOVE(sender),
+                            when_all_vector_receiver{*this, i});
+                    }));
+                    ++i;
+                }
+
+                if constexpr (!is_void_value_type)
+                {
+                    ts.resize(num_predecessors);
+                }
             }
 
-            template <typename Receiver>
-            friend auto tag_invoke(
-                connect_t, when_all_vector_sender_type& s, Receiver&& receiver)
+            operation_state(operation_state&&) = delete;
+            operation_state& operator=(operation_state&&) = delete;
+            operation_state(operation_state const&) = delete;
+            operation_state& operator=(operation_state const&) = delete;
+
+            void finish() noexcept
             {
-                return operation_state<Receiver>(receiver, s.senders);
+                if (--predecessors_remaining == 0)
+                {
+                    if (!set_stopped_error_called)
+                    {
+                        if constexpr (is_void_value_type)
+                        {
+                            pika::execution::experimental::set_value(
+                                PIKA_MOVE(receiver));
+                        }
+                        else
+                        {
+                            std::vector<element_value_type> values;
+                            values.reserve(num_predecessors);
+                            for (auto&& t : ts)
+                            {
+                                values.push_back(PIKA_MOVE(t.value()));
+                            }
+                            pika::execution::experimental::set_value(
+                                PIKA_MOVE(receiver), PIKA_MOVE(values));
+                        }
+                    }
+                    else if (error)
+                    {
+                        pika::detail::visit(
+                            [this](auto&& error) {
+                                pika::execution::experimental::set_error(
+                                    PIKA_MOVE(receiver),
+                                    PIKA_FORWARD(decltype(error), error));
+                            },
+                            PIKA_MOVE(error.value()));
+                    }
+                    else
+                    {
+                        pika::execution::experimental::set_stopped(
+                            PIKA_MOVE(receiver));
+                    }
+                }
+            }
+
+            friend void tag_invoke(pika::execution::experimental::start_t,
+                operation_state& os) noexcept
+            {
+                // If there are no predecessors we can signal the
+                // continuation as soon as start is called.
+                if (os.num_predecessors == 0)
+                {
+                    // If the predecessor sender type sends nothing, we also
+                    // send nothing to the continuation.
+                    if constexpr (is_void_value_type)
+                    {
+                        pika::execution::experimental::set_value(
+                            PIKA_MOVE(os.receiver));
+                    }
+                    // If the predecessor sender type sends something we
+                    // send an empty vector of that type to the continuation.
+                    else
+                    {
+                        pika::execution::experimental::set_value(
+                            PIKA_MOVE(os.receiver),
+                            std::vector<element_value_type>{});
+                    }
+                }
+                // Otherwise we start all the operation states and wait for
+                // the predecessors to signal completion.
+                else
+                {
+                    for (std::size_t i = 0; i < os.num_predecessors; ++i)
+                    {
+                        pika::execution::experimental::start(
+                            os.op_states.get()[i].value());
+                    }
+                }
             }
         };
-    }    // namespace when_all_vector_detail
 
+        template <typename Receiver>
+        friend auto tag_invoke(pika::execution::experimental::connect_t,
+            when_all_vector_sender_type&& s, Receiver&& receiver)
+        {
+            return operation_state<Receiver>(
+                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.senders));
+        }
+
+        template <typename Receiver>
+        friend auto tag_invoke(pika::execution::experimental::connect_t,
+            when_all_vector_sender_type& s, Receiver&& receiver)
+        {
+            return operation_state<Receiver>(receiver, s.senders);
+        }
+    };
+}    // namespace pika::when_all_vector_detail
+
+namespace pika::execution::experimental {
     inline constexpr struct when_all_vector_t final
       : pika::functional::detail::tag_fallback<when_all_vector_t>
     {
