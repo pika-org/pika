@@ -42,7 +42,7 @@ status = [
   "ci/circleci: arm64_build",
 
   # Jenkins
-  "jenkins/cscs-daint/cce-cuda-debug",
+  "jenkins/cscs-daint/cce-debug",
   "jenkins/cscs-daint/clang-11-debug",
   "jenkins/cscs-daint/clang-12-debug",
   "jenkins/cscs-daint/clang-13-debug",

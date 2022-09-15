@@ -134,7 +134,7 @@ namespace pika { namespace util {
                 arrow_dispatch_t<Reference>, Pointer>;
             using reference = Reference;
 
-            PIKA_HOST_DEVICE iterator_facade_base() = default;
+            iterator_facade_base() = default;
 
         protected:
             PIKA_HOST_DEVICE Derived& derived()
@@ -187,7 +187,7 @@ namespace pika { namespace util {
                 arrow_dispatch_t<Reference>, Pointer>;
             using reference = Reference;
 
-            PIKA_HOST_DEVICE iterator_facade_base() = default;
+            iterator_facade_base() = default;
 
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE Derived& operator--()
@@ -297,7 +297,7 @@ namespace pika { namespace util {
                 arrow_dispatch_t<Reference>, Pointer>;
             using reference = Reference;
 
-            PIKA_HOST_DEVICE iterator_facade_base() = default;
+            iterator_facade_base() = default;
 
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             PIKA_HOST_DEVICE
@@ -366,7 +366,7 @@ namespace pika { namespace util {
         using pointer = typename base_type::pointer;
         using reference = typename base_type::reference;
 
-        PIKA_HOST_DEVICE iterator_facade() = default;
+        iterator_facade() = default;
     };
 
     namespace detail {

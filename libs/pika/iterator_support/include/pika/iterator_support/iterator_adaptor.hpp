@@ -129,7 +129,7 @@ namespace pika { namespace util {
         friend class pika::util::iterator_core_access;
 
     public:
-        PIKA_HOST_DEVICE iterator_adaptor() = default;
+        iterator_adaptor() = default;
 
         PIKA_HOST_DEVICE explicit iterator_adaptor(Base const& iter)
           : iterator_(iter)
