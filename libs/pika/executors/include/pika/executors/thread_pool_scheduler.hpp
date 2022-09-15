@@ -29,7 +29,8 @@ namespace pika { namespace execution { namespace experimental {
     struct thread_pool_scheduler
     {
         constexpr thread_pool_scheduler() = default;
-        explicit thread_pool_scheduler(pika::threads::thread_pool_base* pool)
+        explicit thread_pool_scheduler(
+            pika::threads::detail::thread_pool_base* pool)
           : pool_(pool)
         {
         }
@@ -47,7 +48,7 @@ namespace pika { namespace execution { namespace experimental {
             return !(*this == rhs);
         }
 
-        pika::threads::thread_pool_base* get_thread_pool()
+        pika::threads::detail::thread_pool_base* get_thread_pool()
         {
             PIKA_ASSERT(pool_);
             return pool_;
@@ -138,7 +139,7 @@ namespace pika { namespace execution { namespace experimental {
         template <typename F>
         void execute(F&& f, char const* fallback_annotation) const
         {
-            pika::util::detail::thread_description desc(f, fallback_annotation);
+            pika::detail::thread_description desc(f, fallback_annotation);
             threads::detail::thread_init_data data(
                 threads::detail::make_thread_function_nullary(
                     PIKA_FORWARD(F, f)),
@@ -315,11 +316,10 @@ namespace pika { namespace execution { namespace experimental {
                 pika::threads::detail::get_self_id();
             if (id)
             {
-                pika::util::detail::thread_description desc =
+                pika::detail::thread_description desc =
                     pika::threads::detail::get_thread_description(id);
                 if (desc.kind() ==
-                    pika::util::detail::thread_description::
-                        data_type_description)
+                    pika::detail::thread_description::data_type_description)
                 {
                     return desc.get_description();
                 }
@@ -332,7 +332,7 @@ namespace pika { namespace execution { namespace experimental {
             return "<unknown>";
         }
 
-        pika::threads::thread_pool_base* pool_ =
+        pika::threads::detail::thread_pool_base* pool_ =
             pika::threads::detail::get_self_or_default_pool();
         pika::execution::thread_priority priority_ =
             pika::execution::thread_priority::normal;

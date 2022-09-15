@@ -18,7 +18,7 @@
 
 #include <memory>
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     template <typename T>
     class thread_specific_ptr
@@ -72,7 +72,7 @@ namespace pika { namespace threads {
         ~thread_specific_ptr()
         {
             // clean up data if this type is used locally for one thread
-            if (detail::get_self_ptr())
+            if (get_self_ptr())
                 coroutines::detail::erase_tss_node(this, true);
         }
 
@@ -108,5 +108,5 @@ namespace pika { namespace threads {
             }
         }
     };
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 #endif

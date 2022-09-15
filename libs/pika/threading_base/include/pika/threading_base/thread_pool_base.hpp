@@ -34,7 +34,7 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     /// \brief Data structure which stores statistics collected by an
     ///        executor instance.
     struct executor_statistics
@@ -51,42 +51,40 @@ namespace pika { namespace threads {
         std::uint64_t queue_length_;
     };
 
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////
-        enum executor_parameter
-        {
-            min_concurrency = 1,
-            max_concurrency = 2,
-            current_concurrency = 3
-        };
+    ///////////////////////////////////////////////////////////////////////
+    enum executor_parameter
+    {
+        min_concurrency = 1,
+        max_concurrency = 2,
+        current_concurrency = 3
+    };
 
-        ///////////////////////////////////////////////////////////////////////
-        // The interface below is used by the resource manager to
-        // interact with the executor.
-        struct PIKA_EXPORT manage_executor
-        {
-            virtual ~manage_executor() {}
+    ///////////////////////////////////////////////////////////////////////
+    // The interface below is used by the resource manager to
+    // interact with the executor.
+    struct PIKA_EXPORT manage_executor
+    {
+        virtual ~manage_executor() {}
 
-            // Return the requested policy element
-            virtual std::size_t get_policy_element(
-                executor_parameter p, error_code& ec) const = 0;
+        // Return the requested policy element
+        virtual std::size_t get_policy_element(
+            executor_parameter p, error_code& ec) const = 0;
 
-            // Return statistics collected by this scheduler
-            virtual void get_statistics(
-                executor_statistics& stats, error_code& ec) const = 0;
+        // Return statistics collected by this scheduler
+        virtual void get_statistics(
+            executor_statistics& stats, error_code& ec) const = 0;
 
-            // Provide the given processing unit to the scheduler.
-            virtual void add_processing_unit(std::size_t virt_core,
-                std::size_t thread_num, error_code& ec) = 0;
+        // Provide the given processing unit to the scheduler.
+        virtual void add_processing_unit(
+            std::size_t virt_core, std::size_t thread_num, error_code& ec) = 0;
 
-            // Remove the given processing unit from the scheduler.
-            virtual void remove_processing_unit(
-                std::size_t thread_num, error_code& ec) = 0;
+        // Remove the given processing unit from the scheduler.
+        virtual void remove_processing_unit(
+            std::size_t thread_num, error_code& ec) = 0;
 
-            // return the description string of the underlying scheduler
-            virtual char const* get_description() const = 0;
-        };
-    }    // namespace detail
+        // return the description string of the underlying scheduler
+        virtual char const* get_description() const = 0;
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     /// \cond NOINTERNAL
@@ -238,14 +236,13 @@ namespace pika { namespace threads {
 
         virtual std::size_t get_active_os_thread_count() const;
 
-        virtual void create_thread(detail::thread_init_data& data,
-            detail::thread_id_ref_type& id, error_code& ec) = 0;
-        virtual detail::thread_id_ref_type create_work(
-            detail::thread_init_data& data, error_code& ec) = 0;
+        virtual void create_thread(
+            thread_init_data& data, thread_id_ref_type& id, error_code& ec) = 0;
+        virtual thread_id_ref_type create_work(
+            thread_init_data& data, error_code& ec) = 0;
 
-        virtual detail::thread_state set_state(detail::thread_id_type const& id,
-            detail::thread_schedule_state new_state,
-            detail::thread_restart_state new_state_ex,
+        virtual thread_state set_state(thread_id_type const& id,
+            thread_schedule_state new_state, thread_restart_state new_state_ex,
             execution::thread_priority priority, error_code& ec) = 0;
 
         std::size_t get_pool_index() const
@@ -266,8 +263,8 @@ namespace pika { namespace threads {
             return nullptr;
         }
 
-        detail::mask_type get_used_processing_units() const;
-        detail::hwloc_bitmap_ptr get_numa_domain_bitmap() const;
+        mask_type get_used_processing_units() const;
+        hwloc_bitmap_ptr get_numa_domain_bitmap() const;
 
         // performance counters
 #if defined(PIKA_HAVE_THREAD_CUMULATIVE_COUNTS)
@@ -433,8 +430,7 @@ namespace pika { namespace threads {
         }
 #endif
 
-        virtual std::int64_t get_thread_count(
-            detail::thread_schedule_state /*state*/,
+        virtual std::int64_t get_thread_count(thread_schedule_state /*state*/,
             execution::thread_priority /*priority*/, std::size_t /*num_thread*/,
             bool /*reset*/)
         {
@@ -446,7 +442,7 @@ namespace pika { namespace threads {
             return 0;
         }
 
-        virtual void get_idle_core_mask(detail::mask_type&) const {}
+        virtual void get_idle_core_mask(mask_type&) const {}
 
         virtual std::int64_t get_background_thread_count()
         {
@@ -456,35 +452,35 @@ namespace pika { namespace threads {
         std::int64_t get_thread_count_unknown(
             std::size_t num_thread, bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::unknown,
+            return get_thread_count(thread_schedule_state::unknown,
                 execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_active(std::size_t num_thread, bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::active,
+            return get_thread_count(thread_schedule_state::active,
                 execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_pending(
             std::size_t num_thread, bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::pending,
+            return get_thread_count(thread_schedule_state::pending,
                 execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_suspended(
             std::size_t num_thread, bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::suspended,
+            return get_thread_count(thread_schedule_state::suspended,
                 execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_terminated(
             std::size_t num_thread, bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::terminated,
+            return get_thread_count(thread_schedule_state::terminated,
                 execution::thread_priority::default_, num_thread, reset);
         }
         std::int64_t get_thread_count_staged(std::size_t num_thread, bool reset)
         {
-            return get_thread_count(detail::thread_schedule_state::staged,
+            return get_thread_count(thread_schedule_state::staged,
                 execution::thread_priority::default_, num_thread, reset);
         }
 
@@ -497,9 +493,9 @@ namespace pika { namespace threads {
 
         ///////////////////////////////////////////////////////////////////////
         virtual bool enumerate_threads(
-            util::detail::function<bool(detail::thread_id_type)> const& /*f*/,
-            detail::thread_schedule_state /*state*/ =
-                detail::thread_schedule_state::unknown) const
+            util::detail::function<bool(thread_id_type)> const& /*f*/,
+            thread_schedule_state /*state*/ =
+                thread_schedule_state::unknown) const
         {
             return false;
         }
@@ -559,6 +555,6 @@ namespace pika { namespace threads {
 
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream& os, thread_pool_base const& thread_pool);
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>

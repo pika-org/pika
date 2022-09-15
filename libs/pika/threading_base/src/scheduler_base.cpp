@@ -34,7 +34,7 @@
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
+namespace pika::threads::detail {
     scheduler_base::scheduler_base(std::size_t num_threads,
         char const* description, thread_queue_init_parameters thread_queue_init,
         scheduler_mode mode)
@@ -65,13 +65,13 @@ namespace pika::threads {
 #endif
 
         for (std::size_t i = 0; i != num_threads; ++i)
-            states_[i].store(state_initialized);
+            states_[i].store(state::initialized);
     }
 
     void scheduler_base::idle_callback(std::size_t num_thread)
     {
 #if defined(PIKA_HAVE_THREAD_MANAGER_IDLE_BACKOFF)
-        if (mode_.data_.load(std::memory_order_relaxed) & enable_idle_backoff)
+        if (has_scheduler_mode(scheduler_mode::enable_idle_backoff))
         {
             // Put this thread to sleep for some time, additionally it gets
             // woken up on new work.
@@ -105,7 +105,7 @@ namespace pika::threads {
     void scheduler_base::do_some_work(std::size_t)
     {
 #if defined(PIKA_HAVE_THREAD_MANAGER_IDLE_BACKOFF)
-        if (mode_.data_.load(std::memory_order_relaxed) & enable_idle_backoff)
+        if (has_scheduler_mode(scheduler_mode::enable_idle_backoff))
         {
             cond_.notify_all();
         }
@@ -116,18 +116,18 @@ namespace pika::threads {
     {
         PIKA_ASSERT(num_thread < suspend_conds_.size());
 
-        states_[num_thread].store(state_sleeping);
+        states_[num_thread].store(state::sleeping);
         std::unique_lock<pu_mutex_type> l(suspend_mtxs_[num_thread]);
         suspend_conds_[num_thread].wait(l);
 
-        // Only set running if still in state_sleeping. Can be set with
+        // Only set running if still in state::sleeping. Can be set with
         // non-blocking/locking functions to stopping or terminating, in
         // which case the state is left untouched.
-        pika::state expected = state_sleeping;
-        states_[num_thread].compare_exchange_strong(expected, state_running);
+        pika::state expected = state::sleeping;
+        states_[num_thread].compare_exchange_strong(expected, state::running);
 
-        PIKA_ASSERT(expected == state_sleeping || expected == state_stopping ||
-            expected == state_terminating);
+        PIKA_ASSERT(expected == state::sleeping ||
+            expected == state::stopping || expected == state::terminating);
     }
 
     void scheduler_base::resume(std::size_t num_thread)
@@ -150,8 +150,7 @@ namespace pika::threads {
         std::unique_lock<pu_mutex_type>& l, std::size_t num_thread,
         bool allow_fallback)
     {
-        if (mode_.data_.load(std::memory_order_relaxed) &
-            threads::enable_elasticity)
+        if (has_scheduler_mode(threads::scheduler_mode::enable_elasticity))
         {
             std::size_t states_size = states_.size();
 
@@ -160,7 +159,7 @@ namespace pika::threads {
                 // Try indefinitely as long as at least one thread is
                 // available for scheduling. Increase allowed state if no
                 // threads are available for scheduling.
-                auto max_allowed_state = state_suspended;
+                auto max_allowed_state = state::suspended;
 
                 pika::util::yield_while([this, states_size, &l, &num_thread,
                                             &max_allowed_state]() {
@@ -193,13 +192,13 @@ namespace pika::threads {
 
                     if (0 == num_allowed_threads)
                     {
-                        if (max_allowed_state <= state_suspended)
+                        if (max_allowed_state <= state::suspended)
                         {
-                            max_allowed_state = state_sleeping;
+                            max_allowed_state = state::sleeping;
                         }
-                        else if (max_allowed_state <= state_sleeping)
+                        else if (max_allowed_state <= state::sleeping)
                         {
-                            max_allowed_state = state_stopping;
+                            max_allowed_state = state::stopping;
                         }
                         else
                         {
@@ -228,7 +227,7 @@ namespace pika::threads {
                     pu_mtxs_[num_thread_local], std::try_to_lock);
 
                 if (l.owns_lock() &&
-                    states_[num_thread_local] <= state_suspended)
+                    states_[num_thread_local] <= state::suspended)
                 {
                     return num_thread_local;
                 }
@@ -298,7 +297,7 @@ namespace pika::threads {
     std::pair<pika::state, pika::state> scheduler_base::get_minmax_state() const
     {
         std::pair<pika::state, pika::state> result(
-            last_valid_runtime_state, first_valid_runtime_state);
+            state::last_valid_runtime, state::first_valid_runtime);
 
         using state_type = std::atomic<pika::state>;
         for (state_type const& state_iter : states_)
@@ -429,4 +428,4 @@ namespace pika::threads {
 
         return os;
     }
-}    // namespace pika::threads
+}    // namespace pika::threads::detail

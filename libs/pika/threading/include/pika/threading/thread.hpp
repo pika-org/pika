@@ -70,13 +70,13 @@ namespace pika {
         }
 
         template <typename F>
-        thread(threads::thread_pool_base* pool, F&& f)
+        thread(threads::detail::thread_pool_base* pool, F&& f)
         {
             start_thread(pool, util::detail::deferred_call(PIKA_FORWARD(F, f)));
         }
 
         template <typename F, typename... Ts>
-        thread(threads::thread_pool_base* pool, F&& f, Ts&&... vs)
+        thread(threads::detail::thread_pool_base* pool, F&& f, Ts&&... vs)
         {
             start_thread(pool,
                 util::detail::deferred_call(
@@ -133,7 +133,7 @@ namespace pika {
         {
             id_ = threads::detail::invalid_thread_id;
         }
-        void start_thread(threads::thread_pool_base* pool,
+        void start_thread(threads::detail::thread_pool_base* pool,
             util::detail::unique_function<void()>&& func);
         static threads::detail::thread_result_type thread_function_nullary(
             util::detail::unique_function<void()> const& func);

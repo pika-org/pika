@@ -18,12 +18,12 @@ namespace pika::threads::detail {
     struct reset_lco_description
     {
         PIKA_EXPORT reset_lco_description(thread_id_type const& id,
-            util::detail::thread_description const& description,
+            ::pika::detail::thread_description const& description,
             error_code& ec = throws);
         PIKA_EXPORT ~reset_lco_description();
 
         thread_id_type id_;
-        util::detail::thread_description old_desc_;
+        ::pika::detail::thread_description old_desc_;
         error_code& ec_;
     };
 }    // namespace pika::threads::detail

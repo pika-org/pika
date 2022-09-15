@@ -54,7 +54,7 @@ namespace pika::threads {
         typename StagedQueuing = lockfree_fifo,
         typename TerminatedQueuing =
             default_local_queue_scheduler_terminated_queue>
-    class PIKA_EXPORT local_queue_scheduler : public scheduler_base
+    class PIKA_EXPORT local_queue_scheduler : public detail::scheduler_base
     {
     public:
         using has_periodic_maintenance = std::false_type;
@@ -66,7 +66,7 @@ namespace pika::threads {
         {
             init_parameter(std::size_t num_queues,
                 pika::detail::affinity_data const& affinity_data,
-                thread_queue_init_parameters thread_queue_init = {},
+                detail::thread_queue_init_parameters thread_queue_init = {},
                 char const* description = "local_queue_scheduler")
               : num_queues_(num_queues)
               , thread_queue_init_(thread_queue_init)
@@ -86,7 +86,7 @@ namespace pika::threads {
             }
 
             std::size_t num_queues_;
-            thread_queue_init_parameters thread_queue_init_;
+            detail::thread_queue_init_parameters thread_queue_init_;
             pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
@@ -94,7 +94,7 @@ namespace pika::threads {
 
         local_queue_scheduler(init_parameter_type const& init,
             bool deferred_initialization = true)
-          : scheduler_base(
+          : detail::scheduler_base(
                 init.num_queues_, init.description_, init.thread_queue_init_)
           , queues_(init.num_queues_)
           , curr_queue_(0)
@@ -327,7 +327,7 @@ namespace pika::threads {
         /// available
         virtual bool get_next_thread(std::size_t num_thread, bool running,
             threads::detail::thread_id_ref_type& thrd,
-            bool /*enable_stealing*/) override
+            bool /*scheduler_mode::enable_stealing*/) override
         {
             std::size_t queues_size = queues_.size();
 
@@ -355,7 +355,8 @@ namespace pika::threads {
                 return false;
             }
 
-            bool numa_stealing = has_scheduler_mode(enable_stealing_numa);
+            bool numa_stealing =
+                has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             if (!numa_stealing)
             {
                 // steal work items: first try to steal from other cores in
@@ -703,7 +704,8 @@ namespace pika::threads {
         /// scheduler. Returns true if the OS thread calling this function
         /// has to be terminated (i.e. no more work has to be done).
         virtual bool wait_or_add_new(std::size_t num_thread, bool running,
-            std::int64_t& idle_loop_count, bool /* enable_stealing */,
+            std::int64_t& idle_loop_count,
+            bool /* scheduler_mode::enable_stealing */,
             std::size_t& added) override
         {
             std::size_t queues_size = queues_.size();
@@ -724,7 +726,8 @@ namespace pika::threads {
                 return true;
             }
 
-            bool numa_stealing_ = has_scheduler_mode(enable_stealing_numa);
+            bool numa_stealing_ =
+                has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             // limited or no stealing across domains
             if (!numa_stealing_)
             {
@@ -904,7 +907,8 @@ namespace pika::threads {
             else
                 first_mask = core_mask;
 
-            bool numa_stealing = has_scheduler_mode(enable_stealing_numa);
+            bool numa_stealing =
+                has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             if (numa_stealing &&
                 ::pika::threads::detail::any(first_mask & core_mask))
             {

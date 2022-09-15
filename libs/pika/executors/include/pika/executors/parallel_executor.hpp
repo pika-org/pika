@@ -138,7 +138,7 @@ namespace pika { namespace execution {
         }
 
         constexpr explicit parallel_policy_executor(
-            threads::thread_pool_base* pool,
+            threads::detail::thread_pool_base* pool,
             execution::thread_priority priority =
                 execution::thread_priority::default_,
             execution::thread_stacksize stacksize =
@@ -255,7 +255,7 @@ namespace pika { namespace execution {
             typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
         async_execute(F&& f, Ts&&... ts) const
         {
-            pika::util::detail::thread_description desc(f, annotation_);
+            pika::detail::thread_description desc(f, annotation_);
             auto pool =
                 pool_ ? pool_ : threads::detail::get_self_or_default_pool();
 
@@ -293,7 +293,7 @@ namespace pika { namespace execution {
         template <typename F, typename... Ts>
         void post(F&& f, Ts&&... ts) const
         {
-            pika::util::detail::thread_description desc(f, annotation_);
+            pika::detail::thread_description desc(f, annotation_);
             auto pool =
                 pool_ ? pool_ : threads::detail::get_self_or_default_pool();
             parallel::execution::detail::post_policy_dispatch<Policy>::call(
@@ -307,7 +307,7 @@ namespace pika { namespace execution {
                 bulk_function_result<F, S, Ts...>::type>>
         bulk_async_execute(F&& f, S const& shape, Ts&&... ts) const
         {
-            pika::util::detail::thread_description desc(f, annotation_);
+            pika::detail::thread_description desc(f, annotation_);
             auto pool =
                 pool_ ? pool_ : threads::detail::get_self_or_default_pool();
             return parallel::execution::detail::
@@ -335,7 +335,7 @@ namespace pika { namespace execution {
         /// \cond NOINTERNAL
         static constexpr std::size_t hierarchical_threshold_default_ = 6;
 
-        threads::thread_pool_base* pool_;
+        threads::detail::thread_pool_base* pool_;
         Policy policy_;
         std::size_t hierarchical_threshold_ = hierarchical_threshold_default_;
         char const* annotation_ = nullptr;

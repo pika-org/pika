@@ -227,9 +227,10 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
     // create a thread pool and supply a lambda that returns a new pool with
     // a user supplied scheduler attached
     rp.create_thread_pool(CUSTOM_POOL_NAME,
-        [](pika::threads::thread_pool_init_parameters init,
-            pika::threads::thread_queue_init_parameters thread_queue_init)
-            -> std::unique_ptr<pika::threads::thread_pool_base> {
+        [](pika::threads::detail::thread_pool_init_parameters init,
+            pika::threads::detail::thread_queue_init_parameters
+                thread_queue_init)
+            -> std::unique_ptr<pika::threads::detail::thread_pool_base> {
             std::cout << "User defined scheduler creation callback "
                       << std::endl;
             high_priority_sched::init_parameter_type scheduler_init(
@@ -240,7 +241,7 @@ void init_resource_partitioner_handler(pika::resource::partitioner& rp,
 
             init.mode_ = scheduler_mode(scheduler_mode::delay_exit);
 
-            std::unique_ptr<pika::threads::thread_pool_base> pool(
+            std::unique_ptr<pika::threads::detail::thread_pool_base> pool(
                 new pika::threads::detail::scheduled_thread_pool<
                     high_priority_sched>(std::move(scheduler), init));
             return pool;

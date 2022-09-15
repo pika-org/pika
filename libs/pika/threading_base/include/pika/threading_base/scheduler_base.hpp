@@ -37,17 +37,15 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::threads {
-    namespace detail {
-        enum class polling_status
-        {
-            /// Signals that a polling function currently has no more work to do
-            idle = 0,
-            /// Signals that a polling function still has outstanding work to
-            /// poll for
-            busy = 1
-        };
-    }
+namespace pika::threads::detail {
+    enum class polling_status
+    {
+        /// Signals that a polling function currently has no more work to do
+        idle = 0,
+        /// Signals that a polling function still has outstanding work to
+        /// poll for
+        busy = 1
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     /// The scheduler_base defines the interface to be implemented by all
@@ -62,17 +60,17 @@ namespace pika::threads {
 
         scheduler_base(std::size_t num_threads, char const* description = "",
             thread_queue_init_parameters thread_queue_init = {},
-            scheduler_mode mode = nothing_special);
+            scheduler_mode mode = scheduler_mode::nothing_special);
 
         virtual ~scheduler_base() = default;
 
-        threads::thread_pool_base* get_parent_pool() const
+        threads::detail::thread_pool_base* get_parent_pool() const
         {
             PIKA_ASSERT(parent_pool_ != nullptr);
             return parent_pool_;
         }
 
-        void set_parent_pool(threads::thread_pool_base* p)
+        void set_parent_pool(threads::detail::thread_pool_base* p)
         {
             PIKA_ASSERT(parent_pool_ == nullptr);
             parent_pool_ = p;
@@ -127,7 +125,8 @@ namespace pika::threads {
         // get/set scheduler mode
         bool has_scheduler_mode(scheduler_mode mode) const
         {
-            return (mode_.data_.load(std::memory_order_relaxed) & mode) != 0;
+            return (mode_.data_.load(std::memory_order_relaxed) & mode) !=
+                scheduler_mode{};
         }
 
         // set mode flags that control scheduler behaviour
@@ -298,12 +297,12 @@ namespace pika::threads {
             return thread_queue_init_.small_stacksize_;
         }
 
-        using polling_function_ptr = detail::polling_status (*)();
+        using polling_function_ptr = polling_status (*)();
         using polling_work_count_function_ptr = std::size_t (*)();
 
-        static detail::polling_status null_polling_function()
+        static polling_status null_polling_function()
         {
-            return detail::polling_status::idle;
+            return polling_status::idle;
         }
 
         static std::size_t null_polling_work_count_function()
@@ -343,21 +342,21 @@ namespace pika::threads {
                 &null_polling_work_count_function, std::memory_order_relaxed);
         }
 
-        detail::polling_status custom_polling_function() const
+        polling_status custom_polling_function() const
         {
-            detail::polling_status status = detail::polling_status::idle;
+            polling_status status = polling_status::idle;
 #if defined(PIKA_HAVE_MODULE_ASYNC_MPI)
             if ((*polling_function_mpi_.load(std::memory_order_relaxed))() ==
-                detail::polling_status::busy)
+                polling_status::busy)
             {
-                status = detail::polling_status::busy;
+                status = polling_status::busy;
             }
 #endif
 #if defined(PIKA_HAVE_MODULE_ASYNC_CUDA)
             if ((*polling_function_cuda_.load(std::memory_order_relaxed))() ==
-                detail::polling_status::busy)
+                polling_status::busy)
             {
-                status = detail::polling_status::busy;
+                status = polling_status::busy;
             }
 #endif
             return status;
@@ -408,7 +407,7 @@ namespace pika::threads {
         thread_queue_init_parameters thread_queue_init_;
 
         // the pool that owns this scheduler
-        threads::thread_pool_base* parent_pool_;
+        threads::detail::thread_pool_base* parent_pool_;
 
         std::atomic<std::int64_t> background_thread_count_;
 
@@ -441,6 +440,6 @@ namespace pika::threads {
 
     PIKA_EXPORT std::ostream& operator<<(
         std::ostream& os, scheduler_base const& scheduler);
-}    // namespace pika::threads
+}    // namespace pika::threads::detail
 
 #include <pika/config/warnings_suffix.hpp>

@@ -474,7 +474,7 @@ namespace pika::mpi::experimental {
         }
 
         // -------------------------------------------------------------
-        void register_polling(pika::threads::thread_pool_base& pool)
+        void register_polling(pika::threads::detail::thread_pool_base& pool)
         {
 #if defined(PIKA_DEBUG)
             ++get_register_polling_count();
@@ -486,7 +486,7 @@ namespace pika::mpi::experimental {
         }
 
         // -------------------------------------------------------------
-        void unregister_polling(pika::threads::thread_pool_base& pool)
+        void unregister_polling(pika::threads::detail::thread_pool_base& pool)
         {
 #if defined(PIKA_DEBUG)
             {

@@ -62,7 +62,8 @@ namespace pika::threads {
         {
             // disable thread stealing to begin with
             this->remove_scheduler_mode(
-                scheduler_mode(enable_stealing | enable_stealing_numa));
+                scheduler_mode(scheduler_mode::enable_stealing |
+                    scheduler_mode::enable_stealing_numa));
         }
 
         void set_scheduler_mode(scheduler_mode mode) override
@@ -70,7 +71,7 @@ namespace pika::threads {
             // this scheduler does not support stealing or numa stealing
             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing);
             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing_numa);
-            scheduler_base::set_scheduler_mode(mode);
+            detail::scheduler_base::set_scheduler_mode(mode);
         }
 
         static std::string get_scheduler_name()

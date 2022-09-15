@@ -93,7 +93,7 @@ namespace pika::threads {
     ///
     /// Warning: PendingQueuing lifo causes lockup on termination
     template <typename Mutex = std::mutex>
-    class shared_priority_queue_scheduler : public scheduler_base
+    class shared_priority_queue_scheduler : public detail::scheduler_base
     {
     public:
         using has_periodic_maintenance = std::false_type;
@@ -107,7 +107,7 @@ namespace pika::threads {
             init_parameter(std::size_t num_worker_threads,
                 const core_ratios& cores_per_queue,
                 pika::detail::affinity_data const& affinity_data,
-                const thread_queue_init_parameters& thread_queue_init,
+                const detail::thread_queue_init_parameters& thread_queue_init,
                 char const* description = "shared_priority_queue_scheduler")
               : num_worker_threads_(num_worker_threads)
               , cores_per_queue_(cores_per_queue)
@@ -131,14 +131,14 @@ namespace pika::threads {
 
             std::size_t num_worker_threads_;
             core_ratios cores_per_queue_;
-            thread_queue_init_parameters thread_queue_init_;
+            detail::thread_queue_init_parameters thread_queue_init_;
             pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
         using init_parameter_type = init_parameter;
 
         explicit shared_priority_queue_scheduler(init_parameter const& init)
-          : scheduler_base(init.num_worker_threads_, init.description_,
+          : detail::scheduler_base(init.num_worker_threads_, init.description_,
                 init.thread_queue_init_)
           , d_lookup_(pika::threads::detail::hardware_concurrency())
           , q_lookup_(pika::threads::detail::hardware_concurrency())
@@ -170,11 +170,15 @@ namespace pika::threads {
         /// and then sets some flags we need later for scheduling
         void set_scheduler_mode(scheduler_mode mode) override
         {
-            scheduler_base::set_scheduler_mode(mode);
-            round_robin_ = mode & assign_work_round_robin;
-            steal_hp_first_ = mode & steal_high_priority_first;
-            core_stealing_ = mode & enable_stealing;
-            numa_stealing_ = mode & enable_stealing_numa;
+            detail::scheduler_base::set_scheduler_mode(mode);
+            round_robin_ =
+                has_scheduler_mode(scheduler_mode::assign_work_round_robin);
+            steal_hp_first_ =
+                has_scheduler_mode(scheduler_mode::steal_high_priority_first);
+            core_stealing_ =
+                has_scheduler_mode(scheduler_mode::enable_stealing);
+            numa_stealing_ =
+                has_scheduler_mode(scheduler_mode::enable_stealing_numa);
             // clang-format off
             DEBUG(spq_deb<5>,debug(debug::detail::str<>("scheduler_mode")
                 , round_robin_ ? "round_robin" : "thread parent"
@@ -322,8 +326,9 @@ namespace pika::threads {
                     }
                     DEBUG(spq_deb<7>,
                         debug(debug::detail::str<>("create_thread"),
-                            "assign_work_thread_parent", "thread_num",
-                            thread_num, "pool", parent_pool_->get_pool_name()));
+                            "scheduler_mode::assign_work_thread_parent",
+                            "thread_num", thread_num, "pool",
+                            parent_pool_->get_pool_name()));
                 }
                 else /*(round_robin)*/
                 {
@@ -331,8 +336,9 @@ namespace pika::threads {
                     q_index = q_lookup_[thread_num];
                     DEBUG(spq_deb<7>,
                         debug(debug::detail::str<>("create_thread"),
-                            "assign_work_round_robin", "thread_num", thread_num,
-                            "pool", parent_pool_->get_pool_name(),
+                            "scheduler_mode::assign_work_round_robin",
+                            "thread_num", thread_num, "pool",
+                            parent_pool_->get_pool_name(),
                             typename thread_holder_type::queue_data_print(
                                 numa_holder_[domain_num].thread_queue(
                                     static_cast<std::size_t>(q_index)))));
@@ -470,7 +476,8 @@ namespace pika::threads {
                     {
                         DEBUG(spq_deb<5>,
                             debug(debug::detail::str<>(prefix),
-                                "steal_high_priority_first BP/HP",
+                                "scheduler_mode::steal_high_priority_first "
+                                "BP/HP",
                                 (d == 0 ? "taken" : "stolen"), "D",
                                 debug::detail::dec<2>(domain), "Q",
                                 debug::detail::dec<3>(q_index)));
@@ -490,7 +497,8 @@ namespace pika::threads {
                     {
                         DEBUG(spq_deb<5>,
                             debug(debug::detail::str<>(prefix),
-                                "steal_high_priority_first NP/LP",
+                                "scheduler_mode::steal_high_priority_first "
+                                "NP/LP",
                                 (d == 0 ? "taken" : "stolen"), "D",
                                 debug::detail::dec<2>(domain), "Q",
                                 debug::detail::dec<3>(q_index)));
@@ -501,7 +509,7 @@ namespace pika::threads {
                         break;
                 }
             }
-            else /*steal_after_local*/
+            else /*scheduler_mode::steal_after_local*/
             {
                 // do this local core/queue
                 result =
@@ -512,8 +520,8 @@ namespace pika::threads {
                 {
                     DEBUG(spq_deb<5>,
                         debug(debug::detail::str<>(prefix),
-                            "steal_after_local local taken", "D",
-                            debug::detail::dec<2>(domain), "Q",
+                            "scheduler_mode::steal_after_local local taken",
+                            "D", debug::detail::dec<2>(domain), "Q",
                             debug::detail::dec<3>(q_index)));
                     return result;
                 }
@@ -533,8 +541,10 @@ namespace pika::threads {
                         {
                             DEBUG(spq_deb<5>,
                                 debug(debug::detail::str<>(prefix),
-                                    "steal_after_local this numa", "stolen",
-                                    "D", debug::detail::dec<2>(domain), "Q",
+                                    "scheduler_mode::steal_after_local this "
+                                    "numa",
+                                    "stolen", "D",
+                                    debug::detail::dec<2>(domain), "Q",
                                     debug::detail::dec<3>(q_index)));
                             return result;
                         }
@@ -554,7 +564,8 @@ namespace pika::threads {
                         {
                             DEBUG(spq_deb<5>,
                                 debug(debug::detail::str<>(prefix),
-                                    "steal_after_local other numa BP/HP",
+                                    "scheduler_mode::steal_after_local other "
+                                    "numa BP/HP",
                                     (d == 0 ? "taken" : "stolen"), "D",
                                     debug::detail::dec<2>(domain), "Q",
                                     debug::detail::dec<3>(q_index)));
@@ -572,7 +583,8 @@ namespace pika::threads {
                         {
                             DEBUG(spq_deb<5>,
                                 debug(debug::detail::str<>(prefix),
-                                    "steal_after_local other numa NP/LP",
+                                    "scheduler_mode::steal_after_local other "
+                                    "numa NP/LP",
                                     (d == 0 ? "taken" : "stolen"), "D",
                                     debug::detail::dec<2>(domain), "Q",
                                     debug::detail::dec<3>(q_index)));
@@ -753,8 +765,8 @@ namespace pika::threads {
                     q_index = q_lookup_[thread_num];
                     DEBUG(spq_deb<5>,
                         debug(debug::detail::str<>("schedule_thread"),
-                            "assign_work_thread_parent", "thread_num",
-                            thread_num,
+                            "scheduler_mode::assign_work_thread_parent",
+                            "thread_num", thread_num,
                             debug::detail::threadinfo<
                                 threads::detail::thread_id_ref_type*>(&thrd)));
                 }
@@ -767,7 +779,8 @@ namespace pika::threads {
                                      ->worker_next(num_workers_);
                     DEBUG(spq_deb<5>,
                         debug(debug::detail::str<>("schedule_thread"),
-                            "assign_work_round_robin", "thread_num", thread_num,
+                            "scheduler_mode::assign_work_round_robin",
+                            "thread_num", thread_num,
                             debug::detail::threadinfo<
                                 threads::detail::thread_id_ref_type*>(&thrd)));
                 }
@@ -1430,7 +1443,7 @@ namespace pika::threads {
 
         pika::detail::affinity_data const& affinity_data_;
 
-        const thread_queue_init_parameters queue_parameters_;
+        const detail::thread_queue_init_parameters queue_parameters_;
 
         // used to make sure the scheduler is only initialized once on a thread
         std::mutex init_mutex;

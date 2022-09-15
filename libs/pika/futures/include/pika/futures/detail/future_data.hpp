@@ -876,8 +876,8 @@ namespace pika { namespace lcos { namespace detail {
 
         // run in a separate thread
         virtual threads::detail::thread_id_ref_type apply(
-            threads::thread_pool_base* /*pool*/, const char* /*annotation*/,
-            launch /*policy*/, error_code& /*ec*/)
+            threads::detail::thread_pool_base* /*pool*/,
+            const char* /*annotation*/, launch /*policy*/, error_code& /*ec*/)
         {
             PIKA_ASSERT(false);    // shouldn't ever be called
             return threads::detail::invalid_thread_id;

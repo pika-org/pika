@@ -463,7 +463,7 @@ namespace pika { namespace threads { namespace detail {
                 return thread_result_type(
                     thread_schedule_state::terminated, invalid_thread_id);
             },
-            pika::util::detail::thread_description("background_work"),
+            pika::detail::thread_description("background_work"),
             execution::thread_priority::high_recursive, schedulehint,
             execution::thread_stacksize::large,
             // Create in suspended to prevent the thread from being scheduled
@@ -616,7 +616,7 @@ namespace pika { namespace threads { namespace detail {
         thread_id_ref_type background_thread;
 
         if (scheduler.SchedulingPolicy::has_scheduler_mode(
-                do_background_work) &&
+                scheduler_mode::do_background_work) &&
             num_thread < params.max_background_threads_ &&
             !params.background_.empty())
         {
@@ -639,19 +639,20 @@ namespace pika { namespace threads { namespace detail {
 
             // Get the next pika thread from the queue
             bool running =
-                this_state.load(std::memory_order_relaxed) < state_pre_sleep;
+                this_state.load(std::memory_order_relaxed) < state::pre_sleep;
 
             // extract the stealing mode once per loop iteration
             bool enable_stealing =
                 scheduler.SchedulingPolicy::has_scheduler_mode(
-                    ::pika::threads::enable_stealing);
+                    ::pika::threads::scheduler_mode::enable_stealing);
 
             // stealing staged threads is enabled if:
             // - fast idle mode is on: same as normal stealing
             // - fast idle mode off: only after normal stealing has failed for
             //                       a while
             bool enable_stealing_staged = enable_stealing;
-            if (!scheduler.SchedulingPolicy::has_scheduler_mode(fast_idle_mode))
+            if (!scheduler.SchedulingPolicy::has_scheduler_mode(
+                    scheduler_mode::fast_idle_mode))
             {
                 enable_stealing_staged = enable_stealing_staged &&
                     idle_loop_count > params.max_idle_loop_count_ / 2;
@@ -746,10 +747,9 @@ namespace pika { namespace threads { namespace detail {
                                 task_annotation
                                     << "pika/task:" << thrd << "/"
                                     << (desc.kind() ==
-                                                   pika::util::detail::
-                                                       thread_description::
-                                                           data_type::
-                                                               data_type_description ?
+                                                   pika::detail::thread_description::
+                                                       data_type::
+                                                           data_type_description ?
                                                desc.get_description() :
                                                "<unknown>");
                                 auto task_annotation_str =
@@ -926,7 +926,7 @@ namespace pika { namespace threads { namespace detail {
                         scheduler.SchedulingPolicy::get_queue_length(
                             num_thread) == 0;
 
-                    if (this_state.load() == state_pre_sleep)
+                    if (this_state.load() == state::pre_sleep)
                     {
                         if (can_exit)
                         {
@@ -944,7 +944,7 @@ namespace pika { namespace threads { namespace detail {
                         if (can_exit)
                         {
                             if (!scheduler.SchedulingPolicy::has_scheduler_mode(
-                                    delay_exit))
+                                    scheduler_mode::delay_exit))
                             {
                                 // If this is an inner scheduler, try to exit immediately
                                 if (background_thread != nullptr)
@@ -971,7 +971,7 @@ namespace pika { namespace threads { namespace detail {
                                 }
                                 else
                                 {
-                                    this_state.store(state_stopped);
+                                    this_state.store(state::stopped);
                                     break;
                                 }
                             }
@@ -987,7 +987,7 @@ namespace pika { namespace threads { namespace detail {
                 }
                 else if (!may_exit && added == 0 &&
                     (scheduler.SchedulingPolicy::has_scheduler_mode(
-                        fast_idle_mode)))
+                        scheduler_mode::fast_idle_mode)))
                 {
                     // speed up idle suspend if no work was stolen
                     idle_loop_count += params.max_idle_loop_count_ / 1024;
@@ -1038,7 +1038,7 @@ namespace pika { namespace threads { namespace detail {
             }
 
             // something went badly wrong, give up
-            if (PIKA_UNLIKELY(this_state.load() == state_terminating))
+            if (PIKA_UNLIKELY(this_state.load() == state::terminating))
                 break;
 
             if (busy_loop_count > params.max_busy_loop_count_)
@@ -1091,7 +1091,7 @@ namespace pika { namespace threads { namespace detail {
                 // break if we were idling after 'may_exit'
                 if (may_exit)
                 {
-                    PIKA_ASSERT(this_state.load() != state_pre_sleep);
+                    PIKA_ASSERT(this_state.load() != state::pre_sleep);
 
                     if (background_thread)
                     {
@@ -1126,7 +1126,7 @@ namespace pika { namespace threads { namespace detail {
 
                         if (can_exit)
                         {
-                            this_state.store(state_stopped);
+                            this_state.store(state::stopped);
                             break;
                         }
                     }

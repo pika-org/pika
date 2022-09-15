@@ -105,7 +105,7 @@ namespace pika { namespace parallel { namespace execution {
             typename pika::util::detail::invoke_deferred_result<F, Ts...>::type>
         async_execute(F&& f, Ts&&... ts)
         {
-            pika::util::detail::thread_description desc(f);
+            pika::detail::thread_description desc(f);
 
             auto policy = launch::async_policy(priority_, stacksize_,
                 pika::execution::thread_schedule_hint(get_next_thread_num()));
@@ -140,7 +140,7 @@ namespace pika { namespace parallel { namespace execution {
         template <typename F, typename... Ts>
         void post(F&& f, Ts&&... ts)
         {
-            pika::util::detail::thread_description desc(f);
+            pika::detail::thread_description desc(f);
 
             auto policy = launch::async_policy(priority_, stacksize_,
                 pika::execution::thread_schedule_hint(get_next_thread_num()));
@@ -175,7 +175,7 @@ namespace pika { namespace parallel { namespace execution {
         /// \endcond
 
     private:
-        threads::thread_pool_base* pool_ = nullptr;
+        threads::detail::thread_pool_base* pool_ = nullptr;
 
         pika::execution::thread_priority priority_ =
             pika::execution::thread_priority::default_;

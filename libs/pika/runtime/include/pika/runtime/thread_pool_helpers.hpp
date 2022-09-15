@@ -41,11 +41,11 @@ namespace pika { namespace resource {
     PIKA_EXPORT std::string const& get_pool_name(std::size_t pool_index);
 
     /// Return the name of the pool given its name
-    PIKA_EXPORT threads::thread_pool_base& get_thread_pool(
+    PIKA_EXPORT threads::detail::thread_pool_base& get_thread_pool(
         std::string const& pool_name);
 
     /// Return the thread pool given its internal index
-    PIKA_EXPORT threads::thread_pool_base& get_thread_pool(
+    PIKA_EXPORT threads::detail::thread_pool_base& get_thread_pool(
         std::size_t pool_index);
 
     /// Return true if the pool with the given name exists

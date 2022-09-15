@@ -20,7 +20,7 @@ namespace pika { namespace threads {
     /// \note Can only be called from an pika thread. Use
     ///       resume_processing_unit_cb or to resume the processing unit from
     ///       outside pika. Requires that the pool has
-    ///       threads::enable_elasticity set.
+    ///       threads::scheduler_mode::enable_elasticity set.
     ///
     /// \param virt_core [in] The processing unit on the the pool to be resumed.
     ///                  The processing units are indexed starting from 0.
@@ -28,12 +28,12 @@ namespace pika { namespace threads {
     /// \returns A `future<void>` which is ready when the given processing unit
     ///          has been resumed.
     PIKA_EXPORT pika::future<void> resume_processing_unit(
-        thread_pool_base& pool, std::size_t virt_core);
+        detail::thread_pool_base& pool, std::size_t virt_core);
 
     /// Resumes the given processing unit. Takes a callback as a parameter which
     /// will be called when the processing unit has been resumed.
     ///
-    /// \note Requires that the pool has threads::enable_elasticity
+    /// \note Requires that the pool has threads::scheduler_mode::enable_elasticity
     ///       set.
     ///
     /// \param callback  [in] Callback which is called when the processing
@@ -42,7 +42,7 @@ namespace pika { namespace threads {
     /// \param ec        [in,out] this represents the error status on exit, if this
     ///                  is pre-initialized to \a pika#throws the function will throw
     ///                  on error instead.
-    PIKA_EXPORT void resume_processing_unit_cb(thread_pool_base& pool,
+    PIKA_EXPORT void resume_processing_unit_cb(detail::thread_pool_base& pool,
         util::detail::function<void(void)> callback, std::size_t virt_core,
         error_code& ec = throws);
 
@@ -52,7 +52,7 @@ namespace pika { namespace threads {
     /// \note Can only be called from an pika thread. Use
     ///       suspend_processing_unit_cb or to suspend the processing unit from
     ///       outside pika. Requires that the pool has
-    ///       threads::enable_elasticity set.
+    ///       threads::scheduler_mode::enable_elasticity set.
     ///
     /// \param virt_core [in] The processing unit on the the pool to be
     ///                  suspended. The processing units are indexed starting
@@ -63,13 +63,13 @@ namespace pika { namespace threads {
     ///
     /// \throws pika::exception if called from outside the pika runtime.
     PIKA_EXPORT pika::future<void> suspend_processing_unit(
-        thread_pool_base& pool, std::size_t virt_core);
+        detail::thread_pool_base& pool, std::size_t virt_core);
 
     /// Suspends the given processing unit. Takes a callback as a parameter
     /// which will be called when the processing unit has been suspended.
     ///
     /// \note Requires that the pool has
-    ///       threads::enable_elasticity set.
+    ///       threads::scheduler_mode::enable_elasticity set.
     ///
     /// \param callback  [in] Callback which is called when the processing
     ///                  unit has been suspended.
@@ -78,8 +78,9 @@ namespace pika { namespace threads {
     ///                  is pre-initialized to \a pika#throws the function will throw
     ///                  on error instead.
     PIKA_EXPORT void suspend_processing_unit_cb(
-        util::detail::function<void(void)> callback, thread_pool_base& pool,
-        std::size_t virt_core, error_code& ec = throws);
+        util::detail::function<void(void)> callback,
+        detail::thread_pool_base& pool, std::size_t virt_core,
+        error_code& ec = throws);
 
     /// Resumes the thread pool. When the all OS threads on the thread pool have
     /// been resumed the returned future will be ready.
@@ -91,7 +92,7 @@ namespace pika { namespace threads {
     ///          resumed.
     ///
     /// \throws pika::exception if called from outside the pika runtime.
-    PIKA_EXPORT pika::future<void> resume_pool(thread_pool_base& pool);
+    PIKA_EXPORT pika::future<void> resume_pool(detail::thread_pool_base& pool);
 
     /// Resumes the thread pool. Takes a callback as a parameter which will be
     /// called when all OS threads on the thread pool have been resumed.
@@ -100,7 +101,7 @@ namespace pika { namespace threads {
     /// \param ec       [in,out] this represents the error status on exit, if this
     ///                 is pre-initialized to \a pika#throws the function will throw
     ///                 on error instead.
-    PIKA_EXPORT void resume_pool_cb(thread_pool_base& pool,
+    PIKA_EXPORT void resume_pool_cb(detail::thread_pool_base& pool,
         util::detail::function<void(void)> callback, error_code& ec = throws);
 
     /// Suspends the thread pool. When the all OS threads on the thread pool
@@ -114,7 +115,7 @@ namespace pika { namespace threads {
     ///          been suspended.
     ///
     /// \throws pika::exception if called from outside the pika runtime.
-    PIKA_EXPORT pika::future<void> suspend_pool(thread_pool_base& pool);
+    PIKA_EXPORT pika::future<void> suspend_pool(detail::thread_pool_base& pool);
 
     /// Suspends the thread pool. Takes a callback as a parameter which will be
     /// called when all OS threads on the thread pool have been suspended.
@@ -129,6 +130,6 @@ namespace pika { namespace threads {
     ///
     /// \throws pika::exception if called from an pika thread which is running
     ///         on the pool itself.
-    PIKA_EXPORT void suspend_pool_cb(thread_pool_base& pool,
+    PIKA_EXPORT void suspend_pool_cb(detail::thread_pool_base& pool,
         util::detail::function<void(void)> callback, error_code& ec = throws);
 }}    // namespace pika::threads

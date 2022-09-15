@@ -105,7 +105,7 @@ namespace pika::threads::detail {
         }
 
         template <typename F>
-        thread_init_data(F&& f, util::detail::thread_description const& desc,
+        thread_init_data(F&& f, ::pika::detail::thread_description const& desc,
             execution::thread_priority priority_ =
                 execution::thread_priority::normal,
             execution::thread_schedule_hint os_thread =
@@ -115,7 +115,7 @@ namespace pika::threads::detail {
             thread_schedule_state initial_state_ =
                 thread_schedule_state::pending,
             bool run_now_ = false,
-            ::pika::threads::scheduler_base* scheduler_base_ = nullptr)
+            ::pika::threads::detail::scheduler_base* scheduler_base_ = nullptr)
           : func(PIKA_FORWARD(F, f))
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
           , description(desc)
@@ -151,7 +151,7 @@ namespace pika::threads::detail {
         thread_function_type func;
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-        util::detail::thread_description description;
+        ::pika::detail::thread_description description;
 #endif
 #if defined(PIKA_HAVE_THREAD_PARENT_REFERENCE)
         std::uint32_t parent_locality_id;
@@ -170,6 +170,6 @@ namespace pika::threads::detail {
         thread_schedule_state initial_state;
         bool run_now;
 
-        ::pika::threads::scheduler_base* scheduler_base;
+        ::pika::threads::detail::scheduler_base* scheduler_base;
     };
 }    // namespace pika::threads::detail

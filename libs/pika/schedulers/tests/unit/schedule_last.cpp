@@ -46,9 +46,11 @@ void test_scheduler(int argc, char* argv[])
     init_args.rp_callback = [](auto& rp,
                                 pika::program_options::variables_map const&) {
         rp.create_thread_pool("default",
-            [](pika::threads::thread_pool_init_parameters thread_pool_init,
-                pika::threads::thread_queue_init_parameters thread_queue_init)
-                -> std::unique_ptr<pika::threads::thread_pool_base> {
+            [](pika::threads::detail::thread_pool_init_parameters
+                    thread_pool_init,
+                pika::threads::detail::thread_queue_init_parameters
+                    thread_queue_init)
+                -> std::unique_ptr<pika::threads::detail::thread_pool_base> {
                 typename Scheduler::init_parameter_type init(
                     thread_pool_init.num_threads_,
                     thread_pool_init.affinity_data_, std::size_t(-1),
@@ -56,11 +58,11 @@ void test_scheduler(int argc, char* argv[])
                 std::unique_ptr<Scheduler> scheduler(new Scheduler(init));
 
                 thread_pool_init.mode_ = pika::threads::scheduler_mode(
-                    pika::threads::do_background_work |
-                    pika::threads::reduce_thread_priority |
-                    pika::threads::delay_exit);
+                    pika::threads::scheduler_mode::do_background_work |
+                    pika::threads::scheduler_mode::reduce_thread_priority |
+                    pika::threads::scheduler_mode::delay_exit);
 
-                std::unique_ptr<pika::threads::thread_pool_base> pool(
+                std::unique_ptr<pika::threads::detail::thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<Scheduler>(
                         std::move(scheduler), thread_pool_init));
 

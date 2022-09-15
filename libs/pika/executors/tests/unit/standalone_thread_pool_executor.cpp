@@ -172,14 +172,14 @@ int main()
         pika::detail::affinity_data ad{};
         ad.init(num_threads, max_cores, 0, 1, 0, "core", "balanced", true);
         pika::threads::callback_notifier notifier{};
-        pika::threads::thread_queue_init_parameters thread_queue_init{};
+        pika::threads::detail::thread_queue_init_parameters thread_queue_init{};
         sched_type::init_parameter_type scheduler_init(
             num_threads, ad, num_threads, thread_queue_init, "my_scheduler");
         pika::threads::detail::network_background_callback_type
             network_callback{};
-        pika::threads::thread_pool_init_parameters thread_pool_init("my_pool",
-            0, pika::threads::scheduler_mode::default_mode, num_threads, 0,
-            notifier, ad, network_callback, 0,
+        pika::threads::detail::thread_pool_init_parameters thread_pool_init(
+            "my_pool", 0, pika::threads::scheduler_mode::default_mode,
+            num_threads, 0, notifier, ad, network_callback, 0,
             (std::numeric_limits<std::int64_t>::max)(),
             (std::numeric_limits<std::int64_t>::max)());
 

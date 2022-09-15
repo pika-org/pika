@@ -93,7 +93,7 @@ namespace pika { namespace lcos { namespace local {
         protected:
             // run in a separate thread
             threads::detail::thread_id_ref_type apply(
-                threads::thread_pool_base* pool, const char* annotation,
+                threads::detail::thread_pool_base* pool, const char* annotation,
                 launch policy, error_code& ec) override
             {
                 this->check_started();
@@ -105,7 +105,7 @@ namespace pika { namespace lcos { namespace local {
                         threads::detail::make_thread_function_nullary(
                             util::detail::deferred_call(
                                 &base_type::run_impl, PIKA_MOVE(this_))),
-                        util::detail::thread_description(f_, annotation),
+                        ::pika::detail::thread_description(f_, annotation),
                         policy.priority(),
                         execution::thread_schedule_hint(
                             static_cast<std::int16_t>(get_worker_thread_num())),
@@ -121,7 +121,7 @@ namespace pika { namespace lcos { namespace local {
                     threads::detail::make_thread_function_nullary(
                         util::detail::deferred_call(
                             &base_type::run_impl, PIKA_MOVE(this_))),
-                    util::detail::thread_description(f_, annotation),
+                    ::pika::detail::thread_description(f_, annotation),
                     policy.priority(), policy.hint(), policy.stacksize(),
                     threads::detail::thread_schedule_state::pending);
 
@@ -236,7 +236,7 @@ namespace pika { namespace lcos { namespace local {
         protected:
             // run in a separate thread
             threads::detail::thread_id_ref_type apply(
-                threads::thread_pool_base* pool, const char* annotation,
+                threads::detail::thread_pool_base* pool, const char* annotation,
                 launch policy, error_code& ec) override
             {
                 if (exec_)
@@ -736,7 +736,7 @@ namespace pika { namespace lcos { namespace local {
         }
 
         threads::detail::thread_id_ref_type apply(
-            threads::thread_pool_base* pool,
+            threads::detail::thread_pool_base* pool,
             const char* annotation = "futures_factory::apply",
             launch policy = launch::async, error_code& ec = throws) const
         {

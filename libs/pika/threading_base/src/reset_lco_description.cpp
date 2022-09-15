@@ -17,17 +17,16 @@
 
 namespace pika::threads::detail {
     reset_lco_description::reset_lco_description(thread_id_type const& id,
-        util::detail::thread_description const& description, error_code& ec)
+        ::pika::detail::thread_description const& description, error_code& ec)
       : id_(id)
       , ec_(ec)
     {
-        old_desc_ =
-            threads::detail::set_thread_lco_description(id_, description, ec_);
+        old_desc_ = set_thread_lco_description(id_, description, ec_);
     }
 
     reset_lco_description::~reset_lco_description()
     {
-        threads::detail::set_thread_lco_description(id_, old_desc_, ec_);
+        set_thread_lco_description(id_, old_desc_, ec_);
     }
 }    // namespace pika::threads::detail
 

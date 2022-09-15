@@ -457,7 +457,7 @@ namespace pika::threads {
         }
 
         thread_queue(std::size_t queue_num = std::size_t(-1),
-            thread_queue_init_parameters parameters = {})
+            detail::thread_queue_init_parameters parameters = {})
           : parameters_(parameters)
           , thread_map_count_(0)
           , work_items_(128, queue_num)
@@ -1196,7 +1196,7 @@ namespace pika::threads {
         }
 
     private:
-        thread_queue_init_parameters parameters_;
+        detail::thread_queue_init_parameters parameters_;
 
         mutable mutex_type mtx_;    // mutex protecting the members
 

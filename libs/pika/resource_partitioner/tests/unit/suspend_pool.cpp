@@ -48,7 +48,7 @@ int pika_main()
 
     PIKA_TEST(exception_thrown);
 
-    pika::threads::thread_pool_base& worker_pool =
+    pika::threads::detail::thread_pool_base& worker_pool =
         pika::resource::get_thread_pool("worker");
     pika::execution::parallel_executor worker_exec(
         &pika::resource::get_thread_pool("worker"));

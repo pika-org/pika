@@ -288,7 +288,7 @@ namespace pika { namespace lcos { namespace detail {
             }
 
             pika::intrusive_ptr<continuation> this_(this);
-            pika::util::detail::thread_description desc(f_, "async");
+            pika::detail::thread_description desc(f_, "async");
             spawner(
                 [this_ = PIKA_MOVE(this_), f = PIKA_MOVE(f)]() mutable -> void {
                     this_->async_impl(PIKA_MOVE(f));
@@ -318,7 +318,7 @@ namespace pika { namespace lcos { namespace detail {
             }
 
             pika::intrusive_ptr<continuation> this_(this);
-            pika::util::detail::thread_description desc(f_, "async_nounwrap");
+            pika::detail::thread_description desc(f_, "async_nounwrap");
             spawner(
                 [this_ = PIKA_MOVE(this_), f = PIKA_MOVE(f)]() mutable -> void {
                     this_->async_impl_nounwrap(PIKA_MOVE(f));

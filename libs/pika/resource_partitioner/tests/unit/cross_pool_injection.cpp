@@ -65,19 +65,19 @@ int pika_main()
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
     {
+        using ::pika::threads::scheduler_mode;
         sched->add_remove_scheduler_mode(
             // add these flags
-            pika::threads::scheduler_mode(pika::threads::enable_stealing |
-                pika::threads::enable_stealing_numa |
-                pika::threads::assign_work_thread_parent |
-                pika::threads::steal_after_local),
+            scheduler_mode::enable_stealing |
+                scheduler_mode::enable_stealing_numa |
+                scheduler_mode::assign_work_thread_parent |
+                scheduler_mode::steal_after_local,
             // remove these flags
-            pika::threads::scheduler_mode(
-                pika::threads::assign_work_round_robin |
-                pika::threads::steal_high_priority_first));
-        sched->update_scheduler_mode(pika::threads::enable_stealing, false);
+            scheduler_mode::assign_work_round_robin |
+                scheduler_mode::steal_high_priority_first);
+        sched->update_scheduler_mode(scheduler_mode::enable_stealing, false);
         sched->update_scheduler_mode(
-            pika::threads::enable_stealing_numa, false);
+            scheduler_mode::enable_stealing_numa, false);
     }
 
     // setup executors for different task priorities on the pools

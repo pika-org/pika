@@ -328,7 +328,7 @@ namespace pika::threads::detail {
         return get_thread_id_data(id)->set_backtrace(bt);
     }
 
-    threads::thread_pool_base* get_pool(
+    threads::detail::thread_pool_base* get_pool(
         thread_id_type const& id, error_code& ec)
     {
         if (PIKA_UNLIKELY(!id))
@@ -357,7 +357,7 @@ namespace pika::this_thread {
     threads::detail::thread_restart_state suspend(
         threads::detail::thread_schedule_state state,
         threads::detail::thread_id_type nextid,
-        util::detail::thread_description const& description, error_code& ec)
+        detail::thread_description const& description, error_code& ec)
     {
         // let the thread manager do other things while waiting
         threads::detail::thread_self& self = threads::detail::get_self();
@@ -430,7 +430,7 @@ namespace pika::this_thread {
     threads::detail::thread_restart_state suspend(
         pika::chrono::steady_time_point const& abs_time,
         threads::detail::thread_id_type nextid,
-        util::detail::thread_description const& description, error_code& ec)
+        detail::thread_description const& description, error_code& ec)
     {
         // schedule a thread waking us up at_time
         threads::detail::thread_self& self = threads::detail::get_self();
@@ -529,7 +529,7 @@ namespace pika::this_thread {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    threads::thread_pool_base* get_pool(error_code& ec)
+    threads::detail::thread_pool_base* get_pool(error_code& ec)
     {
         return threads::detail::get_pool(threads::detail::get_self_id(), ec);
     }

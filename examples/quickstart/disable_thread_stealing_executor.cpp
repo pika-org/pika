@@ -52,13 +52,14 @@ namespace executor_example {
         static void mark_begin_execution(Parameters&&)
         {
             pika::threads::remove_scheduler_mode(
-                pika::threads::enable_stealing);
+                pika::threads::scheduler_mode::enable_stealing);
         }
 
         template <typename Parameters>
         static void mark_end_execution(Parameters&&)
         {
-            pika::threads::add_scheduler_mode(pika::threads::enable_stealing);
+            pika::threads::add_scheduler_mode(
+                pika::threads::scheduler_mode::enable_stealing);
         }
     };
 

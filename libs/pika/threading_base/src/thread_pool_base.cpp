@@ -24,7 +24,7 @@
 #include <string>
 #include <thread>
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     thread_pool_base::thread_pool_base(thread_pool_init_parameters const& init)
       : id_(init.index_, init.name_)
@@ -36,19 +36,18 @@ namespace pika { namespace threads {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    detail::mask_type thread_pool_base::get_used_processing_units() const
+    mask_type thread_pool_base::get_used_processing_units() const
     {
-        auto const& topo = detail::create_topology();
+        auto const& topo = create_topology();
         auto const sched = get_scheduler();
 
-        detail::mask_type used_processing_units = detail::mask_type();
-        threads::detail::resize(
-            used_processing_units, detail::hardware_concurrency());
+        mask_type used_processing_units = mask_type();
+        resize(used_processing_units, hardware_concurrency());
 
         for (std::size_t thread_num = 0; thread_num < get_os_thread_count();
              ++thread_num)
         {
-            if (sched->get_state(thread_num).load() <= state_suspended)
+            if (sched->get_state(thread_num).load() <= state::suspended)
             {
                 used_processing_units |= affinity_data_.get_pu_mask(
                     topo, thread_num + get_thread_offset());
@@ -58,10 +57,10 @@ namespace pika { namespace threads {
         return used_processing_units;
     }
 
-    detail::hwloc_bitmap_ptr thread_pool_base::get_numa_domain_bitmap() const
+    hwloc_bitmap_ptr thread_pool_base::get_numa_domain_bitmap() const
     {
-        auto const& topo = detail::create_topology();
-        detail::mask_type used_processing_units = get_used_processing_units();
+        auto const& topo = create_topology();
+        mask_type used_processing_units = get_used_processing_units();
         return topo.cpuset_to_nodeset(used_processing_units);
     }
 
@@ -73,7 +72,7 @@ namespace pika { namespace threads {
              ++thread_num)
         {
             if (get_scheduler()->get_state(thread_num).load() <=
-                state_suspended)
+                state::suspended)
             {
                 ++active_os_thread_count;
             }
@@ -127,4 +126,4 @@ namespace pika { namespace threads {
 
         return os;
     }
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

@@ -153,7 +153,7 @@ namespace pika::threads {
             std::atomic<std::int32_t>>
             terminated_items_count_;
 
-        thread_queue_init_parameters parameters_;
+        detail::thread_queue_init_parameters parameters_;
         std::thread::id owner_id_;
 
         // ------------------------------------------------------------
@@ -209,7 +209,8 @@ namespace pika::threads {
         queue_holder_thread(QueueType* bp_queue, QueueType* hp_queue,
             QueueType* np_queue, QueueType* lp_queue, std::size_t domain,
             std::size_t queue, std::size_t thread_num, std::size_t owner,
-            const thread_queue_init_parameters& init, std::thread::id owner_id)
+            const detail::thread_queue_init_parameters& init,
+            std::thread::id owner_id)
           // NOLINTEND(bugprone-easily-swappable-parameters)
           : bp_queue_(bp_queue)
           , hp_queue_(hp_queue)

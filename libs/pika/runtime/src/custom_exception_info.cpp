@@ -389,7 +389,8 @@ namespace pika {
                 state rts_state = rt->get_state();
                 state_name = pika::detail::get_runtime_state_name(rts_state);
 
-                if (rts_state >= state_initialized && rts_state < state_stopped)
+                if (rts_state >= state::initialized &&
+                    rts_state < state::stopped)
                 {
                     hostname = get_runtime().here();
                 }
@@ -402,13 +403,13 @@ namespace pika {
 
             std::size_t shepherd = std::size_t(-1);
             threads::detail::thread_id_type thread_id;
-            util::detail::thread_description thread_name;
+            detail::thread_description thread_name;
 
             threads::detail::thread_self* self =
                 threads::detail::get_self_ptr();
             if (nullptr != self)
             {
-                if (threads::thread_manager_is(state_running))
+                if (threads::thread_manager_is(state::running))
                     shepherd = pika::get_worker_thread_num();
 
                 thread_id = threads::detail::get_self_id();
@@ -427,8 +428,7 @@ namespace pika {
                 pika::detail::throw_shepherd(shepherd),
                 pika::detail::throw_thread_id(
                     reinterpret_cast<std::size_t>(thread_id.get())),
-                pika::detail::throw_thread_name(
-                    util::detail::as_string(thread_name)),
+                pika::detail::throw_thread_name(detail::as_string(thread_name)),
                 pika::detail::throw_function(func),
                 pika::detail::throw_file(file), pika::detail::throw_line(line),
                 pika::detail::throw_env(env),

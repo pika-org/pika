@@ -41,7 +41,7 @@ namespace pika::threads::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
-    class scheduled_thread_pool : public pika::threads::thread_pool_base
+    class scheduled_thread_pool : public pika::threads::detail::thread_pool_base
     {
     public:
         ///////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ namespace pika::threads::detail {
 
         void print_pool(std::ostream& os) override;
 
-        threads::scheduler_base* get_scheduler() const override
+        threads::detail::scheduler_base* get_scheduler() const override
         {
             return sched_.get();
         }
@@ -169,7 +169,7 @@ namespace pika::threads::detail {
                  ++thread_num)
             {
                 if (sched_->Scheduler::get_state(thread_num).load() ==
-                    state_running)
+                    state::running)
                 {
                     ++active_os_thread_count;
                 }

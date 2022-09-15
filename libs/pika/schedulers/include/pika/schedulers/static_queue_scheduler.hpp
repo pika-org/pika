@@ -72,7 +72,7 @@ namespace pika::threads {
             // this scheduler does not support stealing or numa stealing
             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing);
             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing_numa);
-            scheduler_base::set_scheduler_mode(mode);
+            detail::scheduler_base::set_scheduler_mode(mode);
         }
 
         /// Return the next thread to be executed, return false if none is

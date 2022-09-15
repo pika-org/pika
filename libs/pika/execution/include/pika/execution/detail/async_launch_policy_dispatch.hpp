@@ -67,8 +67,8 @@ namespace pika { namespace detail {
         PIKA_FORCEINLINE static std::enable_if_t<
             pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
-        call(launch policy, pika::util::detail::thread_description const& desc,
-            threads::thread_pool_base* pool, F&& f, Ts&&... ts)
+        call(launch policy, pika::detail::thread_description const& desc,
+            threads::detail::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
             using result_type =
                 util::detail::invoke_deferred_result_t<F, Ts...>;
@@ -110,8 +110,8 @@ namespace pika { namespace detail {
         PIKA_FORCEINLINE static std::enable_if_t<
             pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
-        call(launch policy, pika::util::detail::thread_description const& desc,
-            F&& f, Ts&&... ts)
+        call(launch policy, pika::detail::thread_description const& desc, F&& f,
+            Ts&&... ts)
         {
             return call(policy, desc,
                 threads::detail::get_self_or_default_pool(), PIKA_FORWARD(F, f),
@@ -124,7 +124,7 @@ namespace pika { namespace detail {
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(launch policy, F&& f, Ts&&... ts)
         {
-            pika::util::detail::thread_description desc(f);
+            pika::detail::thread_description desc(f);
             return call(policy, desc,
                 threads::detail::get_self_or_default_pool(), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...);
@@ -145,8 +145,8 @@ namespace pika { namespace detail {
             pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::async_policy policy,
-            pika::util::detail::thread_description const& desc,
-            threads::thread_pool_base* pool, F&& f, Ts&&... ts)
+            pika::detail::thread_description const& desc,
+            threads::detail::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
             PIKA_ASSERT(pool);
 
@@ -177,7 +177,7 @@ namespace pika { namespace detail {
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::async_policy policy, F&& f, Ts&&... ts)
         {
-            pika::util::detail::thread_description desc(f);
+            pika::detail::thread_description desc(f);
             return call(policy, desc,
                 threads::detail::get_self_or_default_pool(), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...);
@@ -188,8 +188,8 @@ namespace pika { namespace detail {
             pika::detail::is_deferred_invocable_v<F, Ts...>,
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::fork_policy policy,
-            pika::util::detail::thread_description const& desc,
-            threads::thread_pool_base* pool, F&& f, Ts&&... ts)
+            pika::detail::thread_description const& desc,
+            threads::detail::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
             PIKA_ASSERT(pool);
 
@@ -230,7 +230,7 @@ namespace pika { namespace detail {
             pika::future<util::detail::invoke_deferred_result_t<F, Ts...>>>
         call(pika::detail::fork_policy policy, F&& f, Ts&&... ts)
         {
-            pika::util::detail::thread_description desc(f);
+            pika::detail::thread_description desc(f);
             return call(policy, desc,
                 threads::detail::get_self_or_default_pool(), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...);

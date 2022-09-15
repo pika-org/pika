@@ -16,15 +16,14 @@
 
 namespace pika::detail::external_timer {
     inline std::shared_ptr<task_wrapper> new_task(
-        pika::util::detail::thread_description const&, std::uint32_t,
+        pika::detail::thread_description const&, std::uint32_t,
         threads::detail::thread_id_type)
     {
         return nullptr;
     }
 
     inline std::shared_ptr<task_wrapper> update_task(
-        std::shared_ptr<task_wrapper>,
-        pika::util::detail::thread_description const&)
+        std::shared_ptr<task_wrapper>, pika::detail::thread_description const&)
     {
         return nullptr;
     }

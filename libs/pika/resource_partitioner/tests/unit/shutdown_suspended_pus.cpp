@@ -31,7 +31,7 @@ int pika_main()
 
     PIKA_TEST_EQ(std::size_t(max_threads), num_threads);
 
-    pika::threads::thread_pool_base& tp =
+    pika::threads::detail::thread_pool_base& tp =
         pika::resource::get_thread_pool("default");
 
     PIKA_TEST_EQ(tp.get_active_os_thread_count(), std::size_t(max_threads));
@@ -57,12 +57,12 @@ void test_scheduler(
 {
     pika::init_params init_args;
 
+    using ::pika::threads::scheduler_mode;
     init_args.cfg = {"pika.os_threads=" + std::to_string(max_threads)};
     init_args.rp_callback = [scheduler](auto& rp,
                                 pika::program_options::variables_map const&) {
         rp.create_thread_pool("default", scheduler,
-            pika::threads::scheduler_mode(pika::threads::default_mode |
-                pika::threads::enable_elasticity));
+            scheduler_mode::default_mode | scheduler_mode::enable_elasticity);
     };
 
     PIKA_TEST_EQ(pika::init(pika_main, argc, argv, init_args), 0);

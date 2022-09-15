@@ -62,7 +62,8 @@ namespace pika::threads {
         typename StagedQueuing = lockfree_fifo,
         typename TerminatedQueuing =
             default_local_priority_queue_scheduler_terminated_queue>
-    class PIKA_EXPORT local_priority_queue_scheduler : public scheduler_base
+    class PIKA_EXPORT local_priority_queue_scheduler
+      : public detail::scheduler_base
     {
     public:
         using has_periodic_maintenance = std::false_type;
@@ -79,7 +80,7 @@ namespace pika::threads {
             init_parameter(std::size_t num_queues,
                 pika::detail::affinity_data const& affinity_data,
                 std::size_t num_high_priority_queues = std::size_t(-1),
-                thread_queue_init_parameters thread_queue_init = {},
+                detail::thread_queue_init_parameters thread_queue_init = {},
                 char const* description = "local_priority_queue_scheduler")
               : num_queues_(num_queues)
               , num_high_priority_queues_(
@@ -105,7 +106,7 @@ namespace pika::threads {
 
             std::size_t num_queues_;
             std::size_t num_high_priority_queues_;
-            thread_queue_init_parameters thread_queue_init_;
+            detail::thread_queue_init_parameters thread_queue_init_;
             pika::detail::affinity_data const& affinity_data_;
             char const* description_;
         };
@@ -113,7 +114,7 @@ namespace pika::threads {
 
         local_priority_queue_scheduler(init_parameter_type const& init,
             bool deferred_initialization = true)
-          : scheduler_base(
+          : detail::scheduler_base(
                 init.num_queues_, init.description_, init.thread_queue_init_)
           , curr_queue_(0)
           , affinity_data_(init.affinity_data_)
@@ -1349,7 +1350,7 @@ namespace pika::threads {
             });
 
             // check for the rest and if we are NUMA aware
-            if (has_scheduler_mode(enable_stealing_numa) &&
+            if (has_scheduler_mode(scheduler_mode::enable_stealing_numa) &&
                 ::pika::threads::detail::any(first_mask & pu_mask))
             {
                 iterate([&](std::size_t other_num_thread) {

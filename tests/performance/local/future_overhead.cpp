@@ -162,16 +162,16 @@ void function_futures_limiting_executor(
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
     {
+        using ::pika::threads::scheduler_mode;
         sched->add_remove_scheduler_mode(
             // add these flags
-            pika::threads::scheduler_mode(pika::threads::enable_stealing |
-                pika::threads::enable_stealing_numa |
-                pika::threads::assign_work_round_robin |
-                pika::threads::steal_after_local),
+            scheduler_mode::enable_stealing |
+                scheduler_mode::enable_stealing_numa |
+                scheduler_mode::assign_work_round_robin |
+                scheduler_mode::steal_after_local,
             // remove these flags
-            pika::threads::scheduler_mode(
-                pika::threads::assign_work_thread_parent |
-                pika::threads::steal_high_priority_first));
+            scheduler_mode::assign_work_thread_parent |
+                scheduler_mode::steal_high_priority_first);
     }
 
     // test a parallel algorithm on custom pool with high priority
@@ -296,7 +296,7 @@ void function_futures_create_thread(std::uint64_t count, bool csv)
     };
     auto const thread_func =
         pika::threads::detail::thread_function_nullary<decltype(func)>{func};
-    auto const desc = pika::util::detail::thread_description();
+    auto const desc = pika::detail::thread_description();
     auto const prio = pika::execution::thread_priority::normal;
     auto const hint = pika::execution::thread_schedule_hint();
     auto const stack_size = pika::execution::thread_stacksize::small_;
@@ -331,14 +331,16 @@ void function_futures_create_thread_hierarchical_placement(
     if (std::string("core-shared_priority_queue_scheduler") ==
         sched->get_description())
     {
+        using ::pika::threads::scheduler_mode;
         sched->add_remove_scheduler_mode(
-            pika::threads::scheduler_mode(
-                pika::threads::assign_work_thread_parent),
-            pika::threads::scheduler_mode(pika::threads::enable_stealing |
-                pika::threads::enable_stealing_numa |
-                pika::threads::assign_work_round_robin |
-                pika::threads::steal_after_local |
-                pika::threads::steal_high_priority_first));
+            // add
+            scheduler_mode::assign_work_thread_parent,
+            // remove
+            scheduler_mode::enable_stealing |
+                scheduler_mode::enable_stealing_numa |
+                scheduler_mode::assign_work_round_robin |
+                scheduler_mode::steal_after_local |
+                scheduler_mode::steal_high_priority_first);
     }
     auto const func = [&l]() {
         null_function();
@@ -346,7 +348,7 @@ void function_futures_create_thread_hierarchical_placement(
     };
     auto const thread_func =
         pika::threads::detail::thread_function_nullary<decltype(func)>{func};
-    auto const desc = pika::util::detail::thread_description();
+    auto const desc = pika::detail::thread_description();
     auto prio = pika::execution::thread_priority::normal;
     auto const stack_size = pika::execution::thread_stacksize::small_;
     auto const num_threads = pika::get_num_worker_threads();
