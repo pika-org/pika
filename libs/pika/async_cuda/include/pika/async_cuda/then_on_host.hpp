@@ -9,6 +9,7 @@
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cuda_scheduler.hpp>
+#include <pika/errors/try_catch_exception_ptr.hpp>
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
