@@ -376,5 +376,9 @@ int main(int argc, char** argv)
     pika::init_params init_args;
     init_args.desc_cmdline = cmdline;
 
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+    PIKA_TEST(true);
+#endif
+
     return pika::init(pika_main, argc, argv, init_args);
 }
