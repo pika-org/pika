@@ -35,13 +35,12 @@ if(PIKA_WITH_TESTS)
       modules.hardware
       HEADERS ${hardware_headers}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
-      EXCLUDE_FROM_ALL
-        "pika/hardware/timestamp/msvc.hpp"
-        "pika/hardware/timestamp/linux_x86_32.hpp"
-        "pika/hardware/timestamp/linux_x86_64.hpp"
-        "pika/hardware/timestamp/linux_generic.hpp"
-        "pika/hardware/timestamp/bgq.hpp"
-        "pika/hardware/timestamp/cuda.hpp"
+      EXCLUDE "pika/hardware/timestamp/msvc.hpp"
+              "pika/hardware/timestamp/linux_x86_32.hpp"
+              "pika/hardware/timestamp/linux_x86_64.hpp"
+              "pika/hardware/timestamp/linux_generic.hpp"
+              "pika/hardware/timestamp/bgq.hpp"
+              "pika/hardware/timestamp/cuda.hpp"
       NOLIBS
       DEPENDENCIES pika_hardware
     )
