@@ -17,6 +17,7 @@ status = [
   "github/macos/debug/tests/unit",
   "github/macos/debug/tests/unit/algorithms",
   "github/macos/debug/tests/unit/container_algorithms",
+  "github/macos_arm64/debug",
 
   # CircleCI static checks
   "ci/circleci: check_circular_deps",
