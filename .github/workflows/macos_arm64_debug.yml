@@ -1,0 +1,44 @@
+# Copyright (c) 2020-2022 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: macOS Arm64 CI (Debug)
+
+on:
+  push
+
+# Note that this file contains a lot of duplication between the workflow steps.
+# That is because GitHub actions doesn't support YAML anchors:
+# https://github.community/t/support-for-yaml-anchors/16128. If GitHub ever
+# supports that in the future this file should absolutely be updated to make use
+# of them. In the meantime the duplication stays as GitHub's other options for
+# reusing steps seem overkill in this situation.
+
+# This defines in initial job for configuring pika and building the core
+# library. Following that are parallel steps for building and running tests. The
+# tests have been split to roughly have equal running time.
+#
+# Note that dependencies are reinstalled on every step as this seems to be
+# faster than trying to package the dependencies from the first step and reusing
+# them in later steps. This does open the door for occasional failures with
+# later steps installing different versions of packages.
+
+jobs:
+  build_core:
+    name: github/macos_arm64/debug/core
+    runs-on: self-hosted
+
+    steps:
+    - name: Install dependencies
+      run: |
+        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+        brew upgrade
+        brew update
+        brew install boost cmake hwloc ninja
+    - uses: actions/checkout@v2
+    - name: Hello
+      shell: bash
+      run: |
+          echo "Hello world"
