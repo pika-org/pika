@@ -508,10 +508,10 @@ namespace pika::threads::detail {
             return false;
         }
 
-        virtual pika::state get_state() const = 0;
-        virtual pika::state get_state(std::size_t num_thread) const = 0;
+        virtual pika::runtime_state get_state() const = 0;
+        virtual pika::runtime_state get_state(std::size_t num_thread) const = 0;
 
-        virtual bool has_reached_state(pika::state s) const = 0;
+        virtual bool has_reached_state(pika::runtime_state s) const = 0;
 
         virtual void do_some_work(std::size_t /*num_thread*/) {}
 

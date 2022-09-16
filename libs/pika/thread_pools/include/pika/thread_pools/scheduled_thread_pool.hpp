@@ -57,10 +57,10 @@ namespace pika::threads::detail {
         }
 
         ///////////////////////////////////////////////////////////////////
-        pika::state get_state() const override;
-        pika::state get_state(std::size_t num_thread) const override;
+        pika::runtime_state get_state() const override;
+        pika::runtime_state get_state(std::size_t num_thread) const override;
 
-        bool has_reached_state(pika::state s) const override
+        bool has_reached_state(pika::runtime_state s) const override
         {
             return sched_->Scheduler::has_reached_state(s);
         }
@@ -169,7 +169,7 @@ namespace pika::threads::detail {
                  ++thread_num)
             {
                 if (sched_->Scheduler::get_state(thread_num).load() ==
-                    state::running)
+                    runtime_state::running)
                 {
                     ++active_os_thread_count;
                 }

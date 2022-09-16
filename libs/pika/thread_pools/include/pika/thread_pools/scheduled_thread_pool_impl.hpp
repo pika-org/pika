@@ -116,7 +116,7 @@ namespace pika { namespace threads { namespace detail {
     {
         if (!threads_.empty())
         {
-            if (!sched_->Scheduler::has_reached_state(state::suspended))
+            if (!sched_->Scheduler::has_reached_state(runtime_state::suspended))
             {
                 // still running
                 std::mutex mtx;
@@ -148,14 +148,14 @@ namespace pika { namespace threads { namespace detail {
     void scheduled_thread_pool<Scheduler>::report_error(
         std::size_t global_thread_num, std::exception_ptr const& e)
     {
-        sched_->Scheduler::set_all_states_at_least(state::terminating);
+        sched_->Scheduler::set_all_states_at_least(runtime_state::terminating);
         this->thread_pool_base::report_error(global_thread_num, e);
         sched_->Scheduler::on_error(global_thread_num, e);
     }
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
-    pika::state scheduled_thread_pool<Scheduler>::get_state() const
+    pika::runtime_state scheduled_thread_pool<Scheduler>::get_state() const
     {
         // This function might get called from within background_work inside the
         // os executors
@@ -173,7 +173,7 @@ namespace pika { namespace threads { namespace detail {
     }
 
     template <typename Scheduler>
-    pika::state scheduled_thread_pool<Scheduler>::get_state(
+    pika::runtime_state scheduled_thread_pool<Scheduler>::get_state(
         std::size_t num_thread) const
     {
         PIKA_ASSERT(num_thread != std::size_t(-1));
@@ -232,7 +232,7 @@ namespace pika { namespace threads { namespace detail {
             resume_internal(blocking, throws);
 
             // set state to stopping
-            sched_->Scheduler::set_all_states_at_least(state::stopping);
+            sched_->Scheduler::set_all_states_at_least(runtime_state::stopping);
 
             // make sure we're not waiting
             sched_->Scheduler::do_some_work(std::size_t(-1));
@@ -289,7 +289,7 @@ namespace pika { namespace threads { namespace detail {
         }
 
         if (!threads_.empty() ||
-            sched_->Scheduler::has_reached_state(state::running))
+            sched_->Scheduler::has_reached_state(runtime_state::running))
         {
             return true;    // do nothing if already running
         }
@@ -399,9 +399,9 @@ namespace pika { namespace threads { namespace detail {
 
         for (std::size_t i = 0; i != threads_.size(); ++i)
         {
-            pika::state expected = state::running;
+            pika::runtime_state expected = runtime_state::running;
             sched_->Scheduler::get_state(i).compare_exchange_strong(
-                expected, state::pre_sleep);
+                expected, runtime_state::pre_sleep);
         }
 
         for (std::size_t i = 0; i != threads_.size(); ++i)
@@ -480,10 +480,10 @@ namespace pika { namespace threads { namespace detail {
         ++thread_count_;
 
         // set state to running
-        std::atomic<pika::state>& state =
+        std::atomic<pika::runtime_state>& state =
             sched_->Scheduler::get_state(thread_num);
-        pika::state oldstate = state.exchange(state::running);
-        PIKA_ASSERT(oldstate <= state::running);
+        pika::runtime_state oldstate = state.exchange(runtime_state::running);
+        PIKA_ASSERT(oldstate <= runtime_state::running);
         PIKA_UNUSED(oldstate);
 
         // wait for all threads to start up before before starting pika work
@@ -558,7 +558,8 @@ namespace pika { namespace threads { namespace detail {
                          execution::thread_priority::default_,
                          thread_num) == 0 &&
                         sched_->Scheduler::get_queue_length(thread_num) == 0) ||
-                    sched_->Scheduler::get_state(thread_num) > state::stopping);
+                    sched_->Scheduler::get_state(thread_num) >
+                        runtime_state::stopping);
             }
             catch (pika::exception const& e)
             {
@@ -608,7 +609,8 @@ namespace pika { namespace threads { namespace detail {
         thread_init_data& data, thread_id_ref_type& id, error_code& ec)
     {
         // verify state
-        if (thread_count_ == 0 && !sched_->Scheduler::is_state(state::running))
+        if (thread_count_ == 0 &&
+            !sched_->Scheduler::is_state(runtime_state::running))
         {
             // thread-manager is not currently running
             PIKA_THROWS_IF(ec, pika::error::invalid_status,
@@ -628,7 +630,8 @@ namespace pika { namespace threads { namespace detail {
         thread_init_data& data, error_code& ec)
     {
         // verify state
-        if (thread_count_ == 0 && !sched_->Scheduler::is_state(state::running))
+        if (thread_count_ == 0 &&
+            !sched_->Scheduler::is_state(runtime_state::running))
         {
             // thread-manager is not currently running
             PIKA_THROWS_IF(ec, pika::error::invalid_status,
@@ -1862,11 +1865,12 @@ namespace pika { namespace threads { namespace detail {
             return;
         }
 
-        std::atomic<pika::state>& state =
+        std::atomic<pika::runtime_state>& state =
             sched_->Scheduler::get_state(virt_core);
-        pika::state oldstate = state.exchange(state::initialized);
-        PIKA_ASSERT(
-            oldstate == state::stopped || oldstate == state::initialized);
+        pika::runtime_state oldstate =
+            state.exchange(runtime_state::initialized);
+        PIKA_ASSERT(oldstate == runtime_state::stopped ||
+            oldstate == runtime_state::initialized);
         PIKA_UNUSED(oldstate);
 
         threads_[virt_core] = std::thread(&scheduled_thread_pool::thread_func,
@@ -1893,22 +1897,24 @@ namespace pika { namespace threads { namespace detail {
             return;
         }
 
-        std::atomic<pika::state>& state =
+        std::atomic<pika::runtime_state>& state =
             sched_->Scheduler::get_state(virt_core);
 
         // inform the scheduler to stop the virtual core
-        pika::state oldstate = state.exchange(state::stopping);
+        pika::runtime_state oldstate = state.exchange(runtime_state::stopping);
 
-        if (oldstate > state::stopping)
+        if (oldstate > runtime_state::stopping)
         {
             // If thread was terminating or already stopped we don't want to
             // change the value back to stopping, so we restore the old state.
             state.store(oldstate);
         }
 
-        PIKA_ASSERT(oldstate == state::starting || oldstate == state::running ||
-            oldstate == state::stopping || oldstate == state::stopped ||
-            oldstate == state::terminating);
+        PIKA_ASSERT(oldstate == runtime_state::starting ||
+            oldstate == runtime_state::running ||
+            oldstate == runtime_state::stopping ||
+            oldstate == runtime_state::stopped ||
+            oldstate == runtime_state::terminating);
 
         std::thread t;
         std::swap(threads_[virt_core], t);
@@ -1953,20 +1959,21 @@ namespace pika { namespace threads { namespace detail {
             return;
         }
 
-        std::atomic<pika::state>& state =
+        std::atomic<pika::runtime_state>& state =
             sched_->Scheduler::get_state(virt_core);
 
         // Inform the scheduler to suspend the virtual core only if running
-        pika::state expected = state::running;
-        state.compare_exchange_strong(expected, state::pre_sleep);
+        pika::runtime_state expected = runtime_state::running;
+        state.compare_exchange_strong(expected, runtime_state::pre_sleep);
 
         l.unlock();
 
-        PIKA_ASSERT(expected == state::running ||
-            expected == state::pre_sleep || expected == state::sleeping);
+        PIKA_ASSERT(expected == runtime_state::running ||
+            expected == runtime_state::pre_sleep ||
+            expected == runtime_state::sleeping);
 
         util::yield_while(
-            [&state]() { return state.load() == state::pre_sleep; },
+            [&state]() { return state.load() == runtime_state::pre_sleep; },
             "scheduled_thread_pool::suspend_processing_unit_direct");
     }
 
@@ -1993,13 +2000,13 @@ namespace pika { namespace threads { namespace detail {
 
         l.unlock();
 
-        std::atomic<pika::state>& state =
+        std::atomic<pika::runtime_state>& state =
             sched_->Scheduler::get_state(virt_core);
 
         util::yield_while(
             [this, &state, virt_core]() {
                 this->sched_->Scheduler::resume(virt_core);
-                return state.load() == state::sleeping;
+                return state.load() == runtime_state::sleeping;
             },
             "scheduled_thread_pool::resume_processing_unit_direct");
     }

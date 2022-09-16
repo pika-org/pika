@@ -61,8 +61,8 @@ namespace pika {
         virtual notification_policy_type get_notification_policy(
             char const* prefix, os_thread_type type);
 
-        state get_state() const;
-        void set_state(state s);
+        runtime_state get_state() const;
+        void set_state(runtime_state s);
 
         /// The \a pika_main_function_type is the default function type usable
         /// as the main pika thread function.
@@ -407,7 +407,7 @@ namespace pika {
         // topology and affinity data
         threads::detail::topology& topology_;
 
-        std::atomic<state> state_;
+        std::atomic<runtime_state> state_;
 
         // support tying in external functions to be called for thread events
         notification_policy_type::on_startstop_type on_start_func_;
@@ -464,7 +464,7 @@ namespace pika {
     PIKA_EXPORT void set_error_handlers();
 
     namespace detail {
-        PIKA_EXPORT char const* get_runtime_state_name(pika::state st);
+        PIKA_EXPORT char const* get_runtime_state_name(pika::runtime_state st);
     }
 
     namespace util {

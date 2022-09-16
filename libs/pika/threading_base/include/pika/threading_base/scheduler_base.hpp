@@ -105,15 +105,17 @@ namespace pika::threads::detail {
             std::size_t num_thread, bool allow_fallback = false);
 
         // allow to access/manipulate states
-        std::atomic<pika::state>& get_state(std::size_t num_thread);
-        std::atomic<pika::state> const& get_state(std::size_t num_thread) const;
-        void set_all_states(pika::state s);
-        void set_all_states_at_least(pika::state s);
+        std::atomic<pika::runtime_state>& get_state(std::size_t num_thread);
+        std::atomic<pika::runtime_state> const& get_state(
+            std::size_t num_thread) const;
+        void set_all_states(pika::runtime_state s);
+        void set_all_states_at_least(pika::runtime_state s);
 
         // return whether all states are at least at the given one
-        bool has_reached_state(pika::state s) const;
-        bool is_state(pika::state s) const;
-        std::pair<pika::state, pika::state> get_minmax_state() const;
+        bool has_reached_state(pika::runtime_state s) const;
+        bool is_state(pika::runtime_state s) const;
+        std::pair<pika::runtime_state, pika::runtime_state> get_minmax_state()
+            const;
 
         ///////////////////////////////////////////////////////////////////////
         // get/set scheduler mode
@@ -401,7 +403,7 @@ namespace pika::threads::detail {
 
         std::vector<pu_mutex_type> pu_mtxs_;
 
-        std::vector<std::atomic<pika::state>> states_;
+        std::vector<std::atomic<pika::runtime_state>> states_;
         char const* description_;
 
         thread_queue_init_parameters thread_queue_init_;

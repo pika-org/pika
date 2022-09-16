@@ -65,7 +65,7 @@ namespace pika::threads::detail {
 #endif
 
         for (std::size_t i = 0; i != num_threads; ++i)
-            states_[i].store(state::initialized);
+            states_[i].store(runtime_state::initialized);
     }
 
     void scheduler_base::idle_callback(std::size_t num_thread)
@@ -116,18 +116,20 @@ namespace pika::threads::detail {
     {
         PIKA_ASSERT(num_thread < suspend_conds_.size());
 
-        states_[num_thread].store(state::sleeping);
+        states_[num_thread].store(runtime_state::sleeping);
         std::unique_lock<pu_mutex_type> l(suspend_mtxs_[num_thread]);
         suspend_conds_[num_thread].wait(l);
 
-        // Only set running if still in state::sleeping. Can be set with
+        // Only set running if still in runtime_state::sleeping. Can be set with
         // non-blocking/locking functions to stopping or terminating, in
         // which case the state is left untouched.
-        pika::state expected = state::sleeping;
-        states_[num_thread].compare_exchange_strong(expected, state::running);
+        pika::runtime_state expected = runtime_state::sleeping;
+        states_[num_thread].compare_exchange_strong(
+            expected, runtime_state::running);
 
-        PIKA_ASSERT(expected == state::sleeping ||
-            expected == state::stopping || expected == state::terminating);
+        PIKA_ASSERT(expected == runtime_state::sleeping ||
+            expected == runtime_state::stopping ||
+            expected == runtime_state::terminating);
     }
 
     void scheduler_base::resume(std::size_t num_thread)
@@ -159,7 +161,7 @@ namespace pika::threads::detail {
                 // Try indefinitely as long as at least one thread is
                 // available for scheduling. Increase allowed state if no
                 // threads are available for scheduling.
-                auto max_allowed_state = state::suspended;
+                auto max_allowed_state = runtime_state::suspended;
 
                 pika::util::yield_while([this, states_size, &l, &num_thread,
                                             &max_allowed_state]() {
@@ -192,13 +194,13 @@ namespace pika::threads::detail {
 
                     if (0 == num_allowed_threads)
                     {
-                        if (max_allowed_state <= state::suspended)
+                        if (max_allowed_state <= runtime_state::suspended)
                         {
-                            max_allowed_state = state::sleeping;
+                            max_allowed_state = runtime_state::sleeping;
                         }
-                        else if (max_allowed_state <= state::sleeping)
+                        else if (max_allowed_state <= runtime_state::sleeping)
                         {
-                            max_allowed_state = state::stopping;
+                            max_allowed_state = runtime_state::stopping;
                         }
                         else
                         {
@@ -227,7 +229,7 @@ namespace pika::threads::detail {
                     pu_mtxs_[num_thread_local], std::try_to_lock);
 
                 if (l.owns_lock() &&
-                    states_[num_thread_local] <= state::suspended)
+                    states_[num_thread_local] <= runtime_state::suspended)
                 {
                     return num_thread_local;
                 }
@@ -238,30 +240,31 @@ namespace pika::threads::detail {
     }
 
     // allow to access/manipulate states
-    std::atomic<pika::state>& scheduler_base::get_state(std::size_t num_thread)
+    std::atomic<pika::runtime_state>& scheduler_base::get_state(
+        std::size_t num_thread)
     {
         PIKA_ASSERT(num_thread < states_.size());
         return states_[num_thread];
     }
-    std::atomic<pika::state> const& scheduler_base::get_state(
+    std::atomic<pika::runtime_state> const& scheduler_base::get_state(
         std::size_t num_thread) const
     {
         PIKA_ASSERT(num_thread < states_.size());
         return states_[num_thread];
     }
 
-    void scheduler_base::set_all_states(pika::state s)
+    void scheduler_base::set_all_states(pika::runtime_state s)
     {
-        using state_type = std::atomic<pika::state>;
+        using state_type = std::atomic<pika::runtime_state>;
         for (state_type& state : states_)
         {
             state.store(s);
         }
     }
 
-    void scheduler_base::set_all_states_at_least(pika::state s)
+    void scheduler_base::set_all_states_at_least(pika::runtime_state s)
     {
-        using state_type = std::atomic<pika::state>;
+        using state_type = std::atomic<pika::runtime_state>;
         for (state_type& state : states_)
         {
             if (state < s)
@@ -272,9 +275,9 @@ namespace pika::threads::detail {
     }
 
     // return whether all states are at least at the given one
-    bool scheduler_base::has_reached_state(pika::state s) const
+    bool scheduler_base::has_reached_state(pika::runtime_state s) const
     {
-        using state_type = std::atomic<pika::state>;
+        using state_type = std::atomic<pika::runtime_state>;
         for (state_type const& state : states_)
         {
             if (state.load(std::memory_order_relaxed) < s)
@@ -283,9 +286,9 @@ namespace pika::threads::detail {
         return true;
     }
 
-    bool scheduler_base::is_state(pika::state s) const
+    bool scheduler_base::is_state(pika::runtime_state s) const
     {
-        using state_type = std::atomic<pika::state>;
+        using state_type = std::atomic<pika::runtime_state>;
         for (state_type const& state : states_)
         {
             if (state.load(std::memory_order_relaxed) != s)
@@ -294,15 +297,17 @@ namespace pika::threads::detail {
         return true;
     }
 
-    std::pair<pika::state, pika::state> scheduler_base::get_minmax_state() const
+    std::pair<pika::runtime_state, pika::runtime_state>
+    scheduler_base::get_minmax_state() const
     {
-        std::pair<pika::state, pika::state> result(
-            state::last_valid_runtime, state::first_valid_runtime);
+        std::pair<pika::runtime_state, pika::runtime_state> result(
+            runtime_state::last_valid_runtime,
+            runtime_state::first_valid_runtime);
 
-        using state_type = std::atomic<pika::state>;
+        using state_type = std::atomic<pika::runtime_state>;
         for (state_type const& state_iter : states_)
         {
-            pika::state s = state_iter.load();
+            pika::runtime_state s = state_iter.load();
             result.first = (std::min)(result.first, s);
             result.second = (std::max)(result.second, s);
         }
