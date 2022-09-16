@@ -279,6 +279,7 @@ namespace boost { namespace inspect {
         //
         {"(\\bPIKA_ASSERT\\b)", "PIKA_ASSERT", "pika/assert.hpp"},
         {"(\\bPIKA_ASSERT_MSG\\b)", "PIKA_ASSERT_MSG", "pika/assert.hpp"},
+        {"(\\bwhip\\s*::\\s*([^\\s]+)\\b)", "whip::\\2", "whip.hpp"},
         {nullptr, nullptr, nullptr}};
 
     //  include_check constructor  -------------------------------------------//
