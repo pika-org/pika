@@ -206,7 +206,7 @@ namespace pika {
     }    // namespace detail
 
     ///////////////////////////////////////////////////////////////////////////
-    void set_error_handlers()
+    void set_signal_handlers()
     {
 #if defined(PIKA_WINDOWS)
         // Set console control handler to allow server to be stopped.

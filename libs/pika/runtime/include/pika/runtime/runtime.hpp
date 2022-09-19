@@ -461,7 +461,7 @@ namespace pika {
         std::condition_variable wait_condition_;
     };
 
-    PIKA_EXPORT void set_error_handlers();
+    PIKA_EXPORT void set_signal_handlers();
 
     namespace detail {
         PIKA_EXPORT char const* get_runtime_state_name(pika::runtime_state st);

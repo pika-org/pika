@@ -349,7 +349,7 @@ namespace pika {
         }
 
         ////////////////////////////////////////////////////////////////////////
-        void init_environment()
+        void init_environment(detail::command_line_handling& cmdline)
         {
             PIKA_UNUSED(pika::detail::filesystem::initial_path());
 
@@ -373,7 +373,12 @@ namespace pika {
                 &pika::detail::register_locks_predicate);
 #endif
 #if !defined(PIKA_HAVE_DISABLED_SIGNAL_EXCEPTION_HANDLERS)
-            set_error_handlers();
+            if (pika::detail::get_entry_as<bool>(
+                    cmdline.rtcfg_, "pika.install_signal_handlers", false))
+            {
+                set_signal_handlers();
+            }
+
 #endif
             pika::threads::detail::set_get_default_pool(
                 &pika::detail::get_default_pool);
@@ -421,8 +426,6 @@ namespace pika {
             int argc, const char* const* argv, init_params const& params,
             bool blocking)
         {
-            init_environment();
-
             int result = 0;
             try
             {
@@ -463,6 +466,8 @@ namespace pika {
                             params.rp_mode, cmdline.rtcfg_, affinity_data);
 
                     activate_global_options(cmdline);
+
+                    init_environment(cmdline);
 
                     // check whether pika should be exited at this point
                     // (parse_result is returning a result > 0, if the program options
