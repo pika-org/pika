@@ -755,7 +755,15 @@ namespace pika::detail {
             else
             {
                 if (option == "startup")
+                {
                     debug::detail::attach_debugger();
+                }
+                else if (option == "exception")
+                {
+                    // Signal handlers need to be installed to be able to attach
+                    // the debugger on uncaught exceptions
+                    ini_config_.emplace_back("pika.install_signal_handlers!=1");
+                }
 
                 ini_config_.emplace_back("pika.attach_debugger!=" + option);
             }
