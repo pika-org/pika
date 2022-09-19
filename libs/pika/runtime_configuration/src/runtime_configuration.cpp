@@ -150,6 +150,7 @@ namespace pika { namespace util {
             "default_scheduler_mode = ${PIKA_DEFAULT_SCHEDULER_MODE}",
 
             "install_signal_handlers = ${PIKA_INSTALL_SIGNAL_HANDLERS:0}",
+            "diagnostics_on_terminate = ${PIKA_DIAGNOSTICS_ON_TERMINATE:1}",
             "attach_debugger = ${PIKA_ATTACH_DEBUGGER:0}",
             "exception_verbosity = ${PIKA_EXCEPTION_VERBOSITY:1}",
             "trace_depth = ${PIKA_TRACE_DEPTH:" PIKA_PP_STRINGIZE(
