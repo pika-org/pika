@@ -92,6 +92,8 @@ include(pika_setup_cuda)
 
 include(pika_setup_mpi)
 
+include(pika_setup_p2300)
+
 # APEX
 set(PIKA_APEX_ROOT "@APEX_ROOT@")
 include(pika_setup_apex)
