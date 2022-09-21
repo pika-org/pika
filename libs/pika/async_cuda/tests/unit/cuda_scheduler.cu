@@ -9,6 +9,8 @@
 #include <pika/init.hpp>
 #include <pika/testing.hpp>
 
+#include <whip.hpp>
+
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -55,7 +57,7 @@ int pika_main()
 
     {
         auto s =
-            ex::schedule(sched) | cu::then_with_stream([](cudaStream_t) {});
+            ex::schedule(sched) | cu::then_with_stream([](whip::stream_t) {});
         CHECK_CUDA_COMPLETION_SCHEDULER(s);
     }
 
@@ -78,6 +80,7 @@ int pika_main()
     }
 
     {
+#if !defined(PIKA_HAVE_CUDA) || defined(PIKA_CLANG_VERSION)
         // This test initializes the thread_pool_scheduler with nullptr only to
         // avoid it trying to get a thread pool through the default thread pool
         // handler which is not installed in this test (the pika runtime is not
@@ -87,6 +90,7 @@ int pika_main()
                 [](cublasHandle_t) {}, CUBLAS_POINTER_MODE_HOST) |
             ex::transfer(ex::thread_pool_scheduler{nullptr});
         CHECK_NOT_CUDA_COMPLETION_SCHEDULER(s);
+#endif
     }
 
     {
@@ -127,7 +131,7 @@ int pika_main()
 
         int const n = 1000;
         int* p;
-        cu::check_cuda_error(cudaMalloc(&p, sizeof(int) * n));
+        whip::malloc(&p, sizeof(int) * n);
 
         cu::cuda_pool pool{};
         cu::cuda_scheduler sched{pool};
@@ -141,9 +145,9 @@ int pika_main()
             senders.push_back(
                 ex::schedule(ex::with_priority(sched,
                     i % 2 ? thread_priority::high : thread_priority::normal)) |
-                cu::then_with_stream([p, i](cudaStream_t stream) {
+                cu::then_with_stream([p, i](whip::stream_t stream) {
                     kernel<<<1, 1, 0, stream>>>(p, i);
-                    cu::check_cuda_error(cudaGetLastError());
+                    whip::check_last_error();
                 }));
         }
 
@@ -160,9 +164,8 @@ int pika_main()
 
         std::vector<int> s(n, 0);
 
-        cu::check_cuda_error(
-            cudaMemcpy(s.data(), p, sizeof(int) * n, cudaMemcpyDeviceToHost));
-        cu::check_cuda_error(cudaFree(p));
+        whip::memcpy(s.data(), p, sizeof(int) * n, whip::memcpy_device_to_host);
+        whip::free(p);
 
         for (int i = 0; i < n; ++i)
         {

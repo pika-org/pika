@@ -7,10 +7,8 @@
 #pragma once
 
 #include <pika/assert.hpp>
-#include <pika/async_cuda/cuda_exception.hpp>
 #include <pika/async_cuda/cuda_pool.hpp>
 #include <pika/async_cuda/cuda_stream.hpp>
-#include <pika/async_cuda/custom_gpu_api.hpp>
 #include <pika/async_cuda/then_with_stream.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/execution/algorithms/bulk.hpp>
@@ -20,6 +18,8 @@
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/iterator_support/range.hpp>
+
+#include <whip.hpp>
 
 #include <type_traits>
 
@@ -83,7 +83,7 @@ namespace pika::cuda::experimental {
 #endif
 
         template <typename F, typename Shape>
-        void launch_bulk_function(F f, Shape shape, cudaStream_t stream)
+        void launch_bulk_function(F f, Shape shape, whip::stream_t stream)
         {
 #if defined(PIKA_COMPUTE_CODE)
             auto n = shape_size(shape);
@@ -94,7 +94,7 @@ namespace pika::cuda::experimental {
 
                 bulk_function_kernel_integral<<<block_dim, grid_dim, 0,
                     stream>>>(f, shape, n);
-                check_cuda_error(cudaGetLastError());
+                whip::check_last_error();
             }
 #else
             PIKA_UNUSED(f);
@@ -104,7 +104,7 @@ namespace pika::cuda::experimental {
         }
 
         template <typename F, typename Shape, typename T>
-        void launch_bulk_function(F f, Shape shape, T t, cudaStream_t stream)
+        void launch_bulk_function(F f, Shape shape, T t, whip::stream_t stream)
         {
 #if defined(PIKA_COMPUTE_CODE)
             auto n = shape_size(shape);
@@ -115,7 +115,7 @@ namespace pika::cuda::experimental {
 
                 bulk_function_kernel_integral<<<block_dim, grid_dim, 0,
                     stream>>>(f, shape, n, t);
-                check_cuda_error(cudaGetLastError());
+                whip::check_last_error();
             }
 #else
             PIKA_UNUSED(f);
@@ -134,13 +134,13 @@ namespace pika::cuda::experimental {
             // TODO: This should pass through the additional arguments.
             // Currently only works with zero or one arguments with a plain call
             // operator like here.
-            void operator()(cudaStream_t stream) const
+            void operator()(whip::stream_t stream) const
             {
                 launch_bulk_function(f, shape, stream);
             }
 
             template <typename T>
-            std::decay_t<T> operator()(T&& t, cudaStream_t stream) const
+            std::decay_t<T> operator()(T&& t, whip::stream_t stream) const
             {
                 launch_bulk_function(f, shape, t, stream);
                 return PIKA_MOVE(t);
