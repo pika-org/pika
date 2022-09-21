@@ -30,10 +30,10 @@ namespace pika { namespace ranges {
     ///                     elements.
     /// \tparam Proj1       The type of an optional projection function for
     ///                     the source range. This defaults to
-    ///                     \a util::projection_identity
+    ///                     \a util::detail::projection_identity
     /// \tparam Proj1       The type of an optional projection function for
     ///                     the destination range. This defaults to
-    ///                     \a util::projection_identity
+    ///                     \a util::detail::projection_identity
     ///
     /// \param first1       Refers to the beginning of the source range.
     /// \param last1        Refers to the end of the source range.
@@ -85,10 +85,10 @@ namespace pika { namespace ranges {
     ///                     elements.
     /// \tparam Proj1       The type of an optional projection function for
     ///                     the source range. This defaults to
-    ///                     \a util::projection_identity
+    ///                     \a util::detail::projection_identity
     /// \tparam Proj1       The type of an optional projection function for
     ///                     the destination range. This defaults to
-    ///                     \a util::projection_identity
+    ///                     \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -248,8 +248,9 @@ namespace pika {
 
             return pika::parallel::detail::ends_with().call(
                 pika::execution::seq, first1, last1, first2, last2,
-                PIKA_FORWARD(Pred, pred), parallel::util::projection_identity{},
-                parallel::util::projection_identity{});
+                PIKA_FORWARD(Pred, pred),
+                parallel::util::detail::projection_identity{},
+                parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -279,8 +280,9 @@ namespace pika {
 
             return pika::parallel::detail::ends_with().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
-                PIKA_FORWARD(Pred, pred), parallel::util::projection_identity{},
-                parallel::util::projection_identity{});
+                PIKA_FORWARD(Pred, pred),
+                parallel::util::detail::projection_identity{},
+                parallel::util::detail::projection_identity{});
         }
     } ends_with{};
 }    // namespace pika

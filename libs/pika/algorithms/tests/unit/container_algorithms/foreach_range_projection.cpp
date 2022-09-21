@@ -105,9 +105,11 @@ int pika_main(pika::program_options::variables_map& vm)
     std::cout << "using seed: " << seed << std::endl;
     std::srand(seed);
 
-    for_each_test<pika::parallel::util::projection_identity>();
-    for_each_exception_test<pika::parallel::util::projection_identity>();
-    for_each_bad_alloc_test<pika::parallel::util::projection_identity>();
+    for_each_test<pika::parallel::util::detail::projection_identity>();
+    for_each_exception_test<
+        pika::parallel::util::detail::projection_identity>();
+    for_each_bad_alloc_test<
+        pika::parallel::util::detail::projection_identity>();
 
     for_each_test<projection_square>();
     for_each_exception_test<projection_square>();

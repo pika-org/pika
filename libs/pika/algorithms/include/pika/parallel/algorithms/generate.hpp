@@ -180,7 +180,7 @@ namespace pika::parallel::detail {
                 return sequential_generate(
                     PIKA_MOVE(policy), part_begin, part_end, PIKA_MOVE(f));
             };
-            return util::partitioner<ExPolicy, Iter>::call(
+            return util::detail::partitioner<ExPolicy, Iter>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 [first, last](std::vector<pika::future<Iter>>&&) {
@@ -216,7 +216,7 @@ namespace pika::parallel::detail {
                 return sequential_generate_n(
                     PIKA_MOVE(policy), part_begin, part_size, PIKA_MOVE(f));
             };
-            return util::partitioner<ExPolicy, FwdIter>::call(
+            return util::detail::partitioner<ExPolicy, FwdIter>::call(
                 PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_MOVE(f1),
                 [first, count](std::vector<pika::future<FwdIter>>&&) mutable {
                     std::advance(first, count);

@@ -37,7 +37,7 @@ namespace pika { namespace ranges {
     /// \tparam T           The type that the result of dereferencing InIter is
     ///                     compared to.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -60,7 +60,7 @@ namespace pika { namespace ranges {
     ///           elements copied.
     ///
     template <typename I, typename S, typename O, typename T,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     ranges::remove_copy_result<I, O> ranges::remove_copy(
         I first, S last, O result, const T& val, Proj proj = {});
 
@@ -93,7 +93,7 @@ namespace pika { namespace ranges {
     /// \tparam T           The type that the result of dereferencing InIter is
     ///                     compared to.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -130,7 +130,7 @@ namespace pika { namespace ranges {
     ///           elements copied.
     ///
     template <typename ExPolicy, typename I, typename S, typename O, typename T,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     ranges::remove_copy_result<I, O> ranges::remove_copy(ExPolicy&& policy,
         I first, S last, O result, const T& val, Proj proj = {});
 
@@ -157,7 +157,7 @@ namespace pika { namespace ranges {
     /// \tparam T           The type that the result of dereferencing InIter is
     ///                     compared to.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -180,7 +180,7 @@ namespace pika { namespace ranges {
     ///
     ///
     template <typename Rng, typename O, typename T,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     remove_copy_result<typename pika::traits::range_iterator<Rng>::type, O>
     ranges::remove_copy(Rng&& rng, O dest, T const& val, Proj&& proj = Proj());
 
@@ -211,7 +211,7 @@ namespace pika { namespace ranges {
     /// \tparam T           The type that the result of dereferencing InIter is
     ///                     compared to.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -248,7 +248,7 @@ namespace pika { namespace ranges {
     ///           elements copied.
     ///
     template <typename ExPolicy, typename Rng, typename O, typename T,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         remove_copy_result<typename pika::traits::range_iterator<Rng>::type,
             O>>::type
@@ -284,7 +284,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a remove_copy_if requires \a Pred to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -320,7 +320,7 @@ namespace pika { namespace ranges {
     ///           elements copied.
     ///
     template <typename I, typename Sent, typename O, typename Pred,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     ranges::remove_copy_if_result<I, O> ranges::remove_copy_if(
         I first, Sent last, O dest, Pred&& pred, Proj&& proj = Proj());
 
@@ -357,7 +357,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a remove_copy_if requires \a Pred to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -408,7 +408,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename I, typename Sent, typename O,
         typename Pred,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         remove_copy_if_result<I, O>>::type
     ranges::remove_copy_if(ExPolicy&& policy, I first, Sent last, O dest,
@@ -441,7 +441,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a copy_if requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -476,7 +476,7 @@ namespace pika { namespace ranges {
     ///           elements copied.
     ///
     template <typename Rng, typename O, typename Pred,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     remove_copy_if_result<typename pika::traits::range_iterator<Rng>::type, O>
     ranges::remove_copy_if(
         Rng&& rng, O dest, Pred&& pred, Proj&& proj = Proj());
@@ -512,7 +512,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a copy_if requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -562,7 +562,7 @@ namespace pika { namespace ranges {
     ///           elements copied.
     ///
     template <typename ExPolicy, typename Rng, typename O, typename Pred,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         remove_copy_if_result<typename pika::traits::range_iterator<Rng>::type,
             O>>::type
@@ -591,10 +591,12 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     template <typename I, typename O>
-    using remove_copy_result = pika::parallel::util::in_out_result<I, O>;
+    using remove_copy_result =
+        pika::parallel::util::detail::in_out_result<I, O>;
 
     template <typename I, typename O>
-    using remove_copy_if_result = pika::parallel::util::in_out_result<I, O>;
+    using remove_copy_if_result =
+        pika::parallel::util::detail::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::remove_copy_if
@@ -603,7 +605,7 @@ namespace pika::ranges {
     {
         // clang-format off
         template <typename I, typename Sent, typename O, typename Pred,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<I>::value &&
                 pika::parallel::detail::is_projected<Proj, I>::value &&
@@ -625,14 +627,14 @@ namespace pika::ranges {
                 "Required output iterator.");
 
             return pika::parallel::detail::remove_copy_if<
-                pika::parallel::util::in_out_result<I, O>>()
+                pika::parallel::util::detail::in_out_result<I, O>>()
                 .call(pika::execution::seq, first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename Rng, typename O, typename Pred,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value&&
                 pika::parallel::detail::is_projected_range<Proj,Rng>::value &&
@@ -654,7 +656,7 @@ namespace pika::ranges {
                 "Required at least input iterator.");
 
             return pika::parallel::detail::remove_copy_if<
-                pika::parallel::util::in_out_result<
+                pika::parallel::util::detail::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type, O>>()
                 .call(pika::execution::seq, pika::util::begin(rng),
                     pika::util::end(rng), dest, PIKA_FORWARD(Pred, pred),
@@ -663,7 +665,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename I, typename Sent, typename O,
-         typename Pred, typename Proj = pika::parallel::util::projection_identity,
+         typename Pred, typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value&&
                 pika::traits::is_iterator<I>::value &&
@@ -687,14 +689,14 @@ namespace pika::ranges {
                 "Required at least forward iterator.");
 
             return pika::parallel::detail::remove_copy_if<
-                pika::parallel::util::in_out_result<I, O>>()
+                pika::parallel::util::detail::in_out_result<I, O>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         // clang-format off
         template <typename ExPolicy, typename Rng, typename O, typename Pred,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
@@ -718,7 +720,7 @@ namespace pika::ranges {
                 "Required at least forward iterator.");
 
             return pika::parallel::detail::remove_copy_if<
-                pika::parallel::util::in_out_result<
+                pika::parallel::util::detail::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type, O>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                     pika::util::end(rng), dest, PIKA_FORWARD(Pred, pred),
@@ -734,7 +736,7 @@ namespace pika::ranges {
     private:
         // clang-format off
         template <typename I, typename Sent, typename O,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T = typename pika::parallel::detail::projected<I,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
@@ -761,7 +763,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename Rng, typename O,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
@@ -790,7 +792,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename I, typename Sent, typename O,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T = typename pika::parallel::detail::projected<I,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
@@ -819,7 +821,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Rng, typename O,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(

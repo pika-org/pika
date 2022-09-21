@@ -14,7 +14,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace parallel { namespace util { namespace detail {
+namespace pika::parallel::util::detail {
     // Hand-crafted function object allowing to replace a more complex
     // bind(functional::invoke_fused(), f1, _1)
     template <typename Result, typename F>
@@ -29,7 +29,7 @@ namespace pika { namespace parallel { namespace util { namespace detail {
                 f_, PIKA_FORWARD(T, t));
         }
     };
-}}}}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::util::detail
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #include <pika/functional/traits/get_function_address.hpp>

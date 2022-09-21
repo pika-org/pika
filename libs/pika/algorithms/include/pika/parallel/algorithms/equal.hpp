@@ -302,7 +302,7 @@ namespace pika::parallel ::detail {
                 return !tok.was_cancelled();
             };
 
-            return util::partitioner<ExPolicy, bool>::call(
+            return util::detail::partitioner<ExPolicy, bool>::call(
                 PIKA_FORWARD(ExPolicy, policy),
                 pika::util::make_zip_iterator(first1, first2), count1,
                 PIKA_MOVE(f1),
@@ -366,7 +366,7 @@ namespace pika::parallel ::detail {
                 return !tok.was_cancelled();
             };
 
-            return util::partitioner<ExPolicy, bool>::call(
+            return util::detail::partitioner<ExPolicy, bool>::call(
                 PIKA_FORWARD(ExPolicy, policy),
                 pika::util::make_zip_iterator(first1, first2), count,
                 PIKA_MOVE(f1), [](std::vector<pika::future<bool>>&& results) {
@@ -412,8 +412,8 @@ namespace pika {
             return pika::parallel::detail::equal_binary().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -437,8 +437,8 @@ namespace pika {
             return pika::parallel::detail::equal_binary().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 pika::parallel::detail::equal_to{},
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -514,8 +514,8 @@ namespace pika {
             return pika::parallel::detail::equal_binary().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -536,8 +536,8 @@ namespace pika {
             return pika::parallel::detail::equal_binary().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 pika::parallel::detail::equal_to{},
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off

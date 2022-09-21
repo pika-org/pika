@@ -96,7 +96,8 @@ namespace pika::parallel::detail {
             }
 
             using partitioner =
-                pika::parallel::util::partitioner<ExPolicy, FwdIter, void>;
+                pika::parallel::util::detail::partitioner<ExPolicy, FwdIter,
+                    void>;
 
             pika::parallel::util::cancellation_token<difference_type> tok(
                 count);
@@ -199,7 +200,8 @@ namespace pika::parallel::detail {
             if (diff > s_difference_type(count))
                 return result::get(PIKA_MOVE(first));
 
-            using partitioner = util::partitioner<ExPolicy, FwdIter, void>;
+            using partitioner =
+                util::detail::partitioner<ExPolicy, FwdIter, void>;
 
             util::cancellation_token<difference_type> tok(count);
 

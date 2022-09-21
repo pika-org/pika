@@ -166,7 +166,7 @@ namespace pika::parallel::detail {
             ExPolicy, InIter first, InSent last, Pred&& pred, Proj&& proj)
         {
             return std::is_partitioned(first, last,
-                util::invoke_projected<Pred, Proj>(
+                util::detail::invoke_projected<Pred, Proj>(
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
         }
 
@@ -184,7 +184,7 @@ namespace pika::parallel::detail {
             if (count <= 1)
                 return result::get(true);
 
-            util::invoke_projected<Pred, Proj> pred_projected(
+            util::detail::invoke_projected<Pred, Proj> pred_projected(
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
 
             util::cancellation_token<> tok;
@@ -221,7 +221,7 @@ namespace pika::parallel::detail {
                 return sequential_is_partitioned(PIKA_MOVE(results));
             };
 
-            return util::partitioner<ExPolicy, bool>::call(
+            return util::detail::partitioner<ExPolicy, bool>::call(
                 PIKA_FORWARD(ExPolicy, policy), first, count, PIKA_MOVE(f1),
                 PIKA_MOVE(f2));
         }
@@ -246,7 +246,7 @@ namespace pika {
             return pika::parallel::detail::is_partitioned<FwdIter, FwdIter>()
                 .call(pika::execution::seq, first, last,
                     PIKA_FORWARD(Pred, pred),
-                    pika::parallel::util::projection_identity());
+                    pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -265,7 +265,7 @@ namespace pika {
             return pika::parallel::detail::is_partitioned<FwdIter, FwdIter>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Pred, pred),
-                    pika::parallel::util::projection_identity());
+                    pika::parallel::util::detail::projection_identity());
         }
     } is_partitioned{};
 }    // namespace pika

@@ -290,7 +290,7 @@ namespace pika::parallel::detail {
                     [](pika::future<bool>& val) { return val.get(); });
             };
 
-            return util::partitioner<ExPolicy, bool>::call(
+            return util::detail::partitioner<ExPolicy, bool>::call(
                 PIKA_FORWARD(ExPolicy, policy), first2,
                 detail::distance(first2, last2), PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
@@ -330,8 +330,8 @@ namespace pika {
             return pika::parallel::detail::includes().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -356,8 +356,8 @@ namespace pika {
 
             return pika::parallel::detail::includes().call(pika::execution::seq,
                 first1, last1, first2, last2, PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
     } includes{};
 }    // namespace pika

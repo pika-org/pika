@@ -374,7 +374,7 @@ namespace pika {
             pika::parallel::detail::nth_element<RandomIt>().call(
                 pika::execution::seq, first, nth, last,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -403,7 +403,7 @@ namespace pika {
                    pika::parallel::detail::nth_element<RandomIt>().call(
                        PIKA_FORWARD(ExPolicy, policy), first, nth, last,
                        PIKA_FORWARD(Pred, pred),
-                       pika::parallel::util::projection_identity{});
+                       pika::parallel::util::detail::projection_identity{});
         }
     } nth_element{};
 }    // namespace pika

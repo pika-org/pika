@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util {
+namespace pika::parallel::util::detail {
     /// \brief Compare the elements pointed by it1 and it2, and if they
     ///        are equals, compare their position, doing a stable comparison
     ///
@@ -55,11 +55,12 @@ namespace pika::parallel::util {
     /// \return range with all the elements move with the size adjusted
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename Compare>
-    util::range<Iter1, Sent1> full_merge4(util::range<Iter1, Sent1>& rdest,
-        util::range<Iter2, Sent2> vrange_input[4], std::uint32_t nrange_input,
-        Compare comp)
+    util::detail::range<Iter1, Sent1> full_merge4(
+        util::detail::range<Iter1, Sent1>& rdest,
+        util::detail::range<Iter2, Sent2> vrange_input[4],
+        std::uint32_t nrange_input, Compare comp)
     {
-        using range1_t = util::range<Iter1, Sent1>;
+        using range1_t = util::detail::range<Iter1, Sent1>;
         using type1 = typename std::iterator_traits<Iter1>::value_type;
         using type2 = typename std::iterator_traits<Iter2>::value_type;
 
@@ -146,7 +147,7 @@ namespace pika::parallel::util {
             auto& r = vrange_input[pos[0]];
 
             *(it_dest++) = PIKA_MOVE(*(r.begin()));
-            r = util::range<Iter2, Sent2>(r.begin() + 1, r.end());
+            r = util::detail::range<Iter2, Sent2>(r.begin() + 1, r.end());
 
             if (r.size() == 0)
             {
@@ -199,9 +200,10 @@ namespace pika::parallel::util {
     /// \param [in] comp : comparison object
     /// \return range with all the elements move with the size adjusted
     template <typename Value, typename Iter, typename Sent, typename Compare>
-    util::range<Value*> uninit_full_merge4(util::range<Value*> const& dest,
-        util::range<Iter, Sent> vrange_input[4], std::uint32_t nrange_input,
-        Compare comp)
+    util::detail::range<Value*> uninit_full_merge4(
+        util::detail::range<Value*> const& dest,
+        util::detail::range<Iter, Sent> vrange_input[4],
+        std::uint32_t nrange_input, Compare comp)
     {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
@@ -228,7 +230,7 @@ namespace pika::parallel::util {
 
         if (nrange_input == 0)
         {
-            return util::range<value_type*>(dest.begin(), dest.begin());
+            return util::detail::range<value_type*>(dest.begin(), dest.begin());
         }
         if (nrange_input == 1)
         {
@@ -288,8 +290,9 @@ namespace pika::parallel::util {
         {
             auto& r = vrange_input[pos[0]];
 
-            util::construct_object(&(*(it_dest++)), PIKA_MOVE(*(r.begin())));
-            r = util::range<Iter, Sent>(r.begin() + 1, r.end());
+            util::detail::construct_object(
+                &(*(it_dest++)), PIKA_MOVE(*(r.begin())));
+            r = util::detail::range<Iter, Sent>(r.begin() + 1, r.end());
 
             if (r.size() == 0)
             {
@@ -319,8 +322,8 @@ namespace pika::parallel::util {
             }
         }
 
-        util::range<value_type*> raux1(dest.begin(), it_dest);
-        util::range<value_type*> raux2(it_dest, dest.end());
+        util::detail::range<value_type*> raux1(dest.begin(), it_dest);
+        util::detail::range<value_type*> raux2(it_dest, dest.end());
         if (pos[0] < pos[1])
         {
             return concat(raux1,
@@ -332,4 +335,4 @@ namespace pika::parallel::util {
             uninit_full_merge(
                 raux2, vrange_input[pos[1]], vrange_input[pos[0]], comp));
     }
-}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util::detail

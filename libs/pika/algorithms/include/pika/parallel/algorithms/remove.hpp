@@ -299,8 +299,9 @@ namespace pika::parallel::detail {
 
             using pika::util::make_zip_iterator;
             using std::get;
-            using scan_partitioner_type = util::scan_partitioner<ExPolicy, Iter,
-                std::size_t, void, util::scan_partitioner_sequential_f3_tag>;
+            using scan_partitioner_type =
+                util::detail::scan_partitioner<ExPolicy, Iter, std::size_t,
+                    void, util::detail::scan_partitioner_sequential_f3_tag>;
 
             // Note: replacing the invoke() with PIKA_INVOKE()
             // below makes gcc generate errors
@@ -425,7 +426,7 @@ namespace pika {
             return pika::parallel::detail::remove_if<FwdIter>().call(
                 pika::execution::sequenced_policy{}, first, last,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -449,7 +450,7 @@ namespace pika {
             return pika::parallel::detail::remove_if<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity());
         }
 
     } remove_if{};

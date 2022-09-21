@@ -205,8 +205,8 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename InIter, typename Sent1,
             typename RandIter, typename Sent2, typename Compare, typename Proj1,
             typename Proj2>
-        static util::in_out_result<InIter, RandIter> sequential(ExPolicy,
-            InIter first, Sent1 last, RandIter d_first, Sent2 d_last,
+        static util::detail::in_out_result<InIter, RandIter> sequential(
+            ExPolicy, InIter first, Sent1 last, RandIter d_first, Sent2 d_last,
             Compare&& comp, Proj1&& proj1, Proj2&& proj2)
         {
             auto last_iter = detail::advance_to_sentinel(first, last);
@@ -221,7 +221,7 @@ namespace pika::parallel::detail {
                 std::is_same_v<value1_t, value_t>, "Incompatible iterators\n");
 
             if ((last_iter == first) || (d_last_iter == d_first))
-                return util::in_out_result<InIter, RandIter>{
+                return util::detail::in_out_result<InIter, RandIter>{
                     last_iter, d_first};
 
             std::vector<value_t> aux(first, last_iter);
@@ -238,19 +238,20 @@ namespace pika::parallel::detail {
             {
                 detail::sort<vec_iter_t>().call(pika::execution::seq,
                     aux.begin(), aux.end(), PIKA_MOVE(proj_comp),
-                    util::projection_identity{});
+                    util::detail::projection_identity{});
             }
             else
             {
                 parallel::detail::partial_sort<vec_iter_t>().call(
                     pika::execution::seq, aux.begin(), aux.begin() + nmin,
                     aux.end(), PIKA_MOVE(proj_comp),
-                    util::projection_identity{});
+                    util::detail::projection_identity{});
             }
 
-            detail::copy<util::in_out_result<vec_iter_t, RandIter>>().call(
-                pika::execution::seq, aux.begin(), aux.begin() + nmin, d_first);
-            return util::in_out_result<InIter, RandIter>{
+            detail::copy<util::detail::in_out_result<vec_iter_t, RandIter>>()
+                .call(pika::execution::seq, aux.begin(), aux.begin() + nmin,
+                    d_first);
+            return util::detail::in_out_result<InIter, RandIter>{
                 last_iter, d_first + nmin};
         }
 
@@ -277,12 +278,12 @@ namespace pika::parallel::detail {
             typename RandIter, typename Sent2, typename Compare, typename Proj1,
             typename Proj2>
         static util::detail::algorithm_result_t<ExPolicy,
-            util::in_out_result<FwdIter, RandIter>>
+            util::detail::in_out_result<FwdIter, RandIter>>
         parallel(ExPolicy&& policy, FwdIter first, Sent1 last, RandIter d_first,
             Sent2 d_last, Compare&& comp, Proj1&& proj1, Proj2&& proj2)
         {
             using result_type = util::detail::algorithm_result<ExPolicy,
-                util::in_out_result<FwdIter, RandIter>>;
+                util::detail::in_out_result<FwdIter, RandIter>>;
             using value_t = typename std::iterator_traits<FwdIter>::value_type;
             using value1_t =
                 typename std::iterator_traits<RandIter>::value_type;
@@ -298,7 +299,7 @@ namespace pika::parallel::detail {
 
                 if ((last_iter == first) || (d_last_iter == d_first))
                     return result_type::get(
-                        util::in_out_result<FwdIter, RandIter>{
+                        util::detail::in_out_result<FwdIter, RandIter>{
                             last_iter, d_first});
 
                 std::vector<value_t> aux(first, last_iter);
@@ -315,7 +316,7 @@ namespace pika::parallel::detail {
                     detail::sort<vec_iter_t>().call(
                         policy(pika::execution::non_task), aux.begin(),
                         aux.end(), PIKA_MOVE(proj_comp),
-                        util::projection_identity{});
+                        util::detail::projection_identity{});
                 }
                 else
                 {
@@ -323,20 +324,22 @@ namespace pika::parallel::detail {
                     pika::parallel::detail::partial_sort<vec_iter_t>().call(
                         policy(pika::execution::non_task), aux.begin(),
                         aux.begin() + nmin, aux.end(), PIKA_MOVE(proj_comp),
-                        util::projection_identity{});
+                        util::detail::projection_identity{});
                 };
 
-                detail::copy<util::in_out_result<vec_iter_t, RandIter>>().call(
-                    policy(pika::execution::non_task), aux.begin(),
-                    aux.begin() + nmin, d_first);
+                detail::copy<
+                    util::detail::in_out_result<vec_iter_t, RandIter>>()
+                    .call(policy(pika::execution::non_task), aux.begin(),
+                        aux.begin() + nmin, d_first);
 
-                return result_type::get(util::in_out_result<FwdIter, RandIter>{
-                    last_iter, d_first + nmin});
+                return result_type::get(
+                    util::detail::in_out_result<FwdIter, RandIter>{
+                        last_iter, d_first + nmin});
             }
             catch (...)
             {
                 return result_type::get(detail::handle_exception<ExPolicy,
-                    util::in_out_result<FwdIter,
+                    util::detail::in_out_result<FwdIter,
                         RandIter>>::call(std::current_exception()));
             }
         }
@@ -372,14 +375,15 @@ namespace pika {
             static_assert(pika::traits::is_random_access_iterator_v<RandIter>,
                 "Requires at least random access iterator.");
 
-            using result_type = parallel::util::in_out_result<InIter, RandIter>;
+            using result_type =
+                parallel::util::detail::in_out_result<InIter, RandIter>;
 
-            return parallel::util::get_second_element(
+            return parallel::util::detail::get_second_element(
                 parallel::detail::partial_sort_copy<result_type>().call(
                     pika::execution::seq, first, last, d_first, d_last,
                     PIKA_FORWARD(Comp, comp),
-                    parallel::util::projection_identity{},
-                    parallel::util::projection_identity{}));
+                    parallel::util::detail::projection_identity{},
+                    parallel::util::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -408,14 +412,14 @@ namespace pika {
                 "Requires at least random access iterator.");
 
             using result_type =
-                parallel::util::in_out_result<FwdIter, RandIter>;
+                parallel::util::detail::in_out_result<FwdIter, RandIter>;
 
-            return parallel::util::get_second_element(
+            return parallel::util::detail::get_second_element(
                 parallel::detail::partial_sort_copy<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, d_first,
                     d_last, PIKA_FORWARD(Comp, comp),
-                    parallel::util::projection_identity{},
-                    parallel::util::projection_identity{}));
+                    parallel::util::detail::projection_identity{},
+                    parallel::util::detail::projection_identity{}));
         }
     } partial_sort_copy{};
 }    // namespace pika

@@ -68,7 +68,7 @@ void test_all_of(ExPolicy&& policy, IteratorTag)
 }
 
 template <typename IteratorTag,
-    typename Proj = pika::parallel::util::projection_identity>
+    typename Proj = pika::parallel::util::detail::projection_identity>
 void test_all_of_ranges_seq(IteratorTag, Proj proj = Proj())
 {
     using base_iterator = std::vector<int>::iterator;
@@ -92,7 +92,7 @@ void test_all_of_ranges_seq(IteratorTag, Proj proj = Proj())
 }
 
 template <typename ExPolicy, typename IteratorTag,
-    typename Proj = pika::parallel::util::projection_identity>
+    typename Proj = pika::parallel::util::detail::projection_identity>
 void test_all_of_ranges(ExPolicy&& policy, IteratorTag, Proj proj = Proj())
 {
     static_assert(pika::is_execution_policy<ExPolicy>::value,
@@ -142,7 +142,7 @@ void test_all_of_async(ExPolicy&& p, IteratorTag)
 }
 
 template <typename ExPolicy, typename IteratorTag,
-    typename Proj = pika::parallel::util::projection_identity>
+    typename Proj = pika::parallel::util::detail::projection_identity>
 void test_all_of_ranges_async(ExPolicy&& p, IteratorTag, Proj proj = Proj())
 {
     using base_iterator = std::vector<int>::iterator;

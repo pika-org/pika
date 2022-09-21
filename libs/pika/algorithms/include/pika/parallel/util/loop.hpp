@@ -1185,7 +1185,7 @@ namespace pika::parallel::util::detail {
     }
 
     template <typename T, typename Iter, typename Reduce,
-        typename Conv = util::projection_identity>
+        typename Conv = util::detail::projection_identity>
     PIKA_FORCEINLINE T accumulate(
         Iter first, Iter last, Reduce&& r, Conv&& conv = Conv())
     {

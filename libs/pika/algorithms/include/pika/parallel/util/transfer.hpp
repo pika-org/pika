@@ -20,111 +20,106 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::parallel::util {
-    namespace detail {
-        template <typename Category, typename Enable = void>
-        struct copy_helper;
-        template <typename Category, typename Enable = void>
-        struct copy_n_helper;
+namespace pika::parallel::util::detail {
+    template <typename Category, typename Enable = void>
+    struct copy_helper;
+    template <typename Category, typename Enable = void>
+    struct copy_n_helper;
 
-        template <typename Category, typename Enable = void>
-        struct copy_synchronize_helper;
+    template <typename Category, typename Enable = void>
+    struct copy_synchronize_helper;
 
-        template <typename Category, typename Enable = void>
-        struct move_helper;
-        template <typename Category, typename Enable = void>
-        struct move_n_helper;
+    template <typename Category, typename Enable = void>
+    struct move_helper;
+    template <typename Category, typename Enable = void>
+    struct move_n_helper;
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename T>
-        PIKA_FORCEINLINE std::enable_if_t<std::is_pointer<T>::value, char*>
-        to_ptr(T ptr) noexcept
+    ///////////////////////////////////////////////////////////////////////
+    template <typename T>
+    PIKA_FORCEINLINE std::enable_if_t<std::is_pointer<T>::value, char*> to_ptr(
+        T ptr) noexcept
+    {
+        return const_cast<char*>(reinterpret_cast<char volatile const*>(ptr));
+    }
+
+    template <typename T>
+    PIKA_FORCEINLINE std::enable_if_t<std::is_pointer<T>::value, char const*>
+    to_const_ptr(T ptr) noexcept
+    {
+        return const_cast<char const*>(
+            reinterpret_cast<char volatile const*>(ptr));
+    }
+
+    template <typename Iter>
+    PIKA_FORCEINLINE std::enable_if_t<!std::is_pointer<Iter>::value, char*>
+    to_ptr(Iter ptr) noexcept
+    {
+        static_assert(pika::traits::is_contiguous_iterator_v<Iter>,
+            "optimized copy/move is possible for contiguous-iterators "
+            "only");
+
+        return const_cast<char*>(reinterpret_cast<char volatile const*>(&*ptr));
+    }
+
+    template <typename Iter>
+    PIKA_FORCEINLINE
+        std::enable_if_t<!std::is_pointer<Iter>::value, char const*>
+        to_const_ptr(Iter ptr) noexcept
+    {
+        static_assert(pika::traits::is_contiguous_iterator_v<Iter>,
+            "optimized copy/move is possible for contiguous-iterators "
+            "only");
+
+        return const_cast<char const*>(
+            reinterpret_cast<char volatile const*>(&*ptr));
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename InIter, typename OutIter>
+    PIKA_FORCEINLINE static in_out_result<InIter, OutIter> copy_memmove(
+        InIter first, std::size_t count, OutIter dest)
+    {
+        using data_type = typename std::iterator_traits<InIter>::value_type;
+
+        char const* const first_ch = to_const_ptr(first);
+        char* const dest_ch = to_ptr(dest);
+
+        std::memmove(dest_ch, first_ch, count * sizeof(data_type));
+
+        std::advance(first, count);
+        std::advance(dest, count);
+        return in_out_result<InIter, OutIter>{
+            PIKA_MOVE(first), PIKA_MOVE(dest)};
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    // Customization point for optimizing copy operations
+    template <typename Category, typename Enable>
+    struct copy_helper
+    {
+        template <typename InIter, typename Sent, typename OutIter>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr in_out_result<InIter, OutIter>
+            call(InIter first, Sent last, OutIter dest)
         {
-            return const_cast<char*>(
-                reinterpret_cast<char volatile const*>(ptr));
-        }
-
-        template <typename T>
-        PIKA_FORCEINLINE
-            std::enable_if_t<std::is_pointer<T>::value, char const*>
-            to_const_ptr(T ptr) noexcept
-        {
-            return const_cast<char const*>(
-                reinterpret_cast<char volatile const*>(ptr));
-        }
-
-        template <typename Iter>
-        PIKA_FORCEINLINE std::enable_if_t<!std::is_pointer<Iter>::value, char*>
-        to_ptr(Iter ptr) noexcept
-        {
-            static_assert(pika::traits::is_contiguous_iterator_v<Iter>,
-                "optimized copy/move is possible for contiguous-iterators "
-                "only");
-
-            return const_cast<char*>(
-                reinterpret_cast<char volatile const*>(&*ptr));
-        }
-
-        template <typename Iter>
-        PIKA_FORCEINLINE
-            std::enable_if_t<!std::is_pointer<Iter>::value, char const*>
-            to_const_ptr(Iter ptr) noexcept
-        {
-            static_assert(pika::traits::is_contiguous_iterator_v<Iter>,
-                "optimized copy/move is possible for contiguous-iterators "
-                "only");
-
-            return const_cast<char const*>(
-                reinterpret_cast<char volatile const*>(&*ptr));
-        }
-
-        ///////////////////////////////////////////////////////////////////////
-        template <typename InIter, typename OutIter>
-        PIKA_FORCEINLINE static in_out_result<InIter, OutIter> copy_memmove(
-            InIter first, std::size_t count, OutIter dest)
-        {
-            using data_type = typename std::iterator_traits<InIter>::value_type;
-
-            char const* const first_ch = to_const_ptr(first);
-            char* const dest_ch = to_ptr(dest);
-
-            std::memmove(dest_ch, first_ch, count * sizeof(data_type));
-
-            std::advance(first, count);
-            std::advance(dest, count);
+            while (first != last)
+                *dest++ = *first++;
             return in_out_result<InIter, OutIter>{
                 PIKA_MOVE(first), PIKA_MOVE(dest)};
         }
+    };
 
-        ///////////////////////////////////////////////////////////////////////
-        // Customization point for optimizing copy operations
-        template <typename Category, typename Enable>
-        struct copy_helper
+    template <typename Dummy>
+    struct copy_helper<pika::detail::trivially_copyable_pointer_tag, Dummy>
+    {
+        template <typename InIter, typename Sent, typename OutIter>
+        PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
+            InIter first, Sent last, OutIter dest)
         {
-            template <typename InIter, typename Sent, typename OutIter>
-            PIKA_HOST_DEVICE
-                PIKA_FORCEINLINE static constexpr in_out_result<InIter, OutIter>
-                call(InIter first, Sent last, OutIter dest)
-            {
-                while (first != last)
-                    *dest++ = *first++;
-                return in_out_result<InIter, OutIter>{
-                    PIKA_MOVE(first), PIKA_MOVE(dest)};
-            }
-        };
-
-        template <typename Dummy>
-        struct copy_helper<pika::detail::trivially_copyable_pointer_tag, Dummy>
-        {
-            template <typename InIter, typename Sent, typename OutIter>
-            PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
-                InIter first, Sent last, OutIter dest)
-            {
-                return copy_memmove(
-                    first, parallel::detail::distance(first, last), dest);
-            }
-        };
-    }    // namespace detail
+            return copy_memmove(
+                first, parallel::detail::distance(first, last), dest);
+        }
+    };
 
     template <typename InIter, typename Sent, typename OutIter>
     PIKA_FORCEINLINE constexpr in_out_result<InIter, OutIter> copy(
@@ -134,50 +129,45 @@ namespace pika::parallel::util {
             std::decay_t<
                 pika::detail::remove_const_iterator_value_type_t<InIter>>,
             std::decay_t<OutIter>>;
-        return detail::copy_helper<category>::call(first, last, dest);
+        return copy_helper<category>::call(first, last, dest);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        // Customization point for optimizing copy_n operations
-        template <typename Category, typename Enable>
-        struct copy_n_helper
+    // Customization point for optimizing copy_n operations
+    template <typename Category, typename Enable>
+    struct copy_n_helper
+    {
+        template <typename InIter, typename OutIter>
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr in_out_result<InIter, OutIter>
+            call(InIter first, std::size_t num, OutIter dest)
         {
-            template <typename InIter, typename OutIter>
-            PIKA_HOST_DEVICE
-                PIKA_FORCEINLINE static constexpr in_out_result<InIter, OutIter>
-                call(InIter first, std::size_t num, OutIter dest)
+            std::size_t count(num & std::size_t(-4));    // -V112
+            for (std::size_t i = 0; i < count; (void) ++first, ++dest, i += 4)
             {
-                std::size_t count(num & std::size_t(-4));    // -V112
-                for (std::size_t i = 0; i < count;
-                     (void) ++first, ++dest, i += 4)
-                {
-                    *dest = *first;
-                    *++dest = *++first;
-                    *++dest = *++first;
-                    *++dest = *++first;
-                }
-                for (/**/; count < num; (void) ++first, ++dest, ++count)
-                {
-                    *dest = *first;
-                }
-                return in_out_result<InIter, OutIter>{
-                    PIKA_MOVE(first), PIKA_MOVE(dest)};
+                *dest = *first;
+                *++dest = *++first;
+                *++dest = *++first;
+                *++dest = *++first;
             }
-        };
+            for (/**/; count < num; (void) ++first, ++dest, ++count)
+            {
+                *dest = *first;
+            }
+            return in_out_result<InIter, OutIter>{
+                PIKA_MOVE(first), PIKA_MOVE(dest)};
+        }
+    };
 
-        template <typename Dummy>
-        struct copy_n_helper<pika::detail::trivially_copyable_pointer_tag,
-            Dummy>
+    template <typename Dummy>
+    struct copy_n_helper<pika::detail::trivially_copyable_pointer_tag, Dummy>
+    {
+        template <typename InIter, typename OutIter>
+        PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
+            InIter first, std::size_t count, OutIter dest)
         {
-            template <typename InIter, typename OutIter>
-            PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
-                InIter first, std::size_t count, OutIter dest)
-            {
-                return copy_memmove(first, count, dest);
-            }
-        };
-    }    // namespace detail
+            return copy_memmove(first, count, dest);
+        }
+    };
 
     template <typename ExPolicy>
     struct copy_n_t final
@@ -187,14 +177,15 @@ namespace pika::parallel::util {
         template <typename InIter, typename OutIter>
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr in_out_result<InIter, OutIter>
-            tag_fallback_invoke(pika::parallel::util::copy_n_t<ExPolicy>,
-                InIter first, std::size_t count, OutIter dest)
+            tag_fallback_invoke(
+                pika::parallel::util::detail::copy_n_t<ExPolicy>, InIter first,
+                std::size_t count, OutIter dest)
         {
             using category = pika::detail::pointer_copy_category_t<
                 std::decay_t<
                     pika::detail::remove_const_iterator_value_type_t<InIter>>,
                 std::decay_t<OutIter>>;
-            return detail::copy_n_helper<category>::call(first, count, dest);
+            return copy_n_helper<category>::call(first, count, dest);
         }
     };
 
@@ -206,24 +197,22 @@ namespace pika::parallel::util {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_out_result<InIter, OutIter>
     copy_n(InIter first, std::size_t count, OutIter dest)
     {
-        return pika::parallel::util::copy_n_t<ExPolicy>{}(first, count, dest);
+        return pika::parallel::util::detail::copy_n_t<ExPolicy>{}(
+            first, count, dest);
     }
 #endif
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        // Customization point for copy-synchronize operations
-        template <typename Category, typename Enable>
-        struct copy_synchronize_helper
+    // Customization point for copy-synchronize operations
+    template <typename Category, typename Enable>
+    struct copy_synchronize_helper
+    {
+        template <typename InIter, typename OutIter>
+        PIKA_FORCEINLINE static constexpr void call(
+            InIter const&, OutIter const&) noexcept
         {
-            template <typename InIter, typename OutIter>
-            PIKA_FORCEINLINE static constexpr void call(
-                InIter const&, OutIter const&) noexcept
-            {
-                // do nothing by default (std::memmove is already synchronous)
-            }
-        };
-    }    // namespace detail
+            // do nothing by default (std::memmove is already synchronous)
+        }
+    };
 
     template <typename InIter, typename OutIter>
     PIKA_FORCEINLINE constexpr void copy_synchronize(
@@ -232,42 +221,39 @@ namespace pika::parallel::util {
         using category =
             pika::detail::pointer_copy_category_t<std::decay_t<InIter>,
                 std::decay_t<OutIter>>;
-        detail::copy_synchronize_helper<category>::call(first, dest);
+        copy_synchronize_helper<category>::call(first, dest);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        // Customization point for optimizing copy_n operations
-        template <typename Category, typename Enable>
-        struct move_helper
+    // Customization point for optimizing copy_n operations
+    template <typename Category, typename Enable>
+    struct move_helper
+    {
+        template <typename InIter, typename Sent, typename OutIter>
+        PIKA_FORCEINLINE static constexpr in_out_result<InIter, OutIter> call(
+            InIter first, Sent last, OutIter dest)
         {
-            template <typename InIter, typename Sent, typename OutIter>
-            PIKA_FORCEINLINE static constexpr in_out_result<InIter, OutIter>
-            call(InIter first, Sent last, OutIter dest)
+            while (first != last)
             {
-                while (first != last)
-                {
-                    // NOLINTNEXTLINE(bugprone-macro-repeated-side-effects)
-                    *dest++ = PIKA_MOVE(*first++);
-                }
-
-                return in_out_result<InIter, OutIter>{
-                    PIKA_MOVE(first), PIKA_MOVE(dest)};
+                // NOLINTNEXTLINE(bugprone-macro-repeated-side-effects)
+                *dest++ = PIKA_MOVE(*first++);
             }
-        };
 
-        template <typename Dummy>
-        struct move_helper<pika::detail::trivially_copyable_pointer_tag, Dummy>
+            return in_out_result<InIter, OutIter>{
+                PIKA_MOVE(first), PIKA_MOVE(dest)};
+        }
+    };
+
+    template <typename Dummy>
+    struct move_helper<pika::detail::trivially_copyable_pointer_tag, Dummy>
+    {
+        template <typename InIter, typename Sent, typename OutIter>
+        PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
+            InIter first, Sent last, OutIter dest)
         {
-            template <typename InIter, typename Sent, typename OutIter>
-            PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
-                InIter first, Sent last, OutIter dest)
-            {
-                return copy_memmove(
-                    first, parallel::detail::distance(first, last), dest);
-            }
-        };
-    }    // namespace detail
+            return copy_memmove(
+                first, parallel::detail::distance(first, last), dest);
+        }
+    };
 
     template <typename InIter, typename Sent, typename OutIter>
     PIKA_FORCEINLINE constexpr in_out_result<InIter, OutIter> move(
@@ -276,52 +262,47 @@ namespace pika::parallel::util {
         using category =
             pika::detail::pointer_move_category_t<std::decay_t<InIter>,
                 std::decay_t<OutIter>>;
-        return detail::move_helper<category>::call(first, last, dest);
+        return move_helper<category>::call(first, last, dest);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    namespace detail {
-        // Customization point for optimizing copy_n operations
-        template <typename Category, typename Enable>
-        struct move_n_helper
+    // Customization point for optimizing copy_n operations
+    template <typename Category, typename Enable>
+    struct move_n_helper
+    {
+        template <typename InIter, typename OutIter>
+        PIKA_FORCEINLINE static constexpr in_out_result<InIter, OutIter> call(
+            InIter first, std::size_t num, OutIter dest)
         {
-            template <typename InIter, typename OutIter>
-            PIKA_FORCEINLINE static constexpr in_out_result<InIter, OutIter>
-            call(InIter first, std::size_t num, OutIter dest)
+            std::size_t count(num & std::size_t(-4));    // -V112
+            for (std::size_t i = 0; i < count; (void) ++first, ++dest, i += 4)
             {
-                std::size_t count(num & std::size_t(-4));    // -V112
-                for (std::size_t i = 0; i < count;
-                     (void) ++first, ++dest, i += 4)
-                {
-                    *dest = PIKA_MOVE(*first);
-                    // NOLINTNEXTLINE(bugprone-macro-repeated-side-effects)
-                    *++dest = PIKA_MOVE(*++first);
-                    // NOLINTNEXTLINE(bugprone-macro-repeated-side-effects)
-                    *++dest = PIKA_MOVE(*++first);
-                    // NOLINTNEXTLINE(bugprone-macro-repeated-side-effects)
-                    *++dest = PIKA_MOVE(*++first);
-                }
-                for (/**/; count < num; (void) ++first, ++dest, ++count)
-                {
-                    *dest = PIKA_MOVE(*first);
-                }
-                return in_out_result<InIter, OutIter>{
-                    PIKA_MOVE(first), PIKA_MOVE(dest)};
+                *dest = PIKA_MOVE(*first);
+                // NOLINTNEXTLINE(bugprone-macro-repeated-side-effects)
+                *++dest = PIKA_MOVE(*++first);
+                // NOLINTNEXTLINE(bugprone-macro-repeated-side-effects)
+                *++dest = PIKA_MOVE(*++first);
+                // NOLINTNEXTLINE(bugprone-macro-repeated-side-effects)
+                *++dest = PIKA_MOVE(*++first);
             }
-        };
+            for (/**/; count < num; (void) ++first, ++dest, ++count)
+            {
+                *dest = PIKA_MOVE(*first);
+            }
+            return in_out_result<InIter, OutIter>{
+                PIKA_MOVE(first), PIKA_MOVE(dest)};
+        }
+    };
 
-        template <typename Dummy>
-        struct move_n_helper<pika::detail::trivially_copyable_pointer_tag,
-            Dummy>
+    template <typename Dummy>
+    struct move_n_helper<pika::detail::trivially_copyable_pointer_tag, Dummy>
+    {
+        template <typename InIter, typename OutIter>
+        PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
+            InIter first, std::size_t count, OutIter dest)
         {
-            template <typename InIter, typename OutIter>
-            PIKA_FORCEINLINE static in_out_result<InIter, OutIter> call(
-                InIter first, std::size_t count, OutIter dest)
-            {
-                return copy_memmove(first, count, dest);
-            }
-        };
-    }    // namespace detail
+            return copy_memmove(first, count, dest);
+        }
+    };
 
     template <typename InIter, typename OutIter>
     PIKA_FORCEINLINE constexpr in_out_result<InIter, OutIter> move_n(
@@ -330,6 +311,6 @@ namespace pika::parallel::util {
         using category =
             pika::detail::pointer_move_category_t<std::decay_t<InIter>,
                 std::decay_t<OutIter>>;
-        return detail::move_n_helper<category>::call(first, count, dest);
+        return move_n_helper<category>::call(first, count, dest);
     }
-}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util::detail

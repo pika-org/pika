@@ -31,7 +31,7 @@ namespace pika {
     ///                     forward iterator.
     /// \tparam T           The type of the value to search for (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -66,7 +66,7 @@ namespace pika {
     ///           satisfying the given criteria.
     ///
     template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
-        typename T, typename Proj = util::projection_identity>
+        typename T, typename Proj = util::detail::projection_identity>
     typename util::detail::algorithm_result<ExPolicy,
         typename std::iterator_traits<FwdIterB>::difference_type>::type
     count(ExPolicy&& policy, FwdIterB first, FwdIterE last, T const& value,
@@ -94,7 +94,7 @@ namespace pika {
     ///                     overload of \a count_if requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -141,7 +141,7 @@ namespace pika {
     ///           satisfying the given criteria.
     ///
     template <typename ExPolicy, typename Iter, typename Sent,
-        typename F, typename Proj = util::projection_identity>
+        typename F, typename Proj = util::detail::projection_identity>
     typename util::detail::algorithm_result<ExPolicy,
         typename std::iterator_traits<Iter>::difference_type>::type
     count_if(ExPolicy&& policy, Iter first, Sent last, F&& f,
@@ -285,7 +285,7 @@ namespace pika::parallel ::detail {
             auto f1 = count_iteration<ExPolicy, detail::compare_to<T>, Proj>(
                 detail::compare_to<T>(value), PIKA_FORWARD(Proj, proj));
 
-            return util::partitioner<ExPolicy, difference_type>::call(
+            return util::detail::partitioner<ExPolicy, difference_type>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping([](std::vector<difference_type>&& results) {
@@ -342,7 +342,7 @@ namespace pika::parallel ::detail {
             auto f1 = count_iteration<ExPolicy, Pred, Proj>(
                 op, PIKA_FORWARD(Proj, proj));
 
-            return util::partitioner<ExPolicy, difference_type>::call(
+            return util::detail::partitioner<ExPolicy, difference_type>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping([](std::vector<difference_type>&& results) {
@@ -383,7 +383,7 @@ namespace pika {
 
             return pika::parallel::detail::count<difference_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, value,
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -404,7 +404,7 @@ namespace pika {
 
             return pika::parallel::detail::count<difference_type>().call(
                 pika::execution::seq, first, last, value,
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
     } count{};
 
@@ -437,7 +437,7 @@ namespace pika {
 
             return pika::parallel::detail::count_if<difference_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -460,7 +460,7 @@ namespace pika {
 
             return pika::parallel::detail::count_if<difference_type>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
     } count_if{};
 }    // namespace pika

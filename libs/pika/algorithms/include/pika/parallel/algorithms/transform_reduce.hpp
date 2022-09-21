@@ -379,7 +379,7 @@ namespace pika::parallel::detail {
             auto f1 = transform_reduce_iteration<T, ExPolicy, Reduce, Convert>(
                 PIKA_FORWARD(Reduce, r), PIKA_FORWARD(Convert, conv));
 
-            return util::partitioner<ExPolicy, T>::call(
+            return util::detail::partitioner<ExPolicy, T>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping([init = PIKA_FORWARD(T_, init),
@@ -563,7 +563,7 @@ namespace pika::parallel::detail {
 
             using pika::util::make_zip_iterator;
 
-            return util::partitioner<ExPolicy, T>::call(
+            return util::detail::partitioner<ExPolicy, T>::call(
                 PIKA_FORWARD(ExPolicy, policy),
                 make_zip_iterator(first1, first2), count, PIKA_MOVE(f1),
                 [init = PIKA_FORWARD(T_, init), op1 = PIKA_FORWARD(Op1, op1)](

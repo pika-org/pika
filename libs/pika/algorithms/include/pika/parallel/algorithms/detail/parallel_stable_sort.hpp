@@ -37,7 +37,7 @@ namespace pika::parallel::detail {
     {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
-        util::range<Iter, Sent> range_initial;
+        util::detail::range<Iter, Sent> range_initial;
         Compare comp;
         std::size_t nelem;
         value_type* ptr;
@@ -110,11 +110,11 @@ namespace pika::parallel::detail {
             }
 
             // Parallel Process
-            util::range<Iter, Sent> range_first(
+            util::detail::range<Iter, Sent> range_first(
                 range_initial.begin(), range_initial.begin() + nptr);
-            util::range<Iter, Sent> range_second(
+            util::detail::range<Iter, Sent> range_second(
                 range_initial.begin() + nptr, range_initial.end());
-            util::range<value_type*> range_buffer(ptr, ptr + nptr);
+            util::detail::range<value_type*> range_buffer(ptr, ptr + nptr);
 
             sample_sort(exec, range_initial.begin(),
                 range_initial.begin() + nptr, comp, nthreads, range_buffer,
@@ -123,8 +123,9 @@ namespace pika::parallel::detail {
             sample_sort(exec, range_initial.begin() + nptr, range_initial.end(),
                 comp, nthreads, range_buffer, chunk_size);
 
-            range_buffer = parallel::util::init_move(range_buffer, range_first);
-            range_initial = parallel::util::half_merge(
+            range_buffer =
+                parallel::util::detail::init_move(range_buffer, range_first);
+            range_initial = parallel::util::detail::half_merge(
                 range_initial, range_buffer, range_second, comp);
 
             return last;

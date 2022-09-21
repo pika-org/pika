@@ -420,9 +420,9 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::util::get_subrange<FwdIter, Sent>(
+            return pika::parallel::util::detail::get_subrange<FwdIter, Sent>(
                 pika::parallel::detail::rotate<
-                    parallel::util::in_out_result<FwdIter, Sent>>()
+                    parallel::util::detail::in_out_result<FwdIter, Sent>>()
                     .call(pika::execution::seq, first, middle, last));
         }
 
@@ -446,9 +446,9 @@ namespace pika::ranges {
                 pika::is_sequenced_execution_policy_v<ExPolicy> ||
                     !pika::traits::is_bidirectional_iterator_v<FwdIter>>;
 
-            return pika::parallel::util::get_subrange<FwdIter, Sent>(
+            return pika::parallel::util::detail::get_subrange<FwdIter, Sent>(
                 pika::parallel::detail::rotate<
-                    parallel::util::in_out_result<FwdIter, Sent>>()
+                    parallel::util::detail::in_out_result<FwdIter, Sent>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first,
                         middle, last));
         }
@@ -462,12 +462,12 @@ namespace pika::ranges {
         tag_fallback_invoke(pika::ranges::rotate_t, Rng&& rng,
             pika::traits::range_iterator_t<Rng> middle)
         {
-            return pika::parallel::util::get_subrange<
+            return pika::parallel::util::detail::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::detail::rotate<parallel::util::in_out_result<
-                    pika::traits::range_iterator_t<Rng>,
-                    typename pika::traits::range_sentinel<Rng>::type>>()
+                pika::parallel::detail::rotate<parallel::util::detail::
+                        in_out_result<pika::traits::range_iterator_t<Rng>,
+                            typename pika::traits::range_sentinel<Rng>::type>>()
                     .call(pika::execution::seq, pika::util::begin(rng), middle,
                         pika::util::end(rng)));
         }
@@ -490,12 +490,12 @@ namespace pika::ranges {
                     !pika::traits::is_bidirectional_iterator_v<
                         pika::traits::range_iterator_t<Rng>>>;
 
-            return pika::parallel::util::get_subrange<
+            return pika::parallel::util::detail::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::detail::rotate<parallel::util::in_out_result<
-                    pika::traits::range_iterator_t<Rng>,
-                    typename pika::traits::range_sentinel<Rng>::type>>()
+                pika::parallel::detail::rotate<parallel::util::detail::
+                        in_out_result<pika::traits::range_iterator_t<Rng>,
+                            typename pika::traits::range_sentinel<Rng>::type>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(),
                         pika::util::begin(rng), middle, pika::util::end(rng)));
         }
@@ -504,7 +504,8 @@ namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::rotate_copy
     template <typename I, typename O>
-    using rotate_copy_result = pika::parallel::util::in_out_result<I, O>;
+    using rotate_copy_result =
+        pika::parallel::util::detail::in_out_result<I, O>;
 
     inline constexpr struct rotate_copy_t final
       : pika::detail::tag_parallel_algorithm<rotate_copy_t>

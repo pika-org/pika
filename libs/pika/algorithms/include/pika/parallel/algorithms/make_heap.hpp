@@ -432,7 +432,7 @@ namespace pika {
                 get(pika::parallel::detail::make_heap<RndIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Comp, comp),
-                    pika::parallel::util::projection_identity{}));
+                    pika::parallel::util::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -458,7 +458,7 @@ namespace pika {
                 get(pika::parallel::detail::make_heap<RndIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     std::less<value_type>(),
-                    pika::parallel::util::projection_identity{}));
+                    pika::parallel::util::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -480,7 +480,7 @@ namespace pika {
 
             pika::parallel::detail::make_heap<RndIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -501,7 +501,7 @@ namespace pika {
 
             pika::parallel::detail::make_heap<RndIter>().call(
                 pika::execution::seq, first, last, std::less<value_type>(),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
     } make_heap{};
 }    // namespace pika

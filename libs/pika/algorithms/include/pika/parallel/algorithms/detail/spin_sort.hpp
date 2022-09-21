@@ -36,12 +36,12 @@ namespace pika::parallel::detail {
     /// \return range with all the elements sorted and moved
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename Compare>
-    void range_sort(util::range<Iter1, Sent1> const& rng_a,
-        util::range<Iter2, Sent2> const& rng_b, Compare comp,
+    void range_sort(util::detail::range<Iter1, Sent1> const& rng_a,
+        util::detail::range<Iter2, Sent2> const& rng_b, Compare comp,
         std::uint32_t level)
     {
-        using range_it1 = util::range<Iter1, Sent1>;
-        using range_it2 = util::range<Iter2, Sent2>;
+        using range_it1 = util::detail::range<Iter1, Sent1>;
+        using range_it2 = util::detail::range<Iter2, Sent2>;
 
         std::size_t nelem1 = (rng_a.size() + 1) >> 1;
 
@@ -61,7 +61,7 @@ namespace pika::parallel::detail {
                 comp, level - 1);
         }
 
-        parallel::util::full_merge(rng_b, rng_a1, rng_a2, comp);
+        parallel::util::detail::full_merge(rng_b, rng_a1, rng_a2, comp);
     }
 
     /// \struct spin_sort_helper
@@ -73,8 +73,8 @@ namespace pika::parallel::detail {
     class spin_sort_helper
     {
         using value_type = typename std::iterator_traits<Iter>::value_type;
-        using range_it = util::range<Iter, Sent>;
-        using range_buf = util::range<value_type*>;
+        using range_it = util::detail::range<Iter, Sent>;
+        using range_buf = util::detail::range<value_type*>;
 
         static constexpr std::uint32_t sort_min = 36;
 
@@ -118,8 +118,8 @@ namespace pika::parallel::detail {
         {
             if (construct)
             {
-                parallel::util::destroy_range(
-                    util::range<value_type*>(ptr, ptr + nptr));
+                parallel::util::detail::destroy_range(
+                    util::detail::range<value_type*>(ptr, ptr + nptr));
                 construct = false;
             }
 
@@ -141,7 +141,7 @@ namespace pika::parallel::detail {
       , construct(false)
       , owner(false)
     {
-        util::range<Iter> r_input(first, last);
+        util::detail::range<Iter> r_input(first, last);
         PIKA_ASSERT(r_input.size() >= 0);
 
         std::size_t nelem = r_input.size();
@@ -175,7 +175,7 @@ namespace pika::parallel::detail {
         range_buf rng_buf(ptr, ptr + nptr);
 
         std::uint32_t nlevel =
-            util::nbits64(((nelem + sort_min - 1) / sort_min) - 1) - 1;
+            util::detail::nbits64(((nelem + sort_min - 1) / sort_min) - 1) - 1;
         PIKA_ASSERT(nlevel != 0);
 
         if ((nlevel & 1) == 1)
@@ -185,14 +185,14 @@ namespace pika::parallel::detail {
             range_it rng_a1(first, first + nelem_2);
             range_it rng_a2(first + nelem_2, last);
 
-            rng_buf = parallel::util::uninit_move(rng_buf, rng_a2);
+            rng_buf = parallel::util::detail::uninit_move(rng_buf, rng_a2);
             construct = true;
 
             range_sort(rng_buf, rng_a2, comp, nlevel);
             range_buf rng_bx(rng_buf.begin(), rng_buf.begin() + nelem_2);
 
             range_sort(rng_a1, rng_bx, comp, nlevel);
-            parallel::util::half_merge(r_input, rng_bx, rng_a2, comp);
+            parallel::util::detail::half_merge(r_input, rng_bx, rng_a2, comp);
         }
         else
         {
@@ -201,14 +201,14 @@ namespace pika::parallel::detail {
             range_it rng_a1(first, first + nelem_1);
             range_it rng_a2(first + nelem_1, last);
 
-            rng_buf = parallel::util::uninit_move(rng_buf, rng_a1);
+            rng_buf = parallel::util::detail::uninit_move(rng_buf, rng_a1);
             construct = true;
 
             range_sort(rng_a1, rng_buf, comp, nlevel);
 
             rng_a1 = range_it(rng_a1.begin(), rng_a1.begin() + rng_a2.size());
             range_sort(rng_a1, rng_a2, comp, nlevel);
-            parallel::util::half_merge(r_input, rng_buf, rng_a2, comp);
+            parallel::util::detail::half_merge(r_input, rng_buf, rng_a2, comp);
         }
     }
 
@@ -230,7 +230,8 @@ namespace pika::parallel::detail {
 
     template <typename Iter, typename Sent, typename Compare>
     void spin_sort(Iter first, Sent last, Compare&& comp,
-        util::range<typename std::iterator_traits<Iter>::value_type*> range_aux)
+        util::detail::range<typename std::iterator_traits<Iter>::value_type*>
+            range_aux)
     {
         spin_sort_helper<Iter, Sent, std::decay_t<Compare>> sorter(
             first, last, PIKA_FORWARD(Compare, comp), range_aux);

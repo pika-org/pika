@@ -104,7 +104,7 @@ namespace pika {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -166,7 +166,7 @@ namespace pika {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -331,7 +331,7 @@ namespace pika {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -399,7 +399,7 @@ namespace pika {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -566,8 +566,8 @@ namespace pika::parallel::detail {
             using pika::util::make_zip_iterator;
             using std::get;
             using scan_partitioner_type =
-                util::scan_partitioner<ExPolicy, FwdIter, std::size_t, void,
-                    util::scan_partitioner_sequential_f3_tag>;
+                util::detail::scan_partitioner<ExPolicy, FwdIter, std::size_t,
+                    void, util::detail::scan_partitioner_sequential_f3_tag>;
 
             auto f1 = [pred = PIKA_FORWARD(Pred, pred),
                           proj = PIKA_FORWARD(Proj, proj)](
@@ -682,7 +682,7 @@ namespace pika::parallel::detail {
     /// \endcond
 
     template <typename I, typename O>
-    using unique_copy_result = util::in_out_result<I, O>;
+    using unique_copy_result = util::detail::in_out_result<I, O>;
 
     /////////////////////////////////////////////////////////////////////////////
     // unique_copy
@@ -802,8 +802,9 @@ namespace pika::parallel::detail {
 
             using pika::util::make_zip_iterator;
             using std::get;
-            using scan_partitioner_type = util::scan_partitioner<ExPolicy,
-                unique_copy_result<FwdIter1, FwdIter2>, std::size_t>;
+            using scan_partitioner_type =
+                util::detail::scan_partitioner<ExPolicy,
+                    unique_copy_result<FwdIter1, FwdIter2>, std::size_t>;
 
             auto f1 = [pred = PIKA_FORWARD(Pred, pred),
                           proj = PIKA_FORWARD(Proj, proj)](
@@ -880,7 +881,7 @@ namespace pika {
         // clang-format off
         template <typename FwdIter,
             typename Pred = pika::parallel::detail::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter> &&
                 parallel::detail::is_projected<Proj, FwdIter>::value &&
@@ -904,7 +905,7 @@ namespace pika {
         // clang-format off
         template <typename ExPolicy, typename FwdIter,
             typename Pred = pika::parallel::detail::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<FwdIter> &&
@@ -936,7 +937,7 @@ namespace pika {
         // clang-format off
         template <typename InIter, typename OutIter,
             typename Pred = pika::parallel::detail::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<InIter> &&
                 pika::traits::is_iterator_v<OutIter> &&
@@ -953,9 +954,10 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator_v<InIter>,
                 "Requires at least input iterator.");
 
-            using result_type = parallel::util::in_out_result<InIter, OutIter>;
+            using result_type =
+                parallel::util::detail::in_out_result<InIter, OutIter>;
 
-            return parallel::util::get_second_element<InIter, OutIter>(
+            return parallel::util::detail::get_second_element<InIter, OutIter>(
                 pika::parallel::detail::unique_copy<result_type>().call(
                     pika::execution::seq, first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
@@ -964,7 +966,7 @@ namespace pika {
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
             typename Pred = pika::parallel::detail::equal_to,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator_v<FwdIter1> &&
@@ -984,9 +986,10 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             using result_type =
-                parallel::util::in_out_result<FwdIter1, FwdIter2>;
+                parallel::util::detail::in_out_result<FwdIter1, FwdIter2>;
 
-            return parallel::util::get_second_element<FwdIter1, FwdIter2>(
+            return parallel::util::detail::get_second_element<FwdIter1,
+                FwdIter2>(
                 pika::parallel::detail::unique_copy<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));

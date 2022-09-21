@@ -324,8 +324,8 @@ namespace pika {
             return pika::parallel::detail::search<FwdIter, FwdIter>().call(
                 pika::execution::seq, first, last, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -349,8 +349,8 @@ namespace pika {
             return pika::parallel::detail::search<FwdIter, FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
     } search{};
@@ -378,8 +378,8 @@ namespace pika {
             return pika::parallel::detail::search_n<FwdIter, FwdIter>().call(
                 pika::execution::seq, first, count, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -404,8 +404,8 @@ namespace pika {
             return pika::parallel::detail::search_n<FwdIter, FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, count, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
     } search_n{};

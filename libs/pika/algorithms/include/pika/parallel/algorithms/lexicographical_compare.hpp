@@ -280,8 +280,8 @@ namespace pika::parallel::detail {
             };
 
             using pika::util::make_zip_iterator;
-            return util::partitioner<ExPolicy, bool, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy),
+            return util::detail::partitioner<ExPolicy, bool,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
                 make_zip_iterator(first1, first2), count, 1, PIKA_MOVE(f1),
                 PIKA_MOVE(f2));
         }
@@ -319,8 +319,8 @@ namespace pika {
             return pika::parallel::detail::lexicographical_compare().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -350,8 +350,8 @@ namespace pika {
             return pika::parallel::detail::lexicographical_compare().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::projection_identity{},
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{},
+                pika::parallel::util::detail::projection_identity{});
         }
 
     } lexicographical_compare{};

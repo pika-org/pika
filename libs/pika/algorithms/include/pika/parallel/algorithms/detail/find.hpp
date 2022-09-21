@@ -28,7 +28,7 @@ namespace pika::parallel::detail {
     {
     private:
         template <typename Iterator, typename Sentinel, typename T,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         friend inline constexpr Iterator tag_fallback_invoke(
             sequential_find_t<ExPolicy>, Iterator first, Sentinel last,
             T const& value, Proj proj = Proj())
@@ -65,7 +65,7 @@ namespace pika::parallel::detail {
         sequential_find_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename T, typename Proj = util::projection_identity>
+        typename T, typename Proj = util::detail::projection_identity>
     inline constexpr Iterator sequential_find(
         Iterator first, Sentinel last, T const& val, Proj proj = Proj())
     {
@@ -90,7 +90,7 @@ namespace pika::parallel::detail {
     {
     private:
         template <typename Iterator, typename Sentinel, typename Pred,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         friend inline constexpr Iterator tag_fallback_invoke(
             sequential_find_if_t<ExPolicy>, Iterator first, Sentinel last,
             Pred pred, Proj proj = Proj())
@@ -141,7 +141,7 @@ namespace pika::parallel::detail {
         sequential_find_if_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename Pred, typename Proj = util::projection_identity>
+        typename Pred, typename Proj = util::detail::projection_identity>
     inline constexpr Iterator sequential_find_if(
         Iterator first, Sentinel last, Pred pred, Proj proj = Proj())
     {
@@ -176,7 +176,7 @@ namespace pika::parallel::detail {
     {
     private:
         template <typename Iterator, typename Sentinel, typename Pred,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         friend inline constexpr Iterator tag_fallback_invoke(
             sequential_find_if_not_t<ExPolicy>, Iterator first, Sentinel last,
             Pred pred, Proj proj = Proj())
@@ -227,7 +227,7 @@ namespace pika::parallel::detail {
         sequential_find_if_not_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename Pred, typename Proj = util::projection_identity>
+        typename Pred, typename Proj = util::detail::projection_identity>
     inline constexpr Iterator sequential_find_if_not(
         Iterator first, Sentinel last, Pred pred, Proj proj = Proj())
     {

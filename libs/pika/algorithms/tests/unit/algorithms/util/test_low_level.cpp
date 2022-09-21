@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <vector>
 
-using namespace pika::parallel::util;
+using namespace pika::parallel::util::detail;
 
 struct xk
 {

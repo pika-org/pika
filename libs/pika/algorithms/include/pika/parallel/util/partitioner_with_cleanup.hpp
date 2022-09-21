@@ -33,166 +33,154 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util {
-    namespace detail {
-        ///////////////////////////////////////////////////////////////////////
-        // The static partitioner with cleanup spawns several chunks of
-        // iterations for each available core. The number of iterations is
-        // determined automatically based on the measured runtime of the
-        // iterations.
-        template <typename ExPolicy, typename R, typename Result>
-        struct static_partitioner_with_cleanup
+namespace pika::parallel::util::detail {
+    ///////////////////////////////////////////////////////////////////////
+    // The static partitioner with cleanup spawns several chunks of
+    // iterations for each available core. The number of iterations is
+    // determined automatically based on the measured runtime of the
+    // iterations.
+    template <typename ExPolicy, typename R, typename Result>
+    struct static_partitioner_with_cleanup
+    {
+        using parameters_type = typename ExPolicy::executor_parameters_type;
+        using executor_type = typename ExPolicy::executor_type;
+
+        using scoped_parameters =
+            scoped_executor_parameters_ref<parameters_type, executor_type>;
+
+        using handle_exceptions = handle_local_exceptions<ExPolicy>;
+
+        template <typename ExPolicy_, typename FwdIter, typename F1,
+            typename F2, typename Cleanup>
+        static R call(ExPolicy_&& policy, FwdIter first, std::size_t count,
+            F1&& f1, F2&& f2, Cleanup&& cleanup)
         {
-            using parameters_type = typename ExPolicy::executor_parameters_type;
-            using executor_type = typename ExPolicy::executor_type;
+            // inform parameter traits
+            scoped_parameters scoped_params(
+                policy.parameters(), policy.executor());
 
-            using scoped_executor_parameters =
-                detail::scoped_executor_parameters_ref<parameters_type,
-                    executor_type>;
-
-            using handle_local_exceptions =
-                detail::handle_local_exceptions<ExPolicy>;
-
-            template <typename ExPolicy_, typename FwdIter, typename F1,
-                typename F2, typename Cleanup>
-            static R call(ExPolicy_&& policy, FwdIter first, std::size_t count,
-                F1&& f1, F2&& f2, Cleanup&& cleanup)
+            std::vector<pika::future<Result>> workitems;
+            std::list<std::exception_ptr> errors;
+            try
             {
-                // inform parameter traits
-                scoped_executor_parameters scoped_params(
+                workitems = partition<Result>(PIKA_FORWARD(ExPolicy_, policy),
+                    first, count, PIKA_FORWARD(F1, f1));
+
+                scoped_params.mark_end_of_scheduling();
+            }
+            catch (...)
+            {
+                handle_exceptions::call(std::current_exception(), errors);
+            }
+            return reduce(PIKA_MOVE(workitems), PIKA_MOVE(errors),
+                PIKA_FORWARD(F2, f2), PIKA_FORWARD(Cleanup, cleanup));
+        }
+
+    private:
+        template <typename F, typename Cleanup>
+        static R reduce(std::vector<pika::future<Result>>&& workitems,
+            std::list<std::exception_ptr>&& errors, F&& f, Cleanup&& cleanup)
+        {
+            // wait for all tasks to finish
+            pika::wait_all_nothrow(workitems);
+
+            // always rethrow if 'errors' is not empty or workitems has
+            // exceptional future
+            handle_exceptions::call_with_cleanup(
+                workitems, errors, PIKA_FORWARD(Cleanup, cleanup));
+
+            try
+            {
+                return f(PIKA_MOVE(workitems));
+            }
+            catch (...)
+            {
+                // rethrow either bad_alloc or exception_list
+                handle_exceptions::call(std::current_exception());
+                PIKA_ASSERT(false);
+                return f(PIKA_MOVE(workitems));
+            }
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    template <typename ExPolicy, typename R, typename Result>
+    struct task_static_partitioner_with_cleanup
+    {
+        using parameters_type = typename ExPolicy::executor_parameters_type;
+        using executor_type = typename ExPolicy::executor_type;
+
+        using scoped_parameters =
+            scoped_executor_parameters<parameters_type, executor_type>;
+
+        using handle_exceptions = handle_local_exceptions<ExPolicy>;
+
+        template <typename ExPolicy_, typename FwdIter, typename F1,
+            typename F2, typename Cleanup>
+        static pika::future<R> call(ExPolicy_&& policy, FwdIter first,
+            std::size_t count, F1&& f1, F2&& f2, Cleanup&& cleanup)
+        {
+            // inform parameter traits
+            std::shared_ptr<scoped_parameters> scoped_params =
+                std::make_shared<scoped_parameters>(
                     policy.parameters(), policy.executor());
 
-                std::vector<pika::future<Result>> workitems;
-                std::list<std::exception_ptr> errors;
-                try
-                {
-                    workitems = detail::partition<Result>(
-                        PIKA_FORWARD(ExPolicy_, policy), first, count,
-                        PIKA_FORWARD(F1, f1));
-
-                    scoped_params.mark_end_of_scheduling();
-                }
-                catch (...)
-                {
-                    handle_local_exceptions::call(
-                        std::current_exception(), errors);
-                }
-                return reduce(PIKA_MOVE(workitems), PIKA_MOVE(errors),
-                    PIKA_FORWARD(F2, f2), PIKA_FORWARD(Cleanup, cleanup));
-            }
-
-        private:
-            template <typename F, typename Cleanup>
-            static R reduce(std::vector<pika::future<Result>>&& workitems,
-                std::list<std::exception_ptr>&& errors, F&& f,
-                Cleanup&& cleanup)
+            std::vector<pika::future<Result>> workitems;
+            std::list<std::exception_ptr> errors;
+            try
             {
-                // wait for all tasks to finish
-                pika::wait_all_nothrow(workitems);
+                workitems = partition<Result>(PIKA_FORWARD(ExPolicy_, policy),
+                    first, count, PIKA_FORWARD(F1, f1));
 
-                // always rethrow if 'errors' is not empty or workitems has
-                // exceptional future
-                handle_local_exceptions::call_with_cleanup(
-                    workitems, errors, PIKA_FORWARD(Cleanup, cleanup));
-
-                try
-                {
-                    return f(PIKA_MOVE(workitems));
-                }
-                catch (...)
-                {
-                    // rethrow either bad_alloc or exception_list
-                    handle_local_exceptions::call(std::current_exception());
-                    PIKA_ASSERT(false);
-                    return f(PIKA_MOVE(workitems));
-                }
+                scoped_params->mark_end_of_scheduling();
             }
-        };
+            catch (std::bad_alloc const&)
+            {
+                return pika::make_exceptional_future<R>(
+                    std::current_exception());
+            }
+            catch (...)
+            {
+                handle_exceptions::call(std::current_exception(), errors);
+            }
+            return reduce(PIKA_MOVE(scoped_params), PIKA_MOVE(workitems),
+                PIKA_MOVE(errors), PIKA_FORWARD(F2, f2),
+                PIKA_FORWARD(Cleanup, cleanup));
+        }
 
-        ///////////////////////////////////////////////////////////////////////
-        template <typename ExPolicy, typename R, typename Result>
-        struct task_static_partitioner_with_cleanup
+    private:
+        template <typename F, typename Cleanup>
+        static pika::future<R> reduce(
+            std::shared_ptr<scoped_parameters>&& scoped_params,
+            std::vector<pika::future<Result>>&& workitems,
+            std::list<std::exception_ptr>&& errors, F&& f, Cleanup&& cleanup)
         {
-            using parameters_type = typename ExPolicy::executor_parameters_type;
-            using executor_type = typename ExPolicy::executor_type;
-
-            using scoped_executor_parameters =
-                detail::scoped_executor_parameters<parameters_type,
-                    executor_type>;
-
-            using handle_local_exceptions =
-                detail::handle_local_exceptions<ExPolicy>;
-
-            template <typename ExPolicy_, typename FwdIter, typename F1,
-                typename F2, typename Cleanup>
-            static pika::future<R> call(ExPolicy_&& policy, FwdIter first,
-                std::size_t count, F1&& f1, F2&& f2, Cleanup&& cleanup)
-            {
-                // inform parameter traits
-                std::shared_ptr<scoped_executor_parameters> scoped_params =
-                    std::make_shared<scoped_executor_parameters>(
-                        policy.parameters(), policy.executor());
-
-                std::vector<pika::future<Result>> workitems;
-                std::list<std::exception_ptr> errors;
-                try
-                {
-                    workitems = detail::partition<Result>(
-                        PIKA_FORWARD(ExPolicy_, policy), first, count,
-                        PIKA_FORWARD(F1, f1));
-
-                    scoped_params->mark_end_of_scheduling();
-                }
-                catch (std::bad_alloc const&)
-                {
-                    return pika::make_exceptional_future<R>(
-                        std::current_exception());
-                }
-                catch (...)
-                {
-                    handle_local_exceptions::call(
-                        std::current_exception(), errors);
-                }
-                return reduce(PIKA_MOVE(scoped_params), PIKA_MOVE(workitems),
-                    PIKA_MOVE(errors), PIKA_FORWARD(F2, f2),
-                    PIKA_FORWARD(Cleanup, cleanup));
-            }
-
-        private:
-            template <typename F, typename Cleanup>
-            static pika::future<R> reduce(
-                std::shared_ptr<scoped_executor_parameters>&& scoped_params,
-                std::vector<pika::future<Result>>&& workitems,
-                std::list<std::exception_ptr>&& errors, F&& f,
-                Cleanup&& cleanup)
-            {
-                // wait for all tasks to finish
+            // wait for all tasks to finish
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
-                PIKA_UNUSED(scoped_params);
-                PIKA_UNUSED(workitems);
-                PIKA_UNUSED(errors);
-                PIKA_UNUSED(f);
-                PIKA_UNUSED(cleanup);
-                PIKA_ASSERT(false);
-                return pika::future<R>{};
+            PIKA_UNUSED(scoped_params);
+            PIKA_UNUSED(workitems);
+            PIKA_UNUSED(errors);
+            PIKA_UNUSED(f);
+            PIKA_UNUSED(cleanup);
+            PIKA_ASSERT(false);
+            return pika::future<R>{};
 #else
-                return pika::dataflow(
-                    [errors = PIKA_MOVE(errors),
-                        scoped_params = PIKA_MOVE(scoped_params),
-                        f = PIKA_FORWARD(F, f),
-                        cleanup = PIKA_FORWARD(Cleanup, cleanup)](
-                        std::vector<pika::future<Result>>&& r) mutable -> R {
-                        PIKA_UNUSED(scoped_params);
+            return pika::dataflow(
+                [errors = PIKA_MOVE(errors),
+                    scoped_params = PIKA_MOVE(scoped_params),
+                    f = PIKA_FORWARD(F, f),
+                    cleanup = PIKA_FORWARD(Cleanup, cleanup)](
+                    std::vector<pika::future<Result>>&& r) mutable -> R {
+                    PIKA_UNUSED(scoped_params);
 
-                        handle_local_exceptions::call_with_cleanup(
-                            r, errors, PIKA_FORWARD(Cleanup, cleanup));
-                        return f(PIKA_MOVE(r));
-                    },
-                    PIKA_MOVE(workitems));
+                    handle_exceptions::call_with_cleanup(
+                        r, errors, PIKA_FORWARD(Cleanup, cleanup));
+                    return f(PIKA_MOVE(r));
+                },
+                PIKA_MOVE(workitems));
 #endif
-            }
-        };
-    }    // namespace detail
+        }
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     // ExPolicy: execution policy
@@ -200,10 +188,9 @@ namespace pika::parallel::util {
     // Result:   intermediate result type of first step
     template <typename ExPolicy, typename R = void, typename Result = R>
     struct partitioner_with_cleanup
-      : detail::select_partitioner<std::decay_t<ExPolicy>,
-            detail::static_partitioner_with_cleanup,
-            detail::task_static_partitioner_with_cleanup>::template apply<R,
-            Result>
+      : select_partitioner<std::decay_t<ExPolicy>,
+            static_partitioner_with_cleanup,
+            task_static_partitioner_with_cleanup>::template apply<R, Result>
     {
     };
-}    // namespace pika::parallel::util
+}    // namespace pika::parallel::util::detail

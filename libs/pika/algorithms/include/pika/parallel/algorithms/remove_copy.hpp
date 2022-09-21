@@ -278,7 +278,7 @@ namespace pika::parallel::detail {
     // sequential remove_copy
     template <typename InIter, typename Sent, typename OutIter, typename T,
         typename Proj>
-    constexpr inline util::in_out_result<InIter, OutIter>
+    constexpr inline util::detail::in_out_result<InIter, OutIter>
     sequential_remove_copy(
         InIter first, Sent last, OutIter dest, T const& value, Proj&& proj)
     {
@@ -289,7 +289,7 @@ namespace pika::parallel::detail {
                 *dest++ = *first;
             }
         }
-        return util::in_out_result<InIter, OutIter>{first, dest};
+        return util::detail::in_out_result<InIter, OutIter>{first, dest};
     }
 
     template <typename IterPair>
@@ -303,7 +303,7 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter, typename T, typename Proj>
-        static util::in_out_result<InIter, OutIter> sequential(ExPolicy,
+        static util::detail::in_out_result<InIter, OutIter> sequential(ExPolicy,
             InIter first, Sent last, OutIter dest, T const& val, Proj&& proj)
         {
             return sequential_remove_copy(
@@ -313,7 +313,7 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename T, typename Proj>
         static typename util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<FwdIter1, FwdIter2>>::type
+            util::detail::in_out_result<FwdIter1, FwdIter2>>::type
         parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
             T const& val, Proj&& proj)
         {
@@ -332,7 +332,8 @@ namespace pika::parallel::detail {
     // sequential remove_copy_if
     template <typename InIter, typename Sent, typename OutIter, typename F,
         typename Proj>
-    inline util::in_out_result<InIter, OutIter> sequential_remove_copy_if(
+    inline util::detail::in_out_result<InIter, OutIter>
+    sequential_remove_copy_if(
         InIter first, Sent last, OutIter dest, F p, Proj&& proj)
     {
         for (/* */; first != last; ++first)
@@ -342,7 +343,7 @@ namespace pika::parallel::detail {
                 *dest++ = *first;
             }
         }
-        return util::in_out_result<InIter, OutIter>{first, dest};
+        return util::detail::in_out_result<InIter, OutIter>{first, dest};
     }
 
     template <typename IterPair>
@@ -356,7 +357,7 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter, typename F, typename Proj>
-        static util::in_out_result<InIter, OutIter> sequential(
+        static util::detail::in_out_result<InIter, OutIter> sequential(
             ExPolicy, InIter first, Sent last, OutIter dest, F&& f, Proj&& proj)
         {
             return sequential_remove_copy_if(first, last, dest,
@@ -366,7 +367,7 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename F, typename Proj>
         static typename util::detail::algorithm_result<ExPolicy,
-            util::in_out_result<FwdIter1, FwdIter2>>::type
+            util::detail::in_out_result<FwdIter1, FwdIter2>>::type
         parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
             F&& f, Proj&& proj)
         {
@@ -408,13 +409,15 @@ namespace pika {
             static_assert((pika::traits::is_output_iterator<InIter>::value),
                 "Required output iterator.");
 
-            auto&& res = pika::parallel::detail::remove_copy_if<
-                pika::parallel::util::in_out_result<InIter, OutIter>>()
-                             .call(pika::execution::sequenced_policy{}, first,
-                                 last, dest, PIKA_FORWARD(Pred, pred),
-                                 pika::parallel::util::projection_identity());
+            auto&& res =
+                pika::parallel::detail::remove_copy_if<pika::parallel::util::
+                        detail::in_out_result<InIter, OutIter>>()
+                    .call(pika::execution::sequenced_policy{}, first, last,
+                        dest, PIKA_FORWARD(Pred, pred),
+                        pika::parallel::util::detail::projection_identity());
 
-            return pika::parallel::util::get_second_element(PIKA_MOVE(res));
+            return pika::parallel::util::detail::get_second_element(
+                PIKA_MOVE(res));
         }
 
         // clang-format off
@@ -439,13 +442,15 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Required at least forward iterator.");
 
-            auto&& res = pika::parallel::detail::remove_copy_if<
-                pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
-                             .call(PIKA_FORWARD(ExPolicy, policy), first, last,
-                                 dest, PIKA_FORWARD(Pred, pred),
-                                 pika::parallel::util::projection_identity());
+            auto&& res =
+                pika::parallel::detail::remove_copy_if<pika::parallel::util::
+                        detail::in_out_result<FwdIter1, FwdIter2>>()
+                    .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
+                        PIKA_FORWARD(Pred, pred),
+                        pika::parallel::util::detail::projection_identity());
 
-            return pika::parallel::util::get_second_element(PIKA_MOVE(res));
+            return pika::parallel::util::detail::get_second_element(
+                PIKA_MOVE(res));
         }
     } remove_copy_if{};
 

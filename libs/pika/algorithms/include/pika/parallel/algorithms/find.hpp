@@ -210,7 +210,7 @@ namespace pika {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity and is applied
+    ///                     defaults to \a util::detail::projection_identity and is applied
     ///                     to the elements of type dereferenced \a FwdIter1
     ///                     and dereferenced \a FwdIter2.
     ///
@@ -298,10 +298,10 @@ namespace pika {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj1       The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity and is applied
+    ///                     defaults to \a util::detail::projection_identity and is applied
     ///                     to the elements of type dereferenced \a FwdIter1.
     /// \tparam Proj2       The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity and is applied
+    ///                     defaults to \a util::detail::projection_identity and is applied
     ///                     to the elements of type dereferenced \a FwdIter2.
     ///
     /// \param policy       The execution policy to use for the scheduling of
@@ -412,7 +412,7 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter, typename Sent, typename T,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static constexpr Iter sequential(
             ExPolicy, Iter first, Sent last, T const& val, Proj&& proj = Proj())
         {
@@ -421,7 +421,7 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter, typename Sent, typename T,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static typename util::detail::algorithm_result<ExPolicy, Iter>::type
         parallel(ExPolicy&& policy, Iter first, Sent last, T const& val,
             Proj&& proj = Proj())
@@ -474,9 +474,9 @@ namespace pika::parallel::detail {
                 return PIKA_MOVE(first);
             };
 
-            return util::partitioner<ExPolicy, Iter, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
-                PIKA_MOVE(f2));
+            return util::detail::partitioner<ExPolicy, Iter,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), first,
+                count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
 
@@ -491,7 +491,7 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static constexpr Iter sequential(
             ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
         {
@@ -500,7 +500,7 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static typename util::detail::algorithm_result<ExPolicy, Iter>::type
         parallel(ExPolicy&& policy, Iter first, Sent last, F&& f,
             Proj&& proj = Proj())
@@ -553,9 +553,9 @@ namespace pika::parallel::detail {
                 return PIKA_MOVE(first);
             };
 
-            return util::partitioner<ExPolicy, Iter, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
-                PIKA_MOVE(f2));
+            return util::detail::partitioner<ExPolicy, Iter,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), first,
+                count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
 
@@ -570,7 +570,7 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static constexpr Iter sequential(
             ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
         {
@@ -579,7 +579,7 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static typename util::detail::algorithm_result<ExPolicy, Iter>::type
         parallel(ExPolicy&& policy, Iter first, Sent last, F&& f,
             Proj&& proj = Proj())
@@ -632,9 +632,9 @@ namespace pika::parallel::detail {
                 return PIKA_MOVE(first);
             };
 
-            return util::partitioner<ExPolicy, Iter, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
-                PIKA_MOVE(f2));
+            return util::detail::partitioner<ExPolicy, Iter,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), first,
+                count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
 
@@ -803,9 +803,9 @@ namespace pika::parallel::detail {
                 return PIKA_MOVE(first1);
             };
 
-            return util::partitioner<ExPolicy, Iter1, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy), first1, count - diff + 1, 1,
-                PIKA_MOVE(f1), PIKA_MOVE(f2));
+            return util::detail::partitioner<ExPolicy, Iter1,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), first1,
+                count - diff + 1, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
 
@@ -909,9 +909,9 @@ namespace pika::parallel::detail {
                 return PIKA_MOVE(first);
             };
 
-            return util::partitioner<ExPolicy, FwdIter, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy), first, count, 1, PIKA_MOVE(f1),
-                PIKA_MOVE(f2));
+            return util::detail::partitioner<ExPolicy, FwdIter,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), first,
+                count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
 }    // namespace pika::parallel::detail
@@ -941,7 +941,7 @@ namespace pika {
 
             return pika::parallel::detail::find<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, val,
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -959,7 +959,7 @@ namespace pika {
 
             return pika::parallel::detail::find<InIter>().call(
                 pika::execution::seq, first, last, val,
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
     } find{};
@@ -990,7 +990,7 @@ namespace pika {
 
             return pika::parallel::detail::find_if<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -1010,7 +1010,7 @@ namespace pika {
 
             return pika::parallel::detail::find_if<InIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
     } find_if{};
@@ -1041,7 +1041,7 @@ namespace pika {
 
             return pika::parallel::detail::find_if_not<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -1061,7 +1061,7 @@ namespace pika {
 
             return pika::parallel::detail::find_if_not<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
     } find_if_not{};
@@ -1098,8 +1098,8 @@ namespace pika {
             return pika::parallel::detail::find_end<FwdIter1>().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -1123,8 +1123,8 @@ namespace pika {
             return pika::parallel::detail::find_end<FwdIter1>().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 pika::parallel::detail::equal_to{},
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -1150,8 +1150,8 @@ namespace pika {
             return pika::parallel::detail::find_end<FwdIter1>().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -1172,8 +1172,8 @@ namespace pika {
             return pika::parallel::detail::find_end<FwdIter1>().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 pika::parallel::detail::equal_to{},
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
     } find_end{};
 
@@ -1209,8 +1209,8 @@ namespace pika {
             return pika::parallel::detail::find_first_of<FwdIter1>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -1234,8 +1234,8 @@ namespace pika {
             return pika::parallel::detail::find_first_of<FwdIter1>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, s_first, s_last,
                 pika::parallel::detail::equal_to{},
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -1260,8 +1260,8 @@ namespace pika {
             return pika::parallel::detail::find_first_of<FwdIter1>().call(
                 pika::execution::seq, first, last, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
 
         // clang-format off
@@ -1282,8 +1282,8 @@ namespace pika {
             return pika::parallel::detail::find_first_of<FwdIter1>().call(
                 pika::execution::seq, first, last, s_first, s_last,
                 pika::parallel::detail::equal_to{},
-                pika::parallel::util::projection_identity(),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity(),
+                pika::parallel::util::detail::projection_identity());
         }
     } find_first_of{};
 }    // namespace pika

@@ -31,7 +31,7 @@ namespace pika { namespace ranges {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced). Comp defaults to detail::less.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -85,7 +85,7 @@ namespace pika { namespace ranges {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced). Comp defaults to detail::less.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -150,7 +150,7 @@ namespace pika { namespace ranges {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced). Comp defaults to detail::less.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -206,7 +206,7 @@ namespace pika { namespace ranges {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced). Comp defaults to detail::less;
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -282,7 +282,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename RandomIt, typename Sent,
             typename Comp = ranges::less,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<RandomIt> &&
                 pika::traits::is_sentinel_for_v<Sent, RandomIt> &&
@@ -309,7 +309,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename RandomIt, typename Sent,
             typename Comp = ranges::less,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<RandomIt> &&
@@ -338,7 +338,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng,
             typename Compare = ranges::less,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range_v<Rng> &&
                 parallel::detail::is_projected_range_v<Proj, Rng> &&
@@ -369,7 +369,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng,
             typename Compare = ranges::less,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&

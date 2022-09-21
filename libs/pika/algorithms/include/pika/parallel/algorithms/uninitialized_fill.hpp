@@ -251,7 +251,7 @@ namespace pika::parallel::detail {
         using value_type = typename std::iterator_traits<Iter>::value_type;
 
         util::cancellation_token<util::detail::no_data> tok;
-        return util::partitioner_with_cleanup<ExPolicy, Iter,
+        return util::detail::partitioner_with_cleanup<ExPolicy, Iter,
             partition_result_type>::
             call(
                 PIKA_FORWARD(ExPolicy, policy), first, count,

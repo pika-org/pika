@@ -30,7 +30,7 @@ namespace pika {
     ///                     overload of \a partition requires \a Pred to meet
     ///                     the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -89,7 +89,7 @@ namespace pika {
     ///                     overload of \a partition requires \a Pred to meet
     ///                     the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -156,7 +156,7 @@ namespace pika {
     ///                     overload of \a transform requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -218,7 +218,7 @@ namespace pika {
     ///                     overload of \a transform requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -300,7 +300,7 @@ namespace pika {
     ///                     overload of \a partition_copy requires \a Pred to
     ///                     meet the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -381,7 +381,7 @@ namespace pika {
     ///                     overload of \a partition_copy requires \a Pred to
     ///                     meet the requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -530,7 +530,7 @@ namespace pika::parallel::detail {
                     [first, last, f = PIKA_FORWARD(F, f),
                         proj = PIKA_FORWARD(Proj, proj)]() -> RandIter {
                         return std::stable_partition(first, last,
-                            util::invoke_projected<F, Proj>(f, proj));
+                            util::detail::invoke_projected<F, Proj>(f, proj));
                     });
             }
 
@@ -609,7 +609,8 @@ namespace pika::parallel::detail {
             ++first;
         }
 
-        util::move(std::begin(falseValues), std::end(falseValues), next);
+        util::detail::move(
+            std::begin(falseValues), std::end(falseValues), next);
         return next;
     }
 
@@ -1360,7 +1361,7 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Sent, typename Pred,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static FwdIter sequential(
             ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
         {
@@ -1370,7 +1371,7 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Sent, typename Pred,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
         parallel(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
             Proj&& proj)
@@ -1429,7 +1430,7 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter1, typename OutIter2, typename Pred,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static std::tuple<InIter, OutIter1, OutIter2> sequential(ExPolicy,
             InIter first, Sent last, OutIter1 dest_true, OutIter2 dest_false,
             Pred&& pred, Proj&& proj)
@@ -1441,7 +1442,7 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename FwdIter3, typename Pred,
-            typename Proj = util::projection_identity>
+            typename Proj = util::detail::projection_identity>
         static typename util::detail::algorithm_result<ExPolicy,
             std::tuple<FwdIter1, FwdIter2, FwdIter3>>::type
         parallel(ExPolicy&& policy, FwdIter1 first, Sent last,
@@ -1467,9 +1468,10 @@ namespace pika::parallel::detail {
 
             using pika::util::make_zip_iterator;
             using std::get;
-            using scan_partitioner_type = util::scan_partitioner<ExPolicy,
-                std::tuple<FwdIter1, FwdIter2, FwdIter3>,
-                output_iterator_offset>;
+            using scan_partitioner_type =
+                util::detail::scan_partitioner<ExPolicy,
+                    std::tuple<FwdIter1, FwdIter2, FwdIter3>,
+                    output_iterator_offset>;
 
             // Note: replacing the invoke() with PIKA_INVOKE()
             // below makes gcc generate errors
@@ -1559,7 +1561,7 @@ namespace pika {
     {
         // clang-format off
         template <typename BidirIter, typename F,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<BidirIter> &&
                 parallel::detail::is_projected_v<Proj, BidirIter> &&
@@ -1581,7 +1583,7 @@ namespace pika {
 
         // clang-format off
         template <typename ExPolicy, typename BidirIter, typename F,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<BidirIter> &&
@@ -1615,7 +1617,7 @@ namespace pika {
     {
         // clang-format off
         template <typename FwdIter, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter> &&
                 parallel::detail::is_projected_v<Proj, FwdIter> &&
@@ -1637,7 +1639,7 @@ namespace pika {
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter> &&
@@ -1668,7 +1670,7 @@ namespace pika {
         // clang-format off
         template <typename FwdIter1, typename FwdIter2,
             typename FwdIter3, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<FwdIter1> &&
                 pika::traits::is_iterator_v<FwdIter2> &&
@@ -1702,7 +1704,7 @@ namespace pika {
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
             typename FwdIter3, typename Pred,
-            typename Proj = parallel::util::projection_identity,
+            typename Proj = parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<FwdIter1> &&

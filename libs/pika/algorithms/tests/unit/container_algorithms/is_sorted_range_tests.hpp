@@ -25,7 +25,7 @@
 int seed = std::random_device{}();
 std::mt19937 gen(seed);
 
-using identity = pika::parallel::util::projection_identity;
+using identity = pika::parallel::util::detail::projection_identity;
 
 struct negate
 {

@@ -301,7 +301,7 @@ namespace pika {
     ///                     overload of \a minmax_element requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -389,7 +389,8 @@ namespace pika {
 
 namespace pika::parallel::detail {
     template <typename T>
-    using minmax_element_result = pika::parallel::util::min_max_result<T>;
+    using minmax_element_result =
+        pika::parallel::util::detail::min_max_result<T>;
 
     ///////////////////////////////////////////////////////////////////////////
     // min_element
@@ -510,7 +511,7 @@ namespace pika::parallel::detail {
                     policy, positions.begin(), positions.size(), f, proj);
             };
 
-            return util::partitioner<ExPolicy, FwdIter, FwdIter>::call(
+            return util::detail::partitioner<ExPolicy, FwdIter, FwdIter>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping(PIKA_MOVE(f2)));
@@ -638,7 +639,7 @@ namespace pika::parallel::detail {
                     policy, positions.begin(), positions.size(), f, proj);
             };
 
-            return util::partitioner<ExPolicy, FwdIter, FwdIter>::call(
+            return util::detail::partitioner<ExPolicy, FwdIter, FwdIter>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping(PIKA_MOVE(f2)));
@@ -797,8 +798,8 @@ namespace pika::parallel::detail {
                     policy, positions.begin(), positions.size(), f, proj);
             };
 
-            return util::partitioner<ExPolicy, result_type, result_type>::call(
-                PIKA_FORWARD(ExPolicy, policy), result.min,
+            return util::detail::partitioner<ExPolicy, result_type,
+                result_type>::call(PIKA_FORWARD(ExPolicy, policy), result.min,
                 detail::distance(result.min, last), PIKA_MOVE(f1),
                 pika::unwrapping(PIKA_MOVE(f2)));
         }
@@ -808,7 +809,8 @@ namespace pika::parallel::detail {
 
 namespace pika {
     template <typename T>
-    using minmax_element_result = pika::parallel::util::min_max_result<T>;
+    using minmax_element_result =
+        pika::parallel::util::detail::min_max_result<T>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::min_element
@@ -830,7 +832,7 @@ namespace pika {
 
             return pika::parallel::detail::min_element<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -851,7 +853,7 @@ namespace pika {
 
             return pika::parallel::detail::min_element<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity());
         }
     } min_element{};
 
@@ -875,7 +877,7 @@ namespace pika {
 
             return pika::parallel::detail::max_element<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -896,7 +898,7 @@ namespace pika {
 
             return pika::parallel::detail::max_element<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity());
         }
     } max_element{};
 
@@ -920,7 +922,7 @@ namespace pika {
 
             return pika::parallel::detail::minmax_element<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -941,7 +943,7 @@ namespace pika {
 
             return pika::parallel::detail::minmax_element<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::projection_identity());
+                pika::parallel::util::detail::projection_identity());
         }
     } minmax_element{};
 }    // namespace pika

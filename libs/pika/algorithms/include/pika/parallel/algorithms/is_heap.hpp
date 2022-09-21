@@ -236,9 +236,9 @@ namespace pika::parallel::detail {
                 return find_res != 0;
             };
 
-            return util::partitioner<ExPolicy, bool, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy), second, count, 1, PIKA_MOVE(f1),
-                PIKA_MOVE(f2));
+            return util::detail::partitioner<ExPolicy, bool,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), second,
+                count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
 
@@ -348,9 +348,9 @@ namespace pika::parallel::detail {
                 return PIKA_MOVE(second);
             };
 
-            return util::partitioner<ExPolicy, Iter, void>::call_with_index(
-                PIKA_FORWARD(ExPolicy, policy), second, count, 1, PIKA_MOVE(f1),
-                PIKA_MOVE(f2));
+            return util::detail::partitioner<ExPolicy, Iter,
+                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), second,
+                count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
 
@@ -415,7 +415,7 @@ namespace pika {
             return pika::parallel::detail::is_heap<RandIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -438,7 +438,7 @@ namespace pika {
 
             return pika::parallel::detail::is_heap<RandIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
     } is_heap{};
 
@@ -472,7 +472,7 @@ namespace pika {
             return pika::parallel::detail::is_heap_until<RandIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
 
         // clang-format off
@@ -495,7 +495,7 @@ namespace pika {
 
             return pika::parallel::detail::is_heap_until<RandIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::projection_identity{});
+                pika::parallel::util::detail::projection_identity{});
         }
     } is_heap_until{};
 }    // namespace pika

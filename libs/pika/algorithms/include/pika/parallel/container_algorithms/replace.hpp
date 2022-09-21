@@ -31,7 +31,7 @@ namespace pika { namespace ranges {
     /// \tparam T1          The type of the old value to replace (deduced).
     /// \tparam T2          The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -50,7 +50,7 @@ namespace pika { namespace ranges {
     /// \returns  The \a replace algorithm returns an \a Iter.
     ///
     template <typename Iter, typename Sent, typename T1, typename T2,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     Iter replace(Iter first, Sent sent, T1 const& old_value,
         T2 const& new_value, Proj&& proj = Proj());
 
@@ -70,7 +70,7 @@ namespace pika { namespace ranges {
     /// \tparam T1          The type of the old value to replace (deduced).
     /// \tparam T2          The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -88,7 +88,7 @@ namespace pika { namespace ranges {
     ///           \a pika::traits::range_iterator<Rng>::type.
     ///
     template <typename Rng, typename T1, typename T2,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename pika::traits::range_iterator<Rng>::type replace(Rng&& rng,
         T1 const& old_value, T2 const& new_value, Proj&& proj = Proj());
 
@@ -113,7 +113,7 @@ namespace pika { namespace ranges {
     /// \tparam T1          The type of the old value to replace (deduced).
     /// \tparam T2          The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -145,7 +145,8 @@ namespace pika { namespace ranges {
     ///           returns \a Iter otherwise.
     ///
     template <typename ExPolicy, typename Iter, typename Sent, typename T1,
-        typename T2, typename Proj = pika::parallel::util::projection_identity>
+        typename T2,
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy, Iter>::type
     replace(ExPolicy&& policy, Iter first, Sent sent, T1 const& old_value,
         T2 const& new_value, Proj&& proj = Proj());
@@ -170,7 +171,7 @@ namespace pika { namespace ranges {
     /// \tparam T1          The type of the old value to replace (deduced).
     /// \tparam T2          The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -200,7 +201,7 @@ namespace pika { namespace ranges {
     ///           returns \a pika::traits::range_iterator<Rng>::type otherwise.
     ///
     template <typename ExPolicy, typename Rng, typename T1, typename T2,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         typename pika::traits::range_iterator<Rng>::type>::type
     replace(ExPolicy&& policy, Rng&& rng, T1 const& old_value,
@@ -233,7 +234,7 @@ namespace pika { namespace ranges {
     ///                     (deduced).
     /// \tparam T           The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -270,7 +271,7 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename Iter, typename Sent, typename Pred, typename T,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     Iter replace_if(Iter first, Sent sent, Pred&& pred, T const& new_value,
         Proj&& proj = Proj());
 
@@ -294,7 +295,7 @@ namespace pika { namespace ranges {
     ///                     (deduced).
     /// \tparam T           The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -333,7 +334,7 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename Rng, typename Pred, typename T,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename pika::traits::range_iterator<Rng>::type replace_if(
         Rng&& rng, Pred&& pred, T const& new_value, Proj&& proj = Proj());
 
@@ -363,7 +364,7 @@ namespace pika { namespace ranges {
     ///                     (deduced).
     /// \tparam T           The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -409,7 +410,8 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename ExPolicy, typename Iter, typename Sent, typename Pred,
-        typename T, typename Proj = pika::parallel::util::projection_identity>
+        typename T,
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy, Iter>::type t
     replace_if(ExPolicy&& policy, Iter first, Sent sent, Pred&& pred,
         T const& new_value, Proj&& proj = Proj());
@@ -438,7 +440,7 @@ namespace pika { namespace ranges {
     ///                     (deduced).
     /// \tparam T           The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -483,7 +485,7 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename ExPolicy, typename Rng, typename Pred, typename T,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         typename pika::traits::range_iterator<Rng>::type>::type
     replace_if(ExPolicy&& policy, Rng&& rng, Pred&& pred, T const& new_value,
@@ -515,7 +517,7 @@ namespace pika { namespace ranges {
     /// \tparam T1          The type of the old value to replace (deduced).
     /// \tparam T2          The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -540,7 +542,8 @@ namespace pika { namespace ranges {
     ///           copied.
     ///
     template <typename Initer, typename Sent, typename OutIter, typename T1,
-        typename T2, typename Proj = pika::parallel::util::projection_identity>
+        typename T2,
+        typename Proj = pika::parallel::util::detail::projection_identity>
     replace_copy_result<InIter, OutIter> replace_copy(InIter first, Sent sent,
         OutIter dest, T1 const& old_value, T2 const& new_value,
         Proj&& proj = Proj());
@@ -568,7 +571,7 @@ namespace pika { namespace ranges {
     /// \tparam T1          The type of the old value to replace (deduced).
     /// \tparam T2          The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -592,7 +595,7 @@ namespace pika { namespace ranges {
     ///           copied.
     ///
     template <typename Rng, typename OutIter, typename T1, typename T2,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     replace_copy_result<typename pika::traits::range_iterator<Rng>::type,
         OutIter>
     replace_copy(Rng&& rng, OutIter dest, T1 const& old_value,
@@ -627,7 +630,7 @@ namespace pika { namespace ranges {
     /// \tparam T1          The type of the old value to replace (deduced).
     /// \tparam T2          The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -667,7 +670,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Sent,
         typename FwdIter2, typename T1, typename T2,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         replace_copy_result<FwdIter1, FwdIter2>>::type
     replace_copy(ExPolicy&& policy, FwdIter1 first, Sent sent, FwdIter2 dest,
@@ -700,7 +703,7 @@ namespace pika { namespace ranges {
     /// \tparam T1          The type of the old value to replace (deduced).
     /// \tparam T2          The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -738,7 +741,8 @@ namespace pika { namespace ranges {
     ///           copied.
     ///
     template <typename ExPolicy, typename Rng, typename FwdIter, typename T1,
-        typename T2, typename Proj = pika::parallel::util::projection_identity>
+        typename T2,
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         replace_copy_result<typename pika::traits::range_iterator<Rng>::type,
             FwdIter>>::type
@@ -775,7 +779,7 @@ namespace pika { namespace ranges {
     ///                     (deduced).
     /// \tparam T           The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -814,7 +818,8 @@ namespace pika { namespace ranges {
     ///           copied.
     ///
     template <typename InIter, typename Sent, typename OutIter, typename Pred,
-        typename T, typename Proj = pika::parallel::util::projection_identity>
+        typename T,
+        typename Proj = pika::parallel::util::detail::projection_identity>
     replace_copy_if_result<InIter, OutIter> replace_copy_if(InIter first,
         Sent sent, OutIter dest, Pred&& pred, T const& new_value,
         Proj&& proj = Proj());
@@ -846,7 +851,7 @@ namespace pika { namespace ranges {
     ///                     (deduced).
     /// \tparam T           The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -884,7 +889,7 @@ namespace pika { namespace ranges {
     ///           copied.
     ///
     template <typename Rng, typename OutIter, typename Pred, typename T,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     replace_copy_if_result<typename pika::traits::range_iterator<Rng>::type,
         OutIter>
     replace_copy_if(Rng&& rng, OutIter dest, Pred&& pred, T const& new_value,
@@ -923,7 +928,7 @@ namespace pika { namespace ranges {
     ///                     (deduced).
     /// \tparam T           The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -972,7 +977,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Sent,
         typename FwdIter2, typename Pred, typename T,
-        typename Proj = pika::parallel::util::projection_identity>
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         replace_copy_if_result<FwdIter1, FwdIter2>>::type
     replace_copy_if(ExPolicy&& policy, FwdIter1 first, Sent sent, FwdIter2 dest,
@@ -1009,7 +1014,7 @@ namespace pika { namespace ranges {
     ///                     (deduced).
     /// \tparam T           The type of the new values to replace (deduced).
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::projection_identity
+    ///                     defaults to \a util::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -1056,7 +1061,8 @@ namespace pika { namespace ranges {
     ///           copied.
     ///
     template <typename ExPolicy, typename Rng, typename FwdIter, typename Pred,
-        typename T, typename Proj = pika::parallel::util::projection_identity>
+        typename T,
+        typename Proj = pika::parallel::util::detail::projection_identity>
     typename parallel::util::detail::algorithm_result<ExPolicy,
         replace_copy_if_result<typename pika::traits::range_iterator<Rng>::type,
             FwdIter>>::type
@@ -1082,14 +1088,16 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     /// `replace_copy_if_result` is equivalent to
-    /// `pika::parallel::util::in_out_result`
+    /// `pika::parallel::util::detail::in_out_result`
     template <typename I, typename O>
-    using replace_copy_if_result = pika::parallel::util::in_out_result<I, O>;
+    using replace_copy_if_result =
+        pika::parallel::util::detail::in_out_result<I, O>;
 
     /// `replace_copy_result` is equivalent to
-    /// `pika::parallel::util::in_out_result`
+    /// `pika::parallel::util::detail::in_out_result`
     template <typename I, typename O>
-    using replace_copy_result = pika::parallel::util::in_out_result<I, O>;
+    using replace_copy_result =
+        pika::parallel::util::detail::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::replace_if
@@ -1099,7 +1107,7 @@ namespace pika::ranges {
     private:
         // clang-format off
         template <typename Iter, typename Sent, typename Pred,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T = typename pika::parallel::detail::projected<Iter,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
@@ -1124,7 +1132,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename Rng, typename Pred,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
@@ -1155,7 +1163,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Iter, typename Sent, typename Pred,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T = typename pika::parallel::detail::projected<Iter,
                 Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
@@ -1183,7 +1191,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Rng, typename Pred,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             PIKA_CONCEPT_REQUIRES_(
@@ -1220,7 +1228,7 @@ namespace pika::ranges {
     private:
         // clang-format off
         template <typename Iter, typename Sent,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T1 = typename pika::parallel::detail::projected<Iter,
                 Proj>::value_type,
             typename T2 = T1,
@@ -1247,7 +1255,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename Rng,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T1 = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             typename T2 = T1,
@@ -1276,7 +1284,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Iter, typename Sent,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T1 = typename pika::parallel::detail::projected<Iter,
                 Proj>::value_type,
             typename T2 = T1,
@@ -1306,7 +1314,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Rng,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T1 = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             typename T2 = T1,
@@ -1347,7 +1355,7 @@ namespace pika::ranges {
         template <typename InIter, typename Sent, typename OutIter,
             typename Pred,
             typename T = typename std::iterator_traits<OutIter>::value_type,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter>::value &&
                 pika::traits::is_iterator<OutIter>::value &&
@@ -1369,7 +1377,7 @@ namespace pika::ranges {
                 "Required at least output iterator.");
 
             return pika::parallel::detail::replace_copy_if<
-                pika::parallel::util::in_out_result<InIter, OutIter>>()
+                pika::parallel::util::detail::in_out_result<InIter, OutIter>>()
                 .call(pika::execution::seq, first, sent, dest,
                     PIKA_FORWARD(Pred, pred), new_value,
                     PIKA_FORWARD(Proj, proj));
@@ -1378,7 +1386,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng, typename OutIter, typename Pred,
             typename T = typename std::iterator_traits<OutIter>::value_type,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 pika::traits::is_iterator<OutIter>::value &&
@@ -1404,7 +1412,7 @@ namespace pika::ranges {
                 "Required at least output iterator.");
 
             return pika::parallel::detail::replace_copy_if<
-                pika::parallel::util::in_out_result<
+                pika::parallel::util::detail::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type,
                     OutIter>>()
                 .call(pika::execution::seq, pika::util::begin(rng),
@@ -1416,7 +1424,7 @@ namespace pika::ranges {
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename Pred,
             typename T = typename std::iterator_traits<FwdIter2>::value_type,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
@@ -1439,8 +1447,8 @@ namespace pika::ranges {
             static_assert((pika::traits::is_forward_iterator<FwdIter2>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::replace_copy_if<
-                pika::parallel::util::in_out_result<FwdIter1, FwdIter2>>()
+            return pika::parallel::detail::replace_copy_if<pika::parallel::
+                    util::detail::in_out_result<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, sent, dest,
                     PIKA_FORWARD(Pred, pred), new_value,
                     PIKA_FORWARD(Proj, proj));
@@ -1449,7 +1457,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng, typename FwdIter, typename Pred,
             typename T = typename std::iterator_traits<FwdIter>::value_type,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
@@ -1476,7 +1484,7 @@ namespace pika::ranges {
                 "Required at least forward iterator.");
 
             return pika::parallel::detail::replace_copy_if<
-                pika::parallel::util::in_out_result<
+                pika::parallel::util::detail::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type,
                     FwdIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
@@ -1494,7 +1502,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename InIter, typename Sent,
             typename OutIter,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T1 = typename pika::parallel::detail::projected<InIter,
                 Proj>::value_type, typename T2 = T1,
             PIKA_CONCEPT_REQUIRES_(
@@ -1523,7 +1531,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename Rng, typename OutIter,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T1 = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             typename T2 = T1,
@@ -1559,7 +1567,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename FwdIter1,
             typename Sent, typename FwdIter2,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T1 = typename pika::parallel::detail::projected<FwdIter1,
                 Proj>::value_type, typename T2 = T1,
             PIKA_CONCEPT_REQUIRES_(
@@ -1592,7 +1600,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Rng, typename FwdIter,
-            typename Proj = pika::parallel::util::projection_identity,
+            typename Proj = pika::parallel::util::detail::projection_identity,
             typename T1 = typename pika::parallel::detail::projected<
                 pika::traits::range_iterator_t<Rng>, Proj>::value_type,
             typename T2 = T1,

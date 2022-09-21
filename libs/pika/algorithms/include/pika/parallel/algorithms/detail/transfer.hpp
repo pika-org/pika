@@ -23,7 +23,7 @@ namespace pika::parallel::detail {
     template <typename Algo, typename ExPolicy, typename FwdIter1,
         typename Sent1, typename FwdIter2>
     typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<FwdIter1, FwdIter2>>::type
+        util::detail::in_out_result<FwdIter1, FwdIter2>>::type
     transfer_(ExPolicy&& policy, FwdIter1 first, Sent1 last, FwdIter2 dest)
     {
         return Algo().call(PIKA_FORWARD(ExPolicy, policy), first, last, dest);
@@ -78,7 +78,7 @@ namespace pika::parallel::detail {
         )>
     // clang-format on
     typename util::detail::algorithm_result<ExPolicy,
-        util::in_out_result<FwdIter1, FwdIter2>>::type
+        util::detail::in_out_result<FwdIter1, FwdIter2>>::type
     transfer(ExPolicy&& policy, FwdIter1 first, Sent1 last, FwdIter2 dest)
     {
         static_assert((pika::traits::is_forward_iterator<FwdIter1>::value),

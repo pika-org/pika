@@ -34,25 +34,25 @@ namespace pika::parallel::detail {
     };
 
     template <typename Result1, typename Result2>
-    struct local_algorithm_result<util::in_out_result<Result1, Result2>>
+    struct local_algorithm_result<util::detail::in_out_result<Result1, Result2>>
     {
         using type1 = Result1;
         using type2 = Result2;
 
-        using type = util::in_out_result<type1, type2>;
+        using type = util::detail::in_out_result<type1, type2>;
     };
 
     template <typename Result>
-    struct local_algorithm_result<util::min_max_result<Result>>
+    struct local_algorithm_result<util::detail::min_max_result<Result>>
     {
-        using type = util::min_max_result<Result>;
+        using type = util::detail::min_max_result<Result>;
     };
 
     template <typename Result1, typename Result2, typename Result3>
     struct local_algorithm_result<
-        util::in_in_out_result<Result1, Result2, Result3>>
+        util::detail::in_in_out_result<Result1, Result2, Result3>>
     {
-        using type = util::in_in_out_result<Result1, Result2, Result3>;
+        using type = util::detail::in_in_out_result<Result1, Result2, Result3>;
     };
 
     template <>
