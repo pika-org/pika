@@ -1403,7 +1403,7 @@ namespace pika {
         PIKA_ITT_THREAD_SET_NAME(thread_name.c_str());
 
         // set thread name as shown in Visual Studio
-        util::set_thread_name(thread_name.c_str());
+        detail::set_thread_name(thread_name.c_str());
 
 #if defined(PIKA_HAVE_APEX)
         // not registering helper threads - for now
@@ -1739,7 +1739,7 @@ namespace pika {
         PIKA_ITT_THREAD_SET_NAME(name);
 
         // set thread name as shown in Visual Studio
-        util::set_thread_name(name);
+        detail::set_thread_name(name);
 
 #if defined(PIKA_HAVE_APEX)
         if (std::strstr(name, "worker") != nullptr)
