@@ -122,7 +122,7 @@ namespace pika::threads::detail {
         while (!exit_funcs_.empty())
         {
             {
-                pika::util::unlock_guard<
+                pika::detail::unlock_guard<
                     std::unique_lock<pika::detail::spinlock>>
                     ul(l);
                 if (!exit_funcs_.front().empty())

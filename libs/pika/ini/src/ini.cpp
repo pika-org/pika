@@ -333,7 +333,7 @@ namespace pika { namespace util {
             if (it != sections_.end())
             {
                 std::string sub_sec_name = sec_name.substr(i + 1);
-                pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                 return (*it).second.has_section(sub_sec_name);
             }
             return false;
@@ -352,7 +352,7 @@ namespace pika { namespace util {
             if (it != sections_.end())
             {
                 std::string sub_sec_name = sec_name.substr(i + 1);
-                pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                 return (*it).second.get_section(sub_sec_name);
             }
 
@@ -386,7 +386,7 @@ namespace pika { namespace util {
             if (it != sections_.end())
             {
                 std::string sub_sec_name = sec_name.substr(i + 1);
-                pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                 return (*it).second.get_section(sub_sec_name);
             }
 
@@ -450,7 +450,7 @@ namespace pika { namespace util {
                     std::string value = e.first;
                     entry_changed_func f = e.second;
 
-                    pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(
+                    pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(
                         l);
                     f(fullkey, value);
                 }
@@ -500,7 +500,7 @@ namespace pika { namespace util {
                     std::string value = it->second.first;
                     entry_changed_func f = it->second.second;
 
-                    pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(
+                    pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(
                         l);
                     f(fullkey, value);
                 }
@@ -518,7 +518,7 @@ namespace pika { namespace util {
                     std::string value = p.first->second.first;
                     entry_changed_func f = p.first->second.second;
 
-                    pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(
+                    pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(
                         l);
                     f(key, value);
                 }
@@ -618,7 +618,7 @@ namespace pika { namespace util {
             {
                 section_map::const_iterator cit = sections_.find(sub_sec);
                 PIKA_ASSERT(cit != sections_.end());
-                pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                 return (*cit).second.has_entry(sub_key);
             }
             return false;
@@ -638,7 +638,7 @@ namespace pika { namespace util {
             {
                 section_map::const_iterator cit = sections_.find(sub_sec);
                 PIKA_ASSERT(cit != sections_.end());
-                pika::util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                 return (*cit).second.get_entry(sub_key);
             }
 

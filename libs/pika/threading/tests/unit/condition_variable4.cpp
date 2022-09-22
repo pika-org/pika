@@ -54,7 +54,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
                 int item;
 
                 {
-                    pika::util::unlock_guard<pika::lcos::local::mutex> ul(
+                    pika::detail::unlock_guard<pika::lcos::local::mutex> ul(
                         items_mtx);
                     item = next_value();
                     if (prod_sec > 0)
@@ -76,7 +76,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
         for (;;)
         {
             {
-                pika::util::unlock_guard<pika::lcos::local::mutex> ul(
+                pika::detail::unlock_guard<pika::lcos::local::mutex> ul(
                     items_mtx);
                 if (cons_sec > 0)
                 {

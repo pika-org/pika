@@ -254,7 +254,7 @@ namespace pika { namespace threads { namespace detail {
 
                     {
                         // unlock the lock while joining
-                        util::unlock_guard<Lock> ul(l);
+                        ::pika::detail::unlock_guard<Lock> ul(l);
                         remove_processing_unit_internal(i);
                     }
                 }

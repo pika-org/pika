@@ -181,7 +181,7 @@ namespace pika { namespace lcos { namespace local {
                     &base_trigger::test_condition, this, generation_value));
 
                 {
-                    pika::util::unlock_guard<Lock> ul(l);
+                    pika::detail::unlock_guard<Lock> ul(l);
                     f.get();
                 }    // make sure lock gets re-acquired
             }

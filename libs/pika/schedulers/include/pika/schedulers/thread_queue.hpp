@@ -184,7 +184,7 @@ namespace pika::threads {
             else
 #endif
             {
-                pika::util::unlock_guard<Lock> ull(lk);
+                pika::detail::unlock_guard<Lock> ull(lk);
 
                 // Allocate a new thread object.
                 threads::detail::thread_data* p = nullptr;

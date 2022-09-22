@@ -87,7 +87,7 @@ namespace pika { namespace lcos { namespace local {
             [[maybe_unused]] util::ignore_all_while_checking ignore_lock;
 
             std::unique_lock<mutex_type> l(data->mtx_);
-            util::unlock_guard<std::unique_lock<Mutex>> unlock(lock);
+            ::pika::detail::unlock_guard<std::unique_lock<Mutex>> unlock(lock);
 
             // The following ensures that the inner lock will be unlocked
             // before the outer to avoid deadlock (fixes issue #3608)
@@ -122,7 +122,7 @@ namespace pika { namespace lcos { namespace local {
             PIKA_UNUSED(ignore_lock);
 
             std::unique_lock<mutex_type> l(data->mtx_);
-            util::unlock_guard<std::unique_lock<Mutex>> unlock(lock);
+            ::pika::detail::unlock_guard<std::unique_lock<Mutex>> unlock(lock);
 
             // The following ensures that the inner lock will be unlocked
             // before the outer to avoid deadlock (fixes issue #3608)
@@ -234,7 +234,7 @@ namespace pika { namespace lcos { namespace local {
             PIKA_UNUSED(ignore_lock);
 
             std::unique_lock<mutex_type> l(data->mtx_);
-            util::unlock_guard<Lock> unlock(lock);
+            ::pika::detail::unlock_guard<Lock> unlock(lock);
 
             // The following ensures that the inner lock will be unlocked
             // before the outer to avoid deadlock (fixes issue #3608)
@@ -268,7 +268,7 @@ namespace pika { namespace lcos { namespace local {
             PIKA_UNUSED(ignore_lock);
 
             std::unique_lock<mutex_type> l(data->mtx_);
-            util::unlock_guard<Lock> unlock(lock);
+            ::pika::detail::unlock_guard<Lock> unlock(lock);
 
             // The following ensures that the inner lock will be unlocked
             // before the outer to avoid deadlock (fixes issue #3608)
@@ -350,7 +350,7 @@ namespace pika { namespace lcos { namespace local {
                     return false;
                 }
 
-                util::unlock_guard<Lock> unlock(lock);
+                ::pika::detail::unlock_guard<Lock> unlock(lock);
 
                 // The following ensures that the inner lock will be unlocked
                 // before the outer to avoid deadlock (fixes issue #3608)
@@ -396,7 +396,7 @@ namespace pika { namespace lcos { namespace local {
                         return false;
                     }
 
-                    util::unlock_guard<Lock> unlock(lock);
+                    ::pika::detail::unlock_guard<Lock> unlock(lock);
 
                     // The following ensures that the inner lock will be unlocked
                     // before the outer to avoid deadlock (fixes issue #3608)

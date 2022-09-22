@@ -219,7 +219,7 @@ namespace pika {
                 id_.noref(), util::detail::bind_front(&resume_thread, this_id)))
         {
             // wait for thread to be terminated
-            util::unlock_guard ul(l);
+            detail::unlock_guard ul(l);
             this_thread::suspend(
                 threads::detail::thread_schedule_state::suspended,
                 "thread::join");

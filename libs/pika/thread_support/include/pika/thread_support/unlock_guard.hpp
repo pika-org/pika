@@ -9,7 +9,7 @@
 
 #include <pika/config.hpp>
 
-namespace pika { namespace util {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     // This is a helper structure to make sure a lock gets unlocked and locked
     // again in a scope.
@@ -36,4 +36,4 @@ namespace pika { namespace util {
     private:
         Mutex& m_;
     };
-}}    // namespace pika::util
+}    // namespace pika::detail

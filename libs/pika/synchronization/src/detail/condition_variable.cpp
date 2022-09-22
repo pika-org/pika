@@ -165,7 +165,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         reset_queue_entry r(f, queue_);
         {
             // suspend this thread
-            util::unlock_guard<std::unique_lock<mutex_type>> ul(lock);
+            ::pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(lock);
             this_ctx.suspend();
         }
 
@@ -188,7 +188,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         reset_queue_entry r(f, queue_);
         {
             // suspend this thread
-            util::unlock_guard<std::unique_lock<mutex_type>> ul(lock);
+            ::pika::detail::unlock_guard<std::unique_lock<mutex_type>> ul(lock);
             this_ctx.sleep_until(abs_time.value());
         }
 
@@ -229,7 +229,8 @@ namespace pika { namespace lcos { namespace local { namespace detail {
                     "condition_variable::abort_all: pending thread: {}", ctx);
 
                 // unlock while notifying thread as this can suspend
-                util::unlock_guard<std::unique_lock<Mutex>> unlock(lock);
+                ::pika::detail::unlock_guard<std::unique_lock<Mutex>> unlock(
+                    lock);
 
                 // forcefully abort thread, do not throw
                 ctx.abort();
