@@ -13,7 +13,7 @@
 #include <chrono>
 #include <thread>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::detail {
 
     void spinlock::yield_k(unsigned k) noexcept
     {
@@ -30,4 +30,4 @@ namespace pika { namespace util { namespace detail {
         }
     }
 
-}}}    // namespace pika::util::detail
+}    // namespace pika::detail

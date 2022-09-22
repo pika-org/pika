@@ -62,8 +62,8 @@ namespace pika { namespace util { namespace logging { namespace formatter {
             // fall back to non-thread-safe version on other platforms
             std::tm local_tm;
             {
-                static pika::util::detail::spinlock mutex;
-                std::lock_guard<pika::util::detail::spinlock> ul(mutex);
+                static pika::detail::spinlock mutex;
+                std::lock_guard<pika::detail::spinlock> ul(mutex);
                 local_tm = *std::localtime(&tt);
             }
 #endif

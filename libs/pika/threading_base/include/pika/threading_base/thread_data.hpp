@@ -275,14 +275,14 @@ namespace pika::threads::detail {
 #else
         ::pika::detail::thread_description get_description() const
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return description_;
         }
         ::pika::detail::thread_description set_description(
             ::pika::detail::thread_description value)
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             std::swap(description_, value);
             return value;
@@ -290,14 +290,14 @@ namespace pika::threads::detail {
 
         ::pika::detail::thread_description get_lco_description() const
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return lco_description_;
         }
         ::pika::detail::thread_description set_lco_description(
             ::pika::detail::thread_description value)
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             std::swap(lco_description_, value);
             return value;
@@ -382,13 +382,13 @@ namespace pika::threads::detail {
 #ifdef PIKA_HAVE_THREAD_FULLBACKTRACE_ON_SUSPENSION
         char const* get_backtrace() const noexcept
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return backtrace_;
         }
         char const* set_backtrace(char const* value) noexcept
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
 
             char const* bt = backtrace_;
@@ -398,14 +398,14 @@ namespace pika::threads::detail {
 #else
         debug::detail::backtrace const* get_backtrace() const noexcept
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return backtrace_;
         }
         debug::detail::backtrace const* set_backtrace(
             debug::detail::backtrace const* value) noexcept
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
 
             debug::detail::backtrace const* bt = backtrace_;
@@ -417,7 +417,7 @@ namespace pika::threads::detail {
         // Generate full backtrace for captured stack
         std::string backtrace()
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
 
             std::string bt;
@@ -445,21 +445,21 @@ namespace pika::threads::detail {
         // handle thread interruption
         bool interruption_requested() const noexcept
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return requested_interrupt_;
         }
 
         bool interruption_enabled() const noexcept
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             return enabled_interrupt_;
         }
 
         bool set_interruption_enabled(bool enable) noexcept
         {
-            std::lock_guard<pika::util::detail::spinlock> l(
+            std::lock_guard<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             std::swap(enabled_interrupt_, enable);
             return enable;
@@ -467,7 +467,7 @@ namespace pika::threads::detail {
 
         void interrupt(bool flag = true)
         {
-            std::unique_lock<pika::util::detail::spinlock> l(
+            std::unique_lock<pika::detail::spinlock> l(
                 spinlock_pool::spinlock_for(this));
             if (flag && !enabled_interrupt_)
             {

@@ -16,7 +16,7 @@
 
 #include <atomic>
 
-namespace pika { namespace util { namespace detail {
+namespace pika::detail {
 
     /// Lockable spinlock class
     struct spinlock
@@ -60,4 +60,4 @@ namespace pika { namespace util { namespace detail {
         }
     };
 
-}}}    // namespace pika::util::detail
+}    // namespace pika::detail

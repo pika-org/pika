@@ -42,7 +42,7 @@ namespace pika { namespace util { namespace logging { namespace destination {
 
     struct file_impl : file
     {
-        using mutex_type = pika::util::detail::spinlock;
+        using mutex_type = pika::detail::spinlock;
 
         explicit file_impl(std::string const& file_name, file_settings set)
           : file(file_name, set)

@@ -36,14 +36,14 @@ namespace pika::concurrency::detail {
     {
     private:
         static pika::concurrency::detail::cache_aligned_data<
-            util::detail::spinlock>
+            ::pika::detail::spinlock>
             pool_[N];
 #if PIKA_HAVE_ITTNOTIFY != 0
         static detail::itt_spinlock_init<Tag, N> init_;
 #endif
 
     public:
-        static util::detail::spinlock& spinlock_for(void const* pv)
+        static ::pika::detail::spinlock& spinlock_for(void const* pv)
         {
             std::size_t i =
                 pika::util::fibhash<N>(reinterpret_cast<std::size_t>(pv));
@@ -52,7 +52,7 @@ namespace pika::concurrency::detail {
     };
 
     template <typename Tag, std::size_t N>
-    pika::concurrency::detail::cache_aligned_data<util::detail::spinlock>
+    pika::concurrency::detail::cache_aligned_data<::pika::detail::spinlock>
         spinlock_pool<Tag, N>::pool_[N];
 
 #if PIKA_HAVE_ITTNOTIFY != 0
