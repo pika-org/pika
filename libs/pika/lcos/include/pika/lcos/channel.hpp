@@ -74,7 +74,7 @@ namespace pika { namespace lcos { namespace local {
             }
 
         private:
-            pika::util::atomic_count count_;
+            pika::detail::atomic_count count_;
         };
 
         // support functions for pika::intrusive_ptr

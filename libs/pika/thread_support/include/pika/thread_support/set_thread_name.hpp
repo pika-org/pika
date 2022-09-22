@@ -11,15 +11,15 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 #include <windows.h>
 
-namespace pika { namespace util {
+namespace pika::util {
     PIKA_EXPORT void set_thread_name(
         char const* /*threadName*/, DWORD /*dwThreadID*/ = DWORD(-1));
-}}    // namespace pika::util
+}    // namespace pika::util
 
 #else
 
-namespace pika { namespace util {
+namespace pika::util {
     inline void set_thread_name(char const* /*thread_name*/) {}
-}}    // namespace pika::util
+}    // namespace pika::util
 
 #endif

@@ -190,7 +190,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         friend PIKA_EXPORT void intrusive_ptr_add_ref(condition_variable_data*);
         friend PIKA_EXPORT void intrusive_ptr_release(condition_variable_data*);
 
-        pika::util::atomic_count count_;
+        pika::detail::atomic_count count_;
     };
 
 }}}}    // namespace pika::lcos::local::detail

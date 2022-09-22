@@ -48,7 +48,7 @@ namespace boost { namespace inspect {
         {"(\\bboost\\s*::\\s*unordered_multiset\\b)",
             "std::unordered_multiset"},
         {"(\\bboost\\s*::\\s*detail\\s*::\\s*atomic_count\\b)",
-            "pika::util::atomic_count"},
+            "pika::detail::atomic_count"},
         {"(\\bboost\\s*::\\s*function\\b)", "pika::util::detail::function"},
         {R"((\bboost\s*::\s*intrusive_ptr\b))", "pika::intrusive_ptr"},
         {"(\\bboost\\s*::\\s*shared_ptr\\b)", "std::shared_ptr"},

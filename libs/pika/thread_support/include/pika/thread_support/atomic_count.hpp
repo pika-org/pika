@@ -11,7 +11,7 @@
 
 #include <atomic>
 
-namespace pika { namespace util {
+namespace pika::detail {
     class atomic_count
     {
     public:
@@ -59,4 +59,4 @@ namespace pika { namespace util {
     private:
         std::atomic<long> value_;
     };
-}}    // namespace pika::util
+}    // namespace pika::detail
