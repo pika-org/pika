@@ -37,7 +37,7 @@
 #include <sstream>
 #include <utility>
 
-namespace pika { namespace threads { namespace detail {
+namespace pika::threads::detail {
 
     ///////////////////////////////////////////////////////////////////////
     inline void write_state_log(scheduler_base const& scheduler,
@@ -1141,7 +1141,7 @@ namespace pika { namespace threads { namespace detail {
             }
         }
     }
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail
 
 // NOTE: This line only exists to please doxygen. Without the line doxygen
 // generates incomplete xml output.

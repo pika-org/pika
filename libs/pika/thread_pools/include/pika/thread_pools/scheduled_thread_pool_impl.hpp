@@ -49,7 +49,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace threads { namespace detail {
+namespace pika::threads::detail {
     ///////////////////////////////////////////////////////////////////////////
     struct manage_active_thread_count
     {
@@ -2010,4 +2010,4 @@ namespace pika { namespace threads { namespace detail {
             },
             "scheduled_thread_pool::resume_processing_unit_direct");
     }
-}}}    // namespace pika::threads::detail
+}    // namespace pika::threads::detail
