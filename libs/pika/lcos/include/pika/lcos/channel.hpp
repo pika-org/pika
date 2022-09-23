@@ -218,7 +218,8 @@ namespace pika { namespace lcos { namespace local {
                 std::exception_ptr e;
 
                 {
-                    detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                    ::pika::detail::unlock_guard<std::unique_lock<mutex_type>>
+                        ul(l);
                     e = PIKA_GET_EXCEPTION(pika::error::future_cancelled,
                         pika::throwmode::lightweight,
                         "pika::lcos::local::close",
@@ -514,7 +515,8 @@ namespace pika { namespace lcos { namespace local {
                 // canceled at this point
                 std::exception_ptr e;
                 {
-                    detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                    ::pika::detail::unlock_guard<std::unique_lock<mutex_type>>
+                        ul(l);
                     e = std::exception_ptr(
                         PIKA_GET_EXCEPTION(pika::error::future_cancelled,
                             "pika::lcos::local::close",
