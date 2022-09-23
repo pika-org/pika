@@ -655,7 +655,7 @@ jobs:
             ulimit -c unlimited
             ctest \
               -j4 \
-              --timeout 400 \
+              --timeout 500 \
               -T test \
               --no-compress-output \
               --output-on-failure
