@@ -773,7 +773,8 @@ namespace pika::execution::experimental {
         using completion_signatures =
             pika::execution::experimental::completion_signatures<
                 pika::execution::experimental::set_value_t(Ts...),
-                pika::execution::experimental::set_error_t(std::exception_ptr)>;
+                pika::execution::experimental::set_error_t(std::exception_ptr),
+                pika::execution::experimental::set_stopped_t()>;
 
         template <typename R>
         friend detail::any_operation_state tag_invoke(
@@ -854,7 +855,8 @@ namespace pika::execution::experimental {
         using completion_signatures =
             pika::execution::experimental::completion_signatures<
                 pika::execution::experimental::set_value_t(Ts...),
-                pika::execution::experimental::set_error_t(std::exception_ptr)>;
+                pika::execution::experimental::set_error_t(std::exception_ptr),
+                pika::execution::experimental::set_stopped_t()>;
 
         template <typename R>
         friend detail::any_operation_state tag_invoke(
