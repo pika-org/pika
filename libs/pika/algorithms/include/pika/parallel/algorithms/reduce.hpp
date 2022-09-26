@@ -86,7 +86,7 @@ namespace pika {
     /// non-associative or non-commutative binary predicate.
     ///
     template <typename ExPolicy, typename FwdIter, typename T, typename F>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     reduce(ExPolicy&& policy, FwdIter first, FwdIter last, T init, F&& f);
 
     /// Returns GENERALIZED_SUM(+, init, *first, ..., *(first + (last - first) - 1)).
@@ -144,7 +144,7 @@ namespace pika {
     /// non-associative or non-commutative binary predicate.
     ///
     template <typename ExPolicy, typename FwdIter, typename T>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     reduce(ExPolicy&& policy, FwdIter first, FwdIter last, T init);
 
     /// Returns GENERALIZED_SUM(+, T(), *first, ..., *(first + (last - first) - 1)).
@@ -203,7 +203,7 @@ namespace pika {
     /// non-associative or non-commutative binary predicate.
     ///
     template <typename ExPolicy, typename FwdIter>
-    typename util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename std::iterator_traits<FwdIter>::value_type
     >::type
     reduce(ExPolicy&& policy, FwdIter first, FwdIter last);
@@ -241,7 +241,7 @@ namespace pika::parallel::detail {
     // reduce
     /// \cond NOINTERNAL
     template <typename T>
-    struct reduce : public detail::algorithm<reduce<T>, T>
+    struct reduce : public algorithm<reduce<T>, T>
     {
         reduce()
           : reduce::algorithm("reduce")
@@ -259,31 +259,30 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
             typename T_, typename Reduce>
-        static typename util::detail::algorithm_result<ExPolicy, T>::type
-        parallel(ExPolicy&& policy, FwdIterB first, FwdIterE last, T_&& init,
+        static typename algorithm_result<ExPolicy, T>::type parallel(
+            ExPolicy&& policy, FwdIterB first, FwdIterE last, T_&& init,
             Reduce&& r)
         {
             if (first == last)
             {
-                return util::detail::algorithm_result<ExPolicy, T>::get(
+                return algorithm_result<ExPolicy, T>::get(
                     PIKA_FORWARD(T_, init));
             }
 
             auto f1 = [r](FwdIterB part_begin, std::size_t part_size) -> T {
                 T val = *part_begin;
-                return util::detail::accumulate_n(
+                return accumulate_n(
                     ++part_begin, --part_size, PIKA_MOVE(val), r);
             };
 
-            return util::detail::partitioner<ExPolicy, T>::call(
+            return partitioner<ExPolicy, T>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping([init = PIKA_FORWARD(T_, init),
                                      r = PIKA_FORWARD(Reduce, r)](
                                      std::vector<T>&& results) -> T {
-                    return util::detail::accumulate_n(
-                        pika::util::begin(results), pika::util::size(results),
-                        init, r);
+                    return accumulate_n(pika::util::begin(results),
+                        pika::util::size(results), init, r);
                 }));
         }
     };
@@ -305,10 +304,10 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(pika::reduce_t, ExPolicy&& policy, FwdIter first,
-            FwdIter last, T init, F&& f)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(pika::reduce_t, ExPolicy&& policy,
+                FwdIter first, FwdIter last, T init, F&& f)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
@@ -326,10 +325,10 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(pika::reduce_t, ExPolicy&& policy, FwdIter first,
-            FwdIter last, T init)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(pika::reduce_t, ExPolicy&& policy,
+                FwdIter first, FwdIter last, T init)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
@@ -346,7 +345,7 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename std::iterator_traits<FwdIter>::value_type>::type
         tag_fallback_invoke(
             pika::reduce_t, ExPolicy&& policy, FwdIter first, FwdIter last)

@@ -179,7 +179,7 @@ namespace pika { namespace ranges {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename Iter, typename Sent, typename... Args>
-    typename util::detail::algorithm_result<ExPolicy>::type for_loop(
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type for_loop(
         ExPolicy&& policy, Iter first, Sent last, Args&&... args);
 
     /// The for_loop implements loop functionality over a range specified by
@@ -347,7 +347,7 @@ namespace pika { namespace ranges {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename Rng, typename... Args>
-    typename util::detail::algorithm_result<ExPolicy>::type for_loop(
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type for_loop(
         ExPolicy&& policy, Rng&& rng, Args&&... args);
 
     /// The for_loop_strided implements loop functionality over a range specified by
@@ -530,7 +530,8 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename Iter, typename Sent, typename S,
         typename... Args>
-    typename util::detail::algorithm_result<ExPolicy>::type for_loop_strided(
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
+    for_loop_strided(
         ExPolicy&& policy, Iter first, Sent last, S stride Args&&... args);
 
     /// The for_loop_strided implements loop functionality over a range specified by
@@ -710,8 +711,8 @@ namespace pika { namespace ranges {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename Rng, typename S, typename... Args>
-    typename util::detail::algorithm_result<ExPolicy>::type for_loop_strided(
-        ExPolicy&& policy, Rng&& rng, S stride, Args&&... args);
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
+    for_loop_strided(ExPolicy&& policy, Rng&& rng, S stride, Args&&... args);
 }}    // namespace pika::ranges
 
 #else
@@ -745,7 +746,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(pika::ranges::for_loop_t, ExPolicy&& policy,
             Iter first, Sent last, Args&&... args)
         {
@@ -785,7 +786,7 @@ namespace pika::ranges {
                 pika::traits::is_range<R>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(pika::ranges::for_loop_t, ExPolicy&& policy,
             R&& rng, Args&&... args)
         {
@@ -833,7 +834,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(pika::ranges::for_loop_strided_t, ExPolicy&& policy,
             Iter first, Sent last, S stride, Args&&... args)
         {
@@ -877,7 +878,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(pika::ranges::for_loop_strided_t, ExPolicy&& policy,
             Rng&& rng, S stride, Args&&... args)
         {

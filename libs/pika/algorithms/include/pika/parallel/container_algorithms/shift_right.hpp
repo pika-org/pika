@@ -101,7 +101,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter, typename Sent,
         typename Size>
-    typename parallel::util::detail::algorithm_result<ExPolicy, FwdIter>
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>
     shift_right(ExPolicy&& policy, FwdIter first, Sent last, Size n);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ namespace pika {
     ///           end of the resulting range.
     ///
     template <typename ExPolicy, typename Rng, typename Size>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         pika::traits::range_iterator_t<Rng>>::type
     shift_right(ExPolicy&& policy, Rng&& rng, Size n);
 
@@ -236,7 +236,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(pika::ranges::shift_right_t, ExPolicy&& policy,
             FwdIter first, Sent last, Size n)
@@ -273,7 +273,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             pika::traits::range_iterator_t<Rng>>::type
         tag_fallback_invoke(
             pika::ranges::shift_right_t, ExPolicy&& policy, Rng&& rng, Size n)

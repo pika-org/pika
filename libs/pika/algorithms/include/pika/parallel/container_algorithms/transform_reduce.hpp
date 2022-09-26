@@ -104,7 +104,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename Rng, typename T, typename Reduce,
         typename Convert>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     transform_reduce(ExPolicy&& policy, Rng&& rng, T init, Reduce&& red_op,
         Convert&& conv_op);
 
@@ -152,7 +152,7 @@ namespace pika {
     ///           returns \a T otherwise.
     ///
     template <typename ExPolicy, typename Rng1, typename FwdIter2, typename T>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     transform_reduce(ExPolicy&& policy, Rng1&& rng1, FwdIter2 first2, T init);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -234,7 +234,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename Rng1, typename FwdIter2,
         typename T, typename Reduce, typename Convert>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     transform_reduce(ExPolicy&& policy, Rng1&& rng1, FwdIter2 first2, T init,
         Reduce&& red_op, Convert&& conv_op);
 
@@ -297,10 +297,11 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy, Iter first,
-            Sent last, T init, Reduce&& red_op, Convert&& conv_op)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
+                Iter first, Sent last, T init, Reduce&& red_op,
+                Convert&& conv_op)
         {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Requires at least forward iterator.");
@@ -349,10 +350,10 @@ namespace pika::ranges {
                 pika::traits::is_iterator<Iter2>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy, Iter first,
-            Sent last, Iter2 first2, T init)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
+                Iter first, Sent last, Iter2 first2, T init)
         {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Requires at least forward iterator.");
@@ -409,10 +410,11 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy, Iter first,
-            Sent last, Iter2 first2, T init, Reduce&& red_op, Convert&& conv_op)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
+                Iter first, Sent last, Iter2 first2, T init, Reduce&& red_op,
+                Convert&& conv_op)
         {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Requires at least forward iterator.");
@@ -480,10 +482,10 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy, Rng&& rng,
-            T init, Reduce&& red_op, Convert&& conv_op)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
+                Rng&& rng, T init, Reduce&& red_op, Convert&& conv_op)
         {
             using iterator_type =
                 typename pika::traits::range_iterator<Rng>::type;
@@ -538,10 +540,10 @@ namespace pika::ranges {
                 pika::traits::is_iterator<Iter2>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy, Rng&& rng,
-            Iter2 first2, T init)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
+                Rng&& rng, Iter2 first2, T init)
         {
             using iterator_type =
                 typename pika::traits::range_iterator<Rng>::type;
@@ -607,10 +609,11 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy, Rng&& rng,
-            Iter2 first2, T init, Reduce&& red_op, Convert&& conv_op)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
+                Rng&& rng, Iter2 first2, T init, Reduce&& red_op,
+                Convert&& conv_op)
         {
             using iterator_type =
                 typename pika::traits::range_iterator<Rng>::type;

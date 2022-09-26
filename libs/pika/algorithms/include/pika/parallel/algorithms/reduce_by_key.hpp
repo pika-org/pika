@@ -167,24 +167,23 @@ namespace pika {
         // Zip iterator has 3 iterators inside
         // Iter1, key type : Iter2, value type : Iter3, state type
         template <typename ZIter, typename iKey, typename iVal>
-        parallel::util::detail::in_out_result<iKey, iVal> make_pair_result(
+        parallel::detail::in_out_result<iKey, iVal> make_pair_result(
             ZIter zipiter, iKey key_start, iVal val_start)
         {
             // the iterator we want is 'second' part of pair type (from copy_if)
             auto t = zipiter.out.get_iterator_tuple();
             iKey key_end = std::get<0>(t);
-            return parallel::util::detail::in_out_result<iKey, iVal>{key_end,
+            return parallel::detail::in_out_result<iKey, iVal>{key_end,
                 std::next(val_start, std::distance(key_start, key_end))};
         }
 
         // async version that returns future<pair> from future<zip_iterator<blah>>
         template <typename ZIter, typename iKey, typename iVal>
-        pika::future<parallel::util::detail::in_out_result<iKey, iVal>>
+        pika::future<parallel::detail::in_out_result<iKey, iVal>>
         make_pair_result(
             pika::future<ZIter>&& ziter, iKey key_start, iVal val_start)
         {
-            using result_type =
-                parallel::util::detail::in_out_result<iKey, iVal>;
+            using result_type = parallel::detail::in_out_result<iKey, iVal>;
 
             return pika::make_future<result_type>(
                 PIKA_MOVE(ziter), [=](ZIter zipiter) {
@@ -205,7 +204,7 @@ namespace pika {
         template <typename ExPolicy, typename RanIter, typename RanIter2,
             typename FwdIter1, typename FwdIter2, typename Compare,
             typename Func>
-        static parallel::util::detail::in_out_result<FwdIter1, FwdIter2>
+        static parallel::detail::in_out_result<FwdIter1, FwdIter2>
         reduce_by_key_impl(ExPolicy&& policy, RanIter key_first,
             RanIter key_last, RanIter2 values_first, FwdIter1 keys_output,
             FwdIter2 values_output, Compare&& comp, Func&& func)
@@ -366,7 +365,7 @@ namespace pika {
         struct reduce_by_key
           : public parallel::detail::algorithm<
                 reduce_by_key<FwdIter1, FwdIter2>,
-                parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>
+                parallel::detail::in_out_result<FwdIter1, FwdIter2>>
         {
             reduce_by_key()
               : reduce_by_key::algorithm("reduce_by_key")
@@ -375,7 +374,7 @@ namespace pika {
 
             template <typename ExPolicy, typename RanIter, typename RanIter2,
                 typename Compare, typename Func>
-            static parallel::util::detail::in_out_result<FwdIter1, FwdIter2>
+            static parallel::detail::in_out_result<FwdIter1, FwdIter2>
             sequential(ExPolicy&& policy, RanIter key_first, RanIter key_last,
                 RanIter2 values_first, FwdIter1 keys_output,
                 FwdIter2 values_output, Compare&& comp, Func&& func)
@@ -388,14 +387,14 @@ namespace pika {
 
             template <typename ExPolicy, typename RanIter, typename RanIter2,
                 typename Compare, typename Func>
-            static typename parallel::util::detail::algorithm_result<ExPolicy,
-                parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+            static typename parallel::detail::algorithm_result<ExPolicy,
+                parallel::detail::in_out_result<FwdIter1, FwdIter2>>::type
             parallel(ExPolicy&& policy, RanIter key_first, RanIter key_last,
                 RanIter2 values_first, FwdIter1 keys_output,
                 FwdIter2 values_output, Compare&& comp, Func&& func)
             {
-                return parallel::util::detail::algorithm_result<ExPolicy,
-                    parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>::
+                return parallel::detail::algorithm_result<ExPolicy,
+                    parallel::detail::in_out_result<FwdIter1, FwdIter2>>::
                     get(parallel::execution::async_execute(policy.executor(),
                         pika::util::detail::deferred_call(
                             &reduce_by_key_impl<ExPolicy&&, RanIter, RanIter2,
@@ -520,14 +519,14 @@ namespace pika {
                     pika::traits::is_iterator<RanIter2>::value&&
                         pika::traits::is_iterator<FwdIter1>::value&&
                             pika::traits::is_iterator<FwdIter2>::value)>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
-        parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+    typename parallel::detail::algorithm_result<ExPolicy,
+        parallel::detail::in_out_result<FwdIter1, FwdIter2>>::type
     reduce_by_key(ExPolicy&& policy, RanIter key_first, RanIter key_last,
         RanIter2 values_first, FwdIter1 keys_output, FwdIter2 values_output,
         Compare&& comp = Compare(), Func&& func = Func())
     {
-        using result = parallel::util::detail::algorithm_result<ExPolicy,
-            parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>;
+        using result = parallel::detail::algorithm_result<ExPolicy,
+            parallel::detail::in_out_result<FwdIter1, FwdIter2>>;
 
         static_assert(
             (pika::traits::is_random_access_iterator<RanIter>::value) &&
@@ -543,7 +542,7 @@ namespace pika {
             *keys_output = *key_first;
             *values_output = *values_first;
             return result::get(
-                parallel::util::detail::in_out_result<FwdIter1, FwdIter2>{
+                parallel::detail::in_out_result<FwdIter1, FwdIter2>{
                     keys_output, values_output});
         }
 

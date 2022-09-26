@@ -83,13 +83,13 @@ namespace pika::parallel::detail {
     template <typename ExPolicy, typename Iter1, typename Sent1, typename Iter2,
         typename Sent2, typename Iter3, typename F, typename Proj1,
         typename Proj2, typename Combiner, typename SetOp>
-    typename util::detail::algorithm_result<ExPolicy,
-        util::detail::in_in_out_result<Iter1, Iter2, Iter3>>::type
+    typename algorithm_result<ExPolicy,
+        in_in_out_result<Iter1, Iter2, Iter3>>::type
     set_operation(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
         Sent2 last2, Iter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2,
         Combiner&& combiner, SetOp&& setop)
     {
-        using result_type = util::detail::in_in_out_result<Iter1, Iter2, Iter3>;
+        using result_type = in_in_out_result<Iter1, Iter2, Iter3>;
 
         using difference_type1 =
             typename std::iterator_traits<Iter1>::difference_type;
@@ -97,8 +97,8 @@ namespace pika::parallel::detail {
             typename std::iterator_traits<Iter2>::difference_type;
 
         // allocate intermediate buffers
-        difference_type1 len1 = detail::distance(first1, last1);
-        difference_type2 len2 = detail::distance(first2, last2);
+        difference_type1 len1 = (distance) (first1, last1);
+        difference_type2 len2 = (distance) (first2, last2);
 
         using buffer_type = typename set_operations_buffer<Iter3>::type;
 
@@ -175,16 +175,16 @@ namespace pika::parallel::detail {
             std::size_t start2 = 0;
             if (!first_partition)
             {
-                start2 = detail::lower_bound(
-                             first2, first2 + len2, start_value, f, proj2) -
+                start2 =
+                    lower_bound(first2, first2 + len2, start_value, f, proj2) -
                     first2;
             }
 
             std::size_t end2 = len2;
             if (!last_partition)
             {
-                end2 = detail::lower_bound(first2 + start2, first2 + len2,
-                           end_value, f, proj2) -
+                end2 = lower_bound(first2 + start2, first2 + len2, end_value, f,
+                           proj2) -
                     first2;
             }
 
@@ -232,24 +232,21 @@ namespace pika::parallel::detail {
             }
 
             // finally, copy data to destination
-            parallel::util::detail::
-                foreach_partitioner<pika::execution::parallel_policy>::call(
-                    pika::execution::par, chunks.get(), cores,
-                    [buffer, dest](
-                        set_chunk_data* chunk, std::size_t, std::size_t) {
-                        if (chunk->start == std::size_t(-1) ||
-                            chunk->start_index == std::size_t(-1) ||
-                            chunk->len == std::size_t(-1))
-                        {
-                            return;
-                        }
-                        std::copy(buffer.get() + chunk->start,
-                            buffer.get() + chunk->start + chunk->len,
-                            dest + chunk->start_index);
-                    },
-                    [](set_chunk_data* last) -> set_chunk_data* {
-                        return last;
-                    });
+            foreach_partitioner<pika::execution::parallel_policy>::call(
+                pika::execution::par, chunks.get(), cores,
+                [buffer, dest](
+                    set_chunk_data* chunk, std::size_t, std::size_t) {
+                    if (chunk->start == std::size_t(-1) ||
+                        chunk->start_index == std::size_t(-1) ||
+                        chunk->len == std::size_t(-1))
+                    {
+                        return;
+                    }
+                    std::copy(buffer.get() + chunk->start,
+                        buffer.get() + chunk->start + chunk->len,
+                        dest + chunk->start_index);
+                },
+                [](set_chunk_data* last) -> set_chunk_data* { return last; });
 
             return {std::next(first1, first1_pos),
                 std::next(first2, first2_pos),
@@ -257,9 +254,8 @@ namespace pika::parallel::detail {
         };
 
         // fill the buffer piecewise
-        return parallel::util::detail::partitioner<ExPolicy, result_type,
-            void>::call(policy, chunks.get(), cores, PIKA_MOVE(f1),
-            PIKA_MOVE(f2));
+        return partitioner<ExPolicy, result_type, void>::call(
+            policy, chunks.get(), cores, PIKA_MOVE(f1), PIKA_MOVE(f2));
     }
     /// \endcond
 }    // namespace pika::parallel::detail

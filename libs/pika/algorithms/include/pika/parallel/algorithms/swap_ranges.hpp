@@ -95,7 +95,7 @@ namespace pika {
     ///           \a first2.
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-    typename parallel::util::detail::algorithm_result<ExPolicy, FwdIter2>::type
+    typename parallel::detail::algorithm_result<ExPolicy, FwdIter2>::type
     swap_ranges(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
         FwdIter2 first2);
 
@@ -126,14 +126,13 @@ namespace pika {
 
 namespace pika::parallel::detail {
     template <typename Iter1, typename Iter2>
-    using swap_ranges_result =
-        pika::parallel::util::detail::in_in_result<Iter1, Iter2>;
+    using swap_ranges_result = in_in_result<Iter1, Iter2>;
 
     ///////////////////////////////////////////////////////////////////////////
     // swap ranges
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename Size>
-    typename util::detail::algorithm_result<ExPolicy,
+    typename algorithm_result<ExPolicy,
         swap_ranges_result<FwdIter1, FwdIter2>>::type
     parallel_swap_ranges(
         ExPolicy&& policy, FwdIter1 first1, FwdIter2 first2, Size n)
@@ -148,12 +147,11 @@ namespace pika::parallel::detail {
                 using std::get;
                 std::swap(get<0>(t), get<1>(t));
             },
-            util::detail::projection_identity()));
+            projection_identity()));
     }
 
     template <typename IterPair>
-    struct swap_ranges
-      : public detail::algorithm<swap_ranges<IterPair>, IterPair>
+    struct swap_ranges : public algorithm<swap_ranges<IterPair>, IterPair>
     {
         swap_ranges()
           : swap_ranges::algorithm("swap_ranges")
@@ -195,24 +193,23 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
-        parallel(
+        static typename algorithm_result<ExPolicy, FwdIter2>::type parallel(
             ExPolicy&& policy, FwdIter1 first1, Sent last1, FwdIter2 first2)
         {
-            return util::detail::get_in2_element(
+            return get_in2_element(
                 parallel_swap_ranges(PIKA_FORWARD(ExPolicy, policy), first1,
-                    first2, detail::distance(first1, last1)));
+                    first2, (distance) (first1, last1)));
         }
 
         template <typename ExPolicy, typename FwdIter1, typename Sent1,
             typename FwdIter2, typename Sent2>
-        static typename util::detail::algorithm_result<ExPolicy,
+        static typename algorithm_result<ExPolicy,
             swap_ranges_result<FwdIter1, FwdIter2>>::type
         parallel(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
             FwdIter2 first2, Sent2 last2)
         {
-            auto dist1 = detail::distance(first1, last1);
-            auto dist2 = detail::distance(first2, last2);
+            auto dist1 = (distance) (first1, last1);
+            auto dist2 = (distance) (first2, last2);
             return parallel_swap_ranges(PIKA_FORWARD(ExPolicy, policy), first1,
                 first2, dist1 < dist2 ? dist1 : dist2);
         }
@@ -253,7 +250,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename parallel::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
         tag_fallback_invoke(pika::swap_ranges_t, ExPolicy&& policy,
             FwdIter1 first1, FwdIter1 last1, FwdIter2 first2)

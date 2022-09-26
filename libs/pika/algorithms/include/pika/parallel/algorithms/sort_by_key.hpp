@@ -115,7 +115,7 @@ namespace pika {
 
     template <typename ExPolicy, typename KeyIter, typename ValueIter,
         typename Compare = parallel::detail::less>
-    parallel::util::detail::algorithm_result_t<ExPolicy,
+    parallel::detail::algorithm_result_t<ExPolicy,
         sort_by_key_result<KeyIter, ValueIter>>
     sort_by_key([[maybe_unused]] ExPolicy&& policy,
         [[maybe_unused]] KeyIter key_first, [[maybe_unused]] KeyIter key_last,

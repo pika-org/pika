@@ -24,7 +24,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename ExPolicy>
     struct loop_step_t final
       : pika::functional::detail::tag_fallback<loop_step_t<ExPolicy>>
@@ -1185,7 +1185,7 @@ namespace pika::parallel::util::detail {
     }
 
     template <typename T, typename Iter, typename Reduce,
-        typename Conv = util::detail::projection_identity>
+        typename Conv = projection_identity>
     PIKA_FORCEINLINE T accumulate(
         Iter first, Iter last, Reduce&& r, Conv&& conv = Conv())
     {
@@ -1215,4 +1215,4 @@ namespace pika::parallel::util::detail {
         }
         return val;
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

@@ -34,25 +34,24 @@ namespace pika::parallel::detail {
     };
 
     template <typename Result1, typename Result2>
-    struct local_algorithm_result<util::detail::in_out_result<Result1, Result2>>
+    struct local_algorithm_result<in_out_result<Result1, Result2>>
     {
         using type1 = Result1;
         using type2 = Result2;
 
-        using type = util::detail::in_out_result<type1, type2>;
+        using type = in_out_result<type1, type2>;
     };
 
     template <typename Result>
-    struct local_algorithm_result<util::detail::min_max_result<Result>>
+    struct local_algorithm_result<min_max_result<Result>>
     {
-        using type = util::detail::min_max_result<Result>;
+        using type = min_max_result<Result>;
     };
 
     template <typename Result1, typename Result2, typename Result3>
-    struct local_algorithm_result<
-        util::detail::in_in_out_result<Result1, Result2, Result3>>
+    struct local_algorithm_result<in_in_out_result<Result1, Result2, Result3>>
     {
-        using type = util::detail::in_in_out_result<Result1, Result2, Result3>;
+        using type = in_in_out_result<Result1, Result2, Result3>;
     };
 
     template <>
@@ -86,8 +85,7 @@ namespace pika::parallel::detail {
         ///////////////////////////////////////////////////////////////////////
         // this equivalent to sequential execution
         template <typename ExPolicy, typename... Args>
-        PIKA_HOST_DEVICE pika::parallel::util::detail::algorithm_result_t<
-            ExPolicy, local_result_type>
+        PIKA_HOST_DEVICE algorithm_result_t<ExPolicy, local_result_type>
         operator()(ExPolicy&& policy, Args&&... args) const
         {
 #if !defined(__CUDA_ARCH__)
@@ -99,21 +97,18 @@ namespace pika::parallel::detail {
                 using executor_type =
                     typename std::decay_t<ExPolicy>::executor_type;
 
-                pika::parallel::util::detail::scoped_executor_parameters_ref<
-                    parameters_type, executor_type>
+                scoped_executor_parameters_ref<parameters_type, executor_type>
                     scoped_param(policy.parameters(), policy.executor());
 
-                return pika::parallel::util::detail::
-                    algorithm_result<ExPolicy, local_result_type>::get(
-                        Derived::sequential(PIKA_FORWARD(ExPolicy, policy),
-                            PIKA_FORWARD(Args, args)...));
+                return algorithm_result<ExPolicy, local_result_type>::get(
+                    Derived::sequential(PIKA_FORWARD(ExPolicy, policy),
+                        PIKA_FORWARD(Args, args)...));
 #if !defined(__CUDA_ARCH__)
             }
             catch (...)
             {
                 // this does not return
-                return pika::parallel::detail::handle_exception<ExPolicy,
-                    local_result_type>::call();
+                return handle_exception<ExPolicy, local_result_type>::call();
             }
 #endif
         }
@@ -123,13 +118,11 @@ namespace pika::parallel::detail {
         // main sequential dispatch entry points
 
         template <typename ExPolicy, typename... Args>
-        constexpr pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            local_result_type>
-        call2(ExPolicy&& policy, std::true_type, Args&&... args) const
+        constexpr algorithm_result_t<ExPolicy, local_result_type> call2(
+            ExPolicy&& policy, std::true_type, Args&&... args) const
         {
             using result_handler =
-                pika::parallel::util::detail::algorithm_result<ExPolicy,
-                    local_result_type>;
+                algorithm_result<ExPolicy, local_result_type>;
 
             auto exec = policy.executor();    // avoid move after use
             if constexpr (pika::is_async_execution_policy_v<
@@ -160,18 +153,18 @@ namespace pika::parallel::detail {
 
         // main parallel dispatch entry point
         template <typename ExPolicy, typename... Args>
-        PIKA_FORCEINLINE static constexpr pika::parallel::util::detail::
-            algorithm_result_t<ExPolicy, local_result_type>
-            call2(ExPolicy&& policy, std::false_type, Args&&... args)
+        PIKA_FORCEINLINE static constexpr algorithm_result_t<ExPolicy,
+            local_result_type>
+        call2(ExPolicy&& policy, std::false_type, Args&&... args)
         {
             return Derived::parallel(
                 PIKA_FORWARD(ExPolicy, policy), PIKA_FORWARD(Args, args)...);
         }
 
         template <typename ExPolicy, typename... Args>
-        PIKA_FORCEINLINE constexpr pika::parallel::util::detail::
-            algorithm_result_t<ExPolicy, local_result_type>
-            call(ExPolicy&& policy, Args&&... args) const
+        PIKA_FORCEINLINE constexpr algorithm_result_t<ExPolicy,
+            local_result_type>
+        call(ExPolicy&& policy, Args&&... args) const
         {
             using is_seq = pika::is_sequenced_execution_policy<ExPolicy>;
             return call2(PIKA_FORWARD(ExPolicy, policy), is_seq(),
@@ -181,31 +174,27 @@ namespace pika::parallel::detail {
 #if defined(PIKA_HAVE_CXX17_STD_EXECUTION_POLICIES)
         // main dispatch entry points for std execution policies
         template <typename... Args>
-        PIKA_FORCEINLINE constexpr pika::parallel::util::detail::
-            algorithm_result_t<pika::execution::sequenced_policy,
-                local_result_type>
-            call(std::execution::sequenced_policy, Args&&... args) const
+        PIKA_FORCEINLINE constexpr algorithm_result_t<
+            pika::execution::sequenced_policy, local_result_type>
+        call(std::execution::sequenced_policy, Args&&... args) const
         {
             return call2(pika::execution::seq, std::true_type(),
                 PIKA_FORWARD(Args, args)...);
         }
 
         template <typename... Args>
-        PIKA_FORCEINLINE constexpr pika::parallel::util::detail::
-            algorithm_result_t<pika::execution::parallel_policy,
-                local_result_type>
-            call(std::execution::parallel_policy, Args&&... args) const
+        PIKA_FORCEINLINE constexpr algorithm_result_t<
+            pika::execution::parallel_policy, local_result_type>
+        call(std::execution::parallel_policy, Args&&... args) const
         {
             return call2(pika::execution::par, std::false_type(),
                 PIKA_FORWARD(Args, args)...);
         }
 
         template <typename... Args>
-        PIKA_FORCEINLINE constexpr pika::parallel::util::detail::
-            algorithm_result_t<pika::execution::parallel_unsequenced_policy,
-                local_result_type>
-            call(std::execution::parallel_unsequenced_policy,
-                Args&&... args) const
+        PIKA_FORCEINLINE constexpr algorithm_result_t<
+            pika::execution::parallel_unsequenced_policy, local_result_type>
+        call(std::execution::parallel_unsequenced_policy, Args&&... args) const
         {
             return call2(pika::execution::par_unseq, std::false_type(),
                 PIKA_FORWARD(Args, args)...);
@@ -213,10 +202,9 @@ namespace pika::parallel::detail {
 
 #if defined(PIKA_HAVE_CXX20_STD_EXECUTION_POLICIES)
         template <typename... Args>
-        PIKA_FORCEINLINE constexpr pika::parallel::util::detail::
-            algorithm_result_t<pika::execution::unsequenced_policy,
-                local_result_type>
-            call(std::execution::unsequenced_policy, Args&&... args) const
+        PIKA_FORCEINLINE constexpr algorithm_result_t<
+            pika::execution::unsequenced_policy, local_result_type>
+        call(std::execution::unsequenced_policy, Args&&... args) const
         {
             return call2(pika::execution::unseq, std::false_type(),
                 PIKA_FORWARD(Args, args)...);

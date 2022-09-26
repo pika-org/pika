@@ -37,16 +37,13 @@ namespace pika::parallel::detail {
             traits::detail::vector_pack_size<V>::value;
 
         template <typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static typename std::enable_if_t<
-            pika::parallel::util::detail::iterator_datapar_compatible<
-                Iter>::value,
-            Iter>
-        call(Iter first, std::size_t count, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static
+            typename std::enable_if_t<iterator_datapar_compatible<Iter>::value,
+                Iter>
+            call(Iter first, std::size_t count, F&& f)
         {
             std::size_t len = count;
-            for (; !pika::parallel::util::detail::is_data_aligned(first) &&
-                 len != 0;
-                 --len)
+            for (; !is_data_aligned(first) && len != 0; --len)
             {
                 *first++ = f.template operator()<value_type>();
             }
@@ -68,11 +65,10 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static typename std::enable_if_t<
-            !pika::parallel::util::detail::iterator_datapar_compatible<
-                Iter>::value,
-            Iter>
-        call(Iter first, std::size_t count, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static
+            typename std::enable_if_t<!iterator_datapar_compatible<Iter>::value,
+                Iter>
+            call(Iter first, std::size_t count, F&& f)
         {
             while (count--)
             {

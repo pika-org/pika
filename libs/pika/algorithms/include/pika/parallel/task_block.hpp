@@ -445,7 +445,7 @@ namespace pika::parallel {
     ///       indirectly) call tr.run(_callable_object_).
     ///
     template <typename ExPolicy, typename F>
-    typename util::detail::algorithm_result<ExPolicy>::type
+    typename detail::algorithm_result<ExPolicy>::type
     define_task_block_restore_thread(ExPolicy&& policy, F&& f)
     {
         static_assert(pika::is_execution_policy<ExPolicy>::value,

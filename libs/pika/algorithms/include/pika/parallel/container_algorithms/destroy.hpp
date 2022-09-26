@@ -46,7 +46,7 @@ namespace pika { namespace ranges {
     ///           \a parallel_task_policy and returns \a void otherwise.
     ///
     template <typename ExPolicy>
-    typename util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename traits::range_iterator<Rng>::type>::type
     destroy(ExPolicy&& policy, Rng&& rng);
 
@@ -95,7 +95,7 @@ namespace pika { namespace ranges {
     ///           the last element constructed.
     ///
     template <typename ExPolicy, typename FwdIter, typename Size>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
     destroy_n(ExPolicy&& policy, FwdIter first, Size count);
 
     // clang-format on
@@ -139,7 +139,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename pika::traits::range_iterator<Rng>::type>::type
         tag_fallback_invoke(destroy_t, ExPolicy&& policy, Rng&& rng)
         {
@@ -150,7 +150,7 @@ namespace pika::ranges {
                 (pika::traits::is_forward_iterator<iterator_type>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::destroy<iterator_type>().call(
+            return pika::parallel::detail::destroy_algo<iterator_type>().call(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng));
         }
@@ -162,14 +162,14 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             Iter>::type
         tag_fallback_invoke(destroy_t, ExPolicy&& policy, Iter first, Sent last)
         {
             static_assert((pika::traits::is_forward_iterator<Iter>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::destroy<Iter>().call(
+            return pika::parallel::detail::destroy_algo<Iter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last);
         }
 
@@ -189,7 +189,7 @@ namespace pika::ranges {
                 (pika::traits::is_forward_iterator<iterator_type>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::destroy<iterator_type>().call(
+            return pika::parallel::detail::destroy_algo<iterator_type>().call(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng));
         }
@@ -205,7 +205,7 @@ namespace pika::ranges {
             static_assert((pika::traits::is_forward_iterator<Iter>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::detail::destroy<Iter>().call(
+            return pika::parallel::detail::destroy_algo<Iter>().call(
                 pika::execution::seq, first, last);
         }
     } destroy{};
@@ -223,7 +223,7 @@ namespace pika::ranges {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(
             destroy_n_t, ExPolicy&& policy, FwdIter first, Size count)
@@ -234,7 +234,7 @@ namespace pika::ranges {
             // if count is representing a negative value, we do nothing
             if (pika::parallel::detail::is_negative(count))
             {
-                return pika::parallel::util::detail::algorithm_result<ExPolicy,
+                return pika::parallel::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 

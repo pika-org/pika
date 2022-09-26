@@ -29,7 +29,7 @@
 
 using namespace pika::parallel::detail;
 using pika::execution::parallel_executor;
-using pika::parallel::util::detail::range;
+using pika::parallel::detail::range;
 
 struct xk
 {

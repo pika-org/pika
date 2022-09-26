@@ -92,8 +92,8 @@ namespace pika {
     ///           of the range.
     ///
     template <typename ExPolicy, typename FwdIter, typename T>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type remove(
-        ExPolicy&& policy, FwdIter first, FwdIter last, T const& value);
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+    remove(ExPolicy&& policy, FwdIter first, FwdIter last, T const& value);
 
     /// Removes all elements satisfying specific criteria from the range
     /// [first, last) and returns a past-the-end iterator for the new
@@ -201,8 +201,8 @@ namespace pika {
     ///           of the range.
     ///
     template <typename ExPolicy, typename FwdIter, typename Pred>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type remove_if(
-        ExPolicy&& policy, FwdIter first, FwdIter last, Pred&& pred);
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+    remove_if(ExPolicy&& policy, FwdIter first, FwdIter last, Pred&& pred);
 
 }    // namespace pika
 
@@ -261,7 +261,7 @@ namespace pika::parallel::detail {
     }
 
     template <typename FwdIter>
-    struct remove_if : public detail::algorithm<remove_if<FwdIter>, FwdIter>
+    struct remove_if : public algorithm<remove_if<FwdIter>, FwdIter>
     {
         remove_if()
           : remove_if::algorithm("remove_if")
@@ -279,13 +279,11 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Pred, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-        parallel(
+        static typename algorithm_result<ExPolicy, Iter>::type parallel(
             ExPolicy&& policy, Iter first, Sent last, Pred&& pred, Proj&& proj)
         {
             using zip_iterator = pika::util::zip_iterator<Iter, bool*>;
-            using algorithm_result =
-                util::detail::algorithm_result<ExPolicy, Iter>;
+            using algorithm_result = algorithm_result<ExPolicy, Iter>;
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
 
@@ -299,9 +297,8 @@ namespace pika::parallel::detail {
 
             using pika::util::make_zip_iterator;
             using std::get;
-            using scan_partitioner_type =
-                util::detail::scan_partitioner<ExPolicy, Iter, std::size_t,
-                    void, util::detail::scan_partitioner_sequential_f3_tag>;
+            using scan_partitioner_type = scan_partitioner<ExPolicy, Iter,
+                std::size_t, void, scan_partitioner_sequential_f3_tag>;
 
             // Note: replacing the invoke() with PIKA_INVOKE()
             // below makes gcc generate errors
@@ -310,8 +307,8 @@ namespace pika::parallel::detail {
                           zip_iterator part_begin,
                           std::size_t part_size) -> std::size_t {
                 // MSVC complains if pred or proj is captured by ref below
-                util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin,
-                    part_size, [pred, proj](zip_iterator it) mutable {
+                loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
+                    [pred, proj](zip_iterator it) mutable {
                         bool f = pika::util::detail::invoke(pred,
                             pika::util::detail::invoke(proj, get<0>(*it)));
 
@@ -350,7 +347,7 @@ namespace pika::parallel::detail {
                 if (dest == get<0>(part_begin.get_iterator_tuple()))
                 {
                     // Self-assignment must be detected.
-                    util::detail::loop_n<execution_policy_type>(
+                    loop_n<execution_policy_type>(
                         part_begin, part_size, [&dest](zip_iterator it) {
                             if (!get<1>(*it))
                             {
@@ -364,7 +361,7 @@ namespace pika::parallel::detail {
                 else
                 {
                     // Self-assignment can't be performed.
-                    util::detail::loop_n<execution_policy_type>(
+                    loop_n<execution_policy_type>(
                         part_begin, part_size, [&dest](zip_iterator it) {
                             if (!get<1>(*it))
                                 *dest++ = PIKA_MOVE(get<0>(*it));
@@ -426,7 +423,7 @@ namespace pika {
             return pika::parallel::detail::remove_if<FwdIter>().call(
                 pika::execution::sequenced_policy{}, first, last,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::detail::projection_identity());
+                pika::parallel::detail::projection_identity());
         }
 
         // clang-format off
@@ -439,10 +436,10 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            FwdIter>::type
-        tag_fallback_invoke(pika::remove_if_t, ExPolicy&& policy, FwdIter first,
-            FwdIter last, Pred&& pred)
+        friend
+            typename parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+            tag_fallback_invoke(pika::remove_if_t, ExPolicy&& policy,
+                FwdIter first, FwdIter last, Pred&& pred)
         {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
@@ -450,7 +447,7 @@ namespace pika {
             return pika::parallel::detail::remove_if<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::detail::projection_identity());
+                pika::parallel::detail::projection_identity());
         }
 
     } remove_if{};
@@ -485,10 +482,10 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            FwdIter>::type
-        tag_fallback_invoke(pika::remove_t, ExPolicy&& policy, FwdIter first,
-            FwdIter last, T const& value)
+        friend
+            typename parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+            tag_fallback_invoke(pika::remove_t, ExPolicy&& policy,
+                FwdIter first, FwdIter last, T const& value)
         {
             using Type = typename std::iterator_traits<FwdIter>::value_type;
 

@@ -98,8 +98,8 @@ namespace pika {
     ///           copied.
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename FwdIter3, typename Pred = detail::less>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter3>::type>::type
+        typename FwdIter3, typename Pred = pika::parallel::detail::less>
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter3>::type>::type
     set_union(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
         FwdIter2 first2, FwdIter2 last2, FwdIter3 dest, Pred&& op = Pred());
 
@@ -133,15 +133,15 @@ namespace pika::parallel::detail {
     // set_union
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename Iter3, typename Comp, typename Proj1, typename Proj2>
-    constexpr util::detail::in_in_out_result<Iter1, Iter2, Iter3>
-    sequential_set_union(Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-        Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    constexpr in_in_out_result<Iter1, Iter2, Iter3> sequential_set_union(
+        Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, Iter3 dest,
+        Comp&& comp, Proj1&& proj1, Proj2&& proj2)
     {
         for (; first1 != last1; ++dest)
         {
             if (first2 == last2)
             {
-                auto result = util::detail::copy(first1, last1, dest);
+                auto result = (copy) (first1, last1, dest);
                 return {result.in, first2, result.out};
             }
 
@@ -163,13 +163,13 @@ namespace pika::parallel::detail {
             }
         }
 
-        auto result = util::detail::copy(first2, last2, dest);
+        auto result = (copy) (first2, last2, dest);
         return {first1, result.in, result.out};
     }
 
     ///////////////////////////////////////////////////////////////////////
     template <typename Result>
-    struct set_union : public detail::algorithm<set_union<Result>, Result>
+    struct set_union : public algorithm<set_union<Result>, Result>
     {
         set_union()
           : set_union::algorithm("set_union")
@@ -179,9 +179,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3, typename F,
             typename Proj1, typename Proj2>
-        static util::detail::in_in_out_result<Iter1, Iter2, Iter3> sequential(
-            ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-            Iter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2)
+        static in_in_out_result<Iter1, Iter2, Iter3> sequential(ExPolicy,
+            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, Iter3 dest,
+            F&& f, Proj1&& proj1, Proj2&& proj2)
         {
             return sequential_set_union(first1, last1, first2, last2, dest,
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
@@ -191,8 +191,8 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3, typename F,
             typename Proj1, typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy,
-            util::detail::in_in_out_result<Iter1, Iter2, Iter3>>::type
+        static typename algorithm_result<ExPolicy,
+            in_in_out_result<Iter1, Iter2, Iter3>>::type
         parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
             Sent2 last2, Iter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
@@ -201,29 +201,26 @@ namespace pika::parallel::detail {
             using difference_type2 =
                 typename std::iterator_traits<Iter2>::difference_type;
 
-            using result_type =
-                util::detail::in_in_out_result<Iter1, Iter2, Iter3>;
+            using result_type = in_in_out_result<Iter1, Iter2, Iter3>;
 
             if (first1 == last1)
             {
-                return util::detail::convert_to_result(
-                    detail::copy<util::detail::in_out_result<Iter2, Iter3>>()
-                        .call(PIKA_FORWARD(ExPolicy, policy), first2, last2,
-                            dest),
-                    [first1](util::detail::in_out_result<Iter2, Iter3> const& p)
-                        -> result_type {
+                return convert_to_result(
+                    copy_algo<in_out_result<Iter2, Iter3>>().call(
+                        PIKA_FORWARD(ExPolicy, policy), first2, last2, dest),
+                    [first1](
+                        in_out_result<Iter2, Iter3> const& p) -> result_type {
                         return {first1, p.in, p.out};
                     });
             }
 
             if (first2 == last2)
             {
-                return util::detail::convert_to_result(
-                    detail::copy<util::detail::in_out_result<Iter1, Iter3>>()
-                        .call(PIKA_FORWARD(ExPolicy, policy), first1, last1,
-                            dest),
-                    [first2](util::detail::in_out_result<Iter1, Iter3> const& p)
-                        -> result_type {
+                return convert_to_result(
+                    copy_algo<in_out_result<Iter1, Iter3>>().call(
+                        PIKA_FORWARD(ExPolicy, policy), first1, last1, dest),
+                    [first2](
+                        in_out_result<Iter1, Iter3> const& p) -> result_type {
                         return {p.in, first2, p.out};
                     });
             }
@@ -274,7 +271,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter3>::type
         tag_fallback_invoke(set_union_t, ExPolicy&& policy, FwdIter1 first1,
             FwdIter1 last1, FwdIter2 first2, FwdIter2 last2, FwdIter3 dest,
@@ -295,15 +292,15 @@ namespace pika {
                     !pika::traits::is_random_access_iterator<FwdIter2>::value>;
 
             using result_type =
-                pika::parallel::util::detail::in_in_out_result<FwdIter1,
-                    FwdIter2, FwdIter3>;
+                pika::parallel::detail::in_in_out_result<FwdIter1, FwdIter2,
+                    FwdIter3>;
 
-            return pika::parallel::util::detail::get_third_element(
+            return pika::parallel::detail::get_third_element(
                 pika::parallel::detail::set_union<result_type>().call2(
                     PIKA_FORWARD(ExPolicy, policy), is_seq(), first1, last1,
                     first2, last2, dest, PIKA_FORWARD(Pred, op),
-                    pika::parallel::util::detail::projection_identity(),
-                    pika::parallel::util::detail::projection_identity()));
+                    pika::parallel::detail::projection_identity(),
+                    pika::parallel::detail::projection_identity()));
         }
 
         // clang-format off
@@ -331,15 +328,15 @@ namespace pika {
                 "Requires at least output iterator.");
 
             using result_type =
-                pika::parallel::util::detail::in_in_out_result<FwdIter1,
-                    FwdIter3, FwdIter3>;
+                pika::parallel::detail::in_in_out_result<FwdIter1, FwdIter3,
+                    FwdIter3>;
 
-            return pika::parallel::util::detail::get_third_element(
+            return pika::parallel::detail::get_third_element(
                 pika::parallel::detail::set_union<result_type>().call(
                     pika::execution::seq, first1, last1, first2, last2, dest,
                     PIKA_FORWARD(Pred, op),
-                    pika::parallel::util::detail::projection_identity(),
-                    pika::parallel::util::detail::projection_identity()));
+                    pika::parallel::detail::projection_identity(),
+                    pika::parallel::detail::projection_identity()));
         }
     } set_union{};
 }    // namespace pika

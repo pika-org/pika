@@ -56,7 +56,7 @@ namespace pika {
     ///           and returns \a void otherwise.
     ///
     template <typename ExPolicy, typename RndIter, typename Comp>
-    typename util::detail::algorithm_result<ExPolicy>::type make_heap(
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type make_heap(
         ExPolicy&& policy, RndIter first, RndIter last, Comp&& comp);
 
     /// Constructs a \a max \a heap in the range [first, last). Uses the
@@ -92,7 +92,7 @@ namespace pika {
     ///           and returns \a void otherwise.
     ///
     template <typename ExPolicy, typename RndIter>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
     make_heap(ExPolicy&& policy, RndIter first, RndIter last);
 
     // clang-format on
@@ -224,7 +224,7 @@ namespace pika::parallel::detail {
 
     //////////////////////////////////////////////////////////////////////
     template <typename Iter>
-    struct make_heap : public detail::algorithm<make_heap<Iter>, Iter>
+    struct make_heap : public algorithm<make_heap<Iter>, Iter>
     {
         make_heap()
           : make_heap::algorithm("make_heap")
@@ -242,7 +242,7 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename RndIter, typename Sent,
             typename Comp, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, RndIter>::type
+        static typename algorithm_result<ExPolicy, RndIter>::type
         make_heap_thread(ExPolicy&& policy, RndIter first, Sent last,
             Comp&& comp, Proj&& proj)
         {
@@ -250,7 +250,7 @@ namespace pika::parallel::detail {
                 last - first;
             if (n <= 1)
             {
-                return util::detail::algorithm_result<ExPolicy, RndIter>::get(
+                return algorithm_result<ExPolicy, RndIter>::get(
                     PIKA_MOVE(first));
             }
 
@@ -260,8 +260,7 @@ namespace pika::parallel::detail {
             using executor_type = typename execution_policy::executor_type;
 
             using scoped_executor_parameters =
-                util::detail::scoped_executor_parameters_ref<parameters_type,
-                    executor_type>;
+                scoped_executor_parameters_ref<parameters_type, executor_type>;
 
             scoped_executor_parameters scoped_params(
                 policy.parameters(), policy.executor());
@@ -293,8 +292,7 @@ namespace pika::parallel::detail {
             std::size_t max_chunks = execution::maximal_number_of_chunks(
                 policy.parameters(), policy.executor(), cores, n);
 
-            util::detail::adjust_chunk_size_and_max_chunks(
-                cores, n, chunk_size, max_chunks);
+            adjust_chunk_size_and_max_chunks(cores, n, chunk_size, max_chunks);
 
             try
             {
@@ -343,7 +341,7 @@ namespace pika::parallel::detail {
                         pika::wait_all_nothrow(workitems);
 
                         // collect exceptions
-                        util::detail::handle_local_exceptions<ExPolicy>::call(
+                        handle_local_exceptions<ExPolicy>::call(
                             workitems, errors, false);
                         workitems.clear();
                     }
@@ -362,23 +360,21 @@ namespace pika::parallel::detail {
             }
             catch (...)
             {
-                util::detail::handle_local_exceptions<ExPolicy>::call(
+                handle_local_exceptions<ExPolicy>::call(
                     std::current_exception(), errors);
             }
 
             // rethrow exceptions, if any
-            util::detail::handle_local_exceptions<ExPolicy>::call(
-                workitems, errors);
+            handle_local_exceptions<ExPolicy>::call(workitems, errors);
 
             std::advance(first, n);
-            return util::detail::algorithm_result<ExPolicy, RndIter>::get(
-                PIKA_MOVE(first));
+            return algorithm_result<ExPolicy, RndIter>::get(PIKA_MOVE(first));
         }
 
         template <typename ExPolicy, typename RndIter, typename Sent,
             typename Comp, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, RndIter>::type
-        parallel(ExPolicy&& policy, RndIter first, Sent last, Comp&& comp,
+        static typename algorithm_result<ExPolicy, RndIter>::type parallel(
+            ExPolicy&& policy, RndIter first, Sent last, Comp&& comp,
             Proj&& proj)
         {
             return make_heap_thread(PIKA_FORWARD(ExPolicy, policy), first, last,
@@ -386,8 +382,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename RndIter, typename Sent, typename Comp, typename Proj>
-        static typename util::detail::algorithm_result<
-            pika::execution::parallel_task_policy, RndIter>::type
+        static typename algorithm_result<pika::execution::parallel_task_policy,
+            RndIter>::type
         parallel(pika::execution::parallel_task_policy policy, RndIter first,
             Sent last, Comp&& comp, Proj&& proj)
         {
@@ -419,8 +415,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<
-            ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(make_heap_t, ExPolicy&& policy, RndIter first,
             RndIter last, Comp&& comp)
         {
@@ -428,11 +423,11 @@ namespace pika {
                 pika::traits::is_random_access_iterator<RndIter>::value,
                 "Requires random access iterator.");
 
-            return pika::parallel::util::detail::algorithm_result<ExPolicy>::
-                get(pika::parallel::detail::make_heap<RndIter>().call(
+            return pika::parallel::detail::algorithm_result<ExPolicy>::get(
+                pika::parallel::detail::make_heap<RndIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     PIKA_FORWARD(Comp, comp),
-                    pika::parallel::util::detail::projection_identity{}));
+                    pika::parallel::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -442,8 +437,7 @@ namespace pika {
                 pika::traits::is_iterator<RndIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<
-            ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(
             make_heap_t, ExPolicy&& policy, RndIter first, RndIter last)
         {
@@ -454,11 +448,11 @@ namespace pika {
             using value_type =
                 typename std::iterator_traits<RndIter>::value_type;
 
-            return pika::parallel::util::detail::algorithm_result<ExPolicy>::
-                get(pika::parallel::detail::make_heap<RndIter>().call(
+            return pika::parallel::detail::algorithm_result<ExPolicy>::get(
+                pika::parallel::detail::make_heap<RndIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last,
                     std::less<value_type>(),
-                    pika::parallel::util::detail::projection_identity{}));
+                    pika::parallel::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -480,7 +474,7 @@ namespace pika {
 
             pika::parallel::detail::make_heap<RndIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -501,7 +495,7 @@ namespace pika {
 
             pika::parallel::detail::make_heap<RndIter>().call(
                 pika::execution::seq, first, last, std::less<value_type>(),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
     } make_heap{};
 }    // namespace pika

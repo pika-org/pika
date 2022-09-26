@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     /// \struct range
     /// \brief this represent a range between two iterators
     /// \tparam Iter type of parameters of the range
@@ -314,11 +314,11 @@ namespace pika::parallel::util::detail {
 
         if (rbx.begin() == rbx.end())
         {
-            util::detail::init_move(rbuf, rng2);
+            detail::init_move(rbuf, rng2);
         }
         else
         {
-            util::detail::half_merge(rbuf, rx2, rbx, cmp);
+            detail::half_merge(rbuf, rx2, rbx, cmp);
         }
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

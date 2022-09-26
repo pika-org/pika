@@ -45,8 +45,8 @@ namespace pika::parallel::detail {
     struct sample_sort_helper
     {
         using value_type = typename std::iterator_traits<Iter>::value_type;
-        using range_it = util::detail::range<Iter, Sent>;
-        using range_buf = util::detail::range<value_type*>;
+        using range_it = range<Iter, Sent>;
+        using range_buf = range<value_type*>;
 
         std::uint32_t nthreads;
         std::uint32_t nintervals;
@@ -87,8 +87,8 @@ namespace pika::parallel::detail {
             std::uint32_t job = 0;
             while ((job = njob++) < nintervals)
             {
-                parallel::util::detail::uninit_merge_level4(vrange_buf_ini[job],
-                    vv_range_it[job], vv_range_buf[job], comp);
+                uninit_merge_level4(vrange_buf_ini[job], vv_range_it[job],
+                    vv_range_buf[job], comp);
             }
         }
 
@@ -98,9 +98,8 @@ namespace pika::parallel::detail {
             std::uint32_t job = 0;
             while ((job = njob++) < nintervals)
             {
-                parallel::util::detail::merge_vector4(vrange_buf_ini[job],
-                    vrange_it_ini[job], vv_range_buf[job], vv_range_it[job],
-                    comp);
+                merge_vector4(vrange_buf_ini[job], vrange_it_ini[job],
+                    vv_range_buf[job], vv_range_it[job], comp);
             }
         }
 
@@ -225,7 +224,7 @@ namespace pika::parallel::detail {
     {
         if (construct)
         {
-            parallel::util::detail::destroy_range(global_buf);
+            destroy_range(global_buf);
             construct = false;
         }
 
@@ -326,8 +325,7 @@ namespace pika::parallel::detail {
         }
 
         // Creation of the first vector of ranges
-        std::vector<std::vector<util::detail::range<Iter>>> vv_range_first(
-            nthreads);
+        std::vector<std::vector<range<Iter>>> vv_range_first(nthreads);
 
         for (std::uint32_t i = 0; i < nthreads; ++i)
         {
@@ -408,7 +406,7 @@ namespace pika::parallel::detail {
     template <typename Exec, typename Iter, typename Sent, typename Compare>
     void sample_sort(Exec&& exec, Iter first, Sent last, Compare&& comp,
         std::uint32_t num_threads,
-        util::detail::range<typename std::iterator_traits<Iter>::value_type*>
+        range<typename std::iterator_traits<Iter>::value_type*>
             range_buf_initial,
         std::size_t chunk_size = 0)
     {

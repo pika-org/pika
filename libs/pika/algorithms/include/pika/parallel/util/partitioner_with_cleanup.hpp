@@ -33,7 +33,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////
     // The static partitioner with cleanup spawns several chunks of
     // iterations for each available core. The number of iterations is
@@ -193,4 +193,4 @@ namespace pika::parallel::util::detail {
             task_static_partitioner_with_cleanup>::template apply<R, Result>
     {
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename ExPolicy>
     struct handle_local_exceptions
     {
@@ -389,4 +389,4 @@ namespace pika::parallel::util::detail {
 #endif
         }
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

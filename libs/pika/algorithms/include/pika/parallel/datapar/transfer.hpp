@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename Iterator>
     struct datapar_copy_n
     {
@@ -36,7 +36,7 @@ namespace pika::parallel::util::detail {
             auto ret = transform_loop_n_ind<pika::execution::simd_policy>(
                 first, count, dest, [](auto& v) { return v; });
 
-            return util::detail::in_out_result<InIter, OutIter>{
+            return in_out_result<InIter, OutIter>{
                 PIKA_MOVE(ret.first), PIKA_MOVE(ret.second)};
         }
 
@@ -48,7 +48,7 @@ namespace pika::parallel::util::detail {
             in_out_result<InIter, OutIter>>::type
         call(InIter first, std::size_t count, OutIter dest)
         {
-            return util::detail::copy_n<pika::execution::sequenced_policy>(
+            return copy_n<pika::execution::sequenced_policy>(
                 first, count, dest);
         }
     };
@@ -57,10 +57,10 @@ namespace pika::parallel::util::detail {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
         in_out_result<InIter, OutIter>>::type
-    tag_invoke(pika::parallel::util::detail::copy_n_t<ExPolicy>, InIter first,
-        std::size_t count, OutIter dest)
+    tag_invoke(
+        copy_n_t<ExPolicy>, InIter first, std::size_t count, OutIter dest)
     {
         return datapar_copy_n<InIter>::call(first, count, dest);
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail
 #endif

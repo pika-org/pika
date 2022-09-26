@@ -226,7 +226,7 @@ namespace pika::parallel::detail {
     }
 
     template <typename Iter>
-    struct nth_element : public detail::algorithm<nth_element<Iter>, Iter>
+    struct nth_element : public algorithm<nth_element<Iter>, Iter>
     {
         nth_element()
           : nth_element::algorithm("nth_element")
@@ -262,7 +262,7 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename RandomIt, typename Sent,
             typename Pred, typename Proj>
-        static util::detail::algorithm_result_t<ExPolicy, RandomIt> parallel(
+        static algorithm_result_t<ExPolicy, RandomIt> parallel(
             ExPolicy&& policy, RandomIt first, RandomIt nth, Sent last,
             Pred&& pred, Proj&& proj)
         {
@@ -278,13 +278,13 @@ namespace pika::parallel::detail {
 
             if (first == last)
             {
-                return util::detail::algorithm_result<ExPolicy, RandomIt>::get(
+                return algorithm_result<ExPolicy, RandomIt>::get(
                     PIKA_MOVE(first));
             }
 
             if (nth == last)
             {
-                return util::detail::algorithm_result<ExPolicy, RandomIt>::get(
+                return algorithm_result<ExPolicy, RandomIt>::get(
                     PIKA_MOVE(nth));
             }
 
@@ -298,7 +298,7 @@ namespace pika::parallel::detail {
                     detail::pivot9(first, last_iter, pred);
 
                     partitionIter =
-                        pika::parallel::detail::partition<RandomIt>().call(
+                        pika::parallel::detail::partition_algo<RandomIt>().call(
                             policy(pika::execution::non_task), first + 1,
                             last_iter,
                             [val = PIKA_INVOKE(proj, *first), &pred](
@@ -336,12 +336,12 @@ namespace pika::parallel::detail {
             }
             catch (...)
             {
-                return util::detail::algorithm_result<ExPolicy, RandomIt>::get(
+                return algorithm_result<ExPolicy, RandomIt>::get(
                     detail::handle_exception<ExPolicy, RandomIt>::call(
                         std::current_exception()));
             }
 
-            return util::detail::algorithm_result<ExPolicy, RandomIt>::get(
+            return algorithm_result<ExPolicy, RandomIt>::get(
                 PIKA_MOVE(return_last));
         }
     };
@@ -374,7 +374,7 @@ namespace pika {
             pika::parallel::detail::nth_element<RandomIt>().call(
                 pika::execution::seq, first, nth, last,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -389,7 +389,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend parallel::util::detail::algorithm_result_t<ExPolicy>
+        friend parallel::detail::algorithm_result_t<ExPolicy>
         tag_fallback_invoke(pika::nth_element_t, ExPolicy&& policy,
             RandomIt first, RandomIt nth, RandomIt last, Pred&& pred = Pred())
         {
@@ -397,13 +397,13 @@ namespace pika {
                 "Requires at least random iterator.");
 
             using result_type =
-                pika::parallel::util::detail::algorithm_result_t<ExPolicy>;
+                pika::parallel::detail::algorithm_result_t<ExPolicy>;
 
             return pika::detail::void_guard<result_type>(),
                    pika::parallel::detail::nth_element<RandomIt>().call(
                        PIKA_FORWARD(ExPolicy, policy), first, nth, last,
                        PIKA_FORWARD(Pred, pred),
-                       pika::parallel::util::detail::projection_identity{});
+                       pika::parallel::detail::projection_identity{});
         }
     } nth_element{};
 }    // namespace pika

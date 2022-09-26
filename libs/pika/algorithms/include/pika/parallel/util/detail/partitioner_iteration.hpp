@@ -14,7 +14,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     // Hand-crafted function object allowing to replace a more complex
     // bind(functional::invoke_fused(), f1, _1)
     template <typename Result, typename F>
@@ -29,7 +29,7 @@ namespace pika::parallel::util::detail {
                 f_, PIKA_FORWARD(T, t));
         }
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail
 
 #if defined(PIKA_HAVE_THREAD_DESCRIPTION)
 #include <pika/functional/traits/get_function_address.hpp>
@@ -38,10 +38,10 @@ namespace pika::parallel::util::detail {
 namespace pika::detail {
     template <typename Result, typename F>
     struct get_function_address<
-        parallel::util::detail::partitioner_iteration<Result, F>>
+        parallel::detail::partitioner_iteration<Result, F>>
     {
         static constexpr std::size_t call(
-            parallel::util::detail::partitioner_iteration<Result, F> const&
+            parallel::detail::partitioner_iteration<Result, F> const&
                 f) noexcept
         {
             return get_function_address<std::decay_t<F>>::call(f.f_);
@@ -50,10 +50,10 @@ namespace pika::detail {
 
     template <typename Result, typename F>
     struct get_function_annotation<
-        parallel::util::detail::partitioner_iteration<Result, F>>
+        parallel::detail::partitioner_iteration<Result, F>>
     {
         static constexpr char const* call(
-            parallel::util::detail::partitioner_iteration<Result, F> const&
+            parallel::detail::partitioner_iteration<Result, F> const&
                 f) noexcept
         {
             return get_function_annotation<std::decay_t<F>>::call(f.f_);
@@ -63,10 +63,10 @@ namespace pika::detail {
 #if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
     template <typename Result, typename F>
     struct get_function_annotation_itt<
-        parallel::util::detail::partitioner_iteration<Result, F>>
+        parallel::detail::partitioner_iteration<Result, F>>
     {
         static util::itt::string_handle call(
-            parallel::util::detail::partitioner_iteration<Result, F> const&
+            parallel::detail::partitioner_iteration<Result, F> const&
                 f) noexcept
         {
             return get_function_annotation_itt<std::decay_t<F>>::call(f.f_);

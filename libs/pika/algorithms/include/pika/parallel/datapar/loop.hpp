@@ -27,7 +27,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename ExPolicy, typename Vector>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
@@ -728,6 +728,6 @@ namespace pika::parallel::util::detail {
         return datapar_loop_idx_n_impl<Iter>::call(
             base_idx, it, count, tok, PIKA_FORWARD(F, f));
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail
 
 #endif

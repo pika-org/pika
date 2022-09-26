@@ -13,7 +13,7 @@
 #include <functional>
 #include <vector>
 
-using namespace pika::parallel::util::detail;
+using namespace pika::parallel::detail;
 
 // template <typename Iter, typename Sent>
 // std::ostream& operator<<(std::ostream& out, range<Iter, Sent> R)

@@ -27,7 +27,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename Iterator>
     struct datapar_transform_loop_n
     {
@@ -78,8 +78,7 @@ namespace pika::parallel::util::detail {
             std::pair<InIter, OutIter>>::type
         call(InIter first, std::size_t count, OutIter dest, F&& f)
         {
-            return util::detail::transform_loop_n<
-                pika::execution::sequenced_policy>(
+            return transform_loop_n<pika::execution::sequenced_policy>(
                 first, count, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -88,8 +87,8 @@ namespace pika::parallel::util::detail {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
         std::pair<Iter, OutIter>>::type
-    tag_invoke(pika::parallel::util::detail::transform_loop_n_t<ExPolicy>,
-        Iter it, std::size_t count, OutIter dest, F&& f)
+    tag_invoke(transform_loop_n_t<ExPolicy>, Iter it, std::size_t count,
+        OutIter dest, F&& f)
     {
         return datapar_transform_loop_n<Iter>::call(
             it, count, dest, PIKA_FORWARD(F, f));
@@ -154,8 +153,8 @@ namespace pika::parallel::util::detail {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
         std::pair<Iter, OutIter>>::type
-    tag_invoke(pika::parallel::util::detail::transform_loop_n_ind_t<ExPolicy>,
-        Iter it, std::size_t count, OutIter dest, F&& f)
+    tag_invoke(transform_loop_n_ind_t<ExPolicy>, Iter it, std::size_t count,
+        OutIter dest, F&& f)
     {
         return datapar_transform_loop_n_ind<Iter>::call(
             it, count, dest, PIKA_FORWARD(F, f));
@@ -181,7 +180,7 @@ namespace pika::parallel::util::detail {
             std::pair<InIter, OutIter>>::type
         call(InIter first, InIter last, OutIter dest, F&& f)
         {
-            return util::detail::transform_loop_n<pika::execution::simd_policy>(
+            return transform_loop_n<pika::execution::simd_policy>(
                 first, std::distance(first, last), dest, PIKA_FORWARD(F, f));
         }
 
@@ -193,36 +192,32 @@ namespace pika::parallel::util::detail {
             std::pair<InIter, OutIter>>::type
         call(InIter first, InIter last, OutIter dest, F&& f)
         {
-            return util::detail::transform_loop(
+            return transform_loop(
                 pika::execution::seq, first, last, dest, PIKA_FORWARD(F, f));
         }
     };
 
     template <typename IterB, typename IterE, typename OutIter, typename F>
-    PIKA_HOST_DEVICE
-        PIKA_FORCEINLINE constexpr util::detail::in_out_result<IterB, OutIter>
-        tag_invoke(pika::parallel::util::detail::transform_loop_t,
-            pika::execution::simd_policy, IterB it, IterE end, OutIter dest,
-            F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_out_result<IterB, OutIter>
+    tag_invoke(transform_loop_t, pika::execution::simd_policy, IterB it,
+        IterE end, OutIter dest, F&& f)
     {
         auto ret = datapar_transform_loop<IterB>::call(
             it, end, dest, PIKA_FORWARD(F, f));
 
-        return util::detail::in_out_result<IterB, OutIter>{
+        return in_out_result<IterB, OutIter>{
             PIKA_MOVE(ret.first), PIKA_MOVE(ret.second)};
     }
 
     template <typename IterB, typename IterE, typename OutIter, typename F>
-    PIKA_HOST_DEVICE
-        PIKA_FORCEINLINE constexpr util::detail::in_out_result<IterB, OutIter>
-        tag_invoke(pika::parallel::util::detail::transform_loop_t,
-            pika::execution::simd_task_policy, IterB it, IterE end,
-            OutIter dest, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_out_result<IterB, OutIter>
+    tag_invoke(transform_loop_t, pika::execution::simd_task_policy, IterB it,
+        IterE end, OutIter dest, F&& f)
     {
         auto ret = datapar_transform_loop<IterB>::call(
             it, end, dest, PIKA_FORWARD(F, f));
 
-        return util::detail::in_out_result<IterB, OutIter>{
+        return in_out_result<IterB, OutIter>{
             PIKA_MOVE(ret.first), PIKA_MOVE(ret.second)};
     }
 
@@ -258,7 +253,7 @@ namespace pika::parallel::util::detail {
             std::pair<InIter, OutIter>>::type
         call(InIter first, InIter last, OutIter dest, F&& f)
         {
-            auto ret = util::detail::transform_loop_ind(
+            auto ret = transform_loop_ind(
                 pika::execution::seq, first, last, dest, PIKA_FORWARD(F, f));
             return std::pair<InIter, OutIter>{
                 PIKA_MOVE(ret.in), PIKA_MOVE(ret.out)};
@@ -266,30 +261,26 @@ namespace pika::parallel::util::detail {
     };
 
     template <typename IterB, typename IterE, typename OutIter, typename F>
-    PIKA_HOST_DEVICE
-        PIKA_FORCEINLINE constexpr util::detail::in_out_result<IterB, OutIter>
-        tag_invoke(pika::parallel::util::detail::transform_loop_ind_t,
-            pika::execution::simd_policy, IterB it, IterE end, OutIter dest,
-            F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_out_result<IterB, OutIter>
+    tag_invoke(transform_loop_ind_t, pika::execution::simd_policy, IterB it,
+        IterE end, OutIter dest, F&& f)
     {
         auto ret = datapar_transform_loop_ind<IterB>::call(
             it, end, dest, PIKA_FORWARD(F, f));
 
-        return util::detail::in_out_result<IterB, OutIter>{
+        return in_out_result<IterB, OutIter>{
             PIKA_MOVE(ret.first), PIKA_MOVE(ret.second)};
     }
 
     template <typename IterB, typename IterE, typename OutIter, typename F>
-    PIKA_HOST_DEVICE
-        PIKA_FORCEINLINE constexpr util::detail::in_out_result<IterB, OutIter>
-        tag_invoke(pika::parallel::util::detail::transform_loop_ind_t,
-            pika::execution::simd_task_policy, IterB it, IterE end,
-            OutIter dest, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_out_result<IterB, OutIter>
+    tag_invoke(transform_loop_ind_t, pika::execution::simd_task_policy,
+        IterB it, IterE end, OutIter dest, F&& f)
     {
         auto ret = datapar_transform_loop_ind<IterB>::call(
             it, end, dest, PIKA_FORWARD(F, f));
 
-        return util::detail::in_out_result<IterB, OutIter>{
+        return in_out_result<IterB, OutIter>{
             PIKA_MOVE(ret.first), PIKA_MOVE(ret.second)};
     }
 
@@ -355,8 +346,7 @@ namespace pika::parallel::util::detail {
         call(InIter1 first1, std::size_t count, InIter2 first2, OutIter dest,
             F&& f)
         {
-            return util::detail::transform_binary_loop_n<
-                pika::execution::sequenced_policy>(
+            return transform_binary_loop_n<pika::execution::sequenced_policy>(
                 first1, count, first2, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -366,9 +356,8 @@ namespace pika::parallel::util::detail {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
         std::tuple<InIter1, InIter2, OutIter>>::type
-    tag_invoke(
-        pika::parallel::util::detail::transform_binary_loop_n_t<ExPolicy>,
-        InIter1 first1, std::size_t count, InIter2 first2, OutIter dest, F&& f)
+    tag_invoke(transform_binary_loop_n_t<ExPolicy>, InIter1 first1,
+        std::size_t count, InIter2 first2, OutIter dest, F&& f)
     {
         return datapar_transform_binary_loop_n<InIter1, InIter2>::call(
             first1, count, first2, dest, PIKA_FORWARD(F, f));
@@ -402,14 +391,15 @@ namespace pika::parallel::util::detail {
                 iterator_datapar_compatible<InIter1>::value &&
                 iterator_datapar_compatible<InIter2>::value &&
                 iterator_datapar_compatible<OutIter>::value,
-            util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
+            in_in_out_result<InIter1, InIter2, OutIter>>::type
         call(InIter1 first1, InIter1 last1, InIter2 first2, OutIter dest, F&& f)
         {
-            auto ret = util::detail::transform_binary_loop_n<
-                pika::execution::par_simd_policy>(first1,
-                std::distance(first1, last1), first2, dest, PIKA_FORWARD(F, f));
+            auto ret =
+                transform_binary_loop_n<pika::execution::par_simd_policy>(
+                    first1, std::distance(first1, last1), first2, dest,
+                    PIKA_FORWARD(F, f));
 
-            return util::detail::in_in_out_result<InIter1, InIter2, OutIter>{
+            return in_in_out_result<InIter1, InIter2, OutIter>{
                 std::get<0>(ret), std::get<1>(ret), std::get<2>(ret)};
         }
 
@@ -421,11 +411,10 @@ namespace pika::parallel::util::detail {
                 !iterator_datapar_compatible<InIter1>::value ||
                 !iterator_datapar_compatible<InIter2>::value ||
                 !iterator_datapar_compatible<OutIter>::value,
-            util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
+            in_in_out_result<InIter1, InIter2, OutIter>>::type
         call(InIter1 first1, InIter1 last1, InIter2 first2, OutIter dest, F&& f)
         {
-            return util::detail::transform_binary_loop<
-                pika::execution::sequenced_policy>(
+            return transform_binary_loop<pika::execution::sequenced_policy>(
                 first1, last1, first2, dest, PIKA_FORWARD(F, f));
         }
 
@@ -437,7 +426,7 @@ namespace pika::parallel::util::detail {
                 iterator_datapar_compatible<InIter1>::value &&
                 iterator_datapar_compatible<InIter2>::value &&
                 iterator_datapar_compatible<OutIter>::value,
-            util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
+            in_in_out_result<InIter1, InIter2, OutIter>>::type
         call(InIter1 first1, InIter1 last1, InIter2 first2, InIter2 last2,
             OutIter dest, F&& f)
         {
@@ -447,11 +436,11 @@ namespace pika::parallel::util::detail {
                     std::distance(first2, last2));
             // clang-format on
 
-            auto ret = util::detail::transform_binary_loop_n<
-                pika::execution::par_simd_policy>(
-                first1, count, first2, dest, PIKA_FORWARD(F, f));
+            auto ret =
+                transform_binary_loop_n<pika::execution::par_simd_policy>(
+                    first1, count, first2, dest, PIKA_FORWARD(F, f));
 
-            return util::detail::in_in_out_result<InIter1, InIter2, OutIter>{
+            return in_in_out_result<InIter1, InIter2, OutIter>{
                 std::get<0>(ret), std::get<1>(ret), std::get<2>(ret)};
         }
 
@@ -463,12 +452,11 @@ namespace pika::parallel::util::detail {
                 !iterator_datapar_compatible<InIter1>::value ||
                 !iterator_datapar_compatible<InIter2>::value ||
                 !iterator_datapar_compatible<OutIter>::value,
-            util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
+            in_in_out_result<InIter1, InIter2, OutIter>>::type
         call(InIter1 first1, InIter1 last1, InIter2 first2, InIter2 last2,
             OutIter dest, F&& f)
         {
-            return util::detail::transform_binary_loop<
-                pika::execution::sequenced_policy>(
+            return transform_binary_loop<pika::execution::sequenced_policy>(
                 first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -477,9 +465,9 @@ namespace pika::parallel::util::detail {
         typename OutIter, typename F>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
-        util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
-    tag_invoke(pika::parallel::util::detail::transform_binary_loop_t<ExPolicy>,
-        InIter1 first1, InIter1 last1, InIter2 first2, OutIter dest, F&& f)
+        in_in_out_result<InIter1, InIter2, OutIter>>::type
+    tag_invoke(transform_binary_loop_t<ExPolicy>, InIter1 first1, InIter1 last1,
+        InIter2 first2, OutIter dest, F&& f)
     {
         return datapar_transform_binary_loop<InIter1, InIter2>::call(
             first1, last1, first2, dest, PIKA_FORWARD(F, f));
@@ -489,10 +477,9 @@ namespace pika::parallel::util::detail {
         typename OutIter, typename F>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
-        util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
-    tag_invoke(pika::parallel::util::detail::transform_binary_loop_t<ExPolicy>,
-        InIter1 first1, InIter1 last1, InIter2 first2, InIter2 last2,
-        OutIter dest, F&& f)
+        in_in_out_result<InIter1, InIter2, OutIter>>::type
+    tag_invoke(transform_binary_loop_t<ExPolicy>, InIter1 first1, InIter1 last1,
+        InIter2 first2, InIter2 last2, OutIter dest, F&& f)
     {
         return datapar_transform_binary_loop<InIter1, InIter2>::call(
             first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));
@@ -560,7 +547,7 @@ namespace pika::parallel::util::detail {
         call(InIter1 first1, std::size_t count, InIter2 first2, OutIter dest,
             F&& f)
         {
-            return util::detail::transform_binary_loop_ind_n<
+            return transform_binary_loop_ind_n<
                 pika::execution::sequenced_policy>(
                 first1, count, first2, dest, PIKA_FORWARD(F, f));
         }
@@ -571,9 +558,8 @@ namespace pika::parallel::util::detail {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
         std::tuple<InIter1, InIter2, OutIter>>::type
-    tag_invoke(
-        pika::parallel::util::detail::transform_binary_loop_ind_n_t<ExPolicy>,
-        InIter1 first1, std::size_t count, InIter2 first2, OutIter dest, F&& f)
+    tag_invoke(transform_binary_loop_ind_n_t<ExPolicy>, InIter1 first1,
+        std::size_t count, InIter2 first2, OutIter dest, F&& f)
     {
         return datapar_transform_binary_loop_ind_n<InIter1, InIter2>::call(
             first1, count, first2, dest, PIKA_FORWARD(F, f));
@@ -607,14 +593,15 @@ namespace pika::parallel::util::detail {
                 iterator_datapar_compatible<InIter1>::value &&
                 iterator_datapar_compatible<InIter2>::value &&
                 iterator_datapar_compatible<OutIter>::value,
-            util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
+            in_in_out_result<InIter1, InIter2, OutIter>>::type
         call(InIter1 first1, InIter1 last1, InIter2 first2, OutIter dest, F&& f)
         {
-            auto ret = util::detail::transform_binary_loop_ind_n<
-                pika::execution::par_simd_policy>(first1,
-                std::distance(first1, last1), first2, dest, PIKA_FORWARD(F, f));
+            auto ret =
+                transform_binary_loop_ind_n<pika::execution::par_simd_policy>(
+                    first1, std::distance(first1, last1), first2, dest,
+                    PIKA_FORWARD(F, f));
 
-            return util::detail::in_in_out_result<InIter1, InIter2, OutIter>{
+            return in_in_out_result<InIter1, InIter2, OutIter>{
                 std::get<0>(ret), std::get<1>(ret), std::get<2>(ret)};
         }
 
@@ -626,11 +613,10 @@ namespace pika::parallel::util::detail {
                 !iterator_datapar_compatible<InIter1>::value ||
                 !iterator_datapar_compatible<InIter2>::value ||
                 !iterator_datapar_compatible<OutIter>::value,
-            util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
+            in_in_out_result<InIter1, InIter2, OutIter>>::type
         call(InIter1 first1, InIter1 last1, InIter2 first2, OutIter dest, F&& f)
         {
-            return util::detail::transform_binary_loop_ind<
-                pika::execution::sequenced_policy>(
+            return transform_binary_loop_ind<pika::execution::sequenced_policy>(
                 first1, last1, first2, dest, PIKA_FORWARD(F, f));
         }
 
@@ -642,18 +628,18 @@ namespace pika::parallel::util::detail {
                 iterator_datapar_compatible<InIter1>::value &&
                 iterator_datapar_compatible<InIter2>::value &&
                 iterator_datapar_compatible<OutIter>::value,
-            util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
+            in_in_out_result<InIter1, InIter2, OutIter>>::type
         call(InIter1 first1, InIter1 last1, InIter2 first2, InIter2 last2,
             OutIter dest, F&& f)
         {
             std::size_t count = (std::min)(
                 std::distance(first1, last1), std::distance(first2, last2));
 
-            auto ret = util::detail::transform_binary_loop_ind_n<
-                pika::execution::par_simd_policy>(
-                first1, count, first2, dest, PIKA_FORWARD(F, f));
+            auto ret =
+                transform_binary_loop_ind_n<pika::execution::par_simd_policy>(
+                    first1, count, first2, dest, PIKA_FORWARD(F, f));
 
-            return util::detail::in_in_out_result<InIter1, InIter2, OutIter>{
+            return in_in_out_result<InIter1, InIter2, OutIter>{
                 std::get<0>(ret), std::get<1>(ret), std::get<2>(ret)};
         }
 
@@ -665,12 +651,11 @@ namespace pika::parallel::util::detail {
                 !iterator_datapar_compatible<InIter1>::value ||
                 !iterator_datapar_compatible<InIter2>::value ||
                 !iterator_datapar_compatible<OutIter>::value,
-            util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
+            in_in_out_result<InIter1, InIter2, OutIter>>::type
         call(InIter1 first1, InIter1 last1, InIter2 first2, InIter2 last2,
             OutIter dest, F&& f)
         {
-            return util::detail::transform_binary_loop_ind<
-                pika::execution::sequenced_policy>(
+            return transform_binary_loop_ind<pika::execution::sequenced_policy>(
                 first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));
         }
     };
@@ -679,10 +664,9 @@ namespace pika::parallel::util::detail {
         typename OutIter, typename F>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
-        util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
-    tag_invoke(
-        pika::parallel::util::detail::transform_binary_loop_ind_t<ExPolicy>,
-        InIter1 first1, InIter1 last1, InIter2 first2, OutIter dest, F&& f)
+        in_in_out_result<InIter1, InIter2, OutIter>>::type
+    tag_invoke(transform_binary_loop_ind_t<ExPolicy>, InIter1 first1,
+        InIter1 last1, InIter2 first2, OutIter dest, F&& f)
     {
         return datapar_transform_binary_loop_ind<InIter1, InIter2>::call(
             first1, last1, first2, dest, PIKA_FORWARD(F, f));
@@ -692,14 +676,12 @@ namespace pika::parallel::util::detail {
         typename OutIter, typename F>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE typename std::enable_if<
         pika::is_vectorpack_execution_policy<ExPolicy>::value,
-        util::detail::in_in_out_result<InIter1, InIter2, OutIter>>::type
-    tag_invoke(
-        pika::parallel::util::detail::transform_binary_loop_ind_t<ExPolicy>,
-        InIter1 first1, InIter1 last1, InIter2 first2, InIter2 last2,
-        OutIter dest, F&& f)
+        in_in_out_result<InIter1, InIter2, OutIter>>::type
+    tag_invoke(transform_binary_loop_ind_t<ExPolicy>, InIter1 first1,
+        InIter1 last1, InIter2 first2, InIter2 last2, OutIter dest, F&& f)
     {
         return datapar_transform_binary_loop_ind<InIter1, InIter2>::call(
             first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail
 #endif

@@ -36,7 +36,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename Result, typename ExPolicy, typename FwdIter, typename F>
     std::vector<pika::future<Result>> partition(
         ExPolicy&& policy, FwdIter first, std::size_t count, F&& f)
@@ -427,4 +427,4 @@ namespace pika::parallel::util::detail {
             task_static_partitioner>::template apply<R, Result>
     {
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

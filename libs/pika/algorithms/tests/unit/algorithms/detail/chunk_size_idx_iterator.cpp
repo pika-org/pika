@@ -113,7 +113,7 @@ void test_aux(
 
 template <typename Iterator>
 using chunk_size_idx_iterator =
-    pika::parallel::util::detail::chunk_size_idx_iterator<Iterator>;
+    pika::parallel::detail::chunk_size_idx_iterator<Iterator>;
 
 template <typename Integer>
 void test_integer(

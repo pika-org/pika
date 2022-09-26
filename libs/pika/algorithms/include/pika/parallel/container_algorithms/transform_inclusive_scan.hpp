@@ -207,7 +207,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Sent,
         typename FwdIter2, typename BinOp, typename UnOp>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         transform_inclusive_result<FwdIter1, FwdIter2>>::type
     transform_inclusive_scan(ExPolicy&& policy, FwdIter1 first, Sent last,
         FwdIter2 dest, BinOp&& binary_op, UnOp&& unary_op);
@@ -396,7 +396,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename Rng,  typename O,
         typename BinOp, typename UnOp>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         transform_inclusive_scan_result<traits::range_iterator_t<Rng>, O>>::type
     transform_inclusive_scan(ExPolicy&& policy, Rng&& rng, O dest,
         BinOp&& binary_op, UnOp&& unary_op);
@@ -599,7 +599,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Sent,
         typename FwdIter2, typename BinOp, typename UnOp, typename T>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         transform_inclusive_result<FwdIter1, FwdIter2>>::type
     transform_inclusive_scan(ExPolicy&& policy, FwdIter1 first, Sent last,
         FwdIter2 dest, BinOp&& binary_op, UnOp&& unary_op, T init);
@@ -794,7 +794,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename Rng,  typename O,
         typename BinOp, typename UnOp, typename T>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         transform_inclusive_scan_result<traits::range_iterator_t<Rng>, O>>::type
     transform_inclusive_scan(ExPolicy&& policy, Rng&& rng, O dest,
         BinOp&& binary_op, UnOp&& unary_op, T init);
@@ -823,7 +823,7 @@ namespace pika { namespace ranges {
 namespace pika::ranges {
     template <typename I, typename O>
     using transform_inclusive_scan_result =
-        parallel::util::detail::in_out_result<I, O>;
+        pika::parallel::detail::in_out_result<I, O>;
 
     inline constexpr struct transform_inclusive_scan_t final
       : pika::detail::tag_parallel_algorithm<transform_inclusive_scan_t>
@@ -884,7 +884,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             transform_inclusive_scan_result<FwdIter1, FwdIter2>>::type
         tag_fallback_invoke(pika::ranges::transform_inclusive_scan_t,
             ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
@@ -956,7 +956,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             transform_inclusive_scan_result<pika::traits::range_iterator_t<Rng>,
                 O>>::type
         tag_fallback_invoke(pika::ranges::transform_inclusive_scan_t,
@@ -1036,7 +1036,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             transform_inclusive_scan_result<FwdIter1, FwdIter2>>::type
         tag_fallback_invoke(pika::ranges::transform_inclusive_scan_t,
             ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
@@ -1112,7 +1112,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             transform_inclusive_scan_result<pika::traits::range_iterator_t<Rng>,
                 O>>::type
         tag_fallback_invoke(pika::ranges::transform_inclusive_scan_t,

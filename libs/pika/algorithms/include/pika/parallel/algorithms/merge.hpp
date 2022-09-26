@@ -89,7 +89,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename RandIter1, typename RandIter2,
         typename RandIter3, typename Comp = detail::less>
-    typename util::detail::algorithm_result<ExPolicy, RandIter3>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, RandIter3>::type
     merge(ExPolicy&& policy, RandIter1 first1, RandIter1 last1,
         RandIter2 first2, RandIter2 last2, RandIter3 dest, Comp&& comp = Comp());
 
@@ -157,7 +157,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename RandIter,
         typename Comp = detail::less>
-    typename util::detail::algorithm_result<ExPolicy>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
     inplace_merge(ExPolicy&& policy, RandIter first, RandIter middle,
         RandIter last, Comp&& comp = Comp());
 
@@ -206,9 +206,9 @@ namespace pika::parallel::detail {
     // sequential merge with projection function.
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename OutIter, typename Comp, typename Proj1, typename Proj2>
-    constexpr util::detail::in_in_out_result<Iter1, Iter2, OutIter>
-    sequential_merge(Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-        OutIter dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    constexpr in_in_out_result<Iter1, Iter2, OutIter> sequential_merge(
+        Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, OutIter dest,
+        Comp&& comp, Proj1&& proj1, Proj2&& proj2)
     {
         if (first1 != last1 && first2 != last2)
         {
@@ -234,8 +234,8 @@ namespace pika::parallel::detail {
             }
         }
 
-        auto copy_result1 = util::detail::copy(first1, last1, dest);
-        auto copy_result2 = util::detail::copy(first2, last2, copy_result1.out);
+        auto copy_result1 = (copy) (first1, last1, dest);
+        auto copy_result2 = (copy) (first2, last2, copy_result1.out);
 
         return {copy_result1.in, copy_result2.in, copy_result2.out};
     }
@@ -353,8 +353,7 @@ namespace pika::parallel::detail {
                 pika::make_exceptional_future<void>(std::current_exception()));
 
             std::list<std::exception_ptr> errors;
-            util::detail::handle_local_exceptions<ExPolicy>::call(
-                futures, errors);
+            handle_local_exceptions<ExPolicy>::call(futures, errors);
 
             // Not reachable.
             PIKA_ASSERT(false);
@@ -367,11 +366,11 @@ namespace pika::parallel::detail {
     template <typename ExPolicy, typename Iter1, typename Sent1, typename Iter2,
         typename Sent2, typename Iter3, typename Comp, typename Proj1,
         typename Proj2>
-    pika::future<util::detail::in_in_out_result<Iter1, Iter2, Iter3>>
-    parallel_merge(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
-        Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    pika::future<in_in_out_result<Iter1, Iter2, Iter3>> parallel_merge(
+        ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
+        Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
     {
-        using result_type = util::detail::in_in_out_result<Iter1, Iter2, Iter3>;
+        using result_type = in_in_out_result<Iter1, Iter2, Iter3>;
 
         auto f1 = [first1, last1, first2, last2, dest,
                       policy = PIKA_FORWARD(ExPolicy, policy),
@@ -392,7 +391,7 @@ namespace pika::parallel::detail {
             }
             catch (...)
             {
-                util::detail::handle_local_exceptions<ExPolicy>::call(
+                handle_local_exceptions<ExPolicy>::call(
                     std::current_exception());
                 PIKA_ASSERT(false);
                 // To silence no return statement in all control blocks
@@ -411,7 +410,7 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename IterTuple>
-    struct merge : public detail::algorithm<merge<IterTuple>, IterTuple>
+    struct merge : public algorithm<merge<IterTuple>, IterTuple>
     {
         merge()
           : merge::algorithm("merge")
@@ -421,9 +420,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3, typename Comp,
             typename Proj1, typename Proj2>
-        static util::detail::in_in_out_result<Iter1, Iter2, Iter3> sequential(
-            ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-            Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+        static in_in_out_result<Iter1, Iter2, Iter3> sequential(ExPolicy,
+            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, Iter3 dest,
+            Comp&& comp, Proj1&& proj1, Proj2&& proj2)
         {
             return sequential_merge(first1, last1, first2, last2, dest,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj1, proj1),
@@ -433,15 +432,13 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3, typename Comp,
             typename Proj1, typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy,
-            util::detail::in_in_out_result<Iter1, Iter2, Iter3>>::type
+        static typename algorithm_result<ExPolicy,
+            in_in_out_result<Iter1, Iter2, Iter3>>::type
         parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
             Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
         {
-            using result_type =
-                util::detail::in_in_out_result<Iter1, Iter2, Iter3>;
-            using algorithm_result =
-                util::detail::algorithm_result<ExPolicy, result_type>;
+            using result_type = in_in_out_result<Iter1, Iter2, Iter3>;
+            using algorithm_result = algorithm_result<ExPolicy, result_type>;
 
             try
             {
@@ -470,9 +467,8 @@ namespace pika::parallel::detail {
     inline Iter sequential_inplace_merge(
         Iter first, Iter middle, Sent last, Comp&& comp, Proj&& proj)
     {
-        std::inplace_merge(first, middle,
-            detail::advance_to_sentinel(middle, last),
-            util::compare_projected<Comp&, Proj&>(comp, proj));
+        std::inplace_merge(first, middle, advance_to_sentinel(middle, last),
+            compare_projected<Comp&, Proj&>(comp, proj));
         return last;
     }
 
@@ -540,8 +536,7 @@ namespace pika::parallel::detail {
                     std::current_exception()));
 
                 std::list<std::exception_ptr> errors;
-                util::detail::handle_local_exceptions<ExPolicy>::call(
-                    futures, errors);
+                handle_local_exceptions<ExPolicy>::call(futures, errors);
 
                 // Not reachable.
                 PIKA_ASSERT(false);
@@ -596,8 +591,7 @@ namespace pika::parallel::detail {
                     std::current_exception()));
 
                 std::list<std::exception_ptr> errors;
-                util::detail::handle_local_exceptions<ExPolicy>::call(
-                    futures, errors);
+                handle_local_exceptions<ExPolicy>::call(futures, errors);
 
                 // Not reachable.
                 PIKA_ASSERT(false);
@@ -626,7 +620,7 @@ namespace pika::parallel::detail {
                 }
                 catch (...)
                 {
-                    util::detail::handle_local_exceptions<ExPolicy>::call(
+                    handle_local_exceptions<ExPolicy>::call(
                         std::current_exception());
                 }
 
@@ -637,8 +631,7 @@ namespace pika::parallel::detail {
     }
 
     template <typename Result>
-    struct inplace_merge
-      : public detail::algorithm<inplace_merge<Result>, Result>
+    struct inplace_merge : public algorithm<inplace_merge<Result>, Result>
     {
         inplace_merge()
           : inplace_merge::algorithm("inplace_merge")
@@ -656,11 +649,11 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-        parallel(ExPolicy&& policy, Iter first, Iter middle, Sent last,
-            Comp&& comp, Proj&& proj)
+        static typename algorithm_result<ExPolicy, Iter>::type parallel(
+            ExPolicy&& policy, Iter first, Iter middle, Sent last, Comp&& comp,
+            Proj&& proj)
         {
-            using result = util::detail::algorithm_result<ExPolicy, Iter>;
+            using result = algorithm_result<ExPolicy, Iter>;
 
             try
             {
@@ -713,7 +706,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             RandIter3>::type
         tag_fallback_invoke(merge_t, ExPolicy&& policy, RandIter1 first1,
             RandIter1 last1, RandIter2 first2, RandIter2 last2, RandIter3 dest,
@@ -730,15 +723,15 @@ namespace pika {
                 "Requires at least random access iterator.");
 
             using result_type =
-                pika::parallel::util::detail::in_in_out_result<RandIter1,
-                    RandIter2, RandIter3>;
+                pika::parallel::detail::in_in_out_result<RandIter1, RandIter2,
+                    RandIter3>;
 
-            return pika::parallel::util::detail::get_third_element(
+            return pika::parallel::detail::get_third_element(
                 pika::parallel::detail::merge<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                     last2, dest, PIKA_FORWARD(Comp, comp),
-                    pika::parallel::util::detail::projection_identity(),
-                    pika::parallel::util::detail::projection_identity()));
+                    pika::parallel::detail::projection_identity(),
+                    pika::parallel::detail::projection_identity()));
         }
 
         // clang-format off
@@ -769,15 +762,15 @@ namespace pika {
                 "Requires at least random access iterator.");
 
             using result_type =
-                pika::parallel::util::detail::in_in_out_result<RandIter1,
-                    RandIter2, RandIter3>;
+                pika::parallel::detail::in_in_out_result<RandIter1, RandIter2,
+                    RandIter3>;
 
-            return pika::parallel::util::detail::get_third_element(
+            return pika::parallel::detail::get_third_element(
                 pika::parallel::detail::merge<result_type>().call(
                     pika::execution::seq, first1, last1, first2, last2, dest,
                     PIKA_FORWARD(Comp, comp),
-                    pika::parallel::util::detail::projection_identity(),
-                    pika::parallel::util::detail::projection_identity()));
+                    pika::parallel::detail::projection_identity(),
+                    pika::parallel::detail::projection_identity()));
         }
     } merge{};
 
@@ -799,8 +792,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<
-            ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(inplace_merge_t, ExPolicy&& policy, RandIter first,
             RandIter middle, RandIter last, Comp&& comp = Comp())
         {
@@ -812,7 +804,7 @@ namespace pika {
                 pika::parallel::detail::inplace_merge<RandIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, middle, last,
                     PIKA_FORWARD(Comp, comp),
-                    pika::parallel::util::detail::projection_identity()));
+                    pika::parallel::detail::projection_identity()));
         }
 
         // clang-format off
@@ -837,7 +829,7 @@ namespace pika {
                 pika::parallel::detail::inplace_merge<RandIter>().call(
                     pika::execution::seq, first, middle, last,
                     PIKA_FORWARD(Comp, comp),
-                    pika::parallel::util::detail::projection_identity()));
+                    pika::parallel::detail::projection_identity()));
         }
     } inplace_merge{};
 }    // namespace pika

@@ -66,7 +66,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Sent1,
         typename FwdIter>
-    typename util::detail::algorithm_result<
+    typename pika::parallel::detail::algorithm_result<
         ExPolicy, ranges::move_result<FwdIter1, FwdIter>>::type
     move(ExPolicy&& policy, FwdIter1 iter, Sent1 sent, FwdIter dest);
 
@@ -117,7 +117,7 @@ namespace pika {
     ///           destination range, one past the last element moved.
     ///
     template <typename ExPolicy, typename Rng, typename FwdIter>
-    typename util::detail::algorithm_result<
+    typename pika::parallel::detail::algorithm_result<
         ExPolicy, ranges::move_result<
             typename pika::traits::range_traits<Rng>::iterator_type, FwdIter>
     >::type
@@ -143,7 +143,7 @@ namespace pika {
 
 namespace pika::ranges {
     template <typename I, typename O>
-    using move_result = parallel::util::detail::in_out_result<I, O>;
+    using move_result = pika::parallel::detail::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::move
@@ -160,13 +160,13 @@ namespace pika::ranges {
                 pika::traits::is_iterator<Iter2>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             move_result<Iter1, Iter2>>::type
         tag_fallback_invoke(
             move_t, ExPolicy&& policy, Iter1 first, Sent1 last, Iter2 dest)
         {
             return pika::parallel::detail::transfer<
-                pika::parallel::detail::move<Iter1, Iter2>>(
+                pika::parallel::detail::move_algo<Iter1, Iter2>>(
                 PIKA_FORWARD(ExPolicy, policy), first, last, dest);
         }
 
@@ -178,7 +178,7 @@ namespace pika::ranges {
                 pika::traits::is_iterator<Iter2>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             move_result<typename pika::traits::range_iterator<Rng>::type,
                 Iter2>>::type
         tag_fallback_invoke(move_t, ExPolicy&& policy, Rng&& rng, Iter2 dest)
@@ -187,7 +187,7 @@ namespace pika::ranges {
                 typename pika::traits::range_iterator<Rng>::type;
 
             return pika::parallel::detail::transfer<
-                pika::parallel::detail::move<iterator_type, Iter2>>(
+                pika::parallel::detail::move_algo<iterator_type, Iter2>>(
                 PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),
                 pika::util::end(rng), dest);
         }
@@ -203,7 +203,7 @@ namespace pika::ranges {
             move_t, Iter1 first, Sent1 last, Iter2 dest)
         {
             return pika::parallel::detail::transfer<
-                pika::parallel::detail::move<Iter1, Iter2>>(
+                pika::parallel::detail::move_algo<Iter1, Iter2>>(
                 pika::execution::seq, first, last, dest);
         }
 
@@ -222,7 +222,7 @@ namespace pika::ranges {
                 typename pika::traits::range_iterator<Rng>::type;
 
             return pika::parallel::detail::transfer<
-                pika::parallel::detail::move<iterator_type, Iter2>>(
+                pika::parallel::detail::move_algo<iterator_type, Iter2>>(
                 pika::execution::seq, pika::util::begin(rng),
                 pika::util::end(rng), dest);
         }

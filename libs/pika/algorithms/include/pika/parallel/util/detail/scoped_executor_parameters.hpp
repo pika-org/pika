@@ -9,8 +9,7 @@
 #include <pika/config.hpp>
 #include <pika/execution/executors/execution_parameters.hpp>
 
-namespace pika::parallel::util::detail {
-    ///////////////////////////////////////////////////////////////////////////
+namespace pika::parallel::detail {
     template <typename Parameters, typename Executor>
     struct scoped_executor_parameters
     {
@@ -65,4 +64,4 @@ namespace pika::parallel::util::detail {
         Parameters const& params_;
         Executor const& exec_;
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

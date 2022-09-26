@@ -148,7 +148,7 @@ namespace pika {
     ///           it returns false.
     ///           range [first2, last2), it returns false.
     template <typename FwdIter1, typename FwdIter2, typename Pred>
-    typename util::detail::algorithm_result<ExPolicy, bool>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, bool>::type
     lexicographical_compare(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
         FwdIter2 first2, FwdIter2 last2, Pred&& pred);
 
@@ -184,7 +184,7 @@ namespace pika::parallel::detail {
     // lexicographical_compare
     /// \cond NOINTERNAL
     struct lexicographical_compare
-      : public detail::algorithm<lexicographical_compare, bool>
+      : public algorithm<lexicographical_compare, bool>
     {
         lexicographical_compare()
           : lexicographical_compare::algorithm("lexicographical_compare")
@@ -214,10 +214,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename FwdIter1, typename Sent1,
             typename FwdIter2, typename Sent2, typename Pred, typename Proj1,
             typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy, bool>::type
-        parallel(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
-            FwdIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-            Proj2&& proj2)
+        static typename algorithm_result<ExPolicy, bool>::type parallel(
+            ExPolicy&& policy, FwdIter1 first1, Sent1 last1, FwdIter2 first2,
+            Sent2 last2, Pred&& pred, Proj1&& proj1, Proj2&& proj2)
         {
             using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
             using reference = typename zip_iterator::reference;
@@ -229,14 +228,12 @@ namespace pika::parallel::detail {
             // range
             if (count1 == 0 && count2 != 0)
             {
-                return util::detail::algorithm_result<ExPolicy, bool>::get(
-                    true);
+                return algorithm_result<ExPolicy, bool>::get(true);
             }
 
             if (count2 == 0 && count1 != 0)
             {
-                return util::detail::algorithm_result<ExPolicy, bool>::get(
-                    false);
+                return algorithm_result<ExPolicy, bool>::get(false);
             }
 
             std::size_t count = (std::min)(count1, count2);
@@ -245,8 +242,8 @@ namespace pika::parallel::detail {
             auto f1 = [tok, pred, proj1, proj2](zip_iterator it,
                           std::size_t part_count,
                           std::size_t base_idx) mutable -> void {
-                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                    part_count, tok,
+                loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it, part_count,
+                    tok,
                     [&pred, &tok, &proj1, &proj2](
                         reference t, std::size_t i) mutable -> void {
                         using std::get;
@@ -280,8 +277,8 @@ namespace pika::parallel::detail {
             };
 
             using pika::util::make_zip_iterator;
-            return util::detail::partitioner<ExPolicy, bool,
-                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
+            return detail::partitioner<ExPolicy, bool, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy),
                 make_zip_iterator(first1, first2), count, 1, PIKA_MOVE(f1),
                 PIKA_MOVE(f2));
         }
@@ -319,8 +316,8 @@ namespace pika {
             return pika::parallel::detail::lexicographical_compare().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::detail::projection_identity{},
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{},
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -336,8 +333,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            bool>::type
+        friend typename parallel::detail::algorithm_result<ExPolicy, bool>::type
         tag_fallback_invoke(pika::lexicographical_compare_t, ExPolicy&& policy,
             FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, FwdIter2 last2,
             Pred&& pred = Pred())
@@ -350,8 +346,8 @@ namespace pika {
             return pika::parallel::detail::lexicographical_compare().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::detail::projection_identity{},
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{},
+                pika::parallel::detail::projection_identity{});
         }
 
     } lexicographical_compare{};

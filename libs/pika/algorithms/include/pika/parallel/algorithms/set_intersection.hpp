@@ -98,8 +98,8 @@ namespace pika {
     ///           copied.
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
-        typename FwdIter3, typename Pred = detail::less>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter3>::type
+        typename FwdIter3, typename Pred = pika::parallel::detail::less>
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter3>::type
     set_intersection(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
             FwdIter2 first2, FwdIter2 last2, FwdIter3 dest, Pred&& op = Pred());
 
@@ -132,9 +132,9 @@ namespace pika::parallel::detail {
     // set_intersection
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename Iter3, typename Comp, typename Proj1, typename Proj2>
-    constexpr parallel::util::detail::in_in_out_result<Iter1, Iter2, Iter3>
-    sequential_set_intersection(Iter1 first1, Sent1 last1, Iter2 first2,
-        Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    constexpr in_in_out_result<Iter1, Iter2, Iter3> sequential_set_intersection(
+        Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, Iter3 dest,
+        Comp&& comp, Proj1&& proj1, Proj2&& proj2)
     {
         while (first1 != last1 && first2 != last2)
         {
@@ -159,8 +159,7 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename Result>
-    struct set_intersection
-      : public detail::algorithm<set_intersection<Result>, Result>
+    struct set_intersection : public algorithm<set_intersection<Result>, Result>
     {
         set_intersection()
           : set_intersection::algorithm("set_intersection")
@@ -170,9 +169,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3, typename F,
             typename Proj1, typename Proj2>
-        static util::detail::in_in_out_result<Iter1, Iter2, Iter3> sequential(
-            ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-            Iter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2)
+        static in_in_out_result<Iter1, Iter2, Iter3> sequential(ExPolicy,
+            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, Iter3 dest,
+            F&& f, Proj1&& proj1, Proj2&& proj2)
         {
             return sequential_set_intersection(first1, last1, first2, last2,
                 dest, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
@@ -182,8 +181,8 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3, typename F,
             typename Proj1, typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy,
-            util::detail::in_in_out_result<Iter1, Iter2, Iter3>>::type
+        static typename algorithm_result<ExPolicy,
+            in_in_out_result<Iter1, Iter2, Iter3>>::type
         parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
             Sent2 last2, Iter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
@@ -192,10 +191,8 @@ namespace pika::parallel::detail {
             using difference_type2 =
                 typename std::iterator_traits<Iter2>::difference_type;
 
-            using result_type =
-                util::detail::in_in_out_result<Iter1, Iter2, Iter3>;
-            using result =
-                util::detail::algorithm_result<ExPolicy, result_type>;
+            using result_type = in_in_out_result<Iter1, Iter2, Iter3>;
+            using result = algorithm_result<ExPolicy, result_type>;
 
             if (first1 == last1 || first2 == last2)
             {
@@ -249,7 +246,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter3>::type
         tag_fallback_invoke(set_intersection_t, ExPolicy&& policy,
             FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, FwdIter2 last2,
@@ -270,15 +267,15 @@ namespace pika {
                     !pika::traits::is_random_access_iterator<FwdIter2>::value>;
 
             using result_type =
-                pika::parallel::util::detail::in_in_out_result<FwdIter1,
-                    FwdIter2, FwdIter3>;
+                pika::parallel::detail::in_in_out_result<FwdIter1, FwdIter2,
+                    FwdIter3>;
 
-            return pika::parallel::util::detail::get_third_element(
+            return pika::parallel::detail::get_third_element(
                 pika::parallel::detail::set_intersection<result_type>().call2(
                     PIKA_FORWARD(ExPolicy, policy), is_seq(), first1, last1,
                     first2, last2, dest, PIKA_FORWARD(Pred, op),
-                    pika::parallel::util::detail::projection_identity(),
-                    pika::parallel::util::detail::projection_identity()));
+                    pika::parallel::detail::projection_identity(),
+                    pika::parallel::detail::projection_identity()));
         }
 
         // clang-format off
@@ -306,15 +303,15 @@ namespace pika {
                 "Requires at least output iterator.");
 
             using result_type =
-                pika::parallel::util::detail::in_in_out_result<FwdIter1,
-                    FwdIter2, FwdIter3>;
+                pika::parallel::detail::in_in_out_result<FwdIter1, FwdIter2,
+                    FwdIter3>;
 
-            return pika::parallel::util::detail::get_third_element(
+            return pika::parallel::detail::get_third_element(
                 pika::parallel::detail::set_intersection<result_type>().call(
                     pika::execution::seq, first1, last1, first2, last2, dest,
                     PIKA_FORWARD(Pred, op),
-                    pika::parallel::util::detail::projection_identity(),
-                    pika::parallel::util::detail::projection_identity()));
+                    pika::parallel::detail::projection_identity(),
+                    pika::parallel::detail::projection_identity()));
         }
     } set_intersection{};
 }    // namespace pika

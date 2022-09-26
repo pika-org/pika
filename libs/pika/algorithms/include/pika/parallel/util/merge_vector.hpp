@@ -17,7 +17,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     /// Merge the ranges in the vector v_input using full_merge4. The v_output
     ///        vector is used as auxiliary memory in the internal process
     ///        The final results is in the dest range.
@@ -29,11 +29,11 @@ namespace pika::parallel::util::detail {
     /// \return range with all the elements moved
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename Compare>
-    void merge_level4(util::detail::range<Iter1, Sent1> dest,
-        std::vector<util::detail::range<Iter2, Sent2>>& v_input,
-        std::vector<util::detail::range<Iter1, Sent1>>& v_output, Compare comp)
+    void merge_level4(range<Iter1, Sent1> dest,
+        std::vector<range<Iter2, Sent2>>& v_input,
+        std::vector<range<Iter1, Sent1>>& v_output, Compare comp)
     {
-        using range1_t = util::detail::range<Iter1, Sent1>;
+        using range1_t = range<Iter1, Sent1>;
         using type1 = typename std::iterator_traits<Iter1>::value_type;
         using type2 = typename std::iterator_traits<Iter2>::value_type;
 
@@ -59,7 +59,7 @@ namespace pika::parallel::util::detail {
             std::uint32_t nelem = (nrange + nmerge - 1) / nmerge;
             range1_t rz = full_merge4(dest, &v_input[pos_ini], nelem, comp);
             v_output.emplace_back(rz);
-            dest = util::detail::range<Iter1, Sent1>(rz.end(), dest.end());
+            dest = range<Iter1, Sent1>(rz.end(), dest.end());
             pos_ini += nelem;
             nrange -= nelem;
         }
@@ -75,11 +75,11 @@ namespace pika::parallel::util::detail {
     /// \param [in] comp : comparison object
     /// \return range with all the elements moved
     template <typename Value, typename Iter, typename Sent, typename Compare>
-    void uninit_merge_level4(util::detail::range<Value*> dest,
-        std::vector<util::detail::range<Iter, Sent>>& v_input,
-        std::vector<util::detail::range<Value*>>& v_output, Compare comp)
+    void uninit_merge_level4(range<Value*> dest,
+        std::vector<range<Iter, Sent>>& v_input,
+        std::vector<range<Value*>>& v_output, Compare comp)
     {
-        using range1_t = util::detail::range<Value*>;
+        using range1_t = range<Value*>;
         using type1 = typename std::iterator_traits<Iter>::value_type;
 
         static_assert(
@@ -105,7 +105,7 @@ namespace pika::parallel::util::detail {
             range1_t rz =
                 uninit_full_merge4(dest, &v_input[pos_ini], nelem, comp);
             v_output.emplace_back(rz);
-            dest = util::detail::range<Value*>(rz.end(), dest.end());
+            dest = range<Value*>(rz.end(), dest.end());
             pos_ini += nelem;
             nrange -= nelem;
         }
@@ -124,13 +124,12 @@ namespace pika::parallel::util::detail {
     /// \return range with all the elements moved
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename Compare>
-    util::detail::range<Iter2, Sent2> merge_vector4(
-        util::detail::range<Iter1, Sent1> range_input,
-        util::detail::range<Iter2, Sent2> range_output,
-        std::vector<util::detail::range<Iter1, Sent1>>& v_input,
-        std::vector<util::detail::range<Iter2, Sent2>>& v_output, Compare comp)
+    range<Iter2, Sent2> merge_vector4(range<Iter1, Sent1> range_input,
+        range<Iter2, Sent2> range_output,
+        std::vector<range<Iter1, Sent1>>& v_input,
+        std::vector<range<Iter2, Sent2>>& v_output, Compare comp)
     {
-        using range2_t = util::detail::range<Iter2, Sent2>;
+        using range2_t = range<Iter2, Sent2>;
         using type1 = typename std::iterator_traits<Iter1>::value_type;
         using type2 = typename std::iterator_traits<Iter2>::value_type;
 
@@ -166,4 +165,4 @@ namespace pika::parallel::util::detail {
         }
         return (sw) ? v_output[0] : init_move(range_output, v_input[0]);
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

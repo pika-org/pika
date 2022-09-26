@@ -48,7 +48,7 @@ namespace pika {
     ///           \a parallel_task_policy and returns \a void otherwise.
     ///
     template <typename ExPolicy, typename FwdIter>
-    typename util::detail::algorithm_result<ExPolicy>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
     destroy(ExPolicy&& policy, FwdIter first, FwdIter last);
 
     /// Destroys objects of type typename iterator_traits<ForwardIt>::value_type
@@ -96,7 +96,7 @@ namespace pika {
     ///           the last element constructed.
     ///
     template <typename ExPolicy, typename FwdIter, typename Size>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
     destroy_n(ExPolicy&& policy, FwdIter first, Size count);
 
     // clang-format on
@@ -148,20 +148,19 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename ExPolicy, typename Iter>
-    typename util::detail::algorithm_result<ExPolicy, Iter>::type
+    typename algorithm_result<ExPolicy, Iter>::type
     parallel_sequential_destroy_n(
         ExPolicy&& policy, Iter first, std::size_t count)
     {
         if (count == 0)
         {
-            return util::detail::algorithm_result<ExPolicy, Iter>::get(
-                PIKA_MOVE(first));
+            return algorithm_result<ExPolicy, Iter>::get(PIKA_MOVE(first));
         }
 
-        return util::detail::foreach_partitioner<ExPolicy>::call(
+        return foreach_partitioner<ExPolicy>::call(
             PIKA_FORWARD(ExPolicy, policy), first, count,
             [](Iter first, std::size_t count, std::size_t) {
-                return util::detail::loop_n<std::decay_t<ExPolicy>>(
+                return loop_n<std::decay_t<ExPolicy>>(
                     first, count, [](Iter it) -> void {
                         using value_type =
                             typename std::iterator_traits<Iter>::value_type;
@@ -169,15 +168,15 @@ namespace pika::parallel::detail {
                         std::addressof(*it)->~value_type();
                     });
             },
-            util::detail::projection_identity());
+            projection_identity());
     }
 
     ///////////////////////////////////////////////////////////////////////
     template <typename FwdIter>
-    struct destroy : public detail::algorithm<destroy<FwdIter>, FwdIter>
+    struct destroy_algo : public algorithm<destroy_algo<FwdIter>, FwdIter>
     {
-        destroy()
-          : destroy::algorithm("destroy")
+        destroy_algo()
+          : destroy_algo::algorithm("destroy")
         {
         }
 
@@ -188,8 +187,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter, typename Sent>
-        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-        parallel(ExPolicy&& policy, Iter first, Sent last)
+        static typename algorithm_result<ExPolicy, Iter>::type parallel(
+            ExPolicy&& policy, Iter first, Sent last)
         {
             return parallel_sequential_destroy_n(PIKA_FORWARD(ExPolicy, policy),
                 first, detail::distance(first, last));
@@ -218,7 +217,7 @@ namespace pika::parallel::detail {
     }
 
     template <typename FwdIter>
-    struct destroy_n : public detail::algorithm<destroy_n<FwdIter>, FwdIter>
+    struct destroy_n : public algorithm<destroy_n<FwdIter>, FwdIter>
     {
         destroy_n()
           : destroy_n::algorithm("destroy_n")
@@ -232,8 +231,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter>
-        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-        parallel(ExPolicy&& policy, Iter first, std::size_t count)
+        static typename algorithm_result<ExPolicy, Iter>::type parallel(
+            ExPolicy&& policy, Iter first, std::size_t count)
         {
             return parallel_sequential_destroy_n(
                 PIKA_FORWARD(ExPolicy, policy), first, count);
@@ -257,16 +256,15 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<
-            ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(
             destroy_t, ExPolicy&& policy, FwdIter first, FwdIter last)
         {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            return pika::parallel::util::detail::algorithm_result<ExPolicy>::
-                get(pika::parallel::detail::destroy<FwdIter>().call(
+            return pika::parallel::detail::algorithm_result<ExPolicy>::get(
+                pika::parallel::detail::destroy_algo<FwdIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last));
         }
 
@@ -281,7 +279,7 @@ namespace pika {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Required at least forward iterator.");
 
-            pika::parallel::detail::destroy<FwdIter>().call(
+            pika::parallel::detail::destroy_algo<FwdIter>().call(
                 pika::execution::seq, first, last);
         }
     } destroy{};
@@ -299,7 +297,7 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(
             destroy_n_t, ExPolicy&& policy, FwdIter first, Size count)
@@ -310,7 +308,7 @@ namespace pika {
             // if count is representing a negative value, we do nothing
             if (pika::parallel::detail::is_negative(count))
             {
-                return pika::parallel::util::detail::algorithm_result<ExPolicy,
+                return pika::parallel::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 

@@ -22,7 +22,7 @@ namespace pika {
         /// \tparam Sent        The type of the source sentinel (deduced). This
         ///                     sentinel type must be a sentinel for FwdIter.
         /// \tparam Proj        The type of an optional projection function. This
-        ///                     defaults to \a pika::parallel::util::detail::projection_identity.
+        ///                     defaults to \a pika::parallel::detail::projection_identity.
         /// \tparam Pred        The type of the function/function object to use
         ///                     (deduced).
         /// \param first        Refers to the beginning of the sequence of elements
@@ -54,7 +54,7 @@ namespace pika {
         ///           elements, the function is always true.
         ///
         template <typename FwdIter, typename Sent, typename Pred,
-            typename Proj = pika::parallel::util::detail::projection_identity>
+            typename Proj = pika::parallel::detail::projection_identity>
         bool is_partitioned(
             FwdIter first, Sent last, Pred&& pred, Proj&& proj = Proj());
 
@@ -73,7 +73,7 @@ namespace pika {
         /// \tparam Sent        The type of the source sentinel (deduced). This
         ///                     sentinel type must be a sentinel for FwdIter.
         /// \tparam Proj        The type of an optional projection function. This
-        ///                     defaults to \a pika::parallel::util::detail::projection_identity.
+        ///                     defaults to \a pika::parallel::detail::projection_identity.
         /// \tparam Pred        The type of the function/function object to use
         ///                     (deduced). \a Pred must be \a CopyConstructible
         ///                     when using a parallel policy.
@@ -121,8 +121,8 @@ namespace pika {
         ///
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename Pred,
-            typename Proj = pika::parallel::util::detail::projection_identity>
-        typename util::detail::algorithm_result<ExPolicy, bool>::type
+            typename Proj = pika::parallel::detail::projection_identity>
+        typename pika::parallel::detail::algorithm_result<ExPolicy, bool>::type
         is_partitioned(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
             Proj&& proj = Proj());
 
@@ -135,7 +135,7 @@ namespace pika {
         ///                     The iterators extracted from this range type must
         ///                     meet the requirements of an forward iterator.
         /// \tparam Proj        The type of an optional projection function. This
-        ///                     defaults to \a pika::parallel::util::detail::projection_identity.
+        ///                     defaults to \a pika::parallel::detail::projection_identity.
         /// \tparam Pred        The type of the function/function object to use
         ///                     (deduced).
         /// \param rng          Refers to the sequence of elements the algorithm
@@ -165,7 +165,7 @@ namespace pika {
         ///           elements, the function is always true.
         ///
         template <typename Rng, typename Pred,
-            typename Proj = pika::parallel::util::detail::projection_identity>
+            typename Proj = pika::parallel::detail::projection_identity>
         bool is_partitioned(Rng&& rng, Pred&& pred, Proj&& proj = Proj());
 
         /// Determines if the range [first, last) is partitioned.
@@ -181,7 +181,7 @@ namespace pika {
         ///                     The iterators extracted from this range type must
         ///                     meet the requirements of an forward iterator.
         /// \tparam Proj        The type of an optional projection function. This
-        ///                     defaults to \a pika::parallel::util::detail::projection_identity.
+        ///                     defaults to \a pika::parallel::detail::projection_identity.
         /// \tparam Pred        The type of the function/function object to use
         ///                     (deduced). \a Pred must be \a CopyConstructible
         ///                     when using a parallel policy.
@@ -226,8 +226,8 @@ namespace pika {
         ///           elements, the function is always true.
         ///
         template <typename ExPolicy, typename Rng, typename Pred,
-            typename Proj = pika::parallel::util::detail::projection_identity>
-        typename util::detail::algorithm_result<ExPolicy, bool>::type
+            typename Proj = pika::parallel::detail::projection_identity>
+        typename pika::parallel::detail::algorithm_result<ExPolicy, bool>::type
         is_partitioned(
             ExPolicy&& policy, Rng&& rng, Pred&& pred, Proj&& proj = Proj());
     }    // namespace ranges
@@ -259,7 +259,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename FwdIter, typename Sent,
             typename Pred,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value &&
@@ -280,7 +280,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename Pred,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value &&
@@ -290,7 +290,7 @@ namespace pika::ranges {
                     pika::parallel::detail::projected<Proj, FwdIter>>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             bool>::type
         tag_fallback_invoke(pika::ranges::is_partitioned_t, ExPolicy&& policy,
             FwdIter first, Sent last, Pred&& pred, Proj&& proj = Proj())
@@ -303,7 +303,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng,
             typename Pred,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
@@ -327,7 +327,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng,
             typename Pred,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
@@ -337,7 +337,7 @@ namespace pika::ranges {
                     pika::parallel::detail::projected_range<Proj, Rng>>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             bool>::type
         tag_fallback_invoke(pika::ranges::is_partitioned_t, ExPolicy&& policy,
             Rng&& rng, Pred&& pred, Proj&& proj = Proj())

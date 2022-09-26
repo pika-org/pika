@@ -113,7 +113,7 @@ namespace pika {
     template <typename ExPolicy, typename FwdIter,
         typename Pred = detail::equal_to>
     typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, FwdIter>::type>::type
+        typename algorithm_result<ExPolicy, FwdIter>::type>::type
     adjacent_find(
         ExPolicy&& policy, FwdIter first, FwdIter last, Pred&& pred = Pred());
 }    // namespace pika
@@ -145,8 +145,7 @@ namespace pika::parallel::detail {
     // adjacent_find
     /// \cond NOINTERNAL
     template <typename Iter, typename Sent>
-    struct adjacent_find
-      : public detail::algorithm<adjacent_find<Iter, Sent>, Iter>
+    struct adjacent_find : public algorithm<adjacent_find<Iter, Sent>, Iter>
     {
         adjacent_find()
           : adjacent_find::algorithm("adjacent_find")
@@ -159,14 +158,14 @@ namespace pika::parallel::detail {
             ExPolicy, InIter first, Sent_ last, Pred&& pred, Proj&& proj)
         {
             return std::adjacent_find(first, last,
-                util::detail::invoke_projected<Pred, Proj>(
+                invoke_projected<Pred, Proj>(
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)));
         }
 
         template <typename ExPolicy, typename FwdIter, typename Sent_,
             typename Pred, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        parallel(ExPolicy&& policy, FwdIter first, Sent_ last, Pred&& pred,
+        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
+            ExPolicy&& policy, FwdIter first, Sent_ last, Pred&& pred,
             Proj&& proj)
         {
             using zip_iterator = pika::util::zip_iterator<FwdIter, FwdIter>;
@@ -176,7 +175,7 @@ namespace pika::parallel::detail {
 
             if (first == last)
             {
-                return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
+                return algorithm_result<ExPolicy, FwdIter>::get(
                     PIKA_MOVE(last));
             }
 
@@ -185,14 +184,13 @@ namespace pika::parallel::detail {
             difference_type count = std::distance(first, last);
             util::cancellation_token<difference_type> tok(count);
 
-            util::detail::invoke_projected<Pred, Proj> pred_projected{
+            invoke_projected<Pred, Proj> pred_projected{
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj)};
 
             auto f1 = [pred_projected = PIKA_MOVE(pred_projected), tok](
                           zip_iterator it, std::size_t part_size,
                           std::size_t base_idx) mutable {
-                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                    part_size, tok,
+                loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it, part_size, tok,
                     [&pred_projected, &tok](reference t, std::size_t i) {
                         using std::get;
                         if (pred_projected(get<0>(t), get<1>(t)))
@@ -215,8 +213,8 @@ namespace pika::parallel::detail {
                 return PIKA_MOVE(first);
             };
 
-            return util::detail::partitioner<ExPolicy, FwdIter,
-                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
+            return partitioner<ExPolicy, FwdIter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy),
                 pika::util::make_zip_iterator(first, next), count - 1, 1,
                 PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
@@ -244,7 +242,7 @@ namespace pika {
 
             return parallel::detail::adjacent_find<InIter, InIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -255,10 +253,10 @@ namespace pika {
                 pika::traits::is_forward_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            FwdIter>::type
-        tag_fallback_invoke(pika::adjacent_find_t, ExPolicy&& policy,
-            FwdIter first, FwdIter last, Pred&& pred = Pred())
+        friend
+            typename parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+            tag_fallback_invoke(pika::adjacent_find_t, ExPolicy&& policy,
+                FwdIter first, FwdIter last, Pred&& pred = Pred())
         {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Requires at least a forward iterator");
@@ -266,7 +264,7 @@ namespace pika {
             return parallel::detail::adjacent_find<FwdIter, FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Pred, pred),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
     } adjacent_find{};
 }    // namespace pika

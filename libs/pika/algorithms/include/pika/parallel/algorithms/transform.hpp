@@ -79,8 +79,8 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename F>
-    typename util::detail::algorithm_result<ExPolicy,
-        util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
+        detail::in_out_result<FwdIter1, FwdIter2>>::type
     transform(
         ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest, F&& f);
 
@@ -162,8 +162,8 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename FwdIter3, typename F>
-    typename util::detail::algorithm_result<ExPolicy,
-        util::detail::in_in_out_result<FwdIter1, FwdIter2, FwdIter3>>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
+        detail::in_in_out_result<FwdIter1, FwdIter2, FwdIter3>>::type
     transform(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
         FwdIter2 first2, FwdIter3 dest, F&& f);
 
@@ -227,12 +227,12 @@ namespace pika::parallel::detail {
     };
 
     template <typename F>
-    struct transform_projected<F, util::detail::projection_identity>
+    struct transform_projected<F, projection_identity>
     {
         std::decay_t<F>& f_;
 
         PIKA_HOST_DEVICE constexpr transform_projected(
-            F& f, util::detail::projection_identity) noexcept
+            F& f, projection_identity) noexcept
           : f_(f)
         {
         }
@@ -290,14 +290,14 @@ namespace pika::parallel::detail {
             operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             auto iters = part_begin.get_iterator_tuple();
-            return util::detail::transform_loop_n<execution_policy_type>(
-                std::get<0>(iters), part_size, std::get<1>(iters),
+            return transform_loop_n<execution_policy_type>(std::get<0>(iters),
+                part_size, std::get<1>(iters),
                 transform_projected<F, Proj>(f_, proj_));
         }
     };
 
     template <typename ExPolicy, typename F>
-    struct transform_iteration<ExPolicy, F, util::detail::projection_identity>
+    struct transform_iteration<ExPolicy, F, projection_identity>
     {
         using execution_policy_type = std::decay_t<ExPolicy>;
         using fun_type = std::decay_t<F>;
@@ -305,8 +305,7 @@ namespace pika::parallel::detail {
         fun_type f_;
 
         template <typename F_>
-        PIKA_HOST_DEVICE transform_iteration(
-            F_&& f, util::detail::projection_identity)
+        PIKA_HOST_DEVICE transform_iteration(F_&& f, projection_identity)
           : f_(PIKA_FORWARD(F_, f))
         {
         }
@@ -337,14 +336,14 @@ namespace pika::parallel::detail {
             operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             auto iters = part_begin.get_iterator_tuple();
-            return util::detail::transform_loop_n_ind<execution_policy_type>(
+            return transform_loop_n_ind<execution_policy_type>(
                 std::get<0>(iters), part_size, std::get<1>(iters), f_);
         }
     };
 
     ///////////////////////////////////////////////////////////////////////
     template <typename IterPair>
-    struct transform : public detail::algorithm<transform<IterPair>, IterPair>
+    struct transform : public algorithm<transform<IterPair>, IterPair>
     {
         transform()
           : transform::algorithm("transform")
@@ -354,30 +353,29 @@ namespace pika::parallel::detail {
         // sequential execution with non-trivial projection
         template <typename ExPolicy, typename InIterB, typename InIterE,
             typename OutIter, typename F, typename Proj>
-        PIKA_HOST_DEVICE static util::detail::in_out_result<InIterB, OutIter>
-        sequential(ExPolicy&& policy, InIterB first, InIterE last, OutIter dest,
-            F&& f, Proj&& proj)
+        PIKA_HOST_DEVICE static in_out_result<InIterB, OutIter> sequential(
+            ExPolicy&& policy, InIterB first, InIterE last, OutIter dest, F&& f,
+            Proj&& proj)
         {
-            return util::detail::transform_loop(PIKA_FORWARD(ExPolicy, policy),
-                first, last, dest, transform_projected<F, Proj>(f, proj));
+            return transform_loop(PIKA_FORWARD(ExPolicy, policy), first, last,
+                dest, transform_projected<F, Proj>(f, proj));
         }
 
         // sequential execution without projection
         template <typename ExPolicy, typename InIterB, typename InIterE,
             typename OutIter, typename F>
-        PIKA_HOST_DEVICE static util::detail::in_out_result<InIterB, OutIter>
-        sequential(ExPolicy&& policy, InIterB first, InIterE last, OutIter dest,
-            F&& f, util::detail::projection_identity)
+        PIKA_HOST_DEVICE static in_out_result<InIterB, OutIter> sequential(
+            ExPolicy&& policy, InIterB first, InIterE last, OutIter dest, F&& f,
+            projection_identity)
         {
-            return util::detail::transform_loop_ind(
-                PIKA_FORWARD(ExPolicy, policy), first, last, dest,
-                PIKA_FORWARD(F, f));
+            return transform_loop_ind(PIKA_FORWARD(ExPolicy, policy), first,
+                last, dest, PIKA_FORWARD(F, f));
         }
 
         template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
             typename FwdIter2, typename F, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy,
-            util::detail::in_out_result<FwdIter1B, FwdIter2>>::type
+        static typename algorithm_result<ExPolicy,
+            in_out_result<FwdIter1B, FwdIter2>>::type
         parallel(ExPolicy&& policy, FwdIter1B first, FwdIter1E last,
             FwdIter2 dest, F&& f, Proj&& proj)
         {
@@ -386,18 +384,16 @@ namespace pika::parallel::detail {
                 auto f1 = transform_iteration<ExPolicy, F, Proj>(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
 
-                return util::detail::get_in_out_result(
-                    util::detail::foreach_partitioner<ExPolicy>::call(
-                        PIKA_FORWARD(ExPolicy, policy),
-                        pika::util::make_zip_iterator(first, dest),
-                        detail::distance(first, last), PIKA_MOVE(f1),
-                        util::detail::projection_identity()));
+                return get_in_out_result(foreach_partitioner<ExPolicy>::call(
+                    PIKA_FORWARD(ExPolicy, policy),
+                    pika::util::make_zip_iterator(first, dest),
+                    detail::distance(first, last), PIKA_MOVE(f1),
+                    projection_identity()));
             }
 
-            using result_type =
-                util::detail::in_out_result<FwdIter1B, FwdIter2>;
+            using result_type = in_out_result<FwdIter1B, FwdIter2>;
 
-            return util::detail::algorithm_result<ExPolicy, result_type>::get(
+            return algorithm_result<ExPolicy, result_type>::get(
                 result_type{PIKA_MOVE(first), PIKA_MOVE(dest)});
         }
     };
@@ -479,7 +475,7 @@ namespace pika::parallel::detail {
             operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             auto iters = part_begin.get_iterator_tuple();
-            return util::detail::transform_binary_loop_n<execution_policy_type>(
+            return transform_binary_loop_n<execution_policy_type>(
                 std::get<0>(iters), part_size, std::get<1>(iters),
                 std::get<2>(iters),
                 transform_binary_projected<F_, Proj1, Proj2>{
@@ -488,8 +484,8 @@ namespace pika::parallel::detail {
     };
 
     template <typename ExPolicy, typename F>
-    struct transform_binary_iteration<ExPolicy, F,
-        util::detail::projection_identity, util::detail::projection_identity>
+    struct transform_binary_iteration<ExPolicy, F, projection_identity,
+        projection_identity>
     {
         using execution_policy_type = std::decay_t<ExPolicy>;
         using fun_type = std::decay_t<F>;
@@ -497,9 +493,8 @@ namespace pika::parallel::detail {
         fun_type f_;
 
         template <typename F_>
-        PIKA_HOST_DEVICE transform_binary_iteration(F_&& f,
-            util::detail::projection_identity,
-            util::detail::projection_identity)
+        PIKA_HOST_DEVICE transform_binary_iteration(
+            F_&& f, projection_identity, projection_identity)
           : f_(PIKA_FORWARD(F_, f))
         {
         }
@@ -536,16 +531,16 @@ namespace pika::parallel::detail {
             operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             auto iters = part_begin.get_iterator_tuple();
-            return util::detail::transform_binary_loop_ind_n<
-                execution_policy_type>(std::get<0>(iters), part_size,
-                std::get<1>(iters), std::get<2>(iters), f_);
+            return transform_binary_loop_ind_n<execution_policy_type>(
+                std::get<0>(iters), part_size, std::get<1>(iters),
+                std::get<2>(iters), f_);
         }
     };
 
     ///////////////////////////////////////////////////////////////////////
     template <typename IterTuple>
     struct transform_binary
-      : public detail::algorithm<transform_binary<IterTuple>, IterTuple>
+      : public algorithm<transform_binary<IterTuple>, IterTuple>
     {
         transform_binary()
           : transform_binary::algorithm("transform_binary")
@@ -555,32 +550,30 @@ namespace pika::parallel::detail {
         // sequential execution with non-trivial projection
         template <typename ExPolicy, typename InIter1, typename InIter2,
             typename OutIter, typename F, typename Proj1, typename Proj2>
-        static util::detail::in_in_out_result<InIter1, InIter2, OutIter>
-        sequential(ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+        static in_in_out_result<InIter1, InIter2, OutIter> sequential(
+            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
             OutIter dest, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
-            return util::detail::transform_binary_loop<ExPolicy>(first1, last1,
-                first2, dest,
+            return transform_binary_loop<ExPolicy>(first1, last1, first2, dest,
                 transform_binary_projected<F, Proj1, Proj2>{f, proj1, proj2});
         }
 
         // sequential execution without projection
         template <typename ExPolicy, typename InIter1, typename InIter2,
             typename OutIter, typename F>
-        static util::detail::in_in_out_result<InIter1, InIter2, OutIter>
-        sequential(ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
-            OutIter dest, F&& f, util::detail::projection_identity,
-            util::detail::projection_identity)
+        static in_in_out_result<InIter1, InIter2, OutIter> sequential(
+            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+            OutIter dest, F&& f, projection_identity, projection_identity)
         {
-            return util::detail::transform_binary_loop_ind<ExPolicy>(
+            return transform_binary_loop_ind<ExPolicy>(
                 first1, last1, first2, dest, f);
         }
 
         template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
             typename FwdIter2, typename FwdIter3, typename F, typename Proj1,
             typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy,
-            util::detail::in_in_out_result<FwdIter1B, FwdIter2, FwdIter3>>::type
+        static typename algorithm_result<ExPolicy,
+            in_in_out_result<FwdIter1B, FwdIter2, FwdIter3>>::type
         parallel(ExPolicy&& policy, FwdIter1B first1, FwdIter1E last1,
             FwdIter2 first2, FwdIter3 dest, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
@@ -590,20 +583,17 @@ namespace pika::parallel::detail {
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
                     PIKA_FORWARD(Proj2, proj2));
 
-                return util::detail::get_in_in_out_result(
-                    util::detail::foreach_partitioner<ExPolicy>::call(
-                        PIKA_FORWARD(ExPolicy, policy),
-                        pika::util::make_zip_iterator(first1, first2, dest),
-                        detail::distance(first1, last1), PIKA_MOVE(f1),
-                        util::detail::projection_identity()));
+                return get_in_in_out_result(foreach_partitioner<ExPolicy>::call(
+                    PIKA_FORWARD(ExPolicy, policy),
+                    pika::util::make_zip_iterator(first1, first2, dest),
+                    detail::distance(first1, last1), PIKA_MOVE(f1),
+                    projection_identity()));
             }
 
-            using result_type =
-                util::detail::in_in_out_result<FwdIter1B, FwdIter2, FwdIter3>;
+            using result_type = in_in_out_result<FwdIter1B, FwdIter2, FwdIter3>;
 
-            return util::detail::algorithm_result<ExPolicy, result_type>::get(
-                result_type{
-                    PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)});
+            return algorithm_result<ExPolicy, result_type>::get(result_type{
+                PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)});
         }
     };
     /// \endcond
@@ -613,7 +603,7 @@ namespace pika::parallel::detail {
     /// \cond NOINTERNAL
     template <typename IterTuple>
     struct transform_binary2
-      : public detail::algorithm<transform_binary2<IterTuple>, IterTuple>
+      : public algorithm<transform_binary2<IterTuple>, IterTuple>
     {
         transform_binary2()
           : transform_binary2::algorithm("transform_binary")
@@ -623,34 +613,32 @@ namespace pika::parallel::detail {
         // sequential execution with non-trivial projection
         template <typename ExPolicy, typename InIter1, typename InIter2,
             typename OutIter, typename F, typename Proj1, typename Proj2>
-        static util::detail::in_in_out_result<InIter1, InIter2, OutIter>
-        sequential(ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+        static in_in_out_result<InIter1, InIter2, OutIter> sequential(
+            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
             InIter2 last2, OutIter dest, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
-            return util::detail::transform_binary_loop<ExPolicy>(first1, last1,
-                first2, last2, dest,
+            return transform_binary_loop<ExPolicy>(first1, last1, first2, last2,
+                dest,
                 transform_binary_projected<F, Proj1, Proj2>{f, proj1, proj2});
         }
 
         // sequential execution without projection
         template <typename ExPolicy, typename InIter1, typename InIter2,
             typename OutIter, typename F>
-        static util::detail::in_in_out_result<InIter1, InIter2, OutIter>
-        sequential(ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
-            InIter2 last2, OutIter dest, F&& f,
-            util::detail::projection_identity,
-            util::detail::projection_identity)
+        static in_in_out_result<InIter1, InIter2, OutIter> sequential(
+            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+            InIter2 last2, OutIter dest, F&& f, projection_identity,
+            projection_identity)
         {
-            return util::detail::transform_binary_loop_ind<ExPolicy>(
+            return transform_binary_loop_ind<ExPolicy>(
                 first1, last1, first2, last2, dest, f);
         }
 
         template <typename ExPolicy, typename FwdIter1B, typename FwdIter1E,
             typename FwdIter2B, typename FwdIter2E, typename FwdIter3,
             typename F, typename Proj1, typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy,
-            util::detail::in_in_out_result<FwdIter1B, FwdIter2B,
-                FwdIter3>>::type
+        static typename algorithm_result<ExPolicy,
+            in_in_out_result<FwdIter1B, FwdIter2B, FwdIter3>>::type
         parallel(ExPolicy&& policy, FwdIter1B first1, FwdIter1E last1,
             FwdIter2B first2, FwdIter2E last2, FwdIter3 dest, F&& f,
             Proj1&& proj1, Proj2&& proj2)
@@ -663,22 +651,21 @@ namespace pika::parallel::detail {
 
                 // different versions of clang-format do different things
                 // clang-format off
-                    return util::detail::get_in_in_out_result(
-                        util::detail::foreach_partitioner<ExPolicy>::call(
+                    return get_in_in_out_result(
+                        foreach_partitioner<ExPolicy>::call(
                             PIKA_FORWARD(ExPolicy, policy),
                             pika::util::make_zip_iterator(first1, first2, dest),
                             (std::min) (detail::distance(first1, last1),
                                 detail::distance(first2, last2)),
-                            PIKA_MOVE(f1), util::detail::projection_identity()));
+                            PIKA_MOVE(f1), projection_identity()));
                 // clang-format on
             }
 
             using result_type =
-                util::detail::in_in_out_result<FwdIter1B, FwdIter2B, FwdIter3>;
+                in_in_out_result<FwdIter1B, FwdIter2B, FwdIter3>;
 
-            return util::detail::algorithm_result<ExPolicy, result_type>::get(
-                result_type{
-                    PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)});
+            return algorithm_result<ExPolicy, result_type>::get(result_type{
+                PIKA_MOVE(first1), PIKA_MOVE(first2), PIKA_MOVE(dest)});
         }
     };
     /// \endcond
@@ -783,12 +770,12 @@ namespace pika {
             static_assert(pika::traits::is_input_iterator<FwdIter1>::value,
                 "Requires at least input iterator.");
 
-            return parallel::util::detail::get_second_element(
-                parallel::detail::transform<pika::parallel::util::detail::
-                        in_out_result<FwdIter1, FwdIter2>>()
+            return pika::parallel::detail::get_second_element(
+                parallel::detail::transform<
+                    pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>()
                     .call(pika::execution::seq, first, last, dest,
                         PIKA_FORWARD(F, f),
-                        pika::parallel::util::detail::projection_identity{}));
+                        pika::parallel::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -800,7 +787,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
         tag_fallback_invoke(pika::transform_t, ExPolicy&& policy,
             FwdIter1 first, FwdIter1 last, FwdIter2 dest, F&& f)
@@ -808,12 +795,12 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
                 "Requires at least forward iterator.");
 
-            return parallel::util::detail::get_second_element(
-                parallel::detail::transform<pika::parallel::util::detail::
-                        in_out_result<FwdIter1, FwdIter2>>()
+            return pika::parallel::detail::get_second_element(
+                parallel::detail::transform<
+                    pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                         PIKA_FORWARD(F, f),
-                        pika::parallel::util::detail::projection_identity{}));
+                        pika::parallel::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -832,12 +819,12 @@ namespace pika {
                     pika::traits::is_input_iterator<FwdIter2>::value,
                 "Requires at least input iterator.");
 
-            using proj_id = pika::parallel::util::detail::projection_identity;
+            using proj_id = pika::parallel::detail::projection_identity;
             using result_type =
-                pika::parallel::util::detail::in_in_out_result<FwdIter1,
-                    FwdIter2, FwdIter3>;
+                pika::parallel::detail::in_in_out_result<FwdIter1, FwdIter2,
+                    FwdIter3>;
 
-            return parallel::util::detail::get_third_element(
+            return parallel::detail::get_third_element(
                 parallel::detail::transform_binary<result_type>().call(
                     pika::execution::seq, first1, last1, first2, dest,
                     PIKA_FORWARD(F, f), proj_id(), proj_id()));
@@ -854,7 +841,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter3>
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter3>::type
         tag_fallback_invoke(pika::transform_t, ExPolicy&& policy,
             FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, FwdIter3 dest,
@@ -864,12 +851,12 @@ namespace pika {
                     pika::traits::is_input_iterator<FwdIter2>::value,
                 "Requires at least input iterator.");
 
-            using proj_id = pika::parallel::util::detail::projection_identity;
+            using proj_id = pika::parallel::detail::projection_identity;
             using result_type =
-                pika::parallel::util::detail::in_in_out_result<FwdIter1,
-                    FwdIter2, FwdIter3>;
+                pika::parallel::detail::in_in_out_result<FwdIter1, FwdIter2,
+                    FwdIter3>;
 
-            return parallel::util::detail::get_third_element(
+            return parallel::detail::get_third_element(
                 parallel::detail::transform_binary<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, dest,
                     PIKA_FORWARD(F, f), proj_id(), proj_id()));

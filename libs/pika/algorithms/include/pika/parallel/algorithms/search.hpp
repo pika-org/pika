@@ -158,8 +158,8 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter, typename FwdIter2,
         typename Pred = detail::equal_to>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type search(
-        ExPolicy&& policy, FwdIter first, FwdIter last, FwdIter2 s_first,
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+    search(ExPolicy&& policy, FwdIter first, FwdIter last, FwdIter2 s_first,
         FwdIter2 s_last, Pred&& op = Pred());
 
     /// Searches the range [first, last) for any elements in the range [s_first, s_last).
@@ -294,9 +294,9 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter, typename FwdIter2,
         typename Pred = detail::equal_to>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type search_n(
-        ExPolicy&& policy, FwdIter first, std::size_t count, FwdIter2 s_first,
-        FwdIter2 s_last, Pred&& op = Pred());
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+    search_n(ExPolicy&& policy, FwdIter first, std::size_t count,
+        FwdIter2 s_first, FwdIter2 s_last, Pred&& op = Pred());
 }    // namespace pika
 
 #else
@@ -324,8 +324,8 @@ namespace pika {
             return pika::parallel::detail::search<FwdIter, FwdIter>().call(
                 pika::execution::seq, first, last, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::detail::projection_identity{},
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{},
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -341,16 +341,17 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            FwdIter>::type
-        tag_fallback_invoke(pika::search_t, ExPolicy&& policy, FwdIter first,
-            FwdIter last, FwdIter2 s_first, FwdIter2 s_last, Pred&& op = Pred())
+        friend
+            typename parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+            tag_fallback_invoke(pika::search_t, ExPolicy&& policy,
+                FwdIter first, FwdIter last, FwdIter2 s_first, FwdIter2 s_last,
+                Pred&& op = Pred())
         {
             return pika::parallel::detail::search<FwdIter, FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::detail::projection_identity{},
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{},
+                pika::parallel::detail::projection_identity{});
         }
 
     } search{};
@@ -378,8 +379,8 @@ namespace pika {
             return pika::parallel::detail::search_n<FwdIter, FwdIter>().call(
                 pika::execution::seq, first, count, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::detail::projection_identity{},
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{},
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -395,17 +396,17 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            FwdIter>::type
-        tag_fallback_invoke(pika::search_n_t, ExPolicy&& policy, FwdIter first,
-            std::size_t count, FwdIter2 s_first, FwdIter2 s_last,
-            Pred&& op = Pred())
+        friend
+            typename parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+            tag_fallback_invoke(pika::search_n_t, ExPolicy&& policy,
+                FwdIter first, std::size_t count, FwdIter2 s_first,
+                FwdIter2 s_last, Pred&& op = Pred())
         {
             return pika::parallel::detail::search_n<FwdIter, FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, count, s_first, s_last,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::detail::projection_identity{},
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{},
+                pika::parallel::detail::projection_identity{});
         }
 
     } search_n{};

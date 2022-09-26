@@ -28,7 +28,7 @@ namespace pika::parallel::detail {
     {
     private:
         template <typename Iterator, typename Sentinel, typename T,
-            typename Proj = util::detail::projection_identity>
+            typename Proj = projection_identity>
         friend inline constexpr Iterator tag_fallback_invoke(
             sequential_find_t<ExPolicy>, Iterator first, Sentinel last,
             T const& value, Proj proj = Proj())
@@ -49,8 +49,8 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok,
             T const& val, Proj&& proj)
         {
-            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
-                tok, [&val, &proj, &tok](auto& v, std::size_t i) -> void {
+            loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
+                [&val, &proj, &tok](auto& v, std::size_t i) -> void {
                     if (PIKA_INVOKE(proj, v) == val)
                     {
                         tok.cancel(i);
@@ -65,7 +65,7 @@ namespace pika::parallel::detail {
         sequential_find_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename T, typename Proj = util::detail::projection_identity>
+        typename T, typename Proj = projection_identity>
     inline constexpr Iterator sequential_find(
         Iterator first, Sentinel last, T const& val, Proj proj = Proj())
     {
@@ -90,7 +90,7 @@ namespace pika::parallel::detail {
     {
     private:
         template <typename Iterator, typename Sentinel, typename Pred,
-            typename Proj = util::detail::projection_identity>
+            typename Proj = projection_identity>
         friend inline constexpr Iterator tag_fallback_invoke(
             sequential_find_if_t<ExPolicy>, Iterator first, Sentinel last,
             Pred pred, Proj proj = Proj())
@@ -110,8 +110,8 @@ namespace pika::parallel::detail {
             sequential_find_if_t<ExPolicy>, FwdIter part_begin,
             std::size_t part_count, Token& tok, F&& op, Proj&& proj)
         {
-            util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count,
-                tok, [&op, &tok, &proj](auto const& curr) {
+            loop_n<std::decay_t<ExPolicy>>(part_begin, part_count, tok,
+                [&op, &tok, &proj](auto const& curr) {
                     if (PIKA_INVOKE(op, PIKA_INVOKE(proj, *curr)))
                     {
                         tok.cancel();
@@ -125,8 +125,8 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
             Proj&& proj)
         {
-            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
-                tok, [&f, &proj, &tok](auto& v, std::size_t i) -> void {
+            loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
+                [&f, &proj, &tok](auto& v, std::size_t i) -> void {
                     if (PIKA_INVOKE(f, PIKA_INVOKE(proj, v)))
                     {
                         tok.cancel(i);
@@ -141,7 +141,7 @@ namespace pika::parallel::detail {
         sequential_find_if_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename Pred, typename Proj = util::detail::projection_identity>
+        typename Pred, typename Proj = projection_identity>
     inline constexpr Iterator sequential_find_if(
         Iterator first, Sentinel last, Pred pred, Proj proj = Proj())
     {
@@ -176,7 +176,7 @@ namespace pika::parallel::detail {
     {
     private:
         template <typename Iterator, typename Sentinel, typename Pred,
-            typename Proj = util::detail::projection_identity>
+            typename Proj = projection_identity>
         friend inline constexpr Iterator tag_fallback_invoke(
             sequential_find_if_not_t<ExPolicy>, Iterator first, Sentinel last,
             Pred pred, Proj proj = Proj())
@@ -196,8 +196,8 @@ namespace pika::parallel::detail {
             sequential_find_if_not_t<ExPolicy>, FwdIter part_begin,
             std::size_t part_count, Token& tok, F&& op, Proj&& proj)
         {
-            util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count,
-                tok, [&op, &tok, &proj](auto const& curr) {
+            loop_n<std::decay_t<ExPolicy>>(part_begin, part_count, tok,
+                [&op, &tok, &proj](auto const& curr) {
                     if (!PIKA_INVOKE(op, PIKA_INVOKE(proj, *curr)))
                     {
                         tok.cancel();
@@ -211,8 +211,8 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
             Proj&& proj)
         {
-            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
-                tok, [&f, &proj, &tok](auto& v, std::size_t i) -> void {
+            loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
+                [&f, &proj, &tok](auto& v, std::size_t i) -> void {
                     if (!PIKA_INVOKE(f, PIKA_INVOKE(proj, v)))
                     {
                         tok.cancel(i);
@@ -227,7 +227,7 @@ namespace pika::parallel::detail {
         sequential_find_if_not_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename Pred, typename Proj = util::detail::projection_identity>
+        typename Pred, typename Proj = projection_identity>
     inline constexpr Iterator sequential_find_if_not(
         Iterator first, Sentinel last, Pred pred, Proj proj = Proj())
     {

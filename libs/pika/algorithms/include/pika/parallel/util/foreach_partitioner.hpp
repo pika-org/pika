@@ -35,7 +35,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename Result, typename ExPolicy, typename FwdIter, typename F>
     std::pair<std::vector<pika::future<Result>>,
         std::vector<pika::future<Result>>>
@@ -231,4 +231,4 @@ namespace pika::parallel::util::detail {
             foreach_task_static_partitioner>::template apply<Result>
     {
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

@@ -89,7 +89,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter, typename Sent, typename T,
         typename F>
-    typename util::detail::algorithm_result<ExPolicy, T>::type reduce(
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type reduce(
         ExPolicy&& policy, FwdIter first, Sent last, T init, F&& f);
 
     /// Returns GENERALIZED_SUM(+, init, *first, ..., *(first + (last - first) - 1)).
@@ -149,7 +149,7 @@ namespace pika { namespace ranges {
     /// non-associative or non-commutative binary predicate.
     ///
     template <typename ExPolicy, typename FwdIter, typename Sent, typename T>
-    typename util::detail::algorithm_result<ExPolicy, T>::type reduce(
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type reduce(
         ExPolicy&& policy, FwdIter first, Sent last, T init);
 
     /// Returns GENERALIZED_SUM(+, T(), *first, ..., *(first + (last - first) - 1)).
@@ -210,7 +210,7 @@ namespace pika { namespace ranges {
     /// non-associative or non-commutative binary predicate.
     ///
     template <typename ExPolicy, typename FwdIter, typename Sent>
-    typename util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename std::iterator_traits<FwdIter>::value_type>::type
     reduce(ExPolicy&& policy, FwdIter first, Sent last);
 
@@ -283,7 +283,7 @@ namespace pika { namespace ranges {
     /// non-associative or non-commutative binary predicate.
     ///
     template <typename ExPolicy, typename Rng, typename T, typename F>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     reduce(ExPolicy&& policy, Rng&& rng, T init, F&& f);
 
     /// Returns GENERALIZED_SUM(+, init, *first, ..., *(first + (last - first) - 1)).
@@ -338,7 +338,7 @@ namespace pika { namespace ranges {
     /// non-associative or non-commutative binary predicate.
     ///
     template <typename ExPolicy, typename Rng, typename T>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     reduce(ExPolicy&& policy, Rng&& rng, T init);
 
     /// Returns GENERALIZED_SUM(+, T(), *first, ..., *(first + (last - first) - 1)).
@@ -394,7 +394,7 @@ namespace pika { namespace ranges {
     /// non-associative or non-commutative binary predicate.
     ///
     template <typename ExPolicy, typename Rng>
-    typename util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename std::iterator_traits<
             typename pika::traits::range_traits<Rng>::iterator_type
         >::value_type
@@ -439,10 +439,10 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(pika::ranges::reduce_t, ExPolicy&& policy,
-            FwdIter first, Sent last, T init, F&& f)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(pika::ranges::reduce_t, ExPolicy&& policy,
+                FwdIter first, Sent last, T init, F&& f)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
@@ -461,10 +461,10 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(
-            pika::ranges::reduce_t, ExPolicy&& policy, Rng&& rng, T init, F&& f)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(pika::ranges::reduce_t, ExPolicy&& policy,
+                Rng&& rng, T init, F&& f)
         {
             static_assert(
                 pika::traits::is_forward_iterator<typename pika::traits::
@@ -484,10 +484,10 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(pika::ranges::reduce_t, ExPolicy&& policy,
-            FwdIter first, Sent last, T init)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(pika::ranges::reduce_t, ExPolicy&& policy,
+                FwdIter first, Sent last, T init)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
@@ -506,10 +506,10 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(
-            pika::ranges::reduce_t, ExPolicy&& policy, Rng&& rng, T init)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(
+                pika::ranges::reduce_t, ExPolicy&& policy, Rng&& rng, T init)
         {
             static_assert(
                 pika::traits::is_forward_iterator<typename pika::traits::
@@ -528,7 +528,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename std::iterator_traits<FwdIter>::value_type>::type
         tag_fallback_invoke(
             pika::ranges::reduce_t, ExPolicy&& policy, FwdIter first, Sent last)
@@ -551,7 +551,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename std::iterator_traits<typename pika::traits::range_traits<
                 Rng>::iterator_type>::value_type>::type
         tag_fallback_invoke(

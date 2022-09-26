@@ -31,7 +31,7 @@ namespace pika { namespace ranges {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced). Comp defaults to detail::less.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -85,7 +85,7 @@ namespace pika { namespace ranges {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced). Comp defaults to detail::less.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -130,7 +130,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename RandomIt, typename Sent,
         typename Comp, typename Proj>
-    parallel::util::detail::algorithm_result_t<ExPolicy,
+    pika::parallel::detail::algorithm_result_t<ExPolicy,
         RandomIt>
     partial_sort(ExPolicy&& policy, RandomIt first, RandomIt middle,
         Sent last, Comp&& comp = Comp(), Proj&& proj = Proj());
@@ -150,7 +150,7 @@ namespace pika { namespace ranges {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced). Comp defaults to detail::less.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -206,7 +206,7 @@ namespace pika { namespace ranges {
     /// \tparam Comp        The type of the function/function object to use
     ///                     (deduced). Comp defaults to detail::less;
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -248,7 +248,7 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename ExPolicy, typename Rng, typename Comp, typename Proj>
-    util::detail::algorithm_result_t<ExPolicy,
+    algorithm_result_t<ExPolicy,
         pika::traits::range_iterator<Rng>_t>
     partial_sort(ExPolicy&& policy, Rng&& rng,
         pika::traits::range_iterator<Rng>_t middle,
@@ -282,7 +282,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename RandomIt, typename Sent,
             typename Comp = ranges::less,
-            typename Proj = parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator_v<RandomIt> &&
                 pika::traits::is_sentinel_for_v<Sent, RandomIt> &&
@@ -309,7 +309,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename RandomIt, typename Sent,
             typename Comp = ranges::less,
-            typename Proj = parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_iterator_v<RandomIt> &&
@@ -321,7 +321,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             RandomIt>::type
         tag_fallback_invoke(pika::ranges::partial_sort_t, ExPolicy&& policy,
             RandomIt first, RandomIt middle, Sent last, Comp&& comp = Comp(),
@@ -338,7 +338,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng,
             typename Compare = ranges::less,
-            typename Proj = parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range_v<Rng> &&
                 parallel::detail::is_projected_range_v<Proj, Rng> &&
@@ -369,7 +369,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng,
             typename Compare = ranges::less,
-            typename Proj = parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&
@@ -380,7 +380,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend parallel::util::detail::algorithm_result_t<ExPolicy,
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy,
             pika::traits::range_iterator_t<Rng>>
         tag_fallback_invoke(pika::ranges::partial_sort_t, ExPolicy&& policy,
             Rng&& rng, pika::traits::range_iterator_t<Rng> middle,

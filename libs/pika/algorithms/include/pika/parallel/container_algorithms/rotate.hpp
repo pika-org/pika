@@ -97,7 +97,7 @@ namespace pika { namespace ranges {
     ///           pair(first + (last - middle), last).
     ///
     template <typename ExPolicy, typename FwdIter, typename Sent>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         subrange_t<FwdIter, Sent>>::type
     rotate(ExPolicy&& policy, FwdIter first, FwdIter middle, Sent last);
 
@@ -187,7 +187,7 @@ namespace pika { namespace ranges {
     ///           pair(first + (last - middle), last).
     ///
     template <typename ExPolicy, typename Rng>
-    typename util::detail::algorithm_result<ExPolicy,
+    typename algorithm_result<ExPolicy,
         subrange_t<pika::traits::range_iterator_t<Rng>,
             pika::traits::range_iterator_t<Rng>>>::type
     rotate(ExPolicy&& policy, Rng&& rng,
@@ -279,7 +279,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Sent,
         typename FwdIter2>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         rotate_copy_result<FwdIter1, FwdIter2>>::type
     rotate_copy(ExPolicy&& policy, FwdIter1 first, FwdIter1 middle, Sent last,
         FwdIter2 dest_first);
@@ -374,7 +374,7 @@ namespace pika { namespace ranges {
     ///           the element past the last element copied.
     ///
     template <typename ExPolicy, typename Rng, typename OutIter>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         rotate_copy_result<pika::traits::range_iterator_t<Rng>, OutIter>>::type
     rotate_copy(ExPolicy&& policy, Rng&& rng,
         pika::traits::range_iterator_t<Rng> middle, OutIter dest_first);
@@ -420,9 +420,9 @@ namespace pika::ranges {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return pika::parallel::util::detail::get_subrange<FwdIter, Sent>(
+            return pika::parallel::detail::get_subrange<FwdIter, Sent>(
                 pika::parallel::detail::rotate<
-                    parallel::util::detail::in_out_result<FwdIter, Sent>>()
+                    pika::parallel::detail::in_out_result<FwdIter, Sent>>()
                     .call(pika::execution::seq, first, middle, last));
         }
 
@@ -434,7 +434,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             subrange_t<FwdIter, Sent>>::type
         tag_fallback_invoke(pika::ranges::rotate_t, ExPolicy&& policy,
             FwdIter first, FwdIter middle, Sent last)
@@ -446,9 +446,9 @@ namespace pika::ranges {
                 pika::is_sequenced_execution_policy_v<ExPolicy> ||
                     !pika::traits::is_bidirectional_iterator_v<FwdIter>>;
 
-            return pika::parallel::util::detail::get_subrange<FwdIter, Sent>(
+            return pika::parallel::detail::get_subrange<FwdIter, Sent>(
                 pika::parallel::detail::rotate<
-                    parallel::util::detail::in_out_result<FwdIter, Sent>>()
+                    pika::parallel::detail::in_out_result<FwdIter, Sent>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first,
                         middle, last));
         }
@@ -462,12 +462,12 @@ namespace pika::ranges {
         tag_fallback_invoke(pika::ranges::rotate_t, Rng&& rng,
             pika::traits::range_iterator_t<Rng> middle)
         {
-            return pika::parallel::util::detail::get_subrange<
+            return pika::parallel::detail::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::detail::rotate<parallel::util::detail::
-                        in_out_result<pika::traits::range_iterator_t<Rng>,
-                            typename pika::traits::range_sentinel<Rng>::type>>()
+                pika::parallel::detail::rotate<parallel::detail::in_out_result<
+                    pika::traits::range_iterator_t<Rng>,
+                    typename pika::traits::range_sentinel<Rng>::type>>()
                     .call(pika::execution::seq, pika::util::begin(rng), middle,
                         pika::util::end(rng)));
         }
@@ -479,7 +479,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             subrange_t<pika::traits::range_iterator_t<Rng>,
                 pika::traits::range_iterator_t<Rng>>>::type
         tag_fallback_invoke(pika::ranges::rotate_t, ExPolicy&& policy,
@@ -490,12 +490,12 @@ namespace pika::ranges {
                     !pika::traits::is_bidirectional_iterator_v<
                         pika::traits::range_iterator_t<Rng>>>;
 
-            return pika::parallel::util::detail::get_subrange<
+            return pika::parallel::detail::get_subrange<
                 pika::traits::range_iterator_t<Rng>,
                 typename pika::traits::range_sentinel<Rng>::type>(
-                pika::parallel::detail::rotate<parallel::util::detail::
-                        in_out_result<pika::traits::range_iterator_t<Rng>,
-                            typename pika::traits::range_sentinel<Rng>::type>>()
+                pika::parallel::detail::rotate<parallel::detail::in_out_result<
+                    pika::traits::range_iterator_t<Rng>,
+                    typename pika::traits::range_sentinel<Rng>::type>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(),
                         pika::util::begin(rng), middle, pika::util::end(rng)));
         }
@@ -504,8 +504,7 @@ namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::rotate_copy
     template <typename I, typename O>
-    using rotate_copy_result =
-        pika::parallel::util::detail::in_out_result<I, O>;
+    using rotate_copy_result = pika::parallel::detail::in_out_result<I, O>;
 
     inline constexpr struct rotate_copy_t final
       : pika::detail::tag_parallel_algorithm<rotate_copy_t>
@@ -542,7 +541,7 @@ namespace pika::ranges {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             rotate_copy_result<FwdIter1, FwdIter2>>::type
         tag_fallback_invoke(pika::ranges::rotate_copy_t, ExPolicy&& policy,
             FwdIter1 first, FwdIter1 middle, Sent last, FwdIter2 dest_first)
@@ -587,7 +586,7 @@ namespace pika::ranges {
                 pika::traits::is_iterator_v<OutIter>
                 )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             rotate_copy_result<pika::traits::range_iterator_t<Rng>,
                 OutIter>>::type
         tag_fallback_invoke(pika::ranges::rotate_copy_t, ExPolicy&& policy,

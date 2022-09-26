@@ -91,7 +91,7 @@ namespace pika {
     ///           \a parallel_task_policy and returns void otherwise.
     ///
     template <typename ExPolicy, typename RandIter, typename Comp>
-    util::detail::algorithm_result_t<ExPolicy> partial_sort(
+    pika::parallel::detail::algorithm_result_t<ExPolicy> partial_sort(
         ExPolicy&& policy, RandIter first, RandIter middle, RandIter last,
         Comp&& comp = Comp());
 
@@ -123,6 +123,7 @@ namespace pika {
 #include <pika/parallel/util/compare_projected.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/detail/chunk_size.hpp>
+#include <pika/parallel/util/nbits.hpp>
 #include <pika/parallel/util/projection_identity.hpp>
 
 #include <algorithm>
@@ -139,49 +140,6 @@ namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // sort
     /// \cond NOINTERNAL
-    //////////////////////////////////////////////////////////////////////
-    ///
-    /// \brief Obtain the position of the most significant bit set in N
-    ///
-    /// \param num : Number to examine
-    ///
-    /// \return Position of the first bit set
-    ///
-    inline constexpr unsigned nbits64(std::uint64_t num) noexcept
-    {
-        unsigned nb = 0;
-        if (num >= (1ull << 32))
-        {
-            nb += 32;
-            num = (num >> 32);
-        }
-        if (num >= (1ull << 16))
-        {
-            nb += 16;
-            num = (num >> 16);
-        }
-        if (num >= (1ull << 8))
-        {
-            nb += 8;
-            num = (num >> 8);
-        }
-        if (num >= (1ull << 4))
-        {
-            nb += 4;
-            num = (num >> 4);
-        }
-        if (num >= (1ull << 2))
-        {
-            nb += 2;
-            num = (num >> 2);
-        }
-        if (num >= (1ull << 1))
-        {
-            nb += 1;
-            num = (num >> 1);
-        }
-        return nb;
-    }
 
     ///////////////////////////////////////////////////////////////////////
     ///
@@ -450,7 +408,7 @@ namespace pika::parallel::detail {
     template <typename Iter, typename Sent, typename Comp>
     Iter sequential_partial_sort(Iter first, Iter middle, Sent end, Comp&& comp)
     {
-        std::int64_t nelem = parallel::detail::distance(first, end);
+        std::int64_t nelem = (distance) (first, end);
         PIKA_ASSERT(nelem >= 0);
 
         std::int64_t nmid = middle - first;
@@ -458,14 +416,14 @@ namespace pika::parallel::detail {
 
         if (nmid > 1024)
         {
-            if (detail::is_sorted_sequential(first, middle, comp))
+            if (is_sorted_sequential(first, middle, comp))
             {
                 return first + nelem;
             }
         }
 
-        std::uint32_t level = detail::nbits64(nelem) * 2;
-        detail::recursive_partial_sort(
+        std::uint32_t level = nbits64(nelem) * 2;
+        recursive_partial_sort(
             first, middle, first + nelem, level, PIKA_FORWARD(Comp, comp));
         return first + nelem;
     }
@@ -485,7 +443,7 @@ namespace pika::parallel::detail {
     pika::future<Iter> parallel_partial_sort(
         ExPolicy&& policy, Iter first, Iter middle, Sent end, Comp&& comp)
     {
-        std::int64_t nelem = parallel::detail::distance(first, end);
+        std::int64_t nelem = (distance) (first, end);
         PIKA_ASSERT(nelem >= 0);
 
         std::int64_t nmid = middle - first;
@@ -493,22 +451,21 @@ namespace pika::parallel::detail {
 
         if (nmid > 1024)
         {
-            if (detail::is_sorted_sequential(first, middle, comp))
+            if (is_sorted_sequential(first, middle, comp))
             {
                 return pika::make_ready_future(first + nelem);
             }
         }
 
-        std::uint32_t level = parallel::detail::nbits64(nelem) * 2;
-        return detail::parallel_partial_sort(PIKA_FORWARD(ExPolicy, policy),
-            first, middle, first + nelem, level, PIKA_FORWARD(Comp, comp));
+        std::uint32_t level = nbits64(nelem) * 2;
+        return parallel_partial_sort(PIKA_FORWARD(ExPolicy, policy), first,
+            middle, first + nelem, level, PIKA_FORWARD(Comp, comp));
     }
 
     ///////////////////////////////////////////////////////////////////////
     // partial_sort
     template <typename RandIter>
-    struct partial_sort
-      : public detail::algorithm<partial_sort<RandIter>, RandIter>
+    struct partial_sort : public algorithm<partial_sort<RandIter>, RandIter>
     {
         partial_sort()
           : partial_sort::algorithm("partial_sort")
@@ -521,30 +478,28 @@ namespace pika::parallel::detail {
             Comp&& comp, Proj&& proj)
         {
             return sequential_partial_sort(first, middle, last,
-                util::compare_projected<Comp&, Proj&>(comp, proj));
+                compare_projected<Comp&, Proj&>(comp, proj));
         }
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-        parallel(ExPolicy&& policy, Iter first, Iter middle, Sent last,
-            Comp&& comp, Proj&& proj)
+        static typename algorithm_result<ExPolicy, Iter>::type parallel(
+            ExPolicy&& policy, Iter first, Iter middle, Sent last, Comp&& comp,
+            Proj&& proj)
         {
-            using algorithm_result =
-                util::detail::algorithm_result<ExPolicy, Iter>;
-
             try
             {
                 // call the sort routine and return the right type,
                 // depending on execution policy
-                return algorithm_result::get(parallel_partial_sort(
-                    PIKA_FORWARD(ExPolicy, policy), first, middle, last,
-                    util::compare_projected<Comp&, Proj&>(comp, proj)));
+                return algorithm_result<ExPolicy, Iter>::get(
+                    parallel_partial_sort(PIKA_FORWARD(ExPolicy, policy), first,
+                        middle, last,
+                        compare_projected<Comp&, Proj&>(comp, proj)));
             }
             catch (...)
             {
-                return algorithm_result::get(
-                    detail::handle_exception<ExPolicy, Iter>::call(
+                return algorithm_result<ExPolicy, Iter>::get(
+                    handle_exception<ExPolicy, Iter>::call(
                         std::current_exception()));
             }
         }
@@ -578,7 +533,7 @@ namespace pika {
             return parallel::detail::partial_sort<RandIter>().call(
                 pika::execution::seq, first, middle, last,
                 PIKA_FORWARD(Comp, comp),
-                parallel::util::detail::projection_identity());
+                parallel::detail::projection_identity());
         }
 
         // clang-format off
@@ -593,7 +548,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename parallel::detail::algorithm_result<ExPolicy,
             RandIter>::type
         tag_fallback_invoke(pika::partial_sort_t, ExPolicy&& policy,
             RandIter first, RandIter middle, RandIter last,
@@ -604,13 +559,13 @@ namespace pika {
                 "Requires at least random access iterator.");
 
             using algorithm_result =
-                parallel::util::detail::algorithm_result<ExPolicy, RandIter>;
+                parallel::detail::algorithm_result<ExPolicy, RandIter>;
 
             return algorithm_result::get(
                 parallel::detail::partial_sort<RandIter>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, middle, last,
                     PIKA_FORWARD(Comp, comp),
-                    parallel::util::detail::projection_identity()));
+                    parallel::detail::projection_identity()));
         }
     } partial_sort{};
 }    // namespace pika

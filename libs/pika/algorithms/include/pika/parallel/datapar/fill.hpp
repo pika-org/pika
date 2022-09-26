@@ -23,22 +23,20 @@ namespace pika::parallel::detail {
     struct datapar_fill
     {
         template <typename ExPolicy, typename Iter, typename Sent, typename T>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static typename std::enable_if<
-            util::detail::iterator_datapar_compatible<Iter>::value, Iter>::type
-        call(ExPolicy&& policy, Iter first, Sent last, T const& val)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static
+            typename std::enable_if<iterator_datapar_compatible<Iter>::value,
+                Iter>::type
+            call(ExPolicy&& policy, Iter first, Sent last, T const& val)
         {
-            pika::parallel::util::detail::loop_ind(
-                PIKA_FORWARD(ExPolicy, policy), first, last,
+            loop_ind(PIKA_FORWARD(ExPolicy, policy), first, last,
                 [&val](auto& v) { v = val; });
             return first;
         }
     };
 
     template <typename ExPolicy, typename Iter, typename Sent, typename T,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_vectorpack_execution_policy<ExPolicy>::value&&
-                pika::parallel::util::detail::iterator_datapar_compatible<
-                    Iter>::value)>
+        PIKA_CONCEPT_REQUIRES_(pika::is_vectorpack_execution_policy<
+            ExPolicy>::value&& iterator_datapar_compatible<Iter>::value)>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE Iter tag_invoke(sequential_fill_t,
         ExPolicy&& policy, Iter first, Sent last, T const& value)
     {
@@ -50,21 +48,20 @@ namespace pika::parallel::detail {
     struct datapar_fill_n
     {
         template <typename ExPolicy, typename Iter, typename T>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static typename std::enable_if<
-            util::detail::iterator_datapar_compatible<Iter>::value, Iter>::type
-        call(ExPolicy&&, Iter first, std::size_t count, T const& val)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static
+            typename std::enable_if<iterator_datapar_compatible<Iter>::value,
+                Iter>::type
+            call(ExPolicy&&, Iter first, std::size_t count, T const& val)
         {
-            pika::parallel::util::detail::loop_n_ind<std::decay_t<ExPolicy>>(
+            loop_n_ind<std::decay_t<ExPolicy>>(
                 first, count, [&val](auto& v) { v = val; });
             return first;
         }
     };
 
     template <typename ExPolicy, typename Iter, typename T,
-        PIKA_CONCEPT_REQUIRES_(
-            pika::is_vectorpack_execution_policy<ExPolicy>::value&&
-                pika::parallel::util::detail::iterator_datapar_compatible<
-                    Iter>::value)>
+        PIKA_CONCEPT_REQUIRES_(pika::is_vectorpack_execution_policy<
+            ExPolicy>::value&& iterator_datapar_compatible<Iter>::value)>
     PIKA_HOST_DEVICE PIKA_FORCEINLINE Iter tag_invoke(sequential_fill_n_t,
         ExPolicy&& policy, Iter first, std::size_t count, T const& value)
     {

@@ -56,10 +56,10 @@ namespace pika::ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj1       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of type dereferenced \a FwdIter.
     /// \tparam Proj2       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of type dereferenced \a FwdIter2.
     ///
     /// \param first        Refers to the beginning of the sequence of elements
@@ -106,8 +106,8 @@ namespace pika::ranges {
     ///
     template <typename FwdIter, typename Sent, typename FwdIter2,
         typename Sent2, typename Pred = pika::ranges::equal_to,
-        typename Proj1 = parallel::util::detail::projection_identity,
-        typename Proj2 = parallel::util::detail::projection_identity>
+        typename Proj1 = pika::parallel::detail::projection_identity,
+        typename Proj2 = pika::parallel::detail::projection_identity>
     FwdIter search(FwdIter first, Sent last, FwdIter2 s_first, Sent2 s_last,
         Pred&& op = Pred(), Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
 
@@ -144,10 +144,10 @@ namespace pika::ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj1       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of type dereferenced \a FwdIter.
     /// \tparam Proj2       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of type dereferenced \a FwdIter2.
     ///
     /// \param policy       The execution policy to use for the scheduling of
@@ -204,12 +204,11 @@ namespace pika::ranges {
     template <typename ExPolicy, typename FwdIter, typename Sent,
         typename FwdIter2, typename Sent2,
         typename Pred = pika::ranges::equal_to,
-        typename Proj1 = parallel::util::detail::projection_identity,
-        typename Proj2 = parallel::util::detail::projection_identity>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type search(
-        ExPolicy&& policy, FwdIter first, Sent last, FwdIter2 s_first,
-        Sent2 s_last, Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
-        Proj2&& proj2 = Proj2());
+        typename Proj1 = pika::parallel::detail::projection_identity,
+        typename Proj2 = pika::parallel::detail::projection_identity>
+    typename algorithm_result<ExPolicy, FwdIter>::type search(ExPolicy&& policy,
+        FwdIter first, Sent last, FwdIter2 s_first, Sent2 s_last,
+        Pred&& op = Pred(), Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
 
     /// Searches the range [first, last) for any elements in the range [s_first, s_last).
     /// Uses a provided predicate to compare elements.
@@ -230,10 +229,10 @@ namespace pika::ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj1       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of \a Rng1.
     /// \tparam Proj2       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of \a Rng2.
     ///
     /// \param rng1         Refers to the sequence of elements the algorithm
@@ -276,8 +275,8 @@ namespace pika::ranges {
     ///
     template <typename Rng1, typename Rng2,
         typename Pred = pika::ranges::equal_to,
-        typename Proj1 = pika::parallel::util::detail::projection_identity,
-        typename Proj2 = pika::parallel::util::detail::projection_identity>
+        typename Proj1 = pika::parallel::detail::projection_identity,
+        typename Proj2 = pika::parallel::detail::projection_identity>
     typename pika::traits::range_iterator<Rng1>::type search(Rng1&& rng1,
         Rng2&& rng2, Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
         Proj2&& proj2 = Proj2());
@@ -305,10 +304,10 @@ namespace pika::ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj1       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of \a Rng1.
     /// \tparam Proj2       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of \a Rng2.
     ///
     /// \param policy       The execution policy to use for the scheduling of
@@ -360,9 +359,9 @@ namespace pika::ranges {
     ///
     template <typename ExPolicy, typename Rng1, typename Rng2,
         typename Pred = pika::ranges::equal_to,
-        typename Proj1 = pika::parallel::util::detail::projection_identity,
-        typename Proj2 = pika::parallel::util::detail::projection_identity>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        typename Proj1 = pika::parallel::detail::projection_identity,
+        typename Proj2 = pika::parallel::detail::projection_identity>
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename pika::traits::range_iterator<Rng1>::type>::type
     search(ExPolicy&& policy, Rng1&& rng1, Rng2&& rng2, Pred&& op = Pred(),
         Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
@@ -436,8 +435,8 @@ namespace pika::ranges {
     ///
     template <typename FwdIter, typename FwdIter2, typename Sent2,
         typename Pred = pika::ranges::equal_to,
-        typename Proj1 = parallel::util::detail::projection_identity,
-        typename Proj2 = parallel::util::detail::projection_identity>
+        typename Proj1 = pika::parallel::detail::projection_identity,
+        typename Proj2 = pika::parallel::detail::projection_identity>
     FwdIter search_n(ExPolicy&& policy, FwdIter first, std::size_t count,
         FwdIter2 s_first, Sent s_last, Pred&& op = Pred(),
         Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
@@ -526,9 +525,9 @@ namespace pika::ranges {
     ///
     template <typename ExPolicy, typename FwdIter, typename FwdIter2,
         typename Sent2, typename Pred = pika::ranges::equal_to,
-        typename Proj1 = parallel::util::detail::projection_identity,
-        typename Proj2 = parallel::util::detail::projection_identity>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type search_n(
+        typename Proj1 = pika::parallel::detail::projection_identity,
+        typename Proj2 = pika::parallel::detail::projection_identity>
+    typename algorithm_result<ExPolicy, FwdIter>::type search_n(
         ExPolicy&& policy, FwdIter first, std::size_t count, FwdIter2 s_first,
         Sent2 s_last, Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
         Proj2&& proj2 = Proj2());
@@ -552,10 +551,10 @@ namespace pika::ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj1       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of \a Rng1.
     /// \tparam Proj2       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of \a Rng2.
     ///
     /// \param rng1         Refers to the sequence of elements the algorithm
@@ -599,8 +598,8 @@ namespace pika::ranges {
     ///
     template <typename Rng1, typename Rng2,
         typename Pred = pika::ranges::equal_to,
-        typename Proj1 = pika::parallel::util::detail::projection_identity,
-        typename Proj2 = pika::parallel::util::detail::projection_identity>
+        typename Proj1 = pika::parallel::detail::projection_identity,
+        typename Proj2 = pika::parallel::detail::projection_identity>
     typename pika::traits::range_iterator<Rng1>::type search_n(Rng1&& rng1,
         std::size_t count, Rng2&& rng2, Pred&& op = Pred(),
         Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
@@ -628,10 +627,10 @@ namespace pika::ranges {
     ///                     requirements of \a CopyConstructible. This defaults
     ///                     to std::equal_to<>
     /// \tparam Proj1       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of \a Rng1.
     /// \tparam Proj2       The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity and is applied
+    ///                     defaults to \a parallel::detail::projection_identity and is applied
     ///                     to the elements of \a Rng2.
     ///
     /// \param policy       The execution policy to use for the scheduling of
@@ -684,9 +683,9 @@ namespace pika::ranges {
     ///
     template <typename ExPolicy, typename Rng1, typename Rng2,
         typename Pred = pika::ranges::equal_to,
-        typename Proj1 = pika::parallel::util::detail::projection_identity,
-        typename Proj2 = pika::parallel::util::detail::projection_identity>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        typename Proj1 = pika::parallel::detail::projection_identity,
+        typename Proj2 = pika::parallel::detail::projection_identity>
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename pika::traits::range_iterator<Rng1>::type>::type
     search_n(ExPolicy&& policy, Rng1&& rng1, std::size_t count, Rng2&& rng2,
         Pred&& op = Pred(), Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
@@ -702,8 +701,8 @@ namespace pika::ranges {
         // clang-format off
         template <typename FwdIter, typename Sent, typename FwdIter2,
             typename Sent2, typename Pred = pika::ranges::equal_to,
-            typename Proj1 = parallel::util::detail::projection_identity,
-            typename Proj2 = parallel::util::detail::projection_identity,
+            typename Proj1 = pika::parallel::detail::projection_identity,
+            typename Proj2 = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value &&
@@ -734,8 +733,8 @@ namespace pika::ranges {
         template <typename ExPolicy, typename FwdIter, typename Sent,
                  typename FwdIter2, typename Sent2,
             typename Pred = pika::ranges::equal_to,
-            typename Proj1 = parallel::util::detail::projection_identity,
-            typename Proj2 = parallel::util::detail::projection_identity,
+            typename Proj1 = pika::parallel::detail::projection_identity,
+            typename Proj2 = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value &&
@@ -751,7 +750,7 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(pika::ranges::search_t, ExPolicy&& policy,
             FwdIter first, Sent last, FwdIter2 s_first, Sent2 s_last,
@@ -767,8 +766,8 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng1, typename Rng2,
             typename Pred = pika::ranges::equal_to,
-            typename Proj1 = pika::parallel::util::detail::projection_identity,
-            typename Proj2 = pika::parallel::util::detail::projection_identity,
+            typename Proj1 = pika::parallel::detail::projection_identity,
+            typename Proj2 = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng1>::value &&
                 pika::parallel::detail::is_projected_range<Proj1, Rng1>::value &&
@@ -800,8 +799,8 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng1, typename Rng2,
             typename Pred = pika::ranges::equal_to,
-            typename Proj1 = pika::parallel::util::detail::projection_identity,
-            typename Proj2 = pika::parallel::util::detail::projection_identity,
+            typename Proj1 = pika::parallel::detail::projection_identity,
+            typename Proj2 = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng1>::value &&
@@ -814,7 +813,7 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename pika::traits::range_iterator<Rng1>::type>::type
         tag_fallback_invoke(pika::ranges::search_t, ExPolicy&& policy,
             Rng1&& rng1, Rng2&& rng2, Pred&& op = Pred(),
@@ -840,8 +839,8 @@ namespace pika::ranges {
         // clang-format off
         template <typename FwdIter, typename FwdIter2, typename Sent2,
             typename Pred = pika::ranges::equal_to,
-            typename Proj1 = parallel::util::detail::projection_identity,
-            typename Proj2 = parallel::util::detail::projection_identity,
+            typename Proj1 = pika::parallel::detail::projection_identity,
+            typename Proj2 = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_forward_iterator<FwdIter>::value &&
                 parallel::detail::is_projected<Proj1, FwdIter>::value &&
@@ -870,8 +869,8 @@ namespace pika::ranges {
         template <typename ExPolicy, typename FwdIter, typename FwdIter2,
             typename Sent2,
             typename Pred = pika::ranges::equal_to,
-            typename Proj1 = parallel::util::detail::projection_identity,
-            typename Proj2 = parallel::util::detail::projection_identity,
+            typename Proj1 = pika::parallel::detail::projection_identity,
+            typename Proj2 = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value &&
@@ -885,7 +884,7 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(pika::ranges::search_n_t, ExPolicy&& policy,
             FwdIter first, std::size_t count, FwdIter2 s_first, Sent2 s_last,
@@ -901,8 +900,8 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng1, typename Rng2,
             typename Pred = pika::ranges::equal_to,
-            typename Proj1 = pika::parallel::util::detail::projection_identity,
-            typename Proj2 = pika::parallel::util::detail::projection_identity,
+            typename Proj1 = pika::parallel::detail::projection_identity,
+            typename Proj2 = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng1>::value &&
                 pika::parallel::detail::is_projected_range<Proj1, Rng1>::value &&
@@ -934,8 +933,8 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng1, typename Rng2,
             typename Pred = pika::ranges::equal_to,
-            typename Proj1 = pika::parallel::util::detail::projection_identity,
-            typename Proj2 = pika::parallel::util::detail::projection_identity,
+            typename Proj1 = pika::parallel::detail::projection_identity,
+            typename Proj2 = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng1>::value &&
@@ -948,7 +947,7 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename pika::traits::range_iterator<Rng1>::type>::type
         tag_fallback_invoke(pika::ranges::search_n_t, ExPolicy&& policy,
             Rng1&& rng1, std::size_t count, Rng2&& rng2, Pred&& op = Pred(),

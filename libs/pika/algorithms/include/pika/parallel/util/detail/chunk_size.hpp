@@ -24,7 +24,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename F, typename Future, typename FwdIter>
     // requires traits::is_future<Future>
     void add_ready_future(
@@ -114,8 +114,7 @@ namespace pika::parallel::util::detail {
     template <typename ExPolicy, typename Future, typename F1, typename FwdIter,
         typename Stride>
     // requires traits::is_future<Future>
-    pika::util::iterator_range<
-        parallel::util::detail::chunk_size_iterator<FwdIter>>
+    pika::util::iterator_range<chunk_size_iterator<FwdIter>>
     get_bulk_iteration_shape(std::false_type /*has_variable_chunk_size*/,
         ExPolicy&& policy, std::vector<Future>& workitems, F1&& f1,
         FwdIter& begin, std::size_t& count, Stride s)
@@ -168,7 +167,7 @@ namespace pika::parallel::util::detail {
             // clang-format on
         }
 
-        using iterator = parallel::util::detail::chunk_size_iterator<FwdIter>;
+        using iterator = chunk_size_iterator<FwdIter>;
 
         iterator shape_begin(begin, chunk_size, count);
         iterator shape_end(last, chunk_size, count, count);
@@ -264,8 +263,7 @@ namespace pika::parallel::util::detail {
     template <typename ExPolicy, typename Future, typename F1, typename FwdIter,
         typename Stride>
     // requires traits::is_future<Future>
-    pika::util::iterator_range<
-        parallel::util::detail::chunk_size_idx_iterator<FwdIter>>
+    pika::util::iterator_range<chunk_size_idx_iterator<FwdIter>>
     get_bulk_iteration_shape_idx(std::false_type /*has_variable_chunk_size*/,
         ExPolicy&& policy, std::vector<Future>& workitems, F1&& f1,
         FwdIter begin, std::size_t count, Stride s)
@@ -320,8 +318,7 @@ namespace pika::parallel::util::detail {
             // clang-format on
         }
 
-        using iterator =
-            parallel::util::detail::chunk_size_idx_iterator<FwdIter>;
+        using iterator = chunk_size_idx_iterator<FwdIter>;
 
         iterator shape_begin(begin, chunk_size, count, 0, base_idx);
         iterator shape_end(last, chunk_size, count, count, base_idx);
@@ -389,4 +386,4 @@ namespace pika::parallel::util::detail {
 
         return shape;
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

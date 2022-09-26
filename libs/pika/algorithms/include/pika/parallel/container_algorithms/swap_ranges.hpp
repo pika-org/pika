@@ -108,7 +108,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Sent1,
             typename FwdIter2, typename Sent2>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         swap_ranges_result<FwdIter1, FwdIter2> >::type
     swap_ranges(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
         FwdIter2 first2, Sent2 last2);
@@ -201,7 +201,7 @@ namespace pika { namespace ranges {
     ///           element exchanged in the range beginning with \a first2.
     ///
     template <typename ExPolicy, typename Rng1, typename Rng2>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
     swap_ranges_result<pika::traits::range_iterator_t<Rng1>,
                 pika::traits::range_iterator_t<Rng2>>>::type
     swap_ranges(ExPolicy&& policy, ExPolicy&& policy, Rng1&& rng1,
@@ -229,7 +229,7 @@ namespace pika::ranges {
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter1, typename Iter2>
     using swap_ranges_result =
-        pika::parallel::util::detail::in_in_result<Iter1, Iter2>;
+        pika::parallel::detail::in_in_result<Iter1, Iter2>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::swap_ranges
@@ -272,7 +272,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent2, FwdIter2>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             swap_ranges_result<FwdIter1, FwdIter2>>::type
         tag_fallback_invoke(pika::ranges::swap_ranges_t, ExPolicy&& policy,
             FwdIter1 first1, Sent1 last1, FwdIter2 first2, Sent2 last2)
@@ -324,7 +324,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng2>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             swap_ranges_result<typename pika::traits::range_iterator_t<Rng1>,
                 typename pika::traits::range_iterator_t<Rng2>>>::type
         tag_fallback_invoke(pika::ranges::swap_ranges_t, ExPolicy&& policy,
