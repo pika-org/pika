@@ -588,6 +588,24 @@ void test_unique_any_sender_set_error()
     }
 }
 
+// (unique_)any_sender instantiates a set_stopped call, and should also
+// advertise that it can complete with set_stopped. transfer from the P2300
+// reference implementation is one algorithm that requires that the advertised
+// signatures match what is actuallly instantiated so we use that as a test
+// here. This will fail to compile if (unique_)any_sender doesn't have
+// set_stopped_t in its completion signatures.
+void test_any_sender_set_stopped()
+{
+    ex::any_sender<> as{ex::just()};
+    tt::sync_wait(ex::transfer(std::move(as), ex::std_thread_scheduler{}));
+}
+
+void test_unique_any_sender_set_stopped()
+{
+    ex::any_sender<> as{ex::just()};
+    tt::sync_wait(ex::transfer(std::move(as), ex::std_thread_scheduler{}));
+}
+
 // This tests that the empty vtable types used in the implementation of any_*
 // are not destroyed too early. We use ensure_started inside the function to
 // trigger the use of the empty vtables for any_receiver and
@@ -724,6 +742,10 @@ int main()
     // Failure paths
     test_any_sender_set_error();
     test_unique_any_sender_set_error();
+
+    // set_stopped
+    test_any_sender_set_stopped();
+    test_unique_any_sender_set_stopped();
 
     // Test use of *any_* in globals
     test_globals();
