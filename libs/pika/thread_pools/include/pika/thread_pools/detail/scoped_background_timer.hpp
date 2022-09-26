@@ -12,7 +12,7 @@
 #include <cstdint>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace threads {
+namespace pika::threads::detail {
 #if defined(PIKA_HAVE_BACKGROUND_THREAD_COUNTERS) &&                           \
     defined(PIKA_HAVE_THREAD_IDLE_RATES)
     ////////////////////////////////////////////////////////////////////////////
@@ -55,4 +55,4 @@ namespace pika { namespace threads {
         background_work_duration_counter& background_work_duration_;
     };
 #endif
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail
