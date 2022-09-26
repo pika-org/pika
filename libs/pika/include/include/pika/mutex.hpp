@@ -13,7 +13,6 @@
 #include <pika/thread_support/unlock_guard.hpp>
 
 namespace pika {
-    using pika::detail::unlock_guard;
     using pika::lcos::local::call_once;
     using pika::lcos::local::mutex;
     using pika::lcos::local::no_mutex;
