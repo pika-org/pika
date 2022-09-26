@@ -37,9 +37,13 @@ convert_xml: &convert_xml
     when: always
     command: |
         mkdir -p ${CIRCLE_JOB}
+        curl \
+          https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
+          --fail -o $HOME/conv.xsl
         xsltproc \
-          /pika/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
+          $HOME/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
           > ${CIRCLE_JOB}/Test.xml
+
 
 move_core_dump: &move_core_dump
     name: Moving core dumps
@@ -76,18 +80,10 @@ jobs:
     steps:
       - checkout:
           path: /pika/source
-      - run:
-          name: Downloading CTest XML to Junit XML
-          command: |
-              curl \
-                https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
-                --fail \
-                -o /pika/conv.xsl
       - persist_to_workspace:
           root: /pika
           paths:
             - ./source
-            - ./conv.xsl
 
   # Check circular dependencies with cpp-dependencies tool
   check_circular_deps:
@@ -354,7 +350,7 @@ jobs:
           command: |
               ulimit -c unlimited
               ctest \
-                -j2 \
+                -j4 \
                 --timeout 60 \
                 -T test \
                 --no-compress-output \
@@ -607,14 +603,14 @@ jobs:
             cmake --version
             # Install pika dependencies
             sudo apt install clang ninja-build libboost-regex-dev \
-            libboost-context-dev libhwloc-dev mpi-default-dev -y
+            libboost-context-dev libhwloc-dev mpi-default-dev xsltproc -y
             mkdir build
-          working_directory: /home/circleci/project
       - run:
-          name: Configure pika Arm64
+          name: Configuring pika Arm64
           command: |
             cmake \
-                /home/circleci/project/pika \
+                ./pika \
+                -Bbuild \
                 -G "Ninja" \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DCMAKE_CXX_COMPILER=clang++ \
@@ -639,14 +635,43 @@ jobs:
                 -DPIKA_WITH_STACKTRACES_STATIC_SYMBOLS=On \
                 -DPIKA_WITH_STACKTRACES_DEMANGLE_SYMBOLS=Off \
                 -DPIKA_WITH_TESTS_DEBUG_LOG=On \
-                -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=/build/debug-log-arm.txt \
+                -DPIKA_WITH_TESTS_DEBUG_LOG_DESTINATION=$HOME/project/build/debug-log.txt \
                 -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=On
+      - run:
+          name: Building pika Arm64
+          command: |
+            cd build
+            ninja -k 0 pika
+      - run:
+          name: Building tests Arm64
+          command: |
+            cd build
+            ninja -k 0 tests
+      - run:
+          name: Running tests Arm64
+          when: always
+          command: |
+            cd build
+            ulimit -c unlimited
+            ctest \
+              -j4 \
+              --timeout 500 \
+              -T test \
+              --no-compress-output \
+              --output-on-failure
+      - run:
+          <<: *convert_xml
           working_directory: /home/circleci/project/build
       - run:
-          name: Build pika Arm64
-          command: |
-            ninja -k 0 pika
+          <<: *move_core_dump
           working_directory: /home/circleci/project/build
+      - run:
+          <<: *move_debug_log
+          working_directory: /home/circleci/project/build
+      - store_test_results:
+          path: build/arm64_build
+      - store_artifacts:
+          path: build/arm64_build
 
 workflows:
   version: 2
@@ -720,6 +745,7 @@ workflows:
             - tests.regressions
             - tests.performance
             - tests.headers
+
   build-and-test-arm64:
     jobs:
       - arm64_build:
