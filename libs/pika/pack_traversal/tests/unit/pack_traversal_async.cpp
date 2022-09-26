@@ -36,19 +36,19 @@ struct not_accepted_tag
 
 struct thread_safe_counter
 {
-    using type = pika::util::atomic_count;
+    using type = pika::detail::atomic_count;
 
-    static unsigned int load(pika::util::atomic_count const& counter) noexcept
+    static unsigned int load(pika::detail::atomic_count const& counter) noexcept
     {
         return static_cast<unsigned int>(static_cast<long>(counter));
     }
 
-    static void increment(pika::util::atomic_count& counter) noexcept
+    static void increment(pika::detail::atomic_count& counter) noexcept
     {
         ++counter;
     }
 
-    static unsigned int decrement(pika::util::atomic_count& counter) noexcept
+    static unsigned int decrement(pika::detail::atomic_count& counter) noexcept
     {
         return static_cast<unsigned int>(--counter);
     }

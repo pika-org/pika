@@ -296,7 +296,7 @@ namespace pika { namespace detail {
 
             // Don't hold lock while executing callback so we don't block other
             // threads from unregistering callbacks.
-            util::unlock_guard<stop_state> ul(*this);
+            detail::unlock_guard<stop_state> ul(*this);
 
             bool is_removed = false;
             cb->is_removed_ = &is_removed;

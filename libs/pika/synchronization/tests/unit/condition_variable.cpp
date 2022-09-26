@@ -537,7 +537,7 @@ void test_condition_waits()
         PIKA_TEST(lock ? true : false);
 
         {
-            pika::util::unlock_guard<unique_lock> ul(lock);
+            pika::detail::unlock_guard<unique_lock> ul(lock);
             pika::this_thread::yield();
         }
 
@@ -549,7 +549,7 @@ void test_condition_waits()
         PIKA_TEST_EQ(data.awoken, 1);
 
         {
-            pika::util::unlock_guard<unique_lock> ul(lock);
+            pika::detail::unlock_guard<unique_lock> ul(lock);
             pika::this_thread::yield();
         }
 
@@ -561,7 +561,7 @@ void test_condition_waits()
         PIKA_TEST_EQ(data.awoken, 2);
 
         {
-            pika::util::unlock_guard<unique_lock> ul(lock);
+            pika::detail::unlock_guard<unique_lock> ul(lock);
             pika::this_thread::yield();
         }
 
@@ -573,7 +573,7 @@ void test_condition_waits()
         PIKA_TEST_EQ(data.awoken, 3);
 
         {
-            pika::util::unlock_guard<unique_lock> ul(lock);
+            pika::detail::unlock_guard<unique_lock> ul(lock);
             pika::this_thread::yield();
         }
 
@@ -585,7 +585,7 @@ void test_condition_waits()
         PIKA_TEST_EQ(data.awoken, 4);
 
         {
-            pika::util::unlock_guard<unique_lock> ul(lock);
+            pika::detail::unlock_guard<unique_lock> ul(lock);
             pika::this_thread::yield();
         }
 

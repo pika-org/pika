@@ -130,7 +130,7 @@ namespace pika::ensure_started_detail {
             PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
             using mutex_type = pika::lcos::local::spinlock;
             mutex_type mtx;
-            pika::util::atomic_count reference_count{0};
+            pika::detail::atomic_count reference_count{0};
             std::atomic<bool> start_called{false};
             std::atomic<bool> predecessor_done{false};
 

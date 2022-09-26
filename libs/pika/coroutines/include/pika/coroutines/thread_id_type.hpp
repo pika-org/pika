@@ -195,7 +195,7 @@ namespace pika::threads::detail {
             }
         }
 
-        util::atomic_count count_;
+        ::pika::detail::atomic_count count_;
     };
 
     ///////////////////////////////////////////////////////////////////////////

@@ -116,14 +116,14 @@ namespace pika::threads::detail {
 
     void thread_data::run_thread_exit_callbacks()
     {
-        std::unique_lock<pika::util::detail::spinlock> l(
+        std::unique_lock<pika::detail::spinlock> l(
             spinlock_pool::spinlock_for(this));
 
         while (!exit_funcs_.empty())
         {
             {
-                pika::util::unlock_guard<
-                    std::unique_lock<pika::util::detail::spinlock>>
+                pika::detail::unlock_guard<
+                    std::unique_lock<pika::detail::spinlock>>
                     ul(l);
                 if (!exit_funcs_.front().empty())
                     exit_funcs_.front()();
@@ -136,7 +136,7 @@ namespace pika::threads::detail {
     bool thread_data::add_thread_exit_callback(
         util::detail::function<void()> const& f)
     {
-        std::lock_guard<pika::util::detail::spinlock> l(
+        std::lock_guard<pika::detail::spinlock> l(
             spinlock_pool::spinlock_for(this));
 
         if (ran_exit_funcs_ ||
@@ -152,7 +152,7 @@ namespace pika::threads::detail {
 
     void thread_data::free_thread_exit_callbacks()
     {
-        std::lock_guard<pika::util::detail::spinlock> l(
+        std::lock_guard<pika::detail::spinlock> l(
             spinlock_pool::spinlock_for(this));
 
         // Exit functions should have been executed.

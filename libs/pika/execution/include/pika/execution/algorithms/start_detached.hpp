@@ -80,7 +80,7 @@ namespace pika::start_detached_detail {
         using allocator_type = typename std::allocator_traits<
             Allocator>::template rebind_alloc<operation_state_holder>;
         PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
-        pika::util::atomic_count count{0};
+        pika::detail::atomic_count count{0};
 
         using operation_state_type =
             pika::execution::experimental::connect_result_t<Sender,

@@ -20,5 +20,4 @@ namespace pika {
     using pika::lcos::local::recursive_mutex;
     using pika::lcos::local::spinlock;
     using pika::lcos::local::timed_mutex;
-    using pika::util::unlock_guard;
 }    // namespace pika

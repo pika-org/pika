@@ -16,7 +16,7 @@
 namespace pika::concurrency::detail {
     // Lockable spinlock class
     //
-    // This is equivalent to pika::util::detail::spinlock with the addition of
+    // This is equivalent to pika::detail::spinlock with the addition of
     // lock registration.
     struct spinlock
     {
@@ -24,7 +24,7 @@ namespace pika::concurrency::detail {
         PIKA_NON_COPYABLE(spinlock);
 
     private:
-        pika::util::detail::spinlock m;
+        pika::detail::spinlock m;
 
     public:
         spinlock(char const* /*desc*/ = nullptr)

@@ -38,7 +38,7 @@ namespace pika {
         // TODO: Does this need to be pika::lcos::local::spinlock?
         // using mutex_type = pika::lcos::local::spinlock;
         // TODO: Add correct initialization of pika::util::detail spinlock.
-        using mutex_type = pika::util::detail::spinlock;
+        using mutex_type = pika::detail::spinlock;
 
         using exception_list_type = std::list<std::exception_ptr>;
         exception_list_type exceptions_;

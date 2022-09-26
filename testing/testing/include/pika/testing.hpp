@@ -35,7 +35,7 @@ namespace pika { namespace util {
         struct fixture final
         {
         public:
-            using mutex_type = pika::util::detail::spinlock;
+            using mutex_type = pika::detail::spinlock;
 
         private:
             std::ostream& stream_;

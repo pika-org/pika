@@ -150,7 +150,7 @@ namespace pika {
         {
             pika::exception ex;
             {
-                util::unlock_guard<std::unique_lock<mutex_type>> ul(l);
+                detail::unlock_guard<std::unique_lock<mutex_type>> ul(l);
                 ex = pika::exception(pika::get_error(e));
             }
 

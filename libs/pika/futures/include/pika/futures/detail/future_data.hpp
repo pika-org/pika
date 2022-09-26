@@ -118,7 +118,7 @@ namespace pika { namespace lcos { namespace detail {
         friend void intrusive_ptr_add_ref(future_data_refcnt_base* p) noexcept;
         friend void intrusive_ptr_release(future_data_refcnt_base* p) noexcept;
 
-        util::atomic_count count_;
+        ::pika::detail::atomic_count count_;
     };
 
     /// support functions for pika::intrusive_ptr

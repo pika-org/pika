@@ -13,7 +13,7 @@
 
 #include <pika/thread_support/set_thread_name.hpp>
 
-namespace pika { namespace util {
+namespace pika::detail {
     DWORD const MS_VC_EXCEPTION = 0x406D1388;
 
 #pragma pack(push, 8)
@@ -44,6 +44,6 @@ namespace pika { namespace util {
         {
         }
     }
-}}    // namespace pika::util
+}    // namespace pika::detail
 
 #endif

@@ -14,7 +14,7 @@
 #include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace util { namespace detail {
+namespace pika::util::detail {
     PIKA_HAS_MEMBER_XXX_TRAIT_DEF(owns_lock)
 
     template <typename Lock>
@@ -42,7 +42,7 @@ namespace pika { namespace util { namespace detail {
         PIKA_ASSERT(!l.owns_lock());
         PIKA_UNUSED(l);
     }
-}}}    // namespace pika::util::detail
+}    // namespace pika::util::detail
 
 #define PIKA_ASSERT_OWNS_LOCK(l) ::pika::util::detail::assert_owns_lock(l, 0L)
 

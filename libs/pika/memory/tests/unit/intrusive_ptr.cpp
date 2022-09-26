@@ -40,7 +40,7 @@ namespace N {
     class base
     {
     private:
-        mutable pika::util::atomic_count use_count_;
+        mutable pika::detail::atomic_count use_count_;
 
         base(base const&) = delete;
         base& operator=(base const&) = delete;
