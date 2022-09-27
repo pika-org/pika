@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace experimental {
+namespace pika::execution::experimental {
     namespace detail {
         enum class async_rw_mutex_access_type
         {
@@ -721,4 +721,4 @@ namespace pika { namespace experimental {
         shared_state_ptr_type prev_state;
         shared_state_ptr_type state;
     };
-}}    // namespace pika::experimental
+}    // namespace pika::execution::experimental
