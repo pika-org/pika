@@ -624,7 +624,6 @@ jobs:
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_EXAMPLES=On \
-                -DPIKA_WITH_GENERIC_CONTEXT_COROUTINES=On \
                 -DPIKA_WITH_TESTS=On \
                 -DPIKA_WITH_TESTS_HEADERS=On \
                 -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=On \
