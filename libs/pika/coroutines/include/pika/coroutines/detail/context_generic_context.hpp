@@ -92,7 +92,9 @@ namespace pika::threads::coroutines {
 
             void* allocate(std::size_t size) const
             {
-#if defined(_POSIX_VERSION)
+#if defined(_POSIX_VERSION) &&                                                 \
+    !(defined(__APPLE__) &&                                                    \
+        (defined(arm64) || defined(__arm64) || defined(__arm64__)))
                 void* limit = posix::alloc_stack(size);
                 posix::watermark_stack(limit, size);
 #else
