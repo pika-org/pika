@@ -204,13 +204,25 @@ int pika_main()
                 try
                 {
                     tt::sync_wait(mpi::transform_mpi(
-                        ex::just(data, count, datatype, -1, comm), MPI_Ibcast));
+                        ex::just(data, count, MPI_DATATYPE_NULL, -1, comm),
+                        MPI_Ibcast));
                     PIKA_TEST(false);
                 }
-                catch (std::runtime_error const& e)
+                catch (pika::exception const& e)
                 {
+                    PIKA_TEST_EQ(e.get_error(), pika::error::invalid_status);
+
+                    // Different MPI implementations print different error
+                    // messages. We handle MPICH and OpenMPI explicitly and
+                    // hope that for the rest it's enough to check that a
+                    // pika::exception was thrown with invalid_status.
+#if defined(MPICH)
                     PIKA_TEST(std::string(e.what()).find(std::string(
-                                  "invalid root")) != std::string::npos);
+                                  "Invalid datatype")) != std::string::npos);
+#elif defined(OPEN_MPI)
+                    PIKA_TEST(std::string(e.what()).find(std::string(
+                                  "MPI_ERR_TYPE")) != std::string::npos);
+#endif
                     exception_thrown = true;
                 }
                 PIKA_TEST(exception_thrown);
@@ -228,7 +240,8 @@ int pika_main()
                 try
                 {
                     tt::sync_wait(mpi::transform_mpi(
-                        ex::just(data, count, datatype, -1, comm), MPI_Ibcast));
+                        ex::just(data, count, MPI_DATATYPE_NULL, -1, comm),
+                        MPI_Ibcast));
                     PIKA_TEST(false);
                 }
                 catch (std::runtime_error const&)
