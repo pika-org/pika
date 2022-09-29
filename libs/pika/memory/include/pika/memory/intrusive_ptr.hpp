@@ -65,9 +65,16 @@ namespace pika { namespace memory {
                 intrusive_ptr_add_ref(px);
         }
 
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuse-after-free"
+#endif
         intrusive_ptr(intrusive_ptr const& rhs)
           : px(rhs.px)
         {
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+#pragma GCC diagnostic pop
+#endif
             if (px != nullptr)
                 intrusive_ptr_add_ref(px);
         }

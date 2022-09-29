@@ -46,7 +46,7 @@ pipeline {
                     }
                     axis {
                          name 'build_type'
-                         values 'Debug' // 'Release'
+                         values 'Debug', 'Release'
                     }
                 }
                 stages {
