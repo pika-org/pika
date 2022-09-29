@@ -16,4 +16,8 @@ spack_spec="pika@main arch=${spack_arch} %${spack_compiler} malloc=system cxxstd
 configure_extra_options+=" -DPIKA_WITH_CXX_STANDARD=${cxx_std}"
 configure_extra_options+=" -DPIKA_WITH_MAX_CPU_COUNT=128"
 configure_extra_options+=" -DPIKA_WITH_MALLOC=system"
+configure_extra_options+=" -DPIKA_WITH_MPI=ON"
+configure_extra_options+=" -DMPIEXEC_EXECUTABLE=$(which srun)"
 configure_extra_options+=" -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
+
+export MPICH_MAX_THREAD_SAFETY=multiple
