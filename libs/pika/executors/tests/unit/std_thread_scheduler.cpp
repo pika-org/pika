@@ -692,8 +692,6 @@ void test_when_all_vector()
 
 void test_ensure_started()
 {
-    // TODO: No default implementation in P2300 reference implementation.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     ex::std_thread_scheduler sched{};
 
     {
@@ -711,6 +709,9 @@ void test_ensure_started()
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
 
+    // TODO: The split sender in the P2300 reference implementation is not
+    // copyable.
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     {
         auto s =
             ex::transfer_just(sched, 42) | ex::ensure_started() | ex::split();
@@ -719,17 +720,18 @@ void test_ensure_started()
         PIKA_TEST_EQ(tt::sync_wait(s), 42);
         PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 42);
     }
+#endif
 
     // It's allowed to discard the sender from ensure_started
     {
         ex::schedule(ex::std_thread_scheduler{}) | ex::ensure_started();
     }
-#endif
 }
 
 void test_ensure_started_when_all()
 {
-    // TODO: No default implementation in P2300 reference implementation.
+    // TODO: The split sender in the P2300 reference implementation is not
+    // copyable.
 #if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     ex::std_thread_scheduler sched{};
 

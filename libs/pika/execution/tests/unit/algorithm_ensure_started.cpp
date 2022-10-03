@@ -30,9 +30,6 @@ auto tag_invoke(ex::ensure_started_t, custom_sender_tag_invoke s,
 
 int main()
 {
-    // TODO: ensure_started doesn't have a default implementation in the
-    // reference implementation.
-#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     // Success path
     {
         std::atomic<bool> set_value_called{false};
@@ -167,6 +164,9 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
+    // We don't test internal implementation details of the P2300 reference
+    // implementation
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     // Chained ensure_started calls do not create new shared states
     {
         std::atomic<bool> receiver_set_value_called{false};
@@ -195,6 +195,7 @@ int main()
         ex::start(os);
         PIKA_TEST(receiver_set_value_called);
     }
+#endif
 
     // It's allowed to discard the sender from ensure_started
     {
@@ -204,10 +205,6 @@ int main()
     {
         test_adl_isolation(ex::ensure_started(my_namespace::my_sender{}));
     }
-#else
-    // No tests with the P2300 reference implementation
-    PIKA_TEST(true);
-#endif
 
     return 0;
 }
