@@ -20,7 +20,7 @@ jobs:
   build:
     name: github/linux/fetchcontent/fast
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-base:8
+    container: pikaorg/pika-ci-base:10
 
     steps:
     - uses: actions/checkout@v2
