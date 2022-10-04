@@ -53,6 +53,8 @@ status = [
   "jenkins/cscs-daint/clang-13-release",
   "jenkins/cscs-daint/clang-14-cuda-debug",
   "jenkins/cscs-daint/clang-14-cuda-release",
+  "jenkins/cscs-daint/clang-15-debug",
+  "jenkins/cscs-daint/clang-15-release",
   "jenkins/cscs-daint/gcc-9-debug",
   "jenkins/cscs-daint/gcc-9-release",
   "jenkins/cscs-daint/gcc-10-apex-debug",
