@@ -47,12 +47,19 @@ namespace pika::let_value_detail {
             predecessor_sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
 
+        template <typename Tuple>
+        struct predecessor_value_types_helper
+        {
+            using type = pika::util::detail::transform_t<Tuple, std::decay>;
+        };
+
         // Type of the potential values returned from the predecessor sender
         template <template <typename...> class Tuple,
             template <typename...> class Variant>
-        using predecessor_value_types =
-            typename pika::execution::experimental::sender_traits<std::decay_t<
-                PredecessorSender>>::template value_types<Tuple, Variant>;
+        using predecessor_value_types = pika::util::detail::transform_t<
+            typename pika::execution::experimental::sender_traits<
+                PredecessorSender>::template value_types<Tuple, Variant>,
+            predecessor_value_types_helper>;
 
         template <typename Tuple>
         struct successor_sender_types_helper;
@@ -268,9 +275,9 @@ namespace pika::let_value_detail {
                 {
                     pika::detail::try_catch_exception_ptr(
                         [&]() {
-                            op_state.predecessor_ts
-                                .template emplace<std::tuple<Ts...>>(
-                                    PIKA_FORWARD(Ts, ts)...);
+                            op_state.predecessor_ts.template emplace<
+                                std::tuple<std::decay_t<Ts>...>>(
+                                PIKA_FORWARD(Ts, ts)...);
                             pika::detail::visit(
                                 set_value_visitor{PIKA_MOVE(receiver),
                                     PIKA_MOVE(f), op_state},
@@ -287,7 +294,8 @@ namespace pika::let_value_detail {
                     pika::execution::experimental::set_value_t,
                     let_value_predecessor_receiver&& r, Ts&&... ts) noexcept
                     -> decltype(std::declval<predecessor_ts_type>()
-                                    .template emplace<std::tuple<Ts...>>(
+                                    .template emplace<
+                                        std::tuple<std::decay_t<Ts>...>>(
                                         PIKA_FORWARD(Ts, ts)...),
                         void())
                 {
