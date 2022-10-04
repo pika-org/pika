@@ -46,7 +46,7 @@ void test_jthread_without_token()
         });
 
         // wait until t has set all initial values
-        for (int i = 0; !all_set.load(); ++i)
+        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
         {
             pika::this_thread::yield();
         }
@@ -80,7 +80,8 @@ void test_jthread_with_token()
                 all_set.store(true);
 
                 // wait until interrupt is signaled
-                for (int i = 0; !stoptoken.stop_requested(); ++i)
+                for ([[maybe_unused]] int i = 0; !stoptoken.stop_requested();
+                     ++i)
                 {
                     pika::this_thread::yield();
                 }
@@ -90,7 +91,7 @@ void test_jthread_with_token()
             ssource.get_token());
 
         // wait until t has set all initial values
-        for (int i = 0; !all_set.load(); ++i)
+        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
         {
             pika::this_thread::yield();
         }
@@ -133,7 +134,7 @@ void test_join()
         pika::jthread t([](pika::stop_token stoken) {
             // wait until interrupt is signaled (due to calling request_stop()
             // for the token)
-            for (int i = 0; !stoken.stop_requested(); ++i)
+            for ([[maybe_unused]] int i = 0; !stoken.stop_requested(); ++i)
             {
                 pika::this_thread::yield();
             }
@@ -186,7 +187,7 @@ void test_detach()
 
             // wait until interrupt is signaled (due to calling request_stop()
             // for the token)
-            for (int i = 0; !stoken.stop_requested(); ++i)
+            for ([[maybe_unused]] int i = 0; !stoken.stop_requested(); ++i)
             {
                 pika::this_thread::yield();
             }
@@ -195,7 +196,7 @@ void test_detach()
         });
 
         // wait until t has set all initial values
-        for (int i = 0; !all_set.load(); ++i)
+        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
         {
             pika::this_thread::yield();
         }
@@ -249,7 +250,7 @@ void test_pika_thread()
         bool caught_exception = false;
         try
         {
-            for (int i = 0;; ++i)
+            for ([[maybe_unused]] int i = 0;; ++i)
             {
                 if (shall_die.stop_requested())
                 {
@@ -277,7 +278,7 @@ void test_pika_thread()
     });
 
     // wait until t has set all initial values
-    for (int i = 0; !all_set.load(); ++i)
+    for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
     {
         pika::this_thread::yield();
     }
@@ -314,7 +315,7 @@ void test_temporarily_disable_token()
             state.store(State::loop);
             try
             {
-                for (int i = 0; i < 10; ++i)
+                for ([[maybe_unused]] int i = 0; i < 10; ++i)
                 {
                     if (actToken.stop_requested())
                     {
@@ -345,7 +346,7 @@ void test_temporarily_disable_token()
                     pika::this_thread::yield();
                 }
 
-                for (int i = 0; i < 10; ++i)
+                for ([[maybe_unused]] int i = 0; i < 10; ++i)
                 {
                     pika::this_thread::yield();
                 }
@@ -427,14 +428,14 @@ void test_jthread_api()
                 all_set.store(true);
 
                 // wait until interrupt is signaled (due to destructor of t)
-                for (int i = 0; !stoken.stop_requested(); ++i)
+                for ([[maybe_unused]] int i = 0; !stoken.stop_requested(); ++i)
                 {
                     pika::this_thread::yield();
                 }
             });
 
         // wait until t has set all initial values
-        for (int i = 0; !all_set.load(); ++i)
+        for ([[maybe_unused]] int i = 0; !all_set.load(); ++i)
         {
             pika::this_thread::yield();
         }

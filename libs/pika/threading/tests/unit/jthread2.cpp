@@ -31,7 +31,7 @@ void test_interrupt_by_destructor()
             try
             {
                 // loop until interrupted (at most 40 times the interval)
-                for (int i = 0; i < 40; ++i)
+                for ([[maybe_unused]] int i = 0; i < 40; ++i)
                 {
                     if (stoken.stop_requested())
                     {
@@ -81,7 +81,7 @@ void test_interrupt_started_thread()
             try
             {
                 // loop until interrupted (at most 40 times the interval)
-                for (int i = 0; i < 40; ++i)
+                for ([[maybe_unused]] int i = 0; i < 40; ++i)
                 {
                     if (stoken.stop_requested())
                     {
@@ -163,7 +163,8 @@ void test_exchange_token()
             int num_interrupts = 0;
             try
             {
-                for (int i = 0; num_interrupts < 2 && i < 500; ++i)
+                for ([[maybe_unused]] int i = 0; num_interrupts < 2 && i < 500;
+                     ++i)
                 {
                     // if we get a new interrupt token from the caller, take it
                     if (pstoken.load() != nullptr)
@@ -214,7 +215,7 @@ void test_concurrent_interrupt()
             try
             {
                 bool stop_requested = false;
-                for (int i = 0; !it.stop_requested(); ++i)
+                for ([[maybe_unused]] int i = 0; !it.stop_requested(); ++i)
                 {
                     // should never switch back once requested
                     if (stoken.stop_requested())
@@ -240,11 +241,11 @@ void test_concurrent_interrupt()
         // starts thread concurrently calling request_stop() for the same token
         std::vector<pika::jthread> tv;
         int num_requested_stops = 0;
-        for (int i = 0; i < num_threads; ++i)
+        for ([[maybe_unused]] int i = 0; i < num_threads; ++i)
         {
             std::this_thread::sleep_for(std::chrono::microseconds(100));
             pika::jthread t([&t1, &num_requested_stops] {
-                for (int i = 0; i < 13; ++i)
+                for ([[maybe_unused]] int i = 0; i < 13; ++i)
                 {
                     // only first call to request_stop should return true
                     num_requested_stops += (t1.request_stop() ? 1 : 0);
