@@ -4,6 +4,25 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.9.0 (2022-10-05)
+
+### New features
+
+- Signal handlers are now optional, they can be set with `--pika:install_signal_handlers=1`. They are enabled by default when `--pika:attach-debugger=exception` is set. ([#458](https://github.com/pika-org/pika/pull/458))
+
+### Breaking changes
+
+- The P2300 reference implementation is now found through a `find_package` instead of a `fetch_content` in CMake and is required when `PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION` in `ON`. ([#436](https://github.com/pika-org/pika/pull/436))
+- [whip](https://github.com/eth-cscs/whip) is now a dependency to replace the GPU abstraction layer we previously used. ([#423](https://github.com/pika-org/pika/pull/423))
+- Use rocBLAS directly instead of hipBLAS. ([#391](https://github.com/pika-org/pika/pull/391))
+- Move more internal functionality into the `detail` namespace. ([#445](https://github.com/pika-org/pika/pull/445), [#446](https://github.com/pika-org/pika/pull/446), [#449](https://github.com/pika-org/pika/pull/449), [#461](https://github.com/pika-org/pika/pull/461), [#462](https://github.com/pika-org/pika/pull/462))
+
+### Bugfixes
+
+- Add `set_stopped_t()` to `(unique_)any_sender` completion signatures. ([#464](https://github.com/pika-org/pika/pull/464))
+- Fix compilation on Arm64 with `PIKA_WITH_GENERIC_CONTEXT_COROUTINES=OFF`. ([#439](https://github.com/pika-org/pika/pull/439))
+- Add a missing default entry for `pika.diagnostics_on_terminate`. ([#458](https://github.com/pika-org/pika/pull/458))
+
 ## 0.8.0 (2022-09-07)
 
 ### New features
