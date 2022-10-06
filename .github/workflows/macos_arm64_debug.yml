@@ -1,0 +1,70 @@
+# Copyright (c) 2020-2022 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: macOS Arm64 CI (Debug)
+
+on:
+  push:
+    branches:
+      # Development and release branches
+      - main
+      - release**
+      # Bors branches
+      - trying
+      - staging
+
+jobs:
+  build_and_test:
+    name: github/macos_arm64/debug
+    runs-on: [ self-hosted, macOS, ARM64 ]
+    steps:
+    - name: Install dependencies
+      run: |
+          eval $(/opt/homebrew/bin/brew shellenv)
+          export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+          brew upgrade
+          brew update
+          brew install boost cmake hwloc ninja
+    - uses: actions/checkout@v2
+    - name: Configure
+      shell: bash
+      run: |
+          eval $(/opt/homebrew/bin/brew shellenv)
+          cmake \
+              . \
+              -Bbuild \
+              -GNinja \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DPIKA_WITH_MALLOC=system \
+              -DPIKA_WITH_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS=ON \
+              -DPIKA_WITH_TESTS_EXAMPLES=ON \
+              -DPIKA_WITH_TESTS_HEADERS=OFF \
+              -DPIKA_WITH_COMPILER_WARNINGS=ON \
+              -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON
+    - name: Build
+      shell: bash
+      run: |
+          eval $(/opt/homebrew/bin/brew shellenv)
+          cmake --build build --target all
+          cmake --build build --target examples
+          cmake --build build --target tests
+    - name: Test
+      shell: bash
+      run: |
+          eval $(/opt/homebrew/bin/brew shellenv)
+          cd build
+          ctest \
+            --timeout 300 \
+            --output-on-failure \
+            --exclude-regex \
+          "tests.unit.modules.algorithms.block.task_group|\
+          tests.unit.modules.init_runtime.const_args_init|\
+          tests.unit.modules.resource_partitioner|\
+          tests.unit.modules.schedulers.schedule_last|\
+          tests.regressions.modules.threading_base.thread_stacksize_current|\
+          tests.performance.local.start_stop|\
+          tests.regressions.multiple_init"
