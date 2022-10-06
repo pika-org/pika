@@ -25,7 +25,6 @@
 #include <pika/modules/logging.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/modules/timing.hpp>
-#include <pika/parallel/util/detail/handle_exception_termination_handler.hpp>
 #include <pika/program_options/parsers.hpp>
 #include <pika/program_options/variables_map.hpp>
 #include <pika/resource_partitioner/partitioner.hpp>

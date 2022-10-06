@@ -12,7 +12,6 @@
 #include <pika/executors/execution_policy.hpp>
 #include <pika/modules/async.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/parallel/util/detail/handle_exception_termination_handler.hpp>
 
 #include <exception>
 #include <list>
@@ -231,7 +230,7 @@ namespace pika::parallel::util::detail {
 #else
         [[noreturn]] static void call(std::exception_ptr const&)
         {
-            parallel_exception_termination_handler();
+            std::terminate();
         }
 #endif
 
@@ -245,7 +244,7 @@ namespace pika::parallel::util::detail {
         [[noreturn]] static void call(
             std::exception_ptr const&, std::list<std::exception_ptr>&)
         {
-            parallel_exception_termination_handler();
+            std::terminate();
         }
 #endif
 
@@ -261,7 +260,7 @@ namespace pika::parallel::util::detail {
             {
                 if (f.has_exception())
                 {
-                    parallel_exception_termination_handler();
+                    std::terminate();
                 }
             }
 #endif
@@ -279,7 +278,7 @@ namespace pika::parallel::util::detail {
             {
                 if (f.has_exception())
                 {
-                    parallel_exception_termination_handler();
+                    std::terminate();
                 }
             }
 #endif
@@ -298,7 +297,7 @@ namespace pika::parallel::util::detail {
             {
                 if (f.has_exception())
                 {
-                    parallel_exception_termination_handler();
+                    std::terminate();
                 }
             }
 #endif
@@ -317,7 +316,7 @@ namespace pika::parallel::util::detail {
 #else
         [[noreturn]] static void call(std::exception_ptr const&)
         {
-            parallel_exception_termination_handler();
+            std::terminate();
         }
 #endif
 
@@ -331,7 +330,7 @@ namespace pika::parallel::util::detail {
         [[noreturn]] static void call(
             std::exception_ptr const&, std::list<std::exception_ptr>&)
         {
-            parallel_exception_termination_handler();
+            std::terminate();
         }
 #endif
 
@@ -347,7 +346,7 @@ namespace pika::parallel::util::detail {
             {
                 if (f.has_exception())
                 {
-                    parallel_exception_termination_handler();
+                    std::terminate();
                 }
             }
 #endif
@@ -365,7 +364,7 @@ namespace pika::parallel::util::detail {
             {
                 if (f.has_exception())
                 {
-                    parallel_exception_termination_handler();
+                    std::terminate();
                 }
             }
 #endif
@@ -384,7 +383,7 @@ namespace pika::parallel::util::detail {
             {
                 if (f.has_exception())
                 {
-                    parallel_exception_termination_handler();
+                    std::terminate();
                 }
             }
 #endif

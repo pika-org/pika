@@ -170,7 +170,6 @@ set(algorithms_headers
     pika/parallel/util/detail/algorithm_result.hpp
     pika/parallel/util/detail/chunk_size.hpp
     pika/parallel/util/detail/chunk_size_iterator.hpp
-    pika/parallel/util/detail/handle_exception_termination_handler.hpp
     pika/parallel/util/detail/handle_local_exceptions.hpp
     pika/parallel/util/detail/partitioner_iteration.hpp
     pika/parallel/util/detail/scoped_executor_parameters.hpp
@@ -196,7 +195,7 @@ set(algorithms_headers
     pika/parallel/util/zip_iterator.hpp
 )
 
-set(algorithms_sources handle_exception_termination_handler.cpp task_group.cpp)
+set(algorithms_sources task_group.cpp)
 
 include(pika_add_module)
 pika_add_module(
