@@ -50,6 +50,17 @@ int main()
     }
 
     {
+        int x = 42;
+        std::atomic<bool> then_called{false};
+        ex::start_detached(
+            const_reference_sender<int>{x} | ex::then([&](auto& x) {
+                PIKA_TEST_EQ(x, 42);
+                then_called = true;
+            }));
+        PIKA_TEST(then_called);
+    }
+
+    {
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
