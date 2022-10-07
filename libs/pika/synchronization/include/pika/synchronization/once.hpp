@@ -17,7 +17,7 @@
 #include <atomic>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     struct once_flag
     {
     public:
@@ -86,4 +86,4 @@ namespace pika { namespace lcos { namespace local {
             flag.event_.wait();
         }
     }
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

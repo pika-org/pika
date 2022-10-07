@@ -22,7 +22,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     /// Latches are a thread coordination mechanism that allow one or more
     /// threads to block until an operation is completed. An individual latch
     /// is a singleuse object; once the operation has been completed, the latch
@@ -325,4 +325,4 @@ namespace pika { namespace lcos { namespace local {
             return false;
         }
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

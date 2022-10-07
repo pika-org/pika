@@ -20,7 +20,7 @@
 #include <cstdint>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     /// boost::mutex-compatible spinlock class
     struct spinlock_no_backoff
     {
@@ -102,4 +102,4 @@ namespace pika { namespace lcos { namespace local {
             return v_.load(std::memory_order_relaxed);
         }
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

@@ -21,7 +21,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
 
     ////////////////////////////////////////////////////////////////////////////
     // A simple but very high performance implementation of the channel concept.
@@ -219,4 +219,4 @@ namespace pika { namespace lcos { namespace local {
     template <typename T>
     using channel_mpsc = base_channel_mpsc<T, pika::lcos::local::spinlock>;
 
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

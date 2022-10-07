@@ -24,7 +24,7 @@
 #include <cstdint>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     // std::mutex-compatible spinlock class
     struct spinlock
     {
@@ -128,4 +128,4 @@ namespace pika { namespace lcos { namespace local {
             return v_.load(std::memory_order_relaxed);
         }
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

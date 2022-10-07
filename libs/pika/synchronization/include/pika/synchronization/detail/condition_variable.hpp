@@ -23,7 +23,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local { namespace detail {
+namespace pika::lcos::local::detail {
     class condition_variable
     {
     public:
@@ -193,4 +193,4 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         pika::detail::atomic_count count_;
     };
 
-}}}}    // namespace pika::lcos::local::detail
+}    // namespace pika::lcos::local::detail

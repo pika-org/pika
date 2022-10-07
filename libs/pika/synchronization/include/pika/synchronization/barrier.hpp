@@ -23,7 +23,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
 
     namespace detail {
 
@@ -281,6 +281,6 @@ namespace pika { namespace lcos { namespace local {
         mutable mutex_type mtx_;
         local::detail::condition_variable cond_;
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local
 
 #include <pika/config/warnings_suffix.hpp>

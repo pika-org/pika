@@ -12,7 +12,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     barrier::barrier(std::size_t number_of_threads)
       : number_of_threads_(number_of_threads)
       , total_(barrier_flag)
@@ -82,4 +82,4 @@ namespace pika { namespace lcos { namespace local {
         this->number_of_threads_ = number_of_threads;
     }
 
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

@@ -23,7 +23,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local { namespace detail {
+namespace pika::lcos::local::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     condition_variable::condition_variable() {}
@@ -264,4 +264,4 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         }
     }
 
-}}}}    // namespace pika::lcos::local::detail
+}    // namespace pika::lcos::local::detail

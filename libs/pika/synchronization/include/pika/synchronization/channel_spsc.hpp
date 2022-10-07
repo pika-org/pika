@@ -18,7 +18,7 @@
 #include <memory>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
 
     ////////////////////////////////////////////////////////////////////////////
     // A simple but very high performance implementation of the channel concept.
@@ -197,4 +197,4 @@ namespace pika { namespace lcos { namespace local {
         // this channel was closed, i.e. no further operations are possible
         std::atomic<bool> closed_;
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

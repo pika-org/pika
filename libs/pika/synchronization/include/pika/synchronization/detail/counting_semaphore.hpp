@@ -21,7 +21,7 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local { namespace detail {
+namespace pika::lcos::local::detail {
 
     class counting_semaphore
     {
@@ -53,7 +53,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         std::ptrdiff_t value_;
         local::detail::condition_variable cond_;
     };
-}}}}    // namespace pika::lcos::local::detail
+}    // namespace pika::lcos::local::detail
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
 #pragma warning(pop)

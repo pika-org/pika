@@ -16,7 +16,7 @@
 #include <utility>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local { namespace detail {
+namespace pika::lcos::local::detail {
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     sliding_semaphore::sliding_semaphore(
@@ -94,4 +94,4 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         signal(PIKA_MOVE(l), lower_limit_);
         return lower_limit_;
     }
-}}}}    // namespace pika::lcos::local::detail
+}    // namespace pika::lcos::local::detail

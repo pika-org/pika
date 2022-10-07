@@ -21,7 +21,7 @@
 #include <cstddef>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
 
 #if PIKA_HAVE_ITTNOTIFY != 0
     namespace detail {
@@ -121,4 +121,4 @@ namespace pika { namespace lcos { namespace local {
     template <typename Tag, std::size_t N>
     detail::itt_spinlock_init<Tag, N> spinlock_pool<Tag, N>::init_{};
 #endif
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local

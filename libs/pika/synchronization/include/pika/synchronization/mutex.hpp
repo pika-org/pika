@@ -17,7 +17,7 @@
 #include <pika/threading_base/threading_base_fwd.hpp>
 #include <pika/timing/steady_clock.hpp>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::lcos::local {
     ///////////////////////////////////////////////////////////////////////////
     class mutex
     {
@@ -92,4 +92,4 @@ namespace pika { namespace lcos { namespace local {
             return try_lock_for(rel_time, "mutex::try_lock_for", ec);
         }
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika::lcos::local
