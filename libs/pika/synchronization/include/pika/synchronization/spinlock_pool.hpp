@@ -39,13 +39,13 @@ namespace pika::lcos::local {
     {
     private:
         static pika::concurrency::detail::cache_aligned_data<
-            lcos::local::spinlock>
+            pika::spinlock>
             pool_[N];
 #if PIKA_HAVE_ITTNOTIFY != 0
         static detail::itt_spinlock_init<Tag, N> init_;
 #endif
     public:
-        static lcos::local::spinlock& spinlock_for(void const* pv) noexcept
+        static pika::spinlock& spinlock_for(void const* pv) noexcept
         {
             std::size_t i = util::fibhash<N>(reinterpret_cast<std::size_t>(pv));
             return pool_[i].data_;
@@ -54,7 +54,7 @@ namespace pika::lcos::local {
         class scoped_lock
         {
         private:
-            pika::lcos::local::spinlock& sp_;
+            pika::spinlock& sp_;
 
         public:
             PIKA_NON_COPYABLE(scoped_lock);
@@ -88,7 +88,7 @@ namespace pika::lcos::local {
     };
 
     template <typename Tag, std::size_t N>
-    pika::concurrency::detail::cache_aligned_data<lcos::local::spinlock>
+    pika::concurrency::detail::cache_aligned_data<pika::spinlock>
         spinlock_pool<Tag, N>::pool_[N];
 
 #if PIKA_HAVE_ITTNOTIFY != 0

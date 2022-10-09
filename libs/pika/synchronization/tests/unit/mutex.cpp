@@ -31,7 +31,7 @@ struct test_lock
     void operator()()
     {
         mutex_type mutex;
-        pika::lcos::local::condition_variable_any condition;
+        pika::condition_variable_any condition;
 
         // Test the lock's constructors.
         {
@@ -49,7 +49,7 @@ struct test_lock
         // No one is going to notify this condition variable.  We expect to
         // time out.
         PIKA_TEST(condition.wait_until(lock, xt) ==
-            pika::lcos::local::cv_status::timeout);
+            pika::cv_status::timeout);
         PIKA_TEST(lock ? true : false);
 
         // Test the lock and unlock methods.
@@ -69,7 +69,7 @@ struct test_trylock
     void operator()()
     {
         mutex_type mutex;
-        pika::lcos::local::condition_variable_any condition;
+        pika::condition_variable_any condition;
 
         // Test the lock's constructors.
         {
@@ -91,7 +91,7 @@ struct test_trylock
         // No one is going to notify this condition variable.  We expect to
         // time out.
         PIKA_TEST(condition.wait_until(lock, xt) ==
-            pika::lcos::local::cv_status::timeout);
+            pika::cv_status::timeout);
         PIKA_TEST(lock ? true : false);
 
         // Test the lock, unlock and trylock methods.
@@ -112,10 +112,10 @@ struct test_lock_times_out_if_other_thread_has_lock
     using Lock = std::unique_lock<Mutex>;
 
     Mutex m;
-    pika::lcos::local::mutex done_mutex;
+    pika::mutex done_mutex;
     bool done;
     bool locked;
-    pika::lcos::local::condition_variable_any done_cond;
+    pika::condition_variable_any done_cond;
 
     test_lock_times_out_if_other_thread_has_lock()
       : done(false)
@@ -128,7 +128,7 @@ struct test_lock_times_out_if_other_thread_has_lock
         Lock lock(m, std::defer_lock);
         lock.try_lock_for(std::chrono::milliseconds(50));
 
-        std::lock_guard<pika::lcos::local::mutex> lk(done_mutex);
+        std::lock_guard<pika::mutex> lk(done_mutex);
         locked = lock.owns_lock();
         done = true;
         done_cond.notify_one();
@@ -138,7 +138,7 @@ struct test_lock_times_out_if_other_thread_has_lock
     {
         Lock lock(m, std::chrono::milliseconds(50));
 
-        std::lock_guard<pika::lcos::local::mutex> lk(done_mutex);
+        std::lock_guard<pika::mutex> lk(done_mutex);
         locked = lock.owns_lock();
         done = true;
         done_cond.notify_one();
@@ -163,7 +163,7 @@ struct test_lock_times_out_if_other_thread_has_lock
         try
         {
             {
-                std::unique_lock<pika::lcos::local::mutex> lk(done_mutex);
+                std::unique_lock<pika::mutex> lk(done_mutex);
                 PIKA_TEST(done_cond.wait_for(lk, std::chrono::seconds(2),
                     pika::util::detail::bind(&this_type::is_done, this)));
                 PIKA_TEST(!locked);
@@ -203,7 +203,7 @@ struct test_timedlock
         test_lock_times_out_if_other_thread_has_lock<mutex_type>()();
 
         mutex_type mutex;
-        pika::lcos::local::condition_variable_any condition;
+        pika::condition_variable_any condition;
 
         // Test the lock's constructors.
         {
@@ -277,22 +277,22 @@ struct test_recursive_lock
 
 void test_mutex()
 {
-    test_lock<pika::lcos::local::mutex>()();
-    test_trylock<pika::lcos::local::mutex>()();
+    test_lock<pika::mutex>()();
+    test_trylock<pika::mutex>()();
 }
 
 void test_timed_mutex()
 {
-    test_lock<pika::lcos::local::timed_mutex>()();
-    test_trylock<pika::lcos::local::timed_mutex>()();
-    test_timedlock<pika::lcos::local::timed_mutex>()();
+    test_lock<pika::timed_mutex>()();
+    test_trylock<pika::timed_mutex>()();
+    test_timedlock<pika::timed_mutex>()();
 }
 
 //void test_recursive_mutex()
 //{
-//    test_lock<pika::lcos::local::recursive_mutex>()();
-//    test_trylock<pika::lcos::local::recursive_mutex>()();
-//    test_recursive_lock<pika::lcos::local::recursive_mutex>()();
+//    test_lock<pika::recursive_mutex>()();
+//    test_trylock<pika::recursive_mutex>()();
+//    test_recursive_lock<pika::recursive_mutex>()();
 //}
 //
 //void test_recursive_timed_mutex()

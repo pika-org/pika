@@ -19,7 +19,7 @@ using pika::program_options::options_description;
 using pika::program_options::variables_map;
 
 ///////////////////////////////////////////////////////////////////////////////
-void do_nothing(pika::lcos::local::barrier& b1, pika::lcos::local::barrier& b2)
+void do_nothing(pika::lcos::barrier& b1, pika::lcos::local::barrier& b2)
 {
     b1.wait();
     std::this_thread::sleep_for(
@@ -35,8 +35,8 @@ void test_thread_id_for_default_constructed_thread_is_default_constructed_id()
 
 void test_thread_id_for_running_thread_is_not_default_constructed_id()
 {
-    pika::lcos::local::barrier b1(2);
-    pika::lcos::local::barrier b2(2);
+    pika::lcos::barrier b1(2);
+    pika::lcos::barrier b2(2);
     pika::thread t(&do_nothing, std::ref(b1), std::ref(b2));
     b1.wait();
 
@@ -48,8 +48,8 @@ void test_thread_id_for_running_thread_is_not_default_constructed_id()
 
 void test_different_threads_have_different_ids()
 {
-    pika::lcos::local::barrier b1(3);
-    pika::lcos::local::barrier b2(3);
+    pika::lcos::barrier b1(3);
+    pika::lcos::barrier b2(3);
 
     pika::thread t(&do_nothing, std::ref(b1), std::ref(b2));
     pika::thread t2(&do_nothing, std::ref(b1), std::ref(b2));
@@ -64,8 +64,8 @@ void test_different_threads_have_different_ids()
 
 void test_thread_ids_have_a_total_order()
 {
-    pika::lcos::local::barrier b1(4);
-    pika::lcos::local::barrier b2(4);
+    pika::lcos::barrier b1(4);
+    pika::lcos::barrier b2(4);
 
     pika::thread t1(&do_nothing, std::ref(b1), std::ref(b2));
     pika::thread t2(&do_nothing, std::ref(b1), std::ref(b2));

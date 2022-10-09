@@ -33,7 +33,7 @@ namespace pika::lcos::local {
         PIKA_NON_COPYABLE(cpp20_latch);
 
     protected:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     public:
         /// Initialize the latch
@@ -175,7 +175,7 @@ namespace pika::lcos::local {
     protected:
         mutable pika::concurrency::detail::cache_line_data<mutex_type> mtx_;
         mutable pika::concurrency::detail::cache_line_data<
-            local::detail::condition_variable>
+            pika::detail::condition_variable>
             cond_;
         std::atomic<std::ptrdiff_t> counter_;
         bool notified_;

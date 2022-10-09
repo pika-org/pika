@@ -33,7 +33,7 @@ int pika_main()
 {
     std::vector<pika::thread> threads;
     std::atomic<bool> ready(false);
-    pika::lcos::local::shared_mutex stm;
+    pika::shared_mutex stm;
 
     for (int i = 0; i < writers; ++i)
     {
@@ -47,7 +47,7 @@ int pika_main()
 
             for (int j = 0; j < cycles; ++j)
             {
-                std::unique_lock<pika::lcos::local::shared_mutex> ul(stm);
+                std::unique_lock<pika::shared_mutex> ul(stm);
 
                 std::cout << "^^^ Writer " << i << " starting..." << std::endl;
                 pika::this_thread::sleep_for(milliseconds(dist(urng)));
@@ -74,7 +74,7 @@ int pika_main()
 
             for (int j = 0; j < cycles; ++j)
             {
-                std::shared_lock<pika::lcos::local::shared_mutex> sl(stm);
+                std::shared_lock<pika::shared_mutex> sl(stm);
 
                 std::cout << "Reader " << i << " starting..." << std::endl;
                 pika::this_thread::sleep_for(milliseconds(dist(urng)));

@@ -23,7 +23,7 @@ using pika::program_options::variables_map;
 
 using pika::threads::detail::register_work;
 
-using pika::lcos::local::barrier;
+using pika::lcos::barrier;
 
 using std::chrono::microseconds;
 

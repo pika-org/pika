@@ -117,7 +117,7 @@ private:
         }
     }
 
-    void wait_for_tasks(pika::lcos::local::barrier& finished)
+    void wait_for_tasks(pika::lcos::barrier& finished)
     {
         std::uint64_t const pending_count = pika::threads::get_thread_count(
             pika::execution::thread_priority::normal,
@@ -194,7 +194,7 @@ private:
         // Schedule a low-priority thread; when it is executed, it checks to
         // make sure all the tasks (which are normal priority) have been
         // executed, and then it
-        pika::lcos::local::barrier finished(2);
+        pika::lcos::barrier finished(2);
 
         pika::threads::detail::thread_init_data data(
             pika::threads::detail::make_thread_function_nullary(

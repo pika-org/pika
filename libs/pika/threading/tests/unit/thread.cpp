@@ -120,9 +120,9 @@ void test_id_comparison()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void interruption_point_thread(pika::lcos::local::spinlock* m, bool* failed)
+void interruption_point_thread(pika::spinlock* m, bool* failed)
 {
-    std::unique_lock<pika::lcos::local::spinlock> lk(*m);
+    std::unique_lock<pika::spinlock> lk(*m);
     pika::util::ignore_while_checking il(&lk);
     PIKA_UNUSED(il);
 
@@ -132,9 +132,9 @@ void interruption_point_thread(pika::lcos::local::spinlock* m, bool* failed)
 
 void do_test_thread_interrupts_at_interruption_point()
 {
-    pika::lcos::local::spinlock m;
+    pika::spinlock m;
     bool failed = false;
-    std::unique_lock<pika::lcos::local::spinlock> lk(m);
+    std::unique_lock<pika::spinlock> lk(m);
     pika::thread thrd(&interruption_point_thread, &m, &failed);
     thrd.interrupt();
     lk.unlock();
@@ -150,13 +150,13 @@ void test_thread_interrupts_at_interruption_point()
 
 ///////////////////////////////////////////////////////////////////////////////
 void disabled_interruption_point_thread(
-    pika::lcos::local::spinlock* m, pika::lcos::local::barrier* b, bool* failed)
+    pika::spinlock* m, pika::lcos::barrier* b, bool* failed)
 {
     pika::this_thread::disable_interruption dc;
     b->wait();
     try
     {
-        std::lock_guard<pika::lcos::local::spinlock> lk(*m);
+        std::lock_guard<pika::spinlock> lk(*m);
         pika::this_thread::interruption_point();
         *failed = false;
     }
@@ -170,8 +170,8 @@ void disabled_interruption_point_thread(
 
 void do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point()
 {
-    pika::lcos::local::spinlock m;
-    pika::lcos::local::barrier b(2);
+    pika::spinlock m;
+    pika::lcos::barrier b(2);
     bool caught = false;
     bool failed = true;
     pika::thread thrd(&disabled_interruption_point_thread, &m, &b, &failed);
@@ -179,7 +179,7 @@ void do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point()
                  // to disable interrupts.
     try
     {
-        std::unique_lock<pika::lcos::local::spinlock> lk(m);
+        std::unique_lock<pika::spinlock> lk(m);
         pika::util::ignore_while_checking il(&lk);
         PIKA_UNUSED(il);
 
@@ -296,7 +296,7 @@ void test_creation_through_reference_wrapper()
 // }
 
 void simple_sync_thread(
-    pika::lcos::local::barrier& b1, pika::lcos::local::barrier& b2)
+    pika::lcos::barrier& b1, pika::lcos::local::barrier& b2)
 {
     b1.wait();    // wait for both threads to be started
     // ... do nothing
@@ -307,8 +307,8 @@ void test_swap()
 {
     set_description("test_swap");
 
-    pika::lcos::local::barrier b1(3);
-    pika::lcos::local::barrier b2(3);
+    pika::lcos::barrier b1(3);
+    pika::lcos::barrier b2(3);
     pika::thread t1(&simple_sync_thread, std::ref(b1), std::ref(b2));
     pika::thread t2(&simple_sync_thread, std::ref(b1), std::ref(b2));
 

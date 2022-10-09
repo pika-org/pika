@@ -41,7 +41,7 @@ namespace pika::lcos::local {
     /// allowed to proceed, but will make sure that the difference between
     /// the (arbitrary) number passed to set and wait does not exceed a given
     /// threshold.
-    template <typename Mutex = pika::lcos::local::spinlock>
+    template <typename Mutex = pika::spinlock>
     class sliding_semaphore_var
     {
     private:

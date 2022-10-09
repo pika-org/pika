@@ -8,7 +8,7 @@
 
 #include <pika/config.hpp>
 
-namespace pika::lcos::local {
+namespace pika {
     struct no_mutex
     {
         void lock() {}
@@ -20,4 +20,4 @@ namespace pika::lcos::local {
 
         void unlock() {}
     };
-}    // namespace pika::lcos::local
+}    // namespace pika

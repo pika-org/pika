@@ -25,25 +25,25 @@
 
 #define CHECK_LOCKED_VALUE_EQUAL(mutex_name, value, expected_value)            \
     {                                                                          \
-        std::unique_lock<pika::lcos::local::mutex> lock(mutex_name);           \
+        std::unique_lock<pika::mutex> lock(mutex_name);           \
         PIKA_TEST_EQ(value, expected_value);                                   \
     }
 
 void test_multiple_readers()
 {
-    using shared_mutex_type = pika::lcos::local::shared_mutex;
-    using mutex_type = pika::lcos::local::mutex;
+    using shared_mutex_type = pika::shared_mutex;
+    using mutex_type = pika::mutex;
 
     unsigned const number_of_threads = 10;
 
     test::thread_group pool;
 
-    pika::lcos::local::shared_mutex rw_mutex;
+    pika::shared_mutex rw_mutex;
     unsigned unblocked_count = 0;
     unsigned simultaneous_running_count = 0;
     unsigned max_simultaneous_running = 0;
     mutex_type unblocked_count_mutex;
-    pika::lcos::local::condition_variable unblocked_condition;
+    pika::condition_variable unblocked_condition;
     mutex_type finish_mutex;
     std::unique_lock<mutex_type> finish_lock(finish_mutex);
 
@@ -86,19 +86,19 @@ void test_multiple_readers()
 
 void test_only_one_writer_permitted()
 {
-    using shared_mutex_type = pika::lcos::local::shared_mutex;
-    using mutex_type = pika::lcos::local::mutex;
+    using shared_mutex_type = pika::shared_mutex;
+    using mutex_type = pika::mutex;
 
     unsigned const number_of_threads = 10;
 
     test::thread_group pool;
 
-    pika::lcos::local::shared_mutex rw_mutex;
+    pika::shared_mutex rw_mutex;
     unsigned unblocked_count = 0;
     unsigned simultaneous_running_count = 0;
     unsigned max_simultaneous_running = 0;
     mutex_type unblocked_count_mutex;
-    pika::lcos::local::condition_variable unblocked_condition;
+    pika::condition_variable unblocked_condition;
     mutex_type finish_mutex;
     std::unique_lock<mutex_type> finish_lock(finish_mutex);
 
@@ -135,17 +135,17 @@ void test_only_one_writer_permitted()
 
 void test_reader_blocks_writer()
 {
-    using shared_mutex_type = pika::lcos::local::shared_mutex;
-    using mutex_type = pika::lcos::local::mutex;
+    using shared_mutex_type = pika::shared_mutex;
+    using mutex_type = pika::mutex;
 
     test::thread_group pool;
 
-    pika::lcos::local::shared_mutex rw_mutex;
+    pika::shared_mutex rw_mutex;
     unsigned unblocked_count = 0;
     unsigned simultaneous_running_count = 0;
     unsigned max_simultaneous_running = 0;
     mutex_type unblocked_count_mutex;
-    pika::lcos::local::condition_variable unblocked_condition;
+    pika::condition_variable unblocked_condition;
     mutex_type finish_mutex;
     std::unique_lock<mutex_type> finish_lock(finish_mutex);
 
@@ -195,18 +195,18 @@ void test_reader_blocks_writer()
 
 void test_unlocking_writer_unblocks_all_readers()
 {
-    using shared_mutex_type = pika::lcos::local::shared_mutex;
-    using mutex_type = pika::lcos::local::mutex;
+    using shared_mutex_type = pika::shared_mutex;
+    using mutex_type = pika::mutex;
 
     test::thread_group pool;
 
-    pika::lcos::local::shared_mutex rw_mutex;
-    std::unique_lock<pika::lcos::local::shared_mutex> write_lock(rw_mutex);
+    pika::shared_mutex rw_mutex;
+    std::unique_lock<pika::shared_mutex> write_lock(rw_mutex);
     unsigned unblocked_count = 0;
     unsigned simultaneous_running_count = 0;
     unsigned max_simultaneous_running = 0;
     mutex_type unblocked_count_mutex;
-    pika::lcos::local::condition_variable unblocked_condition;
+    pika::condition_variable unblocked_condition;
     mutex_type finish_mutex;
     std::unique_lock<mutex_type> finish_lock(finish_mutex);
 
@@ -257,19 +257,19 @@ void test_unlocking_writer_unblocks_all_readers()
 
 void test_unlocking_last_reader_only_unblocks_one_writer()
 {
-    using shared_mutex_type = pika::lcos::local::shared_mutex;
-    using mutex_type = pika::lcos::local::mutex;
+    using shared_mutex_type = pika::shared_mutex;
+    using mutex_type = pika::mutex;
 
     test::thread_group pool;
 
-    pika::lcos::local::shared_mutex rw_mutex;
+    pika::shared_mutex rw_mutex;
     unsigned unblocked_count = 0;
     unsigned simultaneous_running_readers = 0;
     unsigned max_simultaneous_readers = 0;
     unsigned simultaneous_running_writers = 0;
     unsigned max_simultaneous_writers = 0;
     mutex_type unblocked_count_mutex;
-    pika::lcos::local::condition_variable unblocked_condition;
+    pika::condition_variable unblocked_condition;
     mutex_type finish_reading_mutex;
     std::unique_lock<mutex_type> finish_reading_lock(finish_reading_mutex);
     mutex_type finish_writing_mutex;

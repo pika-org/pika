@@ -27,7 +27,7 @@ using pika::threads::detail::make_thread_function_nullary;
 using pika::threads::detail::register_work;
 using pika::threads::detail::thread_init_data;
 
-using pika::lcos::local::barrier;
+using pika::lcos::barrier;
 
 using pika::finalize;
 using pika::init;

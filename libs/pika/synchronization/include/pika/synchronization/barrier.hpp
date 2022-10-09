@@ -23,7 +23,7 @@
 #include <pika/config/warnings_prefix.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::lcos::local {
+namespace pika::lcos {
 
     namespace detail {
 
@@ -95,7 +95,7 @@ namespace pika::lcos::local {
         PIKA_NON_COPYABLE(cpp20_barrier);
 
     private:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     public:
         using arrival_token = bool;
@@ -222,7 +222,7 @@ namespace pika::lcos::local {
 
     private:
         mutable mutex_type mtx_;
-        mutable local::detail::condition_variable cond_;
+        mutable pika::detail::condition_variable cond_;
 
         std::ptrdiff_t expected_;
         std::ptrdiff_t arrived_;
@@ -242,7 +242,7 @@ namespace pika::lcos::local {
     class PIKA_EXPORT barrier
     {
     private:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
         static constexpr std::size_t barrier_flag = static_cast<std::size_t>(1)
             << (CHAR_BIT * sizeof(std::size_t) - 1);
@@ -279,8 +279,8 @@ namespace pika::lcos::local {
         std::size_t total_;
 
         mutable mutex_type mtx_;
-        local::detail::condition_variable cond_;
+        pika::detail::condition_variable cond_;
     };
-}    // namespace pika::lcos::local
+}    // namespace pika::lcos
 
 #include <pika/config/warnings_suffix.hpp>

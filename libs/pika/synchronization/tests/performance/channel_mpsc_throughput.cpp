@@ -38,7 +38,7 @@ constexpr int NUM_TESTS = 100000000;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-inline data channel_get(pika::lcos::local::channel_mpsc<data> const& c)
+inline data channel_get(pika::lcos::channel_mpsc<data> const& c)
 {
     data result;
     while (!c.get(&result))
@@ -48,7 +48,7 @@ inline data channel_get(pika::lcos::local::channel_mpsc<data> const& c)
     return result;
 }
 
-inline void channel_set(pika::lcos::local::channel_mpsc<data>& c, data&& val)
+inline void channel_set(pika::lcos::channel_mpsc<data>& c, data&& val)
 {
     while (!c.set(std::move(val)))    // NOLINT
     {
@@ -58,7 +58,7 @@ inline void channel_set(pika::lcos::local::channel_mpsc<data>& c, data&& val)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Produce
-double thread_func_0(pika::lcos::local::channel_mpsc<data>& c)
+double thread_func_0(pika::lcos::channel_mpsc<data>& c)
 {
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -73,7 +73,7 @@ double thread_func_0(pika::lcos::local::channel_mpsc<data>& c)
 }
 
 // Consume
-double thread_func_1(pika::lcos::local::channel_mpsc<data>& c)
+double thread_func_1(pika::lcos::channel_mpsc<data>& c)
 {
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -93,7 +93,7 @@ double thread_func_1(pika::lcos::local::channel_mpsc<data>& c)
 
 int pika_main()
 {
-    pika::lcos::local::channel_mpsc<data> c(10000);
+    pika::lcos::channel_mpsc<data> c(10000);
 
     pika::future<double> producer = pika::async(thread_func_0, std::ref(c));
     pika::future<double> consumer = pika::async(thread_func_1, std::ref(c));

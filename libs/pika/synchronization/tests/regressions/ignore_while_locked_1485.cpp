@@ -20,8 +20,8 @@
 
 struct wait_for_flag
 {
-    pika::lcos::local::spinlock mutex;
-    pika::lcos::local::condition_variable_any cond_var;
+    pika::spinlock mutex;
+    pika::condition_variable_any cond_var;
 
     wait_for_flag()
       : flag(false)
@@ -29,8 +29,8 @@ struct wait_for_flag
     {
     }
 
-    void wait(pika::lcos::local::spinlock& local_mutex,
-        pika::lcos::local::condition_variable_any& local_cond_var,
+    void wait(pika::spinlock& local_mutex,
+        pika::condition_variable_any& local_cond_var,
         bool& running)
     {
         bool first = true;
@@ -40,7 +40,7 @@ struct wait_for_flag
             if (first)
             {
                 {
-                    std::lock_guard<pika::lcos::local::spinlock> lk(
+                    std::lock_guard<pika::spinlock> lk(
                         local_mutex);
                     running = true;
                 }
@@ -49,7 +49,7 @@ struct wait_for_flag
                 local_cond_var.notify_all();
             }
 
-            std::unique_lock<pika::lcos::local::spinlock> lk(mutex);
+            std::unique_lock<pika::spinlock> lk(mutex);
             if (!flag)
             {
                 cond_var.wait(mutex);
@@ -67,15 +67,15 @@ void test_condition_with_mutex()
     wait_for_flag data;
 
     bool running = false;
-    pika::lcos::local::spinlock local_mutex;
-    pika::lcos::local::condition_variable_any local_cond_var;
+    pika::spinlock local_mutex;
+    pika::condition_variable_any local_cond_var;
 
     pika::thread thread(&wait_for_flag::wait, std::ref(data),
         std::ref(local_mutex), std::ref(local_cond_var), std::ref(running));
 
     // wait for the thread to run
     {
-        std::unique_lock<pika::lcos::local::spinlock> lk(local_mutex);
+        std::unique_lock<pika::spinlock> lk(local_mutex);
         // NOLINTNEXTLINE(bugprone-infinite-loop)
         while (!running)
             local_cond_var.wait(lk);
@@ -85,7 +85,7 @@ void test_condition_with_mutex()
     data.flag.store(true);
 
     {
-        std::lock_guard<pika::lcos::local::spinlock> lock(data.mutex);
+        std::lock_guard<pika::spinlock> lock(data.mutex);
         pika::util::ignore_all_while_checking il;
         PIKA_UNUSED(il);
 

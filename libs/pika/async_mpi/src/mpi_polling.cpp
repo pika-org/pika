@@ -55,7 +55,7 @@ namespace pika::mpi::experimental {
 
         // -----------------------------------------------------------------
         /// Spinlock is used as it can be called by OS threads or pika tasks
-        using mutex_type = pika::lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
         // -----------------------------------------------------------------
         /// Queries an environment variable to get/override a default value for
@@ -70,7 +70,7 @@ namespace pika::mpi::experimental {
         struct mpi_stream
         {
             mutex_type throttling_mtx_;
-            pika::lcos::local::condition_variable throttling_cond_;
+            pika::condition_variable throttling_cond_;
             std::atomic<std::uint32_t> in_flight_{0};
             std::uint32_t limit_{get_throttling_default()};
             std::uint32_t index;

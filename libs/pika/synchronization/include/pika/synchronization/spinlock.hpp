@@ -24,7 +24,7 @@
 #include <cstdint>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::lcos::local {
+namespace pika {
     // std::mutex-compatible spinlock class
     struct spinlock
     {
@@ -35,7 +35,7 @@ namespace pika::lcos::local {
         std::atomic<bool> v_;
 
     public:
-        spinlock(char const* const desc = "pika::lcos::local::spinlock")
+        spinlock(char const* const desc = "pika::spinlock")
           : v_(false)
         {
             PIKA_ITT_SYNC_CREATE(this, desc, "");
@@ -76,7 +76,7 @@ namespace pika::lcos::local {
             do
             {
                 util::yield_while([this] { return is_locked(); },
-                    "pika::lcos::local::spinlock::lock");
+                    "pika::spinlock::lock");
             } while (!acquire_lock());
 
             PIKA_ITT_SYNC_ACQUIRED(this);
@@ -128,4 +128,4 @@ namespace pika::lcos::local {
             return v_.load(std::memory_order_relaxed);
         }
     };
-}    // namespace pika::lcos::local
+}    // namespace pika

@@ -24,7 +24,7 @@ namespace pika::lcos::local {
     class event
     {
     private:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     public:
         /// \brief Construct a new event semaphore
@@ -86,7 +86,7 @@ namespace pika::lcos::local {
         }
 
         mutex_type mtx_;    ///< This mutex protects the queue.
-        local::detail::condition_variable cond_;
+        pika::detail::condition_variable cond_;
 
         std::atomic<bool> event_;
     };

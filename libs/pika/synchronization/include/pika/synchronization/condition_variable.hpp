@@ -25,7 +25,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::lcos::local {
+namespace pika {
     enum class cv_status
     {
         no_timeout,
@@ -435,4 +435,4 @@ namespace pika::lcos::local {
     private:
         pika::concurrency::detail::cache_aligned_data_derived<data_type> data_;
     };
-}    // namespace pika::lcos::local
+}    // namespace pika

@@ -41,7 +41,7 @@ namespace pika::lcos::local {
     // the semaphore, or several threads waiting for one other thread to touch
     // this semaphore.
     template <std::ptrdiff_t LeastMaxValue = PTRDIFF_MAX,
-        typename Mutex = pika::lcos::local::spinlock>
+        typename Mutex = pika::spinlock>
     class cpp20_counting_semaphore
     {
     public:
@@ -160,7 +160,7 @@ namespace pika::lcos::local {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Mutex = pika::lcos::local::spinlock>
+    template <typename Mutex = pika::spinlock>
     class cpp20_binary_semaphore : public cpp20_counting_semaphore<1, Mutex>
     {
     public:
@@ -176,7 +176,7 @@ namespace pika::lcos::local {
     };
 
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Mutex = pika::lcos::local::spinlock, int N = 0>
+    template <typename Mutex = pika::spinlock, int N = 0>
     class counting_semaphore_var : cpp20_counting_semaphore<PTRDIFF_MAX, Mutex>
     {
     private:

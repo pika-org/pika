@@ -28,8 +28,8 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
     auto cons_sleep = std::chrono::duration<double, std::milli>{cons_sec};
 
     std::vector<int> items;
-    pika::lcos::local::mutex items_mtx;
-    pika::lcos::local::condition_variable_any items_cv;
+    pika::mutex items_mtx;
+    pika::condition_variable_any items_cv;
     pika::stop_source ssource;
     pika::stop_token stoken{ssource.get_token()};
     constexpr size_t max_queue_size = 100;
@@ -37,7 +37,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
     pika::thread producer{[&] {
         auto next_value = [val = 0]() mutable { return ++val; };
 
-        std::unique_lock<pika::lcos::local::mutex> lock{items_mtx};
+        std::unique_lock<pika::mutex> lock{items_mtx};
         while (!stoken.stop_requested())
         {
             if (!items_cv.wait(lock, stoken,
@@ -54,7 +54,7 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
                 int item;
 
                 {
-                    pika::detail::unlock_guard<pika::lcos::local::mutex> ul(
+                    pika::detail::unlock_guard<pika::mutex> ul(
                         items_mtx);
                     item = next_value();
                     if (prod_sec > 0)
@@ -72,11 +72,11 @@ void producer_consumer(double prod_sec, double cons_sec, bool interrupt)
     }};
 
     pika::thread consumer{[&] {
-        std::unique_lock<pika::lcos::local::mutex> lock{items_mtx};
+        std::unique_lock<pika::mutex> lock{items_mtx};
         for (;;)
         {
             {
-                pika::detail::unlock_guard<pika::lcos::local::mutex> ul(
+                pika::detail::unlock_guard<pika::mutex> ul(
                     items_mtx);
                 if (cons_sec > 0)
                 {

@@ -40,10 +40,10 @@ namespace pika {
     struct spmd_block
     {
     private:
-        using barrier_type = pika::lcos::local::barrier;
+        using barrier_type = pika::lcos::barrier;
         using table_type =
             std::map<std::set<std::size_t>, std::shared_ptr<barrier_type>>;
-        using mutex_type = pika::lcos::local::mutex;
+        using mutex_type = pika::mutex;
 
     public:
         explicit spmd_block(std::size_t num_images, std::size_t image_id,
@@ -145,10 +145,10 @@ namespace pika {
         struct spmd_block_helper
         {
         private:
-            using barrier_type = pika::lcos::local::barrier;
+            using barrier_type = pika::lcos::barrier;
             using table_type =
                 std::map<std::set<std::size_t>, std::shared_ptr<barrier_type>>;
-            using mutex_type = pika::lcos::local::mutex;
+            using mutex_type = pika::mutex;
 
         public:
             std::shared_ptr<barrier_type> barrier_;
@@ -180,10 +180,10 @@ namespace pika {
             using first_type =
                 typename pika::util::detail::first_argument<ftype>::type;
 
-            using barrier_type = pika::lcos::local::barrier;
+            using barrier_type = pika::lcos::barrier;
             using table_type =
                 std::map<std::set<std::size_t>, std::shared_ptr<barrier_type>>;
-            using mutex_type = pika::lcos::local::mutex;
+            using mutex_type = pika::mutex;
 
             static_assert(std::is_same<spmd_block, first_type>::value,
                 "define_spmd_block() needs a function or lambda that "
@@ -217,10 +217,10 @@ namespace pika {
             using first_type =
                 typename pika::util::detail::first_argument<ftype>::type;
 
-            using barrier_type = pika::lcos::local::barrier;
+            using barrier_type = pika::lcos::barrier;
             using table_type =
                 std::map<std::set<std::size_t>, std::shared_ptr<barrier_type>>;
-            using mutex_type = pika::lcos::local::mutex;
+            using mutex_type = pika::mutex;
 
             static_assert(std::is_same<spmd_block, first_type>::value,
                 "define_spmd_block() needs a lambda that "

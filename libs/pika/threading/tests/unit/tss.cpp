@@ -17,8 +17,8 @@
 #include <utility>
 #include <vector>
 
-pika::lcos::local::spinlock check_mutex;
-pika::lcos::local::spinlock tss_mutex;
+pika::spinlock check_mutex;
+pika::spinlock tss_mutex;
 int tss_instances = 0;
 int tss_total = 0;
 
@@ -27,14 +27,14 @@ struct tss_value_t
     tss_value_t(pika::lcos::local::promise<void> pp)
       : p(std::move(pp))
     {
-        std::unique_lock<pika::lcos::local::spinlock> lock(tss_mutex);
+        std::unique_lock<pika::spinlock> lock(tss_mutex);
         ++tss_instances;
         ++tss_total;
         value = 0;
     }
     ~tss_value_t()
     {
-        std::unique_lock<pika::lcos::local::spinlock> lock(tss_mutex);
+        std::unique_lock<pika::spinlock> lock(tss_mutex);
         --tss_instances;
         pika::util::ignore_while_checking il(&lock);
         p.set_value();

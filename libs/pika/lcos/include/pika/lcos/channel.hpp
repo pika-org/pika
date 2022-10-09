@@ -97,7 +97,7 @@ namespace pika { namespace lcos { namespace local {
         template <typename T>
         class unlimited_channel : public channel_impl_base<T>
         {
-            using mutex_type = pika::lcos::local::spinlock;
+            using mutex_type = pika::spinlock;
 
         public:
             PIKA_NON_COPYABLE(unlimited_channel);
@@ -404,7 +404,7 @@ namespace pika { namespace lcos { namespace local {
         template <typename T>
         class one_element_channel : public channel_impl_base<T>
         {
-            using mutex_type = pika::lcos::local::spinlock;
+            using mutex_type = pika::spinlock;
 
         public:
             PIKA_NON_COPYABLE(one_element_channel);

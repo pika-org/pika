@@ -16,7 +16,7 @@
 #include <shared_mutex>
 #include <utility>
 
-namespace pika::lcos::local {
+namespace pika {
 
     template <typename Mutex>
     class upgrade_to_unique_lock;
@@ -250,4 +250,4 @@ namespace pika::lcos::local {
             return exclusive.mutex();
         }
     };
-}    // namespace pika::lcos::local
+}    // namespace pika

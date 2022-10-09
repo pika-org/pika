@@ -46,7 +46,7 @@ namespace pika::detail {
         void lock() noexcept
         {
             // Wait for lock to be released without generating cache misses
-            // Similar implementation to pika::lcos::local::spinlock
+            // Similar implementation to pika::spinlock
             unsigned k = 0;
             while (!try_lock())
             {

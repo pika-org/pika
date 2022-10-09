@@ -21,7 +21,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika::lcos::local {
+namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     mutex::mutex(char const* const description)
       : owner_id_(threads::detail::invalid_thread_id)
@@ -168,4 +168,4 @@ namespace pika::lcos::local {
         owner_id_ = self_id;
         return true;
     }
-}    // namespace pika::lcos::local
+}    // namespace pika

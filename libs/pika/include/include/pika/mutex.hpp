@@ -11,13 +11,3 @@
 #include <pika/synchronization/once.hpp>
 #include <pika/synchronization/recursive_mutex.hpp>
 #include <pika/thread_support/unlock_guard.hpp>
-
-namespace pika {
-    using pika::lcos::local::call_once;
-    using pika::lcos::local::mutex;
-    using pika::lcos::local::no_mutex;
-    using pika::lcos::local::once_flag;
-    using pika::lcos::local::recursive_mutex;
-    using pika::lcos::local::spinlock;
-    using pika::lcos::local::timed_mutex;
-}    // namespace pika

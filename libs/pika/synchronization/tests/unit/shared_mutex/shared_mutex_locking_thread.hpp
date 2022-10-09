@@ -21,20 +21,20 @@ namespace test {
     class locking_thread
     {
     private:
-        pika::lcos::local::shared_mutex& rw_mutex;
+        pika::shared_mutex& rw_mutex;
         unsigned& unblocked_count;
-        pika::lcos::local::condition_variable& unblocked_condition;
+        pika::condition_variable& unblocked_condition;
         unsigned& simultaneous_running_count;
         unsigned& max_simultaneous_running;
-        pika::lcos::local::mutex& unblocked_count_mutex;
-        pika::lcos::local::mutex& finish_mutex;
+        pika::mutex& unblocked_count_mutex;
+        pika::mutex& finish_mutex;
 
     public:
-        locking_thread(pika::lcos::local::shared_mutex& rw_mutex_,
+        locking_thread(pika::shared_mutex& rw_mutex_,
             unsigned& unblocked_count_,
-            pika::lcos::local::mutex& unblocked_count_mutex_,
-            pika::lcos::local::condition_variable& unblocked_condition_,
-            pika::lcos::local::mutex& finish_mutex_,
+            pika::mutex& unblocked_count_mutex_,
+            pika::condition_variable& unblocked_condition_,
+            pika::mutex& finish_mutex_,
             unsigned& simultaneous_running_count_,
             unsigned& max_simultaneous_running_)
           : rw_mutex(rw_mutex_)
@@ -54,7 +54,7 @@ namespace test {
 
             // increment count to show we're unblocked
             {
-                std::unique_lock<pika::lcos::local::mutex> ublock(
+                std::unique_lock<pika::mutex> ublock(
                     unblocked_count_mutex);
 
                 ++unblocked_count;
@@ -67,10 +67,10 @@ namespace test {
             }
 
             // wait to finish
-            std::unique_lock<pika::lcos::local::mutex> finish_lock(
+            std::unique_lock<pika::mutex> finish_lock(
                 finish_mutex);
             {
-                std::unique_lock<pika::lcos::local::mutex> ublock(
+                std::unique_lock<pika::mutex> ublock(
                     unblocked_count_mutex);
 
                 --simultaneous_running_count;
@@ -82,15 +82,15 @@ namespace test {
     class simple_writing_thread
     {
     private:
-        pika::lcos::local::shared_mutex& rwm;
-        pika::lcos::local::mutex& finish_mutex;
-        pika::lcos::local::mutex& unblocked_mutex;
+        pika::shared_mutex& rwm;
+        pika::mutex& finish_mutex;
+        pika::mutex& unblocked_mutex;
         unsigned& unblocked_count;
 
     public:
-        simple_writing_thread(pika::lcos::local::shared_mutex& rwm_,
-            pika::lcos::local::mutex& finish_mutex_,
-            pika::lcos::local::mutex& unblocked_mutex_,
+        simple_writing_thread(pika::shared_mutex& rwm_,
+            pika::mutex& finish_mutex_,
+            pika::mutex& unblocked_mutex_,
             unsigned& unblocked_count_)
           : rwm(rwm_)
           , finish_mutex(finish_mutex_)
@@ -101,12 +101,12 @@ namespace test {
 
         void operator()()
         {
-            std::unique_lock<pika::lcos::local::shared_mutex> lk(rwm);
+            std::unique_lock<pika::shared_mutex> lk(rwm);
             {
-                std::unique_lock<pika::lcos::local::mutex> ulk(unblocked_mutex);
+                std::unique_lock<pika::mutex> ulk(unblocked_mutex);
                 ++unblocked_count;
             }
-            std::unique_lock<pika::lcos::local::mutex> flk(finish_mutex);
+            std::unique_lock<pika::mutex> flk(finish_mutex);
         }
     };
 
@@ -114,15 +114,15 @@ namespace test {
     class simple_reading_thread
     {
     private:
-        pika::lcos::local::shared_mutex& rwm;
-        pika::lcos::local::mutex& finish_mutex;
-        pika::lcos::local::mutex& unblocked_mutex;
+        pika::shared_mutex& rwm;
+        pika::mutex& finish_mutex;
+        pika::mutex& unblocked_mutex;
         unsigned& unblocked_count;
 
     public:
-        simple_reading_thread(pika::lcos::local::shared_mutex& rwm_,
-            pika::lcos::local::mutex& finish_mutex_,
-            pika::lcos::local::mutex& unblocked_mutex_,
+        simple_reading_thread(pika::shared_mutex& rwm_,
+            pika::mutex& finish_mutex_,
+            pika::mutex& unblocked_mutex_,
             unsigned& unblocked_count_)
           : rwm(rwm_)
           , finish_mutex(finish_mutex_)
@@ -133,12 +133,12 @@ namespace test {
 
         void operator()()
         {
-            std::shared_lock<pika::lcos::local::shared_mutex> lk(rwm);
+            std::shared_lock<pika::shared_mutex> lk(rwm);
             {
-                std::unique_lock<pika::lcos::local::mutex> ulk(unblocked_mutex);
+                std::unique_lock<pika::mutex> ulk(unblocked_mutex);
                 ++unblocked_count;
             }
-            std::unique_lock<pika::lcos::local::mutex> flk(finish_mutex);
+            std::unique_lock<pika::mutex> flk(finish_mutex);
         }
     };
 }    // namespace test

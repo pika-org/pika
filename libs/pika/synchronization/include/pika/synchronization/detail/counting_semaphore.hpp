@@ -26,7 +26,7 @@ namespace pika::lcos::local::detail {
     class counting_semaphore
     {
     private:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     public:
         PIKA_EXPORT counting_semaphore(std::ptrdiff_t value = 0);
@@ -51,7 +51,7 @@ namespace pika::lcos::local::detail {
 
     private:
         std::ptrdiff_t value_;
-        local::detail::condition_variable cond_;
+        pika::detail::condition_variable cond_;
     };
 }    // namespace pika::lcos::local::detail
 

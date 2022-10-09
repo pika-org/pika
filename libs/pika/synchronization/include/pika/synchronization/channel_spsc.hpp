@@ -18,7 +18,7 @@
 #include <memory>
 #include <utility>
 
-namespace pika::lcos::local {
+namespace pika::lcos {
 
     ////////////////////////////////////////////////////////////////////////////
     // A simple but very high performance implementation of the channel concept.
@@ -168,7 +168,7 @@ namespace pika::lcos::local {
             if (!closed_.compare_exchange_weak(expected, true))
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "pika::lcos::local::channel_spsc::close",
+                    "pika::lcos::channel_spsc::close",
                     "attempting to close an already closed channel");
             }
             return 0;
@@ -197,4 +197,4 @@ namespace pika::lcos::local {
         // this channel was closed, i.e. no further operations are possible
         std::atomic<bool> closed_;
     };
-}    // namespace pika::lcos::local
+}    // namespace pika::lcos

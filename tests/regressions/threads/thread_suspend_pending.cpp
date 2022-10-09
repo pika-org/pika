@@ -22,7 +22,7 @@ using pika::program_options::variables_map;
 
 using pika::threads::detail::register_work;
 
-using pika::lcos::local::barrier;
+using pika::lcos::barrier;
 
 ///////////////////////////////////////////////////////////////////////////////
 void suspend_test(barrier& b, std::size_t iterations)

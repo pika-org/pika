@@ -49,7 +49,7 @@ namespace pika::cuda::experimental::detail {
     public:
         using event_callback_queue_type =
             concurrency::detail::ConcurrentQueue<event_callback>;
-        using mutex_type = pika::lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
         using event_callback_vector_type = std::vector<event_callback>;
 
         // Background progress function for async CUDA operations. Checks for

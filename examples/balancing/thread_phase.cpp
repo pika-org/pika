@@ -28,8 +28,8 @@ using pika::program_options::variables_map;
 
 using std::chrono::milliseconds;
 
-using pika::lcos::local::barrier;
-using pika::lcos::local::mutex;
+using pika::lcos::barrier;
+using pika::mutex;
 
 using pika::threads::detail::make_thread_function_nullary;
 using pika::threads::detail::register_thread;

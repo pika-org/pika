@@ -35,7 +35,7 @@ namespace pika::lcos::local {
           : v_(0)
         {
             PIKA_ITT_SYNC_CREATE(
-                this, "pika::lcos::local::spinlock_no_backoff", "");
+                this, "pika::spinlock_no_backoff", "");
         }
 
         ~spinlock_no_backoff()
@@ -50,7 +50,7 @@ namespace pika::lcos::local {
             while (!acquire_lock())
             {
                 util::yield_while([this] { return is_locked(); },
-                    "pika::lcos::local::spinlock_no_backoff::lock", false);
+                    "pika::spinlock_no_backoff::lock", false);
             }
 
             PIKA_ITT_SYNC_ACQUIRED(this);

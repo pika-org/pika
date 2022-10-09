@@ -11,5 +11,5 @@
 namespace pika {
 
     template <typename OnCompletion = lcos::local::detail::empty_oncompletion>
-    using barrier = lcos::local::cpp20_barrier<OnCompletion>;
+    using barrier = lcos::cpp20_barrier<OnCompletion>;
 }

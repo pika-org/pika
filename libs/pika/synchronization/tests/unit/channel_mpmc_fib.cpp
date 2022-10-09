@@ -26,7 +26,7 @@ int verify_fibonacci(int n)
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
-inline T channel_get(pika::lcos::local::channel_mpmc<T> const& c)
+inline T channel_get(pika::lcos::channel_mpmc<T> const& c)
 {
     T result;
     while (!c.get(&result))
@@ -37,7 +37,7 @@ inline T channel_get(pika::lcos::local::channel_mpmc<T> const& c)
 }
 
 template <typename T>
-inline void channel_set(pika::lcos::local::channel_mpmc<T>& c, T val)
+inline void channel_set(pika::lcos::channel_mpmc<T>& c, T val)
 {
     while (!c.set(std::move(val)))    // NOLINT
     {
@@ -46,8 +46,8 @@ inline void channel_set(pika::lcos::local::channel_mpmc<T>& c, T val)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void produce_numbers(pika::lcos::local::channel_mpmc<int>& c2,
-    pika::lcos::local::channel_mpmc<int>& c3)
+void produce_numbers(pika::lcos::channel_mpmc<int>& c2,
+    pika::lcos::channel_mpmc<int>& c3)
 {
     int f1 = 1, f2 = 0;
 
@@ -69,9 +69,9 @@ void produce_numbers(pika::lcos::local::channel_mpmc<int>& c2,
     }
 }
 
-void consume_numbers(int n, pika::lcos::local::channel_mpmc<bool>& c1,
-    pika::lcos::local::channel_mpmc<int>& c2,
-    pika::lcos::local::channel_mpmc<int>& c3)
+void consume_numbers(int n, pika::lcos::channel_mpmc<bool>& c1,
+    pika::lcos::channel_mpmc<int>& c2,
+    pika::lcos::channel_mpmc<int>& c3)
 {
     channel_set(c2, n);
 
@@ -87,9 +87,9 @@ void consume_numbers(int n, pika::lcos::local::channel_mpmc<bool>& c1,
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    pika::lcos::local::channel_mpmc<bool> c1(1);
-    pika::lcos::local::channel_mpmc<int> c2(1);
-    pika::lcos::local::channel_mpmc<int> c3(5);
+    pika::lcos::channel_mpmc<bool> c1(1);
+    pika::lcos::channel_mpmc<int> c2(1);
+    pika::lcos::channel_mpmc<int> c3(5);
 
     pika::future<void> producer =
         pika::async(&produce_numbers, std::ref(c2), std::ref(c3));

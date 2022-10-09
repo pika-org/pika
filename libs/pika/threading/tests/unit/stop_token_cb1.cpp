@@ -216,8 +216,8 @@ void test_callback_deregistration_doesnt_wait_for_others_to_finish_executing()
 {
     pika::stop_source src;
 
-    pika::lcos::local::mutex mut;
-    pika::lcos::local::condition_variable cv;
+    pika::mutex mut;
+    pika::condition_variable cv;
 
     bool release_callback = false;
     bool callback_executing = false;
@@ -230,7 +230,7 @@ void test_callback_deregistration_doesnt_wait_for_others_to_finish_executing()
     // Register a first callback that will signal when it starts executing
     // and then block until it receives a signal.
     auto f = [&] {
-        std::unique_lock<pika::lcos::local::mutex> lock{mut};
+        std::unique_lock<pika::mutex> lock{mut};
         callback_executing = true;
         cv.notify_all();
         cv.wait(lock, [&] { return release_callback; });
@@ -247,7 +247,7 @@ void test_callback_deregistration_doesnt_wait_for_others_to_finish_executing()
     // The signaling thread will remain blocked in this callback until we
     // release it.
     {
-        std::unique_lock<pika::lcos::local::mutex> lock{mut};
+        std::unique_lock<pika::mutex> lock{mut};
         cv.wait(lock, [&] { return callback_executing; });
     }
 
@@ -259,7 +259,7 @@ void test_callback_deregistration_doesnt_wait_for_others_to_finish_executing()
     // Finally, signal the callback to unblock and wait for the signaling
     // thread to finish.
     {
-        std::unique_lock<pika::lcos::local::mutex> lock{mut};
+        std::unique_lock<pika::mutex> lock{mut};
         release_callback = true;
         cv.notify_all();
     }
@@ -272,8 +272,8 @@ void test_callback_deregistration_blocks_until_callback_finishes()
 {
     pika::stop_source src;
 
-    pika::lcos::local::mutex mut;
-    pika::lcos::local::condition_variable cv;
+    pika::mutex mut;
+    pika::condition_variable cv;
 
     bool callback_registered = false;
 
@@ -284,7 +284,7 @@ void test_callback_deregistration_blocks_until_callback_finishes()
 
         {
             auto f = [&] {
-                std::unique_lock<pika::lcos::local::mutex> lock{mut};
+                std::unique_lock<pika::mutex> lock{mut};
                 callback_executing = true;
                 cv.notify_all();
                 lock.unlock();
@@ -297,7 +297,7 @@ void test_callback_deregistration_blocks_until_callback_finishes()
             pika::stop_callback<std::function<void()>> cb(src.get_token(), f);
 
             {
-                std::unique_lock<pika::lcos::local::mutex> lock{mut};
+                std::unique_lock<pika::mutex> lock{mut};
                 callback_registered = true;
                 cv.notify_all();
                 cv.wait(lock, [&] { return callback_executing; });
@@ -316,7 +316,7 @@ void test_callback_deregistration_blocks_until_callback_finishes()
     // since this will execute the callback which will try to
     // acquire the lock on the mutex.
     {
-        std::unique_lock<pika::lcos::local::mutex> lock{mut};
+        std::unique_lock<pika::mutex> lock{mut};
         cv.wait(lock, [&] { return callback_registered; });
     }
 

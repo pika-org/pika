@@ -24,8 +24,8 @@
 void test_cv_callback()
 {
     bool ready{false};
-    pika::lcos::local::mutex ready_mtx;
-    pika::lcos::local::condition_variable_any ready_cv;
+    pika::mutex ready_mtx;
+    pika::condition_variable_any ready_cv;
 
     bool cb_called{false};
     {
@@ -36,7 +36,7 @@ void test_cv_callback()
             };
             pika::stop_callback<std::function<void()>> cb(stoken, std::move(f));
 
-            std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
+            std::unique_lock<pika::mutex> lg{ready_mtx};
             ready_cv.wait(lg, stoken, [&ready] { return ready; });
         }};
 

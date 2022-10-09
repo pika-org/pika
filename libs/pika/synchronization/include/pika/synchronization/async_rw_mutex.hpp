@@ -37,7 +37,7 @@ namespace pika::execution::experimental {
                 std::shared_ptr<async_rw_mutex_shared_state>;
             std::optional<T> value;
             shared_state_ptr_type next_state;
-            pika::lcos::local::mutex mtx;
+            pika::mutex mtx;
             pika::detail::small_vector<pika::util::detail::unique_function<void(
                                            shared_state_ptr_type)>,
                 1>
@@ -95,7 +95,7 @@ namespace pika::execution::experimental {
             template <typename F>
             void add_continuation(F&& continuation)
             {
-                std::lock_guard<pika::lcos::local::mutex> l(mtx);
+                std::lock_guard<pika::mutex> l(mtx);
                 continuations.emplace_back(PIKA_FORWARD(F, continuation));
             }
         };
@@ -106,7 +106,7 @@ namespace pika::execution::experimental {
             using shared_state_ptr_type =
                 std::shared_ptr<async_rw_mutex_shared_state>;
             shared_state_ptr_type next_state;
-            pika::lcos::local::mutex mtx;
+            pika::mutex mtx;
             pika::detail::small_vector<pika::util::detail::unique_function<void(
                                            shared_state_ptr_type)>,
                 1>
@@ -145,7 +145,7 @@ namespace pika::execution::experimental {
             template <typename F>
             void add_continuation(F&& continuation)
             {
-                std::lock_guard<pika::lcos::local::mutex> l(mtx);
+                std::lock_guard<pika::mutex> l(mtx);
                 continuations.emplace_back(PIKA_FORWARD(F, continuation));
             }
         };

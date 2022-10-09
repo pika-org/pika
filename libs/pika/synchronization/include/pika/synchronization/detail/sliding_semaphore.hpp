@@ -25,7 +25,7 @@ namespace pika::lcos::local::detail {
     class sliding_semaphore
     {
     private:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     public:
         PIKA_EXPORT sliding_semaphore(
@@ -49,7 +49,7 @@ namespace pika::lcos::local::detail {
     private:
         std::int64_t max_difference_;
         std::int64_t lower_limit_;
-        local::detail::condition_variable cond_;
+        pika::detail::condition_variable cond_;
     };
 }    // namespace pika::lcos::local::detail
 

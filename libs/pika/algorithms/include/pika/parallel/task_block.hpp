@@ -95,7 +95,7 @@ namespace pika::parallel {
     {
     private:
         /// \cond NOINTERNAL
-        using mutex_type = pika::lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
         friend struct detail::define_task_block_impl;
 

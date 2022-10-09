@@ -211,7 +211,7 @@ namespace pika { namespace lcos { namespace detail {
     struct PIKA_EXPORT future_data_base<traits::detail::future_data_void>
       : future_data_refcnt_base
     {
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
         future_data_base() noexcept
           : state_(empty)
@@ -334,7 +334,7 @@ namespace pika { namespace lcos { namespace detail {
         mutable mutex_type mtx_;
         std::atomic<state> state_;    // current state
         completed_callback_vector_type on_completed_;
-        local::detail::condition_variable cond_;    // threads waiting in read
+        pika::detail::condition_variable cond_;    // threads waiting in read
     };
 
     struct in_place
