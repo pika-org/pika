@@ -7,9 +7,3 @@
 #pragma once
 
 #include <pika/synchronization/barrier.hpp>
-
-namespace pika {
-
-    template <typename OnCompletion = lcos::local::detail::empty_oncompletion>
-    using barrier = lcos::cpp20_barrier<OnCompletion>;
-}

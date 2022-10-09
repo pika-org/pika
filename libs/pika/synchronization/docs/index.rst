@@ -14,7 +14,7 @@ synchronization
 This module provides synchronization primitives which should be used rather than
 the C++ standard ones in |pika| threads:
 
-* :cpp:class:`pika::lcos::barrier`
+* :cpp:class:`pika::barrier`
 * :cpp:class:`pika::condition_variable`
 * :cpp:class:`pika::lcos::local::counting_semaphore`
 * :cpp:class:`pika::lcos::local::event`
@@ -34,4 +34,3 @@ for higher level synchronization facilities.
 
 See the :ref:`API reference <modules_synchronization_api>` of this module for more
 details.
-

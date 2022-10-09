@@ -28,7 +28,7 @@ using pika::program_options::variables_map;
 
 using std::chrono::milliseconds;
 
-using pika::lcos::barrier;
+using barrier = pika::barrier<>;
 using pika::mutex;
 
 using pika::threads::detail::make_thread_function_nullary;

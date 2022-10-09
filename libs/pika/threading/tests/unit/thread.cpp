@@ -150,10 +150,10 @@ void test_thread_interrupts_at_interruption_point()
 
 ///////////////////////////////////////////////////////////////////////////////
 void disabled_interruption_point_thread(
-    pika::spinlock* m, pika::lcos::barrier* b, bool* failed)
+    pika::spinlock* m, pika::barrier<>* b, bool* failed)
 {
     pika::this_thread::disable_interruption dc;
-    b->wait();
+    b->arrive_and_wait();
     try
     {
         std::lock_guard<pika::spinlock> lk(*m);
@@ -162,21 +162,21 @@ void disabled_interruption_point_thread(
     }
     catch (...)
     {
-        b->wait();
+        b->arrive_and_wait();
         throw;
     }
-    b->wait();
+    b->arrive_and_wait();
 }
 
 void do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point()
 {
     pika::spinlock m;
-    pika::lcos::barrier b(2);
+    pika::barrier<> b(2);
     bool caught = false;
     bool failed = true;
     pika::thread thrd(&disabled_interruption_point_thread, &m, &b, &failed);
-    b.wait();    // Make sure the test thread has been started and marked itself
-                 // to disable interrupts.
+    b.arrive_and_wait();    // Make sure the test thread has been started and
+                            // marked itself to disable interrupts.
     try
     {
         std::unique_lock<pika::spinlock> lk(m);
@@ -191,7 +191,7 @@ void do_test_thread_no_interrupt_if_interrupts_disabled_at_interruption_point()
         caught = true;
     }
 
-    b.wait();
+    b.arrive_and_wait();
 
     thrd.join();
     PIKA_TEST(!failed);
@@ -295,24 +295,23 @@ void test_creation_through_reference_wrapper()
 //     timed_test(&do_test_timed_join, 10);
 // }
 
-void simple_sync_thread(
-    pika::lcos::barrier& b1, pika::lcos::local::barrier& b2)
+void simple_sync_thread(pika::barrier<>& b1, pika::barrier<>& b2)
 {
-    b1.wait();    // wait for both threads to be started
+    b1.arrive_and_wait();    // wait for both threads to be started
     // ... do nothing
-    b2.wait();    // wait for the tests to be completed
+    b2.arrive_and_wait();    // wait for the tests to be completed
 }
 
 void test_swap()
 {
     set_description("test_swap");
 
-    pika::lcos::barrier b1(3);
-    pika::lcos::barrier b2(3);
+    pika::barrier<> b1(3);
+    pika::barrier<> b2(3);
     pika::thread t1(&simple_sync_thread, std::ref(b1), std::ref(b2));
     pika::thread t2(&simple_sync_thread, std::ref(b1), std::ref(b2));
 
-    b1.wait();    // wait for both threads to be started
+    b1.arrive_and_wait();    // wait for both threads to be started
 
     pika::thread::id id1 = t1.get_id();
     pika::thread::id id2 = t2.get_id();
@@ -325,7 +324,7 @@ void test_swap()
     PIKA_TEST_EQ(t1.get_id(), id1);
     PIKA_TEST_EQ(t2.get_id(), id2);
 
-    b2.wait();    // wait for the tests to be completed
+    b2.arrive_and_wait();    // wait for the tests to be completed
 
     t1.join();
     t2.join();

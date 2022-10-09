@@ -6,7 +6,7 @@
 
 set(tests
     async_rw_mutex
-    barrier_cpp20
+    barrier
     binary_semaphore_cpp20
     channel_mpmc_fib
     channel_mpmc_shift
@@ -19,9 +19,6 @@ set(tests
     counting_semaphore_cpp20
     latch_cpp20
     latch
-    barrier
-    barrier_count_up
-    barrier_reset
     event
     mutex
     sliding_semaphore
