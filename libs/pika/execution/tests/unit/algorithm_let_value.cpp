@@ -193,6 +193,22 @@ int main()
         PIKA_TEST(!let_value_callback_called);
     }
 
+    {
+        std::atomic<bool> set_error_called{false};
+        std::atomic<bool> let_value_callback_called{false};
+        auto s1 = const_reference_error_sender{};
+        auto s2 = ex::let_value(std::move(s1), [&]() {
+            let_value_callback_called = true;
+            return void_sender();
+        });
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(s2), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+        PIKA_TEST(!let_value_callback_called);
+    }
+
     test_adl_isolation(ex::let_value(ex::just(), my_namespace::my_type{}));
 
     return 0;
