@@ -61,6 +61,21 @@ int main()
 
     {
         std::atomic<bool> set_value_called{false};
+        int x = 42;
+        auto s =
+            ex::when_all_vector(std::vector{const_reference_sender<int>{x}});
+        auto f = [](std::vector<int> v) {
+            PIKA_TEST_EQ(v.size(), std::size_t(1));
+            PIKA_TEST_EQ(v[0], 42);
+        };
+        auto r = callback_receiver<decltype(f)>{f, set_value_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        tag_invoke(ex::start, os);
+        PIKA_TEST(set_value_called);
+    }
+
+    {
+        std::atomic<bool> set_value_called{false};
         auto s = ex::when_all_vector(
             std::vector{ex::just(42), ex::just(43), ex::just(44)});
         auto f = [](std::vector<int> v) {

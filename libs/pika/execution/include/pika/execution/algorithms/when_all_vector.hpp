@@ -61,14 +61,22 @@ namespace pika::when_all_vector_detail {
         {
         }
 
+        template <typename Pack>
+        struct element_value_type_helper
+        {
+            using type = pika::util::detail::transform_t<Pack, std::decay>;
+        };
+
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
         // We expect a single value type or nothing from the predecessor
         // sender type
         using element_value_type =
             pika::execution::experimental::detail::single_result_t<
-                pika::execution::experimental::value_types_of_t<Sender,
-                    pika::execution::experimental::detail::empty_env,
-                    pika::util::detail::pack, pika::util::detail::pack>>;
+                pika::util::detail::transform_t<
+                    pika::execution::experimental::value_types_of_t<Sender,
+                        pika::execution::experimental::detail::empty_env,
+                        pika::util::detail::pack, pika::util::detail::pack>,
+                    element_value_type_helper>>;
 
         static constexpr bool is_void_value_type =
             std::is_void_v<element_value_type>;
@@ -109,9 +117,11 @@ namespace pika::when_all_vector_detail {
         // sender type
         using element_value_type =
             pika::execution::experimental::detail::single_result_t<
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template value_types<pika::util::detail::pack,
-                    pika::util::detail::pack>>;
+                pika::util::detail::transform_t<
+                    typename pika::execution::experimental::sender_traits<
+                        Sender>::template value_types<pika::util::detail::pack,
+                        pika::util::detail::pack>,
+                    element_value_type_helper>>;
 
         static constexpr bool is_void_value_type =
             std::is_void_v<element_value_type>;
