@@ -19,7 +19,7 @@ namespace pika::parallel::detail {
     template <typename Iter, typename Sent, typename F>
     constexpr Iter sequential_generate_helper(Iter first, Sent last, F&& f)
     {
-        return util::detail::loop_ind(pika::execution::seq, first, last,
+        return loop_ind(pika::execution::seq, first, last,
             [f = PIKA_FORWARD(F, f)](auto& v) mutable { v = f(); });
     }
 

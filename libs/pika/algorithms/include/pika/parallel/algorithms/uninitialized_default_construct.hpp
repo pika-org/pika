@@ -76,7 +76,7 @@ namespace pika {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename FwdIter>
-    typename parallel::util::detail::algorithm_result<ExPolicy>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
     uninitialized_default_construct(
         ExPolicy&& policy, FwdIter first, FwdIter last);
 
@@ -159,7 +159,7 @@ namespace pika {
     ///           the last element constructed.
     ///
     template <typename ExPolicy, typename FwdIter, typename Size>
-    typename parallel::util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
     uninitialized_default_construct_n(
         ExPolicy&& policy, FwdIter first, Size count);
 }    // namespace pika
@@ -226,7 +226,7 @@ namespace pika::parallel::detail {
     {
         using value_type = typename std::iterator_traits<InIter>::value_type;
 
-        return util::detail::loop_with_cleanup_n_with_token(
+        return loop_with_cleanup_n_with_token(
             first, count, tok,
             [](InIter it) -> void { ::new (std::addressof(*it)) value_type; },
             [](InIter it) -> void { (*it).~value_type(); });
@@ -234,21 +234,20 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename ExPolicy, typename FwdIter>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    typename algorithm_result<ExPolicy, FwdIter>::type
     parallel_sequential_uninitialized_default_construct_n(
         ExPolicy&& policy, FwdIter first, std::size_t count)
     {
         if (count == 0)
         {
-            return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
-                PIKA_MOVE(first));
+            return algorithm_result<ExPolicy, FwdIter>::get(PIKA_MOVE(first));
         }
 
         using partition_result_type = std::pair<FwdIter, FwdIter>;
         using value_type = typename std::iterator_traits<FwdIter>::value_type;
 
         util::cancellation_token<util::detail::no_data> tok;
-        return util::detail::partitioner_with_cleanup<ExPolicy, FwdIter,
+        return detail::partitioner_with_cleanup<ExPolicy, FwdIter,
             partition_result_type>::
             call(
                 PIKA_FORWARD(ExPolicy, policy), first, count,
@@ -282,8 +281,7 @@ namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////
     template <typename FwdIter>
     struct uninitialized_default_construct
-      : public detail::algorithm<uninitialized_default_construct<FwdIter>,
-            FwdIter>
+      : public algorithm<uninitialized_default_construct<FwdIter>, FwdIter>
     {
         uninitialized_default_construct()
           : uninitialized_default_construct::algorithm(
@@ -298,8 +296,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Sent>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        parallel(ExPolicy&& policy, FwdIter first, Sent last)
+        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
+            ExPolicy&& policy, FwdIter first, Sent last)
         {
             return parallel_sequential_uninitialized_default_construct_n(
                 PIKA_FORWARD(ExPolicy, policy), first,
@@ -341,8 +339,7 @@ namespace pika::parallel::detail {
 
     template <typename FwdIter>
     struct uninitialized_default_construct_n
-      : public detail::algorithm<uninitialized_default_construct_n<FwdIter>,
-            FwdIter>
+      : public algorithm<uninitialized_default_construct_n<FwdIter>, FwdIter>
     {
         uninitialized_default_construct_n()
           : uninitialized_default_construct_n::algorithm(
@@ -357,8 +354,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        parallel(ExPolicy&& policy, FwdIter first, std::size_t count)
+        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
+            ExPolicy&& policy, FwdIter first, std::size_t count)
         {
             return parallel_sequential_uninitialized_default_construct_n(
                 PIKA_FORWARD(ExPolicy, policy), first, count);
@@ -396,7 +393,7 @@ namespace pika {
                 pika::traits::is_forward_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(pika::uninitialized_default_construct_t,
             ExPolicy&& policy, FwdIter first, FwdIter last)
         {
@@ -404,7 +401,7 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             using result_type =
-                typename pika::parallel::util::detail::algorithm_result<
+                typename pika::parallel::detail::algorithm_result<
                     ExPolicy>::type;
 
             return pika::detail::void_guard<result_type>(),
@@ -452,7 +449,7 @@ namespace pika {
                 pika::traits::is_forward_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(pika::uninitialized_default_construct_n_t,
             ExPolicy&& policy, FwdIter first, Size count)
@@ -463,7 +460,7 @@ namespace pika {
             // if count is representing a negative value, we do nothing
             if (pika::parallel::detail::is_negative(count))
             {
-                return parallel::util::detail::algorithm_result<ExPolicy,
+                return pika::parallel::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 

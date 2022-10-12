@@ -178,7 +178,7 @@ namespace pika {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename I, typename... Args>
-    typename util::detail::algorithm_result<ExPolicy>::type for_loop(
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type for_loop(
         ExPolicy&& policy, std::decay_t<I> first, I last, Args&&... args);
 
     /// The for_loop_strided implements loop functionality over a range
@@ -361,8 +361,8 @@ namespace pika {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename I, typename S, typename... Args>
-    typename util::detail::algorithm_result<ExPolicy>::type for_loop_strided(
-        ExPolicy&& policy, std::decay_t<I> first, I last, S stride,
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
+    for_loop_strided(ExPolicy&& policy, std::decay_t<I> first, I last, S stride,
         Args&&... args);
 
     /// The for_loop_n implements loop functionality over a range specified by
@@ -536,8 +536,8 @@ namespace pika {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename I, typename Size, typename... Args>
-    typename util::detail::algorithm_result<ExPolicy>::type for_loop_n(
-        ExPolicy&& policy, I first, Size size, Args&&... args);
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
+    for_loop_n(ExPolicy&& policy, I first, Size size, Args&&... args);
 
     /// The for_loop_n_strided implements loop functionality over a range
     /// specified by integral or iterator bounds. For the iterator case, these
@@ -723,7 +723,8 @@ namespace pika {
     ///
     template <typename ExPolicy, typename I, typename Size, typename S,
         typename... Args>
-    typename util::detail::algorithm_result<ExPolicy>::type for_loop_n_strided(
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
+    for_loop_n_strided(
         ExPolicy&& policy, I first, Size size, S stride, Args&&... args);
 }    // namespace pika
 
@@ -830,52 +831,50 @@ namespace pika {
                 auto pack =
                     typename pika::util::detail::make_index_pack<sizeof...(
                         Ts)>::type();
-                detail::init_iteration(args_, pack, part_index);
+                init_iteration(args_, pack, part_index);
 
                 if (stride_ == 1)
                 {
                     while (part_steps-- != 0)
                     {
-                        detail::invoke_iteration(args_, pack, f_, part_begin++);
-                        detail::next_iteration(args_, pack);
+                        invoke_iteration(args_, pack, f_, part_begin++);
+                        next_iteration(args_, pack);
                     }
                 }
                 else if (stride_ > 0)
                 {
                     while (part_steps >= std::size_t(stride_))
                     {
-                        detail::invoke_iteration(args_, pack, f_, part_begin);
+                        invoke_iteration(args_, pack, f_, part_begin);
 
-                        part_begin =
-                            parallel::detail::next(part_begin, stride_);
+                        part_begin = next(part_begin, stride_);
                         part_steps -= stride_;
 
-                        detail::next_iteration(args_, pack);
+                        next_iteration(args_, pack);
                     }
 
                     if (part_steps != 0)
                     {
-                        detail::invoke_iteration(args_, pack, f_, part_begin);
-                        detail::next_iteration(args_, pack);
+                        invoke_iteration(args_, pack, f_, part_begin);
+                        next_iteration(args_, pack);
                     }
                 }
                 else
                 {
                     while (part_steps >= std::size_t(-stride_))
                     {
-                        detail::invoke_iteration(args_, pack, f_, part_begin);
+                        invoke_iteration(args_, pack, f_, part_begin);
 
-                        part_begin =
-                            parallel::detail::next(part_begin, stride_);
+                        part_begin = next(part_begin, stride_);
                         part_steps += stride_;
 
-                        detail::next_iteration(args_, pack);
+                        next_iteration(args_, pack);
                     }
 
                     if (part_steps != 0)
                     {
-                        detail::invoke_iteration(args_, pack, f_, part_begin);
-                        detail::next_iteration(args_, pack);
+                        invoke_iteration(args_, pack, f_, part_begin);
+                        next_iteration(args_, pack);
                     }
                 }
             }
@@ -917,8 +916,7 @@ namespace pika {
                 B part_begin, std::size_t part_steps)
             {
                 PIKA_ASSERT(stride_ == 1);
-                parallel::util::detail::loop_n<std::decay_t<ExPolicy>>(
-                    part_begin, part_steps, f_);
+                loop_n<std::decay_t<ExPolicy>>(part_begin, part_steps, f_);
             }
 
             template <typename B>
@@ -927,8 +925,7 @@ namespace pika {
             {
                 if (stride_ == 1)
                 {
-                    parallel::util::detail::loop_n<std::decay_t<ExPolicy>>(
-                        part_begin, part_steps, f_);
+                    loop_n<std::decay_t<ExPolicy>>(part_begin, part_steps, f_);
                 }
                 else if (stride_ > 0)
                 {
@@ -936,8 +933,7 @@ namespace pika {
                     {
                         PIKA_INVOKE(f_, part_begin);
 
-                        part_begin =
-                            parallel::detail::next(part_begin, stride_);
+                        part_begin = next(part_begin, stride_);
                         part_steps -= stride_;
                     }
 
@@ -952,8 +948,7 @@ namespace pika {
                     {
                         PIKA_INVOKE(f_, part_begin);
 
-                        part_begin =
-                            parallel::detail::next(part_begin, stride_);
+                        part_begin = next(part_begin, stride_);
                         part_steps += stride_;
                     }
 
@@ -966,7 +961,7 @@ namespace pika {
         };
 
         ///////////////////////////////////////////////////////////////////////
-        struct for_loop_algo : public detail::algorithm<for_loop_algo>
+        struct for_loop_algo : public algorithm<for_loop_algo>
         {
             constexpr for_loop_algo() noexcept
               : for_loop_algo::algorithm("for_loop_algo")
@@ -981,7 +976,7 @@ namespace pika {
             {
                 if (stride == 1)
                 {
-                    parallel::util::detail::loop_n<std::decay_t<ExPolicy>>(
+                    loop_n<std::decay_t<ExPolicy>>(
                         first, count, PIKA_FORWARD(F, f));
                 }
                 else if (stride > 0)
@@ -990,7 +985,7 @@ namespace pika {
                     {
                         PIKA_INVOKE(f, first);
 
-                        first = parallel::detail::next(first, stride);
+                        first = next(first, stride);
                         count -= stride;
                     }
 
@@ -1005,7 +1000,7 @@ namespace pika {
                     {
                         PIKA_INVOKE(f, first);
 
-                        first = parallel::detail::next(first, stride);
+                        first = next(first, stride);
                         count += stride;
                     }
 
@@ -1036,7 +1031,7 @@ namespace pika {
                         PIKA_INVOKE(f, first, arg.iteration_value(),
                             args.iteration_value()...);
 
-                        first = parallel::detail::next(first, stride);
+                        first = next(first, stride);
                         count -= stride;
 
                         int const next_sequencer[] = {(arg.next_iteration(), 0),
@@ -1051,7 +1046,7 @@ namespace pika {
                         PIKA_INVOKE(f, first, arg.iteration_value(),
                             args.iteration_value()...);
 
-                        first = parallel::detail::next(first, stride);
+                        first = next(first, stride);
                         count += stride;
 
                         int const next_sequencer[] = {(arg.next_iteration(), 0),
@@ -1076,26 +1071,26 @@ namespace pika {
 
             template <typename ExPolicy, typename B, typename Size, typename S,
                 typename F, typename... Ts>
-            static typename util::detail::algorithm_result<ExPolicy>::type
-            parallel(ExPolicy&& policy, B first, Size size, S stride, F&& f,
+            static typename algorithm_result<ExPolicy>::type parallel(
+                ExPolicy&& policy, B first, Size size, S stride, F&& f,
                 Ts&&... ts)
             {
                 if (size == 0)
                 {
-                    return util::detail::algorithm_result<ExPolicy>::get();
+                    return algorithm_result<ExPolicy>::get();
                 }
 
                 if constexpr (sizeof...(Ts) == 0)
                 {
                     if (stride == 1)
                     {
-                        return util::detail::partitioner<ExPolicy>::call(
+                        return partitioner<ExPolicy>::call(
                             PIKA_FORWARD(ExPolicy, policy), first, size,
                             part_iterations<ExPolicy, F, S>{PIKA_FORWARD(F, f)},
                             ::pika::detail::empty_function{});
                     }
 
-                    return util::detail::partitioner<ExPolicy>::call_with_index(
+                    return partitioner<ExPolicy>::call_with_index(
                         PIKA_FORWARD(ExPolicy, policy), first, size, stride,
                         part_iterations<ExPolicy, F, S>{
                             PIKA_FORWARD(F, f), stride},
@@ -1110,8 +1105,8 @@ namespace pika {
                     args_type args =
                         std::forward_as_tuple(PIKA_FORWARD(Ts, ts)...);
 
-                    return util::detail::partitioner<ExPolicy>::call_with_index(
-                        policy, first, size, stride,
+                    return partitioner<ExPolicy>::call_with_index(policy, first,
+                        size, stride,
                         part_iterations<ExPolicy, F, S, args_type>{
                             PIKA_FORWARD(F, f), stride, args},
                         [=](std::vector<pika::future<void>>&&) mutable -> void {
@@ -1120,7 +1115,7 @@ namespace pika {
                                     sizeof...(Ts)>::type();
                             // make sure live-out variables are properly set on
                             // return
-                            detail::exit_iteration(args, pack, size);
+                            exit_iteration(args, pack, size);
                         });
                 }
             }
@@ -1129,9 +1124,9 @@ namespace pika {
         // reshuffle arguments, last argument is function object, will go first
         template <typename ExPolicy, typename B, typename E, typename S,
             std::size_t... Is, typename... Args>
-        typename util::detail::algorithm_result<ExPolicy>::type for_loop(
-            ExPolicy&& policy, B first, E last, S stride,
-            pika::util::detail::index_pack<Is...>, Args&&... args)
+        typename algorithm_result<ExPolicy>::type for_loop(ExPolicy&& policy,
+            B first, E last, S stride, pika::util::detail::index_pack<Is...>,
+            Args&&... args)
         {
             // stride shall not be zero
             PIKA_ASSERT(stride != 0);
@@ -1149,7 +1144,7 @@ namespace pika {
                 "Requires at least forward iterator or integral loop "
                 "boundaries.");
 
-            std::size_t size = parallel::detail::distance(first, last);
+            std::size_t size = (distance) (first, last);
             auto&& t = std::forward_as_tuple(PIKA_FORWARD(Args, args)...);
 
             return for_loop_algo().call(PIKA_FORWARD(ExPolicy, policy), first,
@@ -1160,9 +1155,9 @@ namespace pika {
         // reshuffle arguments, last argument is function object, will go first
         template <typename ExPolicy, typename B, typename Size, typename S,
             std::size_t... Is, typename... Args>
-        typename util::detail::algorithm_result<ExPolicy>::type for_loop_n(
-            ExPolicy&& policy, B first, Size size, S stride,
-            pika::util::detail::index_pack<Is...>, Args&&... args)
+        typename algorithm_result<ExPolicy>::type for_loop_n(ExPolicy&& policy,
+            B first, Size size, S stride, pika::util::detail::index_pack<Is...>,
+            Args&&... args)
         {
             // stride shall not be zero
             PIKA_ASSERT(stride != 0);
@@ -1202,7 +1197,7 @@ namespace pika {
                  std::is_integral<I>::value)
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
+        friend typename parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(pika::for_loop_t, ExPolicy&& policy,
             std::decay_t<I> first, I last, Args&&... args)
         {
@@ -1250,7 +1245,7 @@ namespace pika {
                  std::is_integral<I>::value)
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
+        friend typename parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(pika::for_loop_strided_t, ExPolicy&& policy,
             std::decay_t<I> first, I last, S stride, Args&&... args)
         {
@@ -1302,7 +1297,7 @@ namespace pika {
                  std::is_integral<I>::value)
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
+        friend typename parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(pika::for_loop_n_t, ExPolicy&& policy, I first,
             Size size, Args&&... args)
         {
@@ -1353,7 +1348,7 @@ namespace pika {
                  std::is_integral<I>::value)
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy>::type
+        friend typename parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(pika::for_loop_n_strided_t, ExPolicy&& policy,
             I first, Size size, S stride, Args&&... args)
         {

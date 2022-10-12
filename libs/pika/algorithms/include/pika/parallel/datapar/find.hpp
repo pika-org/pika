@@ -36,8 +36,7 @@ namespace pika::parallel::detail {
             int offset = 0;
             util::cancellation_token<> tok;
 
-            auto ret = util::detail::loop_n<ExPolicy>(first,
-                std::distance(first, last), tok,
+            auto ret = loop_n<ExPolicy>(first, std::distance(first, last), tok,
                 [&offset, &val, &tok, &proj](auto const& curr) {
                     auto msk = PIKA_INVOKE(proj, *curr) == val;
                     offset = pika::parallel::traits::detail::find_first_of(msk);
@@ -57,8 +56,8 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok,
             T const& val, Proj&& proj)
         {
-            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
-                tok, [&val, &proj, &tok](auto& v, std::size_t i) -> void {
+            loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
+                [&val, &proj, &tok](auto& v, std::size_t i) -> void {
                     auto msk = PIKA_INVOKE(proj, v) == val;
                     int offset =
                         pika::parallel::traits::detail::find_first_of(msk);
@@ -69,7 +68,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename T, typename Proj = util::detail::projection_identity>
+        typename T, typename Proj = projection_identity>
     inline constexpr std::enable_if_t<
         pika::is_vectorpack_execution_policy<ExPolicy>::value, Iterator>
     tag_invoke(sequential_find_t<ExPolicy>, Iterator first, Sentinel last,
@@ -102,8 +101,7 @@ namespace pika::parallel::detail {
             int offset = 0;
             util::cancellation_token<> tok;
 
-            auto ret = util::detail::loop_n<ExPolicy>(first,
-                std::distance(first, last), tok,
+            auto ret = loop_n<ExPolicy>(first, std::distance(first, last), tok,
                 [&offset, &pred, &tok, &proj](auto const& curr) {
                     auto msk = PIKA_INVOKE(pred, PIKA_INVOKE(proj, *curr));
                     offset = pika::parallel::traits::detail::find_first_of(msk);
@@ -122,8 +120,8 @@ namespace pika::parallel::detail {
         static inline constexpr void call(FwdIter part_begin,
             std::size_t part_count, Token& tok, F&& op, Proj&& proj)
         {
-            util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count,
-                tok, [&op, &tok, &proj](auto const& curr) {
+            loop_n<std::decay_t<ExPolicy>>(part_begin, part_count, tok,
+                [&op, &tok, &proj](auto const& curr) {
                     auto msk = PIKA_INVOKE(op, PIKA_INVOKE(proj, *curr));
                     if (pika::parallel::traits::detail::any_of(msk))
                     {
@@ -137,8 +135,8 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
             Proj&& proj)
         {
-            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
-                tok, [&f, &proj, &tok](auto& v, std::size_t i) -> void {
+            loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
+                [&f, &proj, &tok](auto& v, std::size_t i) -> void {
                     auto msk = PIKA_INVOKE(f, PIKA_INVOKE(proj, v));
                     int offset =
                         pika::parallel::traits::detail::find_first_of(msk);
@@ -149,7 +147,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename Pred, typename Proj = util::detail::projection_identity>
+        typename Pred, typename Proj = projection_identity>
     inline constexpr std::enable_if_t<
         pika::is_vectorpack_execution_policy<ExPolicy>::value, Iterator>
     tag_invoke(sequential_find_if_t<ExPolicy>, Iterator first, Sentinel last,
@@ -192,8 +190,7 @@ namespace pika::parallel::detail {
             int offset = 0;
             util::cancellation_token<> tok;
 
-            auto ret = util::detail::loop_n<ExPolicy>(first,
-                std::distance(first, last), tok,
+            auto ret = loop_n<ExPolicy>(first, std::distance(first, last), tok,
                 [&offset, &pred, &tok, &proj](
                     auto const& curr) mutable -> void {
                     auto msk = !PIKA_INVOKE(pred, PIKA_INVOKE(proj, *curr));
@@ -213,8 +210,8 @@ namespace pika::parallel::detail {
         static inline constexpr void call(FwdIter part_begin,
             std::size_t part_count, Token& tok, F&& op, Proj&& proj)
         {
-            util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin, part_count,
-                tok, [&op, &tok, &proj](auto const& curr) {
+            loop_n<std::decay_t<ExPolicy>>(part_begin, part_count, tok,
+                [&op, &tok, &proj](auto const& curr) {
                     auto msk = !PIKA_INVOKE(op, PIKA_INVOKE(proj, *curr));
                     if (pika::parallel::traits::detail::any_of(msk))
                     {
@@ -228,8 +225,8 @@ namespace pika::parallel::detail {
             FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
             Proj&& proj)
         {
-            util::detail::loop_idx_n<ExPolicy>(base_idx, part_begin, part_count,
-                tok, [&f, &proj, &tok](auto& v, std::size_t i) -> void {
+            loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
+                [&f, &proj, &tok](auto& v, std::size_t i) -> void {
                     auto msk = !PIKA_INVOKE(f, PIKA_INVOKE(proj, v));
                     int offset =
                         pika::parallel::traits::detail::find_first_of(msk);
@@ -240,7 +237,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename ExPolicy, typename Iterator, typename Sentinel,
-        typename Pred, typename Proj = util::detail::projection_identity>
+        typename Pred, typename Proj = projection_identity>
     inline constexpr std::enable_if_t<
         pika::is_vectorpack_execution_policy<ExPolicy>::value, Iterator>
     tag_invoke(sequential_find_if_not_t<ExPolicy>, Iterator first,

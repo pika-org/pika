@@ -117,7 +117,7 @@ namespace pika {
     /// \a inclusive_scan includes the ith input element in the ith sum.
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter2>::type
     inclusive_scan(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,
         FwdIter2 dest);
 
@@ -259,7 +259,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename Op>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter2>::type
     inclusive_scan(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,
         FwdIter2 dest, Op&& op);
 
@@ -412,7 +412,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename T, typename Op>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter2>::type
     inclusive_scan(ExPolicy&& policy, FwdIter1 first, FwdIter1 last,
         FwdIter2 dest, T init, Op&& op);
     // clang-format on
@@ -459,8 +459,7 @@ namespace pika::parallel::detail {
     // Our own version of the sequential inclusive_scan.
     template <typename InIter, typename Sent, typename OutIter, typename T,
         typename Op>
-    static constexpr util::detail::in_out_result<InIter, OutIter>
-    sequential_inclusive_scan(
+    static constexpr in_out_result<InIter, OutIter> sequential_inclusive_scan(
         InIter first, Sent last, OutIter dest, T init, Op&& op)
     {
         for (/* */; first != last; (void) ++first, ++dest)
@@ -468,11 +467,11 @@ namespace pika::parallel::detail {
             init = PIKA_INVOKE(op, init, *first);
             *dest = init;
         }
-        return util::detail::in_out_result<InIter, OutIter>{first, dest};
+        return in_out_result<InIter, OutIter>{first, dest};
     }
 
     template <typename InIter, typename Sent, typename OutIter, typename Op>
-    static constexpr util::detail::in_out_result<InIter, OutIter>
+    static constexpr in_out_result<InIter, OutIter>
     sequential_inclusive_scan_noinit(
         InIter first, Sent last, OutIter dest, Op&& op)
     {
@@ -483,7 +482,7 @@ namespace pika::parallel::detail {
             return sequential_inclusive_scan(
                 ++first, last, dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
         }
-        return util::detail::in_out_result<InIter, OutIter>{first, dest};
+        return in_out_result<InIter, OutIter>{first, dest};
     }
 
     template <typename InIter, typename OutIter, typename T, typename Op>
@@ -500,8 +499,7 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename IterPair>
-    struct inclusive_scan
-      : public detail::algorithm<inclusive_scan<IterPair>, IterPair>
+    struct inclusive_scan : public algorithm<inclusive_scan<IterPair>, IterPair>
     {
         inclusive_scan()
           : inclusive_scan::algorithm("inclusive_scan")
@@ -510,9 +508,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter, typename T, typename Op>
-        static constexpr util::detail::in_out_result<InIter, OutIter>
-        sequential(ExPolicy, InIter first, Sent last, OutIter dest,
-            T const& init, Op&& op)
+        static constexpr in_out_result<InIter, OutIter> sequential(ExPolicy,
+            InIter first, Sent last, OutIter dest, T const& init, Op&& op)
         {
             return sequential_inclusive_scan(
                 first, last, dest, init, PIKA_FORWARD(Op, op));
@@ -520,8 +517,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter, typename Op>
-        static constexpr util::detail::in_out_result<InIter, OutIter>
-        sequential(ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
+        static constexpr in_out_result<InIter, OutIter> sequential(
+            ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
         {
             return sequential_inclusive_scan_noinit(
                 first, last, dest, PIKA_FORWARD(Op, op));
@@ -529,21 +526,20 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename T, typename Op>
-        static typename util::detail::algorithm_result<ExPolicy,
-            util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+        static typename algorithm_result<ExPolicy,
+            in_out_result<FwdIter1, FwdIter2>>::type
         parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
             T init, Op&& op)
         {
-            using result = util::detail::algorithm_result<ExPolicy,
-                util::detail::in_out_result<FwdIter1, FwdIter2>>;
+            using result =
+                algorithm_result<ExPolicy, in_out_result<FwdIter1, FwdIter2>>;
             using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
             using difference_type =
                 typename std::iterator_traits<FwdIter1>::difference_type;
 
             if (first == last)
                 return result::get(
-                    util::detail::in_out_result<FwdIter1, FwdIter2>{
-                        first, dest});
+                    in_out_result<FwdIter1, FwdIter2>{first, dest});
 
             FwdIter1 last_iter = first;
             difference_type count =
@@ -566,14 +562,14 @@ namespace pika::parallel::detail {
                 FwdIter2 dst = get<1>(part_begin.get_iterator_tuple());
 
                 // MSVC 2015 fails if op is captured by reference
-                util::detail::loop_n<std::decay_t<ExPolicy>>(
+                loop_n<std::decay_t<ExPolicy>>(
                     dst, part_size, [=, &val](FwdIter2 it) mutable -> void {
                         *it = PIKA_INVOKE(op, val, *it);
                     });
             };
 
-            return util::detail::scan_partitioner<ExPolicy,
-                util::detail::in_out_result<FwdIter1, FwdIter2>, T>::
+            return scan_partitioner<ExPolicy, in_out_result<FwdIter1, FwdIter2>,
+                T>::
                 call(
                     PIKA_FORWARD(ExPolicy, policy),
                     make_zip_iterator(first, dest), count, init,
@@ -602,15 +598,15 @@ namespace pika::parallel::detail {
                         // make sure iterators embedded in function object that is
                         // attached to futures are invalidated
                         data.clear();
-                        return util::detail::in_out_result<FwdIter1, FwdIter2>{
+                        return in_out_result<FwdIter1, FwdIter2>{
                             last_iter, final_dest};
                     });
         }
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename Op>
-        static typename util::detail::algorithm_result<ExPolicy,
-            util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+        static typename algorithm_result<ExPolicy,
+            in_out_result<FwdIter1, FwdIter2>>::type
         parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
             Op&& op)
         {
@@ -622,10 +618,9 @@ namespace pika::parallel::detail {
                     dest, PIKA_MOVE(init), PIKA_FORWARD(Op, op));
             }
 
-            using result = util::detail::algorithm_result<ExPolicy,
-                util::detail::in_out_result<FwdIter1, FwdIter2>>;
-            return result::get(
-                util::detail::in_out_result<FwdIter1, FwdIter2>{first, dest});
+            using result =
+                algorithm_result<ExPolicy, in_out_result<FwdIter1, FwdIter2>>;
+            return result::get(in_out_result<FwdIter1, FwdIter2>{first, dest});
         }
     };
     /// \endcond
@@ -653,11 +648,11 @@ namespace pika {
                 "Requires at least output iterator.");
 
             using result_type =
-                parallel::util::detail::in_out_result<InIter, OutIter>;
+                parallel::detail::in_out_result<InIter, OutIter>;
             using value_type =
                 typename std::iterator_traits<InIter>::value_type;
 
-            return parallel::util::detail::get_second_element(
+            return pika::parallel::detail::get_second_element(
                 parallel::detail::inclusive_scan<result_type>().call(
                     pika::execution::seq, first, last, dest,
                     std::plus<value_type>()));
@@ -671,7 +666,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
         tag_fallback_invoke(pika::inclusive_scan_t, ExPolicy&& policy,
             FwdIter1 first, FwdIter1 last, FwdIter2 dest)
@@ -684,9 +679,9 @@ namespace pika {
             using value_type =
                 typename std::iterator_traits<FwdIter1>::value_type;
             using result_type =
-                parallel::util::detail::in_out_result<FwdIter1, FwdIter2>;
+                parallel::detail::in_out_result<FwdIter1, FwdIter2>;
 
-            return parallel::util::detail::get_second_element(
+            return pika::parallel::detail::get_second_element(
                 parallel::detail::inclusive_scan<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                     std::plus<value_type>()));
@@ -712,9 +707,9 @@ namespace pika {
                 "Requires at least output iterator.");
 
             using result_type =
-                parallel::util::detail::in_out_result<InIter, OutIter>;
+                parallel::detail::in_out_result<InIter, OutIter>;
 
-            return parallel::util::detail::get_second_element(
+            return pika::parallel::detail::get_second_element(
                 parallel::detail::inclusive_scan<result_type>().call(
                     pika::execution::seq, first, last, dest,
                     PIKA_FORWARD(Op, op)));
@@ -733,7 +728,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
         tag_fallback_invoke(pika::inclusive_scan_t, ExPolicy&& policy,
             FwdIter1 first, FwdIter1 last, FwdIter2 dest, Op&& op)
@@ -744,9 +739,9 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             using result_type =
-                parallel::util::detail::in_out_result<FwdIter1, FwdIter2>;
+                parallel::detail::in_out_result<FwdIter1, FwdIter2>;
 
-            return parallel::util::detail::get_second_element(
+            return pika::parallel::detail::get_second_element(
                 parallel::detail::inclusive_scan<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                     PIKA_FORWARD(Op, op)));
@@ -773,9 +768,9 @@ namespace pika {
                 "Requires at least output iterator.");
 
             using result_type =
-                parallel::util::detail::in_out_result<InIter, OutIter>;
+                parallel::detail::in_out_result<InIter, OutIter>;
 
-            return parallel::util::detail::get_second_element(
+            return pika::parallel::detail::get_second_element(
                 parallel::detail::inclusive_scan<result_type>().call(
                     pika::execution::seq, first, last, dest, PIKA_MOVE(init),
                     PIKA_FORWARD(Op, op)));
@@ -795,7 +790,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
         tag_fallback_invoke(pika::inclusive_scan_t, ExPolicy&& policy,
             FwdIter1 first, FwdIter1 last, FwdIter2 dest, Op&& op, T init)
@@ -806,9 +801,9 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             using result_type =
-                parallel::util::detail::in_out_result<FwdIter1, FwdIter2>;
+                parallel::detail::in_out_result<FwdIter1, FwdIter2>;
 
-            return parallel::util::detail::get_second_element(
+            return pika::parallel::detail::get_second_element(
                 parallel::detail::inclusive_scan<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                     PIKA_MOVE(init), PIKA_FORWARD(Op, op)));

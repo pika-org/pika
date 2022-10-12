@@ -31,7 +31,7 @@
 #endif
 #endif
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     namespace prefetching {
         template <typename Itr, typename... Ts>
         class prefetching_iterator
@@ -352,8 +352,8 @@ namespace pika::parallel::util::detail {
         template <typename ExPolicy, typename Itr, typename... Ts, typename F>
         PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr prefetching_iterator<Itr, Ts...>
-            tag_invoke(pika::parallel::util::detail::loop_n_t<ExPolicy>,
-                prefetching_iterator<Itr, Ts...> it, std::size_t count, F&& f)
+            tag_invoke(loop_n_t<ExPolicy>, prefetching_iterator<Itr, Ts...> it,
+                std::size_t count, F&& f)
         {
             return loop_n_helper::call(
                 it, count, PIKA_FORWARD(F, f), std::true_type());
@@ -437,7 +437,7 @@ namespace pika::parallel::util::detail {
         template <typename ExPolicy, typename Itr, typename... Ts, typename F>
         PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr prefetching_iterator<Itr, Ts...>
-            tag_invoke(pika::parallel::util::detail::loop_n_ind_t<ExPolicy>,
+            tag_invoke(loop_n_ind_t<ExPolicy>,
                 prefetching_iterator<Itr, Ts...> it, std::size_t count, F&& f)
         {
             return loop_n_ind_helper::call(
@@ -583,4 +583,4 @@ namespace pika::parallel::util::detail {
             return it;
         }
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

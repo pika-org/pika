@@ -20,7 +20,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename Category, typename Enable = void>
     struct copy_helper;
     template <typename Category, typename Enable = void>
@@ -177,9 +177,8 @@ namespace pika::parallel::util::detail {
         template <typename InIter, typename OutIter>
         friend PIKA_HOST_DEVICE
             PIKA_FORCEINLINE constexpr in_out_result<InIter, OutIter>
-            tag_fallback_invoke(
-                pika::parallel::util::detail::copy_n_t<ExPolicy>, InIter first,
-                std::size_t count, OutIter dest)
+            tag_fallback_invoke(pika::parallel::detail::copy_n_t<ExPolicy>,
+                InIter first, std::size_t count, OutIter dest)
         {
             using category = pika::detail::pointer_copy_category_t<
                 std::decay_t<
@@ -197,8 +196,7 @@ namespace pika::parallel::util::detail {
     PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_out_result<InIter, OutIter>
     copy_n(InIter first, std::size_t count, OutIter dest)
     {
-        return pika::parallel::util::detail::copy_n_t<ExPolicy>{}(
-            first, count, dest);
+        return pika::parallel::detail::copy_n_t<ExPolicy>{}(first, count, dest);
     }
 #endif
 
@@ -313,4 +311,4 @@ namespace pika::parallel::util::detail {
                 std::decay_t<OutIter>>;
         return move_n_helper<category>::call(first, count, dest);
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

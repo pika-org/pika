@@ -52,7 +52,7 @@ namespace pika {
     ///           is defined by \a void.
     ///
     template <typename ExPolicy, typename FwdIter, typename T>
-    typename util::detail::algorithm_result<ExPolicy>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
     fill(ExPolicy&& policy, FwdIter first, FwdIter last, T value);
 
     /// Assigns the given value value to the first count elements in the range
@@ -98,7 +98,7 @@ namespace pika {
     ///           is defined by \a void.
     ///
     template <typename ExPolicy, typename FwdIter, typename Size, typename T>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
     fill_n(ExPolicy&& policy, FwdIter first, Size count, T value);
 
     // clang-format on
@@ -144,7 +144,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename Iter>
-    struct fill : public detail::algorithm<fill<Iter>, Iter>
+    struct fill : public algorithm<fill<Iter>, Iter>
     {
         fill()
           : fill::algorithm("fill")
@@ -161,18 +161,18 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename T>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        parallel(ExPolicy&& policy, FwdIter first, Sent last, T const& val)
+        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
+            ExPolicy&& policy, FwdIter first, Sent last, T const& val)
         {
             if (first == last)
             {
-                return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
+                return algorithm_result<ExPolicy, FwdIter>::get(
                     PIKA_MOVE(first));
             }
 
             return for_each_n<FwdIter>().call(PIKA_FORWARD(ExPolicy, policy),
                 first, detail::distance(first, last), fill_iteration<T>{val},
-                util::detail::projection_identity());
+                projection_identity());
         }
     };
     /// \endcond
@@ -181,7 +181,7 @@ namespace pika::parallel::detail {
     // fill_n
     /// \cond NOINTERNAL
     template <typename FwdIter>
-    struct fill_n : public detail::algorithm<fill_n<FwdIter>, FwdIter>
+    struct fill_n : public algorithm<fill_n<FwdIter>, FwdIter>
     {
         fill_n()
           : fill_n::algorithm("fill_n")
@@ -197,14 +197,12 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename T>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        parallel(
+        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
             ExPolicy&& policy, FwdIter first, std::size_t count, T const& val)
         {
             return for_each_n<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, count,
-                [val](auto& v) -> void { v = val; },
-                util::detail::projection_identity());
+                [val](auto& v) -> void { v = val; }, projection_identity());
         }
     };
     /// \endcond
@@ -225,8 +223,7 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<
-            ExPolicy>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy>::type
         tag_fallback_invoke(fill_t, ExPolicy&& policy, FwdIter first,
             FwdIter last, T const& value)
         {
@@ -234,7 +231,7 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             using result_type =
-                typename pika::parallel::util::detail::algorithm_result<
+                typename pika::parallel::detail::algorithm_result<
                     ExPolicy>::type;
 
             return pika::detail::void_guard<result_type>(),
@@ -274,7 +271,7 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(fill_n_t, ExPolicy&& policy, FwdIter first,
             Size count, T const& value)
@@ -285,7 +282,7 @@ namespace pika {
             // if count is representing a negative value, we do nothing
             if (pika::parallel::detail::is_negative(count))
             {
-                return pika::parallel::util::detail::algorithm_result<ExPolicy,
+                return pika::parallel::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 

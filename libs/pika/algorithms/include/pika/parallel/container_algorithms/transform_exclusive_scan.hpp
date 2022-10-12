@@ -213,7 +213,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Sent,
         typename FwdIter2, typename T, typename BinOp, typename UnOp>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         transform_exclusive_result<FwdIter1, FwdIter2>>::type
     transform_exclusive_scan(ExPolicy&& policy, FwdIter1 first, Sent last,
         FwdIter2 dest, T init, BinOp&& binary_op, UnOp&& unary_op);
@@ -408,7 +408,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename Rng,  typename O, typename T,
         typename BinOp, typename UnOp>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         transform_exclusive_scan_result<traits::range_iterator_t<Rng>, O>>::type
     transform_exclusive_scan(ExPolicy&& policy, Rng&& rng, O dest, T init,
         BinOp&& binary_op, UnOp&& unary_op);
@@ -437,7 +437,7 @@ namespace pika { namespace ranges {
 namespace pika::ranges {
     template <typename I, typename O>
     using transform_exclusive_scan_result =
-        parallel::util::detail::in_out_result<I, O>;
+        pika::parallel::detail::in_out_result<I, O>;
 
     inline constexpr struct transform_exclusive_scan_t final
       : pika::detail::tag_parallel_algorithm<transform_exclusive_scan_t>
@@ -500,7 +500,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             transform_exclusive_scan_result<FwdIter1, FwdIter2>>::type
         tag_fallback_invoke(pika::ranges::transform_exclusive_scan_t,
             ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest, T init,
@@ -575,7 +575,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             transform_exclusive_scan_result<pika::traits::range_iterator_t<Rng>,
                 O>>::type
         tag_fallback_invoke(pika::ranges::transform_exclusive_scan_t,

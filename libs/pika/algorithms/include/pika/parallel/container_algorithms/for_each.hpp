@@ -31,7 +31,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a for_each requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -58,7 +58,7 @@ namespace pika { namespace ranges {
     ///                     corresponding to the input sentinel last.
     ///
     template <typename InIter, typename Sent, typename F,
-        typename Proj = util::detail::projection_identity>
+        typename Proj = parallel::detail::projection_identity>
     pika::ranges::for_each_result<InIter, F> for_each(
         InIter first, Sent last, F&& f, Proj&& proj = Proj());
 
@@ -92,7 +92,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a for_each requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -124,7 +124,7 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename ExPolicy, typename FwdIter, typename Sent, typename F,
-        typename Proj = util::detail::projection_identity>
+        typename Proj = parallel::detail::projection_identity>
     FwdIter for_each(ExPolicy&& policy, FwdIter first, Sent last, F&& f,
         Proj&& proj = Proj());
 
@@ -147,7 +147,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a for_each requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -173,7 +173,7 @@ namespace pika { namespace ranges {
     /// \returns            {std::end(rng), PIKA_MOVE(f)}
     ///
     template <typename Rng, typename F,
-        typename Proj = util::detail::projection_identity>
+        typename Proj = parallel::detail::projection_identity>
     pika::ranges::for_each_result<
         typename pika::traits::range_iterator<Rng>::type, F>
     for_each(ExPolicy&& policy, Rng&& rng, F&& f, Proj&& proj = Proj());
@@ -206,7 +206,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a for_each requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -249,8 +249,8 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename ExPolicy, typename Rng, typename F,
-        typename Proj = util::detail::projection_identity>
-    typename util::detail::algorithm_result<ExPolicy,
+        typename Proj = parallel::detail::projection_identity>
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename pika::traits::range_iterator<Rng>::type>::type
     for_each(ExPolicy&& policy, Rng&& rng, F&& f, Proj&& proj = Proj());
 
@@ -277,7 +277,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a for_each requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -303,7 +303,7 @@ namespace pika { namespace ranges {
     /// \returns            {first + count, PIKA_MOVE(f)}
     ///
     template <typename InIter, typename Sent, typename F,
-        typename Proj = util::detail::projection_identity>
+        typename Proj = parallel::detail::projection_identity>
     pika::ranges::for_each_result<InIter, F> for_each(
         InIter first, Sent last, F&& f, Proj&& proj = Proj());
 
@@ -338,7 +338,7 @@ namespace pika { namespace ranges {
     ///                     overload of \a for_each requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -370,9 +370,9 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename ExPolicy, typename FwdIter, typename Size, typename F,
-        typename Proj = util::detail::projection_identity>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type for_each_n(
-        ExPolicy&& policy, FwdIter first, Size count, F&& f,
+        typename Proj = parallel::detail::projection_identity>
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+    for_each_n(ExPolicy&& policy, FwdIter first, Size count, F&& f,
         Proj&& proj = Proj());
 }}    // namespace pika::ranges
 #else
@@ -403,7 +403,7 @@ namespace pika::ranges {
     {
         // clang-format off
         template <typename InIter, typename Sent, typename F,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_input_iterator<InIter>::value &&
                 pika::traits::is_sentinel_for<Sent, InIter>::value &&
@@ -426,7 +426,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename Rng, typename F,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range<Rng>::value &&
                 pika::parallel::detail::is_projected_range<Proj, Rng>::value &&
@@ -455,7 +455,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter, typename Sent, typename F,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value &&
@@ -464,7 +464,7 @@ namespace pika::ranges {
                 pika::parallel::detail::is_indirect_callable<ExPolicy, F,
                     pika::parallel::detail::projected<Proj, FwdIter>>::value)>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(pika::ranges::for_each_t, ExPolicy&& policy,
             FwdIter first, Sent last, F&& f, Proj&& proj = Proj())
@@ -479,7 +479,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename Rng, typename F,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_range<Rng>::value &&
@@ -487,7 +487,7 @@ namespace pika::ranges {
                 pika::parallel::detail::is_indirect_callable<ExPolicy, F,
                     pika::parallel::detail::projected_range<Proj, Rng>>::value)>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename pika::traits::range_iterator<Rng>::type>::type
         tag_fallback_invoke(pika::ranges::for_each_t, ExPolicy&& policy,
             Rng&& rng, F&& f, Proj&& proj = Proj())
@@ -513,7 +513,7 @@ namespace pika::ranges {
     {
         // clang-format off
         template <typename InIter, typename Size, typename F,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_input_iterator<InIter>::value &&
                 pika::parallel::detail::is_projected<Proj, InIter>::value &&
@@ -542,7 +542,7 @@ namespace pika::ranges {
 
         // clang-format off
         template <typename ExPolicy, typename FwdIter, typename Size, typename F,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_forward_iterator<FwdIter>::value &&
@@ -550,7 +550,7 @@ namespace pika::ranges {
                 pika::parallel::detail::is_indirect_callable<ExPolicy, F,
                     pika::parallel::detail::projected<Proj, FwdIter>>::value)>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(pika::ranges::for_each_n_t, ExPolicy&& policy,
             FwdIter first, Size count, F&& f, Proj&& proj = Proj())
@@ -561,7 +561,7 @@ namespace pika::ranges {
             // if count is representing a negative value, we do nothing
             if (parallel::detail::is_negative(count))
             {
-                return parallel::util::detail::algorithm_result<ExPolicy,
+                return pika::parallel::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 

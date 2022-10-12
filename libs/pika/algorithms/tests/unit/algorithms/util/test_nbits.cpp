@@ -10,7 +10,7 @@
 
 int main(int, char*[])
 {
-    using namespace pika::parallel::util::detail;
+    using namespace pika::parallel::detail;
 
     PIKA_TEST(nbits32(63UL) == 6);
     PIKA_TEST(nbits32(64UL) == 7);

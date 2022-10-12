@@ -90,7 +90,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename Pred = detail::equal_to>
-    util::detail::algorithm_result_t<ExPolicy, std::pair<FwdIter1, FwdIter2>>
+    pika::parallel::detail::algorithm_result_t<ExPolicy, std::pair<FwdIter1, FwdIter2>>
     mismatch(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
             FwdIter2 first2, FwdIter2 last2, Pred&& op = Pred());
 
@@ -162,7 +162,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename Pred = detail::equal_to>
-    util::detail::algorithm_result_t<ExPolicy, std::pair<FwdIter1, FwdIter2>>
+    pika::parallel::detail::algorithm_result_t<ExPolicy, std::pair<FwdIter1, FwdIter2>>
     mismatch(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1, FwdIter2 first2,
         Pred&& op = Pred());
 
@@ -200,9 +200,9 @@ namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename F, typename Proj1, typename Proj2>
-    constexpr util::detail::in_in_result<Iter1, Iter2>
-    sequential_mismatch_binary(Iter1 first1, Sent1 last1, Iter2 first2,
-        Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
+    constexpr in_in_result<Iter1, Iter2> sequential_mismatch_binary(
+        Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, F&& f,
+        Proj1&& proj1, Proj2&& proj2)
     {
         while (first1 != last1 && first2 != last2 &&
             PIKA_INVOKE(
@@ -215,7 +215,7 @@ namespace pika::parallel::detail {
 
     template <typename IterPair>
     struct mismatch_binary
-      : public detail::algorithm<mismatch_binary<IterPair>, IterPair>
+      : public algorithm<mismatch_binary<IterPair>, IterPair>
     {
         mismatch_binary()
           : mismatch_binary::algorithm("mismatch_binary")
@@ -225,9 +225,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename F, typename Proj1,
             typename Proj2>
-        static constexpr util::detail::in_in_result<Iter1, Iter2> sequential(
-            ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-            F&& f, Proj1&& proj1, Proj2&& proj2)
+        static constexpr in_in_result<Iter1, Iter2> sequential(ExPolicy,
+            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, F&& f,
+            Proj1&& proj1, Proj2&& proj2)
         {
             return sequential_mismatch_binary(first1, last1, first2, last2,
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
@@ -237,21 +237,20 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename F, typename Proj1,
             typename Proj2>
-        static util::detail::algorithm_result_t<ExPolicy,
-            util::detail::in_in_result<Iter1, Iter2>>
+        static algorithm_result_t<ExPolicy, in_in_result<Iter1, Iter2>>
         parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
             Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
             if (first1 == last1 || first2 == last2)
             {
-                return util::detail::algorithm_result<ExPolicy,
-                    util::detail::in_in_result<Iter1, Iter2>>::get(util::
-                        detail::in_in_result<Iter1, Iter2>{first1, first2});
+                return algorithm_result<ExPolicy,
+                    in_in_result<Iter1, Iter2>>::get(in_in_result<Iter1, Iter2>{
+                    first1, first2});
             }
 
             using difference_type1 =
                 typename std::iterator_traits<Iter1>::difference_type;
-            difference_type1 count1 = detail::distance(first1, last1);
+            difference_type1 count1 = (distance) (first1, last1);
 
             // The specification of std::mismatch(_binary) states that if FwdIter1
             // and FwdIter2 meet the requirements of RandomAccessIterator and
@@ -262,12 +261,12 @@ namespace pika::parallel::detail {
             // iterators. This could turn into a QoI issue.
             using difference_type2 =
                 typename std::iterator_traits<Iter2>::difference_type;
-            difference_type2 count2 = detail::distance(first2, last2);
+            difference_type2 count2 = (distance) (first2, last2);
             if (count1 != count2)
             {
-                return util::detail::algorithm_result<ExPolicy,
-                    util::detail::in_in_result<Iter1, Iter2>>::get(util::
-                        detail::in_in_result<Iter1, Iter2>{first1, first2});
+                return algorithm_result<ExPolicy,
+                    in_in_result<Iter1, Iter2>>::get(in_in_result<Iter1, Iter2>{
+                    first1, first2});
             }
 
             using zip_iterator = pika::util::zip_iterator<Iter1, Iter2>;
@@ -282,8 +281,8 @@ namespace pika::parallel::detail {
                           proj2 = PIKA_FORWARD(Proj2, proj2)](zip_iterator it,
                           std::size_t part_count,
                           std::size_t base_idx) mutable -> void {
-                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                    part_count, tok,
+                loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it, part_count,
+                    tok,
                     [&f, &proj1, &proj2, &tok](
                         reference t, std::size_t i) mutable -> void {
                         if (!pika::util::detail::invoke(f,
@@ -298,7 +297,7 @@ namespace pika::parallel::detail {
             };
 
             auto f2 = [=](std::vector<pika::future<void>>&& data) mutable
-                -> util::detail::in_in_result<Iter1, Iter2> {
+                -> in_in_result<Iter1, Iter2> {
                 // make sure iterators embedded in function object that is
                 // attached to futures are invalidated
                 data.clear();
@@ -311,14 +310,13 @@ namespace pika::parallel::detail {
                 }
                 else
                 {
-                    first1 = detail::advance_to_sentinel(first1, last1);
-                    first2 = detail::advance_to_sentinel(first2, last2);
+                    first1 = advance_to_sentinel(first1, last1);
+                    first2 = advance_to_sentinel(first2, last2);
                 }
                 return {first1, first2};
             };
 
-            return util::detail::partitioner<ExPolicy,
-                util::detail::in_in_result<Iter1, Iter2>,
+            return partitioner<ExPolicy, in_in_result<Iter1, Iter2>,
                 void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
                 pika::util::make_zip_iterator(first1, first2), count1, 1,
                 PIKA_MOVE(f1), PIKA_MOVE(f2));
@@ -327,17 +325,17 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename I1, typename I2>
-    std::pair<I1, I2> get_pair(util::detail::in_in_result<I1, I2>&& p)
+    std::pair<I1, I2> get_pair(in_in_result<I1, I2>&& p)
     {
         return {p.in1, p.in2};
     }
 
     template <typename I1, typename I2>
     pika::future<std::pair<I1, I2>> get_pair(
-        pika::future<util::detail::in_in_result<I1, I2>>&& f)
+        pika::future<in_in_result<I1, I2>>&& f)
     {
-        return pika::make_future<std::pair<I1, I2>>(PIKA_MOVE(f),
-            [](util::detail::in_in_result<I1, I2>&& p) -> std::pair<I1, I2> {
+        return pika::make_future<std::pair<I1, I2>>(
+            PIKA_MOVE(f), [](in_in_result<I1, I2>&& p) -> std::pair<I1, I2> {
                 return {PIKA_MOVE(p.in1), PIKA_MOVE(p.in2)};
             });
     }
@@ -345,7 +343,7 @@ namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // mismatch
     template <typename IterPair>
-    struct mismatch : public detail::algorithm<mismatch<IterPair>, IterPair>
+    struct mismatch : public algorithm<mismatch<IterPair>, IterPair>
     {
         mismatch()
           : mismatch::algorithm("mismatch")
@@ -366,19 +364,19 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename F>
-        static util::detail::algorithm_result_t<ExPolicy, IterPair> parallel(
+        static algorithm_result_t<ExPolicy, IterPair> parallel(
             ExPolicy&& policy, FwdIter1 first1, Sent last1, FwdIter2 first2,
             F&& f)
         {
             if (first1 == last1)
             {
-                return util::detail::algorithm_result<ExPolicy, IterPair>::get(
+                return algorithm_result<ExPolicy, IterPair>::get(
                     std::make_pair(first1, first2));
             }
 
             using difference_type =
                 typename std::iterator_traits<FwdIter1>::difference_type;
-            difference_type count = detail::distance(first1, last1);
+            difference_type count = (distance) (first1, last1);
 
             using zip_iterator = pika::util::zip_iterator<FwdIter1, FwdIter2>;
             using reference = typename zip_iterator::reference;
@@ -390,8 +388,8 @@ namespace pika::parallel::detail {
             auto f1 = [tok, f = PIKA_FORWARD(F, f)](zip_iterator it,
                           std::size_t part_count,
                           std::size_t base_idx) mutable -> void {
-                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                    part_count, tok,
+                loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it, part_count,
+                    tok,
                     [&f, &tok](reference t, std::size_t i) mutable -> void {
                         if (!pika::util::detail::invoke(
                                 f, std::get<0>(t), std::get<1>(t)))
@@ -411,14 +409,14 @@ namespace pika::parallel::detail {
                 if (mismatched != count)
                     std::advance(first1, mismatched);
                 else
-                    first1 = detail::advance_to_sentinel(first1, last1);
+                    first1 = advance_to_sentinel(first1, last1);
 
                 std::advance(first2, mismatched);
                 return std::make_pair(first1, first2);
             };
 
-            return util::detail::partitioner<ExPolicy, IterPair,
-                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy),
+            return partitioner<ExPolicy, IterPair, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy),
                 pika::util::make_zip_iterator(first1, first2), count, 1,
                 PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
@@ -445,7 +443,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy,
             std::pair<FwdIter1, FwdIter2>>
         tag_fallback_invoke(mismatch_t, ExPolicy&& policy, FwdIter1 first1,
             FwdIter1 last1, FwdIter2 first2, FwdIter2 last2, Pred&& op)
@@ -456,12 +454,12 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             return pika::parallel::detail::get_pair(
-                pika::parallel::detail::mismatch_binary<pika::parallel::util::
-                        detail::in_in_result<FwdIter1, FwdIter2>>()
+                pika::parallel::detail::mismatch_binary<
+                    pika::parallel::detail::in_in_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                         last2, PIKA_FORWARD(Pred, op),
-                        pika::parallel::util::detail::projection_identity{},
-                        pika::parallel::util::detail::projection_identity{}));
+                        pika::parallel::detail::projection_identity{},
+                        pika::parallel::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -472,7 +470,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy,
             std::pair<FwdIter1, FwdIter2>>
         tag_fallback_invoke(mismatch_t, ExPolicy&& policy, FwdIter1 first1,
             FwdIter1 last1, FwdIter2 first2, FwdIter2 last2)
@@ -483,12 +481,12 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             return pika::parallel::detail::get_pair(
-                pika::parallel::detail::mismatch_binary<pika::parallel::util::
-                        detail::in_in_result<FwdIter1, FwdIter2>>()
+                pika::parallel::detail::mismatch_binary<
+                    pika::parallel::detail::in_in_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                         last2, pika::parallel::detail::equal_to{},
-                        pika::parallel::util::detail::projection_identity{},
-                        pika::parallel::util::detail::projection_identity{}));
+                        pika::parallel::detail::projection_identity{},
+                        pika::parallel::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -504,7 +502,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy,
             std::pair<FwdIter1, FwdIter2>>
         tag_fallback_invoke(mismatch_t, ExPolicy&& policy, FwdIter1 first1,
             FwdIter1 last1, FwdIter2 first2, Pred&& op)
@@ -528,7 +526,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy,
             std::pair<FwdIter1, FwdIter2>>
         tag_fallback_invoke(mismatch_t, ExPolicy&& policy, FwdIter1 first1,
             FwdIter1 last1, FwdIter2 first2)
@@ -566,12 +564,12 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             return pika::parallel::detail::get_pair(
-                pika::parallel::detail::mismatch_binary<pika::parallel::util::
-                        detail::in_in_result<FwdIter1, FwdIter2>>()
+                pika::parallel::detail::mismatch_binary<
+                    pika::parallel::detail::in_in_result<FwdIter1, FwdIter2>>()
                     .call(pika::execution::seq, first1, last1, first2, last2,
                         PIKA_FORWARD(Pred, op),
-                        pika::parallel::util::detail::projection_identity{},
-                        pika::parallel::util::detail::projection_identity{}));
+                        pika::parallel::detail::projection_identity{},
+                        pika::parallel::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -590,12 +588,12 @@ namespace pika {
                 "Requires at least forward iterator.");
 
             return pika::parallel::detail::get_pair(
-                pika::parallel::detail::mismatch_binary<pika::parallel::util::
-                        detail::in_in_result<FwdIter1, FwdIter2>>()
+                pika::parallel::detail::mismatch_binary<
+                    pika::parallel::detail::in_in_result<FwdIter1, FwdIter2>>()
                     .call(pika::execution::seq, first1, last1, first2, last2,
                         pika::parallel::detail::equal_to{},
-                        pika::parallel::util::detail::projection_identity{},
-                        pika::parallel::util::detail::projection_identity{}));
+                        pika::parallel::detail::projection_identity{},
+                        pika::parallel::detail::projection_identity{}));
         }
 
         // clang-format off

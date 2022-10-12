@@ -33,24 +33,21 @@
 namespace pika::parallel::detail {
     template <typename FwdIter1, typename FwdIter2, typename Sent2>
     bool get_starts_with_result(
-        util::detail::in_in_result<FwdIter1, FwdIter2>&& p, Sent2 last2)
+        in_in_result<FwdIter1, FwdIter2>&& p, Sent2 last2)
     {
         return p.in2 == last2;
     }
 
     template <typename FwdIter1, typename FwdIter2, typename Sent2>
     pika::future<bool> get_starts_with_result(
-        pika::future<util::detail::in_in_result<FwdIter1, FwdIter2>>&& f,
-        Sent2 last2)
+        pika::future<in_in_result<FwdIter1, FwdIter2>>&& f, Sent2 last2)
     {
         return pika::make_future<bool>(PIKA_MOVE(f),
-            [last2 = PIKA_MOVE(last2)](
-                util::detail::in_in_result<FwdIter1, FwdIter2>&& p) -> bool {
-                return p.in2 == last2;
-            });
+            [last2 = PIKA_MOVE(last2)](in_in_result<FwdIter1, FwdIter2>&& p)
+                -> bool { return p.in2 == last2; });
     }
 
-    struct starts_with : public detail::algorithm<starts_with, bool>
+    struct starts_with : public algorithm<starts_with, bool>
     {
         starts_with()
           : starts_with::algorithm("starts_with")
@@ -64,8 +61,8 @@ namespace pika::parallel::detail {
             Iter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
             Proj2&& proj2)
         {
-            auto dist1 = detail::distance(first1, last1);
-            auto dist2 = detail::distance(first2, last2);
+            auto dist1 = (distance) (first1, last1);
+            auto dist2 = (distance) (first2, last2);
 
             if (dist1 < dist2)
             {
@@ -73,40 +70,36 @@ namespace pika::parallel::detail {
             }
 
             auto end_first = std::next(first1, dist2);
-            return detail::get_starts_with_result<Iter1, Iter2, Sent2>(
-                pika::parallel::detail::mismatch_binary<
-                    util::detail::in_in_result<Iter1, Iter2>>()
-                    .call(pika::execution::seq, PIKA_MOVE(first1),
-                        PIKA_MOVE(end_first), PIKA_MOVE(first2), last2,
-                        PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
-                        PIKA_FORWARD(Proj2, proj2)),
+            return get_starts_with_result<Iter1, Iter2, Sent2>(
+                mismatch_binary<in_in_result<Iter1, Iter2>>().call(
+                    pika::execution::seq, PIKA_MOVE(first1),
+                    PIKA_MOVE(end_first), PIKA_MOVE(first2), last2,
+                    PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
+                    PIKA_FORWARD(Proj2, proj2)),
                 last2);
         }
 
         template <typename ExPolicy, typename FwdIter1, typename Sent1,
             typename FwdIter2, typename Sent2, typename Pred, typename Proj1,
             typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy, bool>::type
-        parallel(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
-            FwdIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-            Proj2&& proj2)
+        static typename algorithm_result<ExPolicy, bool>::type parallel(
+            ExPolicy&& policy, FwdIter1 first1, Sent1 last1, FwdIter2 first2,
+            Sent2 last2, Pred&& pred, Proj1&& proj1, Proj2&& proj2)
         {
-            auto dist1 = detail::distance(first1, last1);
-            auto dist2 = detail::distance(first2, last2);
+            auto dist1 = (distance) (first1, last1);
+            auto dist2 = (distance) (first2, last2);
 
             if (dist1 < dist2)
             {
-                return util::detail::algorithm_result<ExPolicy, bool>::get(
-                    false);
+                return algorithm_result<ExPolicy, bool>::get(false);
             }
 
             auto end_first = std::next(first1, dist2);
-            return detail::get_starts_with_result<FwdIter1, FwdIter2, Sent2>(
-                detail::mismatch_binary<
-                    util::detail::in_in_result<FwdIter1, FwdIter2>>()
-                    .call(PIKA_FORWARD(ExPolicy, policy), first1, end_first,
-                        first2, last2, PIKA_FORWARD(Pred, pred),
-                        PIKA_FORWARD(Proj1, proj1), PIKA_FORWARD(Proj2, proj2)),
+            return get_starts_with_result<FwdIter1, FwdIter2, Sent2>(
+                mismatch_binary<in_in_result<FwdIter1, FwdIter2>>().call(
+                    PIKA_FORWARD(ExPolicy, policy), first1, end_first, first2,
+                    last2, PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj1, proj1),
+                    PIKA_FORWARD(Proj2, proj2)),
                 last2);
         }
     };
@@ -123,8 +116,8 @@ namespace pika {
         // clang-format off
         template <typename InIter1, typename InIter2,
             typename Pred = pika::parallel::detail::equal_to,
-            typename Proj1 = parallel::util::detail::projection_identity,
-            typename Proj2 = parallel::util::detail::projection_identity,
+            typename Proj1 = parallel::detail::projection_identity,
+            typename Proj2 = parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<InIter1>::value &&
                 pika::traits::is_iterator<InIter2>::value &&
@@ -154,8 +147,8 @@ namespace pika {
         // clang-format off
         template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
             typename Pred = ranges::equal_to,
-            typename Proj1 = parallel::util::detail::projection_identity,
-            typename Proj2 = parallel::util::detail::projection_identity,
+            typename Proj1 = parallel::detail::projection_identity,
+            typename Proj2 = parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter1>::value &&
@@ -167,8 +160,7 @@ namespace pika {
                 >::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            bool>::type
+        friend typename parallel::detail::algorithm_result<ExPolicy, bool>::type
         tag_fallback_invoke(pika::starts_with_t, ExPolicy&& policy,
             FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, FwdIter2 last2,
             Pred&& pred = Pred(), Proj1&& proj1 = Proj1(),

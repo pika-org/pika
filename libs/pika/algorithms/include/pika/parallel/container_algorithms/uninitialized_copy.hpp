@@ -51,8 +51,8 @@ namespace pika { namespace ranges {
     ///           the last element copied.
     ///
     template <typename InIter, typename Sent1, typename FwdIter, typename Sent2>
-    pika::parallel::util::detail::in_out_result<InIter, FwdIter>
-    uninitialized_copy(InIter first1, Sent1 last1, FwdIter first2, Sent2 last2);
+    pika::parallel::detail::in_out_result<InIter, FwdIter> uninitialized_copy(
+        InIter first1, Sent1 last1, FwdIter first2, Sent2 last2);
 
     /// Copies the elements in the range, defined by [first, last), to an
     /// uninitialized memory area beginning at \a dest. If an exception is
@@ -108,8 +108,8 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Sent1,
         typename FwdIter2, typename Sent2>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
-        parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
+        pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>::type
     uninitialized_copy(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
         FwdIter2 first2, Sent2 last2);
 
@@ -145,7 +145,7 @@ namespace pika { namespace ranges {
     ///           the last element copied.
     ///
     template <typename Rng1, typename Rng2>
-    pika::parallel::util::detail::in_out_result<
+    pika::parallel::detail::in_out_result<
         typename pika::traits::range_traits<Rng1>::iterator_type,
         typename pika::traits::range_traits<Rng2>::iterator_type>
     uninitialized_copy(Rng1&& rng1, Rng2&& rng2);
@@ -197,8 +197,8 @@ namespace pika { namespace ranges {
     ///           one past the last element copied.
     ///
     template <typename ExPolicy, typename Rng1, typename Rng2>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
-        pika::parallel::util::detail::in_out_result<
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
+        pika::parallel::detail::in_out_result<
             typename pika::traits::range_traits<Rng1>::iterator_type,
             typename pika::traits::range_traits<Rng2>::iterator_type>>::type
     uninitialized_copy(ExPolicy&& policy, Rng1&& rng1, Rng2&& rng2);
@@ -242,8 +242,7 @@ namespace pika { namespace ranges {
     ///           the last element copied.
     ///
     template <typename InIter, typename Size, typename FwdIter, typename Sent2>
-    pika::parallel::util::detail::in_out_result<InIter, FwdIter>
-    uninitialized_copy_n(
+    pika::parallel::detail::in_out_result<InIter, FwdIter> uninitialized_copy_n(
         InIter first1, Size count, FwdIter first2, Sent2 last2);
 
     /// Copies the elements in the range [first, first + count), starting from
@@ -302,8 +301,8 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename FwdIter1, typename Size,
         typename FwdIter2, typename Sent2>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
-        parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
+        pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>::type
     uninitialized_copy_n(ExPolicy&& policy, FwdIter1 first1, Size count,
         FwdIter2 first2, Sent2 last2);
 }}    // namespace pika::ranges
@@ -340,7 +339,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent2, FwdIter>::value
             )>
         // clang-format on
-        friend pika::parallel::util::detail::in_out_result<InIter, FwdIter>
+        friend pika::parallel::detail::in_out_result<InIter, FwdIter>
         tag_fallback_invoke(pika::ranges::uninitialized_copy_t, InIter first1,
             Sent1 last1, FwdIter first2, Sent2 last2)
         {
@@ -350,7 +349,7 @@ namespace pika::ranges {
                 "Requires at least forward iterator.");
 
             return pika::parallel::detail::uninitialized_copy_sent<
-                parallel::util::detail::in_out_result<InIter, FwdIter>>()
+                pika::parallel::detail::in_out_result<InIter, FwdIter>>()
                 .call(pika::execution::seq, first1, last1, first2, last2);
         }
 
@@ -365,8 +364,8 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent2, FwdIter2>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
+            pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>::type
         tag_fallback_invoke(pika::ranges::uninitialized_copy_t,
             ExPolicy&& policy, FwdIter1 first1, Sent1 last1, FwdIter2 first2,
             Sent2 last2)
@@ -377,7 +376,7 @@ namespace pika::ranges {
                 "Requires at least forward iterator.");
 
             return pika::parallel::detail::uninitialized_copy_sent<
-                parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>()
+                pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1, last1, first2,
                     last2);
         }
@@ -389,7 +388,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng2>::value
             )>
         // clang-format on
-        friend pika::parallel::util::detail::in_out_result<
+        friend pika::parallel::detail::in_out_result<
             typename pika::traits::range_traits<Rng1>::iterator_type,
             typename pika::traits::range_traits<Rng2>::iterator_type>
         tag_fallback_invoke(
@@ -409,7 +408,7 @@ namespace pika::ranges {
                 "Requires at least forward iterator.");
 
             return pika::parallel::detail::uninitialized_copy_sent<
-                parallel::util::detail::in_out_result<iterator_type1,
+                pika::parallel::detail::in_out_result<iterator_type1,
                     iterator_type2>>()
                 .call(pika::execution::seq, std::begin(rng1), std::end(rng1),
                     std::begin(rng2), std::end(rng2));
@@ -423,8 +422,8 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng2>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            pika::parallel::util::detail::in_out_result<
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
+            pika::parallel::detail::in_out_result<
                 typename pika::traits::range_traits<Rng1>::iterator_type,
                 typename pika::traits::range_traits<Rng2>::iterator_type>>::type
         tag_fallback_invoke(pika::ranges::uninitialized_copy_t,
@@ -444,7 +443,7 @@ namespace pika::ranges {
                 "Requires at least forward iterator.");
 
             return pika::parallel::detail::uninitialized_copy_sent<
-                parallel::util::detail::in_out_result<iterator_type1,
+                pika::parallel::detail::in_out_result<iterator_type1,
                     iterator_type2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), std::begin(rng1),
                     std::end(rng1), std::begin(rng2), std::end(rng2));
@@ -463,7 +462,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent2, FwdIter>::value
             )>
         // clang-format on
-        friend pika::parallel::util::detail::in_out_result<InIter, FwdIter>
+        friend pika::parallel::detail::in_out_result<InIter, FwdIter>
         tag_fallback_invoke(pika::ranges::uninitialized_copy_n_t, InIter first1,
             Size count, FwdIter first2, Sent2 last2)
         {
@@ -474,7 +473,7 @@ namespace pika::ranges {
 
             std::size_t d = parallel::detail::distance(first2, last2);
             return pika::parallel::detail::uninitialized_copy_n<
-                parallel::util::detail::in_out_result<InIter, FwdIter>>()
+                pika::parallel::detail::in_out_result<InIter, FwdIter>>()
                 .call(pika::execution::seq, first1, count <= d ? count : d,
                     first2);
         }
@@ -489,9 +488,8 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent2, FwdIter2>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            pika::parallel::util::detail::in_out_result<FwdIter1,
-                FwdIter2>>::type
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
+            pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>::type
         tag_fallback_invoke(pika::ranges::uninitialized_copy_n_t,
             ExPolicy&& policy, FwdIter1 first1, Size count, FwdIter2 first2,
             Sent2 last2)
@@ -503,7 +501,7 @@ namespace pika::ranges {
 
             std::size_t d = parallel::detail::distance(first2, last2);
             return pika::parallel::detail::uninitialized_copy_n<
-                parallel::util::detail::in_out_result<FwdIter1, FwdIter2>>()
+                pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first1,
                     count <= d ? count : d, first2);
         }

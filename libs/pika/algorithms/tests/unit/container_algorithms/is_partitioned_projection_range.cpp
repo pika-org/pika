@@ -23,7 +23,7 @@ int seed = std::random_device{}();
 std::mt19937 gen(seed);
 std::uniform_int_distribution<> dis(0, 99);
 
-using identity = pika::parallel::util::detail::projection_identity;
+using identity = pika::parallel::detail::projection_identity;
 
 struct add_one
 {

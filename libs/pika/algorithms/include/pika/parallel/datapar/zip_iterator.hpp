@@ -27,7 +27,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename... Iter>
     struct is_data_aligned_impl<pika::util::zip_iterator<Iter...>>
     {
@@ -58,7 +58,7 @@ namespace pika::parallel::util::detail {
             typename std::iterator_traits<Iter>::value_type>...>
     {
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail
 
 namespace pika::parallel::traits::detail {
     template <typename Tuple, typename... Iter, std::size_t... Is>

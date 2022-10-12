@@ -84,7 +84,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename Pred = detail::less>
-    typename util::detail::algorithm_result<ExPolicy, bool>::type>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, bool>::type>::type
     includes(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
             FwdIter2 first2, FwdIter2 last2, Pred&& op = Pred());
 
@@ -185,7 +185,7 @@ namespace pika::parallel::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////
-    struct includes : public detail::algorithm<includes, bool>
+    struct includes : public algorithm<includes, bool>
     {
         includes()
           : includes::algorithm("includes")
@@ -206,19 +206,17 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename F, typename Proj1,
             typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy, bool>::type
-        parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+        static typename algorithm_result<ExPolicy, bool>::type parallel(
+            ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
             Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
             if (first1 == last1)
             {
-                return util::detail::algorithm_result<ExPolicy, bool>::get(
-                    false);
+                return algorithm_result<ExPolicy, bool>::get(false);
             }
             if (first2 == last2)
             {
-                return util::detail::algorithm_result<ExPolicy, bool>::get(
-                    true);
+                return algorithm_result<ExPolicy, bool>::get(true);
             }
 
             util::cancellation_token<> tok;
@@ -290,7 +288,7 @@ namespace pika::parallel::detail {
                     [](pika::future<bool>& val) { return val.get(); });
             };
 
-            return util::detail::partitioner<ExPolicy, bool>::call(
+            return detail::partitioner<ExPolicy, bool>::call(
                 PIKA_FORWARD(ExPolicy, policy), first2,
                 detail::distance(first2, last2), PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
@@ -317,7 +315,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             bool>::type
         tag_fallback_invoke(includes_t, ExPolicy&& policy, FwdIter1 first1,
             FwdIter1 last1, FwdIter2 first2, FwdIter2 last2, Pred&& op = Pred())
@@ -330,8 +328,8 @@ namespace pika {
             return pika::parallel::detail::includes().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, op),
-                pika::parallel::util::detail::projection_identity(),
-                pika::parallel::util::detail::projection_identity());
+                pika::parallel::detail::projection_identity(),
+                pika::parallel::detail::projection_identity());
         }
 
         // clang-format off
@@ -356,8 +354,8 @@ namespace pika {
 
             return pika::parallel::detail::includes().call(pika::execution::seq,
                 first1, last1, first2, last2, PIKA_FORWARD(Pred, op),
-                pika::parallel::util::detail::projection_identity(),
-                pika::parallel::util::detail::projection_identity());
+                pika::parallel::detail::projection_identity(),
+                pika::parallel::detail::projection_identity());
         }
     } includes{};
 }    // namespace pika

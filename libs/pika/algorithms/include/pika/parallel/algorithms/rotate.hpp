@@ -86,8 +86,8 @@ namespace pika {
     ///           first + (last - new_first).
     ///
     template <typename ExPolicy, typename FwdIter>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type rotate(
-        ExPolicy&& policy, FwdIter first, FwdIter new_first, FwdIter last);
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+    rotate(ExPolicy&& policy, FwdIter first, FwdIter new_first, FwdIter last);
 
     /// Copies the elements from the range [first, last), to another range
     /// beginning at \a dest_first in such a way, that the element
@@ -170,7 +170,7 @@ namespace pika {
     ///           to the element past the last element copied.
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter2>::type
     rotate_copy(ExPolicy&& policy, FwdIter1 first, FwdIter1 new_first,
         FwdIter1 last, FwdIter2 dest_first);
 
@@ -206,7 +206,7 @@ namespace pika::parallel::detail {
     // rotate
     /// \cond NOINTERNAL
     template <typename ExPolicy, typename FwdIter, typename Sent>
-    pika::future<util::detail::in_out_result<FwdIter, Sent>> rotate_helper(
+    pika::future<in_out_result<FwdIter, Sent>> rotate_helper(
         ExPolicy policy, FwdIter first, FwdIter new_first, Sent last)
     {
         using non_seq = std::false_type;
@@ -215,21 +215,20 @@ namespace pika::parallel::detail {
                      .on(policy.executor())
                      .with(policy.parameters());
 
-        detail::reverse<FwdIter> r;
+        reverse<FwdIter> r;
         return dataflow(
             [=](pika::future<FwdIter>&& f1, pika::future<FwdIter>&& f2) mutable
-            -> pika::future<util::detail::in_out_result<FwdIter, Sent>> {
+            -> pika::future<in_out_result<FwdIter, Sent>> {
                 // propagate exceptions
                 f1.get();
                 f2.get();
 
                 pika::future<FwdIter> f = r.call2(p, non_seq(), first, last);
                 return f.then([=](pika::future<FwdIter>&& f) mutable
-                    -> util::detail::in_out_result<FwdIter, Sent> {
+                    -> in_out_result<FwdIter, Sent> {
                     f.get();    // propagate exceptions
-                    std::advance(first, detail::distance(new_first, last));
-                    return util::detail::in_out_result<FwdIter, Sent>{
-                        first, last};
+                    std::advance(first, (distance) (new_first, last));
+                    return in_out_result<FwdIter, Sent>{first, last};
                 });
             },
             r.call2(p, non_seq(), first, new_first),
@@ -237,7 +236,7 @@ namespace pika::parallel::detail {
     }
 
     template <typename IterPair>
-    struct rotate : public detail::algorithm<rotate<IterPair>, IterPair>
+    struct rotate : public algorithm<rotate<IterPair>, IterPair>
     {
         rotate()
           : rotate::algorithm("rotate")
@@ -248,16 +247,15 @@ namespace pika::parallel::detail {
         static IterPair sequential(
             ExPolicy, InIter first, InIter new_first, Sent last)
         {
-            return detail::sequential_rotate(first, new_first, last);
+            return sequential_rotate(first, new_first, last);
         }
 
         template <typename ExPolicy, typename FwdIter, typename Sent>
-        static typename util::detail::algorithm_result<ExPolicy, IterPair>::type
-        parallel(ExPolicy&& policy, FwdIter first, FwdIter new_first, Sent last)
+        static typename algorithm_result<ExPolicy, IterPair>::type parallel(
+            ExPolicy&& policy, FwdIter first, FwdIter new_first, Sent last)
         {
-            return util::detail::algorithm_result<ExPolicy, IterPair>::get(
-                rotate_helper(
-                    PIKA_FORWARD(ExPolicy, policy), first, new_first, last));
+            return algorithm_result<ExPolicy, IterPair>::get(rotate_helper(
+                PIKA_FORWARD(ExPolicy, policy), first, new_first, last));
         }
     };
     /// \endcond
@@ -268,22 +266,22 @@ namespace pika::parallel::detail {
 
     // sequential rotate_copy
     template <typename InIter, typename Sent, typename OutIter>
-    inline util::detail::in_out_result<InIter, OutIter> sequential_rotate_copy(
+    inline in_out_result<InIter, OutIter> sequential_rotate_copy(
         InIter first, InIter new_first, Sent last, OutIter dest_first)
     {
-        util::detail::in_out_result<InIter, OutIter> p1 =
-            util::detail::copy(new_first, last, dest_first);
-        util::detail::in_out_result<InIter, OutIter> p2 =
-            util::detail::copy(first, new_first, PIKA_MOVE(p1.out));
-        return util::detail::in_out_result<InIter, OutIter>{
+        in_out_result<InIter, OutIter> p1 =
+            (copy) (new_first, last, dest_first);
+        in_out_result<InIter, OutIter> p2 =
+            (copy) (first, new_first, PIKA_MOVE(p1.out));
+        return in_out_result<InIter, OutIter>{
             PIKA_MOVE(p1.in), PIKA_MOVE(p2.out)};
     }
 
     template <typename ExPolicy, typename FwdIter1, typename Sent,
         typename FwdIter2>
-    pika::future<util::detail::in_out_result<FwdIter1, FwdIter2>>
-    rotate_copy_helper(ExPolicy policy, FwdIter1 first, FwdIter1 new_first,
-        Sent last, FwdIter2 dest_first)
+    pika::future<in_out_result<FwdIter1, FwdIter2>> rotate_copy_helper(
+        ExPolicy policy, FwdIter1 first, FwdIter1 new_first, Sent last,
+        FwdIter2 dest_first)
     {
         using non_seq = std::false_type;
 
@@ -291,24 +289,21 @@ namespace pika::parallel::detail {
                      .on(policy.executor())
                      .with(policy.parameters());
 
-        using copy_return_type =
-            util::detail::in_out_result<FwdIter1, FwdIter2>;
+        using copy_return_type = in_out_result<FwdIter1, FwdIter2>;
 
-        pika::future<copy_return_type> f =
-            detail::copy<copy_return_type>().call2(
-                p, non_seq(), new_first, last, dest_first);
+        pika::future<copy_return_type> f = copy_algo<copy_return_type>().call2(
+            p, non_seq(), new_first, last, dest_first);
 
         return f.then([=](pika::future<copy_return_type>&& result)
                           -> pika::future<copy_return_type> {
             copy_return_type p1 = result.get();
-            return detail::copy<copy_return_type>().call2(
+            return copy_algo<copy_return_type>().call2(
                 p, non_seq(), first, new_first, p1.out);
         });
     }
 
     template <typename IterPair>
-    struct rotate_copy
-      : public detail::algorithm<rotate_copy<IterPair>, IterPair>
+    struct rotate_copy : public algorithm<rotate_copy<IterPair>, IterPair>
     {
         rotate_copy()
           : rotate_copy::algorithm("rotate_copy")
@@ -317,20 +312,20 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter>
-        static util::detail::in_out_result<InIter, OutIter> sequential(ExPolicy,
-            InIter first, InIter new_first, Sent last, OutIter dest_first)
+        static in_out_result<InIter, OutIter> sequential(ExPolicy, InIter first,
+            InIter new_first, Sent last, OutIter dest_first)
         {
             return sequential_rotate_copy(first, new_first, last, dest_first);
         }
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2>
-        static typename util::detail::algorithm_result<ExPolicy,
-            util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+        static typename algorithm_result<ExPolicy,
+            in_out_result<FwdIter1, FwdIter2>>::type
         parallel(ExPolicy&& policy, FwdIter1 first, FwdIter1 new_first,
             Sent last, FwdIter2 dest_first)
         {
-            return util::detail::algorithm_result<ExPolicy, IterPair>::get(
+            return algorithm_result<ExPolicy, IterPair>::get(
                 rotate_copy_helper(PIKA_FORWARD(ExPolicy, policy), first,
                     new_first, last, dest_first));
         }
@@ -357,9 +352,9 @@ namespace pika {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
 
-            return parallel::util::detail::get_second_element(
-                pika::parallel::detail::rotate<pika::parallel::util::detail::
-                        in_out_result<FwdIter, FwdIter>>()
+            return parallel::detail::get_second_element(
+                pika::parallel::detail::rotate<
+                    pika::parallel::detail::in_out_result<FwdIter, FwdIter>>()
                     .call(pika::execution::seq, first, new_first, last));
         }
         // clang-format off
@@ -369,10 +364,10 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter>
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            FwdIter>::type
-        tag_fallback_invoke(pika::rotate_t, ExPolicy&& policy, FwdIter first,
-            FwdIter new_first, FwdIter last)
+        friend
+            typename parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
+            tag_fallback_invoke(pika::rotate_t, ExPolicy&& policy,
+                FwdIter first, FwdIter new_first, FwdIter last)
         {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter>),
                 "Requires at least forward iterator.");
@@ -381,9 +376,9 @@ namespace pika {
                 pika::is_sequenced_execution_policy_v<ExPolicy> ||
                     !pika::traits::is_bidirectional_iterator_v<FwdIter>>;
 
-            return parallel::util::detail::get_second_element(
-                pika::parallel::detail::rotate<pika::parallel::util::detail::
-                        in_out_result<FwdIter, FwdIter>>()
+            return parallel::detail::get_second_element(
+                pika::parallel::detail::rotate<
+                    pika::parallel::detail::in_out_result<FwdIter, FwdIter>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first,
                         new_first, last));
         }
@@ -410,9 +405,9 @@ namespace pika {
             static_assert((pika::traits::is_output_iterator_v<OutIter>),
                 "Requires at least output iterator.");
 
-            return parallel::util::detail::get_second_element(
-                pika::parallel::detail::rotate_copy<pika::parallel::util::
-                        detail::in_out_result<FwdIter, OutIter>>()
+            return parallel::detail::get_second_element(
+                pika::parallel::detail::rotate_copy<
+                    pika::parallel::detail::in_out_result<FwdIter, OutIter>>()
                     .call(pika::execution::seq, first, new_first, last,
                         dest_first));
         }
@@ -425,7 +420,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename parallel::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
         tag_fallback_invoke(pika::rotate_copy_t, ExPolicy&& policy,
             FwdIter1 first, FwdIter1 new_first, FwdIter1 last,
@@ -440,9 +435,9 @@ namespace pika {
                 pika::is_sequenced_execution_policy_v<ExPolicy> ||
                     !pika::traits::is_forward_iterator_v<FwdIter1>>;
 
-            return parallel::util::detail::get_second_element(
-                pika::parallel::detail::rotate_copy<pika::parallel::util::
-                        detail::in_out_result<FwdIter1, FwdIter2>>()
+            return parallel::detail::get_second_element(
+                pika::parallel::detail::rotate_copy<
+                    pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>()
                     .call2(PIKA_FORWARD(ExPolicy, policy), is_seq(), first,
                         new_first, last, dest_first));
         }

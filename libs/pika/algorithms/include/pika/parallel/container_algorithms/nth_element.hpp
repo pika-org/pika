@@ -33,7 +33,7 @@ namespace pika { namespace ranges {
     /// \tparam Pred        Comparison function object which returns true if
     ///                     the first argument is less than the second.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param first        Refers to the beginning of the sequence of elements
     ///                     the algorithm will be applied to.
@@ -96,7 +96,7 @@ namespace pika { namespace ranges {
     /// \tparam Pred        Comparison function object which returns true if
     ///                     the first argument is less than the second.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -145,7 +145,7 @@ namespace pika { namespace ranges {
     ///
     template <typename ExPolicy, typename RandomIt, typename Sent,
         typename Pred, typename Proj>
-    parallel::util::detail::algorithm_result_t<ExPolicy, RandomIt>
+    pika::parallel::detail::algorithm_result_t<ExPolicy, RandomIt>
     nth_element(ExPolicy&& policy, RandomIt first, RandomIt nth,
         Sent last, Pred&& pred, Proj&& proj);
 
@@ -165,7 +165,7 @@ namespace pika { namespace ranges {
     /// \tparam Pred        Comparison function object which returns true if
     ///                     the first argument is less than the second.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
     ///                     will be applied to.
@@ -225,7 +225,7 @@ namespace pika { namespace ranges {
     /// \tparam Pred        Comparison function object which returns true if
     ///                     the first argument is less than the second.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a parallel::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -271,7 +271,7 @@ namespace pika { namespace ranges {
     ///           to last.
     ///
     template <typename ExPolicy, typename Rng, typename Pred, typename Proj>
-    parallel::util::detail::algorithm_result_t<ExPolicy,
+    pika::parallel::detail::algorithm_result_t<ExPolicy,
         pika::traits::range_iterator_t<Rng>>
     nth_element(ExPolicy&& policy, Rng&& rng,
         pika::traits::range_iterator_t<Rng> nth,
@@ -306,7 +306,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename RandomIt, typename Sent,
             typename Pred = pika::parallel::detail::less,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_random_access_iterator_v<RandomIt> &&
                 pika::traits::is_sentinel_for_v<Sent, RandomIt> &&
@@ -333,7 +333,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename RandomIt, typename Sent,
             typename Pred = pika::parallel::detail::less,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_random_access_iterator_v<RandomIt> &&
@@ -346,7 +346,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend parallel::util::detail::algorithm_result_t<ExPolicy, RandomIt>
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy, RandomIt>
         tag_fallback_invoke(pika::ranges::nth_element_t, ExPolicy&& policy,
             RandomIt first, RandomIt nth, Sent last, Pred&& pred = Pred(),
             Proj&& proj = Proj())
@@ -362,7 +362,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename Rng,
             typename Pred = pika::parallel::detail::less,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_range_v<Rng> &&
                 pika::parallel::detail::is_projected_range_v<Proj, Rng> &&
@@ -392,7 +392,7 @@ namespace pika::ranges {
         // clang-format off
         template <typename ExPolicy, typename Rng,
             typename Pred = pika::parallel::detail::less,
-            typename Proj = pika::parallel::util::detail::projection_identity,
+            typename Proj = pika::parallel::detail::projection_identity,
             PIKA_CONCEPT_REQUIRES_(
                 pika::is_execution_policy_v<ExPolicy> &&
                 pika::traits::is_range_v<Rng> &&
@@ -404,7 +404,7 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend parallel::util::detail::algorithm_result_t<ExPolicy,
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy,
             pika::traits::range_iterator_t<Rng>>
         tag_fallback_invoke(pika::ranges::nth_element_t, ExPolicy&& policy,
             Rng&& rng, pika::traits::range_iterator_t<Rng> nth,

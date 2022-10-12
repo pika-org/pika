@@ -45,9 +45,8 @@ namespace pika::parallel::detail {
 
             using pika::util::make_zip_iterator;
             using std::get;
-            util::detail::loop_n<std::decay_t<ExPolicy>>(
-                make_zip_iterator(first, prev, dest), count,
-                [op](auto&& it) mutable {
+            loop_n<std::decay_t<ExPolicy>>(make_zip_iterator(first, prev, dest),
+                count, [op](auto&& it) mutable {
                     get<2>(*it) = PIKA_INVOKE(op, get<0>(*it), get<1>(*it));
                 });
             std::advance(dest, count);
@@ -57,9 +56,8 @@ namespace pika::parallel::detail {
 
     template <typename ExPolicy, typename InIter, typename OutIter, typename Op,
         PIKA_CONCEPT_REQUIRES_(
-            pika::is_vectorpack_execution_policy<ExPolicy>::value&&
-                pika::parallel::util::detail::iterator_datapar_compatible<
-                    InIter>::value)>
+            pika::is_vectorpack_execution_policy<ExPolicy>::value&& pika::
+                parallel::detail::iterator_datapar_compatible<InIter>::value)>
     inline OutIter tag_invoke(sequential_adjacent_difference_t<ExPolicy>,
         InIter first, InIter last, OutIter dest, Op&& op)
     {

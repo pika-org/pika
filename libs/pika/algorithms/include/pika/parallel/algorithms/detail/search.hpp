@@ -31,7 +31,7 @@ namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // search
     template <typename FwdIter, typename Sent>
-    struct search : public detail::algorithm<search<FwdIter, Sent>, FwdIter>
+    struct search : public algorithm<search<FwdIter, Sent>, FwdIter>
     {
         search()
           : search::algorithm("search")
@@ -62,9 +62,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter2, typename Sent2,
             typename Pred, typename Proj1, typename Proj2>
-        static typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            FwdIter>::type
-        parallel(ExPolicy&& policy, FwdIter first, Sent last, FwdIter2 s_first,
+        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
+            ExPolicy&& policy, FwdIter first, Sent last, FwdIter2 s_first,
             Sent2 s_last, Pred&& op, Proj1&& proj1, Proj2&& proj2)
         {
             using reference = typename std::iterator_traits<FwdIter>::reference;
@@ -75,29 +74,20 @@ namespace pika::parallel::detail {
             using s_difference_type =
                 typename std::iterator_traits<FwdIter2>::difference_type;
 
-            using result =
-                pika::parallel::util::detail::algorithm_result<ExPolicy,
-                    FwdIter>;
+            using result = algorithm_result<ExPolicy, FwdIter>;
 
             // Use of pika::distance instead of std::distance to support
             // sentinels
-            s_difference_type diff =
-                pika::parallel::detail::distance(s_first, s_last);
+            s_difference_type diff = (distance) (s_first, s_last);
             if (diff <= 0)
                 return result::get(PIKA_MOVE(first));
 
-            difference_type count =
-                pika::parallel::detail::distance(first, last);
+            difference_type count = (distance) (first, last);
             if (diff > count)
             {
-                std::advance(
-                    first, pika::parallel::detail::distance(first, last) - 1);
+                std::advance(first, (distance) (first, last) - 1);
                 return result::get(PIKA_MOVE(first));
             }
-
-            using partitioner =
-                pika::parallel::util::detail::partitioner<ExPolicy, FwdIter,
-                    void>;
 
             pika::parallel::util::cancellation_token<difference_type> tok(
                 count);
@@ -109,8 +99,7 @@ namespace pika::parallel::detail {
                           std::size_t base_idx) mutable -> void {
                 FwdIter curr = it;
 
-                pika::parallel::util::detail::loop_idx_n<
-                    std::decay_t<ExPolicy>>(base_idx, it, part_size, tok,
+                loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it, part_size, tok,
                     [diff, count, s_first, &tok, &curr,
                         op = PIKA_FORWARD(Pred, op),
                         proj1 = PIKA_FORWARD(Proj1, proj1),
@@ -148,20 +137,20 @@ namespace pika::parallel::detail {
                 if (search_res != count)
                     std::advance(first, search_res);
                 else
-                    std::advance(first,
-                        pika::parallel::detail::distance(first, last) - 1);
+                    std::advance(first, (distance) (first, last) - 1);
 
                 return PIKA_MOVE(first);
             };
-            return partitioner::call_with_index(PIKA_FORWARD(ExPolicy, policy),
-                first, count - (diff - 1), 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
+            return partitioner<ExPolicy, FwdIter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), first, count - (diff - 1), 1,
+                PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
 
     ///////////////////////////////////////////////////////////////////////////
     // search_n
     template <typename FwdIter, typename Sent>
-    struct search_n : public detail::algorithm<search_n<FwdIter, Sent>, FwdIter>
+    struct search_n : public algorithm<search_n<FwdIter, Sent>, FwdIter>
     {
         search_n()
           : search_n::algorithm("search_n")
@@ -175,14 +164,13 @@ namespace pika::parallel::detail {
             Proj2&& proj2)
         {
             return std::search(first, std::next(first, count), s_first, s_last,
-                util::compare_projected<Pred&, Proj1&, Proj2&>(
-                    op, proj1, proj2));
+                compare_projected<Pred&, Proj1&, Proj2&>(op, proj1, proj2));
         }
 
         template <typename ExPolicy, typename FwdIter2, typename Pred,
             typename Proj1, typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        parallel(ExPolicy&& policy, FwdIter first, std::size_t count,
+        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
+            ExPolicy&& policy, FwdIter first, std::size_t count,
             FwdIter2 s_first, FwdIter2 s_last, Pred&& op, Proj1&& proj1,
             Proj2&& proj2)
         {
@@ -191,7 +179,7 @@ namespace pika::parallel::detail {
                 typename std::iterator_traits<FwdIter>::difference_type;
             using s_difference_type =
                 typename std::iterator_traits<FwdIter2>::difference_type;
-            using result = util::detail::algorithm_result<ExPolicy, FwdIter>;
+            using result = algorithm_result<ExPolicy, FwdIter>;
 
             s_difference_type diff = std::distance(s_first, s_last);
             if (diff <= 0)
@@ -199,9 +187,6 @@ namespace pika::parallel::detail {
 
             if (diff > s_difference_type(count))
                 return result::get(PIKA_MOVE(first));
-
-            using partitioner =
-                util::detail::partitioner<ExPolicy, FwdIter, void>;
 
             util::cancellation_token<difference_type> tok(count);
 
@@ -212,8 +197,7 @@ namespace pika::parallel::detail {
                           std::size_t base_idx) mutable -> void {
                 FwdIter curr = it;
 
-                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                    part_size, tok,
+                loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it, part_size, tok,
                     [count, diff, s_first, &tok, &curr,
                         op = PIKA_FORWARD(Pred, op),
                         proj1 = PIKA_FORWARD(Proj1, proj1),
@@ -253,8 +237,9 @@ namespace pika::parallel::detail {
 
                 return PIKA_MOVE(first);
             };
-            return partitioner::call_with_index(PIKA_FORWARD(ExPolicy, policy),
-                first, count - (diff - 1), 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
+            return partitioner<ExPolicy, FwdIter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), first, count - (diff - 1), 1,
+                PIKA_MOVE(f1), PIKA_MOVE(f2));
         }
     };
     /// \endcond

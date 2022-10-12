@@ -61,7 +61,7 @@ namespace pika {
     ///           copied.
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy, FwdIter2>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter2>::type
     copy(ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest);
 
     /// Copies the elements in the range [first, first + count), starting from
@@ -117,7 +117,7 @@ namespace pika {
     ///           copied.
     ///
     template <typename ExPolicy, typename FwdIter1, typename Size, typename FwdIter2>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy, FwdIter2>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter2>::type
     copy_n(ExPolicy&& policy, FwdIter1 first, Size count, FwdIter2 dest);
 
     /// Copies the elements in the range, defined by [first, last), to another
@@ -191,7 +191,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename F>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy, FwdIter2> >::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter2> >::type
     copy_if(ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest,
         Pred&& pred);
 
@@ -250,16 +250,16 @@ namespace pika { namespace parallel {
             {
                 using std::get;
                 auto iters = part_begin.get_iterator_tuple();
-                util::detail::copy_n<execution_policy_type>(
+                copy_n<execution_policy_type>(
                     get<0>(iters), part_size, get<1>(iters));
             }
         };
 
         template <typename IterPair>
-        struct copy : public detail::algorithm<copy<IterPair>, IterPair>
+        struct copy_algo : public algorithm<copy_algo<IterPair>, IterPair>
         {
-            copy()
-              : copy::algorithm("copy")
+            copy_algo()
+              : copy_algo::algorithm("copy")
             {
             }
 
@@ -267,12 +267,12 @@ namespace pika { namespace parallel {
                 typename OutIter>
             static constexpr std::enable_if_t<
                 !pika::traits::is_random_access_iterator_v<InIter>,
-                util::detail::in_out_result<InIter, OutIter>>
+                in_out_result<InIter, OutIter>>
             sequential(ExPolicy, InIter first, Sent last, OutIter dest)
             {
-                util::detail::in_out_result<InIter, OutIter> result =
-                    util::detail::copy(first, last, dest);
-                util::detail::copy_synchronize(first, dest);
+                in_out_result<InIter, OutIter> result =
+                    (copy) (first, last, dest);
+                copy_synchronize(first, dest);
                 return result;
             }
 
@@ -280,20 +280,19 @@ namespace pika { namespace parallel {
                 typename OutIter>
             static constexpr std::enable_if_t<
                 pika::traits::is_random_access_iterator_v<InIter>,
-                util::detail::in_out_result<InIter, OutIter>>
+                in_out_result<InIter, OutIter>>
             sequential(ExPolicy, InIter first, Sent last, OutIter dest)
             {
-                util::detail::in_out_result<InIter, OutIter> result =
-                    util::detail::copy_n<ExPolicy>(
-                        first, detail::distance(first, last), dest);
-                util::detail::copy_synchronize(first, dest);
+                in_out_result<InIter, OutIter> result = copy_n<ExPolicy>(
+                    first, detail::distance(first, last), dest);
+                copy_synchronize(first, dest);
                 return result;
             }
 
             template <typename ExPolicy, typename FwdIter1, typename Sent1,
                 typename FwdIter2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+            static typename algorithm_result<ExPolicy,
+                in_out_result<FwdIter1, FwdIter2>>::type
             parallel(
                 ExPolicy&& policy, FwdIter1 first, Sent1 last, FwdIter2 dest)
             {
@@ -303,42 +302,36 @@ namespace pika { namespace parallel {
                 PIKA_UNUSED(last);
                 PIKA_UNUSED(dest);
                 PIKA_ASSERT(false);
-                typename util::detail::algorithm_result<ExPolicy,
-                    util::detail::in_out_result<FwdIter1, FwdIter2>>::type*
-                    dummy = nullptr;
+                typename algorithm_result<ExPolicy,
+                    in_out_result<FwdIter1, FwdIter2>>::type* dummy = nullptr;
                 return PIKA_MOVE(*dummy);
 #else
                 using zip_iterator =
                     pika::util::zip_iterator<FwdIter1, FwdIter2>;
 
-                return util::detail::get_in_out_result(
-                    util::detail::foreach_partitioner<ExPolicy>::call(
-                        PIKA_FORWARD(ExPolicy, policy),
-                        pika::util::make_zip_iterator(first, dest),
-                        detail::distance(first, last),
-                        copy_iteration<ExPolicy>(),
-                        [](zip_iterator&& last) -> zip_iterator {
-                            using std::get;
-                            auto iters = last.get_iterator_tuple();
-                            util::detail::copy_synchronize(
-                                get<0>(iters), get<1>(iters));
-                            return PIKA_MOVE(last);
-                        }));
+                return get_in_out_result(foreach_partitioner<ExPolicy>::call(
+                    PIKA_FORWARD(ExPolicy, policy),
+                    pika::util::make_zip_iterator(first, dest),
+                    detail::distance(first, last), copy_iteration<ExPolicy>(),
+                    [](zip_iterator&& last) -> zip_iterator {
+                        using std::get;
+                        auto iters = last.get_iterator_tuple();
+                        copy_synchronize(get<0>(iters), get<1>(iters));
+                        return PIKA_MOVE(last);
+                    }));
 #endif
             }
         };
 
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
         template <typename FwdIter1, typename FwdIter2, typename Enable = void>
-        struct copy_iter
-          : public copy<util::detail::in_out_result<FwdIter1, FwdIter2>>
+        struct copy_iter : public copy_algo<in_out_result<FwdIter1, FwdIter2>>
         {
         };
 #else
         ///////////////////////////////////////////////////////////////////////
         template <typename FwdIter1, typename FwdIter2>
-        struct copy_iter
-          : public copy<util::detail::in_out_result<FwdIter1, FwdIter2>>
+        struct copy_iter : public copy_algo<in_out_result<FwdIter1, FwdIter2>>
         {
         };
 #endif
@@ -350,51 +343,49 @@ namespace pika { namespace parallel {
 
         // sequential copy_n
         template <typename IterPair>
-        struct copy_n : public detail::algorithm<copy_n<IterPair>, IterPair>
+        struct copy_n_algo : public algorithm<copy_n_algo<IterPair>, IterPair>
         {
-            copy_n()
-              : copy_n::algorithm("copy_n")
+            copy_n_algo()
+              : copy_n_algo::algorithm("copy_n")
             {
             }
 
             template <typename ExPolicy, typename InIter, typename OutIter>
-            static constexpr util::detail::in_out_result<InIter, OutIter>
-            sequential(ExPolicy, InIter first, std::size_t count, OutIter dest)
+            static constexpr in_out_result<InIter, OutIter> sequential(
+                ExPolicy, InIter first, std::size_t count, OutIter dest)
             {
-                util::detail::in_out_result<InIter, OutIter> result =
-                    util::detail::copy_n<ExPolicy>(first, count, dest);
-                util::detail::copy_synchronize(first, dest);
+                in_out_result<InIter, OutIter> result =
+                    copy_n<ExPolicy>(first, count, dest);
+                copy_synchronize(first, dest);
                 return result;
             }
 
             template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::detail::in_out_result<FwdIter1, FwdIter2>>::type
+            static typename algorithm_result<ExPolicy,
+                in_out_result<FwdIter1, FwdIter2>>::type
             parallel(ExPolicy&& policy, FwdIter1 first, std::size_t count,
                 FwdIter2 dest)
             {
                 using zip_iterator =
                     pika::util::zip_iterator<FwdIter1, FwdIter2>;
 
-                return util::detail::get_in_out_result(
-                    util::detail::foreach_partitioner<ExPolicy>::call(
-                        PIKA_FORWARD(ExPolicy, policy),
-                        pika::util::make_zip_iterator(first, dest), count,
-                        [](zip_iterator part_begin, std::size_t part_size,
-                            std::size_t) {
-                            using std::get;
+                return get_in_out_result(foreach_partitioner<ExPolicy>::call(
+                    PIKA_FORWARD(ExPolicy, policy),
+                    pika::util::make_zip_iterator(first, dest), count,
+                    [](zip_iterator part_begin, std::size_t part_size,
+                        std::size_t) {
+                        using std::get;
 
-                            auto iters = part_begin.get_iterator_tuple();
-                            util::detail::copy_n<ExPolicy>(
-                                get<0>(iters), part_size, get<1>(iters));
-                        },
-                        [](zip_iterator&& last) -> zip_iterator {
-                            using std::get;
-                            auto iters = last.get_iterator_tuple();
-                            util::detail::copy_synchronize(
-                                get<0>(iters), get<1>(iters));
-                            return PIKA_MOVE(last);
-                        }));
+                        auto iters = part_begin.get_iterator_tuple();
+                        copy_n<ExPolicy>(
+                            get<0>(iters), part_size, get<1>(iters));
+                    },
+                    [](zip_iterator&& last) -> zip_iterator {
+                        using std::get;
+                        auto iters = last.get_iterator_tuple();
+                        copy_synchronize(get<0>(iters), get<1>(iters));
+                        return PIKA_MOVE(last);
+                    }));
             }
         };
     }    // namespace detail
@@ -406,7 +397,7 @@ namespace pika { namespace parallel {
         // sequential copy_if with projection function
         template <typename InIter1, typename InIter2, typename OutIter,
             typename Pred, typename Proj>
-        inline util::detail::in_out_result<InIter1, OutIter> sequential_copy_if(
+        inline in_out_result<InIter1, OutIter> sequential_copy_if(
             InIter1 first, InIter2 last, OutIter dest, Pred&& pred, Proj&& proj)
         {
             while (first != last)
@@ -415,24 +406,24 @@ namespace pika { namespace parallel {
                     *dest++ = *first;
                 first++;
             }
-            return util::detail::in_out_result<InIter1, OutIter>{
+            return in_out_result<InIter1, OutIter>{
                 PIKA_MOVE(first), PIKA_MOVE(dest)};
         }
 
         template <typename IterPair>
-        struct copy_if : public detail::algorithm<copy_if<IterPair>, IterPair>
+        struct copy_if_algo : public algorithm<copy_if_algo<IterPair>, IterPair>
         {
-            copy_if()
-              : copy_if::algorithm("copy_if")
+            copy_if_algo()
+              : copy_if_algo::algorithm("copy_if")
             {
             }
 
             template <typename ExPolicy, typename InIter1, typename InIter2,
                 typename OutIter, typename Pred,
-                typename Proj = util::detail::projection_identity>
-            static util::detail::in_out_result<InIter1, OutIter> sequential(
-                ExPolicy, InIter1 first, InIter2 last, OutIter dest,
-                Pred&& pred, Proj&& proj /* = Proj()*/)
+                typename Proj = projection_identity>
+            static in_out_result<InIter1, OutIter> sequential(ExPolicy,
+                InIter1 first, InIter2 last, OutIter dest, Pred&& pred,
+                Proj&& proj /* = Proj()*/)
             {
                 return sequential_copy_if(first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
@@ -440,23 +431,22 @@ namespace pika { namespace parallel {
 
             template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
                 typename FwdIter3, typename Pred,
-                typename Proj = util::detail::projection_identity>
-            static typename util::detail::algorithm_result<ExPolicy,
-                util::detail::in_out_result<FwdIter1, FwdIter3>>::type
+                typename Proj = projection_identity>
+            static typename algorithm_result<ExPolicy,
+                in_out_result<FwdIter1, FwdIter3>>::type
             parallel(ExPolicy&& policy, FwdIter1 first, FwdIter2 last,
                 FwdIter3 dest, Pred&& pred, Proj&& proj /* = Proj()*/)
             {
                 using zip_iterator = pika::util::zip_iterator<FwdIter1, bool*>;
-                using result = util::detail::algorithm_result<ExPolicy,
-                    util::detail::in_out_result<FwdIter1, FwdIter3>>;
+                using result = algorithm_result<ExPolicy,
+                    in_out_result<FwdIter1, FwdIter3>>;
                 using difference_type =
                     typename std::iterator_traits<FwdIter1>::difference_type;
 
                 if (first == last)
                 {
-                    return result::get(
-                        util::detail::in_out_result<FwdIter1, FwdIter3>{
-                            PIKA_MOVE(first), PIKA_MOVE(dest)});
+                    return result::get(in_out_result<FwdIter1, FwdIter3>{
+                        PIKA_MOVE(first), PIKA_MOVE(dest)});
                 }
 
                 difference_type count = detail::distance(first, last);
@@ -466,10 +456,8 @@ namespace pika { namespace parallel {
 
                 using pika::util::make_zip_iterator;
                 using std::get;
-                using scan_partitioner_type =
-                    util::detail::scan_partitioner<ExPolicy,
-                        util::detail::in_out_result<FwdIter1, FwdIter3>,
-                        std::size_t>;
+                using scan_partitioner_type = scan_partitioner<ExPolicy,
+                    in_out_result<FwdIter1, FwdIter3>, std::size_t>;
 
                 auto f1 = [pred = PIKA_FORWARD(Pred, pred),
                               proj = PIKA_FORWARD(decltype(proj), proj)](
@@ -481,8 +469,7 @@ namespace pika { namespace parallel {
                     // below makes gcc generate errors
 
                     // MSVC complains if proj is captured by ref below
-                    util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin,
-                        part_size,
+                    loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
                         [&pred, proj, &curr](zip_iterator it) mutable -> void {
                             bool f = pika::util::detail::invoke(pred,
                                 pika::util::detail::invoke(proj, get<0>(*it)));
@@ -497,8 +484,8 @@ namespace pika { namespace parallel {
                               std::size_t part_size, std::size_t val) mutable {
                     PIKA_UNUSED(flags);
                     std::advance(dest, val);
-                    util::detail::loop_n<std::decay_t<ExPolicy>>(part_begin,
-                        part_size, [&dest](zip_iterator it) mutable {
+                    loop_n<std::decay_t<ExPolicy>>(part_begin, part_size,
+                        [&dest](zip_iterator it) mutable {
                             if (get<1>(*it))
                                 *dest++ = get<0>(*it);
                         });
@@ -506,7 +493,7 @@ namespace pika { namespace parallel {
 
                 auto f4 = [first, dest, flags](std::vector<std::size_t>&& items,
                               std::vector<pika::future<void>>&& data) mutable
-                    -> util::detail::in_out_result<FwdIter1, FwdIter3> {
+                    -> in_out_result<FwdIter1, FwdIter3> {
                     PIKA_UNUSED(flags);
 
                     auto dist = items.back();
@@ -517,7 +504,7 @@ namespace pika { namespace parallel {
                     // attached to futures are invalidated
                     data.clear();
 
-                    return util::detail::in_out_result<FwdIter1, FwdIter3>{
+                    return in_out_result<FwdIter1, FwdIter3>{
                         PIKA_MOVE(first), PIKA_MOVE(dest)};
                 };
 
@@ -554,12 +541,12 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename parallel::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
         tag_fallback_invoke(pika::copy_t, ExPolicy&& policy, FwdIter1 first,
             FwdIter1 last, FwdIter2 dest)
         {
-            return parallel::util::detail::get_second_element(
+            return parallel::detail::get_second_element(
                 parallel::detail::transfer<
                     parallel::detail::copy_iter<FwdIter1, FwdIter2>>(
                     PIKA_FORWARD(ExPolicy, policy), first, last, dest));
@@ -575,7 +562,7 @@ namespace pika {
         friend FwdIter2 tag_fallback_invoke(
             pika::copy_t, FwdIter1 first, FwdIter1 last, FwdIter2 dest)
         {
-            return parallel::util::detail::get_second_element(
+            return parallel::detail::get_second_element(
                 parallel::detail::transfer<
                     parallel::detail::copy_iter<FwdIter1, FwdIter2>>(
                     pika::execution::seq, first, last, dest));
@@ -597,7 +584,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
         tag_fallback_invoke(pika::copy_n_t, ExPolicy&& policy, FwdIter1 first,
             Size count, FwdIter2 dest)
@@ -612,13 +599,13 @@ namespace pika {
             // if count is representing a negative value, we do nothing
             if (pika::parallel::detail::is_negative(count))
             {
-                return pika::parallel::util::detail::algorithm_result<ExPolicy,
+                return pika::parallel::detail::algorithm_result<ExPolicy,
                     FwdIter2>::get(PIKA_MOVE(dest));
             }
 
-            return pika::parallel::util::detail::get_second_element(
-                pika::parallel::detail::copy_n<pika::parallel::util::detail::
-                        in_out_result<FwdIter1, FwdIter2>>()
+            return pika::parallel::detail::get_second_element(
+                pika::parallel::detail::copy_n_algo<
+                    pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first,
                         std::size_t(count), dest));
         }
@@ -641,14 +628,14 @@ namespace pika {
             // if count is representing a negative value, we do nothing
             if (pika::parallel::detail::is_negative(count))
             {
-                return pika::parallel::util::detail::algorithm_result<
+                return pika::parallel::detail::algorithm_result<
                     pika::execution::sequenced_policy,
                     FwdIter2>::get(PIKA_MOVE(dest));
             }
 
-            return pika::parallel::util::detail::get_second_element(
-                pika::parallel::detail::copy_n<pika::parallel::util::detail::
-                        in_out_result<FwdIter1, FwdIter2>>()
+            return pika::parallel::detail::get_second_element(
+                pika::parallel::detail::copy_n_algo<
+                    pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>()
                     .call(
                         pika::execution::seq, first, std::size_t(count), dest));
         }
@@ -672,7 +659,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter2>::type
         tag_fallback_invoke(pika::copy_if_t, ExPolicy&& policy, FwdIter1 first,
             FwdIter1 last, FwdIter2 dest, Pred&& pred)
@@ -684,12 +671,12 @@ namespace pika {
                         pika::traits::is_output_iterator_v<FwdIter2>),
                 "Requires at least forward iterator or sequential execution.");
 
-            return pika::parallel::util::detail::get_second_element(
-                pika::parallel::detail::copy_if<pika::parallel::util::detail::
-                        in_out_result<FwdIter1, FwdIter2>>()
+            return pika::parallel::detail::get_second_element(
+                pika::parallel::detail::copy_if_algo<
+                    pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>()
                     .call(PIKA_FORWARD(ExPolicy, policy), first, last, dest,
                         PIKA_FORWARD(Pred, pred),
-                        pika::parallel::util::detail::projection_identity{}));
+                        pika::parallel::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -710,12 +697,12 @@ namespace pika {
             static_assert((pika::traits::is_output_iterator_v<FwdIter2>),
                 "Requires at least output iterator.");
 
-            return pika::parallel::util::detail::get_second_element(
-                pika::parallel::detail::copy_if<pika::parallel::util::detail::
-                        in_out_result<FwdIter1, FwdIter2>>()
+            return pika::parallel::detail::get_second_element(
+                pika::parallel::detail::copy_if_algo<
+                    pika::parallel::detail::in_out_result<FwdIter1, FwdIter2>>()
                     .call(pika::execution::seq, first, last, dest,
                         PIKA_FORWARD(Pred, pred),
-                        pika::parallel::util::detail::projection_identity{}));
+                        pika::parallel::detail::projection_identity{}));
         }
     } copy_if{};
 }    // namespace pika

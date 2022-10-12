@@ -50,7 +50,7 @@ namespace pika {
     ///           is defined by \a void.
     ///
     template <typename ExPolicy, typename Rng, typename T>
-    typename util::detail::algorithm_result<ExPolicy>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
     fill(ExPolicy&& policy, Rng&& rng, T const& value);
 
     /// Assigns the given value value to the first count elements in the range
@@ -96,7 +96,7 @@ namespace pika {
     ///           is defined by \a void.
     ///
     template <typename ExPolicy, typename Iterator, typename Size, typename T>
-    typename util::detail::algorithm_result<ExPolicy, Iterator>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, Iterator>::type
     fill_n(ExPolicy&& policy, Iterator first, Size count, T const& value);
 
     // clang-format on
@@ -132,7 +132,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename pika::traits::range_traits<Rng>::iterator_type>::type
         tag_fallback_invoke(
             fill_t, ExPolicy&& policy, Rng&& rng, T const& value)
@@ -157,7 +157,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             Iter>::type
         tag_fallback_invoke(
             fill_t, ExPolicy&& policy, Iter first, Sent last, T const& value)
@@ -225,7 +225,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy,
             pika::traits::range_iterator_t<Rng>>
         tag_fallback_invoke(
             fill_n_t, ExPolicy&& policy, Rng&& rng, T const& value)
@@ -241,7 +241,7 @@ namespace pika::ranges {
             if (pika::parallel::detail::is_negative(pika::util::size(rng)))
             {
                 auto first = pika::util::begin(rng);
-                return pika::parallel::util::detail::algorithm_result<ExPolicy,
+                return pika::parallel::detail::algorithm_result<ExPolicy,
                     iterator_type>::get(PIKA_MOVE(first));
             }
 
@@ -258,7 +258,7 @@ namespace pika::ranges {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(fill_n_t, ExPolicy&& policy, FwdIter first,
             Size count, T const& value)
@@ -269,7 +269,7 @@ namespace pika::ranges {
             // if count is representing a negative value, we do nothing
             if (pika::parallel::detail::is_negative(count))
             {
-                return pika::parallel::util::detail::algorithm_result<ExPolicy,
+                return pika::parallel::detail::algorithm_result<ExPolicy,
                     FwdIter>::get(PIKA_MOVE(first));
             }
 

@@ -43,7 +43,7 @@ namespace pika::parallel::detail {
     }
 
     template <typename Iter, typename Sent>
-    inline constexpr util::detail::in_out_result<Iter, Sent> sequential_rotate(
+    inline constexpr in_out_result<Iter, Sent> sequential_rotate(
         Iter first, Iter new_first, Sent last)
     {
         if (first != new_first && new_first != last)

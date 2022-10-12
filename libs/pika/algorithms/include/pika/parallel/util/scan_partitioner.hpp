@@ -35,7 +35,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     struct scan_partitioner_normal_tag
     {
     };
@@ -423,4 +423,4 @@ namespace pika::parallel::util::detail {
             Result1, Result2>
     {
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

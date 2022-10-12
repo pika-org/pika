@@ -96,7 +96,7 @@ namespace pika {
     ///           end of the resulting range.
     ///
     template <typename ExPolicy, typename FwdIter, typename Size>
-    typename parallel::util::detail::algorithm_result<ExPolicy, FwdIter>
+    typename parallel::detail::algorithm_result<ExPolicy, FwdIter>
     shift_right(ExPolicy&& policy, FwdIter first, FwdIter last, Size n);
 
     // clang-format on
@@ -214,8 +214,7 @@ namespace pika::parallel::detail {
     }
 
     template <typename FwdIter2>
-    struct shift_right
-      : public detail::algorithm<shift_right<FwdIter2>, FwdIter2>
+    struct shift_right : public algorithm<shift_right<FwdIter2>, FwdIter2>
     {
         shift_right()
           : shift_right::algorithm("shift_right")
@@ -226,30 +225,30 @@ namespace pika::parallel::detail {
             typename Size>
         static FwdIter sequential(ExPolicy, FwdIter first, Sent last, Size n)
         {
-            auto dist = static_cast<std::size_t>(detail::distance(first, last));
+            auto dist = static_cast<std::size_t>((distance) (first, last));
             if (n <= 0 || static_cast<std::size_t>(n) >= dist)
             {
                 return first;
             }
 
-            auto last_iter = detail::advance_to_sentinel(first, last);
-            return detail::sequential_shift_right(
+            auto last_iter = advance_to_sentinel(first, last);
+            return sequential_shift_right(
                 first, last_iter, difference_type_t<FwdIter>(n), dist);
         }
 
         template <typename ExPolicy, typename Sent, typename Size>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
-        parallel(ExPolicy&& policy, FwdIter2 first, Sent last, Size n)
+        static typename algorithm_result<ExPolicy, FwdIter2>::type parallel(
+            ExPolicy&& policy, FwdIter2 first, Sent last, Size n)
         {
-            auto dist = static_cast<std::size_t>(detail::distance(first, last));
+            auto dist = static_cast<std::size_t>((distance) (first, last));
             if (n <= 0 || static_cast<std::size_t>(n) >= dist)
             {
-                return parallel::util::detail::algorithm_result<ExPolicy,
-                    FwdIter2>::get(PIKA_MOVE(first));
+                return algorithm_result<ExPolicy, FwdIter2>::get(
+                    PIKA_MOVE(first));
             }
 
             auto new_first = std::next(first, dist - n);
-            return util::detail::algorithm_result<ExPolicy, FwdIter2>::get(
+            return algorithm_result<ExPolicy, FwdIter2>::get(
                 shift_right_helper(policy, first, last, new_first));
         }
     };
@@ -284,7 +283,7 @@ namespace pika {
                 pika::is_execution_policy<ExPolicy>::value &&
                 pika::traits::is_iterator<FwdIter>::value)>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(shift_right_t, ExPolicy&& policy, FwdIter first,
             FwdIter last, Size n)

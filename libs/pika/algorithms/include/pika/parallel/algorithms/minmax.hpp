@@ -118,7 +118,7 @@ namespace pika {
     ///           if the range is empty.
     ///
     template <typename ExPolicy, typename FwdIter, typename T>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
     min_element(ExPolicy&& policy, FwdIter first, FwdIter last, F&& f);
 
     /////////////////////////////////////////////////////////////////////////////
@@ -229,7 +229,7 @@ namespace pika {
     ///           if the range is empty.
     ///
     template <typename ExPolicy, typename FwdIter, typename F>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
     max_element(ExPolicy&& policy, FwdIter first, FwdIter last, F&& f);
 
     /////////////////////////////////////////////////////////////////////////////
@@ -301,7 +301,7 @@ namespace pika {
     ///                     overload of \a minmax_element requires \a F to meet the
     ///                     requirements of \a CopyConstructible.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a pika::parallel::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -355,7 +355,7 @@ namespace pika {
     ///           to the last such element is returned.
     ///
     template <typename ExPolicy, typename FwdIter, typename F>
-    typename util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         minmax_element_result<FwdIter>>::type
     minmax_element(ExPolicy&& policy, FwdIter first, FwdIter last, F&& f);
 
@@ -389,8 +389,7 @@ namespace pika {
 
 namespace pika::parallel::detail {
     template <typename T>
-    using minmax_element_result =
-        pika::parallel::util::detail::min_max_result<T>;
+    using minmax_element_result = min_max_result<T>;
 
     ///////////////////////////////////////////////////////////////////////////
     // min_element
@@ -407,7 +406,7 @@ namespace pika::parallel::detail {
         auto smallest = it;
 
         element_type value = PIKA_INVOKE(proj, *smallest);
-        util::detail::loop_n<std::decay_t<ExPolicy>>(
+        loop_n<std::decay_t<ExPolicy>>(
             ++it, count - 1, [&](FwdIter const& curr) -> void {
                 element_type curr_value = PIKA_INVOKE(proj, *curr);
                 if (PIKA_INVOKE(f, curr_value, value))
@@ -422,7 +421,7 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename Iter>
-    struct min_element : public detail::algorithm<min_element<Iter>, Iter>
+    struct min_element : public algorithm<min_element<Iter>, Iter>
     {
         // this has to be a member of the algorithm type as we access this
         // generically from the segmented algorithms
@@ -443,7 +442,7 @@ namespace pika::parallel::detail {
                 typename std::iterator_traits<decltype(smallest)>::value_type;
 
             element_type value = PIKA_INVOKE(proj, *smallest);
-            util::detail::loop_n<std::decay_t<ExPolicy>>(
+            loop_n<std::decay_t<ExPolicy>>(
                 ++it, count - 1, [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, **curr);
                     if (PIKA_INVOKE(f, curr_value, value))
@@ -475,7 +474,7 @@ namespace pika::parallel::detail {
             auto smallest = first;
 
             element_type value = PIKA_INVOKE(proj, *smallest);
-            util::detail::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
+            loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
                 [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, *curr);
                     if (PIKA_INVOKE(f, curr_value, value))
@@ -490,13 +489,12 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename F, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        parallel(
+        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
             ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
         {
             if (first == last)
             {
-                return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
+                return algorithm_result<ExPolicy, FwdIter>::get(
                     PIKA_MOVE(first));
             }
 
@@ -511,10 +509,9 @@ namespace pika::parallel::detail {
                     policy, positions.begin(), positions.size(), f, proj);
             };
 
-            return util::detail::partitioner<ExPolicy, FwdIter, FwdIter>::call(
-                PIKA_FORWARD(ExPolicy, policy), first,
-                detail::distance(first, last), PIKA_MOVE(f1),
-                pika::unwrapping(PIKA_MOVE(f2)));
+            return partitioner<ExPolicy, FwdIter, FwdIter>::call(
+                PIKA_FORWARD(ExPolicy, policy), first, (distance) (first, last),
+                PIKA_MOVE(f1), pika::unwrapping(PIKA_MOVE(f2)));
         }
     };
 
@@ -535,7 +532,7 @@ namespace pika::parallel::detail {
         auto largest = it;
 
         element_type value = PIKA_INVOKE(proj, *largest);
-        util::detail::loop_n<std::decay_t<ExPolicy>>(
+        loop_n<std::decay_t<ExPolicy>>(
             ++it, count - 1, [&](FwdIter const& curr) -> void {
                 element_type curr_value = PIKA_INVOKE(proj, *curr);
                 if (!PIKA_INVOKE(f, curr_value, value))
@@ -550,7 +547,7 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename Iter>
-    struct max_element : public detail::algorithm<max_element<Iter>, Iter>
+    struct max_element : public algorithm<max_element<Iter>, Iter>
     {
         // this has to be a member of the algorithm type as we access this
         // generically from the segmented algorithms
@@ -571,7 +568,7 @@ namespace pika::parallel::detail {
                 typename std::iterator_traits<decltype(largest)>::value_type;
 
             element_type value = PIKA_INVOKE(proj, *largest);
-            util::detail::loop_n<std::decay_t<ExPolicy>>(
+            loop_n<std::decay_t<ExPolicy>>(
                 ++it, count - 1, [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, **curr);
                     if (!PIKA_INVOKE(f, curr_value, value))
@@ -603,7 +600,7 @@ namespace pika::parallel::detail {
             auto largest = first;
 
             element_type value = PIKA_INVOKE(proj, *largest);
-            util::detail::loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
+            loop(PIKA_FORWARD(ExPolicy, policy), ++first, last,
                 [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, *curr);
                     if (!PIKA_INVOKE(f, curr_value, value))
@@ -618,13 +615,12 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename F, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
-        parallel(
+        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
             ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
         {
             if (first == last)
             {
-                return util::detail::algorithm_result<ExPolicy, FwdIter>::get(
+                return algorithm_result<ExPolicy, FwdIter>::get(
                     PIKA_MOVE(first));
             }
 
@@ -639,10 +635,9 @@ namespace pika::parallel::detail {
                     policy, positions.begin(), positions.size(), f, proj);
             };
 
-            return util::detail::partitioner<ExPolicy, FwdIter, FwdIter>::call(
-                PIKA_FORWARD(ExPolicy, policy), first,
-                detail::distance(first, last), PIKA_MOVE(f1),
-                pika::unwrapping(PIKA_MOVE(f2)));
+            return partitioner<ExPolicy, FwdIter, FwdIter>::call(
+                PIKA_FORWARD(ExPolicy, policy), first, (distance) (first, last),
+                PIKA_MOVE(f1), pika::unwrapping(PIKA_MOVE(f2)));
         }
     };
 
@@ -664,7 +659,7 @@ namespace pika::parallel::detail {
 
         element_type min_value = PIKA_INVOKE(proj, *it);
         element_type max_value = min_value;
-        util::detail::loop_n<std::decay_t<ExPolicy>>(
+        loop_n<std::decay_t<ExPolicy>>(
             ++it, count - 1, [&](FwdIter const& curr) -> void {
                 element_type curr_value = PIKA_INVOKE(proj, *curr);
                 if (PIKA_INVOKE(f, curr_value, min_value))
@@ -685,8 +680,7 @@ namespace pika::parallel::detail {
 
     template <typename Iter>
     struct minmax_element
-      : public detail::algorithm<minmax_element<Iter>,
-            minmax_element_result<Iter>>
+      : public algorithm<minmax_element<Iter>, minmax_element_result<Iter>>
     {
         // this has to be a member of the algorithm type as we access this
         // generically from the segmented algorithms
@@ -708,7 +702,7 @@ namespace pika::parallel::detail {
 
             element_type min_value = PIKA_INVOKE(proj, *result.min);
             element_type max_value = PIKA_INVOKE(proj, *result.max);
-            util::detail::loop_n<std::decay_t<ExPolicy>>(
+            loop_n<std::decay_t<ExPolicy>>(
                 ++it, count - 1, [&](PairIter const& curr) -> void {
                     element_type curr_min_value = PIKA_INVOKE(proj, *curr->min);
                     if (PIKA_INVOKE(f, curr_min_value, min_value))
@@ -750,7 +744,7 @@ namespace pika::parallel::detail {
 
             element_type min_value = PIKA_INVOKE(proj, *min);
             element_type max_value = PIKA_INVOKE(proj, *max);
-            util::detail::loop(PIKA_FORWARD(ExPolicy, policy), first, last,
+            loop(PIKA_FORWARD(ExPolicy, policy), first, last,
                 [&](FwdIter const& curr) -> void {
                     element_type curr_value = PIKA_INVOKE(proj, *curr);
                     if (PIKA_INVOKE(f, curr_value, min_value))
@@ -771,7 +765,7 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename F, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy,
+        static typename algorithm_result<ExPolicy,
             minmax_element_result<FwdIter>>::type
         parallel(
             ExPolicy&& policy, FwdIter first, Sent last, F&& f, Proj&& proj)
@@ -781,8 +775,8 @@ namespace pika::parallel::detail {
             result_type result = {first, first};
             if (first == last || ++first == last)
             {
-                return util::detail::algorithm_result<ExPolicy,
-                    result_type>::get(PIKA_MOVE(result));
+                return algorithm_result<ExPolicy, result_type>::get(
+                    PIKA_MOVE(result));
             }
 
             auto f1 =
@@ -798,9 +792,9 @@ namespace pika::parallel::detail {
                     policy, positions.begin(), positions.size(), f, proj);
             };
 
-            return util::detail::partitioner<ExPolicy, result_type,
-                result_type>::call(PIKA_FORWARD(ExPolicy, policy), result.min,
-                detail::distance(result.min, last), PIKA_MOVE(f1),
+            return partitioner<ExPolicy, result_type, result_type>::call(
+                PIKA_FORWARD(ExPolicy, policy), result.min,
+                (distance) (result.min, last), PIKA_MOVE(f1),
                 pika::unwrapping(PIKA_MOVE(f2)));
         }
     };
@@ -809,8 +803,7 @@ namespace pika::parallel::detail {
 
 namespace pika {
     template <typename T>
-    using minmax_element_result =
-        pika::parallel::util::detail::min_max_result<T>;
+    using minmax_element_result = pika::parallel::detail::min_max_result<T>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::min_element
@@ -832,7 +825,7 @@ namespace pika {
 
             return pika::parallel::detail::min_element<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -843,8 +836,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            FwdIter>
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy, FwdIter>
         tag_fallback_invoke(pika::min_element_t, ExPolicy&& policy,
             FwdIter first, FwdIter last, F&& f = F())
         {
@@ -853,7 +845,7 @@ namespace pika {
 
             return pika::parallel::detail::min_element<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::detail::projection_identity());
+                pika::parallel::detail::projection_identity());
         }
     } min_element{};
 
@@ -877,7 +869,7 @@ namespace pika {
 
             return pika::parallel::detail::max_element<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -888,8 +880,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            FwdIter>
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy, FwdIter>
         tag_fallback_invoke(pika::max_element_t, ExPolicy&& policy,
             FwdIter first, FwdIter last, F&& f = F())
         {
@@ -898,7 +889,7 @@ namespace pika {
 
             return pika::parallel::detail::max_element<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::detail::projection_identity());
+                pika::parallel::detail::projection_identity());
         }
     } max_element{};
 
@@ -922,7 +913,7 @@ namespace pika {
 
             return pika::parallel::detail::minmax_element<FwdIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -933,7 +924,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy,
             minmax_element_result<FwdIter>>
         tag_fallback_invoke(pika::minmax_element_t, ExPolicy&& policy,
             FwdIter first, FwdIter last, F&& f = F())
@@ -943,7 +934,7 @@ namespace pika {
 
             return pika::parallel::detail::minmax_element<FwdIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last, PIKA_FORWARD(F, f),
-                pika::parallel::util::detail::projection_identity());
+                pika::parallel::detail::projection_identity());
         }
     } minmax_element{};
 }    // namespace pika

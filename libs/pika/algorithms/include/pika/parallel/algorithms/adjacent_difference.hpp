@@ -66,7 +66,8 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2>
     inline typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-        typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type>::type
+        typename pika::parallel::detail::algorithm_result<ExPolicy,
+            FwdIter2>::type>::type
     adjacent_difference(
         ExPolicy&& policy, FwdIter1 first, FwdIter1 last, FwdIter2 dest)
 
@@ -139,7 +140,7 @@ namespace pika {
             typename Op>
         inline
         typename std::enable_if<pika::is_execution_policy<ExPolicy>::value,
-            typename util::detail::algorithm_result<ExPolicy,
+            typename pika::parallel::detail::algorithm_result<ExPolicy,
                 FwdIter2>::type>::type adjacent_difference(ExPolicy&& policy,
             FwdIter1 first, FwdIter1 last, FwdIter2 dest, Op&& op)
 }    // namespace pika
@@ -175,7 +176,7 @@ namespace pika::parallel::detail {
     /// \cond NOINTERNAL
     template <typename Iter>
     struct adjacent_difference
-      : public detail::algorithm<adjacent_difference<Iter>, Iter>
+      : public algorithm<adjacent_difference<Iter>, Iter>
     {
         adjacent_difference()
           : adjacent_difference::algorithm("adjacent_difference")
@@ -193,13 +194,13 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename Op>
-        static typename util::detail::algorithm_result<ExPolicy, FwdIter2>::type
-        parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
+        static typename algorithm_result<ExPolicy, FwdIter2>::type parallel(
+            ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
             Op&& op)
         {
             using zip_iterator =
                 pika::util::zip_iterator<FwdIter1, FwdIter1, FwdIter2>;
-            using result = util::detail::algorithm_result<ExPolicy, FwdIter2>;
+            using result = algorithm_result<ExPolicy, FwdIter2>;
             using difference_type =
                 typename std::iterator_traits<FwdIter1>::difference_type;
 
@@ -223,7 +224,7 @@ namespace pika::parallel::detail {
                           std::size_t part_size) mutable {
                 // VS2015RC bails out when op is captured by ref
                 using std::get;
-                util::detail::loop_n<std::decay_t<ExPolicy>>(
+                loop_n<std::decay_t<ExPolicy>>(
                     part_begin, part_size, [op](auto&& it) mutable {
                         get<2>(*it) = PIKA_INVOKE(op, get<0>(*it), get<1>(*it));
                     });
@@ -240,7 +241,7 @@ namespace pika::parallel::detail {
             };
 
             using pika::util::make_zip_iterator;
-            return util::detail::partitioner<ExPolicy, FwdIter2, void>::call(
+            return partitioner<ExPolicy, FwdIter2, void>::call(
                 PIKA_FORWARD(ExPolicy, policy),
                 make_zip_iterator(first, prev, dest), count, PIKA_MOVE(f1),
                 PIKA_MOVE(f2));
@@ -285,8 +286,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            FwdIter2>
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy, FwdIter2>
         tag_fallback_invoke(pika::adjacent_difference_t, ExPolicy&& policy,
             FwdIter1 first, FwdIter1 last, FwdIter2 dest)
         {
@@ -328,8 +328,7 @@ namespace pika {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            FwdIter2>
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy, FwdIter2>
         tag_fallback_invoke(pika::adjacent_difference_t, ExPolicy&& policy,
             FwdIter1 first, FwdIter1 last, FwdIter2 dest, Op&& op)
         {

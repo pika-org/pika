@@ -19,7 +19,7 @@
 #include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename Iterator, typename Enable = void>
     struct chunk_size_iterator_category;
 
@@ -415,4 +415,4 @@ namespace pika::parallel::util::detail {
         std::size_t count_ = 0;
         std::size_t current_ = 0;
     };
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

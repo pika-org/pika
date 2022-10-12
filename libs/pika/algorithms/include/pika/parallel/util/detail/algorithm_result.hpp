@@ -16,7 +16,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
     template <typename ExPolicy, typename T>
     struct algorithm_result_impl
     {
@@ -274,4 +274,4 @@ namespace pika::parallel::util::detail {
         return pika::make_future<result_type>(
             PIKA_MOVE(f), PIKA_FORWARD(Conv, conv));
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

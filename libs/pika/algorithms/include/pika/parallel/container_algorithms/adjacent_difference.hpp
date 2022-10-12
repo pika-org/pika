@@ -24,7 +24,7 @@ namespace pika { namespace ranges {
     /// \tparam Sent        The type of the source sentinel (deduced). This
     ///                     sentinel type must be a sentinel for InIter.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a pika::parallel::detail::projection_identity
     /// \tparam Pred        The type of an optional function/function object to use.
     ///
     /// \param first        Refers to the beginning of the sequence of elements
@@ -52,7 +52,7 @@ namespace pika { namespace ranges {
     ///           first of the identical elements. If no such elements are
     ///           found, \a last is returned.
     template <typename FwdIter, typename Sent,
-        typename Proj = pika::parallel::util::detail::projection_identity,
+        typename Proj = pika::parallel::detail::projection_identity,
         typename Pred = detail::equal_to>
     FwdIter adjacent_difference(
         FwdIter first, Sent last, Pred&& pred = Pred(), Proj&& proj = Proj());
@@ -75,7 +75,7 @@ namespace pika { namespace ranges {
     /// \tparam Sent        The type of the source sentinel (deduced). This
     ///                     sentinel type must be a sentinel for InIter.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a pika::parallel::detail::projection_identity
     /// \tparam Pred        The type of an optional function/function object to use.
     ///                     Unlike its sequential form, the parallel
     ///                     overload of \a adjacent_find requires \a Pred to meet the
@@ -129,9 +129,9 @@ namespace pika { namespace ranges {
     ///           predicate \a pred.
     ///
     template <typename ExPolicy, typename FwdIter, typename Sent,
-        typename Proj = pika::parallel::util::detail::projection_identity,
+        typename Proj = pika::parallel::detail::projection_identity,
         typename Pred = detail::equal_to>
-    typename util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
     adjacent_find(ExPolicy&& policy, FwdIter first, Sent last,
         Pred&& pred = Pred(), Proj&& proj = Proj());
 
@@ -145,7 +145,7 @@ namespace pika { namespace ranges {
     ///                     The iterators extracted from this range type must
     ///                     meet the requirements of an forward iterator.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a pika::parallel::detail::projection_identity
     /// \tparam Pred        The type of an optional function/function object to use.
     ///
     /// \param rng          Refers to the sequence of elements the algorithm
@@ -171,7 +171,7 @@ namespace pika { namespace ranges {
     ///           first of the identical elements. If no such elements are
     ///           found, \a last is returned.
     template <typename Rng,
-        typename Proj = pika::parallel::util::detail::projection_identity,
+        typename Proj = pika::parallel::detail::projection_identity,
         typename Pred = detail::equal_to>
     typename pika::traits::range_traits<Rng>::iterator_type adjacent_difference(
         ExPolicy&& policy, Rng&& rng, Pred&& pred = Pred(),
@@ -191,7 +191,7 @@ namespace pika { namespace ranges {
     ///                     Thpika::traits::is_range<Rng>::valuee iterators extracted from this range type must
     ///                     meet the requirements of an forward iterator.
     /// \tparam Proj        The type of an optional projection function. This
-    ///                     defaults to \a util::detail::projection_identity
+    ///                     defaults to \a pika::parallel::detail::projection_identity
     /// \tparam Pred        The type of an optional function/function object to use.
     ///                     Unlike its sequential form, the parallel
     ///                     overload of \a adjacent_find requires \a Pred to meet the
@@ -243,9 +243,9 @@ namespace pika { namespace ranges {
     ///           predicate \a pred.
     ///
     template <typename ExPolicy, typename Rng,
-        typename Proj = pika::parallel::util::detail::projection_identity,
+        typename Proj = pika::parallel::detail::projection_identity,
         typename Pred = detail::equal_to>
-    typename util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename pika::traits::range_traits<Rng>::iterator_type>::type
     adjacent_find(ExPolicy&& policy, Rng&& rng, Pred&& pred = Pred(),
         Proj&& proj = Proj());
@@ -324,8 +324,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for_v<Sent, FwdIter1>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            FwdIter2>
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy, FwdIter2>
         tag_fallback_invoke(pika::ranges::adjacent_difference_t,
             ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest)
         {
@@ -347,8 +346,7 @@ namespace pika::ranges {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            FwdIter2>
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy, FwdIter2>
         tag_fallback_invoke(pika::ranges::adjacent_difference_t,
             ExPolicy&& policy, Rng&& rng, FwdIter2 dest)
         {
@@ -416,8 +414,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for_v<Sent, FwdIter1>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            FwdIter2>
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy, FwdIter2>
         tag_fallback_invoke(pika::ranges::adjacent_difference_t,
             ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
             Op&& op)
@@ -441,8 +438,7 @@ namespace pika::ranges {
                 pika::traits::is_iterator_v<FwdIter2>
             )>
         // clang-format on
-        friend pika::parallel::util::detail::algorithm_result_t<ExPolicy,
-            FwdIter2>
+        friend pika::parallel::detail::algorithm_result_t<ExPolicy, FwdIter2>
         tag_fallback_invoke(pika::ranges::adjacent_difference_t,
             ExPolicy&& policy, Rng&& rng, FwdIter2 dest, Op&& op)
         {

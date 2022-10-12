@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika::parallel::util::detail {
+namespace pika::parallel::detail {
 
     /// \brief create an object in the memory specified by ptr
     /// \tparam Value : typename of the object to create
@@ -332,4 +332,4 @@ namespace pika::parallel::util::detail {
         half_merge(buf, buf + nx, src2, end_src2, src1, comp);
         return false;
     }
-}    // namespace pika::parallel::util::detail
+}    // namespace pika::parallel::detail

@@ -90,7 +90,7 @@ namespace pika { namespace ranges {
     ///           the last element constructed.
     ///
     template <typename ExPolicy, typename FwdIter, typename Sent>
-    typename parallel::util::detail::algorithm_result<ExPolicy, FwdIter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, FwdIter>::type
     uninitialized_default_construct(
         ExPolicy&& policy, FwdIter first, Sent last);
 
@@ -164,7 +164,7 @@ namespace pika { namespace ranges {
     ///           the last element constructed.
     ///
     template <typename ExPolicy, typename Rng>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename pika::traits::range_traits<Rng>::iterator_type>::type
     uninitialized_default_construct(ExPolicy&& policy, Rng&& rng);
 
@@ -247,7 +247,7 @@ namespace pika { namespace ranges {
     ///           the last element constructed.
     ///
     template <typename ExPolicy, typename FwdIter, typename Size>
-    typename typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename typename pika::parallel::detail::algorithm_result<ExPolicy,
         FwdIter>::type
     uninitialized_default_construct_n(
         ExPolicy&& policy, FwdIter first, Size count);
@@ -305,7 +305,7 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, FwdIter>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(pika::ranges::uninitialized_default_construct_t,
             ExPolicy&& policy, FwdIter first, Sent last)
@@ -347,7 +347,7 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename pika::traits::range_traits<Rng>::iterator_type>::type
         tag_fallback_invoke(pika::ranges::uninitialized_default_construct_t,
             ExPolicy&& policy, Rng&& rng)
@@ -396,7 +396,7 @@ namespace pika::ranges {
                 pika::traits::is_forward_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             FwdIter>::type
         tag_fallback_invoke(pika::ranges::uninitialized_default_construct_n_t,
             ExPolicy&& policy, FwdIter first, Size count)

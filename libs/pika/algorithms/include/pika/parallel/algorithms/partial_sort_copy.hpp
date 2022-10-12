@@ -135,7 +135,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter, typename RandIter,
         typename Comp>
-    parallel::util::detail::algorithm_result_t<ExPolicy, RandIter>
+    pika::parallel::detail::algorithm_result_t<ExPolicy, RandIter>
     partial_sort_copy(
         ExPolicy&& policy, FwdIter first, FwdIter last, RandIter d_first,
         RandIter d_last, Comp&& comp = Comp());
@@ -175,8 +175,7 @@ namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////
     // partial_sort_copy
     template <typename Iter>
-    struct partial_sort_copy
-      : public detail::algorithm<partial_sort_copy<Iter>, Iter>
+    struct partial_sort_copy : public algorithm<partial_sort_copy<Iter>, Iter>
     {
         partial_sort_copy()
           : partial_sort_copy::algorithm("partial_sort_copy")
@@ -205,12 +204,12 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename InIter, typename Sent1,
             typename RandIter, typename Sent2, typename Compare, typename Proj1,
             typename Proj2>
-        static util::detail::in_out_result<InIter, RandIter> sequential(
-            ExPolicy, InIter first, Sent1 last, RandIter d_first, Sent2 d_last,
+        static in_out_result<InIter, RandIter> sequential(ExPolicy,
+            InIter first, Sent1 last, RandIter d_first, Sent2 d_last,
             Compare&& comp, Proj1&& proj1, Proj2&& proj2)
         {
-            auto last_iter = detail::advance_to_sentinel(first, last);
-            auto d_last_iter = detail::advance_to_sentinel(d_first, d_last);
+            auto last_iter = advance_to_sentinel(first, last);
+            auto d_last_iter = advance_to_sentinel(d_first, d_last);
 
             using value_t = typename std::iterator_traits<InIter>::value_type;
             using value1_t =
@@ -221,8 +220,7 @@ namespace pika::parallel::detail {
                 std::is_same_v<value1_t, value_t>, "Incompatible iterators\n");
 
             if ((last_iter == first) || (d_last_iter == d_first))
-                return util::detail::in_out_result<InIter, RandIter>{
-                    last_iter, d_first};
+                return in_out_result<InIter, RandIter>{last_iter, d_first};
 
             std::vector<value_t> aux(first, last_iter);
             std::int64_t noutput = d_last_iter - d_first;
@@ -230,29 +228,25 @@ namespace pika::parallel::detail {
 
             PIKA_ASSERT(ninput >= 0 || noutput >= 0);
 
-            util::compare_projected<Compare&, Proj1&, Proj2&> proj_comp{
+            compare_projected<Compare&, Proj1&, Proj2&> proj_comp{
                 comp, proj1, proj2};
 
             auto nmin = ninput < noutput ? ninput : noutput;
             if (noutput >= ninput)
             {
-                detail::sort<vec_iter_t>().call(pika::execution::seq,
-                    aux.begin(), aux.end(), PIKA_MOVE(proj_comp),
-                    util::detail::projection_identity{});
+                sort<vec_iter_t>().call(pika::execution::seq, aux.begin(),
+                    aux.end(), PIKA_MOVE(proj_comp), projection_identity{});
             }
             else
             {
-                parallel::detail::partial_sort<vec_iter_t>().call(
-                    pika::execution::seq, aux.begin(), aux.begin() + nmin,
-                    aux.end(), PIKA_MOVE(proj_comp),
-                    util::detail::projection_identity{});
+                partial_sort<vec_iter_t>().call(pika::execution::seq,
+                    aux.begin(), aux.begin() + nmin, aux.end(),
+                    PIKA_MOVE(proj_comp), projection_identity{});
             }
 
-            detail::copy<util::detail::in_out_result<vec_iter_t, RandIter>>()
-                .call(pika::execution::seq, aux.begin(), aux.begin() + nmin,
-                    d_first);
-            return util::detail::in_out_result<InIter, RandIter>{
-                last_iter, d_first + nmin};
+            copy_algo<in_out_result<vec_iter_t, RandIter>>().call(
+                pika::execution::seq, aux.begin(), aux.begin() + nmin, d_first);
+            return in_out_result<InIter, RandIter>{last_iter, d_first + nmin};
         }
 
         //////////////////////////////////////////////////////////////////////////
@@ -277,13 +271,12 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename FwdIter, typename Sent1,
             typename RandIter, typename Sent2, typename Compare, typename Proj1,
             typename Proj2>
-        static util::detail::algorithm_result_t<ExPolicy,
-            util::detail::in_out_result<FwdIter, RandIter>>
+        static algorithm_result_t<ExPolicy, in_out_result<FwdIter, RandIter>>
         parallel(ExPolicy&& policy, FwdIter first, Sent1 last, RandIter d_first,
             Sent2 d_last, Compare&& comp, Proj1&& proj1, Proj2&& proj2)
         {
-            using result_type = util::detail::algorithm_result<ExPolicy,
-                util::detail::in_out_result<FwdIter, RandIter>>;
+            using result_type =
+                algorithm_result<ExPolicy, in_out_result<FwdIter, RandIter>>;
             using value_t = typename std::iterator_traits<FwdIter>::value_type;
             using value1_t =
                 typename std::iterator_traits<RandIter>::value_type;
@@ -294,52 +287,48 @@ namespace pika::parallel::detail {
 
             try
             {
-                auto last_iter = detail::advance_to_sentinel(first, last);
-                auto d_last_iter = detail::advance_to_sentinel(d_first, d_last);
+                auto last_iter = advance_to_sentinel(first, last);
+                auto d_last_iter = advance_to_sentinel(d_first, d_last);
 
                 if ((last_iter == first) || (d_last_iter == d_first))
                     return result_type::get(
-                        util::detail::in_out_result<FwdIter, RandIter>{
-                            last_iter, d_first});
+                        in_out_result<FwdIter, RandIter>{last_iter, d_first});
 
                 std::vector<value_t> aux(first, last_iter);
                 std::int64_t ninput = aux.size();
                 std::int64_t noutput = d_last_iter - d_first;
                 PIKA_ASSERT(ninput >= 0 and noutput >= 0);
 
-                util::compare_projected<Compare&, Proj1&, Proj2&> proj_comp{
+                compare_projected<Compare&, Proj1&, Proj2&> proj_comp{
                     comp, proj1, proj2};
 
                 auto nmin = ninput < noutput ? ninput : noutput;
                 if (noutput >= ninput)
                 {
-                    detail::sort<vec_iter_t>().call(
-                        policy(pika::execution::non_task), aux.begin(),
-                        aux.end(), PIKA_MOVE(proj_comp),
-                        util::detail::projection_identity{});
+                    sort<vec_iter_t>().call(policy(pika::execution::non_task),
+                        aux.begin(), aux.end(), PIKA_MOVE(proj_comp),
+                        projection_identity{});
                 }
                 else
                 {
                     //
-                    pika::parallel::detail::partial_sort<vec_iter_t>().call(
+                    partial_sort<vec_iter_t>().call(
                         policy(pika::execution::non_task), aux.begin(),
                         aux.begin() + nmin, aux.end(), PIKA_MOVE(proj_comp),
-                        util::detail::projection_identity{});
+                        projection_identity{});
                 };
 
-                detail::copy<
-                    util::detail::in_out_result<vec_iter_t, RandIter>>()
-                    .call(policy(pika::execution::non_task), aux.begin(),
-                        aux.begin() + nmin, d_first);
+                copy_algo<in_out_result<vec_iter_t, RandIter>>().call(
+                    policy(pika::execution::non_task), aux.begin(),
+                    aux.begin() + nmin, d_first);
 
-                return result_type::get(
-                    util::detail::in_out_result<FwdIter, RandIter>{
-                        last_iter, d_first + nmin});
+                return result_type::get(in_out_result<FwdIter, RandIter>{
+                    last_iter, d_first + nmin});
             }
             catch (...)
             {
-                return result_type::get(detail::handle_exception<ExPolicy,
-                    util::detail::in_out_result<FwdIter,
+                return result_type::get(handle_exception<ExPolicy,
+                    in_out_result<FwdIter,
                         RandIter>>::call(std::current_exception()));
             }
         }
@@ -376,14 +365,14 @@ namespace pika {
                 "Requires at least random access iterator.");
 
             using result_type =
-                parallel::util::detail::in_out_result<InIter, RandIter>;
+                parallel::detail::in_out_result<InIter, RandIter>;
 
-            return parallel::util::detail::get_second_element(
+            return parallel::detail::get_second_element(
                 parallel::detail::partial_sort_copy<result_type>().call(
                     pika::execution::seq, first, last, d_first, d_last,
                     PIKA_FORWARD(Comp, comp),
-                    parallel::util::detail::projection_identity{},
-                    parallel::util::detail::projection_identity{}));
+                    parallel::detail::projection_identity{},
+                    parallel::detail::projection_identity{}));
         }
 
         // clang-format off
@@ -400,7 +389,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend parallel::util::detail::algorithm_result_t<ExPolicy, RandIter>
+        friend parallel::detail::algorithm_result_t<ExPolicy, RandIter>
         tag_fallback_invoke(pika::partial_sort_copy_t, ExPolicy&& policy,
             FwdIter first, FwdIter last, RandIter d_first, RandIter d_last,
             Comp&& comp = Comp())
@@ -412,14 +401,14 @@ namespace pika {
                 "Requires at least random access iterator.");
 
             using result_type =
-                parallel::util::detail::in_out_result<FwdIter, RandIter>;
+                parallel::detail::in_out_result<FwdIter, RandIter>;
 
-            return parallel::util::detail::get_second_element(
+            return parallel::detail::get_second_element(
                 parallel::detail::partial_sort_copy<result_type>().call(
                     PIKA_FORWARD(ExPolicy, policy), first, last, d_first,
                     d_last, PIKA_FORWARD(Comp, comp),
-                    parallel::util::detail::projection_identity{},
-                    parallel::util::detail::projection_identity{}));
+                    parallel::detail::projection_identity{},
+                    parallel::detail::projection_identity{}));
         }
     } partial_sort_copy{};
 }    // namespace pika

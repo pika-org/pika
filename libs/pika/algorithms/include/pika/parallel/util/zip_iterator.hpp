@@ -84,15 +84,15 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename ZipIter>
-    util::detail::in_in_result<typename std::tuple_element<0,
-                                   typename ZipIter::iterator_tuple_type>::type,
+    in_in_result<typename std::tuple_element<0,
+                     typename ZipIter::iterator_tuple_type>::type,
         typename std::tuple_element<1,
             typename ZipIter::iterator_tuple_type>::type>
     get_iter_in_in_result(ZipIter&& zipiter)
     {
         using iterator_tuple_type = typename ZipIter::iterator_tuple_type;
 
-        using result_type = util::detail::in_in_result<
+        using result_type = in_in_result<
             typename std::tuple_element<0, iterator_tuple_type>::type,
             typename std::tuple_element<1, iterator_tuple_type>::type>;
 
@@ -101,16 +101,15 @@ namespace pika::parallel::detail {
     }
 
     template <typename ZipIter>
-    pika::future<util::detail::in_in_result<
-        typename std::tuple_element<0,
-            typename ZipIter::iterator_tuple_type>::type,
+    pika::future<in_in_result<typename std::tuple_element<0,
+                                  typename ZipIter::iterator_tuple_type>::type,
         typename std::tuple_element<1,
             typename ZipIter::iterator_tuple_type>::type>>
     get_iter_in_in_result(pika::future<ZipIter>&& zipiter)
     {
         using iterator_tuple_type = typename ZipIter::iterator_tuple_type;
 
-        using result_type = util::detail::in_in_result<
+        using result_type = in_in_result<
             typename std::tuple_element<0, iterator_tuple_type>::type,
             typename std::tuple_element<1, iterator_tuple_type>::type>;
 

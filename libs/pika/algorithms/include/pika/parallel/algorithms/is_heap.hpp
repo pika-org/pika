@@ -64,7 +64,7 @@ namespace pika {
     ///           That is, true if the range is max heap, false otherwise.
     ///
     template <typename ExPolicy, typename RandIter, typename Comp = detail::less>
-    typename util::detail::algorithm_result<ExPolicy, bool>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, bool>::type
     is_heap(ExPolicy&& policy, RandIter first, RandIter last,
         Comp&& comp = Comp());
 
@@ -125,7 +125,7 @@ namespace pika {
     ///           is a max heap.
     ///
     template <typename ExPolicy, typename RandIter, typename Comp = detail::less>
-    typename util::detail::algorithm_result<ExPolicy, RandIter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, RandIter>::type
     is_heap_until(ExPolicy&& policy, RandIter first, RandIter last,
         Comp&& comp = Comp());
 
@@ -185,11 +185,10 @@ namespace pika::parallel::detail {
     {
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        typename util::detail::algorithm_result<ExPolicy, bool>::type
-        operator()(
+        typename algorithm_result<ExPolicy, bool>::type operator()(
             ExPolicy&& policy, Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
-            using result = util::detail::algorithm_result<ExPolicy, bool>;
+            using result = algorithm_result<ExPolicy, bool>;
             using type = typename std::iterator_traits<Iter>::value_type;
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
@@ -211,8 +210,7 @@ namespace pika::parallel::detail {
                           proj = PIKA_FORWARD(Proj, proj)](Iter it,
                           std::size_t part_size,
                           std::size_t base_idx) mutable -> void {
-                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                    part_size, tok,
+                loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it, part_size, tok,
                     [&tok, first, &comp, &proj](
                         type const& v, std::size_t i) mutable -> void {
                         if (pika::util::detail::invoke(comp,
@@ -236,14 +234,14 @@ namespace pika::parallel::detail {
                 return find_res != 0;
             };
 
-            return util::detail::partitioner<ExPolicy, bool,
-                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), second,
-                count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
+            return partitioner<ExPolicy, bool, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), second, count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
         }
     };
 
     template <typename RandIter>
-    struct is_heap : public detail::algorithm<is_heap<RandIter>, bool>
+    struct is_heap : public algorithm<is_heap<RandIter>, bool>
     {
         is_heap()
           : is_heap::algorithm("is_heap")
@@ -261,8 +259,7 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, bool>::type
-        parallel(
+        static typename algorithm_result<ExPolicy, bool>::type parallel(
             ExPolicy&& policy, Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
             return is_heap_helper()(PIKA_FORWARD(ExPolicy, policy), first, last,
@@ -295,11 +292,10 @@ namespace pika::parallel::detail {
     {
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        typename util::detail::algorithm_result<ExPolicy, Iter>::type
-        operator()(
+        typename algorithm_result<ExPolicy, Iter>::type operator()(
             ExPolicy&& policy, Iter first, Sent last, Comp comp, Proj proj)
         {
-            using result = util::detail::algorithm_result<ExPolicy, Iter>;
+            using result = algorithm_result<ExPolicy, Iter>;
             using type = typename std::iterator_traits<Iter>::value_type;
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
@@ -320,8 +316,7 @@ namespace pika::parallel::detail {
             auto f1 = [tok, first, comp = PIKA_FORWARD(Comp, comp),
                           proj = PIKA_FORWARD(Proj, proj)](Iter it,
                           std::size_t part_size, std::size_t base_idx) mutable {
-                util::detail::loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it,
-                    part_size, tok,
+                loop_idx_n<std::decay_t<ExPolicy>>(base_idx, it, part_size, tok,
                     [&tok, first, &comp, &proj](
                         type const& v, std::size_t i) -> void {
                         if (pika::util::detail::invoke(comp,
@@ -348,15 +343,14 @@ namespace pika::parallel::detail {
                 return PIKA_MOVE(second);
             };
 
-            return util::detail::partitioner<ExPolicy, Iter,
-                void>::call_with_index(PIKA_FORWARD(ExPolicy, policy), second,
-                count, 1, PIKA_MOVE(f1), PIKA_MOVE(f2));
+            return partitioner<ExPolicy, Iter, void>::call_with_index(
+                PIKA_FORWARD(ExPolicy, policy), second, count, 1, PIKA_MOVE(f1),
+                PIKA_MOVE(f2));
         }
     };
 
     template <typename RandIter>
-    struct is_heap_until
-      : public detail::algorithm<is_heap_until<RandIter>, RandIter>
+    struct is_heap_until : public algorithm<is_heap_until<RandIter>, RandIter>
     {
         is_heap_until()
           : is_heap_until::algorithm("is_heap_until")
@@ -374,8 +368,7 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        static typename util::detail::algorithm_result<ExPolicy, Iter>::type
-        parallel(
+        static typename algorithm_result<ExPolicy, Iter>::type parallel(
             ExPolicy&& policy, Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
             return is_heap_until_helper()(PIKA_FORWARD(ExPolicy, policy), first,
@@ -403,7 +396,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             bool>::type
         tag_fallback_invoke(is_heap_t, ExPolicy&& policy, RandIter first,
             RandIter last, Comp&& comp = Comp())
@@ -415,7 +408,7 @@ namespace pika {
             return pika::parallel::detail::is_heap<RandIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -438,7 +431,7 @@ namespace pika {
 
             return pika::parallel::detail::is_heap<RandIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
     } is_heap{};
 
@@ -460,7 +453,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             RandIter>::type
         tag_fallback_invoke(is_heap_until_t, ExPolicy&& policy, RandIter first,
             RandIter last, Comp&& comp = Comp())
@@ -472,7 +465,7 @@ namespace pika {
             return pika::parallel::detail::is_heap_until<RandIter>().call(
                 PIKA_FORWARD(ExPolicy, policy), first, last,
                 PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -495,7 +488,7 @@ namespace pika {
 
             return pika::parallel::detail::is_heap_until<RandIter>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Comp, comp),
-                pika::parallel::util::detail::projection_identity{});
+                pika::parallel::detail::projection_identity{});
         }
     } is_heap_until{};
 }    // namespace pika

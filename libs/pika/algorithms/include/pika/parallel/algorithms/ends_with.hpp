@@ -30,10 +30,10 @@ namespace pika { namespace ranges {
     ///                     elements.
     /// \tparam Proj1       The type of an optional projection function for
     ///                     the source range. This defaults to
-    ///                     \a util::detail::projection_identity
+    ///                     \a pika::parallel::detail::projection_identity
     /// \tparam Proj1       The type of an optional projection function for
     ///                     the destination range. This defaults to
-    ///                     \a util::detail::projection_identity
+    ///                     \a pika::parallel::detail::projection_identity
     ///
     /// \param first1       Refers to the beginning of the source range.
     /// \param last1        Refers to the end of the source range.
@@ -85,10 +85,10 @@ namespace pika { namespace ranges {
     ///                     elements.
     /// \tparam Proj1       The type of an optional projection function for
     ///                     the source range. This defaults to
-    ///                     \a util::detail::projection_identity
+    ///                     \a pika::parallel::detail::projection_identity
     /// \tparam Proj1       The type of an optional projection function for
     ///                     the destination range. This defaults to
-    ///                     \a util::detail::projection_identity
+    ///                     \a pika::parallel::detail::projection_identity
     ///
     /// \param policy       The execution policy to use for the scheduling of
     ///                     the iterations.
@@ -128,7 +128,7 @@ namespace pika { namespace ranges {
     ///           first range, false otherwise.
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename Pred, typename Proj1, typename Proj2>
-    typename pika::parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         bool>::type
     ends_with(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
         FwdIter2 first2, FwdIter2 last2, Pred&& pred, Proj1&& proj1,
@@ -164,7 +164,7 @@ namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////////
     // ends_with
     /// \cond NOINTERNAL
-    struct ends_with : public detail::algorithm<ends_with, bool>
+    struct ends_with : public algorithm<ends_with, bool>
     {
         ends_with()
           : ends_with::algorithm("ends_with")
@@ -194,18 +194,16 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename FwdIter1, typename Sent1,
             typename FwdIter2, typename Sent2, typename Pred, typename Proj1,
             typename Proj2>
-        static typename util::detail::algorithm_result<ExPolicy, bool>::type
-        parallel(ExPolicy&& policy, FwdIter1 first1, Sent1 last1,
-            FwdIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-            Proj2&& proj2)
+        static typename algorithm_result<ExPolicy, bool>::type parallel(
+            ExPolicy&& policy, FwdIter1 first1, Sent1 last1, FwdIter2 first2,
+            Sent2 last2, Pred&& pred, Proj1&& proj1, Proj2&& proj2)
         {
             const auto drop = detail::distance(first1, last1) -
                 detail::distance(first2, last2);
 
             if (drop < 0)
             {
-                return util::detail::algorithm_result<ExPolicy, bool>::get(
-                    false);
+                return algorithm_result<ExPolicy, bool>::get(false);
             }
 
             return pika::parallel::detail::equal_binary().call(
@@ -249,8 +247,8 @@ namespace pika {
             return pika::parallel::detail::ends_with().call(
                 pika::execution::seq, first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
-                parallel::util::detail::projection_identity{},
-                parallel::util::detail::projection_identity{});
+                parallel::detail::projection_identity{},
+                parallel::detail::projection_identity{});
         }
 
         // clang-format off
@@ -266,8 +264,7 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
-            bool>::type
+        friend typename parallel::detail::algorithm_result<ExPolicy, bool>::type
         tag_fallback_invoke(pika::ends_with_t, ExPolicy&& policy,
             FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, FwdIter2 last2,
             Pred&& pred = Pred())
@@ -281,8 +278,8 @@ namespace pika {
             return pika::parallel::detail::ends_with().call(
                 PIKA_FORWARD(ExPolicy, policy), first1, last1, first2, last2,
                 PIKA_FORWARD(Pred, pred),
-                parallel::util::detail::projection_identity{},
-                parallel::util::detail::projection_identity{});
+                parallel::detail::projection_identity{},
+                parallel::detail::projection_identity{});
         }
     } ends_with{};
 }    // namespace pika

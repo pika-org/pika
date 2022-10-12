@@ -108,7 +108,7 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename ExPolicy, typename Iter, typename Sent>
-    typename parallel::util::detail::algorithm_result<ExPolicy, Iter>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, Iter>::type
     reverse(ExPolicy&& policy, Iter first, Sent last);
 
     /// Uses \a rng as the source range, as if using \a util::begin(rng) as
@@ -152,7 +152,7 @@ namespace pika { namespace ranges {
     ///           It returns \a last.
     ///
     template <typename ExPolicy, typename Rng>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         typename pika::traits::range_iterator<Rng>::type>::type
     reverse(ExPolicy&& policy, Rng&& rng);
 
@@ -299,7 +299,7 @@ namespace pika { namespace ranges {
     ///           copied.
     ///
     template <typename ExPolicy, typename Iter, typename Sent, typename OutIter>
-    typename parallel::util::detail::algorithm_result<ExPolicy,
+    typename pika::parallel::detail::algorithm_result<ExPolicy,
         reverse_copy_result<Iter, OutIter>>::type
     reverse_copy(ExPolicy&& policy, Iter first, Sent last, OutIter result);
 
@@ -358,7 +358,7 @@ namespace pika { namespace ranges {
     ///           an object equal to {last, result + N} where N = last - first
     ///
     template <typename ExPolicy, typename Rng, typename OutIter>
-    typename util::detail::algorithm_result<ExPolicy,
+    typename algorithm_result<ExPolicy,
         ranges::reverse_copy_result<
             typename pika::traits::range_iterator<Rng>::type, OutIter>>::type
     reverse_copy(ExPolicy&& policy, Rng&& rng, OutIter result);
@@ -382,10 +382,9 @@ namespace pika { namespace ranges {
 
 namespace pika::ranges {
     /// `reverse_copy_result` is equivalent to
-    /// `pika::parallel::util::detail::in_out_result`
+    /// `pika::parallel::detail::in_out_result`
     template <typename I, typename O>
-    using reverse_copy_result =
-        pika::parallel::util::detail::in_out_result<I, O>;
+    using reverse_copy_result = pika::parallel::detail::in_out_result<I, O>;
 
     ///////////////////////////////////////////////////////////////////////////
     // CPO for pika::ranges::reverse
@@ -439,7 +438,7 @@ namespace pika::ranges {
             pika::traits::is_sentinel_for<Sent, Iter>::value
         )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             Iter>::type
         tag_fallback_invoke(
             pika::ranges::reverse_t, ExPolicy&& policy, Iter first, Sent sent)
@@ -459,7 +458,7 @@ namespace pika::ranges {
             pika::traits::is_range<Rng>::value
         )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             typename pika::traits::range_iterator<Rng>::type>::type
         tag_fallback_invoke(
             pika::ranges::reverse_t, ExPolicy&& policy, Rng&& rng)
@@ -501,7 +500,7 @@ namespace pika::ranges {
                 "Required at least output iterator.");
 
             return parallel::detail::reverse_copy<
-                pika::parallel::util::detail::in_out_result<Iter, OutIter>>()
+                pika::parallel::detail::in_out_result<Iter, OutIter>>()
                 .call(pika::execution::sequenced_policy{}, first, last, result);
         }
 
@@ -526,7 +525,7 @@ namespace pika::ranges {
                 "Required at least output iterator.");
 
             return parallel::detail::reverse_copy<
-                pika::parallel::util::detail::in_out_result<
+                pika::parallel::detail::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type,
                     OutIter>>()
                 .call(pika::execution::sequenced_policy{},
@@ -542,7 +541,7 @@ namespace pika::ranges {
             pika::traits::is_iterator<FwdIter>::value
         )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             reverse_copy_result<Iter, FwdIter>>::type
         tag_fallback_invoke(pika::ranges::reverse_copy_t, ExPolicy&& policy,
             Iter first, Sent last, FwdIter result)
@@ -555,7 +554,7 @@ namespace pika::ranges {
                 "Required at least forward iterator.");
 
             return parallel::detail::reverse_copy<
-                pika::parallel::util::detail::in_out_result<Iter, FwdIter>>()
+                pika::parallel::detail::in_out_result<Iter, FwdIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), first, last, result);
         }
 
@@ -567,7 +566,7 @@ namespace pika::ranges {
             pika::traits::is_iterator<OutIter>::value
         )>
         // clang-format on
-        friend typename parallel::util::detail::algorithm_result<ExPolicy,
+        friend typename pika::parallel::detail::algorithm_result<ExPolicy,
             reverse_copy_result<
                 typename pika::traits::range_iterator<Rng>::type,
                 OutIter>>::type
@@ -583,7 +582,7 @@ namespace pika::ranges {
                 "Required at least output iterator.");
 
             return parallel::detail::reverse_copy<
-                pika::parallel::util::detail::in_out_result<
+                pika::parallel::detail::in_out_result<
                     typename pika::traits::range_iterator<Rng>::type,
                     OutIter>>()
                 .call(PIKA_FORWARD(ExPolicy, policy), pika::util::begin(rng),

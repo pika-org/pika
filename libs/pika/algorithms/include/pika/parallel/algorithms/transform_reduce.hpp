@@ -107,7 +107,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter, typename T, typename Reduce,
         typename Convert>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     transform_reduce(ExPolicy&& policy, FwdIter first, FwdIter last, T init,
         Reduce&& red_op, Convert&& conv_op);
 
@@ -157,7 +157,7 @@ namespace pika {
     ///           returns \a T otherwise.
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2, typename T>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     transform_reduce(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
         FwdIter2 first2, T init);
 
@@ -242,7 +242,7 @@ namespace pika {
     ///
     template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
         typename T, typename Reduce, typename Convert>
-    typename util::detail::algorithm_result<ExPolicy, T>::type
+    typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
     transform_reduce(ExPolicy&& policy, FwdIter1 first1, FwdIter1 last1,
         FwdIter2 first2, T init, Reduce&& red_op, Convert&& conv_op);
 
@@ -332,8 +332,7 @@ namespace pika::parallel::detail {
             using reference = typename std::iterator_traits<Iter>::reference;
 
             T val = PIKA_INVOKE(convert_, *part_begin);
-            return util::detail::accumulate_n(++part_begin, --part_size,
-                PIKA_MOVE(val),
+            return accumulate_n(++part_begin, --part_size, PIKA_MOVE(val),
                 [PIKA_CXX20_CAPTURE_THIS(=)](
                     T const& res, reference next) mutable -> T {
                     return PIKA_INVOKE(
@@ -343,7 +342,7 @@ namespace pika::parallel::detail {
     };
 
     template <typename T>
-    struct transform_reduce : public detail::algorithm<transform_reduce<T>, T>
+    struct transform_reduce : public algorithm<transform_reduce<T>, T>
     {
         transform_reduce()
           : transform_reduce::algorithm("transform_reduce")
@@ -365,29 +364,27 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename T_,
             typename Reduce, typename Convert>
-        static typename util::detail::algorithm_result<ExPolicy, T>::type
-        parallel(ExPolicy&& policy, Iter first, Sent last, T_&& init,
-            Reduce&& r, Convert&& conv)
+        static typename algorithm_result<ExPolicy, T>::type parallel(
+            ExPolicy&& policy, Iter first, Sent last, T_&& init, Reduce&& r,
+            Convert&& conv)
         {
             if (first == last)
             {
                 T init_ = init;
-                return util::detail::algorithm_result<ExPolicy, T>::get(
-                    PIKA_MOVE(init_));
+                return algorithm_result<ExPolicy, T>::get(PIKA_MOVE(init_));
             }
 
             auto f1 = transform_reduce_iteration<T, ExPolicy, Reduce, Convert>(
                 PIKA_FORWARD(Reduce, r), PIKA_FORWARD(Convert, conv));
 
-            return util::detail::partitioner<ExPolicy, T>::call(
+            return detail::partitioner<ExPolicy, T>::call(
                 PIKA_FORWARD(ExPolicy, policy), first,
                 detail::distance(first, last), PIKA_MOVE(f1),
                 pika::unwrapping([init = PIKA_FORWARD(T_, init),
                                      r = PIKA_FORWARD(Reduce, r)](
                                      std::vector<T>&& results) mutable -> T {
-                    return util::detail::accumulate_n(
-                        pika::util::begin(results), pika::util::size(results),
-                        init, r);
+                    return accumulate_n(pika::util::begin(results),
+                        pika::util::size(results), init, r);
                 }));
         }
     };
@@ -427,7 +424,7 @@ namespace pika::parallel::detail {
 
     template <typename T>
     struct transform_reduce_binary
-      : public detail::algorithm<transform_reduce_binary<T>, T>
+      : public algorithm<transform_reduce_binary<T>, T>
     {
         transform_reduce_binary()
           : transform_reduce_binary::algorithm("transform_reduce_binary")
@@ -445,27 +442,26 @@ namespace pika::parallel::detail {
             }
 
             // check whether we should apply vectorization
-            if (!util::detail::loop_optimization<ExPolicy>(first1, last1))
+            if (!loop_optimization<ExPolicy>(first1, last1))
             {
-                util::detail::loop2<ExPolicy>(std::false_type(), first1, last1,
-                    first2,
+                loop2<ExPolicy>(std::false_type(), first1, last1, first2,
                     transform_reduce_binary_partition<Op1, Op2, T>{
                         PIKA_FORWARD(Op1, op1), PIKA_FORWARD(Op2, op2), init});
                 return init;
             }
 
             // loop_step properly advances the iterators
-            auto part_sum = util::detail::loop_step<ExPolicy>(std::true_type(),
+            auto part_sum = loop_step<ExPolicy>(std::true_type(),
                 transform_reduce_binary_indirect<Op2>{op2}, first1, first2);
 
-            std::pair<Iter, Iter2> p = util::detail::loop2<ExPolicy>(
-                std::true_type(), first1, last1, first2,
+            std::pair<Iter, Iter2> p = loop2<ExPolicy>(std::true_type(), first1,
+                last1, first2,
                 transform_reduce_binary_partition<Op1, Op2, decltype(part_sum)>{
                     op1, op2, part_sum});
 
             // this is to support vectorization, it will call op1 for each
             // of the elements of a value-pack
-            auto result = util::detail::accumulate_values<ExPolicy>(
+            auto result = accumulate_values<ExPolicy>(
                 [&op1](T const& sum, T&& val) -> T {
                     return PIKA_INVOKE(op1, sum, val);
                 },
@@ -475,23 +471,22 @@ namespace pika::parallel::detail {
             // handle the remainder directly
             if (p.first != last1)
             {
-                util::detail::loop2<ExPolicy>(std::false_type(), p.first, last1,
-                    p.second,
+                loop2<ExPolicy>(std::false_type(), p.first, last1, p.second,
                     transform_reduce_binary_partition<Op1, Op2,
                         decltype(result)>{PIKA_FORWARD(Op1, op1),
                         PIKA_FORWARD(Op2, op2), result});
             }
 
-            return util::detail::extract_value<ExPolicy>(result);
+            return extract_value<ExPolicy>(result);
         }
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Iter2, typename T_, typename Op1, typename Op2>
-        static typename util::detail::algorithm_result<ExPolicy, T>::type
-        parallel(ExPolicy&& policy, Iter first1, Sent last1, Iter2 first2,
-            T_&& init, Op1&& op1, Op2&& op2)
+        static typename algorithm_result<ExPolicy, T>::type parallel(
+            ExPolicy&& policy, Iter first1, Sent last1, Iter2 first2, T_&& init,
+            Op1&& op1, Op2&& op2)
         {
-            using result = util::detail::algorithm_result<ExPolicy, T>;
+            using result = algorithm_result<ExPolicy, T>;
             using zip_iterator = pika::util::zip_iterator<Iter, Iter2>;
             using difference_type =
                 typename std::iterator_traits<Iter>::difference_type;
@@ -513,35 +508,32 @@ namespace pika::parallel::detail {
                 Iter last1 = it1;
                 std::advance(last1, part_size);
 
-                if (!util::detail::loop_optimization<ExPolicy>(it1, last1))
+                if (!loop_optimization<ExPolicy>(it1, last1))
                 {
                     // loop_step properly advances the iterators
-                    auto result = util::detail::loop_step<ExPolicy>(
-                        std::false_type(),
+                    auto result = loop_step<ExPolicy>(std::false_type(),
                         transform_reduce_binary_indirect<Op2>{op2}, it1, it2);
 
-                    util::detail::loop2<ExPolicy>(std::false_type(), it1, last1,
-                        it2,
+                    loop2<ExPolicy>(std::false_type(), it1, last1, it2,
                         transform_reduce_binary_partition<Op1, Op2,
                             decltype(result)>{PIKA_FORWARD(Op1, op1),
                             PIKA_FORWARD(Op2, op2), result});
 
-                    return util::detail::extract_value<ExPolicy>(result);
+                    return extract_value<ExPolicy>(result);
                 }
 
                 // loop_step properly advances the iterators
-                auto part_sum =
-                    util::detail::loop_step<ExPolicy>(std::true_type(),
-                        transform_reduce_binary_indirect<Op2>{op2}, it1, it2);
+                auto part_sum = loop_step<ExPolicy>(std::true_type(),
+                    transform_reduce_binary_indirect<Op2>{op2}, it1, it2);
 
-                std::pair<Iter, Iter2> p = util::detail::loop2<ExPolicy>(
-                    std::true_type(), it1, last1, it2,
-                    transform_reduce_binary_partition<Op1, Op2,
-                        decltype(part_sum)>{op1, op2, part_sum});
+                std::pair<Iter, Iter2> p =
+                    loop2<ExPolicy>(std::true_type(), it1, last1, it2,
+                        transform_reduce_binary_partition<Op1, Op2,
+                            decltype(part_sum)>{op1, op2, part_sum});
 
                 // this is to support vectorization, it will call op1
                 // for each of the elements of a value-pack
-                auto result = util::detail::accumulate_values<ExPolicy>(
+                auto result = accumulate_values<ExPolicy>(
                     [&op1](T const& sum, T&& val) -> T {
                         return PIKA_INVOKE(op1, sum, val);
                     },
@@ -551,19 +543,18 @@ namespace pika::parallel::detail {
                 // handle the remainder directly
                 if (p.first != last1)
                 {
-                    util::detail::loop2<ExPolicy>(std::false_type(), p.first,
-                        last1, p.second,
+                    loop2<ExPolicy>(std::false_type(), p.first, last1, p.second,
                         transform_reduce_binary_partition<Op1, Op2,
                             decltype(result)>{PIKA_FORWARD(Op1, op1),
                             PIKA_FORWARD(Op2, op2), result});
                 }
 
-                return util::detail::extract_value<ExPolicy>(result);
+                return extract_value<ExPolicy>(result);
             };
 
             using pika::util::make_zip_iterator;
 
-            return util::detail::partitioner<ExPolicy, T>::call(
+            return detail::partitioner<ExPolicy, T>::call(
                 PIKA_FORWARD(ExPolicy, policy),
                 make_zip_iterator(first1, first2), count, PIKA_MOVE(f1),
                 [init = PIKA_FORWARD(T_, init), op1 = PIKA_FORWARD(Op1, op1)](
@@ -664,11 +655,11 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
-            FwdIter first, FwdIter last, T init, Reduce&& red_op,
-            Convert&& conv_op)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
+                FwdIter first, FwdIter last, T init, Reduce&& red_op,
+                Convert&& conv_op)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");
@@ -716,10 +707,10 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter2>::value
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
-            FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, T init)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
+                FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, T init)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
                 "Requires at least forward iterator.");
@@ -776,11 +767,11 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend typename pika::parallel::util::detail::algorithm_result<ExPolicy,
-            T>::type
-        tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
-            FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, T init,
-            Reduce&& red_op, Convert&& conv_op)
+        friend
+            typename pika::parallel::detail::algorithm_result<ExPolicy, T>::type
+            tag_fallback_invoke(transform_reduce_t, ExPolicy&& policy,
+                FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, T init,
+                Reduce&& red_op, Convert&& conv_op)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter1>::value,
                 "Requires at least forward iterator.");
