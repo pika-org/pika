@@ -228,8 +228,8 @@ namespace pika { namespace util { namespace logging { namespace detail {
         };
 
         template <typename Named, typename ParserType>
-        void configure(
-            Named& named, std::string const& format, ParserType parser)
+        void
+        configure(Named& named, std::string const& format, ParserType parser)
         {
             // need to parse string
             bool parsing_params = false;

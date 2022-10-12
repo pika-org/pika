@@ -41,8 +41,8 @@ constexpr int debug_level = 0;
 
 // cppcheck-suppress ConfigurationNotChecked
 template <int Level>
-static pika::debug::detail::print_threshold<Level, debug_level> nws_deb(
-    "STORAGE");
+static pika::debug::detail::print_threshold<Level, debug_level>
+    nws_deb("STORAGE");
 
 //----------------------------------------------------------------------------
 //

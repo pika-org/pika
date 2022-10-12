@@ -174,8 +174,8 @@ namespace pika::ensure_started_detail {
                 pika::intrusive_ptr<shared_state> state;
 
                 template <typename Error>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_error_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_error_t,
                     ensure_started_receiver&& r, Error&& error) noexcept
                 {
                     r.state->v.template emplace<error_type>(
@@ -209,8 +209,8 @@ namespace pika::ensure_started_detail {
                     pika::detail::monostate>;
 
                 template <typename... Ts>
-                friend auto tag_invoke(
-                    pika::execution::experimental::set_value_t,
+                friend auto
+                tag_invoke(pika::execution::experimental::set_value_t,
                     ensure_started_receiver&& r, Ts&&... ts) noexcept
                     -> decltype(std::declval<pika::detail::variant<
                                     pika::detail::monostate, value_type>>()
@@ -472,8 +472,8 @@ namespace pika::ensure_started_detail {
         };
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(
-            pika::execution::experimental::connect_t,
+        friend operation_state<Receiver>
+        tag_invoke(pika::execution::experimental::connect_t,
             ensure_started_sender_type&& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.state)};
@@ -505,8 +505,8 @@ namespace pika::execution::experimental {
         template <typename Sender,
             PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender> &&
                 !ensure_started_detail::is_ensure_started_sender_v<Sender>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            ensure_started_t, Sender&& sender)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(ensure_started_t, Sender&& sender)
         {
             return ensure_started_detail::ensure_started_sender<Sender,
                 pika::detail::internal_allocator<>>{
@@ -529,8 +529,8 @@ namespace pika::execution::experimental {
                 ensure_started_detail::is_ensure_started_sender_v<Sender>&&
                     std::is_same_v<typename Sender::allocator_type,
                         std::decay_t<Allocator>>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            ensure_started_t, Sender&& sender, Allocator const&)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(ensure_started_t, Sender&& sender, Allocator const&)
         {
             return PIKA_FORWARD(Sender, sender);
         }
@@ -550,16 +550,16 @@ namespace pika::execution::experimental {
         template <typename Sender,
             PIKA_CONCEPT_REQUIRES_(
                 ensure_started_detail::is_ensure_started_sender_v<Sender>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            ensure_started_t, Sender&& sender)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(ensure_started_t, Sender&& sender)
         {
             return PIKA_FORWARD(Sender, sender);
         }
 
         template <typename Allocator = pika::detail::internal_allocator<>,
             PIKA_CONCEPT_REQUIRES_(pika::detail::is_allocator_v<Allocator>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            ensure_started_t, Allocator const& allocator = {})
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(ensure_started_t, Allocator const& allocator = {})
         {
             return detail::partial_algorithm<ensure_started_t, Allocator>{
                 allocator};

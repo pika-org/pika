@@ -194,9 +194,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename InIter1, typename Sent1,
             typename InIter2, typename Sent2, typename Pred, typename Proj1,
             typename Proj2>
-        static bool sequential(ExPolicy, InIter1 first1, Sent1 last1,
-            InIter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-            Proj2&& proj2)
+        static bool
+        sequential(ExPolicy, InIter1 first1, Sent1 last1, InIter2 first2,
+            Sent2 last2, Pred&& pred, Proj1&& proj1, Proj2&& proj2)
         {
             for (; (first1 != last1) && (first2 != last2);
                  ++first1, (void) ++first2)
@@ -304,9 +304,9 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(pika::lexicographical_compare_t,
-            InIter1 first1, InIter1 last1, InIter2 first2, InIter2 last2,
-            Pred&& pred = Pred())
+        friend bool
+        tag_fallback_invoke(pika::lexicographical_compare_t, InIter1 first1,
+            InIter1 last1, InIter2 first2, InIter2 last2, Pred&& pred = Pred())
         {
             static_assert(pika::traits::is_input_iterator<InIter1>::value,
                 "Requires at least input iterator.");

@@ -35,8 +35,8 @@ namespace pika { namespace execution { namespace experimental {
                         pika::execution::experimental::set_value_t, Sender,
                         transfer_t, Scheduler>)>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_override_invoke(
-            transfer_t, Sender&& sender, Scheduler&& scheduler)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_override_invoke(transfer_t, Sender&& sender, Scheduler&& scheduler)
         {
             auto completion_scheduler =
                 pika::execution::experimental::get_completion_scheduler<
@@ -61,8 +61,8 @@ namespace pika { namespace execution { namespace experimental {
         }
 
         template <typename Scheduler>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            transfer_t, Scheduler&& scheduler)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(transfer_t, Scheduler&& scheduler)
         {
             return detail::partial_algorithm<transfer_t, Scheduler>{
                 PIKA_FORWARD(Scheduler, scheduler)};

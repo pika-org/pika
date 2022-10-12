@@ -265,8 +265,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
             typename Proj>
-        static bool sequential(
-            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
+        static bool
+        sequential(ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
         {
             return detail::sequential_find_if<ExPolicy>(first, last,
                        invoke_projected<F, Proj>(PIKA_FORWARD(F, f),
@@ -322,8 +322,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
             typename Proj>
-        static bool sequential(
-            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
+        static bool
+        sequential(ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
         {
             return detail::sequential_find_if<ExPolicy>(first, last,
                        invoke_projected<F, Proj>(PIKA_FORWARD(F, f),
@@ -379,8 +379,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
             typename Proj>
-        static bool sequential(
-            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
+        static bool
+        sequential(ExPolicy, Iter first, Sent last, F&& f, Proj&& proj)
         {
             return detail::sequential_find_if_not<ExPolicy>(first, last,
                        PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj)) == last;
@@ -457,8 +457,8 @@ namespace pika {
                 pika::traits::is_iterator<InIter>::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(
-            none_of_t, InIter first, InIter last, F&& f)
+        friend bool
+        tag_fallback_invoke(none_of_t, InIter first, InIter last, F&& f)
         {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");
@@ -501,8 +501,8 @@ namespace pika {
                 pika::traits::is_iterator<InIter>::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(
-            any_of_t, InIter first, InIter last, F&& f)
+        friend bool
+        tag_fallback_invoke(any_of_t, InIter first, InIter last, F&& f)
         {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");
@@ -545,8 +545,8 @@ namespace pika {
                 pika::traits::is_iterator<InIter>::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(
-            all_of_t, InIter first, InIter last, F&& f)
+        friend bool
+        tag_fallback_invoke(all_of_t, InIter first, InIter last, F&& f)
         {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Required at least input iterator.");

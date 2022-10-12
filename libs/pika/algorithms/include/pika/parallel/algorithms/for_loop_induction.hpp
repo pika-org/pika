@@ -222,8 +222,8 @@ namespace pika {
 
     /// \cond NOINTERNAL
     template <typename T>
-    PIKA_FORCEINLINE constexpr parallel::detail::induction_helper<T> induction(
-        T&& value)
+    PIKA_FORCEINLINE constexpr parallel::detail::induction_helper<T>
+    induction(T&& value)
     {
         return parallel::detail::induction_helper<T>(PIKA_FORWARD(T, value));
     }

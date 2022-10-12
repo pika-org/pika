@@ -60,9 +60,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy_, typename FwdIter, typename T, typename F1,
             typename F2, typename F3, typename F4>
-        static R call(scan_partitioner_normal_tag, ExPolicy_ policy,
-            FwdIter first, std::size_t count, T&& init, F1&& f1, F2&& f2,
-            F3&& f3, F4&& f4)
+        static R
+        call(scan_partitioner_normal_tag, ExPolicy_ policy, FwdIter first,
+            std::size_t count, T&& init, F1&& f1, F2&& f2, F3&& f3, F4&& f4)
         {
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
             PIKA_UNUSED(policy);

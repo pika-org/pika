@@ -74,8 +74,8 @@ namespace pika::parallel::detail {
         loop_optimization_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iter>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr bool loop_optimization(
-        Iter it1, Iter it2)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr bool
+    loop_optimization(Iter it1, Iter it2)
     {
         return loop_optimization_t<ExPolicy>{}(it1, it2);
     }
@@ -88,8 +88,8 @@ namespace pika::parallel::detail {
     {
         ///////////////////////////////////////////////////////////////////
         template <typename Begin, typename End, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Begin call(
-            Begin it, End end, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Begin
+        call(Begin it, End end, F&& f)
         {
             for (/**/; it != end; ++it)
             {
@@ -100,8 +100,8 @@ namespace pika::parallel::detail {
 
         template <typename Begin, typename End, typename CancelToken,
             typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Begin call(
-            Begin it, End end, CancelToken& tok, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Begin
+        call(Begin it, End end, CancelToken& tok, F&& f)
         {
             for (/**/; it != end; ++it)
             {
@@ -137,8 +137,8 @@ namespace pika::parallel::detail {
     inline constexpr loop_t loop = loop_t{};
 #else
     template <typename ExPolicy, typename Begin, typename End, typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Begin loop(
-        ExPolicy&& policy, Begin begin, End end, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Begin
+    loop(ExPolicy&& policy, Begin begin, End end, F&& f)
     {
         return loop_t{}(
             PIKA_FORWARD(ExPolicy, policy), begin, end, PIKA_FORWARD(F, f));
@@ -146,8 +146,8 @@ namespace pika::parallel::detail {
 
     template <typename ExPolicy, typename Begin, typename End,
         typename CancelToken, typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Begin loop(
-        ExPolicy&& policy, Begin begin, End end, CancelToken& tok, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Begin
+    loop(ExPolicy&& policy, Begin begin, End end, CancelToken& tok, F&& f)
     {
         return loop_t{}(PIKA_FORWARD(ExPolicy, policy), begin, end, tok,
             PIKA_FORWARD(F, f));
@@ -161,8 +161,8 @@ namespace pika::parallel::detail {
     {
         ///////////////////////////////////////////////////////////////////
         template <typename Begin, typename End, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Begin call(
-            Begin it, End end, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Begin
+        call(Begin it, End end, F&& f)
         {
             for (/**/; it != end; ++it)
             {
@@ -173,8 +173,8 @@ namespace pika::parallel::detail {
 
         template <typename Begin, typename End, typename CancelToken,
             typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Begin call(
-            Begin it, End end, CancelToken& tok, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Begin
+        call(Begin it, End end, CancelToken& tok, F&& f)
         {
             for (/**/; it != end; ++it)
             {
@@ -211,8 +211,8 @@ namespace pika::parallel::detail {
     inline constexpr loop_ind_t loop_ind = loop_ind_t{};
 #else
     template <typename ExPolicy, typename Begin, typename End, typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Begin loop_ind(
-        ExPolicy&& policy, Begin begin, End end, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Begin
+    loop_ind(ExPolicy&& policy, Begin begin, End end, F&& f)
     {
         return loop_ind_t{}(
             PIKA_FORWARD(ExPolicy, policy), begin, end, PIKA_FORWARD(F, f));
@@ -220,8 +220,8 @@ namespace pika::parallel::detail {
 
     template <typename ExPolicy, typename Begin, typename End,
         typename CancelToken, typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Begin loop_ind(
-        ExPolicy&& policy, Begin begin, End end, CancelToken& tok, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Begin
+    loop_ind(ExPolicy&& policy, Begin begin, End end, CancelToken& tok, F&& f)
     {
         return loop_ind_t{}(PIKA_FORWARD(ExPolicy, policy), begin, end, tok,
             PIKA_FORWARD(F, f));
@@ -271,8 +271,8 @@ namespace pika::parallel::detail {
 #else
     template <typename ExPolicy, typename VecOnly, typename Begin1,
         typename End1, typename Begin2, typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr std::pair<Begin1, Begin2> loop2(
-        VecOnly&& v, Begin1 begin1, End1 end1, Begin2 begin2, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr std::pair<Begin1, Begin2>
+    loop2(VecOnly&& v, Begin1 begin1, End1 end1, Begin2 begin2, F&& f)
     {
         return loop2_t<ExPolicy>{}(
             PIKA_FORWARD(VecOnly, v), begin1, end1, begin2, PIKA_FORWARD(F, f));
@@ -286,8 +286,8 @@ namespace pika::parallel::detail {
         ///////////////////////////////////////////////////////////////////
         // handle sequences of non-futures
         template <typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            Iter it, std::size_t num, F&& f, std::false_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(Iter it, std::size_t num, F&& f, std::false_type)
         {
             std::size_t count(num & std::size_t(-4));                  // -V112
             for (std::size_t i = 0; i < count; (void) ++it, i += 4)    // -V112
@@ -305,8 +305,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            Iter it, std::size_t num, F&& f, std::true_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(Iter it, std::size_t num, F&& f, std::true_type)
         {
             while (num >= 4)
             {
@@ -344,8 +344,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename CancelToken, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            Iter it, std::size_t num, CancelToken& tok, F&& f, std::false_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(Iter it, std::size_t num, CancelToken& tok, F&& f, std::false_type)
         {
             std::size_t count(num & std::size_t(-4));                  // -V112
             for (std::size_t i = 0; i < count; (void) ++it, i += 4)    // -V112
@@ -367,8 +367,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename CancelToken, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            Iter it, std::size_t num, CancelToken& tok, F&& f, std::true_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(Iter it, std::size_t num, CancelToken& tok, F&& f, std::true_type)
         {
             while (num >= 4)
             {
@@ -446,16 +446,16 @@ namespace pika::parallel::detail {
     inline constexpr loop_n_t<ExPolicy> loop_n = loop_n_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iter, typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter loop_n(
-        Iter it, std::size_t count, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter
+    loop_n(Iter it, std::size_t count, F&& f)
     {
         return loop_n_t<ExPolicy>{}(it, count, PIKA_FORWARD(F, f));
     }
 
     template <typename ExPolicy, typename Iter, typename CancelToken,
         typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter loop_n(
-        Iter it, std::size_t count, CancelToken& tok, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter
+    loop_n(Iter it, std::size_t count, CancelToken& tok, F&& f)
     {
         return loop_n_t<ExPolicy>{}(it, count, tok, PIKA_FORWARD(F, f));
     }
@@ -480,8 +480,8 @@ namespace pika::parallel::detail {
         extract_value_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename T>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T const& extract_value(
-        T const& v)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T const&
+    extract_value(T const& v)
     {
         return extract_value_t<ExPolicy>{}(v);
     }
@@ -515,15 +515,15 @@ namespace pika::parallel::detail {
         accumulate_values_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename F, typename T>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T const& accumulate_values(
-        F&& f, T const& v)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T const&
+    accumulate_values(F&& f, T const& v)
     {
         return accumulate_values_t<ExPolicy>{}(PIKA_FORWARD(F, f), v);
     }
 
     template <typename ExPolicy, typename F, typename T, typename T1>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T accumulate_values(
-        F&& f, T&& v, T1&& init)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T
+    accumulate_values(F&& f, T&& v, T1&& init)
     {
         return accumulate_values_t<ExPolicy>{}(
             PIKA_FORWARD(F, f), PIKA_FORWARD(T1, v), PIKA_FORWARD(T, init));
@@ -538,8 +538,8 @@ namespace pika::parallel::detail {
         ///////////////////////////////////////////////////////////////////
         // handle sequences of non-futures
         template <typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            Iter it, std::size_t num, F&& f, std::false_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(Iter it, std::size_t num, F&& f, std::false_type)
         {
             std::size_t count(num & std::size_t(-4));                  // -V112
             for (std::size_t i = 0; i < count; (void) ++it, i += 4)    // -V112
@@ -558,8 +558,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            Iter it, std::size_t num, F&& f, std::true_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(Iter it, std::size_t num, F&& f, std::true_type)
         {
             while (num >= 4)
             {
@@ -597,8 +597,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename CancelToken, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            Iter it, std::size_t num, CancelToken& tok, F&& f, std::false_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(Iter it, std::size_t num, CancelToken& tok, F&& f, std::false_type)
         {
             std::size_t count(num & std::size_t(-4));                  // -V112
             for (std::size_t i = 0; i < count; (void) ++it, i += 4)    // -V112
@@ -620,8 +620,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename CancelToken, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            Iter it, std::size_t num, CancelToken& tok, F&& f, std::true_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(Iter it, std::size_t num, CancelToken& tok, F&& f, std::true_type)
         {
             while (num >= 4)
             {
@@ -700,16 +700,16 @@ namespace pika::parallel::detail {
         loop_n_ind_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iter, typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter loop_n_ind(
-        Iter it, std::size_t count, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter
+    loop_n_ind(Iter it, std::size_t count, F&& f)
     {
         return loop_n_ind_t<ExPolicy>{}(it, count, PIKA_FORWARD(F, f));
     }
 
     template <typename ExPolicy, typename Iter, typename CancelToken,
         typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter loop_n_ind(
-        Iter it, std::size_t count, CancelToken& tok, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter
+    loop_n_ind(Iter it, std::size_t count, CancelToken& tok, F&& f)
     {
         return loop_n_ind_t<ExPolicy>{}(it, count, tok, PIKA_FORWARD(F, f));
     }
@@ -744,8 +744,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename FwdIter, typename F, typename Cleanup>
-        static FwdIter call(
-            Iter it, Iter last, FwdIter dest, F&& f, Cleanup&& cleanup)
+        static FwdIter
+        call(Iter it, Iter last, FwdIter dest, F&& f, Cleanup&& cleanup)
         {
             FwdIter base = dest;
             try
@@ -767,8 +767,8 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename F, typename Cleanup>
-    PIKA_FORCEINLINE constexpr Iter loop_with_cleanup(
-        Iter it, Iter last, F&& f, Cleanup&& cleanup)
+    PIKA_FORCEINLINE constexpr Iter
+    loop_with_cleanup(Iter it, Iter last, F&& f, Cleanup&& cleanup)
     {
         using cat = typename std::iterator_traits<Iter>::iterator_category;
         return loop_with_cleanup_impl<cat>::call(
@@ -791,8 +791,8 @@ namespace pika::parallel::detail {
     {
         ///////////////////////////////////////////////////////////////////
         template <typename FwdIter, typename F, typename Cleanup>
-        static FwdIter call(
-            FwdIter it, std::size_t num, F&& f, Cleanup&& cleanup)
+        static FwdIter
+        call(FwdIter it, std::size_t num, F&& f, Cleanup&& cleanup)
         {
             FwdIter base = it;
             try
@@ -823,8 +823,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename FwdIter, typename F, typename Cleanup>
-        static FwdIter call(
-            Iter it, std::size_t num, FwdIter dest, F&& f, Cleanup&& cleanup)
+        static FwdIter
+        call(Iter it, std::size_t num, FwdIter dest, F&& f, Cleanup&& cleanup)
         {
             FwdIter base = dest;
             try
@@ -938,8 +938,8 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename F, typename Cleanup>
-    PIKA_FORCEINLINE constexpr Iter loop_with_cleanup_n(
-        Iter it, std::size_t count, F&& f, Cleanup&& cleanup)
+    PIKA_FORCEINLINE constexpr Iter
+    loop_with_cleanup_n(Iter it, std::size_t count, F&& f, Cleanup&& cleanup)
     {
         using cat = typename std::iterator_traits<Iter>::iterator_category;
         return loop_with_cleanup_n_impl<cat>::call(
@@ -966,9 +966,9 @@ namespace pika::parallel::detail {
 
     template <typename Iter, typename FwdIter, typename CancelToken, typename F,
         typename Cleanup>
-    PIKA_FORCEINLINE constexpr FwdIter loop_with_cleanup_n_with_token(Iter it,
-        std::size_t count, FwdIter dest, CancelToken& tok, F&& f,
-        Cleanup&& cleanup)
+    PIKA_FORCEINLINE constexpr FwdIter
+    loop_with_cleanup_n_with_token(Iter it, std::size_t count, FwdIter dest,
+        CancelToken& tok, F&& f, Cleanup&& cleanup)
     {
         using cat = typename std::iterator_traits<Iter>::iterator_category;
         return loop_with_cleanup_n_impl<cat>::call_with_token(it, count, dest,
@@ -983,8 +983,8 @@ namespace pika::parallel::detail {
         ///////////////////////////////////////////////////////////////////
         // handle sequences of non-futures
         template <typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            std::size_t base_idx, Iter it, std::size_t num, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(std::size_t base_idx, Iter it, std::size_t num, F&& f)
         {
             std::size_t count(num & std::size_t(-4));    // -V112
 
@@ -1003,8 +1003,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename CancelToken, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            std::size_t base_idx, Iter it, std::size_t count, CancelToken& tok,
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(std::size_t base_idx, Iter it, std::size_t count, CancelToken& tok,
             F&& f)
         {
             for (/**/; count != 0; (void) --count, ++it, ++base_idx)
@@ -1025,8 +1025,8 @@ namespace pika::parallel::detail {
         ///////////////////////////////////////////////////////////////////
         // handle sequences of non-futures
         template <typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            std::size_t base_idx, Iter it, std::size_t num, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(std::size_t base_idx, Iter it, std::size_t num, F&& f)
         {
             while (num >= 4)
             {
@@ -1064,8 +1064,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename Iter, typename CancelToken, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter call(
-            std::size_t base_idx, Iter it, std::size_t num, CancelToken& tok,
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr Iter
+        call(std::size_t base_idx, Iter it, std::size_t num, CancelToken& tok,
             F&& f)
         {
             while (num >= 4)
@@ -1140,8 +1140,8 @@ namespace pika::parallel::detail {
         loop_idx_n_t<ExPolicy>{};
 #else
     template <typename ExPolicy, typename Iter, typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter loop_idx_n(
-        std::size_t base_idx, Iter it, std::size_t count, F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter
+    loop_idx_n(std::size_t base_idx, Iter it, std::size_t count, F&& f)
     {
         return loop_idx_n_t<ExPolicy>{}(
             base_idx, it, count, PIKA_FORWARD(F, f));
@@ -1149,9 +1149,9 @@ namespace pika::parallel::detail {
 
     template <typename ExPolicy, typename Iter, typename CancelToken,
         typename F>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter loop_idx_n(
-        std::size_t base_idx, Iter it, std::size_t count, CancelToken& tok,
-        F&& f)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iter
+    loop_idx_n(std::size_t base_idx, Iter it, std::size_t count,
+        CancelToken& tok, F&& f)
     {
         return loop_idx_n_t<ExPolicy>{}(
             base_idx, it, count, tok, PIKA_FORWARD(F, f));

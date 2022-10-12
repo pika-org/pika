@@ -48,8 +48,8 @@ namespace pika::util::detail {
             return *this;
         }
         template <typename T>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type& operator=(
-            T const&) noexcept
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE unused_type&
+        operator=(T const&) noexcept
         {
             return *this;
         }

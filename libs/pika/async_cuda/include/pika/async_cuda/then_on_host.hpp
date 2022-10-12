@@ -260,8 +260,8 @@ namespace pika::cuda::experimental {
     {
     private:
         template <typename Sender, typename F>
-        friend PIKA_FORCEINLINE auto tag_fallback_invoke(
-            then_on_host_t, Sender&& sender, F&& f)
+        friend PIKA_FORCEINLINE auto
+        tag_fallback_invoke(then_on_host_t, Sender&& sender, F&& f)
         {
             auto completion_sched =
                 pika::execution::experimental::get_completion_scheduler<
@@ -278,8 +278,8 @@ namespace pika::cuda::experimental {
         }
 
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            then_on_host_t, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(then_on_host_t, F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<
                 then_on_host_t, F>{PIKA_FORWARD(F, f)};

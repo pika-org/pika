@@ -34,8 +34,8 @@ namespace pika { namespace string_util {
     }
 
     template <typename CharT, class Traits, class Alloc>
-    std::basic_string<CharT, Traits, Alloc> trim_copy(
-        std::basic_string<CharT, Traits, Alloc> const& s)
+    std::basic_string<CharT, Traits, Alloc>
+    trim_copy(std::basic_string<CharT, Traits, Alloc> const& s)
     {
         auto t = s;
         trim(t);

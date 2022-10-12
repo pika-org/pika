@@ -28,8 +28,8 @@ namespace pika { namespace lcos { namespace local {
 
         /// \brief get a future allowing to wait for the trigger to fire
         template <typename Condition>
-        pika::future<void> get_future(
-            Condition&& func, error_code& ec = pika::throws)
+        pika::future<void>
+        get_future(Condition&& func, error_code& ec = pika::throws)
         {
             cond_.assign(PIKA_FORWARD(Condition, func));
 

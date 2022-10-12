@@ -64,8 +64,8 @@ namespace pika { namespace util {
         }
 
         template <typename Char>
-        void check_only_whitespace(
-            std::basic_string<Char> const& s, std::size_t pos)
+        void
+        check_only_whitespace(std::basic_string<Char> const& s, std::size_t pos)
         {
             auto i = s.begin();
             std::advance(i, pos);
@@ -99,8 +99,8 @@ namespace pika { namespace util {
             }
 
             template <typename Char>
-            static void call(
-                std::basic_string<Char> const& value, long long& target)
+            static void
+            call(std::basic_string<Char> const& value, long long& target)
             {
                 std::size_t pos = 0;
                 target = std::stoll(value, &pos);
@@ -108,8 +108,8 @@ namespace pika { namespace util {
             }
 
             template <typename Char>
-            static void call(
-                std::basic_string<Char> const& value, unsigned int& target)
+            static void
+            call(std::basic_string<Char> const& value, unsigned int& target)
             {
                 // there is no std::stoui
                 unsigned long target_long;
@@ -118,8 +118,8 @@ namespace pika { namespace util {
             }
 
             template <typename Char>
-            static void call(
-                std::basic_string<Char> const& value, unsigned long& target)
+            static void
+            call(std::basic_string<Char> const& value, unsigned long& target)
             {
                 std::size_t pos = 0;
                 target = std::stoul(value, &pos);
@@ -152,8 +152,8 @@ namespace pika { namespace util {
             std::enable_if_t<std::is_floating_point<T>::value>>
         {
             template <typename Char>
-            static void call(
-                std::basic_string<Char> const& value, float& target)
+            static void
+            call(std::basic_string<Char> const& value, float& target)
             {
                 std::size_t pos = 0;
                 target = std::stof(value, &pos);
@@ -161,8 +161,8 @@ namespace pika { namespace util {
             }
 
             template <typename Char>
-            static void call(
-                std::basic_string<Char> const& value, double& target)
+            static void
+            call(std::basic_string<Char> const& value, double& target)
             {
                 std::size_t pos = 0;
                 target = std::stod(value, &pos);
@@ -170,8 +170,8 @@ namespace pika { namespace util {
             }
 
             template <typename Char>
-            static void call(
-                std::basic_string<Char> const& value, long double& target)
+            static void
+            call(std::basic_string<Char> const& value, long double& target)
             {
                 std::size_t pos = 0;
                 target = std::stold(value, &pos);

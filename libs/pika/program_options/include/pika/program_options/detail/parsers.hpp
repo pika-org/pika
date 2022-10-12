@@ -36,8 +36,8 @@ namespace pika { namespace program_options {
     }
 
     template <class Char>
-    basic_command_line_parser<Char>& basic_command_line_parser<Char>::options(
-        const options_description& desc)
+    basic_command_line_parser<Char>&
+    basic_command_line_parser<Char>::options(const options_description& desc)
     {
         detail::cmdline::set_options_description(desc);
         m_desc = &desc;
@@ -54,8 +54,8 @@ namespace pika { namespace program_options {
     }
 
     template <class Char>
-    basic_command_line_parser<Char>& basic_command_line_parser<Char>::style(
-        int xstyle)
+    basic_command_line_parser<Char>&
+    basic_command_line_parser<Char>::style(int xstyle)
     {
         detail::cmdline::style(xstyle);
         return *this;
@@ -115,8 +115,8 @@ namespace pika { namespace program_options {
     }
 
     template <class Char>
-    std::vector<std::basic_string<Char>> collect_unrecognized(
-        const std::vector<basic_option<Char>>& options,
+    std::vector<std::basic_string<Char>>
+    collect_unrecognized(const std::vector<basic_option<Char>>& options,
         enum collect_unrecognized_mode mode)
     {
         std::vector<std::basic_string<Char>> result;

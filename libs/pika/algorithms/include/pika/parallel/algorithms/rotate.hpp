@@ -206,8 +206,8 @@ namespace pika::parallel::detail {
     // rotate
     /// \cond NOINTERNAL
     template <typename ExPolicy, typename FwdIter, typename Sent>
-    pika::future<in_out_result<FwdIter, Sent>> rotate_helper(
-        ExPolicy policy, FwdIter first, FwdIter new_first, Sent last)
+    pika::future<in_out_result<FwdIter, Sent>>
+    rotate_helper(ExPolicy policy, FwdIter first, FwdIter new_first, Sent last)
     {
         using non_seq = std::false_type;
 
@@ -244,15 +244,15 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename InIter, typename Sent>
-        static IterPair sequential(
-            ExPolicy, InIter first, InIter new_first, Sent last)
+        static IterPair
+        sequential(ExPolicy, InIter first, InIter new_first, Sent last)
         {
             return sequential_rotate(first, new_first, last);
         }
 
         template <typename ExPolicy, typename FwdIter, typename Sent>
-        static typename algorithm_result<ExPolicy, IterPair>::type parallel(
-            ExPolicy&& policy, FwdIter first, FwdIter new_first, Sent last)
+        static typename algorithm_result<ExPolicy, IterPair>::type
+        parallel(ExPolicy&& policy, FwdIter first, FwdIter new_first, Sent last)
         {
             return algorithm_result<ExPolicy, IterPair>::get(rotate_helper(
                 PIKA_FORWARD(ExPolicy, policy), first, new_first, last));
@@ -279,9 +279,9 @@ namespace pika::parallel::detail {
 
     template <typename ExPolicy, typename FwdIter1, typename Sent,
         typename FwdIter2>
-    pika::future<in_out_result<FwdIter1, FwdIter2>> rotate_copy_helper(
-        ExPolicy policy, FwdIter1 first, FwdIter1 new_first, Sent last,
-        FwdIter2 dest_first)
+    pika::future<in_out_result<FwdIter1, FwdIter2>>
+    rotate_copy_helper(ExPolicy policy, FwdIter1 first, FwdIter1 new_first,
+        Sent last, FwdIter2 dest_first)
     {
         using non_seq = std::false_type;
 

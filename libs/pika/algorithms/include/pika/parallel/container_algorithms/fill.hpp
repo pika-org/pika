@@ -177,8 +177,8 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend pika::traits::range_iterator_t<Rng> tag_fallback_invoke(
-            fill_t, Rng&& rng, T const& value)
+        friend pika::traits::range_iterator_t<Rng>
+        tag_fallback_invoke(fill_t, Rng&& rng, T const& value)
         {
             using iterator_type =
                 typename pika::traits::range_traits<Rng>::iterator_type;
@@ -199,8 +199,8 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
-        friend Iter tag_fallback_invoke(
-            fill_t, Iter first, Sent last, T const& value)
+        friend Iter
+        tag_fallback_invoke(fill_t, Iter first, Sent last, T const& value)
         {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Requires at least forward iterator.");
@@ -314,8 +314,8 @@ namespace pika::ranges {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            fill_n_t, FwdIter first, Size count, T const& value)
+        friend FwdIter
+        tag_fallback_invoke(fill_n_t, FwdIter first, Size count, T const& value)
         {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Requires at least forward iterator.");

@@ -118,8 +118,8 @@ namespace pika::parallel::detail {
         // main sequential dispatch entry points
 
         template <typename ExPolicy, typename... Args>
-        constexpr algorithm_result_t<ExPolicy, local_result_type> call2(
-            ExPolicy&& policy, std::true_type, Args&&... args) const
+        constexpr algorithm_result_t<ExPolicy, local_result_type>
+        call2(ExPolicy&& policy, std::true_type, Args&&... args) const
         {
             using result_handler =
                 algorithm_result<ExPolicy, local_result_type>;

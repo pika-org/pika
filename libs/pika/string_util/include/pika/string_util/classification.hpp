@@ -24,8 +24,8 @@ namespace pika { namespace string_util {
     }    // namespace detail
 
     template <typename CharT, typename Traits, typename Allocator>
-    detail::is_any_of_pred<CharT, Traits, Allocator> is_any_of(
-        std::basic_string<CharT, Traits, Allocator> const& chars)
+    detail::is_any_of_pred<CharT, Traits, Allocator>
+    is_any_of(std::basic_string<CharT, Traits, Allocator> const& chars)
     {
         return detail::is_any_of_pred<CharT, Traits, Allocator>{chars};
     }

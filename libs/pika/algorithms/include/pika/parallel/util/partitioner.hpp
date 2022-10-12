@@ -38,8 +38,8 @@
 
 namespace pika::parallel::detail {
     template <typename Result, typename ExPolicy, typename FwdIter, typename F>
-    std::vector<pika::future<Result>> partition(
-        ExPolicy&& policy, FwdIter first, std::size_t count, F&& f)
+    std::vector<pika::future<Result>>
+    partition(ExPolicy&& policy, FwdIter first, std::size_t count, F&& f)
     {
         // estimate a chunk size based on number of cores used
         using parameters_type =
@@ -101,8 +101,8 @@ namespace pika::parallel::detail {
     template <typename Result, typename ExPolicy, typename FwdIter,
         typename Data, typename F>
     // requires is_container<Data>
-    std::vector<pika::future<Result>> partition_with_data(ExPolicy&& policy,
-        FwdIter first, std::size_t count,
+    std::vector<pika::future<Result>>
+    partition_with_data(ExPolicy&& policy, FwdIter first, std::size_t count,
         std::vector<std::size_t> const& chunk_sizes, Data&& data, F&& f)
     {
         PIKA_ASSERT(pika::util::size(data) >= pika::util::size(chunk_sizes));
@@ -388,8 +388,8 @@ namespace pika::parallel::detail {
 
     private:
         template <typename F>
-        static pika::future<R> reduce(
-            std::shared_ptr<scoped_parameters>&& scoped_params,
+        static pika::future<R>
+        reduce(std::shared_ptr<scoped_parameters>&& scoped_params,
             std::vector<pika::future<Result>>&& workitems,
             std::list<std::exception_ptr>&& errors, F&& f)
         {

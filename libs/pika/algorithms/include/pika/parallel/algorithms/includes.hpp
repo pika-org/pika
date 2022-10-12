@@ -206,8 +206,8 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename F, typename Proj1,
             typename Proj2>
-        static typename algorithm_result<ExPolicy, bool>::type parallel(
-            ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+        static typename algorithm_result<ExPolicy, bool>::type
+        parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
             Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
             if (first1 == last1)

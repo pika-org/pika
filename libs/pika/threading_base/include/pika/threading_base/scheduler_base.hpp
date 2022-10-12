@@ -114,8 +114,8 @@ namespace pika::threads::detail {
         // return whether all states are at least at the given one
         bool has_reached_state(pika::runtime_state s) const;
         bool is_state(pika::runtime_state s) const;
-        std::pair<pika::runtime_state, pika::runtime_state> get_minmax_state()
-            const;
+        std::pair<pika::runtime_state, pika::runtime_state>
+        get_minmax_state() const;
 
         ///////////////////////////////////////////////////////////////////////
         // get/set scheduler mode

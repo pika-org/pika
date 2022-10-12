@@ -508,8 +508,8 @@ namespace pika::parallel::detail {
         using V = typename traits::detail::vector_pack_type<value_type>::type;
 
         template <typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Iter call(
-            std::size_t base_idx, Iter it, std::size_t count, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Iter
+        call(std::size_t base_idx, Iter it, std::size_t count, F&& f)
         {
             std::size_t len = count;
 

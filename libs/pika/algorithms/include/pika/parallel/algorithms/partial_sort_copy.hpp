@@ -204,9 +204,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename InIter, typename Sent1,
             typename RandIter, typename Sent2, typename Compare, typename Proj1,
             typename Proj2>
-        static in_out_result<InIter, RandIter> sequential(ExPolicy,
-            InIter first, Sent1 last, RandIter d_first, Sent2 d_last,
-            Compare&& comp, Proj1&& proj1, Proj2&& proj2)
+        static in_out_result<InIter, RandIter>
+        sequential(ExPolicy, InIter first, Sent1 last, RandIter d_first,
+            Sent2 d_last, Compare&& comp, Proj1&& proj1, Proj2&& proj2)
         {
             auto last_iter = advance_to_sentinel(first, last);
             auto d_last_iter = advance_to_sentinel(d_first, d_last);

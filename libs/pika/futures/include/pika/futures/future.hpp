@@ -112,8 +112,8 @@ namespace pika { namespace lcos { namespace detail {
     struct future_get_result
     {
         template <typename SharedState>
-        PIKA_FORCEINLINE static R* call(
-            SharedState const& state, error_code& ec = throws)
+        PIKA_FORCEINLINE static R*
+        call(SharedState const& state, error_code& ec = throws)
         {
             return state->get_result(ec);
         }
@@ -123,8 +123,8 @@ namespace pika { namespace lcos { namespace detail {
     struct future_get_result<util::detail::unused_type>
     {
         template <typename SharedState>
-        PIKA_FORCEINLINE static util::detail::unused_type* call(
-            SharedState const& state, error_code& ec = throws)
+        PIKA_FORCEINLINE static util::detail::unused_type*
+        call(SharedState const& state, error_code& ec = throws)
         {
             return state->get_result_void(ec);
         }
@@ -184,8 +184,8 @@ namespace pika { namespace lcos { namespace detail {
     struct future_then_dispatch
     {
         template <typename F>
-        PIKA_FORCEINLINE static decltype(auto) call(
-            Future&& /* fut */, F&& /* f */)
+        PIKA_FORCEINLINE static decltype(auto)
+        call(Future&& /* fut */, F&& /* f */)
         {
             // dummy impl to fail compilation if this function is called
             static_assert(sizeof(Future) == 0, "Cannot use the \
@@ -194,8 +194,8 @@ namespace pika { namespace lcos { namespace detail {
         }
 
         template <typename T0, typename F>
-        PIKA_FORCEINLINE static decltype(auto) call(
-            Future&& /* fut */, T0&& /* t */, F&& /* f */)
+        PIKA_FORCEINLINE static decltype(auto)
+        call(Future&& /* fut */, T0&& /* t */, F&& /* f */)
         {
             // dummy impl to fail compilation if this function is called
             static_assert(sizeof(Future) == 0, "Cannot use the \
@@ -225,8 +225,8 @@ namespace pika { namespace lcos { namespace detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Future>
-    inline traits::detail::shared_state_ptr_t<void> downcast_to_void(
-        Future& future, bool addref)
+    inline traits::detail::shared_state_ptr_t<void>
+    downcast_to_void(Future& future, bool addref)
     {
         using shared_state_type = traits::detail::shared_state_ptr_t<void>;
         using element_type = typename shared_state_type::element_type;
@@ -639,8 +639,8 @@ namespace pika {
 #endif
 
         template <typename Receiver>
-        friend lcos::detail::operation_state<Receiver, future> tag_invoke(
-            pika::execution::experimental::connect_t, future&& f,
+        friend lcos::detail::operation_state<Receiver, future>
+        tag_invoke(pika::execution::experimental::connect_t, future&& f,
             Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(f)};
@@ -1073,8 +1073,8 @@ namespace pika {
         // Throws: the stored exception, if an exception was stored in the
         //         shared state.
         // Postcondition: valid() == false.
-        typename pika::traits::future_traits<shared_future>::result_type get()
-            const    //-V659
+        typename pika::traits::future_traits<shared_future>::result_type
+        get() const    //-V659
         {
             if (!this->shared_state_)
             {
@@ -1243,22 +1243,22 @@ namespace pika {
     }
 
     template <typename R>
-    pika::shared_future<R>& make_shared_future(
-        pika::shared_future<R>& f) noexcept
+    pika::shared_future<R>&
+    make_shared_future(pika::shared_future<R>& f) noexcept
     {
         return f;
     }
 
     template <typename R>
-    pika::shared_future<R>&& make_shared_future(
-        pika::shared_future<R>&& f) noexcept
+    pika::shared_future<R>&&
+    make_shared_future(pika::shared_future<R>&& f) noexcept
     {
         return PIKA_MOVE(f);
     }
 
     template <typename R>
-    pika::shared_future<R> const& make_shared_future(
-        pika::shared_future<R> const& f) noexcept
+    pika::shared_future<R> const&
+    make_shared_future(pika::shared_future<R> const& f) noexcept
     {
         return f;
     }
@@ -1311,8 +1311,8 @@ namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     // extension: create a pre-initialized future object, with allocator
     template <int DeductionGuard = 0, typename Allocator, typename T>
-    future<pika::detail::decay_unwrap_t<T>> make_ready_future_alloc(
-        Allocator const& a, T&& init)
+    future<pika::detail::decay_unwrap_t<T>>
+    make_ready_future_alloc(Allocator const& a, T&& init)
     {
         return pika::make_ready_future_alloc<pika::detail::decay_unwrap_t<T>>(
             a, PIKA_FORWARD(T, init));
@@ -1320,8 +1320,8 @@ namespace pika {
 
     // extension: create a pre-initialized future object
     template <int DeductionGuard = 0, typename T>
-    PIKA_FORCEINLINE future<pika::detail::decay_unwrap_t<T>> make_ready_future(
-        T&& init)
+    PIKA_FORCEINLINE future<pika::detail::decay_unwrap_t<T>>
+    make_ready_future(T&& init)
     {
         return pika::make_ready_future_alloc<pika::detail::decay_unwrap_t<T>>(
             pika::detail::internal_allocator<>{}, PIKA_FORWARD(T, init));
@@ -1417,8 +1417,8 @@ namespace pika {
     }
 
     template <typename T>
-    std::enable_if_t<std::is_void_v<T>, future<void>> make_ready_future_at(
-        pika::chrono::steady_time_point const& abs_time)
+    std::enable_if_t<std::is_void_v<T>, future<void>>
+    make_ready_future_at(pika::chrono::steady_time_point const& abs_time)
     {
         return pika::make_ready_future_at(abs_time);
     }
@@ -1431,8 +1431,8 @@ namespace pika {
     }
 
     template <typename T>
-    std::enable_if_t<std::is_void_v<T>, future<void>> make_ready_future_after(
-        pika::chrono::steady_duration const& rel_time)
+    std::enable_if_t<std::is_void_v<T>, future<void>>
+    make_ready_future_after(pika::chrono::steady_duration const& rel_time)
     {
         return pika::make_ready_future_at(rel_time.from_now());
     }

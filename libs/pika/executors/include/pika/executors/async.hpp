@@ -28,8 +28,8 @@ namespace pika { namespace detail {
         std::enable_if_t<!detail::is_action_v<Func>>>
     {
         template <typename Policy_, typename F, typename... Ts>
-        PIKA_FORCEINLINE static auto call(
-            Policy_&& launch_policy, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static auto
+        call(Policy_&& launch_policy, F&& f, Ts&&... ts)
             -> decltype(async_launch_policy_dispatch<std::decay_t<F>>::call(
                 PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...))
@@ -44,8 +44,8 @@ namespace pika { namespace detail {
     struct async_dispatch<Policy, std::enable_if_t<is_launch_policy_v<Policy>>>
     {
         template <typename Policy_, typename F, typename... Ts>
-        PIKA_FORCEINLINE static auto call(
-            Policy_&& launch_policy, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static auto
+        call(Policy_&& launch_policy, F&& f, Ts&&... ts)
             -> decltype(async_dispatch_launch_policy_helper<
                 std::decay_t<F>>::call(PIKA_FORWARD(Policy_, launch_policy),
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
@@ -84,8 +84,8 @@ namespace pika { namespace detail {
             traits::is_two_way_executor_v<Executor>>>
     {
         template <typename Executor_, typename F, typename... Ts>
-        PIKA_FORCEINLINE static decltype(auto) call(
-            Executor_&& exec, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static decltype(auto)
+        call(Executor_&& exec, F&& f, Ts&&... ts)
         {
             return parallel::execution::async_execute(
                 PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f),

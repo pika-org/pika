@@ -37,8 +37,8 @@ struct sender
     };
 
     template <typename R>
-    friend operation_state tag_invoke(
-        pika::execution::experimental::connect_t, sender&&, R&&) noexcept
+    friend operation_state
+    tag_invoke(pika::execution::experimental::connect_t, sender&&, R&&) noexcept
     {
         return {};
     }

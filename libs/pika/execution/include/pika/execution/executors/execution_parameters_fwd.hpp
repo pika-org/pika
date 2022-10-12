@@ -89,9 +89,9 @@ namespace pika { namespace parallel { namespace execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            get_chunk_size_t, Parameters&& params, Executor&& exec, F&& f,
-            std::size_t cores, std::size_t num_tasks)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(get_chunk_size_t, Parameters&& params,
+            Executor&& exec, F&& f, std::size_t cores, std::size_t num_tasks)
         {
             return detail::get_chunk_size_fn_helper<
                 pika::detail::decay_unwrap_t<Parameters>,
@@ -125,9 +125,9 @@ namespace pika { namespace parallel { namespace execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            maximal_number_of_chunks_t, Parameters&& params, Executor&& exec,
-            std::size_t cores, std::size_t num_tasks)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(maximal_number_of_chunks_t, Parameters&& params,
+            Executor&& exec, std::size_t cores, std::size_t num_tasks)
         {
             return detail::maximal_number_of_chunks_fn_helper<
                 pika::detail::decay_unwrap_t<Parameters>,

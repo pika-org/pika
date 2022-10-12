@@ -28,8 +28,8 @@ namespace pika::util::detail {
     struct bind_eval_placeholder
     {
         template <typename T, typename... Us>
-        static constexpr PIKA_HOST_DEVICE decltype(auto) call(
-            T&& /*t*/, Us&&... vs)
+        static constexpr PIKA_HOST_DEVICE decltype(auto)
+        call(T&& /*t*/, Us&&... vs)
         {
             return util::detail::member_pack_for<Us&&...>(
                 std::piecewise_construct, PIKA_FORWARD(Us, vs)...)

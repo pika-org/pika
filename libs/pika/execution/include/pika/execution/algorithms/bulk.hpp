@@ -178,8 +178,8 @@ namespace pika::execution::experimental {
                         pika::execution::experimental::set_value_t, Sender,
                         bulk_t, Shape, F>)>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_override_invoke(
-            bulk_t, Sender&& sender, Shape const& shape, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_override_invoke(bulk_t, Sender&& sender, Shape const& shape, F&& f)
         {
             auto scheduler =
                 pika::execution::experimental::get_completion_scheduler<
@@ -195,8 +195,8 @@ namespace pika::execution::experimental {
                 std::is_integral<Shape>::value
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            bulk_t, Sender&& sender, Shape const& shape, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(bulk_t, Sender&& sender, Shape const& shape, F&& f)
         {
             return bulk_detail::bulk_sender<Sender,
                 pika::util::detail::counting_shape_type<Shape>, F>{
@@ -212,8 +212,8 @@ namespace pika::execution::experimental {
                 !std::is_integral<std::decay_t<Shape>>::value
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            bulk_t, Sender&& sender, Shape&& shape, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(bulk_t, Sender&& sender, Shape&& shape, F&& f)
         {
             return bulk_detail::bulk_sender<Sender, Shape, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Shape, shape),
@@ -221,8 +221,8 @@ namespace pika::execution::experimental {
         }
 
         template <typename Shape, typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            bulk_t, Shape&& shape, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(bulk_t, Shape&& shape, F&& f)
         {
             return detail::partial_algorithm<bulk_t, Shape, F>{
                 PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)};

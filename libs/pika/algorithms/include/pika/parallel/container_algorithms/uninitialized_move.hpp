@@ -52,8 +52,8 @@ namespace pika { namespace ranges {
     ///           the last element moved.
     ///
     template <typename InIter, typename Sent1, typename FwdIter, typename Sent2>
-    pika::parallel::detail::in_out_result<InIter, FwdIter> uninitialized_move(
-        InIter first1, Sent1 last1, FwdIter first2, Sent2 last2);
+    pika::parallel::detail::in_out_result<InIter, FwdIter>
+    uninitialized_move(InIter first1, Sent1 last1, FwdIter first2, Sent2 last2);
 
     /// Moves the elements in the range, defined by [first, last), to an
     /// uninitialized memory area beginning at \a dest. If an exception is

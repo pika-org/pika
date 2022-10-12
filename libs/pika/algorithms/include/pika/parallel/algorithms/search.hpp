@@ -372,9 +372,9 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(pika::search_n_t, FwdIter first,
-            std::size_t count, FwdIter2 s_first, FwdIter2 s_last,
-            Pred&& op = Pred())
+        friend FwdIter
+        tag_fallback_invoke(pika::search_n_t, FwdIter first, std::size_t count,
+            FwdIter2 s_first, FwdIter2 s_last, Pred&& op = Pred())
         {
             return pika::parallel::detail::search_n<FwdIter, FwdIter>().call(
                 pika::execution::seq, first, count, s_first, s_last,

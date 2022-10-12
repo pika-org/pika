@@ -70,8 +70,8 @@ namespace pika { namespace program_options {
            empty string if 'allow_empty' and throws validation_error
            otherwise. */
         template <class Char>
-        const std::basic_string<Char>& get_single_string(
-            const std::vector<std::basic_string<Char>>& v,
+        const std::basic_string<Char>&
+        get_single_string(const std::vector<std::basic_string<Char>>& v,
             bool allow_empty = false)
         {
             static std::basic_string<Char> empty;

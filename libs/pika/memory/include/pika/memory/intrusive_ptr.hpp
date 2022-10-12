@@ -193,15 +193,15 @@ namespace pika { namespace memory {
     };
 
     template <typename T, typename U>
-    inline constexpr bool operator==(
-        intrusive_ptr<T> const& a, intrusive_ptr<U> const& b) noexcept
+    inline constexpr bool
+    operator==(intrusive_ptr<T> const& a, intrusive_ptr<U> const& b) noexcept
     {
         return a.get() == b.get();
     }
 
     template <typename T, typename U>
-    inline constexpr bool operator!=(
-        intrusive_ptr<T> const& a, intrusive_ptr<U> const& b) noexcept
+    inline constexpr bool
+    operator!=(intrusive_ptr<T> const& a, intrusive_ptr<U> const& b) noexcept
     {
         return a.get() != b.get();
     }
@@ -231,36 +231,36 @@ namespace pika { namespace memory {
     }
 
     template <typename T>
-    inline constexpr bool operator==(
-        intrusive_ptr<T> const& p, std::nullptr_t) noexcept
+    inline constexpr bool
+    operator==(intrusive_ptr<T> const& p, std::nullptr_t) noexcept
     {
         return p.get() == nullptr;
     }
 
     template <typename T>
-    inline constexpr bool operator==(
-        std::nullptr_t, intrusive_ptr<T> const& p) noexcept
+    inline constexpr bool
+    operator==(std::nullptr_t, intrusive_ptr<T> const& p) noexcept
     {
         return p.get() == nullptr;
     }
 
     template <typename T>
-    inline constexpr bool operator!=(
-        intrusive_ptr<T> const& p, std::nullptr_t) noexcept
+    inline constexpr bool
+    operator!=(intrusive_ptr<T> const& p, std::nullptr_t) noexcept
     {
         return p.get() != nullptr;
     }
 
     template <typename T>
-    inline constexpr bool operator!=(
-        std::nullptr_t, intrusive_ptr<T> const& p) noexcept
+    inline constexpr bool
+    operator!=(std::nullptr_t, intrusive_ptr<T> const& p) noexcept
     {
         return p.get() != nullptr;
     }
 
     template <typename T>
-    inline constexpr bool operator<(
-        intrusive_ptr<T> const& a, intrusive_ptr<T> const& b) noexcept
+    inline constexpr bool
+    operator<(intrusive_ptr<T> const& a, intrusive_ptr<T> const& b) noexcept
     {
         return std::less<T*>{}(a.get(), b.get());
     }
@@ -298,8 +298,8 @@ namespace pika { namespace memory {
     }
 
     template <typename T, typename U>
-    constexpr intrusive_ptr<T> static_pointer_cast(
-        intrusive_ptr<U>&& p) noexcept
+    constexpr intrusive_ptr<T>
+    static_pointer_cast(intrusive_ptr<U>&& p) noexcept
     {
         return intrusive_ptr<T>(static_cast<T*>(p.detach()), false);
     }

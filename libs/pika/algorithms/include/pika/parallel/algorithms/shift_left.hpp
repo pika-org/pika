@@ -157,8 +157,8 @@ namespace pika::parallel::detail {
         from https://github.com/danra/shift_proposal */
 
     template <typename FwdIter, typename Sent, typename Size>
-    static constexpr FwdIter sequential_shift_left(
-        FwdIter first, Sent last, Size n, std::size_t dist)
+    static constexpr FwdIter
+    sequential_shift_left(FwdIter first, Sent last, Size n, std::size_t dist)
     {
         auto mid = std::next(first, n);
 
@@ -196,8 +196,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Sent, typename Size>
-        static typename algorithm_result<ExPolicy, FwdIter2>::type parallel(
-            ExPolicy&& policy, FwdIter2 first, Sent last, Size n)
+        static typename algorithm_result<ExPolicy, FwdIter2>::type
+        parallel(ExPolicy&& policy, FwdIter2 first, Sent last, Size n)
         {
             auto dist = static_cast<std::size_t>((distance) (first, last));
             if (n <= 0 || static_cast<std::size_t>(n) >= dist)
@@ -225,8 +225,8 @@ namespace pika {
             PIKA_CONCEPT_REQUIRES_(
                 pika::traits::is_iterator<FwdIter>::value)>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            shift_left_t, FwdIter first, FwdIter last, Size n)
+        friend FwdIter
+        tag_fallback_invoke(shift_left_t, FwdIter first, FwdIter last, Size n)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");

@@ -265,8 +265,8 @@ namespace pika::detail {
         }
 
         template <typename Futures_>
-        PIKA_FORCEINLINE void finalize(
-            pika::detail::sync_policy, Futures_&& futures)
+        PIKA_FORCEINLINE void
+        finalize(pika::detail::sync_policy, Futures_&& futures)
         {
             // We need to run the completion on a new thread if we are on a
             // non pika thread.
@@ -375,8 +375,8 @@ namespace pika::detail {
 
         /// Finish the dataflow when the traversal has finished
         template <typename Futures_>
-        PIKA_FORCEINLINE void operator()(
-            util::async_traverse_complete_tag, Futures_&& futures)
+        PIKA_FORCEINLINE void
+        operator()(util::async_traverse_complete_tag, Futures_&& futures)
         {
             finalize(policy_, PIKA_FORWARD(Futures_, futures));
         }
@@ -390,8 +390,8 @@ namespace pika::detail {
     template <typename Policy, typename Func, typename... Ts,
         typename Frame = dataflow_frame<std::decay_t<Policy>,
             std::decay_t<Func>, std::tuple<std::decay_t<Ts>...>>>
-    typename Frame::type create_dataflow(
-        Policy&& policy, Func&& func, Ts&&... ts)
+    typename Frame::type
+    create_dataflow(Policy&& policy, Func&& func, Ts&&... ts)
     {
         // Create the data which is used to construct the dataflow_frame
         auto data = Frame::construct_from(
@@ -441,8 +441,8 @@ namespace pika::detail {
     {
         template <typename Allocator, typename Policy_, typename F,
             typename... Ts>
-        PIKA_FORCEINLINE static decltype(auto) call(
-            Allocator const& alloc, Policy_&& policy, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static decltype(auto)
+        call(Allocator const& alloc, Policy_&& policy, F&& f, Ts&&... ts)
         {
             return detail::create_dataflow_alloc(alloc,
                 PIKA_FORWARD(Policy_, policy), PIKA_FORWARD(F, f),
@@ -456,8 +456,8 @@ namespace pika::detail {
             pika::detail::is_launch_policy<Policy>::value>::type>
     {
         template <typename Allocator, typename F, typename... Ts>
-        PIKA_FORCEINLINE static auto call(
-            Allocator const& alloc, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static auto
+        call(Allocator const& alloc, F&& f, Ts&&... ts)
             -> decltype(dataflow_dispatch_impl<false, Policy>::call(
                 alloc, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
@@ -491,8 +491,8 @@ namespace pika::detail {
     {
         template <typename Allocator, typename Executor_, typename F,
             typename... Ts>
-        PIKA_FORCEINLINE static decltype(auto) call(
-            Allocator const& alloc, Executor_&& exec, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static decltype(auto)
+        call(Allocator const& alloc, Executor_&& exec, F&& f, Ts&&... ts)
         {
             return detail::create_dataflow_alloc(alloc,
                 PIKA_FORWARD(Executor_, exec), PIKA_FORWARD(F, f),
@@ -526,8 +526,8 @@ namespace pika::detail {
                 traits::is_two_way_executor<FD>::value)>::type>
     {
         template <typename Allocator, typename F, typename... Ts>
-        PIKA_FORCEINLINE static auto call(
-            Allocator const& alloc, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static auto
+        call(Allocator const& alloc, F&& f, Ts&&... ts)
             -> decltype(dataflow_dispatch_impl<
                 detail::is_action<std::decay_t<F>>::value, launch>::call(alloc,
                 launch::async, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))

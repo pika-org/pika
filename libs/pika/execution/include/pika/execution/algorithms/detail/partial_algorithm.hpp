@@ -40,8 +40,8 @@ namespace pika {
             partial_algorithm_base const&) = delete;
 
         template <typename U>
-        friend constexpr PIKA_FORCEINLINE auto operator|(
-            U&& u, partial_algorithm_base p)
+        friend constexpr PIKA_FORCEINLINE auto
+        operator|(U&& u, partial_algorithm_base p)
         {
             return Tag{}(
                 PIKA_FORWARD(U, u), PIKA_MOVE(p.ts).template get<Is>()...);

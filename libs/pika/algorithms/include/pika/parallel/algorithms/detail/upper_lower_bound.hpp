@@ -48,8 +48,8 @@ namespace pika::parallel::detail {
 
     template <typename Iter, typename Sent, typename T, typename F,
         typename Proj>
-    constexpr Iter lower_bound(
-        Iter first, Sent last, T&& value, F&& f, Proj&& proj)
+    constexpr Iter
+    lower_bound(Iter first, Sent last, T&& value, F&& f, Proj&& proj)
     {
         using difference_type =
             typename std::iterator_traits<Iter>::difference_type;
@@ -106,8 +106,8 @@ namespace pika::parallel::detail {
 
     template <typename Iter, typename Sent, typename T, typename F,
         typename Proj>
-    constexpr Iter upper_bound(
-        Iter first, Sent last, T&& value, F&& f, Proj&& proj)
+    constexpr Iter
+    upper_bound(Iter first, Sent last, T&& value, F&& f, Proj&& proj)
     {
         using difference_type =
             typename std::iterator_traits<Iter>::difference_type;

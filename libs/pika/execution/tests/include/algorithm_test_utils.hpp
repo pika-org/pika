@@ -45,8 +45,8 @@ struct void_sender
     };
 
     template <typename R>
-    friend operation_state<R> tag_invoke(
-        pika::execution::experimental::connect_t, void_sender, R&& r)
+    friend operation_state<R>
+    tag_invoke(pika::execution::experimental::connect_t, void_sender, R&& r)
     {
         return {std::forward<R>(r)};
     }
@@ -89,8 +89,8 @@ struct error_sender
     };
 
     template <typename R>
-    friend operation_state<R> tag_invoke(
-        pika::execution::experimental::connect_t, error_sender, R&& r)
+    friend operation_state<R>
+    tag_invoke(pika::execution::experimental::connect_t, error_sender, R&& r)
     {
         return {std::forward<R>(r)};
     }
@@ -126,9 +126,9 @@ struct const_reference_error_sender
     };
 
     template <typename R>
-    friend operation_state<R> tag_invoke(
-        pika::execution::experimental::connect_t, const_reference_error_sender,
-        R&& r)
+    friend operation_state<R>
+    tag_invoke(pika::execution::experimental::connect_t,
+        const_reference_error_sender, R&& r)
     {
         return {std::forward<R>(r)};
     }
@@ -456,8 +456,8 @@ struct scheduler
     std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
     template <typename F>
-    friend void tag_invoke(
-        pika::execution::experimental::execute_t, scheduler s, F&& f)
+    friend void
+    tag_invoke(pika::execution::experimental::execute_t, scheduler s, F&& f)
     {
         s.execute_called.get() = true;
         PIKA_INVOKE(std::forward<F>(f), );
@@ -495,8 +495,8 @@ struct scheduler
         };
 
         template <typename R>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, sender&&, R&& r)
+        friend auto
+        tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -537,8 +537,8 @@ struct scheduler2
     std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
     template <typename F>
-    friend void tag_invoke(
-        pika::execution::experimental::execute_t, scheduler2 s, F&& f)
+    friend void
+    tag_invoke(pika::execution::experimental::execute_t, scheduler2 s, F&& f)
     {
         s.execute_called.get() = true;
         PIKA_INVOKE(std::forward<F>(f), );
@@ -576,8 +576,8 @@ struct scheduler2
         };
 
         template <typename R>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, sender&&, R&& r)
+        friend auto
+        tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -735,8 +735,8 @@ namespace my_namespace {
         };
 
         template <typename R>
-        friend operation_state<R> tag_invoke(
-            pika::execution::experimental::connect_t, my_sender, R&& r)
+        friend operation_state<R>
+        tag_invoke(pika::execution::experimental::connect_t, my_sender, R&& r)
         {
             return {std::forward<R>(r)};
         }

@@ -120,8 +120,8 @@ namespace pika::functional::detail {
         {
             PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
             template <typename Tag, typename... Ts>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Tag tag, Ts&&... ts) const
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+            operator()(Tag tag, Ts&&... ts) const
                 noexcept(noexcept(tag_fallback_invoke(
                     std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
                     -> decltype(tag_fallback_invoke(
@@ -259,8 +259,8 @@ namespace pika::functional::detail {
             template <typename... Args,
                 typename Enable =
                     std::enable_if_t<is_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Args&&... args) const
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+            operator()(Args&&... args) const
                 noexcept(is_nothrow_tag_invocable_v<Tag, Args...>)
                     -> tag_invoke_result_t<Tag, Args&&...>
             {
@@ -273,8 +273,8 @@ namespace pika::functional::detail {
             template <typename... Args,
                 typename Enable =
                     std::enable_if_t<!is_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Args&&... args) const
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+            operator()(Args&&... args) const
                 noexcept(is_nothrow_tag_fallback_invocable_v<Tag, Args...>)
                     -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
@@ -317,8 +317,8 @@ namespace pika::functional::detail {
             template <typename... Args,
                 typename Enable = std::enable_if_t<
                     is_nothrow_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Args&&... args) const noexcept
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+            operator()(Args&&... args) const noexcept
                 -> tag_invoke_result_t<Tag, Args&&...>
             {
                 return tag_invoke(static_cast<Tag const&>(*this),
@@ -332,8 +332,8 @@ namespace pika::functional::detail {
                     is_nothrow_tag_fallback_invocable<Tag, Args&&...>,
                 typename Enable = std::enable_if_t<
                     !is_nothrow_tag_invocable_v<Tag, Args&&...>>>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-                Args&&... args) const noexcept
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+            operator()(Args&&... args) const noexcept
                 -> decltype(tag_fallback_invoke_impl(
                     IsFallbackDispatchable{}, PIKA_FORWARD(Args, args)...))
             {

@@ -275,8 +275,8 @@ namespace pika::parallel::detail {
         using V = typename traits::detail::vector_pack_type<value_type>::type;
 
         template <typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(
-            F&& f, Iter& it, std::size_t base_idx)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call1(F&& f, Iter& it, std::size_t base_idx)
         {
             V1 tmp(
                 traits::detail::vector_pack_load<V1, value_type>::aligned(it));
@@ -285,8 +285,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void callv(
-            F&& f, Iter& it, std::size_t base_idx)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        callv(F&& f, Iter& it, std::size_t base_idx)
         {
             V tmp(traits::detail::vector_pack_load<V, value_type>::aligned(it));
             PIKA_INVOKE(f, tmp, base_idx);
@@ -314,8 +314,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static std::size_t callv(
-            F&& f, Iter& it)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static std::size_t
+        callv(F&& f, Iter& it)
         {
             V tmp(traits::detail::vector_pack_load<V, value_type>::aligned(it));
             PIKA_INVOKE(f, &tmp);
@@ -423,8 +423,8 @@ namespace pika::parallel::detail {
     struct invoke_vectorized_inout1
     {
         template <typename F, typename InIter, typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_aligned(
-            F&& f, InIter& it, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call_aligned(F&& f, InIter& it, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
@@ -440,8 +440,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename F, typename InIter, typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_unaligned(
-            F&& f, InIter& it, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call_unaligned(F&& f, InIter& it, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
@@ -462,8 +462,8 @@ namespace pika::parallel::detail {
     struct invoke_vectorized_inout1_ind
     {
         template <typename F, typename InIter, typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_aligned(
-            F&& f, InIter& it, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call_aligned(F&& f, InIter& it, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
@@ -479,8 +479,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename F, typename InIter, typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_unaligned(
-            F&& f, InIter& it, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call_unaligned(F&& f, InIter& it, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
@@ -502,8 +502,8 @@ namespace pika::parallel::detail {
     {
         template <typename F, typename InIter1, typename InIter2,
             typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_aligned(
-            F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call_aligned(F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
             static_assert(traits::detail::vector_pack_size<V1>::value ==
                     traits::detail::vector_pack_size<V2>::value,
@@ -530,8 +530,8 @@ namespace pika::parallel::detail {
 
         template <typename F, typename InIter1, typename InIter2,
             typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_unaligned(
-            F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call_unaligned(F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
             static_assert(traits::detail::vector_pack_size<V1>::value ==
                     traits::detail::vector_pack_size<V2>::value,
@@ -564,8 +564,8 @@ namespace pika::parallel::detail {
     {
         template <typename F, typename InIter1, typename InIter2,
             typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_aligned(
-            F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call_aligned(F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
             static_assert(traits::detail::vector_pack_size<V1>::value ==
                     traits::detail::vector_pack_size<V2>::value,
@@ -592,8 +592,8 @@ namespace pika::parallel::detail {
 
         template <typename F, typename InIter1, typename InIter2,
             typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call_unaligned(
-            F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call_unaligned(F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
             static_assert(traits::detail::vector_pack_size<V1>::value ==
                     traits::detail::vector_pack_size<V2>::value,
@@ -624,8 +624,8 @@ namespace pika::parallel::detail {
     struct datapar_transform_loop_step
     {
         template <typename F, typename InIter, typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(
-            F&& f, InIter& it, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call1(F&& f, InIter& it, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
@@ -640,8 +640,8 @@ namespace pika::parallel::detail {
 
         template <typename F, typename InIter1, typename InIter2,
             typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(
-            F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call1(F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter1>::value_type value_type1;
@@ -661,8 +661,8 @@ namespace pika::parallel::detail {
 
         ///////////////////////////////////////////////////////////////////
         template <typename F, typename InIter, typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void callv(
-            F&& f, InIter& it, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        callv(F&& f, InIter& it, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
@@ -677,8 +677,8 @@ namespace pika::parallel::detail {
 
         template <typename F, typename InIter1, typename InIter2,
             typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void callv(
-            F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        callv(F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter1>::value_type value1_type;
@@ -700,8 +700,8 @@ namespace pika::parallel::detail {
     struct datapar_transform_loop_step_ind
     {
         template <typename F, typename InIter, typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(
-            F&& f, InIter& it, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call1(F&& f, InIter& it, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
@@ -716,8 +716,8 @@ namespace pika::parallel::detail {
 
         template <typename F, typename InIter1, typename InIter2,
             typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void call1(
-            F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        call1(F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter1>::value_type value_type1;
@@ -737,8 +737,8 @@ namespace pika::parallel::detail {
 
         ///////////////////////////////////////////////////////////////////
         template <typename F, typename InIter, typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void callv(
-            F&& f, InIter& it, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        callv(F&& f, InIter& it, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter>::value_type value_type;
@@ -753,8 +753,8 @@ namespace pika::parallel::detail {
 
         template <typename F, typename InIter1, typename InIter2,
             typename OutIter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void callv(
-            F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        callv(F&& f, InIter1& it1, InIter2& it2, OutIter& dest)
         {
             typedef
                 typename std::iterator_traits<InIter1>::value_type value1_type;

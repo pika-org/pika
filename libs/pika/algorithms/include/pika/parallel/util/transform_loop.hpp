@@ -123,10 +123,11 @@ namespace pika::parallel::detail {
     {
         template <typename InIter1B, typename InIter1E, typename InIter2,
             typename OutIter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr in_in_out_result<
-            InIter1B, InIter2, OutIter>
-        call(InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
-            F&& f)
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr in_in_out_result<InIter1B,
+                InIter2, OutIter>
+            call(InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
+                F&& f)
         {
             for (/* */; first1 != last1; (void) ++first1, ++first2, ++dest)
             {
@@ -139,10 +140,11 @@ namespace pika::parallel::detail {
 
         template <typename InIter1B, typename InIter1E, typename InIter2,
             typename OutIter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr in_in_out_result<
-            InIter1B, InIter2, OutIter>
-        call(InIter1B first1, InIter1E last1, InIter2 first2, InIter2 last2,
-            OutIter dest, F&& f)
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr in_in_out_result<InIter1B,
+                InIter2, OutIter>
+            call(InIter1B first1, InIter1E last1, InIter2 first2, InIter2 last2,
+                OutIter dest, F&& f)
         {
             for (/* */; first1 != last1 && first2 != last2;
                  (void) ++first1, ++first2, ++dest)
@@ -163,10 +165,12 @@ namespace pika::parallel::detail {
     private:
         template <typename InIter1B, typename InIter1E, typename InIter2,
             typename OutIter, typename F>
-        friend PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_in_out_result<
-            InIter1B, InIter2, OutIter>
-        tag_fallback_invoke(transform_binary_loop_t<ExPolicy>, InIter1B first1,
-            InIter1E last1, InIter2 first2, OutIter dest, F&& f)
+        friend PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE constexpr in_in_out_result<InIter1B, InIter2,
+                OutIter>
+            tag_fallback_invoke(transform_binary_loop_t<ExPolicy>,
+                InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
+                F&& f)
         {
             return transform_binary_loop_impl<InIter1B, InIter2>::call(
                 first1, last1, first2, dest, PIKA_FORWARD(F, f));
@@ -174,11 +178,12 @@ namespace pika::parallel::detail {
 
         template <typename InIter1B, typename InIter1E, typename InIter2B,
             typename InIter2E, typename OutIter, typename F>
-        friend PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_in_out_result<
-            InIter1B, InIter2B, OutIter>
-        tag_fallback_invoke(transform_binary_loop_t<ExPolicy>, InIter1B first1,
-            InIter1E last1, InIter2B first2, InIter2E last2, OutIter dest,
-            F&& f)
+        friend PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE constexpr in_in_out_result<InIter1B, InIter2B,
+                OutIter>
+            tag_fallback_invoke(transform_binary_loop_t<ExPolicy>,
+                InIter1B first1, InIter1E last1, InIter2B first2,
+                InIter2E last2, OutIter dest, F&& f)
         {
             return transform_binary_loop_impl<InIter1B, InIter2B>::call(
                 first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));
@@ -218,10 +223,11 @@ namespace pika::parallel::detail {
     {
         template <typename InIter1B, typename InIter1E, typename InIter2,
             typename OutIter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr in_in_out_result<
-            InIter1B, InIter2, OutIter>
-        call(InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
-            F&& f)
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr in_in_out_result<InIter1B,
+                InIter2, OutIter>
+            call(InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
+                F&& f)
         {
             for (/* */; first1 != last1; (void) ++first1, ++first2, ++dest)
             {
@@ -234,10 +240,11 @@ namespace pika::parallel::detail {
 
         template <typename InIter1B, typename InIter1E, typename InIter2,
             typename OutIter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static constexpr in_in_out_result<
-            InIter1B, InIter2, OutIter>
-        call(InIter1B first1, InIter1E last1, InIter2 first2, InIter2 last2,
-            OutIter dest, F&& f)
+        PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE static constexpr in_in_out_result<InIter1B,
+                InIter2, OutIter>
+            call(InIter1B first1, InIter1E last1, InIter2 first2, InIter2 last2,
+                OutIter dest, F&& f)
         {
             for (/* */; first1 != last1 && first2 != last2;
                  (void) ++first1, ++first2, ++dest)
@@ -258,11 +265,12 @@ namespace pika::parallel::detail {
     private:
         template <typename InIter1B, typename InIter1E, typename InIter2,
             typename OutIter, typename F>
-        friend PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_in_out_result<
-            InIter1B, InIter2, OutIter>
-        tag_fallback_invoke(transform_binary_loop_ind_t<ExPolicy>,
-            InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
-            F&& f)
+        friend PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE constexpr in_in_out_result<InIter1B, InIter2,
+                OutIter>
+            tag_fallback_invoke(transform_binary_loop_ind_t<ExPolicy>,
+                InIter1B first1, InIter1E last1, InIter2 first2, OutIter dest,
+                F&& f)
         {
             return transform_binary_loop_ind_impl<InIter1B, InIter2>::call(
                 first1, last1, first2, dest, PIKA_FORWARD(F, f));
@@ -270,11 +278,12 @@ namespace pika::parallel::detail {
 
         template <typename InIter1B, typename InIter1E, typename InIter2B,
             typename InIter2E, typename OutIter, typename F>
-        friend PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr in_in_out_result<
-            InIter1B, InIter2B, OutIter>
-        tag_fallback_invoke(transform_binary_loop_ind_t<ExPolicy>,
-            InIter1B first1, InIter1E last1, InIter2B first2, InIter2E last2,
-            OutIter dest, F&& f)
+        friend PIKA_HOST_DEVICE
+            PIKA_FORCEINLINE constexpr in_in_out_result<InIter1B, InIter2B,
+                OutIter>
+            tag_fallback_invoke(transform_binary_loop_ind_t<ExPolicy>,
+                InIter1B first1, InIter1E last1, InIter2B first2,
+                InIter2E last2, OutIter dest, F&& f)
         {
             return transform_binary_loop_ind_impl<InIter1B, InIter2B>::call(
                 first1, last1, first2, last2, dest, PIKA_FORWARD(F, f));

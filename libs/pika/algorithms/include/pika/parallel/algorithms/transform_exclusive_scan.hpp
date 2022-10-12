@@ -290,9 +290,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename Conv, typename T, typename OutIter, typename Op>
-        static constexpr in_out_result<InIter, OutIter> sequential(ExPolicy,
-            InIter first, Sent last, OutIter dest, Conv&& conv, T&& init,
-            Op&& op)
+        static constexpr in_out_result<InIter, OutIter>
+        sequential(ExPolicy, InIter first, Sent last, OutIter dest, Conv&& conv,
+            T&& init, Op&& op)
         {
             return sequential_transform_exclusive_scan(first, last, dest,
                 PIKA_FORWARD(Conv, conv), PIKA_FORWARD(T, init),

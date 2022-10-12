@@ -51,8 +51,8 @@ namespace pika::cuda::experimental {
 
         PIKA_EXPORT whip::stream_t get() const noexcept;
         PIKA_EXPORT int get_device() const noexcept;
-        PIKA_EXPORT pika::execution::thread_priority get_priority()
-            const noexcept;
+        PIKA_EXPORT pika::execution::thread_priority
+        get_priority() const noexcept;
         PIKA_EXPORT unsigned int get_flags() const noexcept;
 
         /// \cond NOINTERNAL

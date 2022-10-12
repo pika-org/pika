@@ -185,8 +185,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter, typename Op>
-        static OutIter sequential(
-            ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
+        static OutIter
+        sequential(ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
         {
             return sequential_adjacent_difference<ExPolicy>(
                 first, last, dest, PIKA_FORWARD(Op, op));
@@ -194,8 +194,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename Op>
-        static typename algorithm_result<ExPolicy, FwdIter2>::type parallel(
-            ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
+        static typename algorithm_result<ExPolicy, FwdIter2>::type
+        parallel(ExPolicy&& policy, FwdIter1 first, Sent last, FwdIter2 dest,
             Op&& op)
         {
             using zip_iterator =

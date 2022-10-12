@@ -51,8 +51,8 @@ namespace pika {
     ///           iterator to the element past the last element copied.
     ///
     template <typename InIter, typename OutIter, typename T>
-    FwdIter remove_copy(
-        InIter first, InIter last, OutIter dest, T const& value);
+    FwdIter
+    remove_copy(InIter first, InIter last, OutIter dest, T const& value);
 
     /// Copies the elements in the range, defined by [first, last), to another
     /// range beginning at \a dest. Copies only the elements for which the
@@ -167,8 +167,8 @@ namespace pika {
     ///           iterator to the element past the last element copied.
     ///
     template <typename InIter, typename OutIter, typename Pred>
-    FwdIter remove_copy_if(
-        InIter first, InIter last, OutIter dest, Pred&& pred);
+    FwdIter
+    remove_copy_if(InIter first, InIter last, OutIter dest, Pred&& pred);
 
     /// Copies the elements in the range, defined by [first, last), to another
     /// range beginning at \a dest. Copies only the elements for which the

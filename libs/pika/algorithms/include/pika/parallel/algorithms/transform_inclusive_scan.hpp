@@ -492,9 +492,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter, typename Conv, typename T, typename Op>
-        static constexpr in_out_result<InIter, OutIter> sequential(ExPolicy,
-            InIter first, Sent last, OutIter dest, Conv&& conv, T&& init,
-            Op&& op)
+        static constexpr in_out_result<InIter, OutIter>
+        sequential(ExPolicy, InIter first, Sent last, OutIter dest, Conv&& conv,
+            T&& init, Op&& op)
         {
             return sequential_transform_inclusive_scan(first, last, dest,
                 PIKA_FORWARD(Conv, conv), PIKA_FORWARD(T, init),
@@ -626,9 +626,9 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend OutIter tag_fallback_invoke(pika::transform_inclusive_scan_t,
-            InIter first, InIter last, OutIter dest, BinOp&& binary_op,
-            UnOp&& unary_op)
+        friend OutIter
+        tag_fallback_invoke(pika::transform_inclusive_scan_t, InIter first,
+            InIter last, OutIter dest, BinOp&& binary_op, UnOp&& unary_op)
         {
             static_assert(pika::traits::is_input_iterator_v<InIter>,
                 "Requires at least input iterator.");

@@ -132,8 +132,8 @@ namespace pika::execution::experimental {
                 pika::detail::is_allocator_v<Allocator>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE void tag_fallback_invoke(
-            start_detached_t, Sender&& sender,
+        friend constexpr PIKA_FORCEINLINE void
+        tag_fallback_invoke(start_detached_t, Sender&& sender,
             Allocator const& allocator = Allocator{})
         {
             using allocator_type = Allocator;

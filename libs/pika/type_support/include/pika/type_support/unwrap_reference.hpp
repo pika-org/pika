@@ -30,8 +30,8 @@ namespace pika::detail {
     };
 
     template <typename T>
-    PIKA_FORCEINLINE typename unwrap_reference_impl<T>::type& unwrap_reference(
-        T& t)
+    PIKA_FORCEINLINE typename unwrap_reference_impl<T>::type&
+    unwrap_reference(T& t)
     {
         return t;
     }

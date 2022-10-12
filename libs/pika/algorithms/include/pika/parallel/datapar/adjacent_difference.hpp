@@ -28,8 +28,8 @@ namespace pika::parallel::detail {
     struct datapar_adjacent_difference
     {
         template <typename InIter, typename OutIter, typename Op>
-        static inline OutIter call(
-            InIter first, InIter last, OutIter dest, Op&& op)
+        static inline OutIter
+        call(InIter first, InIter last, OutIter dest, Op&& op)
         {
             if (first == last)
                 return dest;

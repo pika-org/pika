@@ -257,8 +257,8 @@ namespace pika {
         }
 
         template <typename Exception>
-        std::exception_ptr construct_exception(
-            Exception const& e, pika::exception_info info)
+        std::exception_ptr
+        construct_exception(Exception const& e, pika::exception_info info)
         {
             // create a std::exception_ptr object encapsulating the Exception to
             // be thrown and annotate it with all the local information we have

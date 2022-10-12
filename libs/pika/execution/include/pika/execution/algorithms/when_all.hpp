@@ -424,8 +424,8 @@ namespace pika::execution::experimental {
                 pika::util::detail::all_of_v<is_sender<Senders>...>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            when_all_t, Senders&&... senders)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(when_all_t, Senders&&... senders)
         {
             return pika::when_all_impl::when_all_sender<Senders...>{
                 PIKA_FORWARD(Senders, senders)...};

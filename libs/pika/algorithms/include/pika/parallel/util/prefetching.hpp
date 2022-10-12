@@ -278,8 +278,8 @@ namespace pika::parallel::detail {
         struct loop_n_helper
         {
             template <typename Itr, typename... Ts, typename F, typename Pred>
-            static constexpr prefetching_iterator<Itr, Ts...> call(
-                prefetching_iterator<Itr, Ts...> it, std::size_t count, F&& f,
+            static constexpr prefetching_iterator<Itr, Ts...>
+            call(prefetching_iterator<Itr, Ts...> it, std::size_t count, F&& f,
                 Pred)
             {
                 using index_pack_type =
@@ -312,8 +312,8 @@ namespace pika::parallel::detail {
 
             template <typename Itr, typename... Ts, typename CancelToken,
                 typename F, typename Pred>
-            static constexpr prefetching_iterator<Itr, Ts...> call(
-                prefetching_iterator<Itr, Ts...> it, std::size_t count,
+            static constexpr prefetching_iterator<Itr, Ts...>
+            call(prefetching_iterator<Itr, Ts...> it, std::size_t count,
                 CancelToken& tok, F&& f, Pred)
             {
                 using index_pack_type =
@@ -363,8 +363,8 @@ namespace pika::parallel::detail {
         struct loop_n_ind_helper
         {
             template <typename Itr, typename... Ts, typename F, typename Pred>
-            static constexpr prefetching_iterator<Itr, Ts...> call(
-                prefetching_iterator<Itr, Ts...> it, std::size_t count, F&& f,
+            static constexpr prefetching_iterator<Itr, Ts...>
+            call(prefetching_iterator<Itr, Ts...> it, std::size_t count, F&& f,
                 Pred)
             {
                 using index_pack_type =
@@ -397,8 +397,8 @@ namespace pika::parallel::detail {
 
             template <typename Itr, typename... Ts, typename CancelToken,
                 typename F, typename Pred>
-            static constexpr prefetching_iterator<Itr, Ts...> call(
-                prefetching_iterator<Itr, Ts...> it, std::size_t count,
+            static constexpr prefetching_iterator<Itr, Ts...>
+            call(prefetching_iterator<Itr, Ts...> it, std::size_t count,
                 CancelToken& tok, F&& f, Pred)
             {
                 using index_pack_type =
@@ -497,8 +497,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename End, typename CancelToken, typename F>
-        static iterator_type call(
-            iterator_type it, End end, CancelToken& tok, F&& f)
+        static iterator_type
+        call(iterator_type it, End end, CancelToken& tok, F&& f)
         {
             for (/**/; it != end; ++it)
             {
@@ -557,8 +557,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename End, typename CancelToken, typename F>
-        static iterator_type call(
-            iterator_type it, End end, CancelToken& tok, F&& f)
+        static iterator_type
+        call(iterator_type it, End end, CancelToken& tok, F&& f)
         {
             for (/**/; it != end; ++it)
             {

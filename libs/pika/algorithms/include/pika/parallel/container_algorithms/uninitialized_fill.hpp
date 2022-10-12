@@ -118,8 +118,8 @@ namespace pika { namespace ranges {
     ///           the last element copied.
     ///
     template <typename Rng, typename T>
-    typename pika::traits::range_traits<Rng>::iterator_type uninitialized_fill(
-        Rng&& rng, T const& value);
+    typename pika::traits::range_traits<Rng>::iterator_type
+    uninitialized_fill(Rng&& rng, T const& value);
 
     /// Copies the given \a value to an uninitialized memory area, defined by
     /// the range [first, last). If an exception is thrown during the

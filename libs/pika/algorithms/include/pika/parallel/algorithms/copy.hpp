@@ -351,8 +351,8 @@ namespace pika { namespace parallel {
             }
 
             template <typename ExPolicy, typename InIter, typename OutIter>
-            static constexpr in_out_result<InIter, OutIter> sequential(
-                ExPolicy, InIter first, std::size_t count, OutIter dest)
+            static constexpr in_out_result<InIter, OutIter>
+            sequential(ExPolicy, InIter first, std::size_t count, OutIter dest)
             {
                 in_out_result<InIter, OutIter> result =
                     copy_n<ExPolicy>(first, count, dest);
@@ -421,9 +421,9 @@ namespace pika { namespace parallel {
             template <typename ExPolicy, typename InIter1, typename InIter2,
                 typename OutIter, typename Pred,
                 typename Proj = projection_identity>
-            static in_out_result<InIter1, OutIter> sequential(ExPolicy,
-                InIter1 first, InIter2 last, OutIter dest, Pred&& pred,
-                Proj&& proj /* = Proj()*/)
+            static in_out_result<InIter1, OutIter>
+            sequential(ExPolicy, InIter1 first, InIter2 last, OutIter dest,
+                Pred&& pred, Proj&& proj /* = Proj()*/)
             {
                 return sequential_copy_if(first, last, dest,
                     PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));

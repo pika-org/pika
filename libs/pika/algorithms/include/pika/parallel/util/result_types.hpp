@@ -97,8 +97,8 @@ namespace pika::parallel::detail {
     }
 
     template <typename I, typename O>
-    pika::future<std::pair<I, O>> get_pair(
-        pika::future<in_out_result<I, O>>&& f)
+    pika::future<std::pair<I, O>>
+    get_pair(pika::future<in_out_result<I, O>>&& f)
     {
         return pika::make_future<std::pair<I, O>>(
             PIKA_MOVE(f), [](in_out_result<I, O>&& p) {
@@ -115,15 +115,15 @@ namespace pika::parallel::detail {
 
     // convert a in_out_result into a iterator_range
     template <typename I, typename O>
-    pika::util::iterator_range<I, O> get_subrange(
-        in_out_result<I, O> const& ior)
+    pika::util::iterator_range<I, O>
+    get_subrange(in_out_result<I, O> const& ior)
     {
         return pika::util::iterator_range<I, O>(ior.in, ior.out);
     }
 
     template <typename I, typename O>
-    pika::future<pika::util::iterator_range<I, O>> get_subrange(
-        pika::future<in_out_result<I, O>>&& ior)
+    pika::future<pika::util::iterator_range<I, O>>
+    get_subrange(pika::future<in_out_result<I, O>>&& ior)
     {
         return pika::make_future<pika::util::iterator_range<I, O>>(
             PIKA_MOVE(ior), [](in_out_result<I, O>&& ior) {
@@ -190,8 +190,8 @@ namespace pika::parallel::detail {
     }
 
     template <typename I1, typename I2, typename O>
-    pika::future<O> get_third_element(
-        pika::future<in_in_out_result<I1, I2, O>>&& f)
+    pika::future<O>
+    get_third_element(pika::future<in_in_out_result<I1, I2, O>>&& f)
     {
         return pika::make_future<O>(PIKA_MOVE(f),
             [](in_in_out_result<I1, I2, O>&& p) { return p.out; });
@@ -227,8 +227,8 @@ namespace pika::parallel::detail {
     };
 
     template <typename... Ts>
-    constexpr PIKA_FORCEINLINE in_out_out_result<Ts...> make_in_out_out_result(
-        std::tuple<Ts...>&& t)
+    constexpr PIKA_FORCEINLINE in_out_out_result<Ts...>
+    make_in_out_out_result(std::tuple<Ts...>&& t)
     {
         static_assert(std::tuple_size<std::tuple<Ts...>>::value == 3,
             "size of tuple should be 3 to convert to in_out_out_result");
@@ -239,8 +239,8 @@ namespace pika::parallel::detail {
     }
 
     template <typename... Ts>
-    pika::future<in_out_out_result<Ts...>> make_in_out_out_result(
-        pika::future<std::tuple<Ts...>>&& f)
+    pika::future<in_out_out_result<Ts...>>
+    make_in_out_out_result(pika::future<std::tuple<Ts...>>&& f)
     {
         static_assert(std::tuple_size<std::tuple<Ts...>>::value == 3,
             "size of tuple should be 3 to convert to in_out_out_result");
@@ -279,16 +279,16 @@ namespace pika::parallel::detail {
     };
 
     template <typename Iterator, typename Sentinel = Iterator>
-    pika::util::iterator_range<Iterator, Sentinel> make_subrange(
-        Iterator iterator, Sentinel sentinel)
+    pika::util::iterator_range<Iterator, Sentinel>
+    make_subrange(Iterator iterator, Sentinel sentinel)
     {
         return pika::util::make_iterator_range<Iterator, Sentinel>(
             iterator, sentinel);
     }
 
     template <typename Iterator, typename Sentinel = Iterator>
-    pika::future<pika::util::iterator_range<Iterator, Sentinel>> make_subrange(
-        pika::future<Iterator>&& iterator, Sentinel sentinel)
+    pika::future<pika::util::iterator_range<Iterator, Sentinel>>
+    make_subrange(pika::future<Iterator>&& iterator, Sentinel sentinel)
     {
         return pika::make_future<
             pika::util::iterator_range<Iterator, Sentinel>>(

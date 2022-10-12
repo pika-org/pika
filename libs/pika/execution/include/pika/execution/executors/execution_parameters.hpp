@@ -56,9 +56,9 @@ namespace pika { namespace parallel { namespace execution {
                     !check_for_property<Parameters>::value
                 )>
             // clang-format on
-            friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-                derived_propery_t, Executor&& /*exec*/, Parameters&& /*params*/,
-                Property prop)
+            friend PIKA_FORCEINLINE decltype(auto)
+            tag_fallback_invoke(derived_propery_t, Executor&& /*exec*/,
+                Parameters&& /*params*/, Property prop)
             {
                 return std::make_pair(prop, prop);
             }
@@ -72,9 +72,9 @@ namespace pika { namespace parallel { namespace execution {
                     check_for_property<Parameters>::value
                 )>
             // clang-format on
-            friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-                derived_propery_t, Executor&& exec, Parameters&& params,
-                Property /*prop*/)
+            friend PIKA_FORCEINLINE decltype(auto)
+            tag_fallback_invoke(derived_propery_t, Executor&& exec,
+                Parameters&& params, Property /*prop*/)
             {
                 return std::pair<Parameters&&, Executor&&>(
                     PIKA_FORWARD(Parameters, params),
@@ -134,8 +134,8 @@ namespace pika { namespace parallel { namespace execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor, typename F>
-            PIKA_FORCEINLINE static std::size_t call(Parameters& params,
-                Executor&& exec, F&& f, std::size_t cores,
+            PIKA_FORCEINLINE static std::size_t
+            call(Parameters& params, Executor&& exec, F&& f, std::size_t cores,
                 std::size_t num_tasks)
             {
                 auto withprop =
@@ -148,9 +148,9 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename AnyParameters, typename Executor, typename F>
-            PIKA_FORCEINLINE static std::size_t call(AnyParameters params,
-                Executor&& exec, F&& f, std::size_t cores,
-                std::size_t num_tasks)
+            PIKA_FORCEINLINE static std::size_t
+            call(AnyParameters params, Executor&& exec, F&& f,
+                std::size_t cores, std::size_t num_tasks)
             {
                 return call(static_cast<Parameters&>(params),
                     PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f), cores,
@@ -169,8 +169,8 @@ namespace pika { namespace parallel { namespace execution {
         {
             // default implementation
             template <typename Target>
-            PIKA_FORCEINLINE static std::size_t maximal_number_of_chunks(
-                Target, std::size_t, std::size_t)
+            PIKA_FORCEINLINE static std::size_t
+            maximal_number_of_chunks(Target, std::size_t, std::size_t)
             {
                 // return zero chunks which will tell the implementation to
                 // calculate the number of chunks either based on a
@@ -251,8 +251,8 @@ namespace pika { namespace parallel { namespace execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static void call(
-                Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static void
+            call(Parameters& params, Executor&& exec)
             {
                 auto withprop =
                     with_reset_thread_distribution(PIKA_FORWARD(Executor, exec),
@@ -263,8 +263,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static void call(
-                AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static void
+            call(AnyParameters params, Executor&& exec)
             {
                 call(static_cast<Parameters&>(params),
                     PIKA_FORWARD(Executor, exec));
@@ -305,8 +305,8 @@ namespace pika { namespace parallel { namespace execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static std::size_t call(
-                Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static std::size_t
+            call(Parameters& params, Executor&& exec)
             {
                 auto withprop =
                     with_processing_units_count(PIKA_FORWARD(Executor, exec),
@@ -317,8 +317,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static std::size_t call(
-                AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static std::size_t
+            call(AnyParameters params, Executor&& exec)
             {
                 return call(static_cast<Parameters&>(params),
                     PIKA_FORWARD(Executor, exec));
@@ -358,8 +358,8 @@ namespace pika { namespace parallel { namespace execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static void call(
-                Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static void
+            call(Parameters& params, Executor&& exec)
             {
                 auto withprop =
                     with_mark_begin_execution(PIKA_FORWARD(Executor, exec),
@@ -370,8 +370,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static void call(
-                AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static void
+            call(AnyParameters params, Executor&& exec)
             {
                 call(static_cast<Parameters&>(params),
                     PIKA_FORWARD(Executor, exec));
@@ -411,8 +411,8 @@ namespace pika { namespace parallel { namespace execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static void call(
-                Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static void
+            call(Parameters& params, Executor&& exec)
             {
                 auto withprop =
                     with_mark_end_of_scheduling(PIKA_FORWARD(Executor, exec),
@@ -423,8 +423,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static void call(
-                AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static void
+            call(AnyParameters params, Executor&& exec)
             {
                 call(static_cast<Parameters&>(params),
                     PIKA_FORWARD(Executor, exec));
@@ -463,8 +463,8 @@ namespace pika { namespace parallel { namespace execution {
             std::enable_if_t<pika::traits::is_executor_any<Executor_>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE static void call(
-                Parameters& params, Executor&& exec)
+            PIKA_FORCEINLINE static void
+            call(Parameters& params, Executor&& exec)
             {
                 auto withprop =
                     with_mark_end_execution(PIKA_FORWARD(Executor, exec),
@@ -475,8 +475,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename AnyParameters, typename Executor>
-            PIKA_FORCEINLINE static void call(
-                AnyParameters params, Executor&& exec)
+            PIKA_FORCEINLINE static void
+            call(AnyParameters params, Executor&& exec)
             {
                 call(static_cast<Parameters&>(params),
                     PIKA_FORWARD(Executor, exec));
@@ -629,8 +629,8 @@ namespace pika { namespace parallel { namespace execution {
             std::enable_if_t<has_processing_units_count<T>::value>>
         {
             template <typename Executor>
-            PIKA_FORCEINLINE std::size_t processing_units_count(
-                Executor&& exec) const
+            PIKA_FORCEINLINE std::size_t
+            processing_units_count(Executor&& exec) const
             {
                 auto& wrapped =
                     static_cast<unwrapper<Wrapper> const*>(this)->member_.get();

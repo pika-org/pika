@@ -777,9 +777,9 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_stopped_t()>;
 
         template <typename R>
-        friend detail::any_operation_state tag_invoke(
-            pika::execution::experimental::connect_t, unique_any_sender&& s,
-            R&& r)
+        friend detail::any_operation_state
+        tag_invoke(pika::execution::experimental::connect_t,
+            unique_any_sender&& s, R&& r)
         {
             // We first move the storage to a temporary variable so that this
             // any_sender is empty after this connect. Doing

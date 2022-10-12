@@ -181,8 +181,8 @@ namespace pika {
     }    // namespace detail
 
     template <typename E>
-    [[noreturn]] void throw_with_info(
-        E&& e, exception_info&& xi = exception_info())
+    [[noreturn]] void
+    throw_with_info(E&& e, exception_info&& xi = exception_info())
     {
         using ED = std::decay_t<E>;
         static_assert(std::is_class<ED>::value && !std::is_final<ED>::value,

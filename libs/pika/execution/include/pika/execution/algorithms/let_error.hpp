@@ -195,8 +195,8 @@ namespace pika::let_error_detail {
                 };
 
                 template <typename Error>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_error_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_error_t,
                     let_error_predecessor_receiver&& r, Error&& error) noexcept
                 {
                     pika::detail::try_catch_exception_ptr(
@@ -229,8 +229,8 @@ namespace pika::let_error_detail {
                     typename = std::enable_if_t<pika::detail::is_invocable_v<
                         pika::execution::experimental::set_value_t, Receiver&&,
                         Ts...>>>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_value_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_value_t,
                     let_error_predecessor_receiver&& r, Ts&&... ts) noexcept
                 {
                     pika::execution::experimental::set_value(
@@ -333,8 +333,8 @@ namespace pika::execution::experimental {
         }
 
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            let_error_t, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(let_error_t, F&& f)
         {
             return detail::partial_algorithm<let_error_t, F>{
                 PIKA_FORWARD(F, f)};

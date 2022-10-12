@@ -296,8 +296,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Sent>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, Sent last)
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last)
         {
             return parallel_sequential_uninitialized_default_construct_n(
                 PIKA_FORWARD(ExPolicy, policy), first,
@@ -313,8 +313,8 @@ namespace pika::parallel::detail {
     // provide our own implementation of std::uninitialized_default_construct as some
     // versions of MSVC horribly fail at compiling it for some types T
     template <typename InIter>
-    InIter std_uninitialized_default_construct_n(
-        InIter first, std::size_t count)
+    InIter
+    std_uninitialized_default_construct_n(InIter first, std::size_t count)
     {
         using value_type = typename std::iterator_traits<InIter>::value_type;
 
@@ -354,8 +354,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, std::size_t count)
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, std::size_t count)
         {
             return parallel_sequential_uninitialized_default_construct_n(
                 PIKA_FORWARD(ExPolicy, policy), first, count);
@@ -424,9 +424,9 @@ namespace pika {
                 pika::traits::is_forward_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            pika::uninitialized_default_construct_n_t, FwdIter first,
-            Size count)
+        friend FwdIter
+        tag_fallback_invoke(pika::uninitialized_default_construct_n_t,
+            FwdIter first, Size count)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Requires at least forward iterator.");

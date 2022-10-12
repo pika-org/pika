@@ -483,9 +483,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        static typename algorithm_result<ExPolicy, Iter>::type parallel(
-            ExPolicy&& policy, Iter first, Iter middle, Sent last, Comp&& comp,
-            Proj&& proj)
+        static typename algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Iter middle, Sent last,
+            Comp&& comp, Proj&& proj)
         {
             try
             {
@@ -522,9 +522,9 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend RandIter tag_fallback_invoke(pika::partial_sort_t,
-            RandIter first, RandIter middle, RandIter last,
-            Comp&& comp = Comp())
+        friend RandIter
+        tag_fallback_invoke(pika::partial_sort_t, RandIter first,
+            RandIter middle, RandIter last, Comp&& comp = Comp())
         {
             static_assert(
                 pika::traits::is_random_access_iterator<RandIter>::value,

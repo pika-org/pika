@@ -48,8 +48,8 @@ namespace pika { namespace traits { namespace detail {
     // Reserve sufficient space in the given vector if the underlying
     // iterator type of the given range allow calculating the size in O(1).
     template <typename Container, typename Range>
-    PIKA_FORCEINLINE void reserve_if_random_access_by_range(
-        Container& v, Range const& r)
+    PIKA_FORCEINLINE void
+    reserve_if_random_access_by_range(Container& v, Range const& r)
     {
         using iterator_type = typename range_traits<Range>::iterator_type;
         if constexpr (is_random_access_iterator_v<iterator_type> &&

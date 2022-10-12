@@ -29,9 +29,9 @@ namespace pika::parallel::detail {
     private:
         template <typename Iterator, typename Sentinel, typename T,
             typename Proj = projection_identity>
-        friend inline constexpr Iterator tag_fallback_invoke(
-            sequential_find_t<ExPolicy>, Iterator first, Sentinel last,
-            T const& value, Proj proj = Proj())
+        friend inline constexpr Iterator
+        tag_fallback_invoke(sequential_find_t<ExPolicy>, Iterator first,
+            Sentinel last, T const& value, Proj proj = Proj())
         {
             for (; first != last; ++first)
             {
@@ -44,8 +44,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename FwdIter, typename Token, typename T, typename Proj>
-        friend inline constexpr void tag_fallback_invoke(
-            sequential_find_t<ExPolicy>, std::size_t base_idx,
+        friend inline constexpr void
+        tag_fallback_invoke(sequential_find_t<ExPolicy>, std::size_t base_idx,
             FwdIter part_begin, std::size_t part_count, Token& tok,
             T const& val, Proj&& proj)
         {
@@ -74,9 +74,9 @@ namespace pika::parallel::detail {
 
     template <typename ExPolicy, typename FwdIter, typename Token, typename T,
         typename Proj>
-    inline constexpr void sequential_find(std::size_t base_idx,
-        FwdIter part_begin, std::size_t part_count, Token& tok, T const& val,
-        Proj&& proj)
+    inline constexpr void
+    sequential_find(std::size_t base_idx, FwdIter part_begin,
+        std::size_t part_count, Token& tok, T const& val, Proj&& proj)
     {
         return sequential_find_t<ExPolicy>{}(base_idx, part_begin, part_count,
             tok, val, PIKA_FORWARD(Proj, proj));
@@ -91,9 +91,9 @@ namespace pika::parallel::detail {
     private:
         template <typename Iterator, typename Sentinel, typename Pred,
             typename Proj = projection_identity>
-        friend inline constexpr Iterator tag_fallback_invoke(
-            sequential_find_if_t<ExPolicy>, Iterator first, Sentinel last,
-            Pred pred, Proj proj = Proj())
+        friend inline constexpr Iterator
+        tag_fallback_invoke(sequential_find_if_t<ExPolicy>, Iterator first,
+            Sentinel last, Pred pred, Proj proj = Proj())
         {
             for (; first != last; ++first)
             {
@@ -106,8 +106,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename FwdIter, typename Token, typename F, typename Proj>
-        friend inline constexpr void tag_fallback_invoke(
-            sequential_find_if_t<ExPolicy>, FwdIter part_begin,
+        friend inline constexpr void
+        tag_fallback_invoke(sequential_find_if_t<ExPolicy>, FwdIter part_begin,
             std::size_t part_count, Token& tok, F&& op, Proj&& proj)
         {
             loop_n<std::decay_t<ExPolicy>>(part_begin, part_count, tok,
@@ -120,10 +120,10 @@ namespace pika::parallel::detail {
         }
 
         template <typename FwdIter, typename Token, typename F, typename Proj>
-        friend inline constexpr void tag_fallback_invoke(
-            sequential_find_if_t<ExPolicy>, std::size_t base_idx,
-            FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
-            Proj&& proj)
+        friend inline constexpr void
+        tag_fallback_invoke(sequential_find_if_t<ExPolicy>,
+            std::size_t base_idx, FwdIter part_begin, std::size_t part_count,
+            Token& tok, F&& f, Proj&& proj)
         {
             loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
                 [&f, &proj, &tok](auto& v, std::size_t i) -> void {
@@ -159,9 +159,9 @@ namespace pika::parallel::detail {
 
     template <typename ExPolicy, typename FwdIter, typename Token, typename F,
         typename Proj>
-    inline constexpr void sequential_find_if(std::size_t base_idx,
-        FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
-        Proj&& proj)
+    inline constexpr void
+    sequential_find_if(std::size_t base_idx, FwdIter part_begin,
+        std::size_t part_count, Token& tok, F&& f, Proj&& proj)
     {
         return sequential_find_if_t<ExPolicy>{}(base_idx, part_begin,
             part_count, tok, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
@@ -177,9 +177,9 @@ namespace pika::parallel::detail {
     private:
         template <typename Iterator, typename Sentinel, typename Pred,
             typename Proj = projection_identity>
-        friend inline constexpr Iterator tag_fallback_invoke(
-            sequential_find_if_not_t<ExPolicy>, Iterator first, Sentinel last,
-            Pred pred, Proj proj = Proj())
+        friend inline constexpr Iterator
+        tag_fallback_invoke(sequential_find_if_not_t<ExPolicy>, Iterator first,
+            Sentinel last, Pred pred, Proj proj = Proj())
         {
             for (; first != last; ++first)
             {
@@ -206,10 +206,10 @@ namespace pika::parallel::detail {
         }
 
         template <typename FwdIter, typename Token, typename F, typename Proj>
-        friend inline constexpr void tag_fallback_invoke(
-            sequential_find_if_not_t<ExPolicy>, std::size_t base_idx,
-            FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
-            Proj&& proj)
+        friend inline constexpr void
+        tag_fallback_invoke(sequential_find_if_not_t<ExPolicy>,
+            std::size_t base_idx, FwdIter part_begin, std::size_t part_count,
+            Token& tok, F&& f, Proj&& proj)
         {
             loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
                 [&f, &proj, &tok](auto& v, std::size_t i) -> void {
@@ -245,9 +245,9 @@ namespace pika::parallel::detail {
 
     template <typename ExPolicy, typename FwdIter, typename Token, typename F,
         typename Proj>
-    inline constexpr void sequential_find_if_not(std::size_t base_idx,
-        FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
-        Proj&& proj)
+    inline constexpr void
+    sequential_find_if_not(std::size_t base_idx, FwdIter part_begin,
+        std::size_t part_count, Token& tok, F&& f, Proj&& proj)
     {
         return sequential_find_if_not_t<ExPolicy>{}(base_idx, part_begin,
             part_count, tok, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));

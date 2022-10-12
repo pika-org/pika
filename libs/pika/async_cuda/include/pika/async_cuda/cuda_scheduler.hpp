@@ -133,8 +133,8 @@ namespace pika::cuda::experimental {
 #endif
 
             template <typename Receiver>
-            friend operation_state<Receiver> tag_invoke(
-                pika::execution::experimental::connect_t,
+            friend operation_state<Receiver>
+            tag_invoke(pika::execution::experimental::connect_t,
                 cuda_scheduler_sender&& s, Receiver&& receiver)
             {
                 return {
@@ -142,8 +142,8 @@ namespace pika::cuda::experimental {
             }
 
             template <typename Receiver>
-            friend operation_state<Receiver> tag_invoke(
-                pika::execution::experimental::connect_t,
+            friend operation_state<Receiver>
+            tag_invoke(pika::execution::experimental::connect_t,
                 cuda_scheduler_sender const& s, Receiver&& receiver)
             {
                 return {s.scheduler, PIKA_FORWARD(Receiver, receiver)};

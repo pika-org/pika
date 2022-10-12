@@ -199,8 +199,8 @@ namespace pika::ranges {
                 pika::traits::is_iterator<Iter2>::value
             )>
         // clang-format on
-        friend move_result<Iter1, Iter2> tag_fallback_invoke(
-            move_t, Iter1 first, Sent1 last, Iter2 dest)
+        friend move_result<Iter1, Iter2>
+        tag_fallback_invoke(move_t, Iter1 first, Sent1 last, Iter2 dest)
         {
             return pika::parallel::detail::transfer<
                 pika::parallel::detail::move_algo<Iter1, Iter2>>(

@@ -167,8 +167,8 @@ namespace pika {
         // Zip iterator has 3 iterators inside
         // Iter1, key type : Iter2, value type : Iter3, state type
         template <typename ZIter, typename iKey, typename iVal>
-        parallel::detail::in_out_result<iKey, iVal> make_pair_result(
-            ZIter zipiter, iKey key_start, iVal val_start)
+        parallel::detail::in_out_result<iKey, iVal>
+        make_pair_result(ZIter zipiter, iKey key_start, iVal val_start)
         {
             // the iterator we want is 'second' part of pair type (from copy_if)
             auto t = zipiter.out.get_iterator_tuple();

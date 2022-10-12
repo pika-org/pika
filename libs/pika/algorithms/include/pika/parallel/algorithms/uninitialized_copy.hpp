@@ -220,8 +220,8 @@ namespace pika::parallel::detail {
     /// \cond NOINTERNAL
     ///////////////////////////////////////////////////////////////////////
     template <typename InIter1, typename FwdIter2, typename Cond>
-    in_out_result<InIter1, FwdIter2> sequential_uninitialized_copy(
-        InIter1 first, FwdIter2 dest, Cond cond)
+    in_out_result<InIter1, FwdIter2>
+    sequential_uninitialized_copy(InIter1 first, FwdIter2 dest, Cond cond)
     {
         using value_type = typename std::iterator_traits<FwdIter2>::value_type;
 
@@ -246,9 +246,9 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename InIter1, typename InIter2>
-    in_out_result<InIter1, InIter2> sequential_uninitialized_copy_n(
-        InIter1 first, std::size_t count, InIter2 dest,
-        util::cancellation_token<util::detail::no_data>& tok)
+    in_out_result<InIter1, InIter2>
+    sequential_uninitialized_copy_n(InIter1 first, std::size_t count,
+        InIter2 dest, util::cancellation_token<util::detail::no_data>& tok)
     {
         using value_type = typename std::iterator_traits<InIter2>::value_type;
 
@@ -328,8 +328,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter1, typename Sent,
             typename FwdIter2>
-        static in_out_result<InIter1, FwdIter2> sequential(
-            ExPolicy, InIter1 first, Sent last, FwdIter2 dest)
+        static in_out_result<InIter1, FwdIter2>
+        sequential(ExPolicy, InIter1 first, Sent last, FwdIter2 dest)
         {
             return sequential_uninitialized_copy(
                 first, dest, [last](InIter1 first, FwdIter2) -> bool {
@@ -403,8 +403,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename InIter, typename FwdIter2>
-        static in_out_result<InIter, FwdIter2> sequential(
-            ExPolicy, InIter first, std::size_t count, FwdIter2 dest)
+        static in_out_result<InIter, FwdIter2>
+        sequential(ExPolicy, InIter first, std::size_t count, FwdIter2 dest)
         {
             using value_type =
                 typename std::iterator_traits<FwdIter2>::value_type;

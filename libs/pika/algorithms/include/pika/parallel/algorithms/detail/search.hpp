@@ -40,9 +40,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter2, typename Sent2,
             typename Pred, typename Proj1, typename Proj2>
-        static FwdIter sequential(ExPolicy, FwdIter first, Sent last,
-            FwdIter2 s_first, Sent2 s_last, Pred&& op, Proj1&& proj1,
-            Proj2&& proj2)
+        static FwdIter
+        sequential(ExPolicy, FwdIter first, Sent last, FwdIter2 s_first,
+            Sent2 s_last, Pred&& op, Proj1&& proj1, Proj2&& proj2)
         {
             for (;; ++first)
             {
@@ -62,8 +62,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter2, typename Sent2,
             typename Pred, typename Proj1, typename Proj2>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, Sent last, FwdIter2 s_first,
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, FwdIter2 s_first,
             Sent2 s_last, Pred&& op, Proj1&& proj1, Proj2&& proj2)
         {
             using reference = typename std::iterator_traits<FwdIter>::reference;
@@ -159,9 +159,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter2, typename Pred,
             typename Proj1, typename Proj2>
-        static FwdIter sequential(ExPolicy, FwdIter first, std::size_t count,
-            FwdIter2 s_first, FwdIter2 s_last, Pred&& op, Proj1&& proj1,
-            Proj2&& proj2)
+        static FwdIter
+        sequential(ExPolicy, FwdIter first, std::size_t count, FwdIter2 s_first,
+            FwdIter2 s_last, Pred&& op, Proj1&& proj1, Proj2&& proj2)
         {
             return std::search(first, std::next(first, count), s_first, s_last,
                 compare_projected<Pred&, Proj1&, Proj2&>(op, proj1, proj2));
@@ -169,8 +169,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter2, typename Pred,
             typename Proj1, typename Proj2>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, std::size_t count,
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, std::size_t count,
             FwdIter2 s_first, FwdIter2 s_last, Pred&& op, Proj1&& proj1,
             Proj2&& proj2)
         {

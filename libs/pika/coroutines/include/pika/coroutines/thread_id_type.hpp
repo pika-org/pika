@@ -132,8 +132,8 @@ namespace pika::threads::detail {
         }
 
         template <typename Char, typename Traits>
-        friend std::basic_ostream<Char, Traits>& operator<<(
-            std::basic_ostream<Char, Traits>& os, thread_id const& id)
+        friend std::basic_ostream<Char, Traits>&
+        operator<<(std::basic_ostream<Char, Traits>& os, thread_id const& id)
         {
             os << id.get();
             return os;

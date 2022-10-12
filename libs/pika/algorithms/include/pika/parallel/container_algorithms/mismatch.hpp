@@ -331,9 +331,9 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend mismatch_result<Iter1, Iter2> tag_fallback_invoke(mismatch_t,
-            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-            Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
+        friend mismatch_result<Iter1, Iter2>
+        tag_fallback_invoke(mismatch_t, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
             Proj2&& proj2 = Proj2())
         {
             static_assert((pika::traits::is_forward_iterator<Iter1>::value),

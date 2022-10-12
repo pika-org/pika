@@ -94,9 +94,9 @@ namespace pika { namespace util {
             }
 
             template <typename T, typename U>
-            bool check_not_equal(char const* file, int line,
-                char const* function, counter_type c, T const& t, U const& u,
-                char const* msg)
+            bool
+            check_not_equal(char const* file, int line, char const* function,
+                counter_type c, T const& t, U const& u, char const* msg)
             {
                 increment_tests(c);
 
@@ -133,9 +133,9 @@ namespace pika { namespace util {
             }
 
             template <typename T, typename U>
-            bool check_less_equal(char const* file, int line,
-                char const* function, counter_type c, T const& t, U const& u,
-                char const* msg)
+            bool
+            check_less_equal(char const* file, int line, char const* function,
+                counter_type c, T const& t, U const& u, char const* msg)
             {
                 increment_tests(c);
 

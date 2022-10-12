@@ -251,8 +251,8 @@ namespace pika::this_thread::experimental {
                 pika::execution::experimental::is_sender_v<Sender>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            sync_wait_t, Sender&& sender)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(sync_wait_t, Sender&& sender)
         {
             using receiver_type = sync_wait_detail::sync_wait_receiver<Sender>;
             using state_type = typename receiver_type::shared_state;

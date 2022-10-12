@@ -31,8 +31,8 @@ namespace pika { namespace util {
     public:
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator1, typename Iterator2>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static bool equal(
-            Iterator1 const& lhs, Iterator2 const& rhs)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static bool
+        equal(Iterator1 const& lhs, Iterator2 const& rhs)
         {
             return lhs.equal(rhs);
         }
@@ -53,16 +53,16 @@ namespace pika { namespace util {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Reference, typename Iterator>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Reference dereference(
-            Iterator const& it)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Reference
+        dereference(Iterator const& it)
         {
             return it.dereference();
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Iterator, typename Distance>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void advance(
-            Iterator& it, Distance n)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static void
+        advance(Iterator& it, Distance n)
         {
             it.advance(n);
         }

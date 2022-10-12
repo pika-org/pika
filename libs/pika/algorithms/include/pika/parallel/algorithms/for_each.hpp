@@ -335,8 +335,8 @@ namespace pika::parallel::detail {
         for_each_iteration& operator=(for_each_iteration&&) = default;
 
         template <typename Iter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-            Iter part_begin, std::size_t part_size, std::size_t)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void
+        operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             loop_n<execution_policy_type>(part_begin, part_size,
                 for_each_invoke_projected<fun_type, proj_type>{f_, proj_});
@@ -383,8 +383,8 @@ namespace pika::parallel::detail {
         for_each_iteration& operator=(for_each_iteration&&) = default;
 
         template <typename Iter>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-            Iter part_begin, std::size_t part_size, std::size_t)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void
+        operator()(Iter part_begin, std::size_t part_size, std::size_t)
         {
             loop_n_ind<execution_policy_type>(part_begin, part_size, f_);
         }
@@ -527,8 +527,8 @@ namespace pika {
                 pika::traits::is_iterator<InIter>::value
             )>
         // clang-format on
-        friend F tag_fallback_invoke(
-            pika::for_each_t, InIter first, InIter last, F&& f)
+        friend F
+        tag_fallback_invoke(pika::for_each_t, InIter first, InIter last, F&& f)
         {
             static_assert((pika::traits::is_input_iterator<InIter>::value),
                 "Requires at least input iterator.");
@@ -583,8 +583,8 @@ namespace pika {
                 pika::traits::is_input_iterator<InIter>::value
             )>
         // clang-format on
-        friend InIter tag_fallback_invoke(
-            pika::for_each_n_t, InIter first, Size count, F&& f)
+        friend InIter
+        tag_fallback_invoke(pika::for_each_n_t, InIter first, Size count, F&& f)
         {
             static_assert((pika::traits::is_input_iterator<InIter>::value),
                 "Requires at least input iterator.");

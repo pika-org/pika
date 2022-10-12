@@ -247,9 +247,9 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent2, InIter2>::value
             )>
         // clang-format on
-        friend swap_ranges_result<InIter1, InIter2> tag_fallback_invoke(
-            pika::ranges::swap_ranges_t, InIter1 first1, Sent1 last1,
-            InIter2 first2, Sent2 last2)
+        friend swap_ranges_result<InIter1, InIter2>
+        tag_fallback_invoke(pika::ranges::swap_ranges_t, InIter1 first1,
+            Sent1 last1, InIter2 first2, Sent2 last2)
         {
             static_assert(pika::traits::is_input_iterator_v<InIter1>,
                 "Requires at least input iterator.");

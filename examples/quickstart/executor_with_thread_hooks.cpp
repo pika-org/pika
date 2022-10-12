@@ -107,8 +107,8 @@ namespace executor_example {
         }
 
         template <typename F, typename Future, typename... Ts>
-        decltype(auto) then_execute(
-            F&& f, Future&& predecessor, Ts&&... ts) const
+        decltype(auto)
+        then_execute(F&& f, Future&& predecessor, Ts&&... ts) const
         {
             return pika::parallel::execution::then_execute(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)},
@@ -126,8 +126,8 @@ namespace executor_example {
 
         // BulkOneWayExecutor interface
         template <typename F, typename S, typename... Ts>
-        decltype(auto) bulk_sync_execute(
-            F&& f, S const& shape, Ts&&... ts) const
+        decltype(auto)
+        bulk_sync_execute(F&& f, S const& shape, Ts&&... ts) const
         {
             return pika::parallel::execution::bulk_sync_execute(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)}, shape,
@@ -136,8 +136,8 @@ namespace executor_example {
 
         // BulkTwoWayExecutor interface
         template <typename F, typename S, typename... Ts>
-        decltype(auto) bulk_async_execute(
-            F&& f, S const& shape, Ts&&... ts) const
+        decltype(auto)
+        bulk_async_execute(F&& f, S const& shape, Ts&&... ts) const
         {
             return pika::parallel::execution::bulk_async_execute(exec_,
                 hook_wrapper<F>{*this, std::forward<F>(f)}, shape,

@@ -150,8 +150,8 @@ namespace pika::when_all_vector_detail {
                 std::size_t const i;
 
                 template <typename Error>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_error_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_error_t,
                     when_all_vector_receiver&& r, Error&& error) noexcept
                 {
                     if (!r.op_state.set_stopped_error_called.exchange(true))
@@ -179,8 +179,8 @@ namespace pika::when_all_vector_detail {
                 };
 
                 template <typename... Ts>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_value_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_value_t,
                     when_all_vector_receiver&& r, Ts&&... ts) noexcept
                 {
                     if (!r.op_state.set_stopped_error_called)
@@ -384,8 +384,8 @@ namespace pika::execution::experimental {
     {
     private:
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            when_all_vector_t, std::vector<Sender>&& senders)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(when_all_vector_t, std::vector<Sender>&& senders)
         {
             return when_all_vector_detail::when_all_vector_sender<Sender>{
                 PIKA_MOVE(senders)};

@@ -60,9 +60,9 @@ namespace pika::ranges {
     }
 
     template <typename Iter, typename Sent>
-    constexpr inline Iter next_(Iter first,
-        typename std::iterator_traits<Iter>::difference_type n, Sent bound,
-        std::true_type, std::true_type)
+    constexpr inline Iter
+    next_(Iter first, typename std::iterator_traits<Iter>::difference_type n,
+        Sent bound, std::true_type, std::true_type)
     {
         if (pika::parallel::detail::distance(first, bound) < size_t(n))
         {

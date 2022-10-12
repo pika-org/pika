@@ -60,8 +60,8 @@ namespace test {
         {
         }
 
-        PIKA_HOST_DEVICE decorated_iterator(
-            BaseIterator base, std::function<void()> f)
+        PIKA_HOST_DEVICE
+        decorated_iterator(BaseIterator base, std::function<void()> f)
           : base_type(base)
           , m_callback(f)
         {

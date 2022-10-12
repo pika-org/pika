@@ -166,8 +166,8 @@ namespace pika::schedule_from_detail {
                 operation_state& op_state;
 
                 template <typename Error>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_error_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_error_t,
                     predecessor_sender_receiver&& r, Error&& error) noexcept
                 {
                     r.op_state.set_error_predecessor_sender(
@@ -200,8 +200,8 @@ namespace pika::schedule_from_detail {
                     pika::detail::monostate>;
 
                 template <typename... Ts>
-                friend auto tag_invoke(
-                    pika::execution::experimental::set_value_t,
+                friend auto
+                tag_invoke(pika::execution::experimental::set_value_t,
                     predecessor_sender_receiver&& r, Ts&&... ts) noexcept
                     -> decltype(std::declval<value_type>()
                                     .template emplace<
@@ -260,8 +260,8 @@ namespace pika::schedule_from_detail {
                 operation_state& op_state;
 
                 template <typename Error>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_error_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_error_t,
                     scheduler_sender_receiver&& r, Error&& error) noexcept
                 {
                     r.op_state.set_error_scheduler_sender(
@@ -335,8 +335,8 @@ namespace pika::schedule_from_detail {
         };
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(
-            pika::execution::experimental::connect_t,
+        friend operation_state<Receiver>
+        tag_invoke(pika::execution::experimental::connect_t,
             schedule_from_sender_type&& s, Receiver&& receiver)
         {
             return {PIKA_MOVE(s.predecessor_sender), PIKA_MOVE(s.scheduler),
@@ -344,8 +344,8 @@ namespace pika::schedule_from_detail {
         }
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(
-            pika::execution::experimental::connect_t,
+        friend operation_state<Receiver>
+        tag_invoke(pika::execution::experimental::connect_t,
             schedule_from_sender_type& s, Receiver&& receiver)
         {
             return {s.predecessor_sender, s.scheduler,

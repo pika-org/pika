@@ -186,8 +186,8 @@ constexpr bool unspecialized(...)
 }
 
 template <typename Sender>
-constexpr bool unspecialized(
-    typename ex::sender_traits<Sender>::__unspecialized*)
+constexpr bool
+unspecialized(typename ex::sender_traits<Sender>::__unspecialized*)
 {
     return true;
 }

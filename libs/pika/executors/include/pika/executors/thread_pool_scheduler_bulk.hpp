@@ -160,8 +160,8 @@ namespace pika::thread_pool_bulk_detail {
                 operation_state* op_state;
 
                 template <typename E>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_error_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_error_t,
                     bulk_receiver&& r, E&& e) noexcept
                 {
                     pika::execution::experimental::set_error(
@@ -449,8 +449,8 @@ namespace pika::thread_pool_bulk_detail {
                     pika::traits::range_iterator_t<Shape>>;
 
                 template <typename... Ts>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_value_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_value_t,
                     bulk_receiver&& r, Ts&&... ts) noexcept
                 {
                     // Don't spawn tasks if there is no work to be done

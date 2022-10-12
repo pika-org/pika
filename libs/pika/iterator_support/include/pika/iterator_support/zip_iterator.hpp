@@ -491,8 +491,8 @@ namespace pika { namespace util {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename... Ts>
-    PIKA_HOST_DEVICE zip_iterator<std::decay_t<Ts>...> make_zip_iterator(
-        Ts&&... vs)
+    PIKA_HOST_DEVICE zip_iterator<std::decay_t<Ts>...>
+    make_zip_iterator(Ts&&... vs)
     {
         using result_type = zip_iterator<std::decay_t<Ts>...>;
 
@@ -529,8 +529,8 @@ namespace pika { namespace traits {
                 typename F::template apply<Ts>, Ts>::type...>;
 
             template <std::size_t... Is, typename... Ts_>
-            static result_type call(
-                util::detail::index_pack<Is...>, std::tuple<Ts_...> const& t)
+            static result_type
+            call(util::detail::index_pack<Is...>, std::tuple<Ts_...> const& t)
             {
                 return std::make_tuple(
                     typename F::template apply<Ts>()(std::get<Is>(t))...);

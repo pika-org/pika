@@ -21,8 +21,8 @@ namespace pika {
     {
     private:
         template <typename F, typename... Ts>
-        static void invoke(
-            std::false_type, F&& f, stop_token&& /* st */, Ts&&... ts)
+        static void
+        invoke(std::false_type, F&& f, stop_token&& /* st */, Ts&&... ts)
         {
             // started thread does not expect a stop token:
             PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);

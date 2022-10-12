@@ -77,8 +77,8 @@ namespace test {
     };
 
     template <typename Iterator, typename Transformer>
-    inline stencil3_iterator<Iterator, Transformer> make_stencil3_iterator(
-        Iterator const& it, Transformer const& t)
+    inline stencil3_iterator<Iterator, Transformer>
+    make_stencil3_iterator(Iterator const& it, Transformer const& t)
     {
         return stencil3_iterator<Iterator, Transformer>(it, t);
     }
@@ -95,8 +95,8 @@ namespace test {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator>
-    inline stencil3_iterator<Iterator> make_stencil3_iterator(
-        Iterator const& it)
+    inline stencil3_iterator<Iterator>
+    make_stencil3_iterator(Iterator const& it)
     {
         return stencil3_iterator<Iterator>(it);
     }

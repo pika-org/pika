@@ -94,8 +94,8 @@ namespace pika { namespace lcos { namespace local {
     protected:
         /// \brief get a future allowing to wait for the gate to fire
         template <typename OuterLock>
-        pika::future<void> get_future(OuterLock& outer_lock,
-            std::size_t count = std::size_t(-1),
+        pika::future<void>
+        get_future(OuterLock& outer_lock, std::size_t count = std::size_t(-1),
             std::size_t* generation_value = nullptr,
             error_code& ec = pika::throws)
         {
@@ -184,8 +184,8 @@ namespace pika { namespace lcos { namespace local {
     protected:
         /// \brief Set the data which has to go into the segment \a which.
         template <typename OuterLock>
-        bool set(
-            std::size_t which, OuterLock outer_lock, error_code& ec = throws)
+        bool
+        set(std::size_t which, OuterLock outer_lock, error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(outer_lock);
 
@@ -267,8 +267,8 @@ namespace pika { namespace lcos { namespace local {
             }
 
             template <typename Condition>
-            pika::future<void> get_future(
-                Condition&& func, error_code& ec = pika::throws)
+            pika::future<void>
+            get_future(Condition&& func, error_code& ec = pika::throws)
             {
                 return (*it_)->get_future(PIKA_FORWARD(Condition, func), ec);
             }
@@ -401,8 +401,8 @@ namespace pika { namespace lcos { namespace local {
         }
 
         template <typename Lock>
-        pika::future<void> get_future(Lock& l,
-            std::size_t count = std::size_t(-1),
+        pika::future<void>
+        get_future(Lock& l, std::size_t count = std::size_t(-1),
             std::size_t* generation_value = nullptr,
             error_code& ec = pika::throws)
         {
@@ -410,8 +410,8 @@ namespace pika { namespace lcos { namespace local {
         }
 
         template <typename Lock>
-        pika::shared_future<void> get_shared_future(Lock& l,
-            std::size_t count = std::size_t(-1),
+        pika::shared_future<void>
+        get_shared_future(Lock& l, std::size_t count = std::size_t(-1),
             std::size_t* generation_value = nullptr,
             error_code& ec = pika::throws)
         {

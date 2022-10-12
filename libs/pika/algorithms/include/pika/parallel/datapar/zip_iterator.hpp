@@ -32,8 +32,8 @@ namespace pika::parallel::detail {
     struct is_data_aligned_impl<pika::util::zip_iterator<Iter...>>
     {
         template <std::size_t... Is>
-        static PIKA_FORCEINLINE bool call(
-            pika::util::zip_iterator<Iter...> const& it,
+        static PIKA_FORCEINLINE bool
+        call(pika::util::zip_iterator<Iter...> const& it,
             pika::util::detail::index_pack<Is...>)
         {
             auto const& t = it.get_iterator_tuple();
@@ -96,8 +96,8 @@ namespace pika::parallel::traits::detail {
         }
 
         template <typename... Iter>
-        static value_type unaligned(
-            pika::util::zip_iterator<Iter...> const& iter)
+        static value_type
+        unaligned(pika::util::zip_iterator<Iter...> const& iter)
         {
             return traits::detail::unaligned_pack<value_type>(
                 iter, pika::util::detail::make_index_pack<sizeof...(Iter)>());
@@ -105,8 +105,8 @@ namespace pika::parallel::traits::detail {
     };
 
     template <typename Tuple, typename... Iter, std::size_t... Is>
-    void aligned_pack(Tuple& value,
-        pika::util::zip_iterator<Iter...> const& iter,
+    void
+    aligned_pack(Tuple& value, pika::util::zip_iterator<Iter...> const& iter,
         pika::util::detail::index_pack<Is...>)
     {
         auto const& t = iter.get_iterator_tuple();
@@ -119,8 +119,8 @@ namespace pika::parallel::traits::detail {
     }
 
     template <typename Tuple, typename... Iter, std::size_t... Is>
-    void unaligned_pack(Tuple& value,
-        pika::util::zip_iterator<Iter...> const& iter,
+    void
+    unaligned_pack(Tuple& value, pika::util::zip_iterator<Iter...> const& iter,
         pika::util::detail::index_pack<Is...>)
     {
         auto const& t = iter.get_iterator_tuple();
@@ -136,16 +136,16 @@ namespace pika::parallel::traits::detail {
     struct vector_pack_store<std::tuple<Vector...>, ValueType>
     {
         template <typename V, typename... Iter>
-        static void aligned(
-            V& value, pika::util::zip_iterator<Iter...> const& iter)
+        static void
+        aligned(V& value, pika::util::zip_iterator<Iter...> const& iter)
         {
             traits::detail::aligned_pack(value, iter,
                 pika::util::detail::make_index_pack_t<sizeof...(Iter)>());
         }
 
         template <typename V, typename... Iter>
-        static void unaligned(
-            V& value, pika::util::zip_iterator<Iter...> const& iter)
+        static void
+        unaligned(V& value, pika::util::zip_iterator<Iter...> const& iter)
         {
             traits::detail::unaligned_pack(value, iter,
                 pika::util::detail::make_index_pack<sizeof...(Iter)>());

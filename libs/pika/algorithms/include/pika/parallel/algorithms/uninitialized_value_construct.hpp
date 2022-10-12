@@ -298,8 +298,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Sent>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, Sent last)
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last)
         {
             return parallel_sequential_uninitialized_value_construct_n(
                 PIKA_FORWARD(ExPolicy, policy), first,
@@ -355,8 +355,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, std::size_t count)
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, std::size_t count)
         {
             return parallel_sequential_uninitialized_value_construct_n(
                 PIKA_FORWARD(ExPolicy, policy), first, count);

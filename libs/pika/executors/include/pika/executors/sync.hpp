@@ -26,8 +26,8 @@ namespace pika { namespace detail {
         std::enable_if_t<!detail::is_action_v<Func>>>
     {
         template <typename Policy_, typename F, typename... Ts>
-        PIKA_FORCEINLINE static auto call(
-            Policy_&& launch_policy, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static auto
+        call(Policy_&& launch_policy, F&& f, Ts&&... ts)
             -> decltype(sync_launch_policy_dispatch<std::decay_t<F>>::call(
                 PIKA_FORWARD(Policy_, launch_policy), PIKA_FORWARD(F, f),
                 PIKA_FORWARD(Ts, ts)...))
@@ -42,8 +42,8 @@ namespace pika { namespace detail {
     struct sync_dispatch<Policy, std::enable_if_t<is_launch_policy_v<Policy>>>
     {
         template <typename Policy_, typename F, typename... Ts>
-        PIKA_FORCEINLINE static auto call(
-            Policy_&& launch_policy, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE static auto
+        call(Policy_&& launch_policy, F&& f, Ts&&... ts)
             -> decltype(sync_dispatch_launch_policy_helper<
                 std::decay_t<F>>::call(PIKA_FORWARD(Policy_, launch_policy),
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))

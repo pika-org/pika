@@ -137,8 +137,8 @@ namespace pika { namespace util { namespace detail {
             // We overload with one argument here so Clang and GCC don't
             // have any issues with overloading against zero arguments.
             template <typename First, typename... T>
-            constexpr Type<First, T...> operator()(
-                First&& first, T&&... args) const
+            constexpr Type<First, T...>
+            operator()(First&& first, T&&... args) const
             {
                 return Type<First, T...>{
                     PIKA_FORWARD(First, first), PIKA_FORWARD(T, args)...};
@@ -268,8 +268,8 @@ namespace pika { namespace util { namespace detail {
 
         /// Converts an empty tuple to void
         template <typename First, typename... Rest>
-        constexpr std::tuple<First, Rest...> voidify_empty_tuple(
-            std::tuple<First, Rest...> val)
+        constexpr std::tuple<First, Rest...>
+        voidify_empty_tuple(std::tuple<First, Rest...> val)
         {
             return val;
         }

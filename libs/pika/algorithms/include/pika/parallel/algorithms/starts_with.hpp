@@ -32,8 +32,8 @@
 
 namespace pika::parallel::detail {
     template <typename FwdIter1, typename FwdIter2, typename Sent2>
-    bool get_starts_with_result(
-        in_in_result<FwdIter1, FwdIter2>&& p, Sent2 last2)
+    bool
+    get_starts_with_result(in_in_result<FwdIter1, FwdIter2>&& p, Sent2 last2)
     {
         return p.in2 == last2;
     }
@@ -57,9 +57,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Pred, typename Proj1,
             typename Proj2>
-        static bool sequential(ExPolicy, Iter1 first1, Sent1 last1,
-            Iter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-            Proj2&& proj2)
+        static bool
+        sequential(ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, Pred&& pred, Proj1&& proj1, Proj2&& proj2)
         {
             auto dist1 = (distance) (first1, last1);
             auto dist2 = (distance) (first2, last2);

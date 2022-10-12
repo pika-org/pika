@@ -177,8 +177,8 @@ namespace pika { namespace program_options {
         Read from given stream.
     */
     template <class Char>
-    PIKA_EXPORT basic_parsed_options<Char> parse_config_file(
-        std::basic_istream<Char>&, const options_description&,
+    PIKA_EXPORT basic_parsed_options<Char>
+    parse_config_file(std::basic_istream<Char>&, const options_description&,
         bool allow_unregistered = false);
 
     /** Parse a config file.
@@ -187,8 +187,8 @@ namespace pika { namespace program_options {
         passed to the file stream.
     */
     template <class Char = char>
-    PIKA_EXPORT basic_parsed_options<Char> parse_config_file(
-        const char* filename, const options_description&,
+    PIKA_EXPORT basic_parsed_options<Char>
+    parse_config_file(const char* filename, const options_description&,
         bool allow_unregistered = false);
 
     /** Controls if the 'collect_unregistered' function should
@@ -206,8 +206,8 @@ namespace pika { namespace program_options {
         options.
     */
     template <class Char>
-    std::vector<std::basic_string<Char>> collect_unrecognized(
-        const std::vector<basic_option<Char>>& options,
+    std::vector<std::basic_string<Char>>
+    collect_unrecognized(const std::vector<basic_option<Char>>& options,
         enum collect_unrecognized_mode mode);
 
     /** Parse environment.

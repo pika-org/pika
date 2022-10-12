@@ -348,8 +348,8 @@ namespace pika { namespace execution { namespace experimental {
         }
 
         template <typename Sender>
-        constexpr bool has_error_types(
-            typename Sender::template error_types<variant_mock>*)
+        constexpr bool
+        has_error_types(typename Sender::template error_types<variant_mock>*)
         {
             return true;
         }

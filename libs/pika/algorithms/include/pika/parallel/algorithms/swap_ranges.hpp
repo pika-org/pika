@@ -160,8 +160,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2>
-        static constexpr FwdIter2 sequential(
-            ExPolicy, FwdIter1 first1, Sent last1, FwdIter2 first2)
+        static constexpr FwdIter2
+        sequential(ExPolicy, FwdIter1 first1, Sent last1, FwdIter2 first2)
         {
             while (first1 != last1)
             {
@@ -176,8 +176,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent1,
             typename FwdIter2, typename Sent2>
-        static constexpr swap_ranges_result<FwdIter1, FwdIter2> sequential(
-            ExPolicy, FwdIter1 first1, Sent1 last1, FwdIter2 first2,
+        static constexpr swap_ranges_result<FwdIter1, FwdIter2>
+        sequential(ExPolicy, FwdIter1 first1, Sent1 last1, FwdIter2 first2,
             Sent2 last2)
         {
             while (first1 != last1 && first2 != last2)

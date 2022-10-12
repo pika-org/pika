@@ -175,9 +175,9 @@ namespace pika { namespace util {
         }
 
         template <typename OtherIncrementable>
-        PIKA_HOST_DEVICE typename base_type::difference_type distance_to(
-            counting_iterator<OtherIncrementable, CategoryOrTraversal,
-                Difference> const& y) const
+        PIKA_HOST_DEVICE typename base_type::difference_type
+        distance_to(counting_iterator<OtherIncrementable, CategoryOrTraversal,
+            Difference> const& y) const
         {
             using difference_type = typename base_type::difference_type;
             return static_cast<difference_type>(y.base()) -

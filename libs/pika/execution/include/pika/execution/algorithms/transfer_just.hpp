@@ -23,8 +23,8 @@ namespace pika { namespace execution { namespace experimental {
     {
     private:
         template <typename Scheduler, typename... Ts>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            transfer_just_t, Scheduler&& scheduler, Ts&&... ts)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(transfer_just_t, Scheduler&& scheduler, Ts&&... ts)
         {
             return transfer(just(PIKA_FORWARD(Ts, ts)...),
                 PIKA_FORWARD(Scheduler, scheduler));

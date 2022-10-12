@@ -20,8 +20,8 @@ namespace pika::parallel::detail {
 
     // provide implementation of std::rotate supporting iterators/sentinels
     template <typename Iter, typename Sent>
-    inline constexpr void sequential_rotate_helper(
-        Iter first, Iter new_first, Sent last)
+    inline constexpr void
+    sequential_rotate_helper(Iter first, Iter new_first, Sent last)
     {
         Iter next = new_first;
         while (first != next)
@@ -43,8 +43,8 @@ namespace pika::parallel::detail {
     }
 
     template <typename Iter, typename Sent>
-    inline constexpr in_out_result<Iter, Sent> sequential_rotate(
-        Iter first, Iter new_first, Sent last)
+    inline constexpr in_out_result<Iter, Sent>
+    sequential_rotate(Iter first, Iter new_first, Sent last)
     {
         if (first != new_first && new_first != last)
             sequential_rotate_helper(first, new_first, last);

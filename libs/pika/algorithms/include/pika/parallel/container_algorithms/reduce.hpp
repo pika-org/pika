@@ -598,8 +598,8 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend T tag_fallback_invoke(
-            pika::ranges::reduce_t, Rng&& rng, T init, F&& f)
+        friend T
+        tag_fallback_invoke(pika::ranges::reduce_t, Rng&& rng, T init, F&& f)
         {
             static_assert(
                 pika::traits::is_input_iterator<typename pika::traits::

@@ -568,8 +568,8 @@ namespace pika::ranges {
                 pika::traits::is_iterator<Iter2>::value
             )>
         // clang-format on
-        friend T tag_fallback_invoke(
-            transform_reduce_t, Rng&& rng, Iter2 first2, T init)
+        friend T
+        tag_fallback_invoke(transform_reduce_t, Rng&& rng, Iter2 first2, T init)
         {
             using iterator_type =
                 typename pika::traits::range_iterator<Rng>::type;

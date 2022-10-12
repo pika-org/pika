@@ -65,8 +65,8 @@ namespace pika {
     ///
     template <typename FwdIter, typename Sent, typename F,
         typename Proj = pika::parallel::detail::projection_identity>
-    FwdIter min_element(
-        FwdIter first, Sent last, F&& f = F(), Proj&& proj = Proj());
+    FwdIter
+    min_element(FwdIter first, Sent last, F&& f = F(), Proj&& proj = Proj());
 
     ///////////////////////////////////////////////////////////////////////////
     /// Finds the smallest element in the range [first, last) using the given
@@ -115,8 +115,8 @@ namespace pika {
     ///
     template <typename Rng, typename F,
         typename Proj = pika::parallel::detail::projection_identity>
-    pika::traits::range_iterator_t<Rng> min_element(
-        Rng&& rng, F&& f = F(), Proj&& proj = Proj());
+    pika::traits::range_iterator_t<Rng>
+    min_element(Rng&& rng, F&& f = F(), Proj&& proj = Proj());
 
     ///////////////////////////////////////////////////////////////////////////
     /// Finds the smallest element in the range [first, last) using the given
@@ -315,8 +315,8 @@ namespace pika {
     ///
     template <typename FwdIter, typename Sent, typename F,
         typename Proj = pika::parallel::detail::projection_identity>
-    FwdIter max_element(
-        FwdIter first, Sent sent, F&& f = F(), Proj&& proj = Proj());
+    FwdIter
+    max_element(FwdIter first, Sent sent, F&& f = F(), Proj&& proj = Proj());
 
     ///////////////////////////////////////////////////////////////////////////
     /// Finds the greatest element in the range [first, last) using the given
@@ -366,8 +366,8 @@ namespace pika {
     ///
     template <typename Rng, typename F,
         typename Proj = pika::parallel::detail::projection_identity>
-    pika::traits::range_iterator_t<Rng> max_element(
-        Rng&& rng, F&& f = F(), Proj&& proj = Proj());
+    pika::traits::range_iterator_t<Rng>
+    max_element(Rng&& rng, F&& f = F(), Proj&& proj = Proj());
 
     ///////////////////////////////////////////////////////////////////////////
     /// Finds the greatest element in the range [first, last) using the given
@@ -572,8 +572,8 @@ namespace pika {
     ///
     template <typename FwdIter, typename Sent, typename F,
         typename Proj = pika::parallel::detail::projection_identity>
-    minmax_element_result<FwdIter, FwdIter> minmax_element(
-        FwdIter first, Sent last, F&& f = F(), Proj&& proj = Proj());
+    minmax_element_result<FwdIter, FwdIter>
+    minmax_element(FwdIter first, Sent last, F&& f = F(), Proj&& proj = Proj());
 
     ///////////////////////////////////////////////////////////////////////////
     /// Finds the greatest element in the range [first, last) using the given
@@ -849,8 +849,8 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend pika::traits::range_iterator_t<Rng> tag_fallback_invoke(
-            pika::ranges::min_element_t, Rng&& rng, F&& f = F(),
+        friend pika::traits::range_iterator_t<Rng>
+        tag_fallback_invoke(pika::ranges::min_element_t, Rng&& rng, F&& f = F(),
             Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_forward_iterator_v<
@@ -970,8 +970,8 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend pika::traits::range_iterator_t<Rng> tag_fallback_invoke(
-            pika::ranges::max_element_t, Rng&& rng, F&& f = F(),
+        friend pika::traits::range_iterator_t<Rng>
+        tag_fallback_invoke(pika::ranges::max_element_t, Rng&& rng, F&& f = F(),
             Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_forward_iterator_v<
@@ -1066,9 +1066,9 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend minmax_element_result<FwdIter> tag_fallback_invoke(
-            pika::ranges::minmax_element_t, FwdIter first, Sent last,
-            F&& f = F(), Proj&& proj = Proj())
+        friend minmax_element_result<FwdIter>
+        tag_fallback_invoke(pika::ranges::minmax_element_t, FwdIter first,
+            Sent last, F&& f = F(), Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter>),
                 "Required at least forward iterator.");

@@ -256,8 +256,8 @@ namespace pika { namespace lcos { namespace local {
         }
 
         template <typename Lock>
-        cv_status wait_until(Lock& lock,
-            pika::chrono::steady_time_point const& abs_time,
+        cv_status
+        wait_until(Lock& lock, pika::chrono::steady_time_point const& abs_time,
             error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(lock);
@@ -290,9 +290,9 @@ namespace pika { namespace lcos { namespace local {
         }
 
         template <typename Lock, typename Predicate>
-        bool wait_until(Lock& lock,
-            pika::chrono::steady_time_point const& abs_time, Predicate pred,
-            error_code& ec = throws)
+        bool
+        wait_until(Lock& lock, pika::chrono::steady_time_point const& abs_time,
+            Predicate pred, error_code& ec = throws)
         {
             PIKA_ASSERT_OWNS_LOCK(lock);
 
@@ -305,8 +305,8 @@ namespace pika { namespace lcos { namespace local {
         }
 
         template <typename Lock>
-        cv_status wait_for(Lock& lock,
-            pika::chrono::steady_duration const& rel_time,
+        cv_status
+        wait_for(Lock& lock, pika::chrono::steady_duration const& rel_time,
             error_code& ec = throws)
         {
             return wait_until(lock, rel_time.from_now(), ec);

@@ -41,8 +41,8 @@ namespace pika {
     /// \returns  The \a replace algorithm returns a \a void.
     ///
     template <typename Initer, typename T>
-    void replace(
-        InIter first, InIter last, T const& old_value, T const& new_value);
+    void
+    replace(InIter first, InIter last, T const& old_value, T const& new_value);
 
     /// Replaces all elements satisfying specific criteria with \a new_value
     /// in the range [first, last).
@@ -88,8 +88,8 @@ namespace pika {
     ///           returns \a void otherwise.
     ///
     template <typename ExPolicy, typename FwdIter, typename T>
-    typename parallel::detail::algorithm_result<ExPolicy, void>::type replace(
-        ExPolicy&& policy, FwdIter first, FwdIter last, T const& old_value,
+    typename parallel::detail::algorithm_result<ExPolicy, void>::type
+    replace(ExPolicy&& policy, FwdIter first, FwdIter last, T const& old_value,
         T const& new_value);
 
     /// Replaces all elements satisfying specific criteria (for which predicate
@@ -527,9 +527,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter, typename T1, typename T2,
             typename Proj>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, FwdIter last, T1 const& old_value,
-            T2 const& new_value, Proj&& proj)
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, FwdIter last,
+            T1 const& old_value, T2 const& new_value, Proj&& proj)
         {
             using type = typename std::iterator_traits<FwdIter>::value_type;
 
@@ -587,8 +587,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename F, typename T, typename Proj>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, Sent last, F&& f,
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, F&& f,
             T const& new_value, Proj&& proj)
         {
             using type = typename std::iterator_traits<FwdIter>::value_type;
@@ -614,9 +614,9 @@ namespace pika::parallel::detail {
     // sequential replace_copy
     template <typename InIter, typename Sent, typename OutIter, typename T,
         typename Proj>
-    inline in_out_result<InIter, OutIter> sequential_replace_copy(InIter first,
-        Sent sent, OutIter dest, T const& old_value, T const& new_value,
-        Proj&& proj)
+    inline in_out_result<InIter, OutIter>
+    sequential_replace_copy(InIter first, Sent sent, OutIter dest,
+        T const& old_value, T const& new_value, Proj&& proj)
     {
         for (/* */; first != sent; ++first)
         {
@@ -638,9 +638,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter, typename T, typename Proj>
-        static in_out_result<InIter, OutIter> sequential(ExPolicy, InIter first,
-            Sent sent, OutIter dest, T const& old_value, T const& new_value,
-            Proj&& proj)
+        static in_out_result<InIter, OutIter>
+        sequential(ExPolicy, InIter first, Sent sent, OutIter dest,
+            T const& old_value, T const& new_value, Proj&& proj)
         {
             return sequential_replace_copy(first, sent, dest, old_value,
                 new_value, PIKA_FORWARD(Proj, proj));
@@ -680,9 +680,9 @@ namespace pika::parallel::detail {
     // sequential replace_copy_if
     template <typename InIter, typename Sent, typename OutIter, typename F,
         typename T, typename Proj>
-    inline in_out_result<InIter, OutIter> sequential_replace_copy_if(
-        InIter first, Sent sent, OutIter dest, F&& f, T const& new_value,
-        Proj&& proj)
+    inline in_out_result<InIter, OutIter>
+    sequential_replace_copy_if(InIter first, Sent sent, OutIter dest, F&& f,
+        T const& new_value, Proj&& proj)
     {
         for (/* */; first != sent; ++first)
         {
@@ -875,9 +875,9 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend OutIter tag_fallback_invoke(pika::replace_copy_if_t,
-            InIter first, InIter last, OutIter dest, Pred&& pred,
-            T const& new_value)
+        friend OutIter
+        tag_fallback_invoke(pika::replace_copy_if_t, InIter first, InIter last,
+            OutIter dest, Pred&& pred, T const& new_value)
         {
             static_assert((pika::traits::is_input_iterator<InIter>::value),
                 "Required at least input iterator.");

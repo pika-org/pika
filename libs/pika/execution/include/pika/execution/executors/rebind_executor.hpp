@@ -75,8 +75,8 @@ namespace pika { namespace parallel { namespace execution {
     struct create_rebound_policy_t
     {
         template <typename ExPolicy, typename Executor, typename Parameters>
-        constexpr decltype(auto) operator()(
-            ExPolicy&&, Executor&& exec, Parameters&& parameters) const
+        constexpr decltype(auto)
+        operator()(ExPolicy&&, Executor&& exec, Parameters&& parameters) const
         {
             using rebound_type =
                 typename rebind_executor<ExPolicy, Executor, Parameters>::type;

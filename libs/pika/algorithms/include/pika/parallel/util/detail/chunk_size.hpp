@@ -178,10 +178,10 @@ namespace pika::parallel::detail {
     template <typename ExPolicy, typename Future, typename F1, typename FwdIter,
         typename Stride>
     // requires traits::is_future<Future>
-    std::vector<std::tuple<FwdIter, std::size_t>> get_bulk_iteration_shape(
-        std::true_type /*has_variable_chunk_size*/, ExPolicy&& policy,
-        std::vector<Future>& /*workitems*/, F1&& /*f1*/, FwdIter& first,
-        std::size_t& count, Stride s)
+    std::vector<std::tuple<FwdIter, std::size_t>>
+    get_bulk_iteration_shape(std::true_type /*has_variable_chunk_size*/,
+        ExPolicy&& policy, std::vector<Future>& /*workitems*/, F1&& /*f1*/,
+        FwdIter& first, std::size_t& count, Stride s)
     {
         using tuple_type = std::tuple<FwdIter, std::size_t>;
 

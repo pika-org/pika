@@ -108,8 +108,8 @@ struct test_executor_maximal_number_of_chunks
     }
 
     template <typename Parameters>
-    static std::size_t maximal_number_of_chunks(
-        Parameters&&, std::size_t, std::size_t num_tasks)
+    static std::size_t
+    maximal_number_of_chunks(Parameters&&, std::size_t, std::size_t num_tasks)
     {
         ++exec_count;
         return num_tasks;
@@ -127,8 +127,8 @@ namespace pika { namespace parallel { namespace execution {
 struct test_number_of_chunks
 {
     template <typename Executor>
-    std::size_t maximal_number_of_chunks(
-        Executor&&, std::size_t, std::size_t num_tasks)
+    std::size_t
+    maximal_number_of_chunks(Executor&&, std::size_t, std::size_t num_tasks)
     {
         ++params_count;
         return num_tasks;

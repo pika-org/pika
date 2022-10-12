@@ -109,8 +109,8 @@ namespace pika {
             std::string const& state_name, std::string const& auxinfo);
 
         template <typename Exception>
-        PIKA_EXPORT std::exception_ptr construct_exception(
-            Exception const& e, pika::exception_info info);
+        PIKA_EXPORT std::exception_ptr
+        construct_exception(Exception const& e, pika::exception_info info);
 
         PIKA_EXPORT void pre_exception_handler();
 

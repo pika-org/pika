@@ -43,8 +43,8 @@ namespace pika::parallel::detail {
     }
 
     template <typename ZipIter>
-    pika::future<typename ZipIter::iterator_tuple_type> get_iter_tuple(
-        pika::future<ZipIter>&& zipiter)
+    pika::future<typename ZipIter::iterator_tuple_type>
+    get_iter_tuple(pika::future<ZipIter>&& zipiter)
     {
         using result_type = typename ZipIter::iterator_tuple_type;
         return pika::make_future<result_type>(PIKA_MOVE(zipiter),

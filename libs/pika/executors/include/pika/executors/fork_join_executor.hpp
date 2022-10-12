@@ -369,9 +369,9 @@ namespace pika { namespace execution { namespace experimental {
 
                 template <std::size_t... Is_, typename F_, typename A_,
                     typename Tuple_>
-                static constexpr void invoke_helper(
-                    pika::util::detail::index_pack<Is_...>, F_&& f, A_&& a,
-                    Tuple_&& t)
+                static constexpr void
+                invoke_helper(pika::util::detail::index_pack<Is_...>, F_&& f,
+                    A_&& a, Tuple_&& t)
                 {
                     PIKA_INVOKE(PIKA_FORWARD(F_, f), PIKA_FORWARD(A_, a),
                         std::get<Is_>(PIKA_FORWARD(Tuple_, t))...);
@@ -510,9 +510,9 @@ namespace pika { namespace execution { namespace experimental {
             };
 
             template <typename F, typename S, typename Args>
-            thread_function_helper_type* set_all_states_and_region_data(
-                thread_state state, F& f, S const& shape,
-                Args& argument_pack) noexcept
+            thread_function_helper_type*
+            set_all_states_and_region_data(thread_state state, F& f,
+                S const& shape, Args& argument_pack) noexcept
             {
                 thread_function_helper_type* func = nullptr;
                 if (schedule_ == loop_schedule::static_ || num_threads_ == 1)

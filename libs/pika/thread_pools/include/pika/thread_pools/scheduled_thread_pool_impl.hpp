@@ -173,8 +173,8 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    pika::runtime_state scheduled_thread_pool<Scheduler>::get_state(
-        std::size_t num_thread) const
+    pika::runtime_state
+    scheduled_thread_pool<Scheduler>::get_state(std::size_t num_thread) const
     {
         PIKA_ASSERT(num_thread != std::size_t(-1));
         return sched_->Scheduler::get_state(num_thread).load();
@@ -651,10 +651,10 @@ namespace pika::threads::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Scheduler>
-    thread_state scheduled_thread_pool<Scheduler>::set_state(
-        thread_id_type const& id, thread_schedule_state new_state,
-        thread_restart_state new_state_ex, execution::thread_priority priority,
-        error_code& ec)
+    thread_state
+    scheduled_thread_pool<Scheduler>::set_state(thread_id_type const& id,
+        thread_schedule_state new_state, thread_restart_state new_state_ex,
+        execution::thread_priority priority, error_code& ec)
     {
         return set_thread_state(id, new_state,    //-V107
             new_state_ex, priority,
@@ -1733,8 +1733,8 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::avg_idle_rate(
-        std::size_t num, bool reset)
+    std::int64_t
+    scheduled_thread_pool<Scheduler>::avg_idle_rate(std::size_t num, bool reset)
     {
         if (num == std::size_t(-1))
             return avg_idle_rate_all(reset);
@@ -1794,8 +1794,8 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    std::int64_t scheduled_thread_pool<Scheduler>::get_scheduler_utilization()
-        const
+    std::int64_t
+    scheduled_thread_pool<Scheduler>::get_scheduler_utilization() const
     {
         return (accumulate_projected(counter_data_.begin(), counter_data_.end(),
                     std::int64_t(0), &scheduling_counter_data::tasks_active_) *
@@ -1820,8 +1820,8 @@ namespace pika::threads::detail {
     }
 
     template <typename Scheduler>
-    void scheduled_thread_pool<Scheduler>::get_idle_core_mask(
-        mask_type& mask) const
+    void
+    scheduled_thread_pool<Scheduler>::get_idle_core_mask(mask_type& mask) const
     {
         std::size_t i = 0;
         for (auto const& data : counter_data_)

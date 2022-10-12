@@ -162,9 +162,9 @@ namespace pika::parallel::detail {
 
     template <typename Iter, typename Sent, typename Compare>
     template <typename Exec>
-    void sample_sort_helper<Iter, Sent, Compare>::operator()(Exec&& exec,
-        Iter first, Sent last, value_type* paux, std::size_t naux,
-        std::size_t chunk_size)
+    void
+    sample_sort_helper<Iter, Sent, Compare>::operator()(Exec&& exec, Iter first,
+        Sent last, value_type* paux, std::size_t naux, std::size_t chunk_size)
     {
         global_range = range_it(first, last);
 
@@ -262,8 +262,8 @@ namespace pika::parallel::detail {
     /// \remarks
     template <typename Iter, typename Sent, typename Compare>
     template <typename Exec>
-    void sample_sort_helper<Iter, Sent, Compare>::initial_configuration(
-        Exec& exec)
+    void
+    sample_sort_helper<Iter, Sent, Compare>::initial_configuration(Exec& exec)
     {
         std::vector<range_it> vmem_thread;
         std::vector<range_buf> vbuf_thread;
@@ -421,8 +421,8 @@ namespace pika::parallel::detail {
     }
 
     template <typename Exec, typename Iter, typename Sent>
-    void sample_sort(
-        Exec&& exec, Iter first, Sent last, std::uint32_t num_threads)
+    void
+    sample_sort(Exec&& exec, Iter first, Sent last, std::uint32_t num_threads)
     {
         using value_type = typename std::iterator_traits<Iter>::value_type;
         using compare = std::less<value_type>;

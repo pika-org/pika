@@ -51,8 +51,8 @@ namespace pika { namespace ranges {
     ///
     template <typename FwdIter, typename Sent, typename T,
         typename Proj = parallel::detail::projection_identity>
-    subrange_t<FwdIter, Sent> remove(
-        FwdIter first, Sent last, T const& value, Proj&& proj = Proj());
+    subrange_t<FwdIter, Sent>
+    remove(FwdIter first, Sent last, T const& value, Proj&& proj = Proj());
 
     /// Removes all elements that are equal to \a value from the range
     /// [first, last) and and returns a subrange [ret, last), where ret
@@ -149,8 +149,8 @@ namespace pika { namespace ranges {
     ///
     template <typename Rng, typename T,
         typename Proj = parallel::detail::projection_identity>
-    subrange_t<typename pika::traits::range_iterator<Rng>::type> remove(
-        Rng&& rng, T const& value, Proj&& proj = Proj());
+    subrange_t<typename pika::traits::range_iterator<Rng>::type>
+    remove(Rng&& rng, T const& value, Proj&& proj = Proj());
 
     /// Removes all elements that are equal to \a value from the range
     /// \a rng and and returns a subrange [ret, util::end(rng)), where ret
@@ -262,8 +262,8 @@ namespace pika { namespace ranges {
     ///
     template <typename FwdIter, typename Sent, typename Pred,
         typename Proj = pika::parallel::detail::projection_identity>
-    subrange_t<FwdIter, Sent> remove_if(
-        FwdIter first, Sent sent, Pred&& pred, Proj&& proj = Proj());
+    subrange_t<FwdIter, Sent>
+    remove_if(FwdIter first, Sent sent, Pred&& pred, Proj&& proj = Proj());
 
     /// Removes all elements for which predicate \a pred returns true
     /// from the range [first, last) and returns a subrange [ret, last),
@@ -388,8 +388,8 @@ namespace pika { namespace ranges {
     ///
     template <typename Rng, typename T,
         typename Proj = parallel::detail::projection_identity>
-    subrange_t<typename pika::traits::range_iterator<Rng>::type> remove_if(
-        Rng&& rng, Pred&& pred, Proj&& proj = Proj());
+    subrange_t<typename pika::traits::range_iterator<Rng>::type>
+    remove_if(Rng&& rng, Pred&& pred, Proj&& proj = Proj());
 
     /// Removes all elements that are equal to \a value from the range
     /// \a rng and and returns a subrange [ret, util::end(rng)), where ret
@@ -503,9 +503,9 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend subrange_t<Iter, Sent> tag_fallback_invoke(
-            pika::ranges::remove_if_t, Iter first, Sent sent, Pred&& pred,
-            Proj&& proj = Proj())
+        friend subrange_t<Iter, Sent>
+        tag_fallback_invoke(pika::ranges::remove_if_t, Iter first, Sent sent,
+            Pred&& pred, Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_input_iterator<Iter>::value),
                 "Required at least input iterator.");
@@ -627,9 +627,9 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
-        friend subrange_t<Iter, Sent> tag_fallback_invoke(
-            pika::ranges::remove_t, Iter first, Sent last, T const& value,
-            Proj&& proj = Proj())
+        friend subrange_t<Iter, Sent>
+        tag_fallback_invoke(pika::ranges::remove_t, Iter first, Sent last,
+            T const& value, Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_input_iterator<Iter>::value),
                 "Required at least input iterator.");

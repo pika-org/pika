@@ -59,8 +59,8 @@ namespace pika { namespace ranges {
     ///
     template <typename InIter, typename Sent, typename F,
         typename Proj = parallel::detail::projection_identity>
-    pika::ranges::for_each_result<InIter, F> for_each(
-        InIter first, Sent last, F&& f, Proj&& proj = Proj());
+    pika::ranges::for_each_result<InIter, F>
+    for_each(InIter first, Sent last, F&& f, Proj&& proj = Proj());
 
     /// Applies \a f to the result of dereferencing every iterator in the
     /// range [first, last).
@@ -304,8 +304,8 @@ namespace pika { namespace ranges {
     ///
     template <typename InIter, typename Sent, typename F,
         typename Proj = parallel::detail::projection_identity>
-    pika::ranges::for_each_result<InIter, F> for_each(
-        InIter first, Sent last, F&& f, Proj&& proj = Proj());
+    pika::ranges::for_each_result<InIter, F>
+    for_each(InIter first, Sent last, F&& f, Proj&& proj = Proj());
 
     /// Applies \a f to the result of dereferencing every iterator in the range
     /// [first, first + count), starting from first and proceeding to
@@ -412,9 +412,9 @@ namespace pika::ranges {
                     pika::execution::sequenced_policy, F,
                     pika::parallel::detail::projected<Proj, InIter>>::value)>
         // clang-format on
-        friend for_each_result<InIter, F> tag_fallback_invoke(
-            pika::ranges::for_each_t, InIter first, Sent last, F&& f,
-            Proj&& proj = Proj())
+        friend for_each_result<InIter, F>
+        tag_fallback_invoke(pika::ranges::for_each_t, InIter first, Sent last,
+            F&& f, Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_forward_iterator<InIter>::value),
                 "Requires at least forward iterator.");
@@ -521,9 +521,9 @@ namespace pika::ranges {
                     pika::execution::sequenced_policy, F,
                     pika::parallel::detail::projected<Proj, InIter>>::value)>
         // clang-format on
-        friend for_each_n_result<InIter, F> tag_fallback_invoke(
-            pika::ranges::for_each_n_t, InIter first, Size count, F&& f,
-            Proj&& proj = Proj())
+        friend for_each_n_result<InIter, F>
+        tag_fallback_invoke(pika::ranges::for_each_n_t, InIter first,
+            Size count, F&& f, Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_input_iterator<InIter>::value),
                 "Requires at least input iterator.");

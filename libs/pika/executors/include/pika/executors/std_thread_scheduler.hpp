@@ -92,8 +92,8 @@ namespace pika { namespace execution { namespace experimental {
                         std::exception_ptr)>;
 
             template <typename Receiver>
-            friend operation_state<Receiver> tag_invoke(
-                connect_t, sender const&, Receiver&& receiver)
+            friend operation_state<Receiver>
+            tag_invoke(connect_t, sender const&, Receiver&& receiver)
             {
                 return {PIKA_FORWARD(Receiver, receiver)};
             }

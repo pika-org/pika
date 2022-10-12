@@ -105,8 +105,8 @@ namespace pika::detail {
                         std::decay_t<Predecessor>>>
             )>
         // clang-format on
-        friend auto tag_fallback_invoke(
-            Tag, Predecessor&& predecessor, ExPolicy&& policy)
+        friend auto
+        tag_fallback_invoke(Tag, Predecessor&& predecessor, ExPolicy&& policy)
         {
             return detail::then_with_bound_algorithm<Tag>(
                 PIKA_FORWARD(Predecessor, predecessor),

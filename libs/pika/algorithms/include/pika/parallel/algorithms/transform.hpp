@@ -353,9 +353,9 @@ namespace pika::parallel::detail {
         // sequential execution with non-trivial projection
         template <typename ExPolicy, typename InIterB, typename InIterE,
             typename OutIter, typename F, typename Proj>
-        PIKA_HOST_DEVICE static in_out_result<InIterB, OutIter> sequential(
-            ExPolicy&& policy, InIterB first, InIterE last, OutIter dest, F&& f,
-            Proj&& proj)
+        PIKA_HOST_DEVICE static in_out_result<InIterB, OutIter>
+        sequential(ExPolicy&& policy, InIterB first, InIterE last, OutIter dest,
+            F&& f, Proj&& proj)
         {
             return transform_loop(PIKA_FORWARD(ExPolicy, policy), first, last,
                 dest, transform_projected<F, Proj>(f, proj));
@@ -364,9 +364,9 @@ namespace pika::parallel::detail {
         // sequential execution without projection
         template <typename ExPolicy, typename InIterB, typename InIterE,
             typename OutIter, typename F>
-        PIKA_HOST_DEVICE static in_out_result<InIterB, OutIter> sequential(
-            ExPolicy&& policy, InIterB first, InIterE last, OutIter dest, F&& f,
-            projection_identity)
+        PIKA_HOST_DEVICE static in_out_result<InIterB, OutIter>
+        sequential(ExPolicy&& policy, InIterB first, InIterE last, OutIter dest,
+            F&& f, projection_identity)
         {
             return transform_loop_ind(PIKA_FORWARD(ExPolicy, policy), first,
                 last, dest, PIKA_FORWARD(F, f));
@@ -410,8 +410,8 @@ namespace pika::parallel::detail {
         std::decay_t<Proj2>& proj2_;
 
         template <typename Iter1, typename Iter2>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE auto operator()(
-            Iter1 curr1, Iter2 curr2)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE auto
+        operator()(Iter1 curr1, Iter2 curr2)
         {
             return PIKA_INVOKE(
                 f_, PIKA_INVOKE(proj1_, *curr1), PIKA_INVOKE(proj2_, *curr2));
@@ -431,8 +431,8 @@ namespace pika::parallel::detail {
         proj2_type proj2_;
 
         template <typename F_, typename Proj1_, typename Proj2_>
-        PIKA_HOST_DEVICE transform_binary_iteration(
-            F_&& f, Proj1_&& proj1, Proj2_&& proj2)
+        PIKA_HOST_DEVICE
+        transform_binary_iteration(F_&& f, Proj1_&& proj1, Proj2_&& proj2)
           : f_(PIKA_FORWARD(F_, f))
           , proj1_(PIKA_FORWARD(Proj1_, proj1))
           , proj2_(PIKA_FORWARD(Proj2_, proj2))
@@ -550,8 +550,8 @@ namespace pika::parallel::detail {
         // sequential execution with non-trivial projection
         template <typename ExPolicy, typename InIter1, typename InIter2,
             typename OutIter, typename F, typename Proj1, typename Proj2>
-        static in_in_out_result<InIter1, InIter2, OutIter> sequential(
-            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+        static in_in_out_result<InIter1, InIter2, OutIter>
+        sequential(ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
             OutIter dest, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
             return transform_binary_loop<ExPolicy>(first1, last1, first2, dest,
@@ -561,8 +561,8 @@ namespace pika::parallel::detail {
         // sequential execution without projection
         template <typename ExPolicy, typename InIter1, typename InIter2,
             typename OutIter, typename F>
-        static in_in_out_result<InIter1, InIter2, OutIter> sequential(
-            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+        static in_in_out_result<InIter1, InIter2, OutIter>
+        sequential(ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
             OutIter dest, F&& f, projection_identity, projection_identity)
         {
             return transform_binary_loop_ind<ExPolicy>(
@@ -613,8 +613,8 @@ namespace pika::parallel::detail {
         // sequential execution with non-trivial projection
         template <typename ExPolicy, typename InIter1, typename InIter2,
             typename OutIter, typename F, typename Proj1, typename Proj2>
-        static in_in_out_result<InIter1, InIter2, OutIter> sequential(
-            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+        static in_in_out_result<InIter1, InIter2, OutIter>
+        sequential(ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
             InIter2 last2, OutIter dest, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
             return transform_binary_loop<ExPolicy>(first1, last1, first2, last2,
@@ -625,8 +625,8 @@ namespace pika::parallel::detail {
         // sequential execution without projection
         template <typename ExPolicy, typename InIter1, typename InIter2,
             typename OutIter, typename F>
-        static in_in_out_result<InIter1, InIter2, OutIter> sequential(
-            ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
+        static in_in_out_result<InIter1, InIter2, OutIter>
+        sequential(ExPolicy&&, InIter1 first1, InIter1 last1, InIter2 first2,
             InIter2 last2, OutIter dest, F&& f, projection_identity,
             projection_identity)
         {

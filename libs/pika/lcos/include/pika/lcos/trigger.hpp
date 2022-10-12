@@ -135,8 +135,8 @@ namespace pika { namespace lcos { namespace local {
             }
 
             template <typename Condition>
-            pika::future<void> get_future(
-                Condition&& func, error_code& ec = pika::throws)
+            pika::future<void>
+            get_future(Condition&& func, error_code& ec = pika::throws)
             {
                 return (*it_)->get_future(PIKA_FORWARD(Condition, func), ec);
             }

@@ -120,8 +120,8 @@ namespace pika { namespace parallel { namespace execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            sync_execute_t, Executor&& exec, F&& f, Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(sync_execute_t, Executor&& exec, F&& f, Ts&&... ts)
         {
             return detail::sync_execute_fn_helper<std::decay_t<Executor>>::call(
                 PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f),
@@ -167,8 +167,8 @@ namespace pika { namespace parallel { namespace execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            async_execute_t, Executor&& exec, F&& f, Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(async_execute_t, Executor&& exec, F&& f, Ts&&... ts)
         {
             return detail::async_execute_fn_helper<
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Executor, exec),
@@ -206,9 +206,9 @@ namespace pika { namespace parallel { namespace execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            then_execute_t, Executor&& exec, F&& f, Future&& predecessor,
-            Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(then_execute_t, Executor&& exec, F&& f,
+            Future&& predecessor, Ts&&... ts)
         {
             return detail::then_execute_fn_helper<std::decay_t<Executor>>::call(
                 PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f),
@@ -247,8 +247,8 @@ namespace pika { namespace parallel { namespace execution {
                 pika::traits::is_executor_any<Executor>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            post_t, Executor&& exec, F&& f, Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(post_t, Executor&& exec, F&& f, Ts&&... ts)
         {
             return detail::post_fn_helper<std::decay_t<Executor>>::call(
                 PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f),
@@ -306,9 +306,9 @@ namespace pika { namespace parallel { namespace execution {
                 !std::is_integral<Shape>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            bulk_sync_execute_t, Executor&& exec, F&& f, Shape const& shape,
-            Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(bulk_sync_execute_t, Executor&& exec, F&& f,
+            Shape const& shape, Ts&&... ts)
         {
             return detail::bulk_sync_execute_fn_helper<
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Executor, exec),
@@ -322,9 +322,9 @@ namespace pika { namespace parallel { namespace execution {
                 std::is_integral<Shape>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            bulk_sync_execute_t, Executor&& exec, F&& f, Shape const& shape,
-            Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(bulk_sync_execute_t, Executor&& exec, F&& f,
+            Shape const& shape, Ts&&... ts)
         {
             return detail::bulk_sync_execute_fn_helper<
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Executor, exec),
@@ -378,9 +378,9 @@ namespace pika { namespace parallel { namespace execution {
                 !std::is_integral<Shape>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            bulk_async_execute_t, Executor&& exec, F&& f, Shape const& shape,
-            Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(bulk_async_execute_t, Executor&& exec, F&& f,
+            Shape const& shape, Ts&&... ts)
         {
             return detail::bulk_async_execute_fn_helper<
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Executor, exec),
@@ -394,9 +394,9 @@ namespace pika { namespace parallel { namespace execution {
                 std::is_integral<Shape>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            bulk_async_execute_t, Executor&& exec, F&& f, Shape const& shape,
-            Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(bulk_async_execute_t, Executor&& exec, F&& f,
+            Shape const& shape, Ts&&... ts)
         {
             return detail::bulk_async_execute_fn_helper<
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Executor, exec),
@@ -455,9 +455,9 @@ namespace pika { namespace parallel { namespace execution {
                 !std::is_integral<Shape>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            bulk_then_execute_t, Executor&& exec, F&& f, Shape const& shape,
-            Future&& predecessor, Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(bulk_then_execute_t, Executor&& exec, F&& f,
+            Shape const& shape, Future&& predecessor, Ts&&... ts)
         {
             return detail::bulk_then_execute_fn_helper<
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Executor, exec),
@@ -473,9 +473,9 @@ namespace pika { namespace parallel { namespace execution {
                 std::is_integral<Shape>::value
             )>
         // clang-format on
-        friend PIKA_FORCEINLINE decltype(auto) tag_fallback_invoke(
-            bulk_then_execute_t, Executor&& exec, F&& f, Shape const& shape,
-            Future&& predecessor, Ts&&... ts)
+        friend PIKA_FORCEINLINE decltype(auto)
+        tag_fallback_invoke(bulk_then_execute_t, Executor&& exec, F&& f,
+            Shape const& shape, Future&& predecessor, Ts&&... ts)
         {
             return detail::bulk_then_execute_fn_helper<
                 std::decay_t<Executor>>::call(PIKA_FORWARD(Executor, exec),

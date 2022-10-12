@@ -57,8 +57,8 @@ namespace pika {
             }
 
             template <typename... Ts>
-            pika::util::detail::invoke_result_t<fun_type, Ts...> operator()(
-                Ts&&... ts)
+            pika::util::detail::invoke_result_t<fun_type, Ts...>
+            operator()(Ts&&... ts)
             {
                 scoped_annotation annotate(get_function_annotation());
                 return PIKA_INVOKE(f_, PIKA_FORWARD(Ts, ts)...);
@@ -99,8 +99,8 @@ namespace pika {
     }    // namespace detail
 
     template <typename F>
-    detail::annotated_function<std::decay_t<F>> annotated_function(
-        F&& f, char const* name = nullptr)
+    detail::annotated_function<std::decay_t<F>>
+    annotated_function(F&& f, char const* name = nullptr)
     {
         using result_type = detail::annotated_function<std::decay_t<F>>;
 
@@ -108,8 +108,8 @@ namespace pika {
     }
 
     template <typename F>
-    detail::annotated_function<std::decay_t<F>> annotated_function(
-        F&& f, std::string name)
+    detail::annotated_function<std::decay_t<F>>
+    annotated_function(F&& f, std::string name)
     {
         using result_type = detail::annotated_function<std::decay_t<F>>;
 

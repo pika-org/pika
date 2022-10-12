@@ -56,8 +56,8 @@ namespace pika {
     constexpr int debug_level = 0;
 
     template <int Level>
-    static debug::detail::print_threshold<Level, debug_level> spq_deb(
-        "SPQUEUE");
+    static debug::detail::print_threshold<Level, debug_level>
+        spq_deb("SPQUEUE");
     static debug::detail::print_threshold<1, 1> spq_arr("SPQUEUE");
 #define DEBUG(printer, Expr) PIKA_DP_ONLY(printer, Expr)
 }    // namespace pika

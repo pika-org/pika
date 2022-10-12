@@ -366,9 +366,9 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend partial_sort_copy_result<InIter, RandIter> tag_fallback_invoke(
-            pika::ranges::partial_sort_copy_t, InIter first, Sent1 last,
-            RandIter r_first, Sent2 r_last, Comp&& comp = Comp(),
+        friend partial_sort_copy_result<InIter, RandIter>
+        tag_fallback_invoke(pika::ranges::partial_sort_copy_t, InIter first,
+            Sent1 last, RandIter r_first, Sent2 r_last, Comp&& comp = Comp(),
             Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
         {
             static_assert(pika::traits::is_input_iterator_v<InIter>,

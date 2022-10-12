@@ -173,8 +173,8 @@ namespace pika { namespace ranges {
     template <typename Rng,
         typename Proj = pika::parallel::detail::projection_identity,
         typename Pred = detail::equal_to>
-    typename pika::traits::range_traits<Rng>::iterator_type adjacent_difference(
-        ExPolicy&& policy, Rng&& rng, Pred&& pred = Pred(),
+    typename pika::traits::range_traits<Rng>::iterator_type
+    adjacent_difference(ExPolicy&& policy, Rng&& rng, Pred&& pred = Pred(),
         Proj&& proj = Proj());
 
     /// Searches the range rng for two consecutive identical elements.

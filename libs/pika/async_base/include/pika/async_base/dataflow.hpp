@@ -32,8 +32,8 @@ namespace pika {
     }
 
     template <typename Allocator, typename F, typename... Ts>
-    PIKA_FORCEINLINE auto dataflow_alloc(
-        Allocator const& alloc, F&& f, Ts&&... ts)
+    PIKA_FORCEINLINE auto
+    dataflow_alloc(Allocator const& alloc, F&& f, Ts&&... ts)
         -> decltype(detail::dataflow_dispatch<std::decay_t<F>>::call(
             alloc, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
     {

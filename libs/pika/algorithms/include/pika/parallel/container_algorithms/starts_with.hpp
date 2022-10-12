@@ -311,10 +311,10 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(pika::ranges::starts_with_t,
-            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-            Pred&& pred = Pred(), Proj1&& proj1 = Proj1(),
-            Proj2&& proj2 = Proj2())
+        friend bool
+        tag_fallback_invoke(pika::ranges::starts_with_t, Iter1 first1,
+            Sent1 last1, Iter2 first2, Sent2 last2, Pred&& pred = Pred(),
+            Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
         {
             static_assert(pika::traits::is_input_iterator_v<Iter1>,
                 "Required at least input iterator.");

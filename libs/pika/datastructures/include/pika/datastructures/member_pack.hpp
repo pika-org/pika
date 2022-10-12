@@ -84,14 +84,14 @@ namespace pika::util::detail {
         return leaf;
     }
     template <std::size_t I, typename T>
-    static constexpr T const& member_get(
-        member_leaf<I, T, false> const& leaf) noexcept
+    static constexpr T const&
+    member_get(member_leaf<I, T, false> const& leaf) noexcept
     {
         return leaf.member;
     }
     template <std::size_t I, typename T>
-    static constexpr T const& member_get(
-        member_leaf<I, T, true> const& leaf) noexcept
+    static constexpr T const&
+    member_get(member_leaf<I, T, true> const& leaf) noexcept
     {
         return leaf;
     }

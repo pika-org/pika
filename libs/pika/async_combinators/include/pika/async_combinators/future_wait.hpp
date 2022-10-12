@@ -27,15 +27,15 @@ namespace pika::detail {
     struct wait_acquire_future
     {
         template <typename R>
-        PIKA_FORCEINLINE pika::future<R> operator()(
-            pika::future<R>& future) const
+        PIKA_FORCEINLINE pika::future<R>
+        operator()(pika::future<R>& future) const
         {
             return PIKA_MOVE(future);
         }
 
         template <typename R>
-        PIKA_FORCEINLINE pika::shared_future<R> operator()(
-            pika::shared_future<R>& future) const
+        PIKA_FORCEINLINE pika::shared_future<R>
+        operator()(pika::shared_future<R>& future) const
         {
             return future;
         }

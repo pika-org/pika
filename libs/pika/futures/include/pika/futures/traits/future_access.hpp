@@ -137,8 +137,8 @@ namespace pika { namespace traits {
     struct future_access<pika::future<R>>
     {
         template <typename SharedState>
-        static pika::future<R> create(
-            pika::intrusive_ptr<SharedState> const& shared_state)
+        static pika::future<R>
+        create(pika::intrusive_ptr<SharedState> const& shared_state)
         {
             return pika::future<R>(shared_state);
         }
@@ -152,23 +152,23 @@ namespace pika { namespace traits {
         }
 
         template <typename SharedState>
-        static pika::future<R> create(
-            pika::intrusive_ptr<SharedState>&& shared_state)
+        static pika::future<R>
+        create(pika::intrusive_ptr<SharedState>&& shared_state)
         {
             return pika::future<R>(PIKA_MOVE(shared_state));
         }
 
         template <typename T = void>
-        static pika::future<R> create(
-            detail::shared_state_ptr_for_t<pika::future<pika::future<R>>>&&
+        static pika::future<R>
+        create(detail::shared_state_ptr_for_t<pika::future<pika::future<R>>>&&
                 shared_state)
         {
             return pika::future<pika::future<R>>(PIKA_MOVE(shared_state));
         }
 
         template <typename SharedState>
-        static pika::future<R> create(
-            SharedState* shared_state, bool addref = true)
+        static pika::future<R>
+        create(SharedState* shared_state, bool addref = true)
         {
             return pika::future<R>(
                 pika::intrusive_ptr<SharedState>(shared_state, addref));
@@ -205,8 +205,8 @@ namespace pika { namespace traits {
 
     public:
         template <typename Destination>
-        PIKA_FORCEINLINE static void transfer_result(
-            pika::future<R>&& src, Destination& dest)
+        PIKA_FORCEINLINE static void
+        transfer_result(pika::future<R>&& src, Destination& dest)
         {
             transfer_result_impl(PIKA_MOVE(src), dest, std::is_void<R>{});
         }
@@ -216,8 +216,8 @@ namespace pika { namespace traits {
     struct future_access<pika::shared_future<R>>
     {
         template <typename SharedState>
-        static pika::shared_future<R> create(
-            pika::intrusive_ptr<SharedState> const& shared_state)
+        static pika::shared_future<R>
+        create(pika::intrusive_ptr<SharedState> const& shared_state)
         {
             return pika::shared_future<R>(shared_state);
         }
@@ -230,8 +230,8 @@ namespace pika { namespace traits {
         }
 
         template <typename SharedState>
-        static pika::shared_future<R> create(
-            pika::intrusive_ptr<SharedState>&& shared_state)
+        static pika::shared_future<R>
+        create(pika::intrusive_ptr<SharedState>&& shared_state)
         {
             return pika::shared_future<R>(PIKA_MOVE(shared_state));
         }
@@ -245,8 +245,8 @@ namespace pika { namespace traits {
         }
 
         template <typename SharedState>
-        static pika::shared_future<R> create(
-            SharedState* shared_state, bool addref = true)
+        static pika::shared_future<R>
+        create(SharedState* shared_state, bool addref = true)
         {
             return pika::shared_future<R>(
                 pika::intrusive_ptr<SharedState>(shared_state, addref));
@@ -283,8 +283,8 @@ namespace pika { namespace traits {
 
     public:
         template <typename Destination>
-        PIKA_FORCEINLINE static void transfer_result(
-            pika::shared_future<R>&& src, Destination& dest)
+        PIKA_FORCEINLINE static void
+        transfer_result(pika::shared_future<R>&& src, Destination& dest)
         {
             transfer_result_impl(PIKA_MOVE(src), dest, std::is_void<R>{});
         }

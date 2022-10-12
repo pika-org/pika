@@ -304,9 +304,9 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend RandomIt tag_fallback_invoke(pika::ranges::stable_sort_t,
-            RandomIt first, Sent last, Comp&& comp = Comp(),
-            Proj&& proj = Proj())
+        friend RandomIt
+        tag_fallback_invoke(pika::ranges::stable_sort_t, RandomIt first,
+            Sent last, Comp&& comp = Comp(), Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires a random access iterator.");
