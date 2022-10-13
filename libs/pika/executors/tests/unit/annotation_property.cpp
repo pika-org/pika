@@ -25,7 +25,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 std::string annotation;
 
-void test_post_f(int passed_through, pika::lcos::local::latch& l)
+void test_post_f(int passed_through, pika::latch& l)
 {
     PIKA_TEST_EQ(passed_through, 42);
 
@@ -45,7 +45,7 @@ void test_post()
         auto exec = pika::experimental::prefer(
             pika::execution::experimental::with_annotation, executor{}, desc);
 
-        pika::lcos::local::latch l(2);
+        pika::latch l(2);
         pika::parallel::execution::post(exec, &test_post_f, 42, std::ref(l));
         l.arrive_and_wait();
 
@@ -57,7 +57,7 @@ void test_post()
         auto exec =
             pika::execution::experimental::with_annotation(executor{}, desc);
 
-        pika::lcos::local::latch l(2);
+        pika::latch l(2);
         pika::parallel::execution::post(exec, &test_post_f, 42, std::ref(l));
         l.arrive_and_wait();
 
@@ -346,7 +346,7 @@ void test_post_policy_prefer()
         pika::execution::experimental::with_annotation, pika::execution::par,
         desc);
 
-    pika::lcos::local::latch l(2);
+    pika::latch l(2);
     pika::parallel::execution::post(
         policy.executor(), &test_post_f, 42, std::ref(l));
     l.arrive_and_wait();
@@ -360,7 +360,7 @@ void test_post_policy()
     auto policy = pika::execution::experimental::with_annotation(
         pika::execution::par, desc);
 
-    pika::lcos::local::latch l(2);
+    pika::latch l(2);
     pika::parallel::execution::post(
         policy.executor(), &test_post_f, 42, std::ref(l));
     l.arrive_and_wait();

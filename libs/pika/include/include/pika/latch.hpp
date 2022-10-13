@@ -7,8 +7,3 @@
 #pragma once
 
 #include <pika/synchronization/latch.hpp>
-
-namespace pika {
-
-    using latch = pika::lcos::local::cpp20_latch;
-}

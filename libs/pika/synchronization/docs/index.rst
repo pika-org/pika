@@ -18,7 +18,7 @@ the C++ standard ones in |pika| threads:
 * :cpp:class:`pika::condition_variable`
 * :cpp:class:`pika::lcos::local::counting_semaphore`
 * :cpp:class:`pika::experimental::event`
-* :cpp:class:`pika::lcos::local::latch`
+* :cpp:class:`pika::latch`
 * :cpp:class:`pika::mutex`
 * :cpp:class:`pika::no_mutex`
 * :cpp:class:`pika::once_flag`

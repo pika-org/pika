@@ -17,7 +17,6 @@ set(tests
     condition_variable
     counting_semaphore
     counting_semaphore_cpp20
-    latch_cpp20
     latch
     event
     mutex

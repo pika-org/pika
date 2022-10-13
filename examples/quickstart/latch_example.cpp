@@ -4,7 +4,7 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// Demonstrate the use of pika::lcos::local::latch
+// Demonstrate the use of pika::latch
 
 #include <pika/future.hpp>
 #include <pika/init.hpp>
@@ -18,9 +18,9 @@
 std::ptrdiff_t num_threads = 16;
 
 ///////////////////////////////////////////////////////////////////////////////
-void wait_for_latch(pika::lcos::local::latch& l)
+void wait_for_latch(pika::latch& l)
 {
-    l.count_down_and_wait();
+    l.arrive_and_wait();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,14 +28,14 @@ int pika_main(pika::program_options::variables_map& vm)
 {
     num_threads = vm["num-threads"].as<std::ptrdiff_t>();
 
-    pika::lcos::local::latch l(num_threads + 1);
+    pika::latch l(num_threads + 1);
 
     std::vector<pika::future<void>> results;
     for (std::ptrdiff_t i = 0; i != num_threads; ++i)
         results.push_back(pika::async(&wait_for_latch, std::ref(l)));
 
     // Wait for all threads to reach this point.
-    l.count_down_and_wait();
+    l.arrive_and_wait();
 
     pika::wait_all(results);
 
