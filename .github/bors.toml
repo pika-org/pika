@@ -15,8 +15,6 @@ status = [
   "github/macos/debug/tests/examples_regressions",
   "github/macos/debug/tests/performance",
   "github/macos/debug/tests/unit",
-  "github/macos/debug/tests/unit/algorithms",
-  "github/macos/debug/tests/unit/container_algorithms",
   "github/macos_arm64/debug",
 
   # CircleCI static checks
@@ -38,8 +36,6 @@ status = [
   "ci/circleci: tests.performance",
   "ci/circleci: tests.regressions",
   "ci/circleci: tests.unit",
-  "ci/circleci: tests.unit.algorithms",
-  "ci/circleci: tests.unit.container_algorithms",
   "ci/circleci: install",
   "ci/circleci: arm64_build",
 

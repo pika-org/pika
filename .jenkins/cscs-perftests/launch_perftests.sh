@@ -8,20 +8,11 @@
 
 set -ex
 
-pika_targets=(
-    "foreach_report_test"
-    "future_overhead_report_test"
-    "stream_report_test")
+pika_targets=("future_overhead_report_test")
 pika_test_options=(
     "--pika:ini=pika.thread_queue.init_threads_count=100 \
-    --pika:threads=4 --vector_size=10000 --work_delay=1 \
-    --chunk_size=0 --test_count=5000"
-    "--pika:ini=pika.thread_queue.init_threads_count=100 \
     --pika:queuing=local-priority --pika:threads=4 --test-all \
-    --repetitions=100 --futures=500000"
-    "--pika:ini=pika.thread_queue.init_threads_count=100 \
-    --vector_size=1048576 --pika:threads=4 --iterations=5000 \
-    --warmup_iterations=500")
+    --repetitions=100 --futures=500000")
 
 # Build binaries for performance tests
 ${perftests_dir}/driver.py -v -l $logfile build -b release -o build \

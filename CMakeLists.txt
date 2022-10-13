@@ -1021,27 +1021,6 @@ pika_option(
 )
 
 # ##############################################################################
-# Backwards compatibility options (edit for each release)
-
-# BADBAD: This enables an overload of swap which is necessary to work around the
-# problems caused by zip_iterator not being a real random access iterator.
-# Dereferencing zip_iterator does not yield a true reference but only a
-# temporary tuple holding true references.
-#
-# A real fix for this problem is proposed in PR0022R0
-# (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0022r0.html)
-#
-pika_option(
-  PIKA_WITH_TUPLE_RVALUE_SWAP BOOL
-  "Enable swapping of rvalue tuples (needed for sort_by_key, default: OFF)." OFF
-  CATEGORY "Utility"
-  ADVANCED
-)
-if(PIKA_WITH_TUPLE_RVALUE_SWAP)
-  pika_add_config_define(PIKA_HAVE_TUPLE_RVALUE_SWAP)
-endif()
-
-# ##############################################################################
 # Special diagnostic flags, do not enable by default, only if needed
 pika_option(
   PIKA_WITH_CHECK_MODULE_DEPENDENCIES
@@ -1129,20 +1108,6 @@ pika_option(
   ${__use_generic_coroutine_context}
   ADVANCED
 )
-
-# ##############################################################################
-# check for miscellaneous things
-# ##############################################################################
-
-pika_check_for_mm_prefetch(DEFINITIONS PIKA_HAVE_MM_PREFETCH)
-
-pika_check_for_stable_inplace_merge(DEFINITIONS PIKA_HAVE_STABLE_INPLACE_MERGE)
-
-if(NOT PIKA_WITH_STABLE_INPLACE_MERGE)
-  pika_warn(
-    "The standard library you are using (libc++ version < 6) does not have a stable inplace_merge implementation."
-  )
-endif()
 
 # ##############################################################################
 # Check for misc system headers

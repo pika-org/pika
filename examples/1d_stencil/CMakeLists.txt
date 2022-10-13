@@ -5,9 +5,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(example_programs 1d_stencil_1 1d_stencil_2 1d_stencil_3 1d_stencil_4
-                     1d_stencil_4_parallel
-)
+set(example_programs 1d_stencil_1 1d_stencil_2 1d_stencil_3)
 
 if(PIKA_WITH_EXAMPLES_OPENMP)
   set(example_programs ${example_programs} 1d_stencil_1_omp 1d_stencil_3_omp)
@@ -16,8 +14,6 @@ endif()
 set(1d_stencil_1_PARAMETERS THREADS 4)
 set(1d_stencil_2_PARAMETERS THREADS 4)
 set(1d_stencil_3_PARAMETERS THREADS 4)
-set(1d_stencil_4_PARAMETERS THREADS 4)
-set(1d_stencil_4_parallel_PARAMETERS THREADS 4)
 
 foreach(example_program ${example_programs})
 

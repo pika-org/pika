@@ -21,13 +21,10 @@ set(tests
     algorithm_when_all
     algorithm_when_all_vector
     bulk_async
-    executor_parameters
     executor_parameters_dispatching
-    executor_parameters_timer_hooks
     future_then_executor
     minimal_async_executor
     minimal_sync_executor
-    persistent_executor_parameters
     scheduler_queries
 )
 

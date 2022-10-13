@@ -6,7 +6,7 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-set(subdirs 1d_stencil balancing future_reduce jacobi_smp quickstart transpose)
+set(subdirs 1d_stencil balancing future_reduce jacobi_smp quickstart)
 
 foreach(subdir ${subdirs})
   if(PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)

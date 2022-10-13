@@ -23,7 +23,6 @@ pika_add_module(
   SOURCES ${init_runtime_sources}
   HEADERS ${init_runtime_headers}
   MODULE_DEPENDENCIES
-    pika_algorithms
     pika_command_line_handling
     pika_program_options
     pika_runtime

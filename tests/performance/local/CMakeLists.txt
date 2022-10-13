@@ -20,17 +20,11 @@ set(benchmarks
     print_heterogeneous_payloads
     resume_suspend
     skynet
-    stream
-    stream_report
     wait_all_timings
 )
 
 if(NOT PIKA_WITH_SANITIZERS)
   list(APPEND benchmarks start_stop)
-endif()
-
-if(PIKA_WITH_CXX20_EXPERIMENTAL_SIMD)
-  list(APPEND benchmarks transform_reduce_binary_scaling)
 endif()
 
 if(PIKA_WITH_EXAMPLES_OPENMP)

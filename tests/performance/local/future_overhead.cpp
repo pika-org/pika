@@ -7,7 +7,6 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/algorithm.hpp>
 #include <pika/execution.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
@@ -151,58 +150,6 @@ void function_futures_wait_all(std::uint64_t count, bool csv, Executor& exec)
 }
 
 template <typename Executor>
-void function_futures_limiting_executor(
-    std::uint64_t count, bool csv, Executor exec)
-{
-    std::uint64_t const num_threads = pika::get_num_worker_threads();
-    std::uint64_t const tasks = num_threads * 2000;
-    std::atomic<std::uint64_t> sanity_check(count);
-
-    auto const sched =
-        pika::threads::detail::get_self_id_data()->get_scheduler_base();
-    if (std::string("core-shared_priority_queue_scheduler") ==
-        sched->get_description())
-    {
-        using ::pika::threads::scheduler_mode;
-        sched->add_scheduler_mode(scheduler_mode::enable_stealing |
-            scheduler_mode::enable_stealing_numa |
-            scheduler_mode::assign_work_round_robin |
-            scheduler_mode::steal_after_local);
-        sched->remove_scheduler_mode(scheduler_mode::assign_work_thread_parent |
-            scheduler_mode::steal_high_priority_first);
-    }
-
-    // test a parallel algorithm on custom pool with high priority
-    auto const chunk_size = count / (num_threads * 2);
-    pika::execution::static_chunk_size fixed(chunk_size);
-
-    // start the clock
-    high_resolution_timer walltime;
-    {
-        pika::execution::experimental::limiting_executor<Executor> signal_exec(
-            exec, tasks, tasks + 1000);
-        pika::for_loop(
-            pika::execution::par.with(fixed), 0, count, [&](std::uint64_t) {
-                pika::apply(signal_exec, [&]() {
-                    null_function();
-                    sanity_check--;
-                });
-            });
-    }
-
-    if (sanity_check != 0)
-    {
-        throw std::runtime_error(
-            "This test is faulty " + std::to_string(sanity_check));
-    }
-
-    // stop the clock
-    const double duration = walltime.elapsed();
-    print_stats(
-        "apply", "limiting-Exec", exec_name(exec), count, duration, csv);
-}
-
-template <typename Executor>
 void function_futures_sliding_semaphore(
     std::uint64_t count, bool csv, Executor& exec)
 {
@@ -241,23 +188,6 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
 }}}    // namespace pika::parallel::execution
-
-template <typename Executor>
-void function_futures_for_loop(std::uint64_t count, bool csv, Executor& exec,
-    char const* executor_name = nullptr)
-{
-    // start the clock
-    high_resolution_timer walltime;
-    pika::for_loop(pika::execution::par.on(exec).with(
-                       pika::execution::static_chunk_size(1),
-                       unlimited_number_of_chunks()),
-        0, count, [](std::uint64_t) { null_function(); });
-
-    // stop the clock
-    const double duration = walltime.elapsed();
-    print_stats("for_loop", "par",
-        executor_name ? executor_name : exec_name(exec), count, duration, csv);
-}
 
 void function_futures_register_work(std::uint64_t count, bool csv)
 {
@@ -456,26 +386,15 @@ int pika_main(variables_map& vm)
             throw std::logic_error("error: count of 0 futures specified\n");
 
         pika::execution::parallel_executor par;
-        pika::execution::parallel_executor par_nostack(
-            pika::execution::thread_priority::default_,
-            pika::execution::thread_stacksize::nostack);
-        pika::execution::experimental::scheduler_executor<
-            pika::execution::experimental::thread_pool_scheduler>
-            sched_exec_tps;
 
         for (int i = 0; i < repetitions; i++)
         {
             function_futures_create_thread_hierarchical_placement(count, csv);
             if (test_all)
             {
-                function_futures_limiting_executor(count, csv, par);
                 function_futures_wait_each(count, csv, par);
                 function_futures_wait_all(count, csv, par);
                 function_futures_sliding_semaphore(count, csv, par);
-                function_futures_for_loop(count, csv, par);
-                function_futures_for_loop(count, csv, sched_exec_tps);
-                function_futures_for_loop(
-                    count, csv, par_nostack, "parallel_executor_nostack");
                 function_futures_register_work(count, csv);
                 function_futures_create_thread(count, csv);
                 function_futures_apply_hierarchical_placement(count, csv);

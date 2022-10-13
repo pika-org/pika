@@ -457,15 +457,6 @@ function(pika_check_for_cxx20_perfect_pack_capture)
 endfunction()
 
 # ##############################################################################
-function(pika_check_for_cxx20_experimental_simd)
-  pika_add_config_test(
-    PIKA_WITH_CXX20_EXPERIMENTAL_SIMD
-    SOURCE cmake/tests/cxx20_experimental_simd.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
-  )
-endfunction()
-
-# ##############################################################################
 function(pika_check_for_cxx20_no_unique_address_attribute)
   pika_add_config_test(
     PIKA_WITH_CXX20_NO_UNIQUE_ADDRESS_ATTRIBUTE
@@ -511,15 +502,6 @@ function(pika_check_for_cxx20_std_execution_policies)
 endfunction()
 
 # ##############################################################################
-function(pika_check_for_cxx20_std_ranges_iter_swap)
-  pika_add_config_test(
-    PIKA_WITH_CXX20_STD_RANGES_ITER_SWAP
-    SOURCE cmake/tests/cxx20_std_ranges_iter_swap.cpp
-    FILE ${ARGN} CHECK_CXXSTD 20
-  )
-endfunction()
-
-# ##############################################################################
 function(pika_check_for_cxx20_trivial_virtual_destructor)
   pika_add_config_test(
     PIKA_WITH_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR
@@ -533,24 +515,6 @@ function(pika_check_for_cxx_lambda_capture_decltype)
   pika_add_config_test(
     PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE
     SOURCE cmake/tests/cxx_lambda_capture_decltype.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_mm_prefetch)
-  pika_add_config_test(
-    PIKA_WITH_MM_PREFETCH
-    SOURCE cmake/tests/mm_prefetch.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##############################################################################
-function(pika_check_for_stable_inplace_merge)
-  pika_add_config_test(
-    PIKA_WITH_STABLE_INPLACE_MERGE
-    SOURCE cmake/tests/stable_inplace_merge.cpp
     FILE ${ARGN}
   )
 endfunction()

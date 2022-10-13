@@ -162,7 +162,6 @@ jobs:
             --timeout 120 \
             --tests-regex tests.performance
 
-  # All unit tests except algorithms and container_algorithms
   build_and_run_tests_unit:
     name: github/macos/debug/tests/unit
     needs: build_core
@@ -189,11 +188,7 @@ jobs:
       shell: bash
       run: |
           cd build
-          targets=$(ninja help | \
-            grep '^tests.unit.modules\.' | \
-            grep -v '^tests.unit.modules.algorithms' | \
-            awk -F':' '{ print $1 }')
-          ninja ${targets}
+          ninja tests.unit
     - name: Test
       shell: bash
       run: |
@@ -204,89 +199,5 @@ jobs:
             --timeout 120 \
             --tests-regex tests.unit \
             --exclude-regex \
-          "tests.unit.modules.algorithms|\
-          tests.unit.modules.execution.standalone_thread_pool_executor|\
+          "tests.unit.modules.execution.standalone_thread_pool_executor|\
           tests.unit.modules.resource_partitioner.used_pus"
-
-  # algorithms unit tests
-  build_and_run_tests_unit_algorithms:
-    name: github/macos/debug/tests/unit/algorithms
-    needs: build_core
-    runs-on: macos-latest
-
-    steps:
-    - name: Install dependencies
-      run: |
-        # Workaround for https://github.com/actions/virtual-environments/issues/2322
-        rm -rf /usr/local/bin/2to3
-        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
-        brew upgrade
-        brew update
-        brew install boost cmake fmt hwloc ninja
-    - name: Load build artifacts from core stage
-      uses: actions/download-artifact@v3
-      with:
-        name: artifact
-    - name: Unpack artifacts
-      shell: bash
-      run: |
-          tar --extract --file artifact.tar.gz
-    - name: Build tests
-      shell: bash
-      run: |
-          cd build
-          ninja tests.unit.modules.algorithms.{algorithms,block}
-    - name: Test
-      shell: bash
-      run: |
-          cd build
-          ctest \
-            -j3 \
-            --output-on-failure \
-            --timeout 300 \
-            --tests-regex tests.unit.modules.algorithms \
-            --exclude-regex \
-          "tests.unit.modules.algorithms.container_algorithms|\
-          tests.unit.modules.algorithms.default_construct|\
-          tests.unit.modules.algorithms.destroy|\
-          tests.unit.modules.algorithms.foreach_executors|\
-          tests.unit.modules.algorithms.max_element|\
-          tests.unit.modules.algorithms.replace_copy_if"
-
-  # container_algorithms unit tests
-  build_and_run_tests_unit_container_algorithms:
-    name: github/macos/debug/tests/unit/container_algorithms
-    needs: build_core
-    runs-on: macos-latest
-
-    steps:
-    - name: Install dependencies
-      run: |
-        # Workaround for https://github.com/actions/virtual-environments/issues/2322
-        rm -rf /usr/local/bin/2to3
-        export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
-        brew upgrade
-        brew update
-        brew install boost cmake fmt hwloc ninja
-    - name: Load build artifacts from core stage
-      uses: actions/download-artifact@v3
-      with:
-        name: artifact
-    - name: Unpack artifacts
-      shell: bash
-      run: |
-          tar --extract --file artifact.tar.gz
-    - name: Build tests
-      shell: bash
-      run: |
-          cmake --build build --target tests.unit.modules.algorithms.container_algorithms
-    - name: Test
-      shell: bash
-      run: |
-          cd build
-          ctest \
-            -j3 \
-            --output-on-failure \
-            --timeout 300 \
-            --tests-regex tests.unit.modules.algorithms.container_algorithms \
-            --exclude-regex tests.unit.modules.algorithms.container_algorithms.inplace_merge_range

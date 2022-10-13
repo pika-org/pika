@@ -5,7 +5,6 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(include_headers
-    pika/algorithm.hpp
     pika/barrier.hpp
     pika/channel.hpp
     pika/chrono.hpp
@@ -16,10 +15,8 @@ set(include_headers
     pika/functional.hpp
     pika/future.hpp
     pika/latch.hpp
-    pika/memory.hpp
     pika/mpi.hpp
     pika/mutex.hpp
-    pika/numeric.hpp
     pika/runtime.hpp
     pika/semaphore.hpp
     pika/shared_mutex.hpp
@@ -46,7 +43,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN OFF
   HEADERS ${include_headers}
   MODULE_DEPENDENCIES
-    pika_algorithms
     pika_async_base
     pika_async_combinators
     pika_async

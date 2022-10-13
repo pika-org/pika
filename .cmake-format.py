@@ -463,8 +463,6 @@ with section("parse"):
             "pargs": {"nargs": 0}
         },
         "pika_check_for_libfun_std_experimental_optional": {"pargs": {"nargs": 0}},
-        "pika_check_for_mm_prefetch": {"pargs": {"nargs": 0}},
-        "pika_check_for_stable_inplace_merge": {"pargs": {"nargs": 0}},
         "pika_check_for_unistd_h": {"pargs": {"nargs": 0}},
         "pika_collect_usage_requirements": {
             "kwargs": {"EXCLUDE": "+"},

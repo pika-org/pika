@@ -34,7 +34,7 @@ sbatch \
     --constraint="${configuration_slurm_constraint}" \
     --partition="cscsci" \
     --account="djenkssl" \
-    --time="01:30:00" \
+    --time="00:15:00" \
     --output="jenkins-pika-${configuration_name}.out" \
     --error="jenkins-pika-${configuration_name}.err" \
     --wait .jenkins/cscs-perftests/batch.sh

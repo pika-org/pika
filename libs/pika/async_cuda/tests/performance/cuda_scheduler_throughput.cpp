@@ -18,14 +18,10 @@
 // tasks to use for the CPU comparison/checks and makes no difference to the GPU
 // execution.
 
-#include <pika/algorithm.hpp>
 #include <pika/cuda.hpp>
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
 #include <pika/modules/timing.hpp>
-#include <pika/parallel/algorithms/copy.hpp>
-#include <pika/parallel/algorithms/for_each.hpp>
-#include <pika/parallel/algorithms/for_loop.hpp>
 #include <pika/testing/performance.hpp>
 
 #include <whip.hpp>
@@ -79,8 +75,8 @@ void matrixMultiply(
 
     // Fill A and B with zeroes
     auto zerofunc = [](T& x) { x = 0; };
-    pika::for_each(par, h_A.begin(), h_A.end(), zerofunc);
-    pika::for_each(par, h_B.begin(), h_B.end(), zerofunc);
+    std::for_each(h_A.begin(), h_A.end(), zerofunc);
+    std::for_each(h_B.begin(), h_B.end(), zerofunc);
 
     // create a cuda executor we'll use to schedule cuda work
     cu::cuda_pool cuda_pool(device);
