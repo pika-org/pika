@@ -35,15 +35,44 @@ namespace pika::mpi::experimental {
         receive,
         collective,
         user,
+        max_stream
     };
 
     namespace detail {
         // -----------------------------------------------------------------
         // by convention the title is 7 chars (for alignment)
         using print_on = pika::debug::detail::enable_print<false>;
-        static print_on mpi_debug("MPI_FUT");
+        static print_on mpi_debug("MPIPOLL");
 
         using request_callback_function_type = pika::util::detail::unique_function<void(int)>;
+
+        const char* stream_name(stream_type s)
+        {
+            using namespace pika::mpi::experimental;
+            switch (s)
+            {
+            case stream_type::automatic:
+                return "auto";
+                break;
+            case stream_type::send:
+                return "send";
+                break;
+            case stream_type::receive:
+                return "recv";
+                break;
+            case stream_type::collective:
+                return "coll";
+                break;
+            case stream_type::user:
+                return "user";
+                break;
+            case stream_type::max_stream:
+                return "smax";
+                break;
+            default:
+                return "error";
+            }
+        }
 
         PIKA_EXPORT void add_request_callback(
             request_callback_function_type&&, MPI_Request, stream_type);
@@ -97,7 +126,7 @@ namespace pika::mpi::experimental {
 
     // -----------------------------------------------------------------
     /// returns the number of mpi requests currently outstanding
-    PIKA_EXPORT std::uint32_t get_num_requests_in_flight();
+    PIKA_EXPORT std::uint32_t get_num_requests_in_flight(stream_type s);
 
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
