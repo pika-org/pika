@@ -208,7 +208,7 @@ void function_futures_sliding_semaphore(
     // start the clock
     high_resolution_timer walltime;
     const int sem_count = 5000;
-    pika::lcos::local::sliding_semaphore sem(sem_count);
+    pika::sliding_semaphore sem(sem_count);
     for (std::uint64_t i = 0; i < count; ++i)
     {
         pika::async(exec, [i, &sem]() {

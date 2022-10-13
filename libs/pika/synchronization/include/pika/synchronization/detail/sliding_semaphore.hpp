@@ -20,7 +20,7 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika::lcos::local::detail {
+namespace pika::detail {
 
     class sliding_semaphore
     {
@@ -51,7 +51,7 @@ namespace pika::lcos::local::detail {
         std::int64_t lower_limit_;
         pika::detail::condition_variable cond_;
     };
-}    // namespace pika::lcos::local::detail
+}    // namespace pika::detail
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
 #pragma warning(pop)
