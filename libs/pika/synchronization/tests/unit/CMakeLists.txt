@@ -73,9 +73,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
   set(compile_tests)
 
   if(PIKA_WITH_FAIL_COMPILE_TESTS)
-    set(fail_compile_tests fail_compile_mutex_move fail_compile_spinlock_move
-                           fail_compile_spinlock_no_backoff_move
-    )
+    set(fail_compile_tests fail_compile_mutex_move fail_compile_spinlock_move)
     foreach(fail_compile_test ${fail_compile_tests})
       set(${fail_compile_test}_FLAGS FAILURE_EXPECTED)
     endforeach()
