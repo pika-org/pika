@@ -25,7 +25,6 @@ set(include_headers
     pika/shared_mutex.hpp
     pika/stop_token.hpp
     pika/system_error.hpp
-    pika/task_block.hpp
     pika/thread.hpp
     pika/type_traits.hpp
     pika/unwrap.hpp
