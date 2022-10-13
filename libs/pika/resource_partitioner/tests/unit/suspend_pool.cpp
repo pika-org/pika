@@ -79,7 +79,7 @@ int pika_main()
 
     {
         // Suspend and resume pool with callback
-        pika::lcos::local::counting_semaphore sem;
+        pika::counting_semaphore<> sem{0};
         pika::chrono::detail::high_resolution_timer t;
 
         while (t.elapsed() < 1)
@@ -92,17 +92,17 @@ int pika_main()
             }
 
             pika::threads::suspend_pool_cb(
-                worker_pool, [&sem]() { sem.signal(); });
+                worker_pool, [&sem]() { sem.release(); });
 
-            sem.wait(1);
+            sem.acquire();
 
             // All work should be done when pool has been suspended
             PIKA_TEST(pika::when_all(std::move(fs)).is_ready());
 
             pika::threads::resume_pool_cb(
-                worker_pool, [&sem]() { sem.signal(); });
+                worker_pool, [&sem]() { sem.release(); });
 
-            sem.wait(1);
+            sem.acquire();
         }
     }
 

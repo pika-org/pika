@@ -38,26 +38,26 @@ struct data
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-void worker(std::size_t i, data& d, pika::lcos::local::counting_semaphore& sem)
+void worker(std::size_t i, data& d, pika::counting_semaphore<>& sem)
 {
     d.init.wait();
     std::cout << d.msg << ": " << i << "\n" << std::flush;
-    sem.signal();    // signal main thread
+    sem.release();    // signal main thread
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
     data d;
-    pika::lcos::local::counting_semaphore sem;
+    pika::counting_semaphore<> sem{0};
 
     for (std::size_t i = 0; i < 10; ++i)
         pika::apply(&worker, i, std::ref(d), std::ref(sem));
 
     d.initialize("initialized");    // signal the event
 
-    // Wait for all threads to finish executing.
-    sem.wait(10);
+    for (std::size_t i = 0; i < 10; ++i)
+        sem.acquire();
 
     return pika::finalize();
 }

@@ -15,7 +15,7 @@
 
 void test_semaphore_release_acquire()
 {
-    pika::counting_semaphore<> sem(1);
+    pika::binary_semaphore<> sem;
 
     sem.release();
     sem.acquire();
@@ -23,29 +23,15 @@ void test_semaphore_release_acquire()
 
 void test_semaphore_try_acquire()
 {
-    pika::counting_semaphore<> sem(0);
+    pika::binary_semaphore<> sem(0);
 
     PIKA_TEST(!sem.try_acquire());
     sem.release();
     PIKA_TEST(sem.try_acquire());
 }
 
-void test_semaphore_initial_count()
-{
-    pika::counting_semaphore<> sem(2);
-
-    PIKA_TEST(sem.try_acquire());
-    PIKA_TEST(sem.try_acquire());
-    PIKA_TEST(!sem.try_acquire());
-}
-
 struct semaphore_acquire_and_release_test
 {
-    semaphore_acquire_and_release_test()
-      : sem_(1)
-    {
-    }
-
     void run()
     {
         pika::thread release_thread(
@@ -60,7 +46,7 @@ struct semaphore_acquire_and_release_test
         sem_.release();
     }
 
-    pika::counting_semaphore<> sem_;
+    pika::binary_semaphore<> sem_;
 };
 
 void test_semaphore_acquire_and_release()
@@ -71,7 +57,7 @@ void test_semaphore_acquire_and_release()
 
 void test_semaphore_try_acquire_for()
 {
-    pika::counting_semaphore<> sem(0);
+    pika::binary_semaphore<> sem(0);
 
     auto start = std::chrono::system_clock::now();
 
@@ -91,7 +77,7 @@ void test_semaphore_try_acquire_for()
 
 void test_semaphore_try_acquire_until()
 {
-    pika::counting_semaphore<> sem(0);
+    pika::binary_semaphore<> sem(0);
 
     {
         auto now = std::chrono::system_clock::now();
@@ -124,7 +110,7 @@ void test_semaphore_try_acquire_until()
 
 void test_semaphore_try_acquire_for_until()
 {
-    pika::counting_semaphore<> sem(0);
+    pika::binary_semaphore<> sem(0);
 
     // Relative timeouts
     {
@@ -177,7 +163,7 @@ void test_semaphore_try_acquire_for_until()
 
     {
         // timed acquire after timeout
-        pika::counting_semaphore<> sema(1);
+        pika::binary_semaphore<> sema;
 
         auto start = std::chrono::steady_clock::now();
         auto timeout = start + std::chrono::milliseconds(100);
@@ -194,7 +180,6 @@ int pika_main()
 {
     test_semaphore_release_acquire();
     test_semaphore_try_acquire();
-    test_semaphore_initial_count();
     test_semaphore_acquire_and_release();
     test_semaphore_try_acquire_for();
     test_semaphore_try_acquire_until();

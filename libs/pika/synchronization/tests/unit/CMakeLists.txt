@@ -7,7 +7,7 @@
 set(tests
     async_rw_mutex
     barrier
-    binary_semaphore_cpp20
+    binary_semaphore
     channel_mpmc_fib
     channel_mpmc_shift
     channel_mpsc_fib
@@ -16,7 +16,6 @@ set(tests
     channel_spsc_shift
     condition_variable
     counting_semaphore
-    counting_semaphore_cpp20
     latch
     event
     mutex

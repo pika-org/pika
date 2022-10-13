@@ -23,7 +23,7 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika::lcos::local {
+namespace pika {
     // A semaphore is a protected variable (an entity storing a value) or
     // abstract data type (an entity grouping several variables that may or
     // may not be numerical) which constitutes the classic method for
@@ -42,10 +42,10 @@ namespace pika::lcos::local {
     // this semaphore.
     template <std::ptrdiff_t LeastMaxValue = PTRDIFF_MAX,
         typename Mutex = pika::spinlock>
-    class cpp20_counting_semaphore
+    class counting_semaphore
     {
     public:
-        PIKA_NON_COPYABLE(cpp20_counting_semaphore);
+        PIKA_NON_COPYABLE(counting_semaphore);
 
     protected:
         using mutex_type = Mutex;
@@ -70,12 +70,12 @@ namespace pika::lcos::local {
         //  Preconditions   value >= 0 is true, and value <= max() is true.
         //  Effects         Initializes counter with desired.
         //  Throws          Nothing.
-        explicit cpp20_counting_semaphore(std::ptrdiff_t value)
+        explicit counting_semaphore(std::ptrdiff_t value)
           : sem_(value)
         {
         }
 
-        ~cpp20_counting_semaphore() = default;
+        ~counting_semaphore() = default;
 
         // Preconditions:   update >= 0 is true, and update <= max() - counter
         //                  is true.
@@ -161,94 +161,21 @@ namespace pika::lcos::local {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Mutex = pika::spinlock>
-    class cpp20_binary_semaphore : public cpp20_counting_semaphore<1, Mutex>
+    class binary_semaphore : public counting_semaphore<1, Mutex>
     {
     public:
-        PIKA_NON_COPYABLE(cpp20_binary_semaphore);
+        PIKA_NON_COPYABLE(binary_semaphore);
 
     public:
-        cpp20_binary_semaphore(std::ptrdiff_t value = 1)
-          : cpp20_counting_semaphore<1, Mutex>(value)
+        binary_semaphore(std::ptrdiff_t value = 1)
+          : counting_semaphore<1, Mutex>(value)
         {
         }
 
-        ~cpp20_binary_semaphore() = default;
+        ~binary_semaphore() = default;
     };
 
-    ///////////////////////////////////////////////////////////////////////////
-    template <typename Mutex = pika::spinlock, int N = 0>
-    class counting_semaphore_var : cpp20_counting_semaphore<PTRDIFF_MAX, Mutex>
-    {
-    private:
-        using mutex_type = Mutex;
-
-    public:
-        // \brief Construct a new counting semaphore
-        //
-        // \param value    [in] The initial value of the internal semaphore
-        //                 lock count. Normally this value should be zero
-        //                 (which is the default), values greater than zero
-        //                 are equivalent to the same number of signals pre-
-        //                 set, and negative values are equivalent to the
-        //                 same number of waits pre-set.
-        //
-        //  Preconditions   value >= 0 is true, and value <= max() is true.
-        //  Effects         Initializes counter with desired.
-        //  Throws          Nothing.
-        explicit counting_semaphore_var(std::ptrdiff_t value = N)
-          : cpp20_counting_semaphore<PTRDIFF_MAX, Mutex>(value)
-        {
-        }
-
-        counting_semaphore_var(counting_semaphore_var const&) = delete;
-        counting_semaphore_var& operator=(
-            counting_semaphore_var const&) = delete;
-
-        // \brief Wait for the semaphore to be signaled
-        //
-        // \param count    [in] The value by which the internal lock count will
-        //                 be decremented. At the same time this is the minimum
-        //                 value of the lock count at which the thread is not
-        //                 yielded.
-        void wait(std::ptrdiff_t count = 1)
-        {
-            std::unique_lock<mutex_type> l(this->mtx_);
-            this->sem_.wait(l, count);
-        }
-
-        // \brief Try to wait for the semaphore to be signaled
-        //
-        // \param count    [in] The value by which the internal lock count will
-        //                 be decremented. At the same time this is the minimum
-        //                 value of the lock count at which the thread is not
-        //                 yielded.
-        //
-        // \returns        The function returns true if the calling thread was
-        //                 able to acquire the requested amount of credits.
-        //                 The function returns false if not sufficient credits
-        //                 are available at this point in time.
-        bool try_wait(std::ptrdiff_t count = 1)
-        {
-            std::unique_lock<mutex_type> l(this->mtx_);
-            return this->sem_.try_wait(l, count);
-        }
-
-        /// \brief Signal the semaphore
-        void signal(std::ptrdiff_t count = 1)
-        {
-            std::unique_lock<mutex_type> l(this->mtx_);
-            this->sem_.signal(PIKA_MOVE(l), count);
-        }
-
-        std::ptrdiff_t signal_all()
-        {
-            std::unique_lock<mutex_type> l(this->mtx_);
-            return this->sem_.signal_all(PIKA_MOVE(l));
-        }
-    };
-
-    using counting_semaphore = counting_semaphore_var<>;
-}    // namespace pika::lcos::local
+}    // namespace pika
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
 #pragma warning(pop)
