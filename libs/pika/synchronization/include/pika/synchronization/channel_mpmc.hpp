@@ -20,7 +20,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika::lcos {
+namespace pika::experimental {
 
     ////////////////////////////////////////////////////////////////////////////
     // A simple but very high performance implementation of the channel concept.
@@ -179,7 +179,7 @@ namespace pika::lcos {
             {
                 l.unlock();
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "pika::lcos::bounded_channel::close",
+                    "pika::experimental::bounded_channel::close",
                     "attempting to close an already closed channel");
             }
 
@@ -215,4 +215,4 @@ namespace pika::lcos {
     template <typename T>
     using channel_mpmc = bounded_channel<T, pika::spinlock>;
 
-}    // namespace pika::lcos
+}    // namespace pika::experimental

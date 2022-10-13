@@ -31,7 +31,7 @@ namespace pika {
 
     private:
         std::atomic<long> status_;
-        lcos::local::event event_;
+        pika::experimental::event event_;
 
         template <typename F, typename... Args>
         friend void call_once(once_flag& flag, F&& f, Args&&... args);

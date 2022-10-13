@@ -17,7 +17,7 @@
 #include <utility>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika::lcos::local {
+namespace pika::experimental {
     /// Event semaphores can be used for synchronizing multiple threads that
     /// need to wait for an event to occur. When the event occurs, all threads
     /// waiting for the event are woken up.
@@ -90,4 +90,4 @@ namespace pika::lcos::local {
 
         std::atomic<bool> event_;
     };
-}    // namespace pika::lcos::local
+}    // namespace pika::experimental

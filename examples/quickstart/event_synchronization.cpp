@@ -18,7 +18,7 @@
 struct data
 {
     ///< For synchronizing two-phase initialization.
-    pika::lcos::local::event init;
+    pika::experimental::event init;
 
     char const* msg;
 
