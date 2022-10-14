@@ -278,6 +278,17 @@ int main()
 
     {
         std::atomic<bool> set_error_called{false};
+        auto s =
+            ex::when_all_vector(std::vector{const_reference_error_sender{}});
+        auto r = error_callback_receiver<decltype(check_exception_ptr)>{
+            check_exception_ptr, set_error_called};
+        auto os = ex::connect(std::move(s), std::move(r));
+        ex::start(os);
+        PIKA_TEST(set_error_called);
+    }
+
+    {
+        std::atomic<bool> set_error_called{false};
         std::vector<ex::unique_any_sender<double>> senders;
         senders.emplace_back(error_sender<double>{});
         senders.emplace_back(ex::just(42.0));

@@ -99,8 +99,10 @@ namespace pika::when_all_vector_detail {
         // or std::exception_ptr
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_concat_t<
-            pika::execution::experimental::error_types_of_t<Sender,
-                pika::execution::experimental::detail::empty_env, Variant>,
+            pika::util::detail::transform_t<
+                pika::execution::experimental::error_types_of_t<Sender,
+                    pika::execution::experimental::detail::empty_env, Variant>,
+                std::decay>,
             Variant<std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
@@ -144,8 +146,10 @@ namespace pika::when_all_vector_detail {
         // or std::exception_ptr
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_concat_t<
-            typename pika::execution::experimental::sender_traits<
-                Sender>::template error_types<Variant>,
+            pika::util::detail::transform_t<
+                typename pika::execution::experimental::sender_traits<
+                    Sender>::template error_types<Variant>,
+                std::decay>,
             Variant<std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
