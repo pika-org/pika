@@ -51,7 +51,8 @@ namespace mpi = pika::mpi::experimental;
 namespace tt = pika::this_thread::experimental;
 namespace deb = pika::debug;
 
-static bool output = true;
+static bool output = false;
+static bool mpi_task_transfer = false;
 
 // ------------------------------------------------------------
 // a debug level of zero disables messages with a priority>0
@@ -71,29 +72,6 @@ struct message_item
     }
 };
 
-// ------------------------------------------------------------
-void rmsg_info(int rank, int size, int from, message_item& token, unsigned tag)
-{
-    // to reduce string corruption on stdout from multiple threads
-    // writing simultaneously, we use a stringstream as a buffer
-    if (output)
-    {
-        using namespace pika::debug::detail;
-        msr_deb<0>.debug(str<>("Recv"), "Rank", dec<3>(rank), "of", dec<3>(size), "Recv token",
-            dec<3>(token.databuf[0]), "from rank", dec<3>(from), "tag", dec<3>(tag));
-    }
-}
-
-void smsg_info(int rank, int size, int to, message_item& token, unsigned tag)
-{
-    if (output)
-    {
-        using namespace pika::debug::detail;
-        msr_deb<1>.debug(str<>("Send"), "Rank", dec<3>(rank), "of", dec<3>(size), "Send token",
-            dec<3>(token.databuf[0]), "to   rank", dec<3>(to), "tag", dec<3>(tag));
-    }
-}
-
 inline std::uint32_t next_rank(std::uint32_t rank, std::uint32_t size)
 {
     return (rank + 1) % size;
@@ -101,20 +79,39 @@ inline std::uint32_t next_rank(std::uint32_t rank, std::uint32_t size)
 
 inline std::uint32_t prev_rank(std::uint32_t rank, std::uint32_t size)
 {
-    return (rank - 1) % size;
+    return (rank + size - 1) % size;
 }
 
-inline std::uint32_t tag_no(std::uint32_t rank, std::uint32_t iteration, std::uint32_t n_iterations)
+const int safety_factor = 5;
+
+inline std::uint32_t tag_no(std::uint32_t rank, std::uint32_t iteration, std::uint32_t in_flight)
 {
-    return (rank * n_iterations) + iteration;
+    return (rank * (in_flight * safety_factor)) + (iteration % (in_flight * safety_factor));
 }
 
-inline std::uint32_t recv_tag(
-    std::uint32_t rank, std::uint32_t size, std::uint32_t iteration, std::uint32_t n_iterations)
+// ------------------------------------------------------------
+enum class msg_type : std::uint32_t
 {
-    return (prev_rank(rank, size) * n_iterations) + iteration;
+    send = 0,
+    recv = 1
+};
+
+void msg_info(std::uint32_t rank, std::uint32_t size, msg_type mtype, message_item& token,
+    unsigned tag, const char* xmsg = nullptr)
+{
+    if (output)
+    {
+        using namespace pika::debug::detail;
+        int other = (mtype == msg_type::send) ? next_rank(rank, size) : prev_rank(rank, size);
+        const char* msg = (mtype == msg_type::send) ? "send" : "recv";
+        std::stringstream temp;
+        temp << "R " << dec<3>(rank) << "/" << dec<3>(size);
+        msr_deb<0>.debug(str<>(msg), temp.str(), "token", dec<3>(token.databuf[0]), "to/from",
+            dec<3>(other), "tag", dec<3>(tag), xmsg);
+    }
 }
 
+// ------------------------------------------------------------
 // this is called on an pika thread after the runtime starts up
 int pika_main(pika::program_options::variables_map& vm)
 {
@@ -129,7 +126,8 @@ int pika_main(pika::program_options::variables_map& vm)
     // --------------------------
     if (vm.count("standalone") == 0)
     {
-        PIKA_TEST_MSG(size > 1, "This test requires N>1 mpi ranks");
+        PIKA_TEST_MSG(
+            size > 1, "This test requires N>1 mpi ranks, use --standalone for single node testing");
     }
 
     // --------------------------
@@ -137,9 +135,10 @@ int pika_main(pika::program_options::variables_map& vm)
     // --------------------------
     const std::uint64_t iterations = vm["iterations"].as<std::uint64_t>();
     output = vm.count("output") != 0;
+    mpi_task_transfer = vm.count("mpi-task-transfer") != 0;
     //
-    auto throttling = vm["in-flight-limit"].as<std::uint32_t>();
-    mpi::set_max_requests_in_flight(throttling, mpi::stream_type::user);
+    auto in_flight = vm["in-flight-limit"].as<std::uint32_t>();
+    mpi::set_max_requests_in_flight(in_flight, mpi::stream_type::user);
 
     // --------------------------
     // main scope with polling enabled
@@ -149,16 +148,18 @@ int pika_main(pika::program_options::variables_map& vm)
         mpi::enable_user_polling enable_polling;
 
         // we will send "tokens" : random data (with counters set by default)
-        std::vector<message_item> tokens(iterations * size, size);
-        for (auto& t : tokens)
-        {
-            t.databuf[0] = size;
-        }
+        std::vector<message_item> tokens(safety_factor * in_flight * size, size);
 
+        // To prevent the application exiting the main scope of mpi polling
+        // whilst there are messages in flight, we will count each send/recv and
+        // wait until all are done
+        // each iteration initiate ring = send + recv
+        // each iteration participate in = recv + send (for n_ranks - 1)
+        // #nummessages = (2 * iterations) + (size-1)*2*iterations
+        std::atomic<std::uint64_t> counter = size * 2 * iterations;
+
+        // start a timer
         pika::chrono::detail::high_resolution_timer t;
-
-        // Each rank starts N rings, where N=iterations
-        std::atomic<std::uint64_t> counter = iterations;
 
         // for each iteration (number of times we ring send)
         for (std::uint64_t i = 0; i < iterations; ++i)
@@ -167,19 +168,47 @@ int pika_main(pika::program_options::variables_map& vm)
             for (int origin = 0; origin < size; origin++)
             {
                 // post a ring receive for each rank at this iteration
-                std::uint64_t tag = tag_no(origin, i, iterations);
-                auto recv_snd = ex::just(&tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
-                                    prev_rank(rank, size), tag, MPI_COMM_WORLD) |
-                    mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive) |
-                    ex::then([rank, size, tag, origin, &tokens, &counter](int /*result*/) {
+                std::uint64_t tag = tag_no(origin, i, in_flight);
+                auto snd1 = ex::just(&tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
+                                prev_rank(rank, size), tag, MPI_COMM_WORLD) |
+                    mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive);
+                // to prevent continuations running on a polling thread
+                // transfer explicitly to a new pika task
+                ex::any_sender<int> as1;
+                if (mpi_task_transfer)
+                {
+                    as1 =
+                        snd1 | ex::transfer(pika::execution::experimental::thread_pool_scheduler{});
+                }
+                else
+                {
+                    as1 = snd1;
+                }
+                auto recv_snd = as1 |
+                    ex::transfer(pika::execution::experimental::thread_pool_scheduler{}) |
+                    ex::then([=, &tokens, &counter](int /*res*/) {
                         // output info
-                        rmsg_info(rank, size, prev_rank(rank, size), tokens[tag], tag);
-                        // decrement the token
+                        msg_info(rank, size, msg_type::recv, tokens[tag], tag);
+                        counter--;
+
+                        // decrement the token we received
                         --tokens[tag].databuf[0];
+                        if (tokens[tag].databuf[0] != (size - std::uint64_t(rank - origin)) % size)
+                        {
+                            if (output)
+                            {
+                                using namespace pika::debug::detail;
+                                msr_deb<0>.debug(str<>("Recv"), "Rank", dec<3>(rank), "of",
+                                    dec<3>(size), "Recv token", dec<3>(tokens[tag].databuf[0]),
+                                    "from rank", dec<3>(prev_rank(rank, size)), "tag", dec<3>(tag));
+                            }
+                        }
+                        assert(
+                            tokens[tag].databuf[0] == (size - std::uint64_t(rank - origin)) % size);
+
                         // if this token came from us and has been all the way round the ring, just exit
                         if (origin == rank)
                         {
-                            --counter;
                             if (output)
                             {
                                 using namespace pika::debug::detail;
@@ -191,29 +220,58 @@ int pika_main(pika::program_options::variables_map& vm)
                         // if this token is from another rank, then forward it on to the right
                         else
                         {
-                            auto send_snd =
+                            auto snd1 =
                                 ex::just(&tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
                                     next_rank(rank, size), tag, MPI_COMM_WORLD) |
-                                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send) |
-                                ex::then([rank, size, tag, &tokens](int /*result*/) {
+                                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send);
+                            // we don't need an any sender here because running the continuation
+                            // on apolling thread would not do any harm, but for benchmarking
+                            // we want to create more tasks to stress things
+                            ex::any_sender<int> as1;
+                            if (mpi_task_transfer)
+                            {
+                                as1 = snd1 |
+                                    ex::transfer(
+                                        pika::execution::experimental::thread_pool_scheduler{});
+                            }
+                            else
+                            {
+                                as1 = snd1;
+                            }
+                            auto send_snd = as1 |
+                                // ex::transfer(pika::execution::experimental::thread_pool_scheduler{}) |
+                                ex::then([=, &tokens, &counter](int /*res*/) {
                                     // output info
-                                    smsg_info(rank, size, next_rank(rank, size), tokens[tag], tag);
+                                    msg_info(rank, size, msg_type::send, tokens[tag], tag);
+                                    counter--;
                                 });
+                            msg_info(rank, size, msg_type::send, tokens[tag], tag, "post");
                             ex::start_detached(std::move(send_snd));
                         }
                     });
+                msg_info(rank, size, msg_type::recv, tokens[tag], tag, "post");
                 ex::start_detached(std::move(recv_snd));
             }
 
             // start the ring (first message) message for this iteration/rank
-            std::uint64_t tag = tag_no(rank, i, iterations);
-            auto send_snd = ex::just(&tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
-                                next_rank(rank, size), tag, MPI_COMM_WORLD) |
+            std::uint64_t tag = tag_no(rank, i, in_flight);
+            tokens[tag].databuf[0] = size;
+            auto send_snd =
+#if SPAWN_AS_NEW_TASK
+//                ex::transfer_just(pika::execution::experimental::thread_pool_scheduler{},
+//                                  &tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
+//                    next_rank(rank, size), tag, MPI_COMM_WORLD) |
+#else
+                ex::just(&tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
+                    next_rank(rank, size), tag, MPI_COMM_WORLD) |
+#endif
                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::user) |
-                ex::then([rank, size, tag, &tokens](int /*result*/) {
+                ex::then([=, &tokens, &counter](int /*result*/) {
                     // output info
-                    smsg_info(rank, size, next_rank(rank, size), tokens[tag], tag);
+                    msg_info(rank, size, msg_type::send, tokens[tag], tag);
+                    counter--;
                 });
+            msg_info(rank, size, msg_type::send, tokens[tag], tag, "post");
             ex::start_detached(std::move(send_snd));
         }
 
@@ -244,9 +302,15 @@ int pika_main(pika::program_options::variables_map& vm)
 
         if (rank == 0)
         {
-            std::cout << "time " << t.elapsed() << std::endl;
+            // a complete set of results formatted for plotting
+            std::stringstream temp;
+            char const* msg = "CSVData, {1}, in_flight, {2}, ranks, {3}, threads, {4}, iterations, "
+                              "{5}, task_transfer, {6} time";
+            pika::util::format_to(temp, msg, in_flight, size, pika::get_num_worker_threads(),
+                iterations, mpi_task_transfer, t.elapsed())
+                << std::endl;
+            std::cout << temp.str();
         }
-
         // let the user polling go out of scope
     }
     return pika::finalize();
@@ -278,6 +342,8 @@ int main(int argc, char* argv[])
         pika::program_options::value<std::uint32_t>()->default_value(
             mpi::get_max_requests_in_flight()),
         "Apply a limit to the number of messages in flight.");
+
+    cmdline.add_options()("mpi-task-transfer", "Always put mpi polling results onto new pika task");
 
     cmdline.add_options()("output", "Display messages during test");
 
