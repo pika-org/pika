@@ -50,6 +50,11 @@ int main()
     }
 
     {
+        int x = 42;
+        ex::start_detached(const_reference_sender<int>{x});
+    }
+
+    {
         std::atomic<bool> start_called{false};
         std::atomic<bool> connect_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
