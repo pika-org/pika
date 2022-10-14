@@ -11,7 +11,9 @@
 #include <pika/mpi.hpp>
 #include <pika/program_options.hpp>
 #include <pika/testing.hpp>
-
+//
+#include <boost/lockfree/stack.hpp>
+//
 #include <array>
 #include <atomic>
 #include <cstdint>
@@ -111,6 +113,23 @@ void msg_info(std::uint32_t rank, std::uint32_t size, msg_type mtype, message_it
     }
 }
 
+boost::lockfree::stack<message_item*, boost::lockfree::fixed_sized<false>> message_buffers(1024);
+
+message_item* get_msg_buffer()
+{
+    message_item* buffer;
+    if (message_buffers.pop(buffer))
+    {
+        return buffer;
+    }
+    return new message_item;
+}
+
+void release_msg_buffer(message_item* buffer)
+{
+    message_buffers.push(buffer);
+}
+
 // ------------------------------------------------------------
 // this is called on an pika thread after the runtime starts up
 int pika_main(pika::program_options::variables_map& vm)
@@ -147,9 +166,6 @@ int pika_main(pika::program_options::variables_map& vm)
         // the scope of the user polling must include all uses of transform_mpi
         mpi::enable_user_polling enable_polling;
 
-        // we will send "tokens" : random data (with counters set by default)
-        std::vector<message_item> tokens(safety_factor * in_flight * size, size);
-
         // To prevent the application exiting the main scope of mpi polling
         // whilst there are messages in flight, we will count each send/recv and
         // wait until all are done
@@ -168,8 +184,9 @@ int pika_main(pika::program_options::variables_map& vm)
             for (int origin = 0; origin < size; origin++)
             {
                 // post a ring receive for each rank at this iteration
+                auto buf = get_msg_buffer();
                 std::uint64_t tag = tag_no(origin, i, in_flight);
-                auto snd1 = ex::just(&tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
+                auto snd1 = ex::just(&*buf, sizeof(message_item), MPI_UNSIGNED_CHAR,
                                 prev_rank(rank, size), tag, MPI_COMM_WORLD) |
                     mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive);
                 // to prevent continuations running on a polling thread
@@ -186,25 +203,21 @@ int pika_main(pika::program_options::variables_map& vm)
                 }
                 auto recv_snd = as1 |
                     ex::transfer(pika::execution::experimental::thread_pool_scheduler{}) |
-                    ex::then([=, &tokens, &counter](int /*res*/) {
+                    ex::then([=, &counter](int /*res*/) {
                         // output info
-                        msg_info(rank, size, msg_type::recv, tokens[tag], tag);
+                        msg_info(rank, size, msg_type::recv, *buf, tag);
                         counter--;
 
                         // decrement the token we received
-                        --tokens[tag].databuf[0];
-                        if (tokens[tag].databuf[0] != (size - std::uint64_t(rank - origin)) % size)
+                        --buf->databuf[0];
+                        if (buf->databuf[0] != (size - std::uint64_t(rank - origin)) % size)
                         {
-                            if (output)
-                            {
-                                using namespace pika::debug::detail;
-                                msr_deb<0>.debug(str<>("Recv"), "Rank", dec<3>(rank), "of",
-                                    dec<3>(size), "Recv token", dec<3>(tokens[tag].databuf[0]),
-                                    "from rank", dec<3>(prev_rank(rank, size)), "tag", dec<3>(tag));
-                            }
+                            using namespace pika::debug::detail;
+                            msr_deb<0>.debug(str<>("Recv"), "Rank", dec<3>(rank), "of",
+                                dec<3>(size), "Recv token", dec<3>(buf->databuf[0]), "from rank",
+                                dec<3>(prev_rank(rank, size)), "tag", dec<3>(tag));
                         }
-                        assert(
-                            tokens[tag].databuf[0] == (size - std::uint64_t(rank - origin)) % size);
+                        assert(buf->databuf[0] == (size - std::uint64_t(rank - origin)) % size);
 
                         // if this token came from us and has been all the way round the ring, just exit
                         if (origin == rank)
@@ -213,16 +226,16 @@ int pika_main(pika::program_options::variables_map& vm)
                             {
                                 using namespace pika::debug::detail;
                                 msr_deb<0>.debug(str<>("Complete"), "Rank", dec<3>(rank), "of",
-                                    dec<3>(size), "Recv token", dec<3>(tokens[tag].databuf[0]),
-                                    "tag", dec<3>(tag), "counter", dec<3>(counter));
+                                    dec<3>(size), "Recv token", dec<3>(buf->databuf[0]), "tag",
+                                    dec<3>(tag), "counter", dec<3>(counter));
                             }
+                            release_msg_buffer(buf);
                         }
                         // if this token is from another rank, then forward it on to the right
                         else
                         {
-                            auto snd1 =
-                                ex::just(&tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
-                                    next_rank(rank, size), tag, MPI_COMM_WORLD) |
+                            auto snd1 = ex::just(&*buf, sizeof(message_item), MPI_UNSIGNED_CHAR,
+                                            next_rank(rank, size), tag, MPI_COMM_WORLD) |
                                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::send);
                             // we don't need an any sender here because running the continuation
                             // on apolling thread would not do any harm, but for benchmarking
@@ -240,38 +253,41 @@ int pika_main(pika::program_options::variables_map& vm)
                             }
                             auto send_snd = as1 |
                                 // ex::transfer(pika::execution::experimental::thread_pool_scheduler{}) |
-                                ex::then([=, &tokens, &counter](int /*res*/) {
+                                ex::then([=, &counter](int /*res*/) {
                                     // output info
-                                    msg_info(rank, size, msg_type::send, tokens[tag], tag);
+                                    msg_info(rank, size, msg_type::send, *buf, tag);
                                     counter--;
+                                    release_msg_buffer(buf);
                                 });
-                            msg_info(rank, size, msg_type::send, tokens[tag], tag, "post");
+                            msg_info(rank, size, msg_type::send, *buf, tag, "post");
                             ex::start_detached(std::move(send_snd));
                         }
                     });
-                msg_info(rank, size, msg_type::recv, tokens[tag], tag, "post");
+                msg_info(rank, size, msg_type::recv, *buf, tag, "post");
                 ex::start_detached(std::move(recv_snd));
             }
 
             // start the ring (first message) message for this iteration/rank
+            auto buf = get_msg_buffer();
+            buf->databuf[0] = size;
             std::uint64_t tag = tag_no(rank, i, in_flight);
-            tokens[tag].databuf[0] = size;
             auto send_snd =
 #if SPAWN_AS_NEW_TASK
 //                ex::transfer_just(pika::execution::experimental::thread_pool_scheduler{},
 //                                  &tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
 //                    next_rank(rank, size), tag, MPI_COMM_WORLD) |
 #else
-                ex::just(&tokens[tag], sizeof(message_item), MPI_UNSIGNED_CHAR,
-                    next_rank(rank, size), tag, MPI_COMM_WORLD) |
+                ex::just(&*buf, sizeof(message_item), MPI_UNSIGNED_CHAR, next_rank(rank, size), tag,
+                    MPI_COMM_WORLD) |
 #endif
                 mpi::transform_mpi(MPI_Isend, mpi::stream_type::user) |
-                ex::then([=, &tokens, &counter](int /*result*/) {
+                ex::then([=, &counter](int /*result*/) {
                     // output info
-                    msg_info(rank, size, msg_type::send, tokens[tag], tag);
+                    msg_info(rank, size, msg_type::send, *buf, tag);
                     counter--;
+                    release_msg_buffer(buf);
                 });
-            msg_info(rank, size, msg_type::send, tokens[tag], tag, "post");
+            msg_info(rank, size, msg_type::send, *buf, tag, "post");
             ex::start_detached(std::move(send_snd));
         }
 
@@ -298,6 +314,8 @@ int pika_main(pika::program_options::variables_map& vm)
             pika::this_thread::yield();
         }
 
+        double elapsed = t.elapsed();
+
         std::cout << "Rank " << rank << " reached end of test " << counter << std::endl;
 
         if (rank == 0)
@@ -307,7 +325,7 @@ int pika_main(pika::program_options::variables_map& vm)
             char const* msg = "CSVData, {1}, in_flight, {2}, ranks, {3}, threads, {4}, iterations, "
                               "{5}, task_transfer, {6} time";
             pika::util::format_to(temp, msg, in_flight, size, pika::get_num_worker_threads(),
-                iterations, mpi_task_transfer, t.elapsed())
+                iterations, mpi_task_transfer, elapsed)
                 << std::endl;
             std::cout << temp.str();
         }
