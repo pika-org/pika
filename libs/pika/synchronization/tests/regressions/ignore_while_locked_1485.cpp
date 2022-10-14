@@ -30,8 +30,7 @@ struct wait_for_flag
     }
 
     void wait(pika::spinlock& local_mutex,
-        pika::condition_variable_any& local_cond_var,
-        bool& running)
+        pika::condition_variable_any& local_cond_var, bool& running)
     {
         bool first = true;
         while (!flag)
@@ -40,8 +39,7 @@ struct wait_for_flag
             if (first)
             {
                 {
-                    std::lock_guard<pika::spinlock> lk(
-                        local_mutex);
+                    std::lock_guard<pika::spinlock> lk(local_mutex);
                     running = true;
                 }
 

@@ -68,8 +68,7 @@ namespace pika { namespace threads {
 
                         // Now signal to the waiting thread that we're done.
                         {
-                            std::lock_guard<pika::spinlock> lk(
-                                mtx);
+                            std::lock_guard<pika::spinlock> lk(mtx);
                             stopping = true;
                         }
                         cond->notify_all();
@@ -119,8 +118,7 @@ namespace pika { namespace threads {
 
                         // Now signal to the waiting thread that we're done.
                         {
-                            std::lock_guard<pika::spinlock> lk(
-                                mtx);
+                            std::lock_guard<pika::spinlock> lk(mtx);
                             stopping = true;
                         }
                         cond->notify_all();

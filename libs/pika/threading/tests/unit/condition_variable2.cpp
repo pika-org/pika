@@ -26,8 +26,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 // helper to call wait()
 void cv_wait(pika::stop_token stoken, int /* id */, bool& ready,
-    pika::mutex& ready_mtx,
-    pika::condition_variable_any& ready_cv, bool notify_called)
+    pika::mutex& ready_mtx, pika::condition_variable_any& ready_cv,
+    bool notify_called)
 {
     try
     {
@@ -256,8 +256,7 @@ void test_minimal_wait(int sec)
                     {
                         auto t0 = std::chrono::steady_clock::now();
                         {
-                            std::unique_lock<pika::mutex> lg{
-                                ready_mtx};
+                            std::unique_lock<pika::mutex> lg{ready_mtx};
                             ready_cv.wait(lg, st, [&ready] { return ready; });
                         }
                         PIKA_TEST(std::chrono::steady_clock::now() <
@@ -299,8 +298,7 @@ void test_minimal_wait_for(int sec1, int sec2)
                 {
                     auto t0 = std::chrono::steady_clock::now();
                     {
-                        std::unique_lock<pika::mutex> lg{
-                            ready_mtx};
+                        std::unique_lock<pika::mutex> lg{ready_mtx};
                         ready_cv.wait_for(
                             lg, st, dur_wait, [&ready] { return ready; });
                     }
@@ -517,8 +515,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
         // don't forget to initialize with {} here !!!
         std::array<bool, NumExtraCV> arr_ready{};
         std::array<pika::mutex, NumExtraCV> arr_ready_mtx{};
-        std::array<pika::condition_variable_any, NumExtraCV>
-            arr_ready_cv{};
+        std::array<pika::condition_variable_any, NumExtraCV> arr_ready_cv{};
         std::vector<pika::jthread> vthreads_deferred;
 
         pika::jthread t0(
@@ -563,8 +560,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
                 for (int idx = 0; idx < NumExtraCV; ++idx)
                 {
                     {
-                        std::lock_guard<pika::mutex> lg(
-                            arr_ready_mtx[idx]);
+                        std::lock_guard<pika::mutex> lg(arr_ready_mtx[idx]);
                         arr_ready[idx] = true;
                         arr_ready_cv[idx].notify_one();
                     }    // release lock

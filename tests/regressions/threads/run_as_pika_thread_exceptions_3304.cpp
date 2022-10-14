@@ -22,8 +22,7 @@ std::condition_variable startup_cond;
 bool running = false;
 bool stop_running = false;
 
-int start_func(pika::spinlock& mtx,
-    pika::condition_variable_any& cond)
+int start_func(pika::spinlock& mtx, pika::condition_variable_any& cond)
 {
     // Signal to constructor that thread has started running.
     {

@@ -48,8 +48,7 @@ struct test_lock
         // Test the lock and the mutex with condition variables.
         // No one is going to notify this condition variable.  We expect to
         // time out.
-        PIKA_TEST(condition.wait_until(lock, xt) ==
-            pika::cv_status::timeout);
+        PIKA_TEST(condition.wait_until(lock, xt) == pika::cv_status::timeout);
         PIKA_TEST(lock ? true : false);
 
         // Test the lock and unlock methods.
@@ -90,8 +89,7 @@ struct test_trylock
         // Test the lock and the mutex with condition variables.
         // No one is going to notify this condition variable.  We expect to
         // time out.
-        PIKA_TEST(condition.wait_until(lock, xt) ==
-            pika::cv_status::timeout);
+        PIKA_TEST(condition.wait_until(lock, xt) == pika::cv_status::timeout);
         PIKA_TEST(lock ? true : false);
 
         // Test the lock, unlock and trylock methods.

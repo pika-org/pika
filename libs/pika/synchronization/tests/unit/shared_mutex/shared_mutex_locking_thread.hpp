@@ -31,11 +31,9 @@ namespace test {
 
     public:
         locking_thread(pika::shared_mutex& rw_mutex_,
-            unsigned& unblocked_count_,
-            pika::mutex& unblocked_count_mutex_,
+            unsigned& unblocked_count_, pika::mutex& unblocked_count_mutex_,
             pika::condition_variable& unblocked_condition_,
-            pika::mutex& finish_mutex_,
-            unsigned& simultaneous_running_count_,
+            pika::mutex& finish_mutex_, unsigned& simultaneous_running_count_,
             unsigned& max_simultaneous_running_)
           : rw_mutex(rw_mutex_)
           , unblocked_count(unblocked_count_)
@@ -54,8 +52,7 @@ namespace test {
 
             // increment count to show we're unblocked
             {
-                std::unique_lock<pika::mutex> ublock(
-                    unblocked_count_mutex);
+                std::unique_lock<pika::mutex> ublock(unblocked_count_mutex);
 
                 ++unblocked_count;
                 unblocked_condition.notify_one();
@@ -67,11 +64,9 @@ namespace test {
             }
 
             // wait to finish
-            std::unique_lock<pika::mutex> finish_lock(
-                finish_mutex);
+            std::unique_lock<pika::mutex> finish_lock(finish_mutex);
             {
-                std::unique_lock<pika::mutex> ublock(
-                    unblocked_count_mutex);
+                std::unique_lock<pika::mutex> ublock(unblocked_count_mutex);
 
                 --simultaneous_running_count;
             }
@@ -89,8 +84,7 @@ namespace test {
 
     public:
         simple_writing_thread(pika::shared_mutex& rwm_,
-            pika::mutex& finish_mutex_,
-            pika::mutex& unblocked_mutex_,
+            pika::mutex& finish_mutex_, pika::mutex& unblocked_mutex_,
             unsigned& unblocked_count_)
           : rwm(rwm_)
           , finish_mutex(finish_mutex_)
@@ -121,8 +115,7 @@ namespace test {
 
     public:
         simple_reading_thread(pika::shared_mutex& rwm_,
-            pika::mutex& finish_mutex_,
-            pika::mutex& unblocked_mutex_,
+            pika::mutex& finish_mutex_, pika::mutex& unblocked_mutex_,
             unsigned& unblocked_count_)
           : rwm(rwm_)
           , finish_mutex(finish_mutex_)

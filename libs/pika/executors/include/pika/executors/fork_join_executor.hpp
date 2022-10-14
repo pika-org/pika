@@ -95,8 +95,8 @@ namespace pika { namespace execution { namespace experimental {
 
             struct region_data_type;
             using thread_function_helper_type = void(region_data_type&,
-                std::size_t, std::size_t, queues_type&,
-                pika::spinlock&, std::exception_ptr&) noexcept;
+                std::size_t, std::size_t, queues_type&, pika::spinlock&,
+                std::exception_ptr&) noexcept;
 
             // Members that change for each parallel region.
             struct region_data
@@ -436,8 +436,7 @@ namespace pika { namespace execution { namespace experimental {
                 /// scheduling).
                 static void call_dynamic(region_data_type& rdata,
                     std::size_t thread_index, std::size_t num_threads,
-                    queues_type& queues,
-                    pika::spinlock& exception_mutex,
+                    queues_type& queues, pika::spinlock& exception_mutex,
                     std::exception_ptr& exception) noexcept
                 {
                     region_data& data = rdata[thread_index].data_;

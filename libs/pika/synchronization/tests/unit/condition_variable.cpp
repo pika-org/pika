@@ -99,8 +99,7 @@ struct wait_for_flag
         std::unique_lock<pika::mutex> lock(mutex);
         while (!flag)
         {
-            if (cond_var.wait_until(lock, timeout) ==
-                pika::cv_status::timeout)
+            if (cond_var.wait_until(lock, timeout) == pika::cv_status::timeout)
             {
                 return;
             }
@@ -621,8 +620,7 @@ void test_wait_until_times_out()
         std::chrono::system_clock::now();
     std::chrono::system_clock::time_point const timeout = start + delay;
 
-    while (cond.wait_until(lock, timeout) ==
-        pika::cv_status::no_timeout)
+    while (cond.wait_until(lock, timeout) == pika::cv_status::no_timeout)
     {
     }
 
@@ -675,8 +673,7 @@ void test_wait_until_relative_times_out()
     std::chrono::system_clock::time_point const start =
         std::chrono::system_clock::now();
 
-    while (
-        cond.wait_for(lock, delay) == pika::cv_status::no_timeout)
+    while (cond.wait_for(lock, delay) == pika::cv_status::no_timeout)
     {
     }
 

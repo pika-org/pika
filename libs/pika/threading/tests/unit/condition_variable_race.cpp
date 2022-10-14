@@ -132,8 +132,7 @@
 void test_cv_mutex()
 {
     void* raw = std::malloc(sizeof(pika::condition_variable));
-    pika::condition_variable* cv =
-        new (raw) pika::condition_variable;
+    pika::condition_variable* cv = new (raw) pika::condition_variable;
 
     pika::mutex m;
     std::atomic<bool> f_ready{false};
@@ -176,8 +175,7 @@ void test_cv_mutex()
 void test_cv_any_mutex()
 {
     void* raw = std::malloc(sizeof(pika::condition_variable_any));
-    pika::condition_variable_any* cv =
-        new (raw) pika::condition_variable_any;
+    pika::condition_variable_any* cv = new (raw) pika::condition_variable_any;
 
     pika::mutex m;
     std::atomic<bool> f_ready{false};
