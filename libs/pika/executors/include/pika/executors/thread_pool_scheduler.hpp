@@ -286,7 +286,7 @@ namespace pika::execution::experimental {
 #endif
         /// \endcond
 
-    private:
+    protected:
         /// \cond NOINTERNAL
         char const* get_fallback_annotation() const
         {
@@ -312,6 +312,7 @@ namespace pika::execution::experimental {
             return "<unknown>";
         }
 
+    protected:
         pika::threads::detail::thread_pool_base* pool_ =
             pika::threads::detail::get_self_or_default_pool();
         pika::execution::thread_priority priority_ = pika::execution::thread_priority::normal;
