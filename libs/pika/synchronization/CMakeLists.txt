@@ -34,7 +34,7 @@ set(synchronization_headers
 
 set(synchronization_sources
     detail/condition_variable.cpp detail/counting_semaphore.cpp
-    detail/sliding_semaphore.cpp barrier.cpp mutex.cpp stop_token.cpp
+    detail/sliding_semaphore.cpp mutex.cpp stop_token.cpp
 )
 
 include(pika_add_module)
