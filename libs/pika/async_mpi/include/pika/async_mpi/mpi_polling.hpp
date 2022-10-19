@@ -128,6 +128,11 @@ namespace pika::mpi::experimental {
     /// returns the number of mpi requests currently outstanding
     PIKA_EXPORT std::uint32_t get_num_requests_in_flight(stream_type s);
 
+    // -----------------------------------------------------------------
+    /// set the maximume number of MPI_Request completions to
+    /// handle at each polling event
+    PIKA_EXPORT void set_max_mpi_polling_size(std::uint32_t);
+
     // initialize the pika::mpi background request handler
     // All ranks should call this function,
     // but only one thread per rank needs to do so
