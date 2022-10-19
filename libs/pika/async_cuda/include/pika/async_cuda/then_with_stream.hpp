@@ -20,6 +20,7 @@
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
+#include <pika/functional/invoke_fused.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <whip.hpp>
@@ -109,6 +110,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 PIKA_ASSERT(
                     pika::detail::holds_alternative<pika::detail::monostate>(
                         op_state.result));
+                op_state.ts = {};
                 set_value_event_callback_helper(
                     status, PIKA_MOVE(op_state.receiver));
             },
@@ -122,6 +124,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             [&op_state](whip::error_t status) mutable {
                 PIKA_ASSERT(
                     pika::detail::holds_alternative<Result>(op_state.result));
+                op_state.ts = {};
                 set_value_event_callback_helper(status,
                     PIKA_MOVE(op_state.receiver),
                     PIKA_MOVE(pika::detail::get<Result>(op_state.result)));
@@ -297,6 +300,12 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 {
                     pika::detail::try_catch_exception_ptr(
                         [&]() mutable {
+                            using ts_element_type =
+                                std::tuple<std::decay_t<Ts>...>;
+                            op_state.ts.template emplace<ts_element_type>(
+                                PIKA_FORWARD(Ts, ts)...);
+                            auto& t = std::get<ts_element_type>(op_state.ts);
+
                             if (!op_state.stream)
                             {
                                 op_state.stream.emplace(
@@ -336,8 +345,12 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                             {
                                 // When the return type is void, there is no
                                 // value to forward to the receiver
-                                PIKA_INVOKE(PIKA_MOVE(op_state.f),
-                                    op_state.stream.value(), ts...);
+                                pika::util::detail::invoke_fused(
+                                    [&](auto&... ts) mutable {
+                                        PIKA_INVOKE(PIKA_MOVE(op_state.f),
+                                            op_state.stream.value(), ts...);
+                                    },
+                                    t);
 
                                 if constexpr (is_then_with_cuda_stream_receiver<
                                                   std::decay_t<Receiver>>::
@@ -375,10 +388,14 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                             {
                                 // When the return type is non-void, we have to
                                 // forward the value to the receiver
-                                op_state.result
-                                    .template emplace<invoke_result_type>(
-                                        PIKA_INVOKE(PIKA_MOVE(op_state.f),
+                                pika::util::detail::invoke_fused(
+                                    [&](auto&... ts) mutable {
+                                        op_state.result.template emplace<
+                                            invoke_result_type>(PIKA_INVOKE(
+                                            PIKA_MOVE(op_state.f),
                                             op_state.stream.value(), ts...));
+                                    },
+                                    t);
 
                                 if constexpr (is_then_with_cuda_stream_receiver<
                                                   std::decay_t<Receiver>>::
