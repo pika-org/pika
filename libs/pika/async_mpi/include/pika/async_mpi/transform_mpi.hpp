@@ -202,13 +202,15 @@ namespace pika::mpi::experimental {
                     tag_invoke(pika::execution::experimental::set_value_t,
                         transform_mpi_receiver&& r, Ts&&... ts) noexcept
                     {
-                        using ts_element_type = std::tuple<std::decay_t<Ts>...>;
-                        r.op_state.ts.template emplace<ts_element_type>(
-                            PIKA_FORWARD(Ts, ts)...);
-                        auto& t = std::get<ts_element_type>(r.op_state.ts);
-
                         pika::detail::try_catch_exception_ptr(
-                            [&]() {
+                            [&]() mutable {
+                                using ts_element_type =
+                                    std::tuple<std::decay_t<Ts>...>;
+                                r.op_state.ts.template emplace<ts_element_type>(
+                                    PIKA_FORWARD(Ts, ts)...);
+                                auto& t =
+                                    std::get<ts_element_type>(r.op_state.ts);
+
                                 MPI_Request request;
 
                                 using invoke_result_type =
