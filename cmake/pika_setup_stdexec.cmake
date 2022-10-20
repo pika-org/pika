@@ -14,9 +14,9 @@ if(PIKA_WITH_P2300_REFERENCE_IMPLEMENTATION)
 
   endif()
 
-  pika_find_package(p2300 REQUIRED)
+  pika_find_package(STDEXEC REQUIRED)
   if(NOT PIKA_FIND_PACKAGE)
-    target_link_libraries(pika_base_libraries INTERFACE P2300::p2300)
+    target_link_libraries(pika_base_libraries INTERFACE STDEXEC::stdexec)
   endif()
 
 endif()
