@@ -20,7 +20,7 @@ jobs:
   build:
     name: github/linux/tracy/fast
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-base:10
+    container: pikaorg/pika-ci-base:11
 
     steps:
     - name: Check out Tracy
