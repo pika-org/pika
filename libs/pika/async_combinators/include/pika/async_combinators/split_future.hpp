@@ -55,8 +55,8 @@ namespace pika {
     ///             futures will be exceptional as well.
     ///
     template <typename T>
-    inline std::vector<future<T>> split_future(
-        future<std::vector<T>>&& f, std::size_t size);
+    inline std::vector<future<T>>
+    split_future(future<std::vector<T>>&& f, std::size_t size);
 }    // namespace pika
 
 #else    // DOXYGEN
@@ -175,16 +175,16 @@ namespace pika {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename... Ts, std::size_t... Is>
-        PIKA_FORCEINLINE std::tuple<pika::future<Ts>...> split_future_helper(
-            pika::future<std::tuple<Ts...>>&& f,
+        PIKA_FORCEINLINE std::tuple<pika::future<Ts>...>
+        split_future_helper(pika::future<std::tuple<Ts...>>&& f,
             pika::util::detail::index_pack<Is...>)
         {
             return std::make_tuple(extract_nth_future<Is>(f)...);
         }
 
         template <typename... Ts, std::size_t... Is>
-        PIKA_FORCEINLINE std::tuple<pika::future<Ts>...> split_future_helper(
-            pika::shared_future<std::tuple<Ts...>>&& f,
+        PIKA_FORCEINLINE std::tuple<pika::future<Ts>...>
+        split_future_helper(pika::shared_future<std::tuple<Ts...>>&& f,
             pika::util::detail::index_pack<Is...>)
         {
             return std::make_tuple(extract_nth_future<Is>(f)...);
@@ -259,8 +259,8 @@ namespace pika {
         };
 
         template <typename T, typename Future>
-        inline pika::future<T> extract_future_array(
-            std::size_t i, Future& future)
+        inline pika::future<T>
+        extract_future_array(std::size_t i, Future& future)
         {
             using shared_state = split_continuation<T>;
 
@@ -272,8 +272,8 @@ namespace pika {
         }
 
         template <std::size_t N, typename T, typename Future>
-        inline std::array<pika::future<T>, N> split_future_helper_array(
-            Future&& f)
+        inline std::array<pika::future<T>, N>
+        split_future_helper_array(Future&& f)
         {
             std::array<pika::future<T>, N> result;
 
@@ -284,8 +284,8 @@ namespace pika {
         }
 
         template <typename T, typename Future>
-        inline std::vector<pika::future<T>> split_future_helper_vector(
-            Future&& f, std::size_t size)
+        inline std::vector<pika::future<T>>
+        split_future_helper_vector(Future&& f, std::size_t size)
         {
             std::vector<pika::future<T>> result;
             result.reserve(size);
@@ -299,8 +299,8 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename... Ts>
-    PIKA_FORCEINLINE std::tuple<pika::future<Ts>...> split_future(
-        pika::future<std::tuple<Ts...>>&& f)
+    PIKA_FORCEINLINE std::tuple<pika::future<Ts>...>
+    split_future(pika::future<std::tuple<Ts...>>&& f)
     {
         return detail::split_future_helper(PIKA_MOVE(f),
             typename pika::util::detail::make_index_pack<sizeof...(
@@ -314,8 +314,8 @@ namespace pika {
     }
 
     template <typename... Ts>
-    PIKA_FORCEINLINE std::tuple<pika::future<Ts>...> split_future(
-        pika::shared_future<std::tuple<Ts...>>&& f)
+    PIKA_FORCEINLINE std::tuple<pika::future<Ts>...>
+    split_future(pika::shared_future<std::tuple<Ts...>>&& f)
     {
         return detail::split_future_helper(PIKA_MOVE(f),
             typename pika::util::detail::make_index_pack<sizeof...(
@@ -330,30 +330,30 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename T1, typename T2>
-    PIKA_FORCEINLINE std::pair<pika::future<T1>, pika::future<T2>> split_future(
-        pika::future<std::pair<T1, T2>>&& f)
+    PIKA_FORCEINLINE std::pair<pika::future<T1>, pika::future<T2>>
+    split_future(pika::future<std::pair<T1, T2>>&& f)
     {
         return detail::split_future_helper(PIKA_MOVE(f));
     }
 
     template <typename T1, typename T2>
-    PIKA_FORCEINLINE std::pair<pika::future<T1>, pika::future<T2>> split_future(
-        pika::shared_future<std::pair<T1, T2>>&& f)
+    PIKA_FORCEINLINE std::pair<pika::future<T1>, pika::future<T2>>
+    split_future(pika::shared_future<std::pair<T1, T2>>&& f)
     {
         return detail::split_future_helper(PIKA_MOVE(f));
     }
 
     ///////////////////////////////////////////////////////////////////////////
     template <std::size_t N, typename T>
-    PIKA_FORCEINLINE std::array<pika::future<T>, N> split_future(
-        pika::future<std::array<T, N>>&& f)
+    PIKA_FORCEINLINE std::array<pika::future<T>, N>
+    split_future(pika::future<std::array<T, N>>&& f)
     {
         return detail::split_future_helper_array<N, T>(PIKA_MOVE(f));
     }
 
     template <typename T>
-    PIKA_FORCEINLINE std::array<pika::future<void>, 1> split_future(
-        pika::future<std::array<T, 0>>&& f)
+    PIKA_FORCEINLINE std::array<pika::future<void>, 1>
+    split_future(pika::future<std::array<T, 0>>&& f)
     {
         std::array<pika::future<void>, 1> result;
         result[0] = pika::future<void>(PIKA_MOVE(f));
@@ -361,15 +361,15 @@ namespace pika {
     }
 
     template <std::size_t N, typename T>
-    PIKA_FORCEINLINE std::array<pika::future<T>, N> split_future(
-        pika::shared_future<std::array<T, N>>&& f)
+    PIKA_FORCEINLINE std::array<pika::future<T>, N>
+    split_future(pika::shared_future<std::array<T, N>>&& f)
     {
         return detail::split_future_helper_array<N, T>(PIKA_MOVE(f));
     }
 
     template <typename T>
-    PIKA_FORCEINLINE std::array<pika::future<void>, 1> split_future(
-        pika::shared_future<std::array<T, 0>>&& f)
+    PIKA_FORCEINLINE std::array<pika::future<void>, 1>
+    split_future(pika::shared_future<std::array<T, 0>>&& f)
     {
         std::array<pika::future<void>, 1> result;
         result[0] = pika::make_future<void>(PIKA_MOVE(f));
@@ -378,15 +378,15 @@ namespace pika {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename T>
-    PIKA_FORCEINLINE std::vector<pika::future<T>> split_future(
-        pika::future<std::vector<T>>&& f, std::size_t size)
+    PIKA_FORCEINLINE std::vector<pika::future<T>>
+    split_future(pika::future<std::vector<T>>&& f, std::size_t size)
     {
         return detail::split_future_helper_vector<T>(PIKA_MOVE(f), size);
     }
 
     template <typename T>
-    PIKA_FORCEINLINE std::vector<pika::future<T>> split_future(
-        pika::shared_future<std::vector<T>>&& f, std::size_t size)
+    PIKA_FORCEINLINE std::vector<pika::future<T>>
+    split_future(pika::shared_future<std::vector<T>>&& f, std::size_t size)
     {
         return detail::split_future_helper_vector<T>(PIKA_MOVE(f), size);
     }

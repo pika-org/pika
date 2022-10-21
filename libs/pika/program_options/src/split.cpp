@@ -15,8 +15,8 @@
 namespace pika { namespace program_options { namespace detail {
 
     template <class Char>
-    std::vector<std::basic_string<Char>> split_unix(
-        const std::basic_string<Char>& cmdline,
+    std::vector<std::basic_string<Char>>
+    split_unix(const std::basic_string<Char>& cmdline,
         const std::basic_string<Char>& separator,
         const std::basic_string<Char>& quote,
         const std::basic_string<Char>& escape)

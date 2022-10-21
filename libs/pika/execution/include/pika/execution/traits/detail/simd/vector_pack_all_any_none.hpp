@@ -15,24 +15,24 @@
 
 namespace pika::parallel::traits::detail {
     template <typename T, typename Abi>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE std::size_t all_of(
-        std::experimental::simd_mask<T, Abi> const& msk)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE std::size_t
+    all_of(std::experimental::simd_mask<T, Abi> const& msk)
     {
         return std::experimental::all_of(msk);
     }
 
     ///////////////////////////////////////////////////////////////////////
     template <typename T, typename Abi>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE std::size_t any_of(
-        std::experimental::simd_mask<T, Abi> const& msk)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE std::size_t
+    any_of(std::experimental::simd_mask<T, Abi> const& msk)
     {
         return std::experimental::any_of(msk);
     }
 
     ///////////////////////////////////////////////////////////////////////
     template <typename T, typename Abi>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE std::size_t none_of(
-        std::experimental::simd_mask<T, Abi> const& msk)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE std::size_t
+    none_of(std::experimental::simd_mask<T, Abi> const& msk)
     {
         return std::experimental::none_of(msk);
     }

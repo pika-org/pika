@@ -63,8 +63,8 @@ namespace pika { namespace ranges {
     /// \a inclusive_scan includes the ith input element in the ith sum.
     ///
     template <typename InIter, typename Sent, typename OutIter, typename T>
-    exclusive_scan_result<InIter, OutIter> exclusive_scan(
-        InIter first, Sent last, OutIter dest, T init);
+    exclusive_scan_result<InIter, OutIter>
+    exclusive_scan(InIter first, Sent last, OutIter dest, T init);
 
     ///////////////////////////////////////////////////////////////////////////
     /// Assigns through each iterator \a i in [result, result + (last - first))
@@ -206,8 +206,8 @@ namespace pika { namespace ranges {
     ///
     template <typename InIter, typename Sent, typename OutIter, typename T,
         typename Op>
-    exclusive_scan_result<InIter, OutIter> exclusive_scan(
-        InIter first, Sent last, OutIter dest, T init, Op&& op);
+    exclusive_scan_result<InIter, OutIter>
+    exclusive_scan(InIter first, Sent last, OutIter dest, T init, Op&& op);
 
     ///////////////////////////////////////////////////////////////////////////
     /// Assigns through each iterator \a i in [result, result + (last - first))
@@ -344,8 +344,8 @@ namespace pika { namespace ranges {
     /// \a inclusive_scan includes the ith input element in the ith sum.
     ///
     template <typename Rng, typename O, typename T>
-    exclusive_scan_result<traits::range_iterator_t<Rng>, O> exclusive_scan(
-        Rng&& rng, O dest, T init);
+    exclusive_scan_result<traits::range_iterator_t<Rng>, O>
+    exclusive_scan(Rng&& rng, O dest, T init);
 
     ///////////////////////////////////////////////////////////////////////////
     /// Assigns through each iterator \a i in [result, result + (last - first))
@@ -477,8 +477,8 @@ namespace pika { namespace ranges {
     /// \a inclusive_scan includes the ith input element in the ith sum.
     ///
     template <typename Rng, typename O, typename T, typename Op>
-    exclusive_scan_result<traits::range_iterator_t<Rng>, O> exclusive_scan(
-        Rng&& rng, O dest, T init, Op&& op);
+    exclusive_scan_result<traits::range_iterator_t<Rng>, O>
+    exclusive_scan(Rng&& rng, O dest, T init, Op&& op);
 
     ///////////////////////////////////////////////////////////////////////////
     /// Assigns through each iterator \a i in [result, result + (last - first))
@@ -609,9 +609,9 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend exclusive_scan_result<InIter, OutIter> tag_fallback_invoke(
-            pika::ranges::exclusive_scan_t, InIter first, Sent last,
-            OutIter dest, T init, Op&& op = Op())
+        friend exclusive_scan_result<InIter, OutIter>
+        tag_fallback_invoke(pika::ranges::exclusive_scan_t, InIter first,
+            Sent last, OutIter dest, T init, Op&& op = Op())
         {
             static_assert(pika::traits::is_input_iterator_v<InIter>,
                 "Requires at least input iterator.");

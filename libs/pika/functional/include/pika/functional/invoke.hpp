@@ -34,8 +34,8 @@ namespace pika::util::detail {
     ///
     /// \note This function is similar to `std::invoke` (C++17)
     template <typename F, typename... Ts>
-    constexpr PIKA_HOST_DEVICE util::detail::invoke_result_t<F, Ts...> invoke(
-        F&& f, Ts&&... vs)
+    constexpr PIKA_HOST_DEVICE util::detail::invoke_result_t<F, Ts...>
+    invoke(F&& f, Ts&&... vs)
     {
         return PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
     }

@@ -62,8 +62,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     }
 
     template <typename R, typename... Ts>
-    void set_value_event_callback_helper(
-        whip::error_t status, R&& r, Ts&&... ts)
+    void
+    set_value_event_callback_helper(whip::error_t status, R&& r, Ts&&... ts)
     {
         static_assert(sizeof...(Ts) <= 1, "Expecting at most one value");
 
@@ -272,8 +272,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                     then_with_cuda_stream_receiver const&) = delete;
 
                 template <typename Error>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_error_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_error_t,
                     then_with_cuda_stream_receiver&& r, Error&& error) noexcept
                 {
                     pika::execution::experimental::set_error(
@@ -702,8 +702,8 @@ namespace pika::cuda::experimental {
         }
 
         template <typename F>
-        constexpr PIKA_FORCEINLINE auto operator()(
-            F&& f, cublasPointerMode_t pointer_mode) const
+        constexpr PIKA_FORCEINLINE auto
+        operator()(F&& f, cublasPointerMode_t pointer_mode) const
         {
             return pika::execution::experimental::detail::partial_algorithm<
                 then_with_cublas_t, F, cublasPointerMode_t>{

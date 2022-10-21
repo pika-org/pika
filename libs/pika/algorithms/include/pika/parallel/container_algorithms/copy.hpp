@@ -623,9 +623,9 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend ranges::copy_if_result<FwdIter1, FwdIter> tag_fallback_invoke(
-            pika::ranges::copy_if_t, FwdIter1 iter, Sent1 sent, FwdIter dest,
-            Pred&& pred, Proj&& proj = Proj())
+        friend ranges::copy_if_result<FwdIter1, FwdIter>
+        tag_fallback_invoke(pika::ranges::copy_if_t, FwdIter1 iter, Sent1 sent,
+            FwdIter dest, Pred&& pred, Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_forward_iterator<FwdIter1>::value),
                 "Required at least forward iterator.");

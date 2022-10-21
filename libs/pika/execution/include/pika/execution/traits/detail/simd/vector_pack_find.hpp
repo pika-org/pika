@@ -15,8 +15,8 @@
 
 namespace pika::parallel::traits::detail {
     template <typename T, typename Abi>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE int find_first_of(
-        std::experimental::simd_mask<T, Abi> const& msk)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE int
+    find_first_of(std::experimental::simd_mask<T, Abi> const& msk)
     {
         if (std::experimental::any_of(msk))
         {

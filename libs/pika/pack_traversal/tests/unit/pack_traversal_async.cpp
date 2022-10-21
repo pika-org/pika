@@ -412,8 +412,8 @@ struct invalidate_visitor : async_counter_base<invalidate_visitor>
     }
 
     template <typename N>
-    void operator()(
-        async_traverse_detach_tag, std::shared_ptr<int>& i, N&& next)
+    void
+    operator()(async_traverse_detach_tag, std::shared_ptr<int>& i, N&& next)
     {
         PIKA_UNUSED(i);
 

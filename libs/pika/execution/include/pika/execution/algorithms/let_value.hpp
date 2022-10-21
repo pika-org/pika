@@ -180,8 +180,8 @@ namespace pika::let_value_detail {
                 }
 
                 template <typename Error>
-                friend void tag_invoke(
-                    pika::execution::experimental::set_error_t,
+                friend void
+                tag_invoke(pika::execution::experimental::set_error_t,
                     let_value_predecessor_receiver&& r, Error&& error) noexcept
                 {
                     pika::execution::experimental::set_error(
@@ -290,8 +290,8 @@ namespace pika::let_value_detail {
                 }
 
                 template <typename... Ts>
-                friend auto tag_invoke(
-                    pika::execution::experimental::set_value_t,
+                friend auto
+                tag_invoke(pika::execution::experimental::set_value_t,
                     let_value_predecessor_receiver&& r, Ts&&... ts) noexcept
                     -> decltype(std::declval<predecessor_ts_type>()
                                     .template emplace<
@@ -361,8 +361,8 @@ namespace pika::execution::experimental {
         }
 
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            let_value_t, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(let_value_t, F&& f)
         {
             return detail::partial_algorithm<let_value_t, F>{
                 PIKA_FORWARD(F, f)};

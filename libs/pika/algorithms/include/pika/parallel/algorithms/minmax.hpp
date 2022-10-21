@@ -279,8 +279,8 @@ namespace pika {
     ///           to the last such element is returned.
     ///
     template <typename FwdIter, typename F>
-    minmax_element_result<FwdIter> minmax_element(
-        FwdIter first, FwdIter last, F&& f);
+    minmax_element_result<FwdIter>
+    minmax_element(FwdIter first, FwdIter last, F&& f);
 
     /////////////////////////////////////////////////////////////////////////////
     /// Finds the largest element in the range [first, last) using the given

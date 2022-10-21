@@ -248,8 +248,8 @@ namespace pika::ranges {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            destroy_n_t, FwdIter first, Size count)
+        friend FwdIter
+        tag_fallback_invoke(destroy_n_t, FwdIter first, Size count)
         {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Requires at least forward iterator.");

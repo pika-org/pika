@@ -318,9 +318,9 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend RandomIt tag_fallback_invoke(pika::ranges::nth_element_t,
-            RandomIt first, RandomIt nth, Sent last, Pred&& pred = Pred(),
-            Proj&& proj = Proj())
+        friend RandomIt
+        tag_fallback_invoke(pika::ranges::nth_element_t, RandomIt first,
+            RandomIt nth, Sent last, Pred&& pred = Pred(), Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_random_access_iterator_v<RandomIt>,
                 "Requires at least random access iterator.");
@@ -373,8 +373,8 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend pika::traits::range_iterator_t<Rng> tag_fallback_invoke(
-            pika::ranges::nth_element_t, Rng&& rng,
+        friend pika::traits::range_iterator_t<Rng>
+        tag_fallback_invoke(pika::ranges::nth_element_t, Rng&& rng,
             pika::traits::range_iterator_t<Rng> nth, Pred&& pred = Pred(),
             Proj&& proj = Proj())
         {

@@ -79,8 +79,8 @@ namespace pika { namespace parallel { namespace execution {
                 !pika::traits::is_two_way_executor_v<Executor>>>
         {
             template <typename OneWayExecutor, typename F, typename... Ts>
-            PIKA_FORCEINLINE static auto call_impl(
-                std::false_type, OneWayExecutor&& exec, F&& f, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call_impl(std::false_type, OneWayExecutor&& exec, F&& f, Ts&&... ts)
                 -> pika::future<decltype(sync_execute_dispatch(0,
                     PIKA_FORWARD(OneWayExecutor, exec), PIKA_FORWARD(F, f),
                     PIKA_FORWARD(Ts, ts)...))>
@@ -91,8 +91,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename OneWayExecutor, typename F, typename... Ts>
-            PIKA_FORCEINLINE static pika::future<void> call_impl(
-                std::true_type, OneWayExecutor&& exec, F&& f, Ts&&... ts)
+            PIKA_FORCEINLINE static pika::future<void>
+            call_impl(std::true_type, OneWayExecutor&& exec, F&& f, Ts&&... ts)
             {
                 sync_execute_dispatch(0, PIKA_FORWARD(OneWayExecutor, exec),
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
@@ -250,8 +250,8 @@ namespace pika { namespace parallel { namespace execution {
         }
 
         template <typename TwoWayExecutor, typename F, typename... Ts>
-        PIKA_FORCEINLINE auto async_execute_dispatch(
-            int, TwoWayExecutor&& exec, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE auto
+        async_execute_dispatch(int, TwoWayExecutor&& exec, F&& f, Ts&&... ts)
             -> decltype(exec.async_execute(
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
@@ -319,8 +319,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename TwoWayExecutor, typename F, typename... Ts>
-            PIKA_FORCEINLINE static void call_impl(
-                std::true_type, TwoWayExecutor&& exec, F&& f, Ts&&... ts)
+            PIKA_FORCEINLINE static void
+            call_impl(std::true_type, TwoWayExecutor&& exec, F&& f, Ts&&... ts)
             {
                 async_execute_dispatch(0, PIKA_FORWARD(TwoWayExecutor, exec),
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...)
@@ -340,8 +340,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename TwoWayExecutor, typename F, typename... Ts>
-            PIKA_FORCEINLINE static auto call_impl(
-                int, TwoWayExecutor&& exec, F&& f, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call_impl(int, TwoWayExecutor&& exec, F&& f, Ts&&... ts)
                 -> decltype(exec.sync_execute(
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
             {
@@ -350,8 +350,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename TwoWayExecutor, typename F, typename... Ts>
-            PIKA_FORCEINLINE static auto call(
-                TwoWayExecutor&& exec, F&& f, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call(TwoWayExecutor&& exec, F&& f, Ts&&... ts)
                 -> decltype(call_impl(0, PIKA_FORWARD(TwoWayExecutor, exec),
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
             {
@@ -457,8 +457,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename TwoWayExecutor, typename F, typename... Ts>
-            PIKA_FORCEINLINE static auto call(
-                TwoWayExecutor&& exec, F&& f, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call(TwoWayExecutor&& exec, F&& f, Ts&&... ts)
                 -> decltype(call_impl(0, PIKA_FORWARD(TwoWayExecutor, exec),
                     PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
             {
@@ -495,8 +495,8 @@ namespace pika { namespace parallel { namespace execution {
         // default implementation of the post() customization point
         template <typename NonBlockingOneWayExecutor, typename F,
             typename... Ts>
-        PIKA_FORCEINLINE auto post_dispatch(
-            int, NonBlockingOneWayExecutor&& exec, F&& f, Ts&&... ts)
+        PIKA_FORCEINLINE auto
+        post_dispatch(int, NonBlockingOneWayExecutor&& exec, F&& f, Ts&&... ts)
             -> decltype(exec.post(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...))
         {
             return exec.post(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, ts)...);
@@ -619,8 +619,8 @@ namespace pika { namespace parallel { namespace execution {
 
             template <typename BulkExecutor, typename F, typename Shape,
                 typename... Ts>
-            PIKA_FORCEINLINE static auto call(
-                BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call(BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
                 -> decltype(call_impl(0, PIKA_FORWARD(BulkExecutor, exec),
                     PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...))
             {
@@ -645,8 +645,8 @@ namespace pika { namespace parallel { namespace execution {
         {
             template <typename BulkExecutor, typename F, typename Shape,
                 typename... Ts>
-            PIKA_FORCEINLINE static auto call(
-                BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call(BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
                 -> decltype(bulk_async_execute_dispatch(0,
                     PIKA_FORWARD(BulkExecutor, exec), PIKA_FORWARD(F, f), shape,
                     PIKA_FORWARD(Ts, ts)...))
@@ -811,8 +811,8 @@ namespace pika { namespace parallel { namespace execution {
 
             template <typename BulkExecutor, typename F, typename Shape,
                 typename... Ts>
-            PIKA_FORCEINLINE static auto call(
-                BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call(BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
                 -> decltype(call_impl(0, PIKA_FORWARD(BulkExecutor, exec),
                     PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...))
             {
@@ -941,8 +941,8 @@ namespace pika { namespace parallel { namespace execution {
 
             template <typename BulkExecutor, typename F, typename Shape,
                 typename... Ts>
-            PIKA_FORCEINLINE static auto call(
-                BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call(BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
                 -> decltype(call_impl(0, PIKA_FORWARD(BulkExecutor, exec),
                     PIKA_FORWARD(F, f), shape, PIKA_FORWARD(Ts, ts)...))
             {
@@ -967,8 +967,8 @@ namespace pika { namespace parallel { namespace execution {
         {
             template <typename BulkExecutor, typename F, typename Shape,
                 typename... Ts>
-            PIKA_FORCEINLINE static auto call(
-                BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call(BulkExecutor&& exec, F&& f, Shape const& shape, Ts&&... ts)
                 -> decltype(bulk_sync_execute_dispatch(0,
                     PIKA_FORWARD(BulkExecutor, exec), PIKA_FORWARD(F, f), shape,
                     PIKA_FORWARD(Ts, ts)...))
@@ -1028,9 +1028,9 @@ namespace pika { namespace parallel { namespace execution {
 
             template <typename BulkExecutor, typename F, typename Shape,
                 typename Future, typename... Ts>
-            static pika::future<void> call_impl(std::true_type,
-                BulkExecutor&& exec, F&& f, Shape const& shape,
-                Future&& predecessor, Ts&&... ts)
+            static pika::future<void>
+            call_impl(std::true_type, BulkExecutor&& exec, F&& f,
+                Shape const& shape, Future&& predecessor, Ts&&... ts)
             {
                 auto func = make_fused_bulk_sync_execute_helper<void>(exec,
                     PIKA_FORWARD(F, f), shape,
@@ -1047,9 +1047,9 @@ namespace pika { namespace parallel { namespace execution {
 
             template <typename BulkExecutor, typename F, typename Shape,
                 typename Future, typename... Ts>
-            PIKA_FORCEINLINE static auto call_impl(pika::detail::wrap_int,
-                BulkExecutor&& exec, F&& f, Shape const& shape,
-                Future&& predecessor, Ts&&... ts)
+            PIKA_FORCEINLINE static auto
+            call_impl(pika::detail::wrap_int, BulkExecutor&& exec, F&& f,
+                Shape const& shape, Future&& predecessor, Ts&&... ts)
                 -> pika::future<
                     bulk_then_execute_result_t<F, Shape, Future, Ts...>>
             {

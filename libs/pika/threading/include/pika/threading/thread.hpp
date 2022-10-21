@@ -167,8 +167,8 @@ namespace pika {
             thread::id const& x, thread::id const& y) noexcept;
 
         template <typename Char, typename Traits>
-        friend std::basic_ostream<Char, Traits>& operator<<(
-            std::basic_ostream<Char, Traits>&, thread::id const&);
+        friend std::basic_ostream<Char, Traits>&
+        operator<<(std::basic_ostream<Char, Traits>&, thread::id const&);
 
         friend class thread;
 
@@ -230,8 +230,8 @@ namespace pika {
     }
 
     template <typename Char, typename Traits>
-    std::basic_ostream<Char, Traits>& operator<<(
-        std::basic_ostream<Char, Traits>& out, thread::id const& id)
+    std::basic_ostream<Char, Traits>&
+    operator<<(std::basic_ostream<Char, Traits>& out, thread::id const& id)
     {
         out << id.id_;
         return out;

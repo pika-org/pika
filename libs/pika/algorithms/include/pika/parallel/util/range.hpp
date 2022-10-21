@@ -32,8 +32,8 @@ namespace pika::parallel::detail {
     /// \param [in] it2 : second range
     /// \return  range resulting of the concatenation
     template <typename Iter, typename Sent>
-    range<Iter, Sent> concat(
-        range<Iter, Sent> const& it1, range<Iter, Sent> const& it2)
+    range<Iter, Sent>
+    concat(range<Iter, Sent> const& it1, range<Iter, Sent> const& it2)
     {
         return range<Iter, Sent>(it1.begin(), it2.end());
     }
@@ -43,8 +43,8 @@ namespace pika::parallel::detail {
     /// \param [in] src : range from where move the objects
     /// \return range with the objects moved and the size adjusted
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2>
-    inline range<Iter2, Iter2> init_move(
-        range<Iter2, Sent2> const& dest, range<Iter1, Sent1> const& src)
+    inline range<Iter2, Iter2>
+    init_move(range<Iter2, Sent2> const& dest, range<Iter1, Sent1> const& src)
     {
         using type1 = typename std::iterator_traits<Iter1>::value_type;
         using type2 = typename std::iterator_traits<Iter2>::value_type;
@@ -70,8 +70,8 @@ namespace pika::parallel::detail {
     /// \return range with the objects moved and the size adjusted
     //-----------------------------------------------------------------------------
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2>
-    inline range<Iter2, Sent2> uninit_move(
-        range<Iter2, Sent2> const& dest, range<Iter1, Sent1> const& src)
+    inline range<Iter2, Sent2>
+    uninit_move(range<Iter2, Sent2> const& dest, range<Iter1, Sent1> const& src)
     {
         using type1 = typename std::iterator_traits<Iter1>::value_type;
         using type2 = typename std::iterator_traits<Iter2>::value_type;
@@ -143,9 +143,9 @@ namespace pika::parallel::detail {
     /// \return range with the elements merged and the size adjusted
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename Iter3, typename Sent3, typename Compare>
-    inline range<Iter3, Sent3> full_merge(range<Iter3, Sent3> const& dest,
-        range<Iter1, Sent1> const& src1, range<Iter2, Sent2> const& src2,
-        Compare comp)
+    inline range<Iter3, Sent3>
+    full_merge(range<Iter3, Sent3> const& dest, range<Iter1, Sent1> const& src1,
+        range<Iter2, Sent2> const& src2, Compare comp)
     {
         using type1 = typename std::iterator_traits<Iter1>::value_type;
         using type2 = typename std::iterator_traits<Iter2>::value_type;
@@ -199,9 +199,9 @@ namespace pika::parallel::detail {
     /// \return : range with the two buffers merged
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename Compare>
-    inline range<Iter2, Sent2> half_merge(range<Iter2, Sent2> const& dest,
-        range<Iter1, Sent1> const& src1, range<Iter2, Sent2> const& src2,
-        Compare comp)
+    inline range<Iter2, Sent2>
+    half_merge(range<Iter2, Sent2> const& dest, range<Iter1, Sent1> const& src1,
+        range<Iter2, Sent2> const& src2, Compare comp)
     {
         using type1 = typename std::iterator_traits<Iter1>::value_type;
         using type2 = typename std::iterator_traits<Iter2>::value_type;

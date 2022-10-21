@@ -628,8 +628,8 @@ namespace pika::ranges {
                     parallel::detail::projected<Proj, FwdIter>>::value
             )>
         // clang-format on
-        friend subrange_t<FwdIter, Sent> tag_fallback_invoke(
-            pika::ranges::unique_t, FwdIter first, Sent last,
+        friend subrange_t<FwdIter, Sent>
+        tag_fallback_invoke(pika::ranges::unique_t, FwdIter first, Sent last,
             Pred&& pred = Pred(), Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
@@ -767,9 +767,9 @@ namespace pika::ranges {
                     parallel::detail::projected<Proj, InIter>>::value
             )>
         // clang-format on
-        friend unique_copy_result<InIter, O> tag_fallback_invoke(
-            pika::ranges::unique_copy_t, InIter first, Sent last, O dest,
-            Pred&& pred = Pred(), Proj&& proj = Proj())
+        friend unique_copy_result<InIter, O>
+        tag_fallback_invoke(pika::ranges::unique_copy_t, InIter first,
+            Sent last, O dest, Pred&& pred = Pred(), Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_input_iterator_v<InIter>,
                 "Requires at least input iterator.");

@@ -174,9 +174,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Pred, typename Proj1,
             typename Proj2>
-        static bool sequential(ExPolicy, Iter1 first1, Sent1 last1,
-            Iter2 first2, Sent2 last2, Pred&& pred, Proj1&& proj1,
-            Proj2&& proj2)
+        static bool
+        sequential(ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, Pred&& pred, Proj1&& proj1, Proj2&& proj2)
         {
             const auto drop = detail::distance(first1, last1) -
                 detail::distance(first2, last2);

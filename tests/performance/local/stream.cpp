@@ -314,9 +314,9 @@ struct triad_step
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename Policy>
-std::vector<std::vector<std::chrono::duration<double>>> run_benchmark(
-    std::size_t warmup_iterations, std::size_t iterations, std::size_t size,
-    Policy&& policy)
+std::vector<std::vector<std::chrono::duration<double>>>
+run_benchmark(std::size_t warmup_iterations, std::size_t iterations,
+    std::size_t size, Policy&& policy)
 {
     // Allocate our data
     using vector_type = std::vector<STREAM_TYPE>;

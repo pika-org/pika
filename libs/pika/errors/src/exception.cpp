@@ -160,9 +160,9 @@ namespace pika {
 
 namespace pika { namespace detail {
     template <typename Exception>
-    PIKA_EXPORT std::exception_ptr construct_lightweight_exception(
-        Exception const& e, std::string const& func, std::string const& file,
-        long line)
+    PIKA_EXPORT std::exception_ptr
+    construct_lightweight_exception(Exception const& e, std::string const& func,
+        std::string const& file, long line)
     {
         // create a std::exception_ptr object encapsulating the Exception to
         // be thrown and annotate it with all the local information we have
@@ -185,8 +185,8 @@ namespace pika { namespace detail {
     }
 
     template <typename Exception>
-    PIKA_EXPORT std::exception_ptr construct_lightweight_exception(
-        Exception const& e)
+    PIKA_EXPORT std::exception_ptr
+    construct_lightweight_exception(Exception const& e)
     {
         // create a std::exception_ptr object encapsulating the Exception to
         // be thrown and annotate it with all the local information we have
@@ -208,9 +208,9 @@ namespace pika { namespace detail {
         pika::thread_interrupted const&);
 
     template <typename Exception>
-    PIKA_EXPORT std::exception_ptr construct_custom_exception(
-        Exception const& e, std::string const& func, std::string const& file,
-        long line, std::string const& auxinfo)
+    PIKA_EXPORT std::exception_ptr
+    construct_custom_exception(Exception const& e, std::string const& func,
+        std::string const& file, long line, std::string const& auxinfo)
     {
         if (!custom_exception_info_handler)
         {
@@ -253,9 +253,9 @@ namespace pika { namespace detail {
     }
 
     template <typename Exception>
-    PIKA_EXPORT std::exception_ptr get_exception(Exception const& e,
-        std::string const& func, std::string const& file, long line,
-        std::string const& auxinfo)
+    PIKA_EXPORT std::exception_ptr
+    get_exception(Exception const& e, std::string const& func,
+        std::string const& file, long line, std::string const& auxinfo)
     {
         if (is_of_lightweight_pika_category(e))
         {

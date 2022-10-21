@@ -39,8 +39,8 @@ namespace pika { namespace execution {
 
         /// \cond NOINTERNAL
         template <typename Executor, typename F>
-        constexpr std::size_t get_chunk_size(
-            Executor&, F&&, std::size_t, std::size_t) const
+        constexpr std::size_t
+        get_chunk_size(Executor&, F&&, std::size_t, std::size_t) const
         {
             return chunk_size_;
         }

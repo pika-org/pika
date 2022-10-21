@@ -494,8 +494,8 @@ namespace pika { namespace util {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    std::size_t runtime_configuration::get_spinlock_deadlock_detection_limit()
-        const
+    std::size_t
+    runtime_configuration::get_spinlock_deadlock_detection_limit() const
     {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)
@@ -510,8 +510,8 @@ namespace pika { namespace util {
 #endif
     }
 
-    std::size_t runtime_configuration::get_spinlock_deadlock_warning_limit()
-        const
+    std::size_t
+    runtime_configuration::get_spinlock_deadlock_warning_limit() const
     {
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
         if (util::section const* sec = get_section("pika"); nullptr != sec)

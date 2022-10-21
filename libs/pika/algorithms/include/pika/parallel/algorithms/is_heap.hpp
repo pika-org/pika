@@ -250,8 +250,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        static bool sequential(
-            ExPolicy&&, Iter first, Sent last, Comp&& comp, Proj&& proj)
+        static bool
+        sequential(ExPolicy&&, Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
             return sequential_is_heap(first, last, PIKA_FORWARD(Comp, comp),
                 PIKA_FORWARD(Proj, proj));
@@ -271,8 +271,8 @@ namespace pika::parallel::detail {
     // is_heap_until
     // sequential is_heap_until with projection function
     template <typename Iter, typename Sent, typename Comp, typename Proj>
-    Iter sequential_is_heap_until(
-        Iter first, Sent last, Comp&& comp, Proj&& proj)
+    Iter
+    sequential_is_heap_until(Iter first, Sent last, Comp&& comp, Proj&& proj)
     {
         using difference_type =
             typename std::iterator_traits<Iter>::difference_type;
@@ -359,8 +359,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        static Iter sequential(
-            ExPolicy&&, Iter first, Sent last, Comp&& comp, Proj&& proj)
+        static Iter
+        sequential(ExPolicy&&, Iter first, Sent last, Comp&& comp, Proj&& proj)
         {
             return sequential_is_heap_until(first, last,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));

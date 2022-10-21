@@ -262,8 +262,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename RandomIt, typename Sent,
             typename Pred, typename Proj>
-        static algorithm_result_t<ExPolicy, RandomIt> parallel(
-            ExPolicy&& policy, RandomIt first, RandomIt nth, Sent last,
+        static algorithm_result_t<ExPolicy, RandomIt>
+        parallel(ExPolicy&& policy, RandomIt first, RandomIt nth, Sent last,
             Pred&& pred, Proj&& proj)
         {
             auto end = detail::advance_to_sentinel(first, last);

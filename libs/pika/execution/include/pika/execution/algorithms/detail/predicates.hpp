@@ -22,15 +22,15 @@
 
 namespace pika { namespace parallel { namespace detail {
     template <typename InputIterator, typename Distance>
-    PIKA_HOST_DEVICE constexpr void advance_impl(
-        InputIterator& i, Distance n, std::random_access_iterator_tag)
+    PIKA_HOST_DEVICE constexpr void
+    advance_impl(InputIterator& i, Distance n, std::random_access_iterator_tag)
     {
         i += n;
     }
 
     template <typename InputIterator, typename Distance>
-    PIKA_HOST_DEVICE constexpr void advance_impl(
-        InputIterator& i, Distance n, std::bidirectional_iterator_tag)
+    PIKA_HOST_DEVICE constexpr void
+    advance_impl(InputIterator& i, Distance n, std::bidirectional_iterator_tag)
     {
         if (n < 0)
         {
@@ -45,8 +45,8 @@ namespace pika { namespace parallel { namespace detail {
     }
 
     template <typename InputIterator, typename Distance>
-    PIKA_HOST_DEVICE constexpr void advance_impl(
-        InputIterator& i, Distance n, std::input_iterator_tag)
+    PIKA_HOST_DEVICE constexpr void
+    advance_impl(InputIterator& i, Distance n, std::input_iterator_tag)
     {
 #if defined(PIKA_INTEL_VERSION)
 #pragma warning(push)
@@ -84,16 +84,16 @@ namespace pika { namespace parallel { namespace detail {
             pika::traits::is_iterator<Iterable>::value>::type>
     {
         template <typename Iter1, typename Iter2>
-        PIKA_FORCEINLINE constexpr static std::size_t call(
-            Iter1 iter1, Iter2 iter2)
+        PIKA_FORCEINLINE constexpr static std::size_t
+        call(Iter1 iter1, Iter2 iter2)
         {
             return std::distance(iter1, iter2);
         }
     };
 
     template <typename Iterable>
-    PIKA_FORCEINLINE constexpr std::size_t distance(
-        Iterable iter1, Iterable iter2)
+    PIKA_FORCEINLINE constexpr std::size_t
+    distance(Iterable iter1, Iterable iter2)
     {
         return calculate_distance<std::decay_t<Iterable>>::call(iter1, iter2);
     }
@@ -103,15 +103,15 @@ namespace pika { namespace parallel { namespace detail {
     struct calculate_next
     {
         template <typename T, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static T call(
-            T t1, Stride offset)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static T
+        call(T t1, Stride offset)
         {
             return T(t1 + offset);
         }
 
         template <typename T, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static T call(
-            T t, std::size_t max_count, Stride& offset, std::true_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static T
+        call(T t, std::size_t max_count, Stride& offset, std::true_type)
         {
             if (is_negative(offset))
             {
@@ -129,8 +129,8 @@ namespace pika { namespace parallel { namespace detail {
         }
 
         template <typename T, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static T call(
-            T t, std::size_t max_count, Stride& offset, std::false_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static T
+        call(T t, std::size_t max_count, Stride& offset, std::false_type)
         {
             // NVCC seems to have a bug with std::min...
             offset = max_count < offset ? max_count : offset;
@@ -138,8 +138,8 @@ namespace pika { namespace parallel { namespace detail {
         }
 
         template <typename T, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static T call(
-            T t, std::size_t max_count, Stride& offset)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static T
+        call(T t, std::size_t max_count, Stride& offset)
         {
             return call(
                 t, max_count, offset, typename std::is_signed<Stride>::type());
@@ -152,8 +152,8 @@ namespace pika { namespace parallel { namespace detail {
             !pika::traits::is_bidirectional_iterator<Iterable>::value>::type>
     {
         template <typename Iter, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter call(
-            Iter iter, Stride offset)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter
+        call(Iter iter, Stride offset)
         {
 #if (defined(PIKA_HAVE_CUDA) && defined(__CUDACC__)) || defined(PIKA_HAVE_HIP)
             pika::parallel::detail::advance(iter, offset);
@@ -164,8 +164,8 @@ namespace pika { namespace parallel { namespace detail {
         }
 
         template <typename Iter, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter call(
-            Iter iter, std::size_t max_count, Stride& offset)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter
+        call(Iter iter, std::size_t max_count, Stride& offset)
         {
             // anything less than a bidirectional iterator does not support
             // negative offsets
@@ -189,8 +189,8 @@ namespace pika { namespace parallel { namespace detail {
             pika::traits::is_bidirectional_iterator<Iterable>::value>::type>
     {
         template <typename Iter, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter call(
-            Iter iter, Stride offset)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter
+        call(Iter iter, Stride offset)
         {
 #if (defined(PIKA_HAVE_CUDA) && defined(__CUDACC__)) || defined(PIKA_HAVE_HIP)
             pika::parallel::detail::advance(iter, offset);
@@ -201,8 +201,8 @@ namespace pika { namespace parallel { namespace detail {
         }
 
         template <typename Iter, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter call(
-            Iter iter, std::size_t max_count, Stride& offset, std::true_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter
+        call(Iter iter, std::size_t max_count, Stride& offset, std::true_type)
         {
             // advance through the end or max number of elements
             if (!is_negative(offset))
@@ -231,8 +231,8 @@ namespace pika { namespace parallel { namespace detail {
         }
 
         template <typename Iter, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter call(
-            Iter iter, std::size_t max_count, Stride& offset, std::false_type)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter
+        call(Iter iter, std::size_t max_count, Stride& offset, std::false_type)
         {
             // advance through the end or max number of elements
             // NVCC seems to have a bug with std::min...
@@ -247,8 +247,8 @@ namespace pika { namespace parallel { namespace detail {
         }
 
         template <typename Iter, typename Stride>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter call(
-            Iter iter, std::size_t max_count, Stride& offset)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr static Iter
+        call(Iter iter, std::size_t max_count, Stride& offset)
         {
             return call(iter, max_count, offset,
                 typename std::is_signed<Stride>::type());
@@ -256,15 +256,15 @@ namespace pika { namespace parallel { namespace detail {
     };
 
     template <typename Iterable, typename Stride>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iterable next(
-        Iterable iter, Stride offset)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iterable
+    next(Iterable iter, Stride offset)
     {
         return calculate_next<std::decay_t<Iterable>>::call(iter, offset);
     }
 
     template <typename Iterable, typename Stride>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iterable next(
-        Iterable iter, std::size_t max_count, Stride offset)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr Iterable
+    next(Iterable iter, std::size_t max_count, Stride offset)
     {
         return calculate_next<std::decay_t<Iterable>>::call(
             iter, max_count, offset);
@@ -276,8 +276,8 @@ namespace pika { namespace parallel { namespace detail {
         template <typename T1, typename T2,
             typename Enable = std::enable_if_t<
                 pika::detail::is_equality_comparable_with_v<T1, T2>>>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-            T1&& t1, T2&& t2) const
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+        operator()(T1&& t1, T2&& t2) const
         {
             return t1 == t2;
         }
@@ -288,8 +288,8 @@ namespace pika { namespace parallel { namespace detail {
         template <typename T1, typename T2,
             typename Enable = std::enable_if_t<
                 pika::detail::is_equality_comparable_with_v<T1, T2>>>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-            T1&& t1, T2&& t2) const
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+        operator()(T1&& t1, T2&& t2) const
         {
             return t1 != t2;
         }
@@ -308,8 +308,8 @@ namespace pika { namespace parallel { namespace detail {
         }
 
         template <typename T>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-            T const& t) const -> decltype(std::declval<Value>() == t)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+        operator()(T const& t) const -> decltype(std::declval<Value>() == t)
         {
             return value_ == t;
         }
@@ -321,8 +321,8 @@ namespace pika { namespace parallel { namespace detail {
     struct less
     {
         template <typename T1, typename T2>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-            T1&& t1, T2&& t2) const
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+        operator()(T1&& t1, T2&& t2) const
         {
             return PIKA_FORWARD(T1, t1) < PIKA_FORWARD(T2, t2);
         }
@@ -331,8 +331,8 @@ namespace pika { namespace parallel { namespace detail {
     struct greater
     {
         template <typename T1, typename T2>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-            T1&& t1, T2&& t2) const
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+        operator()(T1&& t1, T2&& t2) const
         {
             return PIKA_FORWARD(T1, t1) > PIKA_FORWARD(T2, t2);
         }
@@ -341,8 +341,8 @@ namespace pika { namespace parallel { namespace detail {
     struct greater_equal
     {
         template <typename T1, typename T2>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-            T1&& t1, T2&& t2) const
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+        operator()(T1&& t1, T2&& t2) const
         {
             return PIKA_FORWARD(T1, t1) >= PIKA_FORWARD(T2, t2);
         }
@@ -351,8 +351,8 @@ namespace pika { namespace parallel { namespace detail {
     struct less_equal
     {
         template <typename T1, typename T2>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto operator()(
-            T1&& t1, T2&& t2) const
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
+        operator()(T1&& t1, T2&& t2) const
         {
             return PIKA_FORWARD(T1, t1) <= PIKA_FORWARD(T2, t2);
         }

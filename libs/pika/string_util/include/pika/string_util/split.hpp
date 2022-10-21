@@ -19,8 +19,8 @@ namespace pika { namespace string_util {
     namespace detail {
         template <typename It, typename CharT, typename Traits,
             typename Allocator>
-        std::basic_string<CharT, Traits, Allocator> substr(
-            std::basic_string<CharT, Traits, Allocator> const& s,
+        std::basic_string<CharT, Traits, Allocator>
+        substr(std::basic_string<CharT, Traits, Allocator> const& s,
             It const& first, It const& last)
         {
             std::size_t const pos = std::distance(std::begin(s), first);

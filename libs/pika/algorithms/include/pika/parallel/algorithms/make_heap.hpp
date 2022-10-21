@@ -233,8 +233,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename RndIter, typename Sent,
             typename Comp, typename Proj>
-        static RndIter sequential(
-            ExPolicy, RndIter first, Sent last, Comp&& comp, Proj&& proj)
+        static RndIter
+        sequential(ExPolicy, RndIter first, Sent last, Comp&& comp, Proj&& proj)
         {
             return sequential_make_heap(first, last, PIKA_FORWARD(Comp, comp),
                 PIKA_FORWARD(Proj, proj));
@@ -373,8 +373,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename RndIter, typename Sent,
             typename Comp, typename Proj>
-        static typename algorithm_result<ExPolicy, RndIter>::type parallel(
-            ExPolicy&& policy, RndIter first, Sent last, Comp&& comp,
+        static typename algorithm_result<ExPolicy, RndIter>::type
+        parallel(ExPolicy&& policy, RndIter first, Sent last, Comp&& comp,
             Proj&& proj)
         {
             return make_heap_thread(PIKA_FORWARD(ExPolicy, policy), first, last,
@@ -483,8 +483,8 @@ namespace pika {
                 pika::traits::is_iterator<RndIter>::value
             )>
         // clang-format on
-        friend void tag_fallback_invoke(
-            make_heap_t, RndIter first, RndIter last)
+        friend void
+        tag_fallback_invoke(make_heap_t, RndIter first, RndIter last)
         {
             static_assert(
                 pika::traits::is_random_access_iterator<RndIter>::value,

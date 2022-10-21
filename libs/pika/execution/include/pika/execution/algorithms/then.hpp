@@ -195,16 +195,16 @@ namespace pika::execution::experimental {
                 is_sender_v<Sender>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            then_t, Sender&& sender, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(then_t, Sender&& sender, F&& f)
         {
             return then_detail::then_sender<Sender, F>{
                 PIKA_FORWARD(Sender, sender), PIKA_FORWARD(F, f)};
         }
 
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            then_t, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(then_t, F&& f)
         {
             return detail::partial_algorithm<then_t, F>{PIKA_FORWARD(F, f)};
         }

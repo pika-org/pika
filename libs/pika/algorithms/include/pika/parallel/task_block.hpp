@@ -491,7 +491,7 @@ namespace pika::parallel {
 /// \cond NOINTERNAL
 namespace std {
     template <typename ExPolicy>
-    pika::parallel::task_block<ExPolicy>* addressof(
-        pika::parallel::task_block<ExPolicy>&) = delete;
+    pika::parallel::task_block<ExPolicy>*
+    addressof(pika::parallel::task_block<ExPolicy>&) = delete;
 }
 /// \endcond

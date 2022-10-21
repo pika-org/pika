@@ -349,8 +349,8 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend pika::traits::range_iterator_t<Rng> tag_fallback_invoke(
-            pika::ranges::partial_sort_t, Rng&& rng,
+        friend pika::traits::range_iterator_t<Rng>
+        tag_fallback_invoke(pika::ranges::partial_sort_t, Rng&& rng,
             pika::traits::range_iterator_t<Rng> middle,
             Compare&& comp = Compare(), Proj&& proj = Proj())
         {

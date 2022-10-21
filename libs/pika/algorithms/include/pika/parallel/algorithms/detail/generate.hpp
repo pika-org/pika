@@ -50,8 +50,8 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename F>
-    constexpr Iter sequential_generate_n_helper(
-        Iter first, std::size_t count, F&& f)
+    constexpr Iter
+    sequential_generate_n_helper(Iter first, std::size_t count, F&& f)
     {
         return std::generate_n(first, count, f);
     }

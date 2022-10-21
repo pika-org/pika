@@ -75,9 +75,8 @@ namespace pika::util::detail {
         deferred& operator=(deferred const&) = delete;
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE
-            util::detail::invoke_result_t<F, Ts...>
-            operator()()
+        PIKA_HOST_DEVICE
+        PIKA_FORCEINLINE util::detail::invoke_result_t<F, Ts...> operator()()
         {
             return PIKA_INVOKE(
                 PIKA_MOVE(_f), PIKA_MOVE(_args).template get<Is>()...);

@@ -38,8 +38,8 @@ namespace pika::detail {
         exception const& e, std::string const& func);
 
     template <typename Exception>
-    PIKA_EXPORT std::exception_ptr get_exception(Exception const& e,
-        std::string const& func = "<unknown>",
+    PIKA_EXPORT std::exception_ptr
+    get_exception(Exception const& e, std::string const& func = "<unknown>",
         std::string const& file = "<unknown>", long line = -1,
         std::string const& auxinfo = "");
 

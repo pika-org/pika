@@ -517,8 +517,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter, typename Op>
-        static constexpr in_out_result<InIter, OutIter> sequential(
-            ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
+        static constexpr in_out_result<InIter, OutIter>
+        sequential(ExPolicy, InIter first, Sent last, OutIter dest, Op&& op)
         {
             return sequential_inclusive_scan_noinit(
                 first, last, dest, PIKA_FORWARD(Op, op));

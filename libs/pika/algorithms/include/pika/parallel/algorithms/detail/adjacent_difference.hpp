@@ -27,9 +27,9 @@ namespace pika::parallel::detail {
     {
     private:
         template <typename InIter, typename Sent, typename OutIter, typename Op>
-        friend inline OutIter tag_fallback_invoke(
-            sequential_adjacent_difference_t<ExPolicy>, InIter first, Sent last,
-            OutIter dest, Op&& op)
+        friend inline OutIter
+        tag_fallback_invoke(sequential_adjacent_difference_t<ExPolicy>,
+            InIter first, Sent last, OutIter dest, Op&& op)
         {
             if (first == last)
                 return dest;

@@ -243,8 +243,8 @@ namespace pika { namespace parallel { namespace execution {
             }
 
             template <typename T>
-            static void _deallocate(
-                void* obj, std::size_t storage_size, bool destroy)
+            static void
+            _deallocate(void* obj, std::size_t storage_size, bool destroy)
             {
                 using storage_t =
                     typename std::aligned_storage<sizeof(T), alignof(T)>::type;
@@ -387,8 +387,8 @@ namespace pika { namespace parallel { namespace execution {
 
             // then_execute
             template <typename T>
-            static pika::future<R> _then_execute(void* exec,
-                then_execute_function_type&& f,
+            static pika::future<R>
+            _then_execute(void* exec, then_execute_function_type&& f,
                 pika::shared_future<void> const& predecessor, Ts&&... ts)
             {
                 return execution::then_execute(vtable_base::get<T>(exec),
@@ -440,9 +440,9 @@ namespace pika { namespace parallel { namespace execution {
 
             // bulk_sync_execute
             template <typename T>
-            static std::vector<R> _bulk_sync_execute(void* exec,
-                bulk_sync_execute_function_type&& f, range_proxy const& shape,
-                Ts&&... ts)
+            static std::vector<R>
+            _bulk_sync_execute(void* exec, bulk_sync_execute_function_type&& f,
+                range_proxy const& shape, Ts&&... ts)
             {
                 return execution::bulk_sync_execute(vtable_base::get<T>(exec),
                     PIKA_MOVE(f), shape, PIKA_FORWARD(Ts, ts)...);
@@ -814,8 +814,8 @@ namespace pika { namespace parallel { namespace execution {
         }
 
         template <typename F, typename Future>
-        PIKA_FORCEINLINE pika::future<R> then_execute(
-            F&& f, Future&& predecessor, Ts&&... ts) const
+        PIKA_FORCEINLINE pika::future<R>
+        then_execute(F&& f, Future&& predecessor, Ts&&... ts) const
         {
             using function_type = typename vtable::then_execute_function_type;
 
@@ -827,8 +827,8 @@ namespace pika { namespace parallel { namespace execution {
 
         // BulkOneWayExecutor interface
         template <typename F, typename Shape>
-        PIKA_FORCEINLINE std::vector<R> bulk_sync_execute(
-            F&& f, Shape const& s, Ts&&... ts) const
+        PIKA_FORCEINLINE std::vector<R>
+        bulk_sync_execute(F&& f, Shape const& s, Ts&&... ts) const
         {
             using function_type =
                 typename vtable::bulk_sync_execute_function_type;
@@ -842,8 +842,8 @@ namespace pika { namespace parallel { namespace execution {
 
         // BulkTwoWayExecutor interface
         template <typename F, typename Shape>
-        PIKA_FORCEINLINE std::vector<pika::future<R>> bulk_async_execute(
-            F&& f, Shape const& s, Ts&&... ts) const
+        PIKA_FORCEINLINE std::vector<pika::future<R>>
+        bulk_async_execute(F&& f, Shape const& s, Ts&&... ts) const
         {
             using function_type =
                 typename vtable::bulk_async_execute_function_type;
@@ -856,9 +856,9 @@ namespace pika { namespace parallel { namespace execution {
         }
 
         template <typename F, typename Shape>
-        PIKA_FORCEINLINE pika::future<std::vector<R>> bulk_then_execute(F&& f,
-            Shape const& s, pika::shared_future<void> const& predecessor,
-            Ts&&... ts) const
+        PIKA_FORCEINLINE pika::future<std::vector<R>>
+        bulk_then_execute(F&& f, Shape const& s,
+            pika::shared_future<void> const& predecessor, Ts&&... ts) const
         {
             using function_type =
                 typename vtable::bulk_then_execute_function_type;

@@ -164,8 +164,8 @@ struct back_materializer
     }
 
     template <typename First, typename Second, typename... Rest>
-    tuple<First, Second, Rest...> operator()(
-        First&& first, Second&& second, Rest&&... rest) const
+    tuple<First, Second, Rest...>
+    operator()(First&& first, Second&& second, Rest&&... rest) const
     {
         return tuple<First, Second, Rest...>{std::forward<First>(first),
             std::forward<Second>(second), std::forward<Rest>(rest)...};

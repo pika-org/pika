@@ -16,8 +16,8 @@
 
 namespace pika::parallel::traits::detail {
     template <typename T, typename Abi>
-    PIKA_HOST_DEVICE PIKA_FORCEINLINE std::size_t count_bits(
-        std::experimental::simd_mask<T, Abi> const& mask)
+    PIKA_HOST_DEVICE PIKA_FORCEINLINE std::size_t
+    count_bits(std::experimental::simd_mask<T, Abi> const& mask)
     {
         return std::experimental::popcount(mask);
     }

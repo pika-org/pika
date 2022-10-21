@@ -269,8 +269,8 @@ namespace NS_DEBUG {
     };
 
     template <typename TupleType, std::size_t... I>
-    void tuple_print(
-        std::ostream& os, TupleType const& t, std::index_sequence<I...>)
+    void
+    tuple_print(std::ostream& os, TupleType const& t, std::index_sequence<I...>)
     {
         (..., (os << (I == 0 ? "" : " ") << std::get<I>(t)));
     }
@@ -519,8 +519,8 @@ namespace NS_DEBUG {
     };
 
     template <typename T>
-    PIKA_EXPORT void print_array(
-        std::string const& name, T const* data, std::size_t size);
+    PIKA_EXPORT void
+    print_array(std::string const& name, T const* data, std::size_t size);
 
     // when true, debug statements produce valid output
     template <>
@@ -597,8 +597,8 @@ namespace NS_DEBUG {
         }
 
         template <typename T>
-        void array(
-            std::string const& name, T const* data, std::size_t size) const
+        void
+        array(std::string const& name, T const* data, std::size_t size) const
         {
             print_array(name, data, size);
         }
@@ -616,8 +616,8 @@ namespace NS_DEBUG {
         }
 
         template <typename... Args>
-        constexpr timed_var<Args...> make_timer(
-            const double delay, const Args... args) const
+        constexpr timed_var<Args...>
+        make_timer(const double delay, const Args... args) const
         {
             return timed_var<Args...>(delay, args...);
         }

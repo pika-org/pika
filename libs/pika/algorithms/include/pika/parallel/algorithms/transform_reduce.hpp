@@ -294,8 +294,8 @@ namespace pika::parallel::detail {
         convert_type convert_;
 
         template <typename Reduce_, typename Convert_>
-        PIKA_HOST_DEVICE transform_reduce_iteration(
-            Reduce_&& reduce, Convert_&& convert)
+        PIKA_HOST_DEVICE
+        transform_reduce_iteration(Reduce_&& reduce, Convert_&& convert)
           : reduce_(PIKA_FORWARD(Reduce_, reduce))
           , convert_(PIKA_FORWARD(Convert_, convert))
         {
@@ -305,15 +305,15 @@ namespace pika::parallel::detail {
         transform_reduce_iteration(transform_reduce_iteration const&) = default;
         transform_reduce_iteration(transform_reduce_iteration&&) = default;
 #else
-        PIKA_HOST_DEVICE transform_reduce_iteration(
-            transform_reduce_iteration const& rhs)
+        PIKA_HOST_DEVICE
+        transform_reduce_iteration(transform_reduce_iteration const& rhs)
           : reduce_(rhs.reduce_)
           , convert_(rhs.convert_)
         {
         }
 
-        PIKA_HOST_DEVICE transform_reduce_iteration(
-            transform_reduce_iteration&& rhs)
+        PIKA_HOST_DEVICE
+        transform_reduce_iteration(transform_reduce_iteration&& rhs)
           : reduce_(PIKA_MOVE(rhs.reduce_))
           , convert_(PIKA_MOVE(rhs.convert_))
         {
@@ -364,9 +364,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename T_,
             typename Reduce, typename Convert>
-        static typename algorithm_result<ExPolicy, T>::type parallel(
-            ExPolicy&& policy, Iter first, Sent last, T_&& init, Reduce&& r,
-            Convert&& conv)
+        static typename algorithm_result<ExPolicy, T>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, T_&& init,
+            Reduce&& r, Convert&& conv)
         {
             if (first == last)
             {
@@ -414,8 +414,8 @@ namespace pika::parallel::detail {
         value_type& part_sum_;
 
         template <typename Iter1, typename Iter2>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-            Iter1 it1, Iter2 it2)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void
+        operator()(Iter1 it1, Iter2 it2)
         {
             part_sum_ =
                 PIKA_INVOKE(op1_, part_sum_, PIKA_INVOKE(op2_, *it1, *it2));
@@ -482,9 +482,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Iter2, typename T_, typename Op1, typename Op2>
-        static typename algorithm_result<ExPolicy, T>::type parallel(
-            ExPolicy&& policy, Iter first1, Sent last1, Iter2 first2, T_&& init,
-            Op1&& op1, Op2&& op2)
+        static typename algorithm_result<ExPolicy, T>::type
+        parallel(ExPolicy&& policy, Iter first1, Sent last1, Iter2 first2,
+            T_&& init, Op1&& op1, Op2&& op2)
         {
             using result = algorithm_result<ExPolicy, T>;
             using zip_iterator = pika::util::zip_iterator<Iter, Iter2>;
@@ -806,9 +806,9 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend T tag_fallback_invoke(transform_reduce_t, InIter1 first1,
-            InIter1 last1, InIter2 first2, T init, Reduce&& red_op,
-            Convert&& conv_op)
+        friend T
+        tag_fallback_invoke(transform_reduce_t, InIter1 first1, InIter1 last1,
+            InIter2 first2, T init, Reduce&& red_op, Convert&& conv_op)
         {
             static_assert(pika::traits::is_input_iterator<InIter1>::value,
                 "Requires at least input iterator.");

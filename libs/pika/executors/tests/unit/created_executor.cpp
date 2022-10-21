@@ -33,8 +33,8 @@ struct void_parallel_executor : pika::execution::parallel_executor
     using base_type = pika::execution::parallel_executor;
 
     template <typename F, typename Shape, typename... Ts>
-    std::vector<pika::future<void>> bulk_async_execute(
-        F&& f, Shape const& shape, Ts&&... ts)
+    std::vector<pika::future<void>>
+    bulk_async_execute(F&& f, Shape const& shape, Ts&&... ts)
     {
         std::vector<pika::future<void>> results;
         for (auto const& elem : shape)

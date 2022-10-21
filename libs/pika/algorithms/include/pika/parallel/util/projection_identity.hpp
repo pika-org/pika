@@ -17,8 +17,8 @@ namespace pika::parallel::detail {
         using is_transparent = std::true_type;
 
         template <typename T>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T&& operator()(
-            T&& val) const noexcept
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr T&&
+        operator()(T&& val) const noexcept
         {
             return PIKA_FORWARD(T, val);
         }

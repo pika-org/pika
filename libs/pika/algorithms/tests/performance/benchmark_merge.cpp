@@ -66,9 +66,9 @@ double run_merge_benchmark_std(int test_count, InIter1 first1, InIter1 last1,
 ///////////////////////////////////////////////////////////////////////////////
 template <typename ExPolicy, typename FwdIter1, typename FwdIter2,
     typename FwdIter3>
-double run_merge_benchmark_pika(int test_count, ExPolicy policy,
-    FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, FwdIter2 last2,
-    FwdIter3 dest)
+double
+run_merge_benchmark_pika(int test_count, ExPolicy policy, FwdIter1 first1,
+    FwdIter1 last1, FwdIter2 first2, FwdIter2 last2, FwdIter3 dest)
 {
     using namespace std::chrono;
     auto time = high_resolution_clock::now();

@@ -44,8 +44,8 @@ namespace test {
         }
 
         template <typename Iterator>
-        typename std::iterator_traits<Iterator>::reference operator()(
-            Iterator const& it) const
+        typename std::iterator_traits<Iterator>::reference
+        operator()(Iterator const& it) const
         {
             if (it == begin_)
                 return *value_;
@@ -79,8 +79,8 @@ namespace test {
         }
 
         template <typename Iterator>
-        typename std::iterator_traits<Iterator>::reference operator()(
-            Iterator const& it) const
+        typename std::iterator_traits<Iterator>::reference
+        operator()(Iterator const& it) const
         {
             if (it == end_)
                 return *value_;
@@ -93,8 +93,8 @@ namespace test {
     };
 
     template <typename IteratorBase, typename IteratorValue>
-    inline next_transformer<IteratorBase, IteratorValue> make_next_transformer(
-        IteratorBase const& base, IteratorValue const& value)
+    inline next_transformer<IteratorBase, IteratorValue>
+    make_next_transformer(IteratorBase const& base, IteratorValue const& value)
     {
         return next_transformer<IteratorBase, IteratorValue>(base, value);
     }

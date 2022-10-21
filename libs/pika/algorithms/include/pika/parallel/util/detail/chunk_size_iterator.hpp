@@ -74,9 +74,9 @@ namespace pika::parallel::detail {
     public:
         chunk_size_iterator() = default;
 
-        PIKA_HOST_DEVICE chunk_size_iterator(Iterator it,
-            std::size_t chunk_size, std::size_t count = 0,
-            std::size_t current = 0)
+        PIKA_HOST_DEVICE
+        chunk_size_iterator(Iterator it, std::size_t chunk_size,
+            std::size_t count = 0, std::size_t current = 0)
           : data_(it, (std::min)(chunk_size, count))
           , chunk_size_(chunk_size)
           , last_chunk_size_(get_last_chunk_size(count, chunk_size))
@@ -113,8 +113,8 @@ namespace pika::parallel::detail {
                 chunk_size_ == other.chunk_size_ && current_ == other.current_;
         }
 
-        PIKA_HOST_DEVICE typename base_type::reference dereference()
-            const noexcept
+        PIKA_HOST_DEVICE typename base_type::reference
+        dereference() const noexcept
         {
             return data_;
         }
@@ -206,8 +206,8 @@ namespace pika::parallel::detail {
             typename Enable = std::enable_if_t<
                 pika::traits::is_random_access_iterator_v<Iter> ||
                 std::is_integral_v<Iter>>>
-        PIKA_HOST_DEVICE std::ptrdiff_t distance_to(
-            chunk_size_iterator const& rhs) const
+        PIKA_HOST_DEVICE std::ptrdiff_t
+        distance_to(chunk_size_iterator const& rhs) const
         {
             return static_cast<std::ptrdiff_t>(
                 ((rhs.iterator() - iterator()) + chunk_size_ - 1) /
@@ -304,8 +304,8 @@ namespace pika::parallel::detail {
                 chunk_size_ == other.chunk_size_ && current_ == other.current_;
         }
 
-        PIKA_HOST_DEVICE typename base_type::reference dereference()
-            const noexcept
+        PIKA_HOST_DEVICE typename base_type::reference
+        dereference() const noexcept
         {
             return data_;
         }
@@ -400,8 +400,8 @@ namespace pika::parallel::detail {
             typename Enable = std::enable_if_t<
                 pika::traits::is_random_access_iterator_v<Iter> ||
                 std::is_integral_v<Iter>>>
-        PIKA_HOST_DEVICE std::ptrdiff_t distance_to(
-            chunk_size_idx_iterator const& rhs) const
+        PIKA_HOST_DEVICE std::ptrdiff_t
+        distance_to(chunk_size_idx_iterator const& rhs) const
         {
             return static_cast<std::ptrdiff_t>(
                 ((rhs.iterator() - iterator()) + chunk_size_ - 1) /

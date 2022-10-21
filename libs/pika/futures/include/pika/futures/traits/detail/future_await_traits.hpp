@@ -58,8 +58,8 @@ namespace pika { namespace lcos { namespace detail {
     }
 
     template <typename T, typename Promise>
-    PIKA_FORCEINLINE void await_suspend(
-        pika::future<T>& f, coroutine_handle<Promise> rh)
+    PIKA_FORCEINLINE void
+    await_suspend(pika::future<T>& f, coroutine_handle<Promise> rh)
     {
         // f.then([=](future<T> result) {});
         auto st = traits::detail::get_shared_state(f);
@@ -100,8 +100,8 @@ namespace pika { namespace lcos { namespace detail {
     }
 
     template <typename T, typename Promise>
-    PIKA_FORCEINLINE void await_suspend(
-        pika::shared_future<T>& f, coroutine_handle<Promise> rh)
+    PIKA_FORCEINLINE void
+    await_suspend(pika::shared_future<T>& f, coroutine_handle<Promise> rh)
     {
         // f.then([=](shared_future<T> result) {})
         auto st = traits::detail::get_shared_state(f);

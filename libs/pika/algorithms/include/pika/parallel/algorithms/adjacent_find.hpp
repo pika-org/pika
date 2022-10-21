@@ -154,8 +154,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent_,
             typename Pred, typename Proj>
-        static InIter sequential(
-            ExPolicy, InIter first, Sent_ last, Pred&& pred, Proj&& proj)
+        static InIter
+        sequential(ExPolicy, InIter first, Sent_ last, Pred&& pred, Proj&& proj)
         {
             return std::adjacent_find(first, last,
                 invoke_projected<Pred, Proj>(
@@ -164,8 +164,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter, typename Sent_,
             typename Pred, typename Proj>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, Sent_ last, Pred&& pred,
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent_ last, Pred&& pred,
             Proj&& proj)
         {
             using zip_iterator = pika::util::zip_iterator<FwdIter, FwdIter>;

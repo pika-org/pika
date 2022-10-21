@@ -24,8 +24,8 @@ namespace pika { namespace execution { namespace experimental {
     {
     private:
         template <typename Scheduler, typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            execute_t, Scheduler&& scheduler, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(execute_t, Scheduler&& scheduler, F&& f)
         {
             return start_detached(
                 then(schedule(PIKA_FORWARD(Scheduler, scheduler)),

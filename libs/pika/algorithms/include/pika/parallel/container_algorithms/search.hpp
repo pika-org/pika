@@ -277,9 +277,9 @@ namespace pika::ranges {
         typename Pred = pika::ranges::equal_to,
         typename Proj1 = pika::parallel::detail::projection_identity,
         typename Proj2 = pika::parallel::detail::projection_identity>
-    typename pika::traits::range_iterator<Rng1>::type search(Rng1&& rng1,
-        Rng2&& rng2, Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
-        Proj2&& proj2 = Proj2());
+    typename pika::traits::range_iterator<Rng1>::type
+    search(Rng1&& rng1, Rng2&& rng2, Pred&& op = Pred(),
+        Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
 
     /// Searches the range [first, last) for any elements in the range [s_first, s_last).
     /// Uses a provided predicate to compare elements.
@@ -527,10 +527,10 @@ namespace pika::ranges {
         typename Sent2, typename Pred = pika::ranges::equal_to,
         typename Proj1 = pika::parallel::detail::projection_identity,
         typename Proj2 = pika::parallel::detail::projection_identity>
-    typename algorithm_result<ExPolicy, FwdIter>::type search_n(
-        ExPolicy&& policy, FwdIter first, std::size_t count, FwdIter2 s_first,
-        Sent2 s_last, Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
-        Proj2&& proj2 = Proj2());
+    typename algorithm_result<ExPolicy, FwdIter>::type
+    search_n(ExPolicy&& policy, FwdIter first, std::size_t count,
+        FwdIter2 s_first, Sent2 s_last, Pred&& op = Pred(),
+        Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
 
     /// Searches the range [first, last) for any elements in the range [s_first, s_last).
     /// Uses a provided predicate to compare elements.
@@ -600,8 +600,8 @@ namespace pika::ranges {
         typename Pred = pika::ranges::equal_to,
         typename Proj1 = pika::parallel::detail::projection_identity,
         typename Proj2 = pika::parallel::detail::projection_identity>
-    typename pika::traits::range_iterator<Rng1>::type search_n(Rng1&& rng1,
-        std::size_t count, Rng2&& rng2, Pred&& op = Pred(),
+    typename pika::traits::range_iterator<Rng1>::type
+    search_n(Rng1&& rng1, std::size_t count, Rng2&& rng2, Pred&& op = Pred(),
         Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2());
 
     /// Searches the range [first, last) for any elements in the range [s_first, s_last).
@@ -718,10 +718,10 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(pika::ranges::search_t,
-            FwdIter first, Sent last, FwdIter2 s_first, Sent2 s_last,
-            Pred&& op = Pred(), Proj1&& proj1 = Proj1(),
-            Proj2&& proj2 = Proj2())
+        friend FwdIter
+        tag_fallback_invoke(pika::ranges::search_t, FwdIter first, Sent last,
+            FwdIter2 s_first, Sent2 s_last, Pred&& op = Pred(),
+            Proj1&& proj1 = Proj1(), Proj2&& proj2 = Proj2())
         {
             return pika::parallel::detail::search<FwdIter, Sent>().call(
                 pika::execution::seq, first, last, s_first, s_last,

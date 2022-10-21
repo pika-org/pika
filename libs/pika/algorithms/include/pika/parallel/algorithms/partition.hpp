@@ -520,9 +520,9 @@ namespace pika::parallel::detail {
     {
         template <typename ExPolicy, typename RandIter, typename F,
             typename Proj>
-        pika::future<RandIter> operator()(ExPolicy&& policy, RandIter first,
-            RandIter last, std::size_t size, F&& f, Proj&& proj,
-            std::size_t chunks)
+        pika::future<RandIter>
+        operator()(ExPolicy&& policy, RandIter first, RandIter last,
+            std::size_t size, F&& f, Proj&& proj, std::size_t chunks)
         {
             if (chunks < 2)
             {
@@ -587,8 +587,8 @@ namespace pika::parallel::detail {
     };
 
     template <typename BidirIter, typename Sent, typename F, typename Proj>
-    static BidirIter stable_partition_seq(
-        BidirIter first, Sent last, F&& f, Proj&& proj)
+    static BidirIter
+    stable_partition_seq(BidirIter first, Sent last, F&& f, Proj&& proj)
     {
         using value_type = typename std::iterator_traits<BidirIter>::value_type;
         std::vector<value_type> falseValues;
@@ -624,8 +624,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename BidirIter, typename Sent,
             typename F, typename Proj>
-        static BidirIter sequential(
-            ExPolicy&&, BidirIter first, Sent last, F&& f, Proj&& proj)
+        static BidirIter
+        sequential(ExPolicy&&, BidirIter first, Sent last, F&& f, Proj&& proj)
         {
             return stable_partition_seq(
                 first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
@@ -732,8 +732,8 @@ namespace pika::parallel::detail {
     template <typename FwdIter, typename Pred, typename Proj,
         PIKA_CONCEPT_REQUIRES_(pika::traits::is_forward_iterator_v<FwdIter> &&
             !pika::traits::is_bidirectional_iterator_v<FwdIter>)>
-    FwdIter sequential_partition(
-        FwdIter first, FwdIter last, Pred&& pred, Proj&& proj)
+    FwdIter
+    sequential_partition(FwdIter first, FwdIter last, Pred&& pred, Proj&& proj)
     {
         while (first != last && PIKA_INVOKE(pred, PIKA_INVOKE(proj, *first)))
             ++first;
@@ -968,8 +968,8 @@ namespace pika::parallel::detail {
         // If dest is previous to first, the range [first, last) can be
         //     successfully moved to the range [dest, dest+distance(first, last)).
         template <class FwdIter1, class FwdIter2>
-        static FwdIter2 swap_ranges_forward(
-            FwdIter1 first, FwdIter1 last, FwdIter2 dest)
+        static FwdIter2
+        swap_ranges_forward(FwdIter1 first, FwdIter1 last, FwdIter2 dest)
         {
             while (first != last)
             {
@@ -1028,9 +1028,9 @@ namespace pika::parallel::detail {
         // Performs sequential sub-partitioning to remaining blocks for
         //     reducing the number and size of remaining blocks.
         template <typename FwdIter, typename Pred, typename Proj>
-        static void collapse_remaining_blocks(
-            std::vector<block<FwdIter>>& remaining_blocks, Pred& pred,
-            Proj& proj)
+        static void
+        collapse_remaining_blocks(std::vector<block<FwdIter>>& remaining_blocks,
+            Pred& pred, Proj& proj)
         {
             if (remaining_blocks.empty())
                 return;
@@ -1219,9 +1219,9 @@ namespace pika::parallel::detail {
         // The function which merges remaining blocks into
         //     one block which is adjacent to boundary.
         template <typename FwdIter>
-        static block<FwdIter> merge_remaining_blocks(
-            std::vector<block<FwdIter>>& remaining_blocks, FwdIter boundary,
-            FwdIter first)
+        static block<FwdIter>
+        merge_remaining_blocks(std::vector<block<FwdIter>>& remaining_blocks,
+            FwdIter boundary, FwdIter first)
         {
             if (remaining_blocks.empty())
                 return {boundary, boundary};
@@ -1359,8 +1359,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Sent, typename Pred,
             typename Proj = projection_identity>
-        static FwdIter sequential(
-            ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
+        static FwdIter
+        sequential(ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
         {
             auto last_iter = detail::advance_to_sentinel(first, last);
             return sequential_partition(first, last_iter,
@@ -1369,8 +1369,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Sent, typename Pred,
             typename Proj = projection_identity>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
             Proj&& proj)
         {
             using algorithm_result = algorithm_result<ExPolicy, FwdIter>;
@@ -1399,9 +1399,9 @@ namespace pika::parallel::detail {
     // sequential partition_copy with projection function
     template <typename InIter, typename OutIter1, typename OutIter2,
         typename Pred, typename Proj>
-    std::tuple<InIter, OutIter1, OutIter2> sequential_partition_copy(
-        InIter first, InIter last, OutIter1 dest_true, OutIter2 dest_false,
-        Pred&& pred, Proj&& proj)
+    std::tuple<InIter, OutIter1, OutIter2>
+    sequential_partition_copy(InIter first, InIter last, OutIter1 dest_true,
+        OutIter2 dest_false, Pred&& pred, Proj&& proj)
     {
         while (first != last)
         {
@@ -1427,9 +1427,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename InIter, typename Sent,
             typename OutIter1, typename OutIter2, typename Pred,
             typename Proj = projection_identity>
-        static std::tuple<InIter, OutIter1, OutIter2> sequential(ExPolicy,
-            InIter first, Sent last, OutIter1 dest_true, OutIter2 dest_false,
-            Pred&& pred, Proj&& proj)
+        static std::tuple<InIter, OutIter1, OutIter2>
+        sequential(ExPolicy, InIter first, Sent last, OutIter1 dest_true,
+            OutIter2 dest_false, Pred&& pred, Proj&& proj)
         {
             auto last_iter = detail::advance_to_sentinel(first, last);
             return sequential_partition_copy(first, last_iter, dest_true,
@@ -1673,9 +1673,9 @@ namespace pika {
                     parallel::detail::projected<Proj, FwdIter1>>
             )>
         // clang-format on
-        friend std::pair<FwdIter2, FwdIter3> tag_fallback_invoke(
-            pika::partition_copy_t, FwdIter1 first, FwdIter1 last,
-            FwdIter2 dest_true, FwdIter3 dest_false, Pred&& pred,
+        friend std::pair<FwdIter2, FwdIter3>
+        tag_fallback_invoke(pika::partition_copy_t, FwdIter1 first,
+            FwdIter1 last, FwdIter2 dest_true, FwdIter3 dest_false, Pred&& pred,
             Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter1>),

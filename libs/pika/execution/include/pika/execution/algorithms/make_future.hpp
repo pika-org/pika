@@ -252,8 +252,8 @@ namespace pika::execution::experimental {
                 pika::detail::is_allocator_v<Allocator>
             )>
         // clang-format on
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            make_future_t, Sender&& sender,
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(make_future_t, Sender&& sender,
             Allocator const& allocator = Allocator{})
         {
             return make_future_detail::make_future(

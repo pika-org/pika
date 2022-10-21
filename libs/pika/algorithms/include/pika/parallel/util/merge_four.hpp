@@ -55,9 +55,9 @@ namespace pika::parallel::detail {
     /// \return range with all the elements move with the size adjusted
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename Compare>
-    range<Iter1, Sent1> full_merge4(range<Iter1, Sent1>& rdest,
-        range<Iter2, Sent2> vrange_input[4], std::uint32_t nrange_input,
-        Compare comp)
+    range<Iter1, Sent1>
+    full_merge4(range<Iter1, Sent1>& rdest, range<Iter2, Sent2> vrange_input[4],
+        std::uint32_t nrange_input, Compare comp)
     {
         using range1_t = range<Iter1, Sent1>;
         using type1 = typename std::iterator_traits<Iter1>::value_type;

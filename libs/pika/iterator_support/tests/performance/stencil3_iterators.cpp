@@ -89,8 +89,8 @@ namespace pika { namespace experimental {
             }
 
             template <typename Iterator>
-            typename std::iterator_traits<Iterator>::reference operator()(
-                Iterator const& it) const
+            typename std::iterator_traits<Iterator>::reference
+            operator()(Iterator const& it) const
             {
                 if (it == begin_)
                     return *value_;
@@ -126,8 +126,8 @@ namespace pika { namespace experimental {
             }
 
             template <typename Iterator>
-            typename std::iterator_traits<Iterator>::reference operator()(
-                Iterator const& it) const
+            typename std::iterator_traits<Iterator>::reference
+            operator()(Iterator const& it) const
             {
                 if (it == end_)
                     return *value_;
@@ -313,8 +313,8 @@ namespace pika { namespace experimental {
     };
 
     template <typename Iterator>
-    inline stencil3_iterator_v1<Iterator> make_stencil3_iterator_v1(
-        Iterator const& it)
+    inline stencil3_iterator_v1<Iterator>
+    make_stencil3_iterator_v1(Iterator const& it)
     {
         return stencil3_iterator_v1<Iterator>(it);
     }
@@ -422,8 +422,8 @@ namespace pika { namespace experimental {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator>
-    inline stencil3_iterator_v2<Iterator> make_stencil3_iterator_v2(
-        Iterator const& it)
+    inline stencil3_iterator_v2<Iterator>
+    make_stencil3_iterator_v2(Iterator const& it)
     {
         return stencil3_iterator_v2<Iterator>(it);
     }

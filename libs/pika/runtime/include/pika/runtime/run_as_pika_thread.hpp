@@ -29,8 +29,8 @@ namespace pika { namespace threads {
     namespace detail {
         // This is the overload for running functions which return a value.
         template <typename F, typename... Ts>
-        typename util::detail::invoke_result<F, Ts...>::type run_as_pika_thread(
-            std::false_type, F const& f, Ts&&... ts)
+        typename util::detail::invoke_result<F, Ts...>::type
+        run_as_pika_thread(std::false_type, F const& f, Ts&&... ts)
         {
             // NOTE: The condition variable needs be able to live past the scope
             // of this function. The mutex and boolean are guaranteed to live
@@ -140,8 +140,8 @@ namespace pika { namespace threads {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Ts>
-    typename util::detail::invoke_result<F, Ts...>::type run_as_pika_thread(
-        F const& f, Ts&&... vs)
+    typename util::detail::invoke_result<F, Ts...>::type
+    run_as_pika_thread(F const& f, Ts&&... vs)
     {
         // This shouldn't be used on a pika-thread
         PIKA_ASSERT(pika::threads::detail::get_self_ptr() == nullptr);

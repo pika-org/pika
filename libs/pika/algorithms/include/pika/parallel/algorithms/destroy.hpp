@@ -187,8 +187,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter, typename Sent>
-        static typename algorithm_result<ExPolicy, Iter>::type parallel(
-            ExPolicy&& policy, Iter first, Sent last)
+        static typename algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last)
         {
             return parallel_sequential_destroy_n(PIKA_FORWARD(ExPolicy, policy),
                 first, detail::distance(first, last));
@@ -231,8 +231,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter>
-        static typename algorithm_result<ExPolicy, Iter>::type parallel(
-            ExPolicy&& policy, Iter first, std::size_t count)
+        static typename algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, std::size_t count)
         {
             return parallel_sequential_destroy_n(
                 PIKA_FORWARD(ExPolicy, policy), first, count);
@@ -322,8 +322,8 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            destroy_n_t, FwdIter first, Size count)
+        friend FwdIter
+        tag_fallback_invoke(destroy_n_t, FwdIter first, Size count)
         {
             static_assert((pika::traits::is_forward_iterator<FwdIter>::value),
                 "Requires at least forward iterator.");

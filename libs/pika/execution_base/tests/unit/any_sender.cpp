@@ -91,9 +91,9 @@ struct non_copyable_sender
     };
 
     template <typename R>
-    friend operation_state<R> tag_invoke(
-        pika::execution::experimental::connect_t, non_copyable_sender&& s,
-        R&& r) noexcept
+    friend operation_state<R>
+    tag_invoke(pika::execution::experimental::connect_t,
+        non_copyable_sender&& s, R&& r) noexcept
     {
         return {std::forward<R>(r), std::move(s.ts)};
     }
@@ -152,15 +152,15 @@ struct sender
     };
 
     template <typename R>
-    friend operation_state<R> tag_invoke(
-        pika::execution::experimental::connect_t, sender&& s, R&& r)
+    friend operation_state<R>
+    tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
     {
         return {std::forward<R>(r), std::move(s.ts)};
     }
 
     template <typename R>
-    friend operation_state<R> tag_invoke(
-        pika::execution::experimental::connect_t, sender& s, R&& r)
+    friend operation_state<R>
+    tag_invoke(pika::execution::experimental::connect_t, sender& s, R&& r)
     {
         return {std::forward<R>(r), s.ts};
     }
@@ -257,8 +257,8 @@ struct error_sender
     };
 
     template <typename R>
-    friend operation_state<R> tag_invoke(
-        pika::execution::experimental::connect_t, error_sender, R&& r)
+    friend operation_state<R>
+    tag_invoke(pika::execution::experimental::connect_t, error_sender, R&& r)
     {
         return {std::forward<R>(r)};
     }

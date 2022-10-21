@@ -518,16 +518,16 @@ namespace pika {
     //      template parameter Callback that models both invocable and
     //      destructible.
     template <typename Callback>
-    stop_callback<std::decay_t<Callback>> make_stop_callback(
-        stop_token const& st, Callback&& cb)
+    stop_callback<std::decay_t<Callback>>
+    make_stop_callback(stop_token const& st, Callback&& cb)
     {
         return stop_callback<std::decay_t<Callback>>(
             st, PIKA_FORWARD(Callback, cb));
     }
 
     template <typename Callback>
-    stop_callback<std::decay_t<Callback>> make_stop_callback(
-        stop_token&& st, Callback&& cb)
+    stop_callback<std::decay_t<Callback>>
+    make_stop_callback(stop_token&& st, Callback&& cb)
     {
         return stop_callback<std::decay_t<Callback>>(
             PIKA_MOVE(st), PIKA_FORWARD(Callback, cb));

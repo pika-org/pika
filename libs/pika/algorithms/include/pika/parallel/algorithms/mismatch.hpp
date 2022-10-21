@@ -200,9 +200,9 @@ namespace pika::parallel::detail {
     ///////////////////////////////////////////////////////////////////////
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename F, typename Proj1, typename Proj2>
-    constexpr in_in_result<Iter1, Iter2> sequential_mismatch_binary(
-        Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, F&& f,
-        Proj1&& proj1, Proj2&& proj2)
+    constexpr in_in_result<Iter1, Iter2>
+    sequential_mismatch_binary(Iter1 first1, Sent1 last1, Iter2 first2,
+        Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
     {
         while (first1 != last1 && first2 != last2 &&
             PIKA_INVOKE(
@@ -225,9 +225,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename F, typename Proj1,
             typename Proj2>
-        static constexpr in_in_result<Iter1, Iter2> sequential(ExPolicy,
-            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, F&& f,
-            Proj1&& proj1, Proj2&& proj2)
+        static constexpr in_in_result<Iter1, Iter2>
+        sequential(ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, F&& f, Proj1&& proj1, Proj2&& proj2)
         {
             return sequential_mismatch_binary(first1, last1, first2, last2,
                 PIKA_FORWARD(F, f), PIKA_FORWARD(Proj1, proj1),
@@ -331,8 +331,8 @@ namespace pika::parallel::detail {
     }
 
     template <typename I1, typename I2>
-    pika::future<std::pair<I1, I2>> get_pair(
-        pika::future<in_in_result<I1, I2>>&& f)
+    pika::future<std::pair<I1, I2>>
+    get_pair(pika::future<in_in_result<I1, I2>>&& f)
     {
         return pika::make_future<std::pair<I1, I2>>(
             PIKA_MOVE(f), [](in_in_result<I1, I2>&& p) -> std::pair<I1, I2> {
@@ -352,8 +352,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter1, typename Sent,
             typename InIter2, typename F>
-        static constexpr IterPair sequential(
-            ExPolicy, InIter1 first1, Sent last1, InIter2 first2, F&& f)
+        static constexpr IterPair
+        sequential(ExPolicy, InIter1 first1, Sent last1, InIter2 first2, F&& f)
         {
             while (first1 != last1 && PIKA_INVOKE(f, *first1, *first2))
             {
@@ -364,9 +364,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter1, typename Sent,
             typename FwdIter2, typename F>
-        static algorithm_result_t<ExPolicy, IterPair> parallel(
-            ExPolicy&& policy, FwdIter1 first1, Sent last1, FwdIter2 first2,
-            F&& f)
+        static algorithm_result_t<ExPolicy, IterPair>
+        parallel(ExPolicy&& policy, FwdIter1 first1, Sent last1,
+            FwdIter2 first2, F&& f)
         {
             if (first1 == last1)
             {
@@ -554,9 +554,9 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend std::pair<FwdIter1, FwdIter2> tag_fallback_invoke(mismatch_t,
-            FwdIter1 first1, FwdIter1 last1, FwdIter2 first2, FwdIter2 last2,
-            Pred&& op)
+        friend std::pair<FwdIter1, FwdIter2>
+        tag_fallback_invoke(mismatch_t, FwdIter1 first1, FwdIter1 last1,
+            FwdIter2 first2, FwdIter2 last2, Pred&& op)
         {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter1>),
                 "Requires at least forward iterator.");

@@ -64,8 +64,8 @@ namespace pika { namespace util {
     /// if possible. This can be used to create a mapper function used
     /// in map_pack that maps one element to an arbitrary count (1:n).
     template <typename... T>
-    constexpr detail::spreading::spread_box<std::decay_t<T>...> spread_this(
-        T&&... args)
+    constexpr detail::spreading::spread_box<std::decay_t<T>...>
+    spread_this(T&&... args)
     {
         return detail::spreading::spread_box<std::decay_t<T>...>(
             std::make_tuple(PIKA_FORWARD(T, args)...));

@@ -199,8 +199,8 @@ namespace pika { namespace util {
         };
 
         template <typename T>
-        void format_value(
-            std::ostream& os, std::string_view spec, T const& value)
+        void
+        format_value(std::ostream& os, std::string_view spec, T const& value)
         {
             if (!spec.empty())
                 throw std::runtime_error("Not a valid format specifier");
@@ -302,8 +302,8 @@ namespace pika { namespace util {
     }    // namespace detail
 
     template <typename Range>
-    detail::format_join<Range> format_join(
-        Range const& range, std::string_view delimiter) noexcept
+    detail::format_join<Range>
+    format_join(Range const& range, std::string_view delimiter) noexcept
     {
         return {range, delimiter};
     }

@@ -162,16 +162,16 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F>
-        static constexpr Iter sequential(
-            ExPolicy&& policy, Iter first, Sent last, F&& f)
+        static constexpr Iter
+        sequential(ExPolicy&& policy, Iter first, Sent last, F&& f)
         {
             return sequential_generate(PIKA_FORWARD(ExPolicy, policy), first,
                 last, PIKA_FORWARD(F, f));
         }
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F>
-        static typename algorithm_result<ExPolicy, Iter>::type parallel(
-            ExPolicy&& policy, Iter first, Sent last, F&& f)
+        static typename algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, F&& f)
         {
             auto f1 = [policy, f = PIKA_FORWARD(F, f)](
                           Iter part_begin, std::size_t part_size) mutable {
@@ -200,16 +200,16 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename InIter, typename F>
-        static FwdIter sequential(
-            ExPolicy&& policy, InIter first, std::size_t count, F&& f)
+        static FwdIter
+        sequential(ExPolicy&& policy, InIter first, std::size_t count, F&& f)
         {
             return sequential_generate_n(
                 PIKA_FORWARD(ExPolicy, policy), first, count, f);
         }
 
         template <typename ExPolicy, typename F>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, std::size_t count, F&& f)
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, std::size_t count, F&& f)
         {
             auto f1 = [policy, f = PIKA_FORWARD(F, f)](
                           FwdIter part_begin, std::size_t part_size) mutable {
@@ -259,8 +259,8 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            generate_t, FwdIter first, FwdIter last, F&& f)
+        friend FwdIter
+        tag_fallback_invoke(generate_t, FwdIter first, FwdIter last, F&& f)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");
@@ -308,8 +308,8 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            generate_n_t, FwdIter first, Size count, F&& f)
+        friend FwdIter
+        tag_fallback_invoke(generate_n_t, FwdIter first, Size count, F&& f)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");

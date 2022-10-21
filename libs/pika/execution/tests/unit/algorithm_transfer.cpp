@@ -66,8 +66,8 @@ struct scheduler_schedule_from
         };
 
         template <typename R>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, sender&&, R&& r)
+        friend auto
+        tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -156,8 +156,8 @@ struct scheduler_transfer
         };
 
         template <typename R>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, sender&&, R&& r)
+        friend auto
+        tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
         {
             return operation_state<R>{std::forward<R>(r)};
         }

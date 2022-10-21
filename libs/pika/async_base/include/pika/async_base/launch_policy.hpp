@@ -624,8 +624,8 @@ namespace pika {
 
         ///////////////////////////////////////////////////////////////////////
         template <typename Left, typename Right>
-        constexpr inline policy_holder_base operator&(
-            policy_holder<Left> const& lhs,
+        constexpr inline policy_holder_base
+        operator&(policy_holder<Left> const& lhs,
             policy_holder<Right> const& rhs) noexcept
         {
             return policy_holder_base(
@@ -635,8 +635,8 @@ namespace pika {
         }
 
         template <typename Left, typename Right>
-        constexpr inline policy_holder_base operator|(
-            policy_holder<Left> const& lhs,
+        constexpr inline policy_holder_base
+        operator|(policy_holder<Left> const& lhs,
             policy_holder<Right> const& rhs) noexcept
         {
             return policy_holder_base(
@@ -646,8 +646,8 @@ namespace pika {
         }
 
         template <typename Left, typename Right>
-        constexpr inline policy_holder_base operator^(
-            policy_holder<Left> const& lhs,
+        constexpr inline policy_holder_base
+        operator^(policy_holder<Left> const& lhs,
             policy_holder<Right> const& rhs) noexcept
         {
             return policy_holder_base(
@@ -657,8 +657,8 @@ namespace pika {
         }
 
         template <typename Derived>
-        constexpr inline policy_holder<Derived> operator~(
-            policy_holder<Derived> const& p) noexcept
+        constexpr inline policy_holder<Derived>
+        operator~(policy_holder<Derived> const& p) noexcept
         {
             return policy_holder<Derived>(
                 static_cast<launch_policy>(~static_cast<int>(p.policy())),
@@ -881,8 +881,8 @@ namespace pika {
         }
 
         template <typename F>
-        PIKA_FORCEINLINE constexpr bool has_async_policy(
-            detail::policy_holder<F> const& p) noexcept
+        PIKA_FORCEINLINE constexpr bool
+        has_async_policy(detail::policy_holder<F> const& p) noexcept
         {
             return bool(static_cast<int>(p.policy()) &
                 static_cast<int>(detail::launch_policy::async_policies));

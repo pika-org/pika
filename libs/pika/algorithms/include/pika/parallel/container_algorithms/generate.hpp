@@ -273,8 +273,8 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
-        friend Iter tag_fallback_invoke(
-            generate_t, Iter first, Sent last, F&& f)
+        friend Iter
+        tag_fallback_invoke(generate_t, Iter first, Sent last, F&& f)
         {
             static_assert(pika::traits::is_forward_iterator<Iter>::value,
                 "Required at least forward iterator.");
@@ -322,8 +322,8 @@ namespace pika::ranges {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            generate_n_t, FwdIter first, Size count, F&& f)
+        friend FwdIter
+        tag_fallback_invoke(generate_n_t, FwdIter first, Size count, F&& f)
         {
             static_assert(pika::traits::is_forward_iterator<FwdIter>::value,
                 "Required at least forward iterator.");

@@ -198,8 +198,8 @@ namespace pika { namespace ranges {
     ///           copied.
     ///
     template <typename Iter, typename Sent, typename OutIter>
-    reverse_copy_result<Iter, OutIter> reverse_copy(
-        Iter first, Sent last, OutIter result);
+    reverse_copy_result<Iter, OutIter>
+    reverse_copy(Iter first, Sent last, OutIter result);
 
     /// Uses \a rng as the source range, as if using \a util::begin(rng) as
     /// \a first and \a ranges::end(rng) as \a last.
@@ -399,8 +399,8 @@ namespace pika::ranges {
             pika::traits::is_sentinel_for<Sent, Iter>::value
         )>
         // clang-format on
-        friend Iter tag_fallback_invoke(
-            pika::ranges::reverse_t, Iter first, Sent sent)
+        friend Iter
+        tag_fallback_invoke(pika::ranges::reverse_t, Iter first, Sent sent)
         {
             static_assert(
                 (pika::traits::is_bidirectional_iterator<Iter>::value),

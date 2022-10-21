@@ -257,16 +257,16 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Pred, typename Proj>
-        static bool sequential(
-            ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
+        static bool
+        sequential(ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
         {
             return is_sorted_sequential(first, last, PIKA_FORWARD(Pred, pred),
                 PIKA_FORWARD(Proj, proj));
         }
 
         template <typename ExPolicy, typename Pred, typename Proj>
-        static typename algorithm_result<ExPolicy, bool>::type parallel(
-            ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
+        static typename algorithm_result<ExPolicy, bool>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
             Proj&& proj)
         {
             using difference_type =
@@ -336,16 +336,16 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Pred, typename Proj>
-        static FwdIter sequential(
-            ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
+        static FwdIter
+        sequential(ExPolicy, FwdIter first, Sent last, Pred&& pred, Proj&& proj)
         {
             return is_sorted_until_sequential(first, last,
                 PIKA_FORWARD(Pred, pred), PIKA_FORWARD(Proj, proj));
         }
 
         template <typename ExPolicy, typename Pred, typename Proj>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
             Proj&& proj)
         {
             using reference = typename std::iterator_traits<FwdIter>::reference;

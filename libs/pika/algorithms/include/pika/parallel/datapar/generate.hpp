@@ -82,8 +82,8 @@ namespace pika::parallel::detail {
     struct datapar_generate
     {
         template <typename ExPolicy, typename Iter, typename Sent, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Iter call(
-            ExPolicy&&, Iter first, Sent last, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Iter
+        call(ExPolicy&&, Iter first, Sent last, F&& f)
         {
             std::size_t count = std::distance(first, last);
             return datapar_generate_helper<Iter>::call(
@@ -105,8 +105,8 @@ namespace pika::parallel::detail {
     struct datapar_generate_n
     {
         template <typename ExPolicy, typename Iter, typename F>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Iter call(
-            ExPolicy&&, Iter first, std::size_t count, F&& f)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE static Iter
+        call(ExPolicy&&, Iter first, std::size_t count, F&& f)
         {
             return datapar_generate_helper<Iter>::call(
                 first, count, PIKA_FORWARD(F, f));

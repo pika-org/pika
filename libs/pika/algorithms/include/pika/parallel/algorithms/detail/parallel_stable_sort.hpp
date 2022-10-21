@@ -46,8 +46,8 @@ namespace pika::parallel::detail {
 
         // / brief Perform sorting operation
         template <typename Exec>
-        Iter operator()(
-            Exec&& exec, std::uint32_t nthreads, std::size_t chunk_size);
+        Iter
+        operator()(Exec&& exec, std::uint32_t nthreads, std::size_t chunk_size);
 
         /// \brief destructor of the typename. The utility is to destroy the
         ///        temporary buffer used in the sorting process

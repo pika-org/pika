@@ -51,8 +51,8 @@ namespace pika::parallel::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iter, typename T>
-    constexpr Iter sequential_fill_n_helper(
-        Iter first, std::size_t count, T const& value)
+    constexpr Iter
+    sequential_fill_n_helper(Iter first, std::size_t count, T const& value)
     {
         return std::fill_n(first, count, value);
     }

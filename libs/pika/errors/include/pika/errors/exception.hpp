@@ -301,13 +301,13 @@ namespace pika {
         };
 
         template <typename Exception>
-        PIKA_EXPORT std::exception_ptr get_exception(pika::exception const& e,
-            std::string const& func, std::string const& file, long line,
-            std::string const& auxinfo);
+        PIKA_EXPORT std::exception_ptr
+        get_exception(pika::exception const& e, std::string const& func,
+            std::string const& file, long line, std::string const& auxinfo);
 
         template <typename Exception>
-        PIKA_EXPORT std::exception_ptr construct_lightweight_exception(
-            Exception const& e);
+        PIKA_EXPORT std::exception_ptr
+        construct_lightweight_exception(Exception const& e);
     }    // namespace detail
     /// \endcond
 

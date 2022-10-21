@@ -29,9 +29,9 @@ namespace pika { namespace execution { namespace experimental {
             pika::is_execution_policy_v<ExPolicy>
         )>
     // clang-format on
-    constexpr decltype(auto) tag_invoke(
-        pika::execution::experimental::with_annotation_t, ExPolicy&& policy,
-        char const* annotation)
+    constexpr decltype(auto)
+    tag_invoke(pika::execution::experimental::with_annotation_t,
+        ExPolicy&& policy, char const* annotation)
     {
         auto exec = pika::execution::experimental::with_annotation(
             policy.executor(), annotation);

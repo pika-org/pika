@@ -179,8 +179,8 @@ namespace pika { namespace ranges {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename Iter, typename Sent, typename... Args>
-    typename pika::parallel::detail::algorithm_result<ExPolicy>::type for_loop(
-        ExPolicy&& policy, Iter first, Sent last, Args&&... args);
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
+    for_loop(ExPolicy&& policy, Iter first, Sent last, Args&&... args);
 
     /// The for_loop implements loop functionality over a range specified by
     /// a range. These algorithms resemble for_each from the
@@ -347,8 +347,8 @@ namespace pika { namespace ranges {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename Rng, typename... Args>
-    typename pika::parallel::detail::algorithm_result<ExPolicy>::type for_loop(
-        ExPolicy&& policy, Rng&& rng, Args&&... args);
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
+    for_loop(ExPolicy&& policy, Rng&& rng, Args&&... args);
 
     /// The for_loop_strided implements loop functionality over a range specified by
     /// iterator bounds. These algorithms resemble for_each from the
@@ -806,8 +806,8 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend void tag_fallback_invoke(
-            pika::ranges::for_loop_t, Rng&& rng, Args&&... args)
+        friend void
+        tag_fallback_invoke(pika::ranges::for_loop_t, Rng&& rng, Args&&... args)
         {
             static_assert(sizeof...(Args) >= 1,
                 "for_loop must be called with at least a function object");

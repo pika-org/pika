@@ -297,8 +297,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename Sent, typename T>
-        static typename algorithm_result<ExPolicy, Iter>::type parallel(
-            ExPolicy&& policy, Iter first, Sent last, T const& value)
+        static typename algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, T const& value)
         {
             if (first == last)
                 return algorithm_result<ExPolicy, Iter>::get(PIKA_MOVE(first));
@@ -351,8 +351,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename T>
-        static Iter sequential(
-            ExPolicy, Iter first, std::size_t count, T const& value)
+        static Iter
+        sequential(ExPolicy, Iter first, std::size_t count, T const& value)
         {
             return std_uninitialized_fill_n(first, count, value);
         }

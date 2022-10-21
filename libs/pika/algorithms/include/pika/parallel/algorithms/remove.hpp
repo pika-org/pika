@@ -270,8 +270,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Pred, typename Proj>
-        static Iter sequential(
-            ExPolicy, Iter first, Sent last, Pred&& pred, Proj&& proj)
+        static Iter
+        sequential(ExPolicy, Iter first, Sent last, Pred&& pred, Proj&& proj)
         {
             return sequential_remove_if(first, last, PIKA_FORWARD(Pred, pred),
                 PIKA_FORWARD(Proj, proj));

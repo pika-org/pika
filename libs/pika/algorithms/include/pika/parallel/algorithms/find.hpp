@@ -422,8 +422,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename T,
             typename Proj = projection_identity>
-        static typename algorithm_result<ExPolicy, Iter>::type parallel(
-            ExPolicy&& policy, Iter first, Sent last, T const& val,
+        static typename algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, T const& val,
             Proj&& proj = Proj())
         {
             using result = algorithm_result<ExPolicy, Iter>;
@@ -491,8 +491,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
             typename Proj = projection_identity>
-        static constexpr Iter sequential(
-            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
+        static constexpr Iter
+        sequential(ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
         {
             return sequential_find_if<ExPolicy>(
                 first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
@@ -500,8 +500,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
             typename Proj = projection_identity>
-        static typename algorithm_result<ExPolicy, Iter>::type parallel(
-            ExPolicy&& policy, Iter first, Sent last, F&& f,
+        static typename algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, F&& f,
             Proj&& proj = Proj())
         {
             using result = algorithm_result<ExPolicy, Iter>;
@@ -569,8 +569,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
             typename Proj = projection_identity>
-        static constexpr Iter sequential(
-            ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
+        static constexpr Iter
+        sequential(ExPolicy, Iter first, Sent last, F&& f, Proj&& proj = Proj())
         {
             return sequential_find_if_not<ExPolicy>(
                 first, last, PIKA_FORWARD(F, f), PIKA_FORWARD(Proj, proj));
@@ -578,8 +578,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent, typename F,
             typename Proj = projection_identity>
-        static typename algorithm_result<ExPolicy, Iter>::type parallel(
-            ExPolicy&& policy, Iter first, Sent last, F&& f,
+        static typename algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Sent last, F&& f,
             Proj&& proj = Proj())
         {
             using result = algorithm_result<ExPolicy, Iter>;
@@ -716,8 +716,8 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Pred, typename Proj1,
             typename Proj2>
-        static typename algorithm_result<ExPolicy, Iter1>::type parallel(
-            ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+        static typename algorithm_result<ExPolicy, Iter1>::type
+        parallel(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
             Sent2 last2, Pred&& op, Proj1&& proj1, Proj2&& proj2)
         {
             using result_type = algorithm_result<ExPolicy, Iter1>;
@@ -817,9 +817,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter1, typename InIter2,
             typename Pred, typename Proj1, typename Proj2>
-        static InIter1 sequential(ExPolicy, InIter1 first, InIter1 last,
-            InIter2 s_first, InIter2 s_last, Pred&& op, Proj1&& proj1,
-            Proj2&& proj2)
+        static InIter1
+        sequential(ExPolicy, InIter1 first, InIter1 last, InIter2 s_first,
+            InIter2 s_last, Pred&& op, Proj1&& proj1, Proj2&& proj2)
         {
             if (first == last)
                 return last;
@@ -944,8 +944,8 @@ namespace pika {
                 pika::traits::is_iterator<InIter>::value
             )>
         // clang-format on
-        friend InIter tag_fallback_invoke(
-            find_t, InIter first, InIter last, T const& val)
+        friend InIter
+        tag_fallback_invoke(find_t, InIter first, InIter last, T const& val)
         {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Requires at least input iterator.");
@@ -995,8 +995,8 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend InIter tag_fallback_invoke(
-            find_if_t, InIter first, InIter last, F&& f)
+        friend InIter
+        tag_fallback_invoke(find_if_t, InIter first, InIter last, F&& f)
         {
             static_assert(pika::traits::is_input_iterator<InIter>::value,
                 "Requires at least input iterator.");
@@ -1046,8 +1046,8 @@ namespace pika {
                 >
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(
-            find_if_not_t, FwdIter first, FwdIter last, F&& f)
+        friend FwdIter
+        tag_fallback_invoke(find_if_not_t, FwdIter first, FwdIter last, F&& f)
         {
             static_assert(pika::traits::is_input_iterator<FwdIter>::value,
                 "Requires at least input iterator.");

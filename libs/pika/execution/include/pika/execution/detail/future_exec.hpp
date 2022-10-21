@@ -137,8 +137,8 @@ namespace pika { namespace lcos { namespace detail {
         }
 
         template <typename Allocator, typename F>
-        PIKA_FORCEINLINE static auto call_alloc(
-            Allocator const& alloc, Future&& fut, F&& f)
+        PIKA_FORCEINLINE static auto
+        call_alloc(Allocator const& alloc, Future&& fut, F&& f)
             -> decltype(future_then_dispatch<Future, launch>::call_alloc(
                 alloc, PIKA_MOVE(fut), launch::all, PIKA_FORWARD(F, f)))
         {

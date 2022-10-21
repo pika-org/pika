@@ -63,8 +63,8 @@ struct check_context_receiver
     bool& executed;
 
     template <typename E>
-    friend void tag_invoke(
-        ex::set_error_t, check_context_receiver&&, E&&) noexcept
+    friend void
+    tag_invoke(ex::set_error_t, check_context_receiver&&, E&&) noexcept
     {
         PIKA_TEST(false);
     }
@@ -75,8 +75,8 @@ struct check_context_receiver
     }
 
     template <typename... Ts>
-    friend void tag_invoke(
-        ex::set_value_t, check_context_receiver&& r, Ts&&...) noexcept
+    friend void
+    tag_invoke(ex::set_value_t, check_context_receiver&& r, Ts&&...) noexcept
     {
         PIKA_TEST_NEQ(r.parent_id, pika::this_thread::get_id());
         PIKA_TEST_NEQ(
@@ -247,8 +247,8 @@ struct callback_receiver
     }
 
     template <typename... Ts>
-    friend void tag_invoke(
-        ex::set_value_t, callback_receiver&& r, Ts&&...) noexcept
+    friend void
+    tag_invoke(ex::set_value_t, callback_receiver&& r, Ts&&...) noexcept
     {
         r.f();
         std::lock_guard l{r.mtx};

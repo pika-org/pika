@@ -178,8 +178,8 @@ namespace pika {
     ///           otherwise.
     ///
     template <typename ExPolicy, typename I, typename... Args>
-    typename pika::parallel::detail::algorithm_result<ExPolicy>::type for_loop(
-        ExPolicy&& policy, std::decay_t<I> first, I last, Args&&... args);
+    typename pika::parallel::detail::algorithm_result<ExPolicy>::type
+    for_loop(ExPolicy&& policy, std::decay_t<I> first, I last, Args&&... args);
 
     /// The for_loop_strided implements loop functionality over a range
     /// specified by integral or iterator bounds. For the iterator case, these
@@ -265,8 +265,8 @@ namespace pika {
     /// Remarks: If \a f returns a result, the result is ignored.
     ///
     template <typename I, typename S, typename... Args>
-    void for_loop_strided(
-        std::decay_t<I> first, I last, S stride, Args&&... args);
+    void
+    for_loop_strided(std::decay_t<I> first, I last, S stride, Args&&... args);
 
     /// The for_loop_strided implements loop functionality over a range
     /// specified by integral or iterator bounds. For the iterator case, these
@@ -774,17 +774,17 @@ namespace pika {
         }
 
         template <typename... Ts, std::size_t... Is, typename F, typename B>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void invoke_iteration(
-            std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
-            F&& f, B part_begin)
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void
+        invoke_iteration(std::tuple<Ts...>& args,
+            pika::util::detail::index_pack<Is...>, F&& f, B part_begin)
         {
             PIKA_INVOKE(PIKA_FORWARD(F, f), part_begin,
                 std::get<Is>(args).iteration_value()...);
         }
 
         template <typename... Ts, std::size_t... Is>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void next_iteration(
-            std::tuple<Ts...>& args,
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void
+        next_iteration(std::tuple<Ts...>& args,
             pika::util::detail::index_pack<Is...>) noexcept
         {
             int const _sequencer[] = {
@@ -793,9 +793,9 @@ namespace pika {
         }
 
         template <typename... Ts, std::size_t... Is>
-        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void exit_iteration(
-            std::tuple<Ts...>& args, pika::util::detail::index_pack<Is...>,
-            std::size_t size) noexcept
+        PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void
+        exit_iteration(std::tuple<Ts...>& args,
+            pika::util::detail::index_pack<Is...>, std::size_t size) noexcept
         {
             int const _sequencer[] = {
                 0, (std::get<Is>(args).exit_iteration(size), 0)...};
@@ -912,16 +912,16 @@ namespace pika {
             }
 
             template <typename B>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                B part_begin, std::size_t part_steps)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void
+            operator()(B part_begin, std::size_t part_steps)
             {
                 PIKA_ASSERT(stride_ == 1);
                 loop_n<std::decay_t<ExPolicy>>(part_begin, part_steps, f_);
             }
 
             template <typename B>
-            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void operator()(
-                B part_begin, std::size_t part_steps, std::size_t)
+            PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr void
+            operator()(B part_begin, std::size_t part_steps, std::size_t)
             {
                 if (stride_ == 1)
                 {
@@ -1071,8 +1071,8 @@ namespace pika {
 
             template <typename ExPolicy, typename B, typename Size, typename S,
                 typename F, typename... Ts>
-            static typename algorithm_result<ExPolicy>::type parallel(
-                ExPolicy&& policy, B first, Size size, S stride, F&& f,
+            static typename algorithm_result<ExPolicy>::type
+            parallel(ExPolicy&& policy, B first, Size size, S stride, F&& f,
                 Ts&&... ts)
             {
                 if (size == 0)
@@ -1124,9 +1124,9 @@ namespace pika {
         // reshuffle arguments, last argument is function object, will go first
         template <typename ExPolicy, typename B, typename E, typename S,
             std::size_t... Is, typename... Args>
-        typename algorithm_result<ExPolicy>::type for_loop(ExPolicy&& policy,
-            B first, E last, S stride, pika::util::detail::index_pack<Is...>,
-            Args&&... args)
+        typename algorithm_result<ExPolicy>::type
+        for_loop(ExPolicy&& policy, B first, E last, S stride,
+            pika::util::detail::index_pack<Is...>, Args&&... args)
         {
             // stride shall not be zero
             PIKA_ASSERT(stride != 0);
@@ -1155,9 +1155,9 @@ namespace pika {
         // reshuffle arguments, last argument is function object, will go first
         template <typename ExPolicy, typename B, typename Size, typename S,
             std::size_t... Is, typename... Args>
-        typename algorithm_result<ExPolicy>::type for_loop_n(ExPolicy&& policy,
-            B first, Size size, S stride, pika::util::detail::index_pack<Is...>,
-            Args&&... args)
+        typename algorithm_result<ExPolicy>::type
+        for_loop_n(ExPolicy&& policy, B first, Size size, S stride,
+            pika::util::detail::index_pack<Is...>, Args&&... args)
         {
             // stride shall not be zero
             PIKA_ASSERT(stride != 0);

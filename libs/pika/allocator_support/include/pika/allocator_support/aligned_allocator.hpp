@@ -191,15 +191,15 @@ namespace pika::detail {
     };
 
     template <typename T>
-    constexpr bool operator==(
-        aligned_allocator<T> const&, aligned_allocator<T> const&)
+    constexpr bool
+    operator==(aligned_allocator<T> const&, aligned_allocator<T> const&)
     {
         return true;
     }
 
     template <typename T>
-    constexpr bool operator!=(
-        aligned_allocator<T> const&, aligned_allocator<T> const&)
+    constexpr bool
+    operator!=(aligned_allocator<T> const&, aligned_allocator<T> const&)
     {
         return false;
     }

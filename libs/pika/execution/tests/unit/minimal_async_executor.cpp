@@ -219,8 +219,8 @@ struct test_async_executor4 : test_async_executor1
     using execution_category = pika::execution::parallel_execution_tag;
 
     template <typename F, typename Shape, typename... Ts>
-    static std::vector<pika::future<void>> bulk_async_execute(
-        F f, Shape const& shape, Ts&&... ts)
+    static std::vector<pika::future<void>>
+    bulk_async_execute(F f, Shape const& shape, Ts&&... ts)
     {
         ++count_bulk_async;
         std::vector<pika::future<void>> results;

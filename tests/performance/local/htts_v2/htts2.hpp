@@ -58,8 +58,8 @@ namespace htts2 {
     // Performs approximately 'expected_' nanoseconds of artificial work.
     // Returns: nanoseconds of work performed.
     template <typename BaseClock>
-    typename clocksource<BaseClock>::rep payload(
-        typename clocksource<BaseClock>::rep expected)
+    typename clocksource<BaseClock>::rep
+    payload(typename clocksource<BaseClock>::rep expected)
     {
         using rep = typename clocksource<BaseClock>::rep;
 

@@ -88,8 +88,8 @@ namespace pika { namespace util { namespace logging {
         }
 
         template <typename... Args>
-        message& format(
-            std::string_view format_str, Args const&... args) noexcept
+        message&
+        format(std::string_view format_str, Args const&... args) noexcept
         {
             util::format_to(m_str, format_str, args...);
             m_full_msg_computed = false;

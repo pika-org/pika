@@ -285,8 +285,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename T, typename Cleanup>
-        static void call_with_cleanup(
-            std::vector<pika::future<T>> const& workitems,
+        static void
+        call_with_cleanup(std::vector<pika::future<T>> const& workitems,
             std::list<std::exception_ptr>&, Cleanup&&, bool = true)
         {
 #if defined(PIKA_COMPUTE_DEVICE_CODE)
@@ -371,8 +371,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename T, typename Cleanup>
-        static void call_with_cleanup(
-            std::vector<pika::future<T>> const& workitems,
+        static void
+        call_with_cleanup(std::vector<pika::future<T>> const& workitems,
             std::list<std::exception_ptr>&, Cleanup&&, bool = true)
         {
 #if defined(PIKA_COMPUTE_DEVICE_CODE)

@@ -250,8 +250,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIterB, typename InIterE,
             typename T_, typename Reduce>
-        static T sequential(
-            ExPolicy, InIterB first, InIterE last, T_&& init, Reduce&& r)
+        static T
+        sequential(ExPolicy, InIterB first, InIterE last, T_&& init, Reduce&& r)
         {
             return detail::accumulate(
                 first, last, PIKA_FORWARD(T_, init), PIKA_FORWARD(Reduce, r));
@@ -259,8 +259,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIterB, typename FwdIterE,
             typename T_, typename Reduce>
-        static typename algorithm_result<ExPolicy, T>::type parallel(
-            ExPolicy&& policy, FwdIterB first, FwdIterE last, T_&& init,
+        static typename algorithm_result<ExPolicy, T>::type
+        parallel(ExPolicy&& policy, FwdIterB first, FwdIterE last, T_&& init,
             Reduce&& r)
         {
             if (first == last)
@@ -386,8 +386,8 @@ namespace pika {
                 pika::traits::is_iterator<FwdIter>::value
             )>
         // clang-format on
-        friend T tag_fallback_invoke(
-            pika::reduce_t, FwdIter first, FwdIter last, T init)
+        friend T
+        tag_fallback_invoke(pika::reduce_t, FwdIter first, FwdIter last, T init)
         {
             static_assert(pika::traits::is_input_iterator<FwdIter>::value,
                 "Requires at least input iterator.");

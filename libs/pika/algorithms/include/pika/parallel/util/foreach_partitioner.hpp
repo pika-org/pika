@@ -182,8 +182,8 @@ namespace pika::parallel::detail {
 
     private:
         template <typename F, typename FwdIter>
-        static pika::future<FwdIter> reduce(
-            std::shared_ptr<scoped_parameters>&& scoped_params,
+        static pika::future<FwdIter>
+        reduce(std::shared_ptr<scoped_parameters>&& scoped_params,
             std::vector<pika::future<Result>>&& inititems,
             std::vector<pika::future<Result>>&& workitems,
             std::list<std::exception_ptr>&& errors, F&& f, FwdIter last)

@@ -497,8 +497,8 @@ namespace pika::parallel::detail {
 
     // sequential unique with projection function
     template <typename FwdIter, typename Sent, typename Pred, typename Proj>
-    FwdIter sequential_unique(
-        FwdIter first, Sent last, Pred&& pred, Proj&& proj)
+    FwdIter
+    sequential_unique(FwdIter first, Sent last, Pred&& pred, Proj&& proj)
     {
         if (first == last)
             return first;
@@ -531,8 +531,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename InIter, typename Sent,
             typename Pred, typename Proj>
-        static InIter sequential(
-            ExPolicy, InIter first, Sent last, Pred&& pred, Proj&& proj)
+        static InIter
+        sequential(ExPolicy, InIter first, Sent last, Pred&& pred, Proj&& proj)
         {
             return sequential_unique(first, last, PIKA_FORWARD(Pred, pred),
                 PIKA_FORWARD(Proj, proj));
@@ -540,8 +540,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename FwdIter, typename Sent,
             typename Pred, typename Proj>
-        static typename algorithm_result<ExPolicy, FwdIter>::type parallel(
-            ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
+        static typename algorithm_result<ExPolicy, FwdIter>::type
+        parallel(ExPolicy&& policy, FwdIter first, Sent last, Pred&& pred,
             Proj&& proj)
         {
             using zip_iterator = pika::util::zip_iterator<FwdIter, bool*>;
@@ -943,9 +943,9 @@ namespace pika {
                     parallel::detail::projected<Proj, InIter>>::value
             )>
         // clang-format on
-        friend OutIter tag_fallback_invoke(pika::unique_copy_t, InIter first,
-            InIter last, OutIter dest, Pred&& pred = Pred(),
-            Proj&& proj = Proj())
+        friend OutIter
+        tag_fallback_invoke(pika::unique_copy_t, InIter first, InIter last,
+            OutIter dest, Pred&& pred = Pred(), Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_input_iterator_v<InIter>,
                 "Requires at least input iterator.");

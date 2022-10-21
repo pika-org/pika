@@ -929,8 +929,8 @@ namespace pika::concurrency::detail {
     // Need to forward-declare this swap because it's in a namespace.
     // See http://stackoverflow.com/questions/4492062/why-does-a-c-friend-class-need-a-forward-declaration-only-in-other-namespaces
     template <typename T, typename Traits>
-    inline void swap(
-        typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& a,
+    inline void
+    swap(typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& a,
         typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& b)
         MOODYCAMEL_NOEXCEPT;
 
@@ -1300,8 +1300,8 @@ namespace pika::concurrency::detail {
         // instead of copied.
         // Thread-safe.
         template <typename It>
-        bool enqueue_bulk(
-            producer_token_t const& token, It itemFirst, size_t count)
+        bool
+        enqueue_bulk(producer_token_t const& token, It itemFirst, size_t count)
         {
             return inner_enqueue_bulk<CanAlloc>(token, itemFirst, count);
         }
@@ -1533,8 +1533,8 @@ namespace pika::concurrency::detail {
         // were checked (so, the queue is likely but not guaranteed to be empty).
         // Never allocates. Thread-safe.
         template <typename It>
-        size_t try_dequeue_bulk(
-            consumer_token_t& token, It itemFirst, size_t max)
+        size_t
+        try_dequeue_bulk(consumer_token_t& token, It itemFirst, size_t max)
         {
             if (token.desiredProducer == nullptr ||
                 token.lastKnownGlobalOffset !=
@@ -1601,8 +1601,8 @@ namespace pika::concurrency::detail {
         // was checked (so, the queue is likely but not guaranteed to be empty).
         // Never allocates. Thread-safe.
         template <typename U>
-        inline bool try_dequeue_from_producer(
-            producer_token_t const& producer, U& item)
+        inline bool
+        try_dequeue_from_producer(producer_token_t const& producer, U& item)
         {
             return static_cast<ExplicitProducer*>(producer.producer)
                 ->dequeue(item);
@@ -4968,8 +4968,8 @@ namespace pika::concurrency::detail {
     }
 
     template <typename T, typename Traits>
-    inline void swap(
-        typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& a,
+    inline void
+    swap(typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& a,
         typename ConcurrentQueue<T, Traits>::ImplicitProducerKVP& b)
         MOODYCAMEL_NOEXCEPT
     {

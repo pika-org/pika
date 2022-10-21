@@ -105,9 +105,9 @@ namespace pika::keep_future_detail {
         keep_future_sender& operator=(keep_future_sender const&) = delete;
 
         template <typename Receiver>
-        friend operation_state<Receiver, future_type> tag_invoke(
-            pika::execution::experimental::connect_t, keep_future_sender&& s,
-            Receiver&& receiver)
+        friend operation_state<Receiver, future_type>
+        tag_invoke(pika::execution::experimental::connect_t,
+            keep_future_sender&& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.future)};
         }
@@ -135,17 +135,17 @@ namespace pika::keep_future_detail {
         keep_future_sender& operator=(keep_future_sender const&) = default;
 
         template <typename Receiver>
-        friend operation_state<Receiver, future_type> tag_invoke(
-            pika::execution::experimental::connect_t, keep_future_sender&& s,
-            Receiver&& receiver)
+        friend operation_state<Receiver, future_type>
+        tag_invoke(pika::execution::experimental::connect_t,
+            keep_future_sender&& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.future)};
         }
 
         template <typename Receiver>
-        friend operation_state<Receiver, future_type> tag_invoke(
-            pika::execution::experimental::connect_t, keep_future_sender& s,
-            Receiver&& receiver)
+        friend operation_state<Receiver, future_type>
+        tag_invoke(pika::execution::experimental::connect_t,
+            keep_future_sender& s, Receiver&& receiver)
         {
             return {PIKA_FORWARD(Receiver, receiver), s.future};
         }

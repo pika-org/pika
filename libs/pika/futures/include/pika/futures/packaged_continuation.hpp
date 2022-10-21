@@ -32,8 +32,8 @@
 namespace pika { namespace lcos { namespace detail {
 
     template <typename Future, typename SourceState, typename DestinationState>
-    PIKA_FORCEINLINE void transfer_result(
-        SourceState&& src, DestinationState const& dest)
+    PIKA_FORCEINLINE void
+    transfer_result(SourceState&& src, DestinationState const& dest)
     {
         pika::detail::try_catch_exception_ptr(
             [&]() {
@@ -379,9 +379,9 @@ namespace pika { namespace lcos { namespace detail {
         ///////////////////////////////////////////////////////////////////////
         // TODO: Reduce duplication!
         template <typename Spawner, typename Policy>
-        void attach(Future const& future,
-            std::remove_reference_t<Spawner>& spawner, Policy&& policy,
-            error_code& /*ec*/ = throws)
+        void
+        attach(Future const& future, std::remove_reference_t<Spawner>& spawner,
+            Policy&& policy, error_code& /*ec*/ = throws)
         {
             using shared_state_ptr =
                 traits::detail::shared_state_ptr_for_t<Future>;
@@ -416,9 +416,9 @@ namespace pika { namespace lcos { namespace detail {
         }
 
         template <typename Spawner, typename Policy>
-        void attach(Future const& future,
-            std::remove_reference_t<Spawner>&& spawner, Policy&& policy,
-            error_code& /*ec*/ = throws)
+        void
+        attach(Future const& future, std::remove_reference_t<Spawner>&& spawner,
+            Policy&& policy, error_code& /*ec*/ = throws)
         {
             using shared_state_ptr =
                 traits::detail::shared_state_ptr_for_t<Future>;

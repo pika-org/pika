@@ -543,9 +543,9 @@ namespace pika { namespace ranges {
     template <typename Initer, typename Sent, typename OutIter, typename T1,
         typename T2,
         typename Proj = pika::parallel::detail::projection_identity>
-    replace_copy_result<InIter, OutIter> replace_copy(InIter first, Sent sent,
-        OutIter dest, T1 const& old_value, T2 const& new_value,
-        Proj&& proj = Proj());
+    replace_copy_result<InIter, OutIter>
+    replace_copy(InIter first, Sent sent, OutIter dest, T1 const& old_value,
+        T2 const& new_value, Proj&& proj = Proj());
 
     /// Copies the all elements from the range rbg to another range
     /// beginning at \a dest replacing all elements satisfying a specific
@@ -818,9 +818,9 @@ namespace pika { namespace ranges {
     ///
     template <typename InIter, typename Sent, typename OutIter, typename Pred,
         typename T, typename Proj = pika::parallel::detail::projection_identity>
-    replace_copy_if_result<InIter, OutIter> replace_copy_if(InIter first,
-        Sent sent, OutIter dest, Pred&& pred, T const& new_value,
-        Proj&& proj = Proj());
+    replace_copy_if_result<InIter, OutIter>
+    replace_copy_if(InIter first, Sent sent, OutIter dest, Pred&& pred,
+        T const& new_value, Proj&& proj = Proj());
 
     /// Copies the all elements from the range rng to another range
     /// beginning at \a dest replacing all elements satisfying a specific
@@ -1233,9 +1233,9 @@ namespace pika::ranges {
                 pika::traits::is_sentinel_for<Sent, Iter>::value
             )>
         // clang-format on
-        friend Iter tag_fallback_invoke(pika::ranges::replace_t, Iter first,
-            Sent sent, T1 const& old_value, T2 const& new_value,
-            Proj&& proj = Proj())
+        friend Iter
+        tag_fallback_invoke(pika::ranges::replace_t, Iter first, Sent sent,
+            T1 const& old_value, T2 const& new_value, Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_input_iterator<Iter>::value),
                 "Required at least input iterator.");

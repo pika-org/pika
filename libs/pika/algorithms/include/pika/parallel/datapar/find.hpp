@@ -30,8 +30,8 @@ namespace pika::parallel::detail {
     {
         template <typename Iterator, typename Sentinel, typename T,
             typename Proj>
-        static inline Iterator call(
-            Iterator first, Sentinel last, T const& val, Proj proj)
+        static inline Iterator
+        call(Iterator first, Sentinel last, T const& val, Proj proj)
         {
             int offset = 0;
             util::cancellation_token<> tok;
@@ -52,9 +52,9 @@ namespace pika::parallel::detail {
         }
 
         template <typename FwdIter, typename Token, typename T, typename Proj>
-        static inline constexpr void call(std::size_t base_idx,
-            FwdIter part_begin, std::size_t part_count, Token& tok,
-            T const& val, Proj&& proj)
+        static inline constexpr void
+        call(std::size_t base_idx, FwdIter part_begin, std::size_t part_count,
+            Token& tok, T const& val, Proj&& proj)
         {
             loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
                 [&val, &proj, &tok](auto& v, std::size_t i) -> void {
@@ -95,8 +95,8 @@ namespace pika::parallel::detail {
     {
         template <typename Iterator, typename Sentinel, typename Pred,
             typename Proj>
-        static inline Iterator call(
-            Iterator first, Sentinel last, Pred pred, Proj proj)
+        static inline Iterator
+        call(Iterator first, Sentinel last, Pred pred, Proj proj)
         {
             int offset = 0;
             util::cancellation_token<> tok;
@@ -131,9 +131,9 @@ namespace pika::parallel::detail {
         }
 
         template <typename FwdIter, typename Token, typename F, typename Proj>
-        static inline constexpr void call(std::size_t base_idx,
-            FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
-            Proj&& proj)
+        static inline constexpr void
+        call(std::size_t base_idx, FwdIter part_begin, std::size_t part_count,
+            Token& tok, F&& f, Proj&& proj)
         {
             loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
                 [&f, &proj, &tok](auto& v, std::size_t i) -> void {
@@ -184,8 +184,8 @@ namespace pika::parallel::detail {
     {
         template <typename Iterator, typename Sentinel, typename Pred,
             typename Proj>
-        static inline Iterator call(
-            Iterator first, Sentinel last, Pred pred, Proj proj)
+        static inline Iterator
+        call(Iterator first, Sentinel last, Pred pred, Proj proj)
         {
             int offset = 0;
             util::cancellation_token<> tok;
@@ -221,9 +221,9 @@ namespace pika::parallel::detail {
         }
 
         template <typename FwdIter, typename Token, typename F, typename Proj>
-        static inline constexpr void call(std::size_t base_idx,
-            FwdIter part_begin, std::size_t part_count, Token& tok, F&& f,
-            Proj&& proj)
+        static inline constexpr void
+        call(std::size_t base_idx, FwdIter part_begin, std::size_t part_count,
+            Token& tok, F&& f, Proj&& proj)
         {
             loop_idx_n<ExPolicy>(base_idx, part_begin, part_count, tok,
                 [&f, &proj, &tok](auto& v, std::size_t i) -> void {

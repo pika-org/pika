@@ -51,8 +51,8 @@ namespace pika::execution::experimental {
                         pika::functional::is_nothrow_tag_invocable_v<
                             get_forward_progress_guarantee_t,
                             Scheduler const&>)>
-            constexpr forward_progress_guarantee operator()(
-                Scheduler const& scheduler) const noexcept
+            constexpr forward_progress_guarantee
+            operator()(Scheduler const& scheduler) const noexcept
             {
                 return pika::functional::tag_invoke(*this, scheduler);
             }
@@ -61,8 +61,8 @@ namespace pika::execution::experimental {
                 PIKA_CONCEPT_REQUIRES_(is_scheduler_v<Scheduler> &&
                     !pika::functional::is_nothrow_tag_invocable_v<
                         get_forward_progress_guarantee_t, Scheduler const&>)>
-            constexpr forward_progress_guarantee operator()(
-                Scheduler const&) const noexcept
+            constexpr forward_progress_guarantee
+            operator()(Scheduler const&) const noexcept
             {
                 return forward_progress_guarantee::weakly_parallel;
             }

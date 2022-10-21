@@ -107,9 +107,9 @@ double run_remove_benchmark_std(int test_count, OrgIter org_first,
 ///////////////////////////////////////////////////////////////////////////////
 template <typename ExPolicy, typename OrgIter, typename FwdIter,
     typename ValueType>
-double run_remove_benchmark_pika(int test_count, ExPolicy policy,
-    OrgIter org_first, OrgIter org_last, FwdIter first, FwdIter last,
-    ValueType value)
+double
+run_remove_benchmark_pika(int test_count, ExPolicy policy, OrgIter org_first,
+    OrgIter org_last, FwdIter first, FwdIter last, ValueType value)
 {
     using namespace std::chrono;
     duration<double> dur(0);

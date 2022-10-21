@@ -165,8 +165,8 @@ namespace pika { namespace util {
             }
 
             template <typename... Args>
-            dummy_log_impl const& format(
-                char const*, Args const&...) const noexcept
+            dummy_log_impl const&
+            format(char const*, Args const&...) const noexcept
             {
                 return *this;
             }

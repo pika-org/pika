@@ -288,9 +288,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Sentinel, typename Compare,
             typename Proj>
-        static typename algorithm_result<ExPolicy, RandomIt>::type parallel(
-            ExPolicy&& policy, RandomIt first, Sentinel last, Compare&& compare,
-            Proj&& proj)
+        static typename algorithm_result<ExPolicy, RandomIt>::type
+        parallel(ExPolicy&& policy, RandomIt first, Sentinel last,
+            Compare&& compare, Proj&& proj)
         {
             using algorithm_result = algorithm_result<ExPolicy, RandomIt>;
             using compare_type = compare_projected<Compare&, Proj&>;

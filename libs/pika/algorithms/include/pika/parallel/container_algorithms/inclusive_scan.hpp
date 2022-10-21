@@ -895,9 +895,9 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend inclusive_scan_result<InIter, OutIter> tag_fallback_invoke(
-            pika::ranges::inclusive_scan_t, InIter first, Sent last,
-            OutIter dest, Op&& op = Op())
+        friend inclusive_scan_result<InIter, OutIter>
+        tag_fallback_invoke(pika::ranges::inclusive_scan_t, InIter first,
+            Sent last, OutIter dest, Op&& op = Op())
         {
             static_assert(pika::traits::is_input_iterator_v<InIter>,
                 "Requires at least input iterator.");
@@ -1016,9 +1016,9 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend inclusive_scan_result<InIter, OutIter> tag_fallback_invoke(
-            pika::ranges::inclusive_scan_t, InIter first, Sent last,
-            OutIter dest, Op&& op, T init)
+        friend inclusive_scan_result<InIter, OutIter>
+        tag_fallback_invoke(pika::ranges::inclusive_scan_t, InIter first,
+            Sent last, OutIter dest, Op&& op, T init)
         {
             static_assert(pika::traits::is_input_iterator_v<InIter>,
                 "Requires at least input iterator.");

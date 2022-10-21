@@ -309,8 +309,8 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(
-            none_of_t, Rng&& rng, F&& f, Proj&& proj = Proj())
+        friend bool
+        tag_fallback_invoke(none_of_t, Rng&& rng, F&& f, Proj&& proj = Proj())
         {
             using iterator_type =
                 typename pika::traits::range_iterator<Rng>::type;
@@ -421,8 +421,8 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(
-            any_of_t, Rng&& rng, F&& f, Proj&& proj = Proj())
+        friend bool
+        tag_fallback_invoke(any_of_t, Rng&& rng, F&& f, Proj&& proj = Proj())
         {
             using iterator_type =
                 typename pika::traits::range_iterator<Rng>::type;
@@ -533,8 +533,8 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(
-            all_of_t, Rng&& rng, F&& f, Proj&& proj = Proj())
+        friend bool
+        tag_fallback_invoke(all_of_t, Rng&& rng, F&& f, Proj&& proj = Proj())
         {
             using iterator_type =
                 typename pika::traits::range_iterator<Rng>::type;

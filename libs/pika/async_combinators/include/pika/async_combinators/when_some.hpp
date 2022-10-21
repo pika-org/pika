@@ -63,8 +63,8 @@ namespace pika {
     template <typename InputIter,
         typename Container = vector<
             future<typename std::iterator_traits<InputIter>::value_type>>>
-    future<when_some_result<Container>> when_some(
-        std::size_t n, Iterator first, Iterator last);
+    future<when_some_result<Container>>
+    when_some(std::size_t n, Iterator first, Iterator last);
 
     /// The function \a when_some is an operator allowing to join on the result
     /// of all given futures. It AND-composes all future objects given and
@@ -132,8 +132,8 @@ namespace pika {
     ///       but the futures held in the output collection may.
     ///
     template <typename... Ts>
-    future<when_some_result<tuple<future<T>...>>> when_some(
-        std::size_t n, Ts&&... futures);
+    future<when_some_result<tuple<future<T>...>>>
+    when_some(std::size_t n, Ts&&... futures);
 
     /// The function \a when_some_n is an operator allowing to join on the result
     /// of all given futures. It AND-composes all future objects given and
@@ -174,8 +174,8 @@ namespace pika {
     template <typename InputIter,
         typename Container = vector<
             future<typename std::iterator_traits<InputIter>::value_type>>>
-    future<when_some_result<Container>> when_some_n(
-        std::size_t n, Iterator first, std::size_t count);
+    future<when_some_result<Container>>
+    when_some_n(std::size_t n, Iterator first, std::size_t count);
 }    // namespace pika
 
 #else    // DOXYGEN
@@ -241,8 +241,8 @@ namespace pika {
             }
 
             template <typename Future>
-            std::enable_if_t<traits::is_future_v<Future>> operator()(
-                Future& future) const
+            std::enable_if_t<traits::is_future_v<Future>>
+            operator()(Future& future) const
             {
                 std::size_t counter =
                     when_.count_.load(std::memory_order_seq_cst);
@@ -300,8 +300,8 @@ namespace pika {
             }
 
             template <typename Tuple, std::size_t... Is>
-            PIKA_FORCEINLINE void apply(
-                Tuple& tuple, util::detail::index_pack<Is...>) const
+            PIKA_FORCEINLINE void
+            apply(Tuple& tuple, util::detail::index_pack<Is...>) const
             {
                 int const _sequencer[] = {
                     (((*this)(std::get<Is>(tuple))), 0)...};
@@ -326,8 +326,8 @@ namespace pika {
         };
 
         template <typename Sequence>
-        PIKA_FORCEINLINE void set_on_completed_callback(
-            detail::when_some<Sequence>& when)
+        PIKA_FORCEINLINE void
+        set_on_completed_callback(detail::when_some<Sequence>& when)
         {
             set_when_some_callback_impl<Sequence> callback(when);
             callback.apply(when.values_.futures);
@@ -457,8 +457,8 @@ namespace pika {
             typename lcos::detail::future_iterator_traits<Iterator>::type>,
         typename Enable =
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    pika::future<when_some_result<Container>> when_some(
-        std::size_t n, Iterator begin, Iterator end)
+    pika::future<when_some_result<Container>>
+    when_some(std::size_t n, Iterator begin, Iterator end)
     {
         Container values;
         traits::detail::reserve_if_random_access_by_range(values, begin, end);
@@ -474,8 +474,8 @@ namespace pika {
             typename lcos::detail::future_iterator_traits<Iterator>::type>,
         typename Enable =
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    pika::future<when_some_result<Container>> when_some_n(
-        std::size_t n, Iterator begin, std::size_t count)
+    pika::future<when_some_result<Container>>
+    when_some_n(std::size_t n, Iterator begin, std::size_t count)
     {
         Container values;
         traits::detail::reserve_if_reservable(values, count);

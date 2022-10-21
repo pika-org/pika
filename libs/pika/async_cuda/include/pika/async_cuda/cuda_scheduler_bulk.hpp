@@ -56,8 +56,8 @@ namespace pika::cuda::experimental {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         template <typename Shape>
-        PIKA_DEVICE auto shape_dereference_impl(
-            std::false_type, Shape&& shape, int i)
+        PIKA_DEVICE auto
+        shape_dereference_impl(std::false_type, Shape&& shape, int i)
         {
             return pika::util::begin(shape)[i];
         }
@@ -71,8 +71,8 @@ namespace pika::cuda::experimental {
         }
 
         template <typename F, typename Shape, typename Size, typename... Ts>
-        __global__ void bulk_function_kernel_integral(
-            F f, Shape shape, Size n, Ts... ts)
+        __global__ void
+        bulk_function_kernel_integral(F f, Shape shape, Size n, Ts... ts)
         {
             int i = threadIdx.x + blockIdx.x * blockDim.x;
             if (i < static_cast<int>(n))

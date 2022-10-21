@@ -45,8 +45,8 @@ namespace pika {
     template <typename InputIter,
         typename Container = vector<
             future<typename std::iterator_traits<InputIter>::value_type>>>
-    future<when_any_result<Container>> when_any(
-        InputIter first, InputIter last);
+    future<when_any_result<Container>>
+    when_any(InputIter first, InputIter last);
 
     /// The function \a when_any is a non-deterministic choice operator. It
     /// OR-composes all future objects given and returns a new future object
@@ -114,8 +114,8 @@ namespace pika {
     template <typename InputIter,
         typename Container = vector<
             future<typename std::iterator_traits<InputIter>::value_type>>>
-    future<when_any_result<Container>> when_any_n(
-        InputIter first, std::size_t count);
+    future<when_any_result<Container>>
+    when_any_n(InputIter first, std::size_t count);
 }    // namespace pika
 
 #else    // DOXYGEN
@@ -223,8 +223,8 @@ namespace pika {
             }
 
             template <typename Future>
-            std::enable_if_t<pika::traits::is_future_v<Future>> operator()(
-                Future& future) const
+            std::enable_if_t<pika::traits::is_future_v<Future>>
+            operator()(Future& future) const
             {
                 std::size_t index =
                     when_.index_.load(std::memory_order_seq_cst);
@@ -275,8 +275,8 @@ namespace pika {
             }
 
             template <typename Tuple, std::size_t... Is>
-            PIKA_FORCEINLINE void apply(
-                Tuple& tuple, pika::util::detail::index_pack<Is...>) const
+            PIKA_FORCEINLINE void
+            apply(Tuple& tuple, pika::util::detail::index_pack<Is...>) const
             {
                 int const _sequencer[] = {
                     (((*this)(std::get<Is>(tuple))), 0)...};
@@ -301,8 +301,8 @@ namespace pika {
         };
 
         template <typename Sequence>
-        PIKA_FORCEINLINE void set_on_completed_callback(
-            detail::when_any<Sequence>& when)
+        PIKA_FORCEINLINE void
+        set_on_completed_callback(detail::when_any<Sequence>& when)
         {
             set_when_any_callback_impl<Sequence> callback(when);
             callback.apply(when.lazy_values_.futures);
@@ -406,8 +406,8 @@ namespace pika {
             std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
         typename Enable =
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    pika::future<pika::when_any_result<Container>> when_any(
-        Iterator begin, Iterator end)
+    pika::future<pika::when_any_result<Container>>
+    when_any(Iterator begin, Iterator end)
     {
         Container values;
         traits::detail::reserve_if_random_access_by_range(values, begin, end);
@@ -427,8 +427,8 @@ namespace pika {
             std::vector<pika::lcos::detail::future_iterator_traits_t<Iterator>>,
         typename Enable =
             std::enable_if_t<pika::traits::is_iterator_v<Iterator>>>
-    pika::future<pika::when_any_result<Container>> when_any_n(
-        Iterator begin, std::size_t count)
+    pika::future<pika::when_any_result<Container>>
+    when_any_n(Iterator begin, std::size_t count)
     {
         Container values;
         traits::detail::reserve_if_reservable(values, count);

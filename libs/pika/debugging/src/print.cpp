@@ -301,8 +301,8 @@ namespace NS_DEBUG {
 
     ///////////////////////////////////////////////////////////////////////
     template <typename T>
-    PIKA_EXPORT void print_array(
-        std::string const& name, T const* data, std::size_t size)
+    PIKA_EXPORT void
+    print_array(std::string const& name, T const* data, std::size_t size)
     {
         std::cout << str<20>(name.c_str()) << ": {" << dec<4>(size) << "} : ";
         std::copy(data, data + size, std::ostream_iterator<T>(std::cout, ", "));

@@ -98,8 +98,8 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
     struct post_policy_dispatch
     {
         template <typename F, typename... Ts>
-        static void call(Policy const& policy,
-            pika::detail::thread_description const& desc,
+        static void
+        call(Policy const& policy, pika::detail::thread_description const& desc,
             threads::detail::thread_pool_base* pool, F&& f, Ts&&... ts)
         {
             if (policy == launch::sync)

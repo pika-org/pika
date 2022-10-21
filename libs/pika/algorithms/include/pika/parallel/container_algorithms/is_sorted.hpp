@@ -406,8 +406,8 @@ namespace pika { namespace ranges {
     ///
     template <typename Rng, typename Pred = pika::parallel::detail::less,
         typename Proj = pika::parallel::detail::projection_identity>
-    typename pika::traits::range_iterator<Rng>::type is_sorted_until(
-        ExPolicy&& policy, Rng&& rng, Pred&& pred = Pred(),
+    typename pika::traits::range_iterator<Rng>::type
+    is_sorted_until(ExPolicy&& policy, Rng&& rng, Pred&& pred = Pred(),
         Proj&& proj = Proj());
 
     /// Returns the first element in the range rng that is not sorted.
@@ -520,9 +520,9 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend bool tag_fallback_invoke(pika::ranges::is_sorted_t,
-            FwdIter first, Sent last, Pred&& pred = Pred(),
-            Proj&& proj = Proj())
+        friend bool
+        tag_fallback_invoke(pika::ranges::is_sorted_t, FwdIter first, Sent last,
+            Pred&& pred = Pred(), Proj&& proj = Proj())
         {
             return pika::parallel::detail::is_sorted<FwdIter, Sent>().call(
                 pika::execution::seq, first, last, PIKA_FORWARD(Pred, pred),
@@ -628,9 +628,9 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(pika::ranges::is_sorted_until_t,
-            FwdIter first, Sent last, Pred&& pred = Pred(),
-            Proj&& proj = Proj())
+        friend FwdIter
+        tag_fallback_invoke(pika::ranges::is_sorted_until_t, FwdIter first,
+            Sent last, Pred&& pred = Pred(), Proj&& proj = Proj())
         {
             return pika::parallel::detail::is_sorted_until<FwdIter, Sent>()
                 .call(pika::execution::seq, first, last,

@@ -148,8 +148,8 @@ namespace pika { namespace execution { namespace experimental {
         }
 
         template <typename F>
-        friend void tag_invoke(
-            execute_t, thread_pool_scheduler const& sched, F&& f)
+        friend void
+        tag_invoke(execute_t, thread_pool_scheduler const& sched, F&& f)
         {
             sched.execute(PIKA_FORWARD(F, f), sched.get_fallback_annotation());
         }
@@ -222,16 +222,16 @@ namespace pika { namespace execution { namespace experimental {
                         std::exception_ptr)>;
 
             template <typename Receiver>
-            friend operation_state<Scheduler, Receiver> tag_invoke(
-                connect_t, sender&& s, Receiver&& receiver)
+            friend operation_state<Scheduler, Receiver>
+            tag_invoke(connect_t, sender&& s, Receiver&& receiver)
             {
                 return {PIKA_MOVE(s.scheduler),
                     PIKA_FORWARD(Receiver, receiver), s.fallback_annotation};
             }
 
             template <typename Receiver>
-            friend operation_state<Scheduler, Receiver> tag_invoke(
-                connect_t, sender& s, Receiver&& receiver)
+            friend operation_state<Scheduler, Receiver>
+            tag_invoke(connect_t, sender& s, Receiver&& receiver)
             {
                 return {s.scheduler, PIKA_FORWARD(Receiver, receiver),
                     s.fallback_annotation};

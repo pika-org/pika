@@ -74,8 +74,8 @@ namespace pika {
     ///           returns \a void otherwise.
     ///
     template <typename ExPolicy, typename BidirIter>
-    typename parallel::detail::algorithm_result<ExPolicy, void>::type reverse(
-        ExPolicy&& policy, BidirIter first, BidirIter last);
+    typename parallel::detail::algorithm_result<ExPolicy, void>::type
+    reverse(ExPolicy&& policy, BidirIter first, BidirIter last);
 
     ///////////////////////////////////////////////////////////////////////////
     /// Copies the elements from the range [first, last) to another range
@@ -212,8 +212,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename BidirIter, typename Sent>
-        constexpr static BidirIter sequential(
-            ExPolicy, BidirIter first, Sent last)
+        constexpr static BidirIter
+        sequential(ExPolicy, BidirIter first, Sent last)
         {
             auto last2{pika::ranges::next(first, last)};
             for (auto tail{last2}; !(first == tail || first == --tail); ++first)
@@ -228,8 +228,8 @@ namespace pika::parallel::detail {
         }
 
         template <typename ExPolicy, typename BidirIter, typename Sent>
-        static typename algorithm_result<ExPolicy, BidirIter>::type parallel(
-            ExPolicy&& policy, BidirIter first, Sent last)
+        static typename algorithm_result<ExPolicy, BidirIter>::type
+        parallel(ExPolicy&& policy, BidirIter first, Sent last)
         {
             auto last2{pika::ranges::next(first, last)};
             using destination_iterator = std::reverse_iterator<BidirIter>;
@@ -258,8 +258,8 @@ namespace pika::parallel::detail {
 
     // sequential reverse_copy
     template <typename BidirIt, typename Sent, typename OutIter>
-    constexpr inline in_out_result<BidirIt, OutIter> sequential_reverse_copy(
-        BidirIt first, Sent last, OutIter dest)
+    constexpr inline in_out_result<BidirIt, OutIter>
+    sequential_reverse_copy(BidirIt first, Sent last, OutIter dest)
     {
         auto iter{pika::ranges::next(first, last)};
         while (first != iter)
@@ -279,8 +279,8 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename BidirIter, typename Sent,
             typename OutIter>
-        constexpr static in_out_result<BidirIter, OutIter> sequential(
-            ExPolicy, BidirIter first, Sent last, OutIter dest_first)
+        constexpr static in_out_result<BidirIter, OutIter>
+        sequential(ExPolicy, BidirIter first, Sent last, OutIter dest_first)
         {
             return sequential_reverse_copy(first, last, dest_first);
         }
@@ -322,8 +322,8 @@ namespace pika {
                 pika::traits::is_iterator<BidirIter>::value
             )>
         // clang-format on
-        friend void tag_fallback_invoke(
-            pika::reverse_t, BidirIter first, BidirIter last)
+        friend void
+        tag_fallback_invoke(pika::reverse_t, BidirIter first, BidirIter last)
         {
             static_assert(
                 (pika::traits::is_bidirectional_iterator<BidirIter>::value),

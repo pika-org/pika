@@ -178,8 +178,8 @@ namespace pika::mpi::experimental {
                     operation_state& op_state;
 
                     template <typename Error>
-                    friend constexpr void tag_invoke(
-                        pika::execution::experimental::set_error_t,
+                    friend constexpr void
+                    tag_invoke(pika::execution::experimental::set_error_t,
                         transform_mpi_receiver&& r, Error&& error) noexcept
                     {
                         pika::execution::experimental::set_error(
@@ -198,8 +198,8 @@ namespace pika::mpi::experimental {
                     template <typename... Ts,
                         typename = std::enable_if_t<
                             is_mpi_request_invocable_v<F, Ts...>>>
-                    friend constexpr void tag_invoke(
-                        pika::execution::experimental::set_value_t,
+                    friend constexpr void
+                    tag_invoke(pika::execution::experimental::set_value_t,
                         transform_mpi_receiver&& r, Ts&&... ts) noexcept
                     {
                         using ts_element_type = std::tuple<std::decay_t<Ts>...>;
@@ -363,8 +363,8 @@ namespace pika::mpi::experimental {
             };
 
             template <typename Receiver>
-            friend constexpr auto tag_invoke(
-                pika::execution::experimental::connect_t,
+            friend constexpr auto
+            tag_invoke(pika::execution::experimental::connect_t,
                 transform_mpi_sender_type& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
@@ -372,8 +372,8 @@ namespace pika::mpi::experimental {
             }
 
             template <typename Receiver>
-            friend constexpr auto tag_invoke(
-                pika::execution::experimental::connect_t,
+            friend constexpr auto
+            tag_invoke(pika::execution::experimental::connect_t,
                 transform_mpi_sender_type&& s, Receiver&& receiver)
             {
                 return operation_state<Receiver>(
@@ -390,8 +390,8 @@ namespace pika::mpi::experimental {
         template <typename Sender, typename F,
             PIKA_CONCEPT_REQUIRES_(
                 pika::execution::experimental::is_sender_v<Sender>)>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            transform_mpi_t, Sender&& sender, F&& f,
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(transform_mpi_t, Sender&& sender, F&& f,
             mpi::experimental::stream_type s =
                 mpi::experimental::stream_type::automatic)
         {
@@ -403,8 +403,8 @@ namespace pika::mpi::experimental {
         // tag invoke overload for mpi_transform
         //
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(
-            transform_mpi_t, F&& f,
+        friend constexpr PIKA_FORCEINLINE auto
+        tag_fallback_invoke(transform_mpi_t, F&& f,
             mpi::experimental::stream_type s =
                 mpi::experimental::stream_type::automatic)
         {

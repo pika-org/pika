@@ -57,8 +57,8 @@ namespace pika { namespace execution_base {
         }
 
         template <class Clock, class Duration>
-        void sleep_until(
-            std::chrono::time_point<Clock, Duration> const& sleep_time,
+        void
+        sleep_until(std::chrono::time_point<Clock, Duration> const& sleep_time,
             char const* desc = "pika::execution_base::this_thread::sleep_for")
         {
             agent().sleep_until(sleep_time, desc);

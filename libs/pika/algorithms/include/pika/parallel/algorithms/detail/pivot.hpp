@@ -26,8 +26,8 @@ namespace pika::parallel::detail {
     /// \param comp : object for comparing two values
     /// \return iterator to mid value
     template <typename Iter, typename Comp>
-    inline constexpr Iter mid3(
-        Iter iter_1, Iter iter_2, Iter iter_3, Comp&& comp)
+    inline constexpr Iter
+    mid3(Iter iter_1, Iter iter_2, Iter iter_3, Comp&& comp)
     {
         return PIKA_INVOKE(comp, *iter_1, *iter_2) ?
             (PIKA_INVOKE(comp, *iter_2, *iter_3) ?
@@ -52,9 +52,9 @@ namespace pika::parallel::detail {
     /// \param iter_9   iterator to the ninth value
     /// \return iterator to the mid value
     template <typename Iter, typename Comp>
-    inline constexpr Iter mid9(Iter iter_1, Iter iter_2, Iter iter_3,
-        Iter iter_4, Iter iter_5, Iter iter_6, Iter iter_7, Iter iter_8,
-        Iter iter_9, Comp&& comp)
+    inline constexpr Iter
+    mid9(Iter iter_1, Iter iter_2, Iter iter_3, Iter iter_4, Iter iter_5,
+        Iter iter_6, Iter iter_7, Iter iter_8, Iter iter_9, Comp&& comp)
     {
         return mid3(mid3(iter_1, iter_2, iter_3, comp),
             mid3(iter_4, iter_5, iter_6, comp),

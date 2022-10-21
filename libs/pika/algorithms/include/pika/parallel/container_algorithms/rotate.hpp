@@ -227,8 +227,8 @@ namespace pika { namespace ranges {
     ///           the element past the last element copied.
     ///
     template <typename FwdIter, typename Sent, typename OutIter>
-    rotate_copy_result<FwdIter, OutIter> rotate_copy(
-        FwdIter first, FwdIter middle, Sent last, OutIter dest_first);
+    rotate_copy_result<FwdIter, OutIter>
+    rotate_copy(FwdIter first, FwdIter middle, Sent last, OutIter dest_first);
 
     ///////////////////////////////////////////////////////////////////////////
     /// Copies the elements from the range [first, last), to another range
@@ -518,9 +518,9 @@ namespace pika::ranges {
                 pika::traits::is_iterator_v<OutIter>
             )>
         // clang-format on
-        friend rotate_copy_result<FwdIter, OutIter> tag_fallback_invoke(
-            pika::ranges::rotate_copy_t, FwdIter first, FwdIter middle,
-            Sent last, OutIter dest_first)
+        friend rotate_copy_result<FwdIter, OutIter>
+        tag_fallback_invoke(pika::ranges::rotate_copy_t, FwdIter first,
+            FwdIter middle, Sent last, OutIter dest_first)
         {
             static_assert((pika::traits::is_forward_iterator_v<FwdIter>),
                 "Requires at least forward iterator.");

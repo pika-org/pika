@@ -614,9 +614,9 @@ namespace pika::ranges {
                 >
             )>
         // clang-format on
-        friend remove_copy_if_result<I, O> tag_fallback_invoke(
-            pika::ranges::remove_copy_if_t, I first, Sent last, O dest,
-            Pred&& pred, Proj&& proj = Proj())
+        friend remove_copy_if_result<I, O>
+        tag_fallback_invoke(pika::ranges::remove_copy_if_t, I first, Sent last,
+            O dest, Pred&& pred, Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_input_iterator<I>::value),
                 "Required input iterator.");
@@ -744,9 +744,9 @@ namespace pika::ranges {
                 pika::parallel::detail::is_projected<Proj, I>::value
             )>
         // clang-format on
-        friend remove_copy_result<I, O> tag_fallback_invoke(
-            pika::ranges::remove_copy_t, I first, Sent last, O dest,
-            T const& value, Proj&& proj = Proj())
+        friend remove_copy_result<I, O>
+        tag_fallback_invoke(pika::ranges::remove_copy_t, I first, Sent last,
+            O dest, T const& value, Proj&& proj = Proj())
         {
             static_assert((pika::traits::is_input_iterator<I>::value),
                 "Required at least input iterator.");

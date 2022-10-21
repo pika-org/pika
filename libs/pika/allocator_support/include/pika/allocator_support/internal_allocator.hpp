@@ -105,15 +105,15 @@ namespace pika::detail {
     };
 
     template <typename T>
-    constexpr bool operator==(
-        internal_allocator<T> const&, internal_allocator<T> const&)
+    constexpr bool
+    operator==(internal_allocator<T> const&, internal_allocator<T> const&)
     {
         return true;
     }
 
     template <typename T>
-    constexpr bool operator!=(
-        internal_allocator<T> const&, internal_allocator<T> const&)
+    constexpr bool
+    operator!=(internal_allocator<T> const&, internal_allocator<T> const&)
     {
         return false;
     }

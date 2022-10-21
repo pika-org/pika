@@ -995,9 +995,9 @@ namespace pika::ranges {
                     parallel::detail::projected<Proj, FwdIter>>
         )>
         // clang-format on
-        friend subrange_t<FwdIter> tag_fallback_invoke(
-            pika::ranges::partition_t, FwdIter first, Sent last, Pred&& pred,
-            Proj&& proj = Proj())
+        friend subrange_t<FwdIter>
+        tag_fallback_invoke(pika::ranges::partition_t, FwdIter first, Sent last,
+            Pred&& pred, Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_forward_iterator_v<FwdIter>,
                 "Requires at least forward iterator.");
@@ -1117,9 +1117,9 @@ namespace pika::ranges {
                     parallel::detail::projected<Proj, BidirIter>>
         )>
         // clang-format on
-        friend subrange_t<BidirIter> tag_fallback_invoke(
-            pika::ranges::stable_partition_t, BidirIter first, Sent last,
-            Pred&& pred, Proj&& proj = Proj())
+        friend subrange_t<BidirIter>
+        tag_fallback_invoke(pika::ranges::stable_partition_t, BidirIter first,
+            Sent last, Pred&& pred, Proj&& proj = Proj())
         {
             static_assert(pika::traits::is_bidirectional_iterator_v<BidirIter>,
                 "Requires at least bidirectional iterator.");

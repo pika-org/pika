@@ -121,15 +121,15 @@ namespace pika { namespace util {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Transformer, typename Iterator>
-    inline transform_iterator<Iterator, Transformer> make_transform_iterator(
-        Iterator const& it, Transformer const& f)
+    inline transform_iterator<Iterator, Transformer>
+    make_transform_iterator(Iterator const& it, Transformer const& f)
     {
         return transform_iterator<Iterator, Transformer>(it, f);
     }
 
     template <typename Transformer, typename Iterator>
-    inline transform_iterator<Iterator, Transformer> make_transform_iterator(
-        Iterator const& it)
+    inline transform_iterator<Iterator, Transformer>
+    make_transform_iterator(Iterator const& it)
     {
         return transform_iterator<Iterator, Transformer>(it, Transformer());
     }

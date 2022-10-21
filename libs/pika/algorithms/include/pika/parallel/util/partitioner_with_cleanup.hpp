@@ -150,8 +150,8 @@ namespace pika::parallel::detail {
 
     private:
         template <typename F, typename Cleanup>
-        static pika::future<R> reduce(
-            std::shared_ptr<scoped_parameters>&& scoped_params,
+        static pika::future<R>
+        reduce(std::shared_ptr<scoped_parameters>&& scoped_params,
             std::vector<pika::future<Result>>&& workitems,
             std::list<std::exception_ptr>&& errors, F&& f, Cleanup&& cleanup)
         {

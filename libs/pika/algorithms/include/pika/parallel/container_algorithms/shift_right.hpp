@@ -254,8 +254,8 @@ namespace pika::ranges {
                 pika::traits::is_range<Rng>::value
             )>
         // clang-format on
-        friend pika::traits::range_iterator_t<Rng> tag_fallback_invoke(
-            pika::ranges::shift_right_t, Rng&& rng, Size n)
+        friend pika::traits::range_iterator_t<Rng>
+        tag_fallback_invoke(pika::ranges::shift_right_t, Rng&& rng, Size n)
         {
             static_assert(pika::traits::is_forward_iterator_v<
                               pika::traits::range_iterator_t<Rng>>,

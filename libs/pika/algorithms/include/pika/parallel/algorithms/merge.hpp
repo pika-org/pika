@@ -206,9 +206,9 @@ namespace pika::parallel::detail {
     // sequential merge with projection function.
     template <typename Iter1, typename Sent1, typename Iter2, typename Sent2,
         typename OutIter, typename Comp, typename Proj1, typename Proj2>
-    constexpr in_in_out_result<Iter1, Iter2, OutIter> sequential_merge(
-        Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, OutIter dest,
-        Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    constexpr in_in_out_result<Iter1, Iter2, OutIter>
+    sequential_merge(Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
+        OutIter dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
     {
         if (first1 != last1 && first2 != last2)
         {
@@ -248,8 +248,8 @@ namespace pika::parallel::detail {
         // upper_bound with projection function.
         template <typename Iter, typename Sent, typename T, typename Comp,
             typename Proj>
-        static constexpr Iter call(
-            Iter first, Sent last, T const& value, Comp&& comp, Proj&& proj)
+        static constexpr Iter
+        call(Iter first, Sent last, T const& value, Comp&& comp, Proj&& proj)
         {
             return detail::upper_bound(first, last, value,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
@@ -263,8 +263,8 @@ namespace pika::parallel::detail {
         // lower_bound with projection function.
         template <typename Iter, typename Sent, typename T, typename Comp,
             typename Proj>
-        static constexpr Iter call(
-            Iter first, Sent last, T const& value, Comp&& comp, Proj&& proj)
+        static constexpr Iter
+        call(Iter first, Sent last, T const& value, Comp&& comp, Proj&& proj)
         {
             return detail::lower_bound(first, last, value,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj, proj));
@@ -366,9 +366,9 @@ namespace pika::parallel::detail {
     template <typename ExPolicy, typename Iter1, typename Sent1, typename Iter2,
         typename Sent2, typename Iter3, typename Comp, typename Proj1,
         typename Proj2>
-    pika::future<in_in_out_result<Iter1, Iter2, Iter3>> parallel_merge(
-        ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2,
-        Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+    pika::future<in_in_out_result<Iter1, Iter2, Iter3>>
+    parallel_merge(ExPolicy&& policy, Iter1 first1, Sent1 last1, Iter2 first2,
+        Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
     {
         using result_type = in_in_out_result<Iter1, Iter2, Iter3>;
 
@@ -420,9 +420,9 @@ namespace pika::parallel::detail {
         template <typename ExPolicy, typename Iter1, typename Sent1,
             typename Iter2, typename Sent2, typename Iter3, typename Comp,
             typename Proj1, typename Proj2>
-        static in_in_out_result<Iter1, Iter2, Iter3> sequential(ExPolicy,
-            Iter1 first1, Sent1 last1, Iter2 first2, Sent2 last2, Iter3 dest,
-            Comp&& comp, Proj1&& proj1, Proj2&& proj2)
+        static in_in_out_result<Iter1, Iter2, Iter3>
+        sequential(ExPolicy, Iter1 first1, Sent1 last1, Iter2 first2,
+            Sent2 last2, Iter3 dest, Comp&& comp, Proj1&& proj1, Proj2&& proj2)
         {
             return sequential_merge(first1, last1, first2, last2, dest,
                 PIKA_FORWARD(Comp, comp), PIKA_FORWARD(Proj1, proj1),
@@ -649,9 +649,9 @@ namespace pika::parallel::detail {
 
         template <typename ExPolicy, typename Iter, typename Sent,
             typename Comp, typename Proj>
-        static typename algorithm_result<ExPolicy, Iter>::type parallel(
-            ExPolicy&& policy, Iter first, Iter middle, Sent last, Comp&& comp,
-            Proj&& proj)
+        static typename algorithm_result<ExPolicy, Iter>::type
+        parallel(ExPolicy&& policy, Iter first, Iter middle, Sent last,
+            Comp&& comp, Proj&& proj)
         {
             using result = algorithm_result<ExPolicy, Iter>;
 

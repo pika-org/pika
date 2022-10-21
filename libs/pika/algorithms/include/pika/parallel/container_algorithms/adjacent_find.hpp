@@ -174,8 +174,8 @@ namespace pika { namespace ranges {
     template <typename Rng,
         typename Proj = pika::parallel::detail::projection_identity,
         typename Pred = detail::equal_to>
-    typename pika::traits::range_traits<Rng>::iterator_type adjacent_find(
-        ExPolicy&& policy, Rng&& rng, Pred&& pred = Pred(),
+    typename pika::traits::range_traits<Rng>::iterator_type
+    adjacent_find(ExPolicy&& policy, Rng&& rng, Pred&& pred = Pred(),
         Proj&& proj = Proj());
 
     /// Searches the range rng for two consecutive identical elements.
@@ -289,9 +289,9 @@ namespace pika::ranges {
                 >::value
             )>
         // clang-format on
-        friend FwdIter tag_fallback_invoke(pika::ranges::adjacent_find_t,
-            FwdIter first, Sent last, Pred&& pred = Pred(),
-            Proj&& proj = Proj())
+        friend FwdIter
+        tag_fallback_invoke(pika::ranges::adjacent_find_t, FwdIter first,
+            Sent last, Pred&& pred = Pred(), Proj&& proj = Proj())
         {
             return pika::parallel::detail::adjacent_find<FwdIter, FwdIter>()
                 .call(pika::execution::seq, first, last,

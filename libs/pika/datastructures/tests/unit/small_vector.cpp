@@ -419,9 +419,9 @@ namespace test {
     }
 
     template <typename SeqContainer>
-    void test_insert_range(std::deque<int>& std_deque,
-        SeqContainer& seq_container, std::deque<int> const& input_deque,
-        std::size_t index)
+    void
+    test_insert_range(std::deque<int>& std_deque, SeqContainer& seq_container,
+        std::deque<int> const& input_deque, std::size_t index)
     {
         check_equal_containers(std_deque, seq_container);
 
@@ -748,9 +748,9 @@ namespace test {
     static emplace_int expected[10];
 
     template <typename Container>
-    void test_expected_container(Container const& ec,
-        emplace_int const* expected, unsigned int only_first_n,
-        unsigned int cont_offset = 0)
+    void
+    test_expected_container(Container const& ec, emplace_int const* expected,
+        unsigned int only_first_n, unsigned int cont_offset = 0)
     {
         PIKA_TEST(cont_offset <= ec.size());
         PIKA_TEST(only_first_n <= (ec.size() - cont_offset));
