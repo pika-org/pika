@@ -304,7 +304,8 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                                 std::tuple<std::decay_t<Ts>...>;
                             op_state.ts.template emplace<ts_element_type>(
                                 PIKA_FORWARD(Ts, ts)...);
-                            auto& t = std::get<ts_element_type>(op_state.ts);
+                            [[maybe_unused]] auto& t =
+                                std::get<ts_element_type>(op_state.ts);
 
                             if (!op_state.stream)
                             {
@@ -343,6 +344,20 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                                 std::is_void_v<invoke_result_type>;
                             if constexpr (is_void_result)
                             {
+                            // nvcc fails to compile the invoke_fused call
+                            // until version 11.3.  Since this is never meant
+                            // to be called on the device, we can disable it
+                            // from being compiled on the device. However, if
+                            // we completely disable it device side functions
+                            // will not be correctly instantiated, so we
+                            // compile a dummy form invoke_fused instead that
+                            // should also never be called.
+#if defined(__NVCC__) && defined(PIKA_COMPUTE_DEVICE_CODE) &&                  \
+    defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION < 1103)
+                                PIKA_ASSERT(false);
+                                PIKA_INVOKE(PIKA_MOVE(op_state.f),
+                                    op_state.stream.value(), ts...);
+#else
                                 // When the return type is void, there is no
                                 // value to forward to the receiver
                                 pika::util::detail::invoke_fused(
@@ -351,6 +366,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                                             op_state.stream.value(), ts...);
                                     },
                                     t);
+#endif
 
                                 if constexpr (is_then_with_cuda_stream_receiver<
                                                   std::decay_t<Receiver>>::
@@ -386,6 +402,22 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                             }
                             else
                             {
+                            // nvcc fails to compile the invoke_fused call
+                            // until version 11.3.  Since this is never meant
+                            // to be called on the device, we can disable it
+                            // from being compiled on the device. However, if
+                            // we completely disable it device side functions
+                            // will not be correctly instantiated, so we
+                            // compile a dummy form invoke_fused instead that
+                            // should also never be called.
+#if defined(__NVCC__) && defined(PIKA_COMPUTE_DEVICE_CODE) &&                  \
+    defined(PIKA_CUDA_VERSION) && (PIKA_CUDA_VERSION < 1103)
+                                PIKA_ASSERT(false);
+                                op_state.result
+                                    .template emplace<invoke_result_type>(
+                                        PIKA_INVOKE(PIKA_MOVE(op_state.f),
+                                            op_state.stream.value(), ts...));
+#else
                                 // When the return type is non-void, we have to
                                 // forward the value to the receiver
                                 pika::util::detail::invoke_fused(
@@ -396,6 +428,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                                             op_state.stream.value(), ts...));
                                     },
                                     t);
+#endif
 
                                 if constexpr (is_then_with_cuda_stream_receiver<
                                                   std::decay_t<Receiver>>::
