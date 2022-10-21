@@ -65,6 +65,9 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+    // The P2300 reference implementation still requires copyable senders (see
+    // issue https://github.com/NVIDIA/stdexec/issues/641).
+#if !defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
     {
         std::atomic<bool> set_value_called{false};
         auto s1 =
@@ -88,6 +91,7 @@ int main()
         ex::start(os);
         PIKA_TEST(set_value_called);
     }
+#endif
 
     // operator| overload
     {
