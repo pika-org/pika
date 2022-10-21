@@ -36,6 +36,7 @@ pika requires:
 * `CMake <https://cmake.org>`_ 3.22.0 or greater
 * `header-only Boost <https://boost.org>`_ 1.71.0 or greater
 * `hwloc <https://www-lb.open-mpi.org/projects/hwloc/>`_ 1.11.5 or greater
+* `fmt <https://fmt.dev/latest/index.html>`_
 
 pika optionally requires:
 
