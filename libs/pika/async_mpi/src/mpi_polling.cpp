@@ -77,10 +77,15 @@ namespace pika::mpi::experimental {
             std::uint32_t index_;
         };
 
+        // some MPI versions use int for MPI_Request so we do not use the same int type
+        // for the error code because our tuple get<type> fails due to ambiguity
+        using error_type = std::conditional_t<std::is_same<std::int32_t, MPI_Request>::value,
+            std::uint32_t, std::int32_t>;
+
         // tuple of <callback, errorcode, stream, request>, request is only kept here
         // for debugging when callbacks are invoked
         using mpi_callback_tuple =
-            std::tuple<request_callback_function_type, int, mpi_stream*, MPI_Request>;
+            std::tuple<request_callback_function_type, error_type, mpi_stream*, MPI_Request>;
 
         // -----------------------------------------------------------------
         /// a convenience structure to hold state vars in one place
@@ -310,8 +315,7 @@ namespace pika::mpi::experimental {
         void pika_MPI_Handler(MPI_Comm*, int* errorcode, ...)
         {
             mpi_debug.debug(debug::detail::str<>("pika_MPI_Handler"));
-            PIKA_THROW_EXCEPTION(
-                pika::error::invalid_status, "pika_MPI_Handler", "{}", error_message(*errorcode));
+            throw mpi_exception(*errorcode, error_message(*errorcode));
         }
 
         // set an error handler for communicators that will be called
@@ -371,9 +375,6 @@ namespace pika::mpi::experimental {
             if (detail::mpi_data_.all_in_flight_.load(std::memory_order_relaxed) == 0)
                 return polling_status::idle;
 
-            const std::size_t max_test_vector_size = 512;
-            int vsize = std::min(detail::mpi_data_.request_vector_.size(), max_test_vector_size);
-            int outcount = 0;
             // completed requests will be moved into this temp array
             // so that we can release the lock before triggering continuations
             pika::detail::small_vector<mpi_callback_tuple, 64> callbacks_;
@@ -412,6 +413,11 @@ namespace pika::mpi::experimental {
                     add_to_request_callback_vector(PIKA_MOVE(req_callback));
                 }
 
+                const std::size_t max_test_vector_size = 512;
+                int vsize =
+                    std::min(detail::mpi_data_.request_vector_.size(), max_test_vector_size);
+                int outcount = 0;
+
                 // do we poll for N requests at a time, or just 1
                 if (detail::mpi_data_.max_polling_requests > 1)
                 {
@@ -421,7 +427,9 @@ namespace pika::mpi::experimental {
 
                     int result = MPI_Testsome(req_size, detail::mpi_data_.request_vector_.data(),
                         &outcount, detail::mpi_data_.indices_vector_.data(),
-                        MPI_STATUSES_IGNORE /*detail::mpi_data_.status_vector_.data()*/);
+                        detail::mpi_data_.status_vector_.data());
+                    /*use MPI_STATUSES_IGNORE ?*/
+
                     if (result != MPI_SUCCESS)
                         throw mpi_exception(result, "MPI_Testsome error");
                     if (outcount != MPI_UNDEFINED && outcount != 0)
@@ -434,7 +442,8 @@ namespace pika::mpi::experimental {
                             size_t index = detail::mpi_data_.indices_vector_[i];
                             callbacks_.emplace_back(
                                 PIKA_MOVE(detail::mpi_data_.callback_vector_[index]));
-                            // std::get<int>(callbacks_[i]) = detail::mpi_data_.status_vector_[i].MPI_ERROR;
+                            std::get<error_type>(callbacks_[i]) =
+                                detail::mpi_data_.status_vector_[i].MPI_ERROR;
                             // Remove the request from our vector to prevent retesting
                             detail::mpi_data_.request_vector_[index] = MPI_REQUEST_NULL;
                         }
@@ -471,11 +480,11 @@ namespace pika::mpi::experimental {
             }
 
             // we can now invoke callbacks without holding the lock
-            for (int i = 0; i < outcount; ++i)
+            for (const auto& c : callbacks_)
             {
                 // decrement before invoking callback to avoid race
                 // if invoked code checks in_flight value
-                detail::mpi_stream& stream = *std::get<mpi_stream*>(callbacks_[i]);
+                detail::mpi_stream& stream = *std::get<mpi_stream*>(c);
                 --stream.in_stream_;
                 --detail::mpi_data_.all_in_flight_;
                 --detail::mpi_data_.active_request_vector_size_;
@@ -483,12 +492,12 @@ namespace pika::mpi::experimental {
                 if constexpr (mpi_debug.is_enabled())
                 {
                     mpi_debug.debug(str<>("CB invoke"), detail::mpi_data_, "request",
-                        hex<8>(std::get<MPI_Request>(callbacks_[i])), "throttling", stream);
+                        hex<8>(std::get<MPI_Request>(c)), "throttling", stream);
                 }
 
                 // Invoke the callback with the result status
-                PIKA_INVOKE(PIKA_MOVE(std::get<request_callback_function_type>(callbacks_[i])),
-                    std::get<int>(callbacks_[i]));
+                PIKA_INVOKE(PIKA_MOVE(std::get<request_callback_function_type>(c)),
+                    std::get<error_type>(c));
 
                 // wake any thread that is waiting for throttling
                 if (stream.in_stream_ < stream.limit_)
