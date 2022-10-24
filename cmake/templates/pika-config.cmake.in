@@ -91,7 +91,7 @@ include(pika_setup_whip)
 
 include(pika_setup_mpi)
 
-include(pika_setup_p2300)
+include(pika_setup_stdexec)
 
 # APEX
 set(PIKA_APEX_ROOT "@APEX_ROOT@")

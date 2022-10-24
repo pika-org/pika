@@ -1548,7 +1548,7 @@ include(pika_setup_hip)
 include(pika_setup_whip)
 include(pika_setup_apex)
 include(pika_setup_valgrind)
-include(pika_setup_p2300)
+include(pika_setup_stdexec)
 
 if(PIKA_WITH_SANITIZERS)
   pika_add_config_define(PIKA_HAVE_SANITIZERS)
