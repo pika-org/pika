@@ -47,33 +47,7 @@ namespace pika::mpi::experimental {
         using request_callback_function_type =
             pika::util::detail::unique_function<void(int)>;
 
-        const char* stream_name(stream_type s)
-        {
-            using namespace pika::mpi::experimental;
-            switch (s)
-            {
-            case stream_type::automatic:
-                return "auto";
-                break;
-            case stream_type::send:
-                return "send";
-                break;
-            case stream_type::receive:
-                return "recv";
-                break;
-            case stream_type::collective:
-                return "coll";
-                break;
-            case stream_type::user:
-                return "user";
-                break;
-            case stream_type::max_stream:
-                return "smax";
-                break;
-            default:
-                return "error";
-            }
-        }
+        const char* stream_name(stream_type s);
 
         PIKA_EXPORT void add_request_callback(
             request_callback_function_type&&, MPI_Request, stream_type);
