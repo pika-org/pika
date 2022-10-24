@@ -77,6 +77,34 @@ namespace pika::mpi::experimental {
             std::uint32_t index_;
         };
 
+        PIKA_EXPORT const char* stream_name(stream_type s)
+        {
+            using namespace pika::mpi::experimental;
+            switch (s)
+            {
+            case stream_type::automatic:
+                return "auto";
+                break;
+            case stream_type::send:
+                return "send";
+                break;
+            case stream_type::receive:
+                return "recv";
+                break;
+            case stream_type::collective:
+                return "coll";
+                break;
+            case stream_type::user:
+                return "user";
+                break;
+            case stream_type::max_stream:
+                return "smax";
+                break;
+            default:
+                return "error";
+            }
+        }
+
         // some MPI versions use int for MPI_Request so we do not use the same int type
         // for the error code because our tuple get<type> fails due to ambiguity
         using error_type = std::conditional_t<std::is_same<std::int32_t, MPI_Request>::value,
