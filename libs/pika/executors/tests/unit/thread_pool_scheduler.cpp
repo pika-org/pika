@@ -388,9 +388,7 @@ void test_transfer_basic()
     });
     auto transfer1 = ex::transfer(work2, sched);
     auto work3 = ex::then(transfer1, [=, &current_id]() {
-        pika::thread::id new_id = pika::this_thread::get_id();
-        PIKA_TEST_NEQ(current_id, new_id);
-        current_id = new_id;
+        current_id = pika::this_thread::get_id();
         PIKA_TEST_NEQ(current_id, parent_id);
     });
     auto work4 = ex::then(work3, [=, &current_id]() {
@@ -398,9 +396,7 @@ void test_transfer_basic()
     });
     auto transfer2 = ex::transfer(work4, sched);
     auto work5 = ex::then(transfer2, [=, &current_id]() {
-        pika::thread::id new_id = pika::this_thread::get_id();
-        PIKA_TEST_NEQ(current_id, new_id);
-        current_id = new_id;
+        current_id = pika::this_thread::get_id();
         PIKA_TEST_NEQ(current_id, parent_id);
     });
 
@@ -425,9 +421,7 @@ void test_transfer_arguments()
     });
     auto transfer1 = ex::transfer(work2, sched);
     auto work3 = ex::then(transfer1, [=, &current_id](double x) {
-        pika::thread::id new_id = pika::this_thread::get_id();
-        PIKA_TEST_NEQ(current_id, new_id);
-        current_id = new_id;
+        current_id = pika::this_thread::get_id();
         PIKA_TEST_NEQ(current_id, parent_id);
         return x / 2;
     });
@@ -437,9 +431,7 @@ void test_transfer_arguments()
     });
     auto transfer2 = ex::transfer(work4, sched);
     auto work5 = ex::then(transfer2, [=, &current_id](std::string s) {
-        pika::thread::id new_id = pika::this_thread::get_id();
-        PIKA_TEST_NEQ(current_id, new_id);
-        current_id = new_id;
+        current_id = pika::this_thread::get_id();
         PIKA_TEST_NEQ(current_id, parent_id);
         return s + "!";
     });
