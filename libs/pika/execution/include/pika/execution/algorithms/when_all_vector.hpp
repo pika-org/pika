@@ -65,10 +65,10 @@ namespace pika::when_all_vector_detail {
         // We expect a single value type or nothing from the predecessor
         // sender type
         using element_value_type =
-            pika::execution::experimental::detail::single_result_t<
+            std::decay_t<pika::execution::experimental::detail::single_result_t<
                 pika::execution::experimental::value_types_of_t<Sender,
                     pika::execution::experimental::detail::empty_env,
-                    pika::util::detail::pack, pika::util::detail::pack>>;
+                    pika::util::detail::pack, pika::util::detail::pack>>>;
 
         static constexpr bool is_void_value_type =
             std::is_void_v<element_value_type>;
@@ -91,8 +91,10 @@ namespace pika::when_all_vector_detail {
         // or std::exception_ptr
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_concat_t<
-            pika::execution::experimental::error_types_of_t<Sender,
-                pika::execution::experimental::detail::empty_env, Variant>,
+            pika::util::detail::transform_t<
+                pika::execution::experimental::error_types_of_t<Sender,
+                    pika::execution::experimental::detail::empty_env, Variant>,
+                std::decay>,
             Variant<std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
@@ -108,10 +110,10 @@ namespace pika::when_all_vector_detail {
         // We expect a single value type or nothing from the predecessor
         // sender type
         using element_value_type =
-            pika::execution::experimental::detail::single_result_t<
+            std::decay_t<pika::execution::experimental::detail::single_result_t<
                 typename pika::execution::experimental::sender_traits<
                     Sender>::template value_types<pika::util::detail::pack,
-                    pika::util::detail::pack>>;
+                    pika::util::detail::pack>>>;
 
         static constexpr bool is_void_value_type =
             std::is_void_v<element_value_type>;
@@ -134,8 +136,10 @@ namespace pika::when_all_vector_detail {
         // or std::exception_ptr
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_concat_t<
-            typename pika::execution::experimental::sender_traits<
-                Sender>::template error_types<Variant>,
+            pika::util::detail::transform_t<
+                typename pika::execution::experimental::sender_traits<
+                    Sender>::template error_types<Variant>,
+                std::decay>,
             Variant<std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
