@@ -254,7 +254,14 @@ namespace pika { namespace lcos { namespace detail {
 
         bool has_exception() const noexcept
         {
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
             return state_.load(std::memory_order_acquire) == exception;
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
         }
 
         virtual void execute_deferred(error_code& /*ec*/ = throws) {}
