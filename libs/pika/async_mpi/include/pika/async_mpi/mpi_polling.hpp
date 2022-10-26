@@ -105,7 +105,7 @@ namespace pika::mpi::experimental {
     // -----------------------------------------------------------------
     /// set the maximume number of MPI_Request completions to
     /// handle at each polling event
-    PIKA_EXPORT void set_max_mpi_polling_size(std::uint32_t);
+    PIKA_EXPORT void set_max_mpi_polling_size(std::size_t);
 
     // initialize the pika::mpi background request handler
     // All ranks should call this function,

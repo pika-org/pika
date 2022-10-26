@@ -63,6 +63,7 @@ namespace pika::mpi::experimental {
         /// the number of messages allowed 'in flight' before we throttle a
         /// thread trying to send more data
         std::uint32_t get_throttling_default();
+        std::size_t get_polling_default();
 
         // -----------------------------------------------------------------
         /// To enable independent throttling of sends/receives/other
@@ -122,7 +123,7 @@ namespace pika::mpi::experimental {
             bool error_handler_initialized_ = false;
             int rank_ = -1;
             int size_ = -1;
-            int max_polling_requests = 8;
+            std::size_t max_polling_requests = get_polling_default();
 
             // requests vector holds the requests that are checked; this
             // represents the number of active requests in the vector, not the
@@ -250,6 +251,23 @@ namespace pika::mpi::experimental {
                 mpi_data_.default_queues_[i].index_ = i;
             }
 
+            return def;
+        }
+
+        // -----------------------------------------------------------------
+        std::size_t get_polling_default()
+        {
+            std::size_t def = 8;
+            char* env = std::getenv("PIKA_MPI_POLLING_SIZE");
+            if (env)
+            {
+                def = std::atoi(env);
+                // badly formed env var
+                if (def == 0)
+                    def = std::uint32_t(-1);    // unlimited
+                mpi_debug.debug(debug::detail::str<>("polling"), "default", def);
+            }
+            mpi_data_.max_polling_requests = def;
             return def;
         }
 
@@ -442,7 +460,7 @@ namespace pika::mpi::experimental {
                 }
 
                 const std::size_t max_test_vector_size = 512;
-                int vsize =
+                std::size_t vsize =
                     std::min(detail::mpi_data_.request_vector_.size(), max_test_vector_size);
                 int outcount = 0;
 
@@ -617,7 +635,7 @@ namespace pika::mpi::experimental {
         return detail::mpi_data_.default_queues_[static_cast<int>(s)].in_stream_;
     }
 
-    void set_max_mpi_polling_size(std::uint32_t p)
+    void set_max_mpi_polling_size(std::size_t p)
     {
         detail::mpi_data_.max_polling_requests = p;
     }
