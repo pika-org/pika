@@ -23,6 +23,18 @@
 
 #include <pika/config/warnings_prefix.hpp>
 
+// This silences what seems to be a bogus warning emitted by GCC. The type
+// erased wrappers below use the small-buffer optimization (SBO). When the
+// stored type is bigger than the embedded storage heap allocation happens, but
+// there are still code paths that in theory can access the embedded storage and
+// so read/write out of bounds. However, since access to the embedded storage is
+// guarded by whether the embedded storage can actually be used (i.e. if the
+// stored type is small enough) that path should never be taken.
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+
 namespace pika::detail {
     template <typename T>
     struct empty_vtable_type
@@ -940,5 +952,9 @@ namespace pika::detail {
             pika::execution::experimental::detail::empty_any_sender<Ts...>;
     };
 }    // namespace pika::detail
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #include <pika/config/warnings_suffix.hpp>
