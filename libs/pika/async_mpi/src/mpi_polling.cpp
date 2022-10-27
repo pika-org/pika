@@ -77,6 +77,7 @@ namespace pika::mpi::experimental {
             pika::condition_variable throttling_cond_;
             std::atomic<std::uint32_t> in_stream_{0};
             std::uint32_t limit_{get_throttling_default()};
+            // used only for debug
             std::uint32_t index_;
         };
 
@@ -241,10 +242,9 @@ namespace pika::mpi::experimental {
         }
 
         // -----------------------------------------------------------------
-        std::uint32_t get_throttling_default()
+        std::uint32_t get_env_value(const char* str, std::uint32_t def)
         {
-            std::uint32_t def = std::uint32_t(-1);    // unlimited
-            char* env = std::getenv("PIKA_MPI_MSG_THROTTLE");
+            char* env = std::getenv(str);
             if (env)
             {
                 def = std::atoi(env);
@@ -252,33 +252,44 @@ namespace pika::mpi::experimental {
                 if (def == 0)
                     def = std::uint32_t(-1);    // unlimited
                 mpi_debug.debug(
-                    debug::detail::str<>("throttling"), "default", def);
+                    debug::detail::str<>("get_env_value"), str, def);
             }
+            return def;
+        }
 
+        // -----------------------------------------------------------------
+        std::uint32_t get_throttling_default()
+        {
+            // if the global throttling var is set, set all streams
+            std::uint32_t def = std::uint32_t(-1);    // unlimited
+            std::uint32_t val = get_env_value("MPI_MSG_THROTTLE", def);
             for (size_t i = 0; i < mpi_data_.default_queues_.size(); ++i)
             {
+                mpi_data_.default_queues_[i].limit_ = val;
                 mpi_data_.default_queues_[i].index_ = i;
             }
-
-            return def;
+            // check env settings for individual streams
+            for (size_t i = 0; i < mpi_data_.default_queues_.size(); ++i)
+            {
+                std::string str = "PIKA_MPI_MSG_THROTTLE_" +
+                    std::string(stream_name(stream_type(i)));
+                std::transform(str.begin(), str.end(), str.begin(),
+                    [](unsigned char c) { return std::toupper(c); });
+                val = get_env_value(str.c_str(), def);
+                if (val != def)
+                    mpi_data_.default_queues_[i].limit_ = val;
+            }
+            // return default val for automatic (unspecified) stream
+            return mpi_data_.default_queues_[int(stream_type::automatic)]
+                .limit_;
         }
 
         // -----------------------------------------------------------------
         std::size_t get_polling_default()
         {
-            std::size_t def = 8;
-            char* env = std::getenv("PIKA_MPI_POLLING_SIZE");
-            if (env)
-            {
-                def = std::atoi(env);
-                // badly formed env var
-                if (def == 0)
-                    def = std::uint32_t(-1);    // unlimited
-                mpi_debug.debug(
-                    debug::detail::str<>("polling"), "default", def);
-            }
-            mpi_data_.max_polling_requests = def;
-            return def;
+            std::uint32_t val = get_env_value("PIKA_MPI_POLLING_SIZE", 8);
+            mpi_data_.max_polling_requests = val;
+            return val;
         }
 
         // -----------------------------------------------------------------
