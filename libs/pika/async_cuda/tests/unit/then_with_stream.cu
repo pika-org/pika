@@ -15,9 +15,117 @@
 
 #include <atomic>
 #include <cstddef>
+#include <exception>
+#include <functional>
+#include <string>
 #include <utility>
 
+namespace cu = pika::cuda::experimental;
+namespace ex = pika::execution::experimental;
+namespace tt = pika::this_thread::experimental;
+
 __global__ void dummy_kernel() {}
+
+template <typename T>
+struct const_reference_cuda_sender
+{
+    std::reference_wrapper<std::decay_t<T>> x;
+    cu::cuda_scheduler sched;
+
+    template <template <class...> class Tuple,
+        template <class...> class Variant>
+    using value_types = Variant<Tuple<std::decay_t<T> const&>>;
+
+    template <template <class...> class Variant>
+    using error_types = Variant<std::exception_ptr>;
+
+    static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(std::decay_t<T>&),
+            pika::execution::experimental::set_error_t(std::exception_ptr)>;
+
+    template <typename R>
+    struct operation_state
+    {
+        std::reference_wrapper<std::decay_t<T>> const x;
+        std::decay_t<R> r;
+
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
+        {
+            pika::execution::experimental::set_value(
+                std::move(os.r), os.x.get());
+        };
+    };
+
+    template <typename R>
+    friend auto tag_invoke(pika::execution::experimental::connect_t,
+        const_reference_cuda_sender&& s, R&& r)
+    {
+        return operation_state<R>{std::move(s.x), std::forward<R>(r)};
+    }
+
+    friend cu::cuda_scheduler tag_invoke(
+        pika::execution::experimental::get_completion_scheduler_t<
+            pika::execution::experimental::set_value_t>,
+        const_reference_cuda_sender const& s) noexcept
+    {
+        return s.sched;
+    }
+};
+
+struct const_reference_error_cuda_sender
+{
+    cu::cuda_scheduler sched;
+
+    PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
+    ~const_reference_error_cuda_sender() = default;
+
+    template <template <class...> class Tuple,
+        template <class...> class Variant>
+    using value_types = Variant<Tuple<>>;
+
+    template <template <class...> class Variant>
+    using error_types = Variant<std::exception_ptr const&>;
+
+    static constexpr bool sends_done = false;
+
+    using completion_signatures =
+        pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(),
+            pika::execution::experimental::set_error_t(
+                std::exception_ptr const&)>;
+
+    template <typename R>
+    struct operation_state
+    {
+        std::decay_t<R> r;
+        friend void tag_invoke(pika::execution::experimental::start_t,
+            operation_state& os) noexcept
+        {
+            auto const e = std::make_exception_ptr(std::runtime_error("error"));
+            pika::execution::experimental::set_error(std::move(os.r), e);
+        }
+    };
+
+    template <typename R>
+    friend operation_state<R>
+    tag_invoke(pika::execution::experimental::connect_t,
+        const_reference_error_cuda_sender, R&& r)
+    {
+        return {std::forward<R>(r)};
+    }
+
+    friend cu::cuda_scheduler tag_invoke(
+        pika::execution::experimental::get_completion_scheduler_t<
+            pika::execution::experimental::set_value_t>,
+        const_reference_error_cuda_sender const& s) noexcept
+    {
+        return s.sched;
+    }
+};
 
 struct dummy
 {
@@ -197,10 +305,6 @@ auto non_default_constructible_non_copyable_params(
 
 int pika_main()
 {
-    namespace cu = ::pika::cuda::experimental;
-    namespace ex = ::pika::execution::experimental;
-    namespace tt = ::pika::this_thread::experimental;
-
     cu::cuda_pool pool{};
 
     cu::enable_user_polling p;
@@ -491,6 +595,32 @@ int pika_main()
 #if !defined(PIKA_HAVE_HIP)
         PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
 #endif
+    }
+
+    // then_with_stream should be able to handle reference types (by copying
+    // them to the operation state)
+    {
+        int x = 42;
+        auto result = tt::sync_wait(cu::then_with_stream(
+            const_reference_cuda_sender<int>{x, cu::cuda_scheduler{pool}},
+            [](int& x, whip::stream_t) { return x + 1; }));
+        PIKA_TEST_EQ(result, 43);
+    }
+
+    {
+        bool exception_thrown = false;
+        try
+        {
+            tt::sync_wait(cu::then_with_stream(
+                const_reference_error_cuda_sender{cu::cuda_scheduler{pool}},
+                [](whip::stream_t) { PIKA_TEST(false); }));
+        }
+        catch (std::runtime_error const& e)
+        {
+            PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
+            exception_thrown = true;
+        }
+        PIKA_TEST(exception_thrown);
     }
 
     return pika::finalize();
