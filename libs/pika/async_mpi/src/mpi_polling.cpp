@@ -87,17 +87,29 @@ namespace pika::mpi::experimental {
             case stream_type::automatic:
                 return "auto";
                 break;
-            case stream_type::send:
-                return "send";
+            case stream_type::send_1:
+                return "send_1";
                 break;
-            case stream_type::receive:
-                return "recv";
+            case stream_type::send_2:
+                return "send_2";
                 break;
-            case stream_type::collective:
-                return "coll";
+            case stream_type::receive_1:
+                return "recv_1";
                 break;
-            case stream_type::user:
-                return "user";
+            case stream_type::receive_2:
+                return "recv_2";
+                break;
+            case stream_type::collective_1:
+                return "coll_1";
+                break;
+            case stream_type::collective_2:
+                return "coll_2";
+                break;
+            case stream_type::user_1:
+                return "user_1";
+                break;
+            case stream_type::user_2:
+                return "user_2";
                 break;
             case stream_type::max_stream:
                 return "smax";

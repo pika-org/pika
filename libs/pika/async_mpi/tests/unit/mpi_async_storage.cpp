@@ -227,7 +227,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_recv = &local_recv_storage[memory_offset_recv];
             auto rsnd = ex::just(buffer_to_recv, options.transfer_size_B, MPI_UNSIGNED_CHAR,
                             recv_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive) |
+                mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive_1) |
                 ex::then([&](int result) {
                     --recvs_in_flight;
                     nws_deb<5>.debug(deb::str<>("recv complete"), "recv in flight", recvs_in_flight,
@@ -250,7 +250,7 @@ void test_send_recv(std::uint32_t rank, std::uint32_t nranks, std::mt19937& gen,
             void* buffer_to_send = &local_send_storage[memory_offset_send];
             auto ssnd = ex::just(buffer_to_send, options.transfer_size_B, MPI_UNSIGNED_CHAR,
                             send_rank, tag, MPI_COMM_WORLD) |
-                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send) | ex::then([&](int result) {
+                mpi::transform_mpi(MPI_Isend, mpi::stream_type::send_1) | ex::then([&](int result) {
                     --sends_in_flight;
                     nws_deb<5>.debug(deb::str<>("send complete"), "recv in flight", recvs_in_flight,
                         "send in flight", sends_in_flight);

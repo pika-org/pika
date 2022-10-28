@@ -186,7 +186,7 @@ int pika_main(pika::program_options::variables_map& vm)
     mpi_task_transfer = vm["mpi-task-transfer"].as<std::uint32_t>();
     //
     auto in_flight = vm["in-flight-limit"].as<std::uint32_t>();
-    mpi::set_max_requests_in_flight(in_flight, mpi::stream_type::user);
+    mpi::set_max_requests_in_flight(in_flight, mpi::stream_type::user_1);
 
     mpi_poll_size = vm["mpi-polling-size"].as<std::uint32_t>();
     mpi::set_max_mpi_polling_size(mpi_poll_size);
@@ -222,7 +222,7 @@ int pika_main(pika::program_options::variables_map& vm)
                 std::uint64_t tag = tag_no(origin, i, in_flight);
                 auto snd1 = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR, prev_rank(rank, size),
                                 tag, MPI_COMM_WORLD) |
-                    mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive);
+                    mpi::transform_mpi(MPI_Irecv, mpi::stream_type::receive_1);
                 // rx msg came from us, and has completed the ring
                 if (origin == rank)
                 {
@@ -283,7 +283,7 @@ int pika_main(pika::program_options::variables_map& vm)
 
                         auto snd1 = ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR,
                                         next_rank(rank, size), tag, MPI_COMM_WORLD) |
-                            mpi::transform_mpi(MPI_Isend, mpi::stream_type::send);
+                            mpi::transform_mpi(MPI_Isend, mpi::stream_type::send_1);
 
                         auto send_snd = snd1 |
                             // ex::transfer(ex::thread_pool_scheduler_queue_bypass{}) |
@@ -316,7 +316,7 @@ int pika_main(pika::program_options::variables_map& vm)
                 ex::just(&*buf, message_size, MPI_UNSIGNED_CHAR, next_rank(rank, size), tag,
                     MPI_COMM_WORLD) |
 #endif
-                mpi::transform_mpi(MPI_Isend, mpi::stream_type::user) |
+                mpi::transform_mpi(MPI_Isend, mpi::stream_type::user_1) |
                 ex::then([=, &counter](int /*result*/) {
                     // output info
                     msg_info(rank, size, msg_type::send, buf, tag);
@@ -336,15 +336,15 @@ int pika_main(pika::program_options::variables_map& vm)
         {
             using namespace pika::debug::detail;
             msr_deb<0>.debug(str<>("User Messages"), "Rank", dec<3>(rank), "of", dec<3>(size),
-                dec<3>(mpi::get_num_requests_in_flight(mpi::stream_type::user)));
+                dec<3>(mpi::get_num_requests_in_flight(mpi::stream_type::user_1)));
         }
 
         // the user queue should always be empty by now since our counter tracks it
-        PIKA_ASSERT(mpi::get_num_requests_in_flight(mpi::stream_type::user) == 0);
+        PIKA_ASSERT(mpi::get_num_requests_in_flight(mpi::stream_type::user_1) == 0);
 
         // don't exit until messages that are still in flight are drained
-        while (mpi::get_num_requests_in_flight(mpi::stream_type::send) +
-                mpi::get_num_requests_in_flight(mpi::stream_type::receive) >
+        while (mpi::get_num_requests_in_flight(mpi::stream_type::send_1) +
+                mpi::get_num_requests_in_flight(mpi::stream_type::receive_1) >
             0)
         {
             pika::this_thread::yield();

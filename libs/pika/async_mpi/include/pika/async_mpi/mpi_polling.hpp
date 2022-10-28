@@ -31,10 +31,14 @@ namespace pika::mpi::experimental {
     enum class stream_type : std::uint32_t
     {
         automatic = 0,
-        send,
-        receive,
-        collective,
-        user,
+        send_1,
+        send_2,
+        receive_1,
+        receive_2,
+        collective_1,
+        collective_2,
+        user_1,
+        user_2,
         max_stream
     };
 
