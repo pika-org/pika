@@ -175,27 +175,20 @@ namespace pika::when_all_impl {
         {
         }
 
-        template <typename Sender>
+        template <typename Tuple>
         struct value_types_helper
         {
-            using value_types =
-                typename pika::execution::experimental::sender_traits<
-                    Sender>::template value_types<pika::util::detail::pack,
-                    pika::util::detail::pack>;
-            using type =
-                pika::execution::experimental::detail::single_result_non_void_t<
-                    value_types>;
+            using type = pika::util::detail::transform_t<Tuple, std::decay>;
         };
-
-        template <typename Sender>
-        using value_types_helper_t = typename value_types_helper<Sender>::type;
 
         template <template <typename...> class Tuple,
             template <typename...> class Variant>
-        using value_types = pika::util::detail::concat_inner_packs_t<
-            pika::util::detail::concat_t<
-                typename pika::execution::experimental::sender_traits<
-                    Senders>::template value_types<Tuple, Variant>...>>;
+        using value_types = pika::util::detail::transform_t<
+            pika::util::detail::concat_inner_packs_t<
+                pika::util::detail::concat_t<
+                    typename pika::execution::experimental::sender_traits<
+                        Senders>::template value_types<Tuple, Variant>...>>,
+            value_types_helper>;
 
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_concat_t<
