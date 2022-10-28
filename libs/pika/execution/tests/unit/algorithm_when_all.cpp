@@ -14,6 +14,7 @@
 #include <exception>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -195,6 +196,22 @@ int main()
         auto os = ex::connect(std::move(s), std::move(r));
         ex::start(os);
         PIKA_TEST(set_value_called);
+    }
+
+    {
+        int x = 42;
+        auto s = ex::when_all(const_reference_sender<int>{x});
+#if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
+        // The reference implementation does not remove_cvref the types sent.
+        PIKA_UNUSED(s);
+#else
+        using value_types =
+            typename pika::execution::experimental::sender_traits<decltype(s)>::
+                template value_types<std::tuple, pika::detail::variant>;
+        using expected_value_types = pika::detail::variant<std::tuple<int>>;
+        static_assert(std::is_same_v<value_types, expected_value_types>,
+            "when_all should remove_cvref the value types sent");
+#endif
     }
 
     // Failure path
