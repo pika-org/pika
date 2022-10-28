@@ -113,6 +113,25 @@ int pika_main()
                 }
             }
 
+            // transform_mpi should be able to handle reference types (by copying
+            // them to the operation state)
+            {
+                int data = 0, count = 1;
+                if (rank == 0)
+                {
+                    data = 42;
+                }
+                auto s = mpi::transform_mpi(const_reference_sender<int>{count},
+                    [&](int& count, MPI_Request* request) {
+                        MPI_Ibcast(&data, count, datatype, 0, comm, request);
+                    });
+                tt::sync_wait(PIKA_MOVE(s));
+                if (rank != 0)
+                {
+                    PIKA_TEST_EQ(data, 42);
+                }
+            }
+
             {
                 // tag_invoke overload
                 std::atomic<bool> tag_invoke_overload_called{false};
@@ -161,6 +180,23 @@ int pika_main()
                         error_sender<int*, int, MPI_Datatype, int, MPI_Comm>{},
                         MPI_Ibcast));
                     PIKA_TEST(false);
+                }
+                catch (std::runtime_error const& e)
+                {
+                    PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
+                    exception_thrown = true;
+                }
+                PIKA_TEST(exception_thrown);
+            }
+
+            {
+                // Exception with const reference error sencder
+                bool exception_thrown = false;
+                try
+                {
+                    tt::sync_wait(
+                        mpi::transform_mpi(const_reference_error_sender{},
+                            [](MPI_Request*) { PIKA_TEST(false); }));
                 }
                 catch (std::runtime_error const& e)
                 {

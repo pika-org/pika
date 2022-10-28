@@ -273,18 +273,30 @@ namespace pika::mpi::experimental {
                         std::decay_t<Sender>, transform_mpi_receiver>;
                 operation_state_type op_state;
 
+                template <typename Tuple>
+                struct value_types_helper
+                {
+                    using type =
+                        pika::util::detail::transform_t<Tuple, std::decay>;
+                };
+
 #if defined(PIKA_HAVE_P2300_REFERENCE_IMPLEMENTATION)
                 using ts_type = pika::util::detail::prepend_t<
-                    pika::execution::experimental::value_types_of_t<
-                        std::decay_t<Sender>,
-                        pika::execution::experimental::detail::empty_env,
-                        std::tuple, pika::detail::variant>,
+                    pika::util::detail::transform_t<
+                        pika::execution::experimental::value_types_of_t<
+                            std::decay_t<Sender>,
+                            pika::execution::experimental::detail::empty_env,
+                            std::tuple, pika::detail::variant>,
+                        value_types_helper>,
                     pika::detail::monostate>;
 #else
                 using ts_type = pika::util::detail::prepend_t<
-                    typename pika::execution::experimental::sender_traits<
-                        std::decay_t<Sender>>::template value_types<std::tuple,
-                        pika::detail::variant>,
+                    pika::util::detail::transform_t<
+                        typename pika::execution::experimental::sender_traits<
+                            std::decay_t<Sender>>::
+                            template value_types<std::tuple,
+                                pika::detail::variant>,
+                        value_types_helper>,
                     pika::detail::monostate>;
 #endif
                 ts_type ts;
