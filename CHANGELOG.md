@@ -4,6 +4,19 @@
 <!--- Distributed under the Boost Software License, Version 1.0. (See accompanying -->
 <!--- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 
+## 0.10.0 (2022-11-02)
+
+### New features
+
+### Breaking changes
+
+- More functionality in the `algorithms` module has been moved into `detail` namespaces. ([#475](https://github.com/pika-org/pika/pull/475))
+
+### Bugfixes
+
+- Many sender adaptors have been updated to correctly handle reference types. ([#472](https://github.com/pika-org/pika/pull/472), [#484](https://github.com/pika-org/pika/pull/484), [#492](https://github.com/pika-org/pika/pull/492), )
+- `then_with_stream` now correctly stores the values sent by the predecessor sender for the duration of the CUDA operation launched by it. ([#485](https://github.com/pika-org/pika/pull/485))
+
 ## 0.9.0 (2022-10-05)
 
 ### New features
