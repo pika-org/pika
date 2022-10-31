@@ -189,17 +189,18 @@ namespace pika::functional::detail {
     // correctly check this condition. We default to the more relaxed
     // noexcept(true) to not falsely exclude correct overloads. However, this
     // may lead to noexcept(false) overloads falsely being candidates.
-#if !defined(PIKA_CUDA_VERSION) || (PIKA_CUDA_VERSION >= 1102)
+#if defined(__NVCC__) && defined(PIKA_CUDA_VERSION) &&                         \
+    (PIKA_CUDA_VERSION < 1102)
+    template <typename Tag, typename... Args>
+    struct is_nothrow_tag_override_invocable : std::true_type
+    {
+    };
+#else
     template <typename Tag, typename... Args>
     struct is_nothrow_tag_override_invocable
       : is_nothrow_tag_override_invocable_impl<
             decltype(tag_override_invoke_ns::tag_override_invoke)(Tag, Args...),
             is_tag_override_invocable_v<Tag, Args...>>
-    {
-    };
-#else
-    template <typename Tag, typename... Args>
-    struct is_nothrow_tag_override_invocable : std::true_type
     {
     };
 #endif
