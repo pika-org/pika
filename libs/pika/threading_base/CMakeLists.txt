@@ -16,6 +16,7 @@ set(threading_base_headers
     pika/threading_base/detail/get_default_pool.hpp
     pika/threading_base/detail/reset_backtrace.hpp
     pika/threading_base/detail/reset_lco_description.hpp
+    pika/threading_base/detail/tracy.hpp
     pika/threading_base/execution_agent.hpp
     pika/threading_base/external_timer.hpp
     pika/threading_base/network_background_callback.hpp
