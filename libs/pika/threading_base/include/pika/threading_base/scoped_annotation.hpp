@@ -17,7 +17,7 @@
 #elif defined(PIKA_HAVE_APEX)
 #include <pika/threading_base/external_timer.hpp>
 #elif defined(PIKA_HAVE_TRACY)
-#include <Tracy.hpp>
+#include <pika/threading_base/detail/tracy.hpp>
 #endif
 #endif
 

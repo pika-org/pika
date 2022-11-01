@@ -25,7 +25,7 @@
 #endif
 
 #if defined(PIKA_HAVE_TRACY)
-#include <Tracy.hpp>
+#include <pika/threading_base/detail/tracy.hpp>
 #include <common/TracyColor.hpp>
 #endif
 
