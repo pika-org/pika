@@ -336,14 +336,6 @@ namespace pika::threads::detail {
         set_scheduler_mode(mode);
     }
 
-    void scheduler_base::add_remove_scheduler_mode(
-        scheduler_mode to_add_mode, scheduler_mode to_remove_mode)
-    {
-        scheduler_mode mode = scheduler_mode(
-            (get_scheduler_mode() | to_add_mode) & ~to_remove_mode);
-        set_scheduler_mode(mode);
-    }
-
     void scheduler_base::update_scheduler_mode(scheduler_mode mode, bool set)
     {
         if (set)

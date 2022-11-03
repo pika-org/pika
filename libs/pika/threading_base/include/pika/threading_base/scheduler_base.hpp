@@ -144,10 +144,6 @@ namespace pika::threads::detail {
         // remove flag from scheduler mode
         void remove_scheduler_mode(scheduler_mode mode);
 
-        // add flag to scheduler mode
-        void add_remove_scheduler_mode(
-            scheduler_mode to_add_mode, scheduler_mode to_remove_mode);
-
         // conditionally add or remove depending on set true/false
         void update_scheduler_mode(scheduler_mode mode, bool set);
 

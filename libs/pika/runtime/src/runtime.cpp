@@ -969,13 +969,6 @@ namespace pika { namespace threads {
         get_runtime().get_thread_manager().add_scheduler_mode(m);
     }
 
-    void add_remove_scheduler_mode(threads::scheduler_mode to_add_mode,
-        threads::scheduler_mode to_remove_mode)
-    {
-        get_runtime().get_thread_manager().add_remove_scheduler_mode(
-            to_add_mode, to_remove_mode);
-    }
-
     void remove_scheduler_mode(threads::scheduler_mode m)
     {
         get_runtime().get_thread_manager().remove_scheduler_mode(m);
