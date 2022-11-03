@@ -27,7 +27,7 @@ jobs:
           export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
           brew upgrade
           brew update
-          brew install boost cmake hwloc ninja
+          brew install boost cmake fmt hwloc ninja
     - uses: actions/checkout@v2
     - name: Configure
       shell: bash

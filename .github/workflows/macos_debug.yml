@@ -43,7 +43,7 @@ jobs:
         export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
         brew update
-        brew install boost cmake hwloc ninja
+        brew install boost cmake fmt hwloc ninja
     - uses: actions/checkout@v2
     - name: Configure
       shell: bash
@@ -93,7 +93,7 @@ jobs:
         export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
         brew update
-        brew install boost cmake hwloc ninja
+        brew install boost cmake fmt hwloc ninja
     - name: Load build artifacts from core stage
       uses: actions/download-artifact@v3
       with:
@@ -139,7 +139,7 @@ jobs:
         export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
         brew update
-        brew install boost cmake hwloc ninja
+        brew install boost cmake fmt hwloc ninja
     - name: Load build artifacts from core stage
       uses: actions/download-artifact@v3
       with:
@@ -176,7 +176,7 @@ jobs:
         export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
         brew update
-        brew install boost cmake hwloc ninja
+        brew install boost cmake fmt hwloc ninja
     - name: Load build artifacts from core stage
       uses: actions/download-artifact@v3
       with:
@@ -222,7 +222,7 @@ jobs:
         export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
         brew update
-        brew install boost cmake hwloc ninja
+        brew install boost cmake fmt hwloc ninja
     - name: Load build artifacts from core stage
       uses: actions/download-artifact@v3
       with:
@@ -267,7 +267,7 @@ jobs:
         export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
         brew upgrade
         brew update
-        brew install boost cmake hwloc ninja
+        brew install boost cmake fmt hwloc ninja
     - name: Load build artifacts from core stage
       uses: actions/download-artifact@v3
       with:
