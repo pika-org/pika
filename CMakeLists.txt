@@ -155,7 +155,7 @@ endif()
 # Generic build options
 set(DEFAULT_MALLOC "system")
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-  set(DEFAULT_MALLOC "tcmalloc")
+  set(DEFAULT_MALLOC "mimalloc")
 endif()
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
@@ -179,7 +179,7 @@ endif()
 pika_option(
   PIKA_WITH_MALLOC
   STRING
-  "Define which allocator should be linked in. Options are: system, tcmalloc, jemalloc, mimalloc, tbbmalloc, and custom (default: tcmalloc)"
+  "Define which allocator should be linked in. Options are: system, tcmalloc, jemalloc, mimalloc, tbbmalloc, and custom (default: ${DEFAULT_MALLOC})"
   ${DEFAULT_MALLOC}
   STRINGS "system;tcmalloc;jemalloc;mimalloc;tbbmalloc;custom"
 )
