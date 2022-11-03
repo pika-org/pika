@@ -1655,15 +1655,6 @@ endif()
 # Tests
 # ##############################################################################
 if(PIKA_WITH_TESTS)
-  find_package(PythonInterp)
-
-  if(NOT PYTHONINTERP_FOUND)
-    pika_warn(
-      "A python interpreter could not be found. The test suite can not be run automatically."
-    )
-  endif()
-
-  # pseudo_target added above
   add_subdirectory(tests)
 endif()
 
