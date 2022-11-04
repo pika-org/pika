@@ -20,7 +20,7 @@ jobs:
   build:
     name: github/linux/hip/fast
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-hip:3
+    container: pikaorg/pika-ci-hip:5
     steps:
     - uses: actions/checkout@v2
     - name: Update apt repositories for ccache
@@ -40,6 +40,7 @@ jobs:
               -DCMAKE_BUILD_TYPE=Debug \
               -DPIKA_WITH_UNITY_BUILD=ON \
               -DPIKA_WITH_MALLOC=system \
+              -DPIKA_WITH_HIP=ON \
               -DPIKA_WITH_EXAMPLES=ON \
               -DPIKA_WITH_TESTS=ON \
               -DPIKA_WITH_TESTS_UNIT=ON \
