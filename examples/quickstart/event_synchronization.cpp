@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <functional>
 #include <iostream>
+#include <sstream>
 
 struct data
 {
@@ -38,26 +39,28 @@ struct data
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-void worker(std::size_t i, data& d, pika::counting_semaphore<>& sem)
+void worker(std::size_t i, data& d, pika::latch& l)
 {
     d.init.wait();
-    std::cout << d.msg << ": " << i << "\n" << std::flush;
-    sem.release();    // signal main thread
+    std::ostringstream s;
+    s << d.msg << ": " << i << "\n";
+    std::cout << s.str();
+    l.count_down(1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
     data d;
-    pika::counting_semaphore<> sem{0};
+    constexpr std::size_t num_tasks = 10;
+    pika::latch l(num_tasks + 1);
 
-    for (std::size_t i = 0; i < 10; ++i)
-        pika::apply(&worker, i, std::ref(d), std::ref(sem));
+    for (std::size_t i = 0; i < num_tasks; ++i)
+        pika::apply(&worker, i, std::ref(d), std::ref(l));
 
-    d.initialize("initialized");    // signal the event
+    d.initialize("initialized");
 
-    for (std::size_t i = 0; i < 10; ++i)
-        sem.acquire();
+    l.arrive_and_wait();
 
     return pika::finalize();
 }
