@@ -124,9 +124,6 @@ void test_saxpy(pika::cuda::experimental::cuda_scheduler& cuda_sched)
 // -------------------------------------------------------------------------
 int pika_main(pika::program_options::variables_map& vm)
 {
-    // install cuda future polling handler
-    pika::cuda::experimental::enable_user_polling poll("default");
-    //
     std::size_t device = vm["device"].as<std::size_t>();
     //
     unsigned int seed = (unsigned int) std::time(nullptr);
@@ -137,6 +134,9 @@ int pika_main(pika::program_options::variables_map& vm)
     std::srand(seed);
 
     pika::cuda::experimental::cuda_pool cuda_pool(device);
+    // install cuda future polling handler
+    pika::cuda::experimental::enable_user_polling poll("default");
+    //
     pika::cuda::experimental::cuda_scheduler cuda_sched(std::move(cuda_pool));
 
     // --------------------

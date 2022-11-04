@@ -284,8 +284,6 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched,
 // -------------------------------------------------------------------------
 int pika_main(pika::program_options::variables_map& vm)
 {
-    // install cuda future polling handler
-    pika::cuda::experimental::enable_user_polling poll("default");
     //
     std::size_t device = vm["device"].as<std::size_t>();
     std::size_t sizeMult = vm["sizemult"].as<std::size_t>();
@@ -294,6 +292,12 @@ int pika_main(pika::program_options::variables_map& vm)
     unsigned int seed = std::random_device{}();
     if (vm.count("seed"))
         seed = vm["seed"].as<unsigned int>();
+
+    pika::cuda::experimental::cuda_pool cuda_pool(device);
+
+    // install cuda future polling handler
+    pika::cuda::experimental::enable_user_polling poll("default");
+    //
 
     gen.seed(seed);
     std::cout << "using seed: " << seed << std::endl;
@@ -315,8 +319,6 @@ int pika_main(pika::program_options::variables_map& vm)
     printf("MatrixA(%u,%u), MatrixB(%u,%u), MatrixC(%u,%u)\n\n",
         matrix_size.uiWA, matrix_size.uiHA, matrix_size.uiWB, matrix_size.uiHB,
         matrix_size.uiWC, matrix_size.uiHC);
-
-    pika::cuda::experimental::cuda_pool cuda_pool(device);
 
     // --------------------------------
     // test matrix multiply using cuda scheduler

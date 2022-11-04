@@ -6,6 +6,7 @@
 
 set(tests
     cublas_handle
+    cublas_matmul
     cuda_bulk
     cuda_pool
     cuda_scheduler
@@ -13,10 +14,11 @@ set(tests
     cusolver_handle
     then_with_stream
 )
+
 if(PIKA_WITH_CUDA)
-  list(APPEND tests cublas_matmul cuda_sender)
+  list(APPEND tests cuda_sender)
 elseif(PIKA_WITH_HIP)
-  set(compile_tests cublas_matmul cuda_sender)
+  set(compile_tests cuda_sender)
 endif()
 
 set(cublas_matmul_PARAMETERS THREADS 4)
