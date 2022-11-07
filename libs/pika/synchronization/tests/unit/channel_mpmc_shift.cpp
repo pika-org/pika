@@ -21,7 +21,7 @@ constexpr int NUM_WORKERS = 1000;
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
-inline T channel_get(pika::lcos::local::channel_mpmc<T> const& c)
+inline T channel_get(pika::experimental::channel_mpmc<T> const& c)
 {
     T result;
     while (!c.get(&result))
@@ -32,7 +32,7 @@ inline T channel_get(pika::lcos::local::channel_mpmc<T> const& c)
 }
 
 template <typename T>
-inline void channel_set(pika::lcos::local::channel_mpmc<T>& c, T val)
+inline void channel_set(pika::experimental::channel_mpmc<T>& c, T val)
 {
     while (!c.set(std::move(val)))    // NOLINT
     {
@@ -41,8 +41,8 @@ inline void channel_set(pika::lcos::local::channel_mpmc<T>& c, T val)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int thread_func(int i, pika::lcos::local::channel_mpmc<int>& channel,
-    pika::lcos::local::channel_mpmc<int>& next)
+int thread_func(int i, pika::experimental::channel_mpmc<int>& channel,
+    pika::experimental::channel_mpmc<int>& next)
 {
     channel_set(channel, i);
     return channel_get(next);
@@ -51,7 +51,7 @@ int thread_func(int i, pika::lcos::local::channel_mpmc<int>& channel,
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
-    std::vector<pika::lcos::local::channel_mpmc<int>> channels;
+    std::vector<pika::experimental::channel_mpmc<int>> channels;
     channels.reserve(NUM_WORKERS);
 
     std::vector<pika::future<int>> workers;

@@ -29,8 +29,7 @@ pika::thread::id async_test(int passed_through)
     return pika::this_thread::get_id();
 }
 
-void apply_test(
-    pika::lcos::local::latch& l, pika::thread::id& id, int passed_through)
+void apply_test(pika::latch& l, pika::thread::id& id, int passed_through)
 {
     PIKA_TEST_EQ(passed_through, 42);
     id = pika::this_thread::get_id();
@@ -47,12 +46,12 @@ void async_bulk_test(int, pika::thread::id tid, int passed_through)    //-V813
 template <typename Executor>
 void test_apply(Executor& exec)
 {
-    pika::lcos::local::latch l(2);
+    pika::latch l(2);
     pika::thread::id id;
 
     pika::parallel::execution::post(
         exec, &apply_test, std::ref(l), std::ref(id), 42);
-    l.count_down_and_wait();
+    l.arrive_and_wait();
 
     PIKA_TEST_NEQ(id, pika::this_thread::get_id());
 }

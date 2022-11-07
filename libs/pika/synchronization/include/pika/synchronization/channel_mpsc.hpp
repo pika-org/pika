@@ -21,7 +21,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika::experimental {
 
     ////////////////////////////////////////////////////////////////////////////
     // A simple but very high performance implementation of the channel concept.
@@ -178,7 +178,7 @@ namespace pika { namespace lcos { namespace local {
             if (!closed_.compare_exchange_weak(expected, true))
             {
                 PIKA_THROW_EXCEPTION(pika::error::invalid_status,
-                    "pika::lcos::local::base_channel_mpsc::close",
+                    "pika::experimental::base_channel_mpsc::close",
                     "attempting to close an already closed channel");
             }
             return 0;
@@ -217,6 +217,6 @@ namespace pika { namespace lcos { namespace local {
     // Using pika::concurrency::detail::spinlock as the means of synchronization
     // enables the use of this channel with non-pika threads.
     template <typename T>
-    using channel_mpsc = base_channel_mpsc<T, pika::lcos::local::spinlock>;
+    using channel_mpsc = base_channel_mpsc<T, pika::spinlock>;
 
-}}}    // namespace pika::lcos::local
+}    // namespace pika::experimental

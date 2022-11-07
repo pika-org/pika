@@ -17,7 +17,7 @@
 #include <atomic>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika {
     struct once_flag
     {
     public:
@@ -31,13 +31,13 @@ namespace pika { namespace lcos { namespace local {
 
     private:
         std::atomic<long> status_;
-        lcos::local::event event_;
+        pika::experimental::event event_;
 
         template <typename F, typename... Args>
         friend void call_once(once_flag& flag, F&& f, Args&&... args);
     };
 
-#define PIKA_ONCE_INIT ::pika::lcos::local::once_flag()
+#define PIKA_ONCE_INIT ::pika::once_flag()
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename... Args>
@@ -86,4 +86,4 @@ namespace pika { namespace lcos { namespace local {
             flag.event_.wait();
         }
     }
-}}}    // namespace pika::lcos::local
+}    // namespace pika

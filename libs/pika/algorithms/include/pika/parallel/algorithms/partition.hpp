@@ -875,7 +875,7 @@ namespace pika::parallel::detail {
             std::size_t left_, right_;
             std::size_t block_size_;
             std::int64_t left_block_no_{-1}, right_block_no_{1};
-            pika::lcos::local::spinlock mutex_;
+            pika::spinlock mutex_;
         };
 
         // block manager for forward access iterator.
@@ -956,7 +956,7 @@ namespace pika::parallel::detail {
             std::vector<block<FwdIter>> blocks_;
             std::size_t left_, right_;
             std::int64_t left_block_no_{-1}, right_block_no_{1};
-            pika::lcos::local::spinlock mutex_;
+            pika::spinlock mutex_;
         };
 
         // std::swap_ranges doesn't support overlapped ranges in standard.

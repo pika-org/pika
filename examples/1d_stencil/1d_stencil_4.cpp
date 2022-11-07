@@ -165,7 +165,7 @@ struct stepper
         });
 
         // limit depth of dependency tree
-        pika::lcos::local::sliding_semaphore sem(static_cast<std::int64_t>(nd));
+        pika::sliding_semaphore sem(static_cast<std::int64_t>(nd));
 
         auto Op = unwrapping(&stepper::heat_part);
 

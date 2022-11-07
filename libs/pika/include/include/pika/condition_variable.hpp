@@ -8,14 +8,3 @@
 
 #include <pika/config.hpp>
 #include <pika/synchronization/condition_variable.hpp>
-
-///////////////////////////////////////////////////////////////////////////////
-// C++20 condition_variable
-
-namespace pika {
-
-    using pika::lcos::local::condition_variable;
-    using pika::lcos::local::condition_variable_any;
-
-    using pika::lcos::local::cv_status;
-}    // namespace pika

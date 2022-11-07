@@ -140,7 +140,7 @@ namespace pika { namespace util {
         os_thread_data get_os_thread_data(std::string const& label) const;
 
     private:
-        using mutex_type = pika::lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
         using thread_map_type = std::vector<detail::os_thread_data>;
         using label_map_type = std::map<std::string, std::size_t>;

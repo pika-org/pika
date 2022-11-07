@@ -23,7 +23,7 @@ int const initial_count = 42;
 int const num_tasks = 139;
 std::atomic<int> completed_tasks(0);
 
-void worker(pika::lcos::local::sliding_semaphore& sem)
+void worker(pika::sliding_semaphore& sem)
 {
     sem.signal(++count);    // signal main thread
 }
@@ -34,7 +34,7 @@ int pika_main()
     std::vector<pika::future<void>> futures;
     futures.reserve(num_tasks);
 
-    pika::lcos::local::sliding_semaphore sem(initial_count);
+    pika::sliding_semaphore sem(initial_count);
 
     for (std::size_t i = 0; i != num_tasks; ++i)
     {

@@ -14,11 +14,12 @@
 #include <cstddef>
 #include <functional>
 #include <iostream>
+#include <sstream>
 
 struct data
 {
     ///< For synchronizing two-phase initialization.
-    pika::lcos::local::event init;
+    pika::experimental::event init;
 
     char const* msg;
 
@@ -38,26 +39,28 @@ struct data
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-void worker(std::size_t i, data& d, pika::lcos::local::counting_semaphore& sem)
+void worker(std::size_t i, data& d, pika::latch& l)
 {
     d.init.wait();
-    std::cout << d.msg << ": " << i << "\n" << std::flush;
-    sem.signal();    // signal main thread
+    std::ostringstream s;
+    s << d.msg << ": " << i << "\n";
+    std::cout << s.str();
+    l.count_down(1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main()
 {
     data d;
-    pika::lcos::local::counting_semaphore sem;
+    constexpr std::size_t num_tasks = 10;
+    pika::latch l(num_tasks + 1);
 
-    for (std::size_t i = 0; i < 10; ++i)
-        pika::apply(&worker, i, std::ref(d), std::ref(sem));
+    for (std::size_t i = 0; i < num_tasks; ++i)
+        pika::apply(&worker, i, std::ref(d), std::ref(l));
 
-    d.initialize("initialized");    // signal the event
+    d.initialize("initialized");
 
-    // Wait for all threads to finish executing.
-    sem.wait(10);
+    l.arrive_and_wait();
 
     return pika::finalize();
 }

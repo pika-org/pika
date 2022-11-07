@@ -93,7 +93,7 @@ void measure_function_futures_create_thread_hierarchical_placement(
     pika::util::perftests_report(
         "future overhead - create_thread_hierarchical - latch", "no-executor",
         repetitions, [&]() -> void {
-            pika::lcos::local::latch l(count);
+            pika::latch l(count);
 
             auto const func = [&l]() {
                 null_function();

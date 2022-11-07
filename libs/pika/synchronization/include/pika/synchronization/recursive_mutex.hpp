@@ -21,11 +21,11 @@
 #include <cstdint>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika {
     namespace detail {
         /// An exclusive-ownership recursive mutex which implements Boost.Thread's
         /// TimedLockable concept.
-        template <typename Mutex = local::spinlock>
+        template <typename Mutex = pika::spinlock>
         struct recursive_mutex_impl
         {
         public:
@@ -126,4 +126,4 @@ namespace pika { namespace lcos { namespace local {
     }    // namespace detail
 
     using recursive_mutex = detail::recursive_mutex_impl<>;
-}}}    // namespace pika::lcos::local
+}    // namespace pika

@@ -16,7 +16,7 @@
 #include <cstdint>
 #include <mutex>
 
-namespace pika { namespace detail {
+namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     void intrusive_ptr_add_ref(stop_state* p)
@@ -313,4 +313,4 @@ namespace pika { namespace detail {
 
         return true;
     }
-}}    // namespace pika::detail
+}    // namespace pika::detail

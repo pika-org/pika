@@ -17,7 +17,7 @@
 #include <pika/threading_base/threading_base_fwd.hpp>
 #include <pika/timing/steady_clock.hpp>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika {
     ///////////////////////////////////////////////////////////////////////////
     class mutex
     {
@@ -25,7 +25,7 @@ namespace pika { namespace lcos { namespace local {
         PIKA_NON_COPYABLE(mutex);
 
     protected:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     public:
         PIKA_EXPORT mutex(char const* const description = "");
@@ -52,7 +52,7 @@ namespace pika { namespace lcos { namespace local {
     protected:
         mutable mutex_type mtx_;
         threads::detail::thread_id_type owner_id_;
-        lcos::local::detail::condition_variable cond_;
+        pika::detail::condition_variable cond_;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -92,4 +92,4 @@ namespace pika { namespace lcos { namespace local {
             return try_lock_for(rel_time, "mutex::try_lock_for", ec);
         }
     };
-}}}    // namespace pika::lcos::local
+}    // namespace pika

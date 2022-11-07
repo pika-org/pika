@@ -22,10 +22,10 @@ using pika::program_options::variables_map;
 
 using pika::threads::detail::register_work;
 
-using pika::lcos::local::barrier;
+using pika::barrier;
 
 ///////////////////////////////////////////////////////////////////////////////
-void suspend_test(barrier& b, std::size_t iterations)
+void suspend_test(barrier<>& b, std::size_t iterations)
 {
     for (std::size_t i = 0; i < iterations; ++i)
     {
@@ -36,7 +36,7 @@ void suspend_test(barrier& b, std::size_t iterations)
     }
 
     // Wait for all pika threads to enter the barrier.
-    b.wait();
+    b.arrive_and_drop();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ int pika_main(variables_map& vm)
         iterations = vm["iterations"].as<std::size_t>();
 
     {
-        barrier b(pxthreads + 1);
+        barrier<> b(pxthreads + 1);
 
         // Create the pika threads.
         for (std::size_t i = 0; i < pxthreads; ++i)
@@ -66,7 +66,7 @@ int pika_main(variables_map& vm)
             register_work(data);
         }
 
-        b.wait();    // Wait for all pika threads to enter the barrier.
+        b.arrive_and_wait();    // Wait for all pika threads to enter the barrier.
     }
 
     // Initiate shutdown of the runtime system.

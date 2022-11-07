@@ -143,7 +143,7 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
 
     future_3.get();
 
-    pika::lcos::local::mutex m;
+    pika::mutex m;
     std::set<std::thread::id> thread_set;
 
     // test a parallel algorithm on custom pool with high priority
@@ -151,7 +151,7 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     pika::for_loop_strided(
         pika::execution::par.with(fixed).on(high_priority_executor), 0,
         loop_count, 1, [&](std::size_t i) {
-            std::lock_guard<pika::lcos::local::mutex> lock(m);
+            std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
                 std::cout << std::hex << pika::this_thread::get_id() << " "
@@ -167,7 +167,7 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     pika::for_loop_strided(
         pika::execution::par.with(fixed).on(normal_priority_executor), 0,
         loop_count, 1, [&](std::size_t i) {
-            std::lock_guard<pika::lcos::local::mutex> lock(m);
+            std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
                 std::cout << std::hex << pika::this_thread::get_id() << " "
@@ -183,7 +183,7 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     // test a parallel algorithm on pool_executor
     pika::for_loop_strided(pika::execution::par.with(fixed).on(pool_executor),
         0, loop_count, 1, [&](std::size_t i) {
-            std::lock_guard<pika::lcos::local::mutex> lock(m);
+            std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
                 std::cout << std::hex << pika::this_thread::get_id() << " "
@@ -204,7 +204,7 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
         pika::execution::par.with(fixed /*, high_priority_async_policy*/)
             .on(pool_executor),
         0, loop_count, 1, [&](std::size_t i) {
-            std::lock_guard<pika::lcos::local::mutex> lock(m);
+            std::lock_guard<pika::mutex> lock(m);
             if (thread_set.insert(std::this_thread::get_id()).second)
             {
                 std::cout << std::hex << pika::this_thread::get_id() << " "

@@ -163,8 +163,6 @@ set(algorithms_headers
     pika/parallel/memory.hpp
     pika/parallel/numeric.hpp
     pika/parallel/spmd_block.hpp
-    pika/parallel/task_block.hpp
-    pika/parallel/task_group.hpp
     pika/parallel/util/cancellation_token.hpp
     pika/parallel/util/compare_projected.hpp
     pika/parallel/util/detail/algorithm_result.hpp
@@ -194,8 +192,6 @@ set(algorithms_headers
     pika/parallel/util/transform_loop.hpp
     pika/parallel/util/zip_iterator.hpp
 )
-
-set(algorithms_sources task_group.cpp)
 
 include(pika_add_module)
 pika_add_module(

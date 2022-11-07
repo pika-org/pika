@@ -61,8 +61,7 @@ jobs:
             --timeout 300 \
             --output-on-failure \
             --exclude-regex \
-          "tests.unit.modules.algorithms.block.task_group|\
-          tests.unit.modules.init_runtime.const_args_init|\
+          "tests.unit.modules.init_runtime.const_args_init|\
           tests.unit.modules.resource_partitioner|\
           tests.unit.modules.schedulers.schedule_last|\
           tests.regressions.modules.threading_base.thread_stacksize_current|\

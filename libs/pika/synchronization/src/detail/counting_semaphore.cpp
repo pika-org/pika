@@ -18,7 +18,7 @@
 #include <utility>
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local { namespace detail {
+namespace pika::detail {
 
     counting_semaphore::counting_semaphore(std::ptrdiff_t value)
       : value_(value)
@@ -114,4 +114,4 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         signal(PIKA_MOVE(l), count);
         return count;
     }
-}}}}    // namespace pika::lcos::local::detail
+}    // namespace pika::detail

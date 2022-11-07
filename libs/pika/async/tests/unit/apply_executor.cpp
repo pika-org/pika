@@ -20,7 +20,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 std::atomic<std::int32_t> accumulator;
-pika::lcos::local::condition_variable_any result_cv;
+pika::condition_variable_any result_cv;
 
 void increment(std::int32_t i)
 {
@@ -120,8 +120,8 @@ void test_apply_with_executor(Executor& exec)
         pika::apply(exec, pika::util::detail::bind(increment_lambda, _1), 1);
     }
 
-    pika::lcos::local::no_mutex result_mutex;
-    std::unique_lock<pika::lcos::local::no_mutex> l(result_mutex);
+    pika::no_mutex result_mutex;
+    std::unique_lock<pika::no_mutex> l(result_mutex);
     result_cv.wait_for(l, std::chrono::seconds(1),
         pika::util::detail::bind(
             std::equal_to<std::int32_t>(), std::ref(accumulator), 18));

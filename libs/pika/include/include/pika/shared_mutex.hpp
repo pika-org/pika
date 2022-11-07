@@ -8,9 +8,3 @@
 
 #include <pika/synchronization/lock_types.hpp>
 #include <pika/synchronization/shared_mutex.hpp>
-
-namespace pika {
-    using pika::lcos::local::shared_mutex;
-    using pika::lcos::local::upgrade_lock;
-    using pika::lcos::local::upgrade_to_unique_lock;
-}    // namespace pika

@@ -21,31 +21,28 @@
 #include <cstddef>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika::detail {
 
 #if PIKA_HAVE_ITTNOTIFY != 0
-    namespace detail {
-        template <typename Tag, std::size_t N>
-        struct itt_spinlock_init
-        {
-            itt_spinlock_init() noexcept;
-            ~itt_spinlock_init();
-        };
-    }    // namespace detail
+    template <typename Tag, std::size_t N>
+    struct itt_spinlock_init
+    {
+        itt_spinlock_init() noexcept;
+        ~itt_spinlock_init();
+    };
 #endif
 
     template <typename Tag, std::size_t N = PIKA_HAVE_SPINLOCK_POOL_NUM>
     class spinlock_pool
     {
     private:
-        static pika::concurrency::detail::cache_aligned_data<
-            lcos::local::spinlock>
+        static pika::concurrency::detail::cache_aligned_data<pika::spinlock>
             pool_[N];
 #if PIKA_HAVE_ITTNOTIFY != 0
         static detail::itt_spinlock_init<Tag, N> init_;
 #endif
     public:
-        static lcos::local::spinlock& spinlock_for(void const* pv) noexcept
+        static pika::spinlock& spinlock_for(void const* pv) noexcept
         {
             std::size_t i = util::fibhash<N>(reinterpret_cast<std::size_t>(pv));
             return pool_[i].data_;
@@ -54,7 +51,7 @@ namespace pika { namespace lcos { namespace local {
         class scoped_lock
         {
         private:
-            pika::lcos::local::spinlock& sp_;
+            pika::spinlock& sp_;
 
         public:
             PIKA_NON_COPYABLE(scoped_lock);
@@ -88,37 +85,35 @@ namespace pika { namespace lcos { namespace local {
     };
 
     template <typename Tag, std::size_t N>
-    pika::concurrency::detail::cache_aligned_data<lcos::local::spinlock>
+    pika::concurrency::detail::cache_aligned_data<pika::spinlock>
         spinlock_pool<Tag, N>::pool_[N];
 
 #if PIKA_HAVE_ITTNOTIFY != 0
-    namespace detail {
-
-        template <typename Tag, std::size_t N>
-        itt_spinlock_init<Tag, N>::itt_spinlock_init() noexcept
-        {
-            for (int i = 0; i < N; ++i)
-            {
-                PIKA_ITT_SYNC_CREATE(
-                    (&lcos::local::spinlock_pool<Tag, N>::pool_[i].data_),
-                    "pika::lcos::spinlock", 0);
-                PIKA_ITT_SYNC_RENAME(
-                    (&lcos::local::spinlock_pool<Tag, N>::pool_[i].data_),
-                    "pika::lcos::spinlock");
-            }
-        }
-
-        template <typename Tag, std::size_t N>
-        itt_spinlock_init<Tag, N>::~itt_spinlock_init()
-        {
-            for (int i = 0; i < N; ++i)
-            {
-                PIKA_ITT_SYNC_DESTROY((&spinlock_pool<Tag, N>::pool_[i].data_));
-            }
-        }
-    }    // namespace detail
 
     template <typename Tag, std::size_t N>
-    detail::itt_spinlock_init<Tag, N> spinlock_pool<Tag, N>::init_{};
+    itt_spinlock_init<Tag, N>::itt_spinlock_init() noexcept
+    {
+        for (int i = 0; i < N; ++i)
+        {
+            PIKA_ITT_SYNC_CREATE(
+                (&pika::detail::spinlock_pool<Tag, N>::pool_[i].data_),
+                "pika::lcos::spinlock", 0);
+            PIKA_ITT_SYNC_RENAME(
+                (&pika::detail::spinlock_pool<Tag, N>::pool_[i].data_),
+                "pika::lcos::spinlock");
+        }
+    }
+
+    template <typename Tag, std::size_t N>
+    itt_spinlock_init<Tag, N>::~itt_spinlock_init()
+    {
+        for (int i = 0; i < N; ++i)
+        {
+            PIKA_ITT_SYNC_DESTROY((&spinlock_pool<Tag, N>::pool_[i].data_));
+        }
+    }
+
+    template <typename Tag, std::size_t N>
+    itt_spinlock_init<Tag, N> spinlock_pool<Tag, N>::init_{};
 #endif
-}}}    // namespace pika::lcos::local
+}    // namespace pika::detail

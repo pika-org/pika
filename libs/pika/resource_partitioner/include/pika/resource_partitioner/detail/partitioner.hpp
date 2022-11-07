@@ -75,7 +75,7 @@ namespace pika { namespace resource { namespace detail {
     ///////////////////////////////////////////////////////////////////////
     class partitioner
     {
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     public:
         partitioner();

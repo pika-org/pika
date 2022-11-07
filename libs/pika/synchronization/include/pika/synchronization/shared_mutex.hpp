@@ -13,9 +13,9 @@
 
 #include <mutex>
 
-namespace pika { namespace lcos { namespace local {
+namespace pika {
     namespace detail {
-        template <typename Mutex = lcos::local::mutex>
+        template <typename Mutex = pika::mutex>
         class shared_mutex
         {
         private:
@@ -31,9 +31,9 @@ namespace pika { namespace lcos { namespace local {
 
             state_data state;
             mutex_type state_change;
-            lcos::local::condition_variable shared_cond;
-            lcos::local::condition_variable exclusive_cond;
-            lcos::local::condition_variable upgrade_cond;
+            pika::condition_variable shared_cond;
+            pika::condition_variable exclusive_cond;
+            pika::condition_variable upgrade_cond;
 
             void release_waiters()
             {
@@ -235,4 +235,4 @@ namespace pika { namespace lcos { namespace local {
     }    // namespace detail
 
     using shared_mutex = detail::shared_mutex<>;
-}}}    // namespace pika::lcos::local
+}    // namespace pika

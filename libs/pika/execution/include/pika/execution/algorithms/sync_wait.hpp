@@ -145,11 +145,11 @@ namespace pika::sync_wait_detail {
 #endif
 
         // We use a spinlock here to allow taking the lock on non-pika threads.
-        using mutex_type = pika::lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
         struct shared_state
         {
-            pika::lcos::local::condition_variable cond_var;
+            pika::condition_variable cond_var;
             mutex_type mtx;
             std::atomic<bool> set_called = false;
             pika::detail::variant<pika::detail::monostate, error_type,

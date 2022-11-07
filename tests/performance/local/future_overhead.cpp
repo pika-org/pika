@@ -208,7 +208,7 @@ void function_futures_sliding_semaphore(
     // start the clock
     high_resolution_timer walltime;
     const int sem_count = 5000;
-    pika::lcos::local::sliding_semaphore sem(sem_count);
+    pika::sliding_semaphore sem(sem_count);
     for (std::uint64_t i = 0; i < count; ++i)
     {
         pika::async(exec, [i, &sem]() {
@@ -260,7 +260,7 @@ void function_futures_for_loop(std::uint64_t count, bool csv, Executor& exec,
 
 void function_futures_register_work(std::uint64_t count, bool csv)
 {
-    pika::lcos::local::latch l(count);
+    pika::latch l(count);
 
     // start the clock
     high_resolution_timer walltime;
@@ -283,7 +283,7 @@ void function_futures_register_work(std::uint64_t count, bool csv)
 
 void function_futures_create_thread(std::uint64_t count, bool csv)
 {
-    pika::lcos::local::latch l(count);
+    pika::latch l(count);
 
     auto const sched =
         pika::threads::detail::get_self_id_data()->get_scheduler_base();
@@ -320,7 +320,7 @@ void function_futures_create_thread(std::uint64_t count, bool csv)
 void function_futures_create_thread_hierarchical_placement(
     std::uint64_t count, bool csv)
 {
-    pika::lcos::local::latch l(count);
+    pika::latch l(count);
 
     auto sched =
         pika::threads::detail::get_self_id_data()->get_scheduler_base();
@@ -391,7 +391,7 @@ void function_futures_create_thread_hierarchical_placement(
 void function_futures_apply_hierarchical_placement(
     std::uint64_t count, bool csv)
 {
-    pika::lcos::local::latch l(count);
+    pika::latch l(count);
 
     auto const func = [&l]() {
         null_function();

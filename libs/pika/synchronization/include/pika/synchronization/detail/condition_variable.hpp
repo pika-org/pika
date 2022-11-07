@@ -23,14 +23,14 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local { namespace detail {
+namespace pika::detail {
     class condition_variable
     {
     public:
         PIKA_NON_COPYABLE(condition_variable);
 
     private:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     private:
         // define data structures needed for intrusive slist container used for
@@ -174,7 +174,7 @@ namespace pika { namespace lcos { namespace local { namespace detail {
 
     struct condition_variable_data
     {
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
         condition_variable_data()
           : count_(1)
@@ -193,4 +193,4 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         pika::detail::atomic_count count_;
     };
 
-}}}}    // namespace pika::lcos::local::detail
+}    // namespace pika::detail

@@ -26,13 +26,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 // helper to call wait()
 void cv_wait(pika::stop_token stoken, int /* id */, bool& ready,
-    pika::lcos::local::mutex& ready_mtx,
-    pika::lcos::local::condition_variable_any& ready_cv, bool notify_called)
+    pika::mutex& ready_mtx, pika::condition_variable_any& ready_cv,
+    bool notify_called)
 {
     try
     {
         {
-            std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
+            std::unique_lock<pika::mutex> lg{ready_mtx};
             ready_cv.wait(lg, stoken, [&ready] { return ready; });
             if (stoken.stop_requested())
             {
@@ -56,14 +56,14 @@ void cv_wait(pika::stop_token stoken, int /* id */, bool& ready,
 void test_cv(bool call_notify)
 {
     bool ready = false;
-    pika::lcos::local::mutex ready_mtx;
-    pika::lcos::local::condition_variable_any ready_cv;
+    pika::mutex ready_mtx;
+    pika::condition_variable_any ready_cv;
 
     {
         pika::jthread t1(
             [&ready, &ready_mtx, &ready_cv, call_notify](pika::stop_token it) {
                 {
-                    std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
+                    std::unique_lock<pika::mutex> lg{ready_mtx};
                     while (!it.stop_requested() && !ready)
                     {
                         ready_cv.wait_for(lg, std::chrono::milliseconds(100));
@@ -77,7 +77,7 @@ void test_cv(bool call_notify)
         if (call_notify)
         {
             {
-                std::lock_guard<pika::lcos::local::mutex> lg(ready_mtx);
+                std::lock_guard<pika::mutex> lg(ready_mtx);
                 ready = true;
             }    // release lock
 
@@ -91,15 +91,15 @@ void test_cv(bool call_notify)
 void test_cv_pred(bool call_notify)
 {
     bool ready = false;
-    pika::lcos::local::mutex ready_mtx;
-    pika::lcos::local::condition_variable_any ready_cv;
+    pika::mutex ready_mtx;
+    pika::condition_variable_any ready_cv;
 
     {
         pika::jthread t1(
             [&ready, &ready_mtx, &ready_cv, call_notify](pika::stop_token st) {
                 try
                 {
-                    std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
+                    std::unique_lock<pika::mutex> lg{ready_mtx};
                     ready_cv.wait(lg, st, [&ready] { return ready; });
                     if (st.stop_requested())
                     {
@@ -128,7 +128,7 @@ void test_cv_pred(bool call_notify)
         if (call_notify)
         {
             {
-                std::lock_guard<pika::lcos::local::mutex> lg(ready_mtx);
+                std::lock_guard<pika::mutex> lg(ready_mtx);
                 ready = true;
             }    // release lock
 
@@ -142,15 +142,15 @@ void test_cv_pred(bool call_notify)
 void test_cv_thread_no_pred(bool call_notify)
 {
     bool ready = false;
-    pika::lcos::local::mutex ready_mtx;
-    pika::lcos::local::condition_variable_any ready_cv;
+    pika::mutex ready_mtx;
+    pika::condition_variable_any ready_cv;
 
     pika::stop_source is;
     {
         pika::thread t1([&ready, &ready_mtx, &ready_cv, st = is.get_token(),
                             call_notify] {
             {
-                std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
+                std::unique_lock<pika::mutex> lg{ready_mtx};
                 bool ret = ready_cv.wait(lg, st, [&ready] { return ready; });
                 if (ret)
                 {
@@ -173,7 +173,7 @@ void test_cv_thread_no_pred(bool call_notify)
         if (call_notify)
         {
             {
-                std::lock_guard<pika::lcos::local::mutex> lg(ready_mtx);
+                std::lock_guard<pika::mutex> lg(ready_mtx);
                 ready = true;
             }    // release lock
 
@@ -191,8 +191,8 @@ void test_cv_thread_no_pred(bool call_notify)
 void test_cv_thread_pred(bool call_notify)
 {
     bool ready = false;
-    pika::lcos::local::mutex ready_mtx;
-    pika::lcos::local::condition_variable_any ready_cv;
+    pika::mutex ready_mtx;
+    pika::condition_variable_any ready_cv;
 
     pika::stop_source is;
     {
@@ -200,7 +200,7 @@ void test_cv_thread_pred(bool call_notify)
             [&ready, &ready_mtx, &ready_cv, st = is.get_token(), call_notify] {
                 bool ret;
                 {
-                    std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
+                    std::unique_lock<pika::mutex> lg{ready_mtx};
                     ret = ready_cv.wait(lg, st, [&ready] { return ready; });
                     if (ret)
                     {
@@ -223,7 +223,7 @@ void test_cv_thread_pred(bool call_notify)
         if (call_notify)
         {
             {
-                std::lock_guard<pika::lcos::local::mutex> lg(ready_mtx);
+                std::lock_guard<pika::mutex> lg(ready_mtx);
                 ready = true;
             }    // release lock
 
@@ -246,8 +246,8 @@ void test_minimal_wait(int sec)
     try
     {
         bool ready = false;
-        pika::lcos::local::mutex ready_mtx;
-        pika::lcos::local::condition_variable_any ready_cv;
+        pika::mutex ready_mtx;
+        pika::condition_variable_any ready_cv;
 
         {
             pika::jthread t1(
@@ -256,8 +256,7 @@ void test_minimal_wait(int sec)
                     {
                         auto t0 = std::chrono::steady_clock::now();
                         {
-                            std::unique_lock<pika::lcos::local::mutex> lg{
-                                ready_mtx};
+                            std::unique_lock<pika::mutex> lg{ready_mtx};
                             ready_cv.wait(lg, st, [&ready] { return ready; });
                         }
                         PIKA_TEST(std::chrono::steady_clock::now() <
@@ -289,8 +288,8 @@ void test_minimal_wait_for(int sec1, int sec2)
     try
     {
         bool ready = false;
-        pika::lcos::local::mutex ready_mtx;
-        pika::lcos::local::condition_variable_any ready_cv;
+        pika::mutex ready_mtx;
+        pika::condition_variable_any ready_cv;
 
         {
             pika::jthread t1([&ready, &ready_mtx, &ready_cv, dur_int, dur_wait](
@@ -299,8 +298,7 @@ void test_minimal_wait_for(int sec1, int sec2)
                 {
                     auto t0 = std::chrono::steady_clock::now();
                     {
-                        std::unique_lock<pika::lcos::local::mutex> lg{
-                            ready_mtx};
+                        std::unique_lock<pika::mutex> lg{ready_mtx};
                         ready_cv.wait_for(
                             lg, st, dur_wait, [&ready] { return ready; });
                     }
@@ -331,8 +329,8 @@ void test_timed_cv(bool call_notify, bool /* call_interrupt */, Dur dur)
 {
     // test the basic jthread API
     bool ready = false;
-    pika::lcos::local::mutex ready_mtx;
-    pika::lcos::local::condition_variable_any ready_cv;
+    pika::mutex ready_mtx;
+    pika::condition_variable_any ready_cv;
 
     {
         pika::jthread t1([&ready, &ready_mtx, &ready_cv, call_notify, dur](
@@ -342,7 +340,7 @@ void test_timed_cv(bool call_notify, bool /* call_interrupt */, Dur dur)
             while (times_done < 3)
             {
                 {
-                    std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
+                    std::unique_lock<pika::mutex> lg{ready_mtx};
                     auto ret = ready_cv.wait_for(
                         lg, st, dur, [&ready] { return ready; });
                     if (dur > std::chrono::seconds(5))
@@ -371,7 +369,7 @@ void test_timed_cv(bool call_notify, bool /* call_interrupt */, Dur dur)
         if (call_notify)
         {
             {
-                std::lock_guard<pika::lcos::local::mutex> lg(ready_mtx);
+                std::lock_guard<pika::mutex> lg(ready_mtx);
                 ready = true;
             }    // release lock
 
@@ -399,8 +397,8 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
     // ready_ instead of ready to not clash with state::ready and work around
     // potential bug in GCC 10
     bool ready_ = false;
-    pika::lcos::local::mutex ready_mtx;
-    pika::lcos::local::condition_variable_any ready_cv;
+    pika::mutex ready_mtx;
+    pika::condition_variable_any ready_cv;
 
     enum class state
     {
@@ -419,7 +417,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
             {
                 try
                 {
-                    std::unique_lock<pika::lcos::local::mutex> lg{ready_mtx};
+                    std::unique_lock<pika::mutex> lg{ready_mtx};
                     auto ret = ready_cv.wait_for(
                         lg, st, dur, [&ready_] { return ready_; });
                     if (st.stop_requested())
@@ -467,7 +465,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
         if (call_notify)
         {
             {
-                std::lock_guard<pika::lcos::local::mutex> lg(ready_mtx);
+                std::lock_guard<pika::mutex> lg(ready_mtx);
                 ready_ = true;
             }    // release lock
 
@@ -511,14 +509,13 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
     {
         // thread t0 with CV:
         bool ready = false;
-        pika::lcos::local::mutex ready_mtx;
-        pika::lcos::local::condition_variable_any ready_cv;
+        pika::mutex ready_mtx;
+        pika::condition_variable_any ready_cv;
 
         // don't forget to initialize with {} here !!!
         std::array<bool, NumExtraCV> arr_ready{};
-        std::array<pika::lcos::local::mutex, NumExtraCV> arr_ready_mtx{};
-        std::array<pika::lcos::local::condition_variable_any, NumExtraCV>
-            arr_ready_cv{};
+        std::array<pika::mutex, NumExtraCV> arr_ready_mtx{};
+        std::array<pika::condition_variable_any, NumExtraCV> arr_ready_cv{};
         std::vector<pika::jthread> vthreads_deferred;
 
         pika::jthread t0(
@@ -553,7 +550,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
             if (call_notify)
             {
                 {
-                    std::lock_guard<pika::lcos::local::mutex> lg(ready_mtx);
+                    std::lock_guard<pika::mutex> lg(ready_mtx);
                     ready = true;
                 }    // release lock
 
@@ -563,8 +560,7 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
                 for (int idx = 0; idx < NumExtraCV; ++idx)
                 {
                     {
-                        std::lock_guard<pika::lcos::local::mutex> lg(
-                            arr_ready_mtx[idx]);
+                        std::lock_guard<pika::mutex> lg(arr_ready_mtx[idx]);
                         arr_ready[idx] = true;
                         arr_ready_cv[idx].notify_one();
                     }    // release lock

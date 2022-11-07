@@ -20,7 +20,7 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika {
     /// A semaphore is a protected variable (an entity storing a value) or
     /// abstract data type (an entity grouping several variables that may or
     /// may not be numerical) which constitutes the classic method for
@@ -41,7 +41,7 @@ namespace pika { namespace lcos { namespace local {
     /// allowed to proceed, but will make sure that the difference between
     /// the (arbitrary) number passed to set and wait does not exceed a given
     /// threshold.
-    template <typename Mutex = pika::lcos::local::spinlock>
+    template <typename Mutex = pika::spinlock>
     class sliding_semaphore_var
     {
     private:
@@ -129,7 +129,7 @@ namespace pika { namespace lcos { namespace local {
     };
 
     using sliding_semaphore = sliding_semaphore_var<>;
-}}}    // namespace pika::lcos::local
+}    // namespace pika
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
 #pragma warning(pop)

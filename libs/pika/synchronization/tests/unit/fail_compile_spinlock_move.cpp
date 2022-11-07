@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 int main()
 {
-    using pika::lcos::local::spinlock;
+    using pika::spinlock;
     spinlock m1, m2(std::move(m1));
     return 0;
 }

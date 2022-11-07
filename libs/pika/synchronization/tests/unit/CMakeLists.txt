@@ -6,8 +6,8 @@
 
 set(tests
     async_rw_mutex
-    barrier_cpp20
-    binary_semaphore_cpp20
+    barrier
+    binary_semaphore
     channel_mpmc_fib
     channel_mpmc_shift
     channel_mpsc_fib
@@ -16,12 +16,7 @@ set(tests
     channel_spsc_shift
     condition_variable
     counting_semaphore
-    counting_semaphore_cpp20
-    latch_cpp20
     latch
-    barrier
-    barrier_count_up
-    barrier_reset
     event
     mutex
     sliding_semaphore
@@ -76,9 +71,7 @@ if(PIKA_WITH_COMPILE_ONLY_TESTS)
   set(compile_tests)
 
   if(PIKA_WITH_FAIL_COMPILE_TESTS)
-    set(fail_compile_tests fail_compile_mutex_move fail_compile_spinlock_move
-                           fail_compile_spinlock_no_backoff_move
-    )
+    set(fail_compile_tests fail_compile_mutex_move fail_compile_spinlock_move)
     foreach(fail_compile_test ${fail_compile_tests})
       set(${fail_compile_test}_FLAGS FAILURE_EXPECTED)
     endforeach()

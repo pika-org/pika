@@ -154,8 +154,7 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void wait_for_tasks(
-    pika::lcos::local::barrier& finished, std::uint64_t suspended_tasks)
+void wait_for_tasks(pika::barrier& finished, std::uint64_t suspended_tasks)
 {
     std::uint64_t const pending_count =
         get_thread_count(pika::execution::thread_priority::normal,
@@ -487,7 +486,7 @@ int pika_main(variables_map& vm)
         // Schedule a low-priority thread; when it is executed, it checks to
         // make sure all the tasks (which are normal priority) have been
         // executed, and then it
-        pika::lcos::local::barrier finished(2);
+        pika::barrier finished(2);
 
         thread_init_data data(
             make_thread_function_nullary(pika::util::detail::bind(

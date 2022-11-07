@@ -39,7 +39,7 @@ namespace pika {
 
     class PIKA_EXPORT thread
     {
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
         void terminate(const char* function, const char* reason) const;
 
     public:

@@ -35,7 +35,7 @@ namespace pika { namespace threads {
             // NOTE: The condition variable needs be able to live past the scope
             // of this function. The mutex and boolean are guaranteed to live
             // long enough because of the lock.
-            pika::lcos::local::spinlock mtx;
+            pika::spinlock mtx;
             auto cond = std::make_shared<std::condition_variable_any>();
             bool stopping = false;
 
@@ -68,8 +68,7 @@ namespace pika { namespace threads {
 
                         // Now signal to the waiting thread that we're done.
                         {
-                            std::lock_guard<pika::lcos::local::spinlock> lk(
-                                mtx);
+                            std::lock_guard<pika::spinlock> lk(mtx);
                             stopping = true;
                         }
                         cond->notify_all();
@@ -78,7 +77,7 @@ namespace pika { namespace threads {
             pika::threads::detail::register_work(data);
 
             // wait for the pika thread to exit
-            std::unique_lock<pika::lcos::local::spinlock> lk(mtx);
+            std::unique_lock<pika::spinlock> lk(mtx);
             cond->wait(lk, [&]() -> bool { return stopping; });
 
             // rethrow exceptions
@@ -95,7 +94,7 @@ namespace pika { namespace threads {
             // NOTE: The condition variable needs be able to live past the scope
             // of this function. The mutex and boolean are guaranteed to live
             // long enough because of the lock.
-            pika::lcos::local::spinlock mtx;
+            pika::spinlock mtx;
             auto cond = std::make_shared<std::condition_variable_any>();
             bool stopping = false;
 
@@ -119,8 +118,7 @@ namespace pika { namespace threads {
 
                         // Now signal to the waiting thread that we're done.
                         {
-                            std::lock_guard<pika::lcos::local::spinlock> lk(
-                                mtx);
+                            std::lock_guard<pika::spinlock> lk(mtx);
                             stopping = true;
                         }
                         cond->notify_all();
@@ -129,7 +127,7 @@ namespace pika { namespace threads {
             pika::threads::detail::register_work(data);
 
             // wait for the pika thread to exit
-            std::unique_lock<pika::lcos::local::spinlock> lk(mtx);
+            std::unique_lock<pika::spinlock> lk(mtx);
             cond->wait(lk, [&]() -> bool { return stopping; });
 
             // rethrow exceptions

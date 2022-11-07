@@ -20,12 +20,12 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local { namespace detail {
+namespace pika::detail {
 
     class sliding_semaphore
     {
     private:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     public:
         PIKA_EXPORT sliding_semaphore(
@@ -49,9 +49,9 @@ namespace pika { namespace lcos { namespace local { namespace detail {
     private:
         std::int64_t max_difference_;
         std::int64_t lower_limit_;
-        local::detail::condition_variable cond_;
+        pika::detail::condition_variable cond_;
     };
-}}}}    // namespace pika::lcos::local::detail
+}    // namespace pika::detail
 
 #if defined(PIKA_MSVC_WARNING_PRAGMA)
 #pragma warning(pop)

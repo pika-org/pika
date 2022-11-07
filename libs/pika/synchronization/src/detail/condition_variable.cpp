@@ -23,7 +23,7 @@
 #include <mutex>
 #include <utility>
 
-namespace pika { namespace lcos { namespace local { namespace detail {
+namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     condition_variable::condition_variable() {}
@@ -35,9 +35,9 @@ namespace pika { namespace lcos { namespace local { namespace detail {
             LERR_(fatal).format(
                 "~condition_variable: queue is not empty, aborting threads");
 
-            local::no_mutex no_mtx;
-            std::unique_lock<local::no_mutex> lock(no_mtx);
-            abort_all<local::no_mutex>(PIKA_MOVE(lock));
+            pika::no_mutex no_mtx;
+            std::unique_lock<pika::no_mutex> lock(no_mtx);
+            abort_all<pika::no_mutex>(PIKA_MOVE(lock));
         }
     }
 
@@ -264,4 +264,4 @@ namespace pika { namespace lcos { namespace local { namespace detail {
         }
     }
 
-}}}}    // namespace pika::lcos::local::detail
+}    // namespace pika::detail

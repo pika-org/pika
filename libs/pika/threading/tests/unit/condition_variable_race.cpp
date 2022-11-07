@@ -80,8 +80,8 @@
 
 // Original test case from HH:
 //
-// pika::lcos::local::condition_variable_any* cv = nullptr;
-// pika::lcos::local::mutex m;
+// pika::condition_variable_any* cv = nullptr;
+// pika::mutex m;
 // bool f_ready = false;
 // bool g_ready = false;
 //
@@ -113,8 +113,8 @@
 //     // Writing over the deleted memory is undefined behavior. In particular,
 //     // it can destroy the heap data structure, and cause other problems.
 //     // If you replace new/delete with malloc and free, then it's OK
-//     void* raw = std::malloc(sizeof(pika::lcos::local::condition_variable_any));
-//     cv = new (raw) pika::lcos::local::condition_variable_any;
+//     void* raw = std::malloc(sizeof(pika::condition_variable_any));
+//     cv = new (raw) pika::condition_variable_any;
 //
 //     pika::thread th2(g);
 //     m.lock();
@@ -131,16 +131,15 @@
 
 void test_cv_mutex()
 {
-    void* raw = std::malloc(sizeof(pika::lcos::local::condition_variable));
-    pika::lcos::local::condition_variable* cv =
-        new (raw) pika::lcos::local::condition_variable;
+    void* raw = std::malloc(sizeof(pika::condition_variable));
+    pika::condition_variable* cv = new (raw) pika::condition_variable;
 
-    pika::lcos::local::mutex m;
+    pika::mutex m;
     std::atomic<bool> f_ready{false};
     std::atomic<bool> g_ready{false};
 
     pika::thread t2([&] {
-        std::unique_lock<pika::lcos::local::mutex> ul{m};
+        std::unique_lock<pika::mutex> ul{m};
         g_ready = true;
         cv->notify_one();
         while (!f_ready)
@@ -150,7 +149,7 @@ void test_cv_mutex()
     });
 
     {
-        std::unique_lock<pika::lcos::local::mutex> ul{m};
+        std::unique_lock<pika::mutex> ul{m};
         while (!g_ready)
         {
             cv->wait(ul);
@@ -158,7 +157,7 @@ void test_cv_mutex()
     }
 
     pika::thread t1([&] {
-        std::unique_lock<pika::lcos::local::mutex> ul{m};
+        std::unique_lock<pika::mutex> ul{m};
         f_ready = true;
         cv->notify_one();
         cv->~condition_variable();
@@ -175,16 +174,15 @@ void test_cv_mutex()
 
 void test_cv_any_mutex()
 {
-    void* raw = std::malloc(sizeof(pika::lcos::local::condition_variable_any));
-    pika::lcos::local::condition_variable_any* cv =
-        new (raw) pika::lcos::local::condition_variable_any;
+    void* raw = std::malloc(sizeof(pika::condition_variable_any));
+    pika::condition_variable_any* cv = new (raw) pika::condition_variable_any;
 
-    pika::lcos::local::mutex m;
+    pika::mutex m;
     std::atomic<bool> f_ready{false};
     std::atomic<bool> g_ready{false};
 
     pika::thread t2([&] {
-        std::unique_lock<pika::lcos::local::mutex> ul{m};
+        std::unique_lock<pika::mutex> ul{m};
         g_ready = true;
         cv->notify_one();
         while (!f_ready)
@@ -194,7 +192,7 @@ void test_cv_any_mutex()
     });
 
     {
-        std::unique_lock<pika::lcos::local::mutex> ul{m};
+        std::unique_lock<pika::mutex> ul{m};
         while (!g_ready)
         {
             cv->wait(ul);
@@ -202,7 +200,7 @@ void test_cv_any_mutex()
     }
 
     pika::thread t1([&] {
-        std::unique_lock<pika::lcos::local::mutex> ul{m};
+        std::unique_lock<pika::mutex> ul{m};
         f_ready = true;
         cv->notify_one();
         cv->~condition_variable_any();

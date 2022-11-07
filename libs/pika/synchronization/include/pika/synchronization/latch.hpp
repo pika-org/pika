@@ -22,18 +22,18 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace lcos { namespace local {
+namespace pika {
     /// Latches are a thread coordination mechanism that allow one or more
     /// threads to block until an operation is completed. An individual latch
     /// is a singleuse object; once the operation has been completed, the latch
     /// cannot be reused.
-    class cpp20_latch
+    class latch
     {
     public:
-        PIKA_NON_COPYABLE(cpp20_latch);
+        PIKA_NON_COPYABLE(latch);
 
     protected:
-        using mutex_type = lcos::local::spinlock;
+        using mutex_type = pika::spinlock;
 
     public:
         /// Initialize the latch
@@ -42,7 +42,7 @@ namespace pika { namespace lcos { namespace local {
         /// Synchronization: None
         /// Postconditions: counter_ == count.
         ///
-        explicit cpp20_latch(std::ptrdiff_t count)
+        explicit latch(std::ptrdiff_t count)
           : mtx_()
           , cond_()
           , counter_(count)
@@ -61,12 +61,12 @@ namespace pika { namespace lcos { namespace local {
         ///       thread enters wait() after one thread has called the
         ///       destructor. This may require additional coordination.
 #if defined(PIKA_DEBUG)
-        ~cpp20_latch()
+        ~latch()
         {
             PIKA_ASSERT(counter_ == 0);
         }
 #else
-        ~cpp20_latch() = default;
+        ~latch() = default;
 #endif
 
         /// Returns:        The maximum value of counter that the implementation
@@ -128,7 +128,7 @@ namespace pika { namespace lcos { namespace local {
             std::unique_lock l(mtx_.data_);
             if (counter_.load(std::memory_order_relaxed) > 0 || !notified_)
             {
-                cond_.data_.wait(l, "pika::cpp20_latch::wait");
+                cond_.data_.wait(l, "pika::latch::wait");
 
                 PIKA_ASSERT(counter_.load(std::memory_order_relaxed) == 0);
                 PIKA_ASSERT(notified_);
@@ -150,7 +150,7 @@ namespace pika { namespace lcos { namespace local {
 
             if (old_count > update)
             {
-                cond_.data_.wait(l, "pika::cpp20_latch::arrive_and_wait");
+                cond_.data_.wait(l, "pika::latch::arrive_and_wait");
 
                 PIKA_ASSERT(counter_.load(std::memory_order_relaxed) == 0);
                 PIKA_ASSERT(notified_);
@@ -175,154 +175,10 @@ namespace pika { namespace lcos { namespace local {
     protected:
         mutable pika::concurrency::detail::cache_line_data<mutex_type> mtx_;
         mutable pika::concurrency::detail::cache_line_data<
-            local::detail::condition_variable>
+            pika::detail::condition_variable>
             cond_;
         std::atomic<std::ptrdiff_t> counter_;
         bool notified_;
     };
 
-    ///////////////////////////////////////////////////////////////////////////
-    /// A latch maintains an internal counter_ that is initialized when the
-    /// latch is created. Threads may block at a synchronization point waiting
-    /// for counter_ to be decremented to 0. When counter_ reaches 0, all such
-    /// blocked threads are released.
-    ///
-    /// Calls to countdown_and_wait() , count_down() , wait() , is_ready(),
-    /// count_up() , and reset() behave as atomic operations.
-    ///
-    /// \note   A \a local::latch is not an LCO in the sense that it has no
-    ///         global id and it can't be triggered using the action (parcel)
-    ///         mechanism. Use lcos::latch instead if this is required.
-    ///         It is just a low level synchronization primitive allowing to
-    ///         synchronize a given number of \a threads.
-    class latch : public cpp20_latch
-    {
-    public:
-        PIKA_NON_COPYABLE(latch);
-
-    public:
-        /// Initialize the latch
-        ///
-        /// Requires: count >= 0.
-        /// Synchronization: None
-        /// Postconditions: counter_ == count.
-        ///
-        explicit latch(std::ptrdiff_t count)
-          : cpp20_latch(count)
-        {
-        }
-
-        /// Requires: No threads are blocked at the synchronization point.
-        ///
-        /// \note May be called even if some threads have not yet returned
-        ///       from wait() or count_down_and_wait(), provided that counter_
-        ///       is 0.
-        /// \note The destructor might not return until all threads have exited
-        ///       wait() or count_down_and_wait().
-        /// \note It is the caller's responsibility to ensure that no other
-        ///       thread enters wait() after one thread has called the
-        ///       destructor. This may require additional coordination.
-        ~latch() = default;
-
-        /// Decrements counter_ by 1 . Blocks at the synchronization point
-        /// until counter_ reaches 0.
-        ///
-        /// Requires: counter_ > 0.
-        ///
-        /// Synchronization: Synchronizes with all calls that block on this
-        /// latch and with all is_ready calls on this latch that return true.
-        ///
-        /// \throws Nothing.
-        ///
-        void count_down_and_wait()
-        {
-            cpp20_latch::arrive_and_wait();
-        }
-
-        /// Returns: counter_ == 0. Does not block.
-        ///
-        /// \throws Nothing.
-        ///
-        bool is_ready() const noexcept
-        {
-            return cpp20_latch::try_wait();
-        }
-
-        void abort_all()
-        {
-            std::unique_lock l(mtx_.data_);
-            cond_.data_.abort_all(PIKA_MOVE(l));
-        }
-
-        /// Increments counter_ by n. Does not block.
-        ///
-        /// Requires:  n >= 0.
-        ///
-        /// \throws Nothing.
-        ///
-        void count_up(std::ptrdiff_t n)
-        {
-            PIKA_ASSERT(n >= 0);
-
-            std::ptrdiff_t old_count =
-                counter_.fetch_add(n, std::memory_order_acq_rel);
-
-            PIKA_ASSERT(old_count > 0);
-            PIKA_UNUSED(old_count);
-        }
-
-        /// Reset counter_ to n. Does not block.
-        ///
-        /// Requires:  n >= 0.
-        ///
-        /// \throws Nothing.
-        void reset(std::ptrdiff_t n)
-        {
-            PIKA_ASSERT(n >= 0);
-
-            std::ptrdiff_t old_count =
-                counter_.exchange(n, std::memory_order_acq_rel);
-
-            PIKA_ASSERT(old_count == 0);
-            PIKA_UNUSED(old_count);
-
-            std::scoped_lock l(mtx_.data_);
-            notified_ = false;
-        }
-
-        /// Effects: Equivalent to:
-        ///             if (is_ready())
-        ///                 reset(count);
-        ///             count_up(n);
-        /// Returns: true if the latch was reset
-        bool reset_if_needed_and_count_up(
-            std::ptrdiff_t n, std::ptrdiff_t count)
-        {
-            PIKA_ASSERT(n >= 0);
-            PIKA_ASSERT(count >= 0);
-
-            std::unique_lock l(mtx_.data_);
-
-            if (notified_)
-            {
-                notified_ = false;
-
-                std::ptrdiff_t old_count =
-                    counter_.fetch_add(n + count, std::memory_order_relaxed);
-
-                PIKA_ASSERT(old_count == 0);
-                PIKA_UNUSED(old_count);
-
-                return true;
-            }
-
-            std::ptrdiff_t old_count =
-                counter_.fetch_add(n, std::memory_order_relaxed);
-
-            PIKA_ASSERT(old_count > 0);
-            PIKA_UNUSED(old_count);
-
-            return false;
-        }
-    };
-}}}    // namespace pika::lcos::local
+}    // namespace pika

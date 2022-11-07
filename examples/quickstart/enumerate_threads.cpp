@@ -15,15 +15,15 @@
 int const num_threads = 10;
 
 ///////////////////////////////////////////////////////////////////////////////
-void wait_for_latch(pika::lcos::local::latch& l)
+void wait_for_latch(pika::latch& l)
 {
-    l.count_down_and_wait();
+    l.arrive_and_wait();
 }
 
 int pika_main()
 {
     // Spawn a couple of threads
-    pika::lcos::local::latch l(num_threads + 1);
+    pika::latch l(num_threads + 1);
 
     std::vector<pika::future<void>> results;
     results.reserve(num_threads);
@@ -46,7 +46,7 @@ int pika_main()
         pika::threads::detail::thread_schedule_state::suspended);
 
     // Wait for all threads to reach this point.
-    l.count_down_and_wait();
+    l.arrive_and_wait();
 
     pika::wait_all(results);
 

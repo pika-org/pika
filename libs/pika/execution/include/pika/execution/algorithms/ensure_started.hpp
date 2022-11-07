@@ -128,7 +128,7 @@ namespace pika::ensure_started_detail {
             using allocator_type = typename std::allocator_traits<
                 Allocator>::template rebind_alloc<shared_state>;
             PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
-            using mutex_type = pika::lcos::local::spinlock;
+            using mutex_type = pika::spinlock;
             mutex_type mtx;
             pika::detail::atomic_count reference_count{0};
             std::atomic<bool> start_called{false};

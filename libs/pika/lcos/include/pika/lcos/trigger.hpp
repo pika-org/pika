@@ -24,7 +24,7 @@
 
 namespace pika { namespace lcos { namespace local {
     ///////////////////////////////////////////////////////////////////////////
-    template <typename Mutex = lcos::local::spinlock>
+    template <typename Mutex = pika::spinlock>
     struct base_trigger
     {
     protected:

@@ -26,7 +26,7 @@ using pika::threads::get_thread_count;
 
 using pika::this_thread::suspend;
 
-using pika::lcos::local::event;
+using pika::experimental::event;
 
 using pika::finalize;
 using pika::init;
