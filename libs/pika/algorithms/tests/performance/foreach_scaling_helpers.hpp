@@ -44,8 +44,9 @@ struct disable_stealing_parameter
     template <typename Executor>
     void mark_begin_execution(Executor&&)
     {
-        pika::threads::add_remove_scheduler_mode(
-            ::pika::threads::scheduler_mode::enable_stealing,
+        pika::threads::add_scheduler_mode(
+            ::pika::threads::scheduler_mode::enable_stealing);
+        pika::threads::remove_scheduler_mode(
             ::pika::threads::scheduler_mode::enable_idle_backoff);
     }
 
@@ -59,8 +60,9 @@ struct disable_stealing_parameter
     template <typename Executor>
     void mark_end_execution(Executor&&)
     {
-        pika::threads::add_remove_scheduler_mode(
-            ::pika::threads::scheduler_mode::enable_idle_backoff,
+        pika::threads::add_scheduler_mode(
+            ::pika::threads::scheduler_mode::enable_idle_backoff);
+        pika::threads::remove_scheduler_mode(
             ::pika::threads::scheduler_mode::enable_stealing);
     }
 };

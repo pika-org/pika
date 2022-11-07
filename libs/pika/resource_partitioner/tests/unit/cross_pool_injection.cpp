@@ -66,18 +66,12 @@ int pika_main()
         sched->get_description())
     {
         using ::pika::threads::scheduler_mode;
-        sched->add_remove_scheduler_mode(
-            // add these flags
-            scheduler_mode::enable_stealing |
-                scheduler_mode::enable_stealing_numa |
-                scheduler_mode::assign_work_thread_parent |
-                scheduler_mode::steal_after_local,
-            // remove these flags
+        sched->add_scheduler_mode(scheduler_mode::assign_work_thread_parent |
+            scheduler_mode::steal_after_local);
+        sched->remove_scheduler_mode(scheduler_mode::enable_stealing |
+            scheduler_mode::enable_stealing_numa |
             scheduler_mode::assign_work_round_robin |
-                scheduler_mode::steal_high_priority_first);
-        sched->update_scheduler_mode(scheduler_mode::enable_stealing, false);
-        sched->update_scheduler_mode(
-            scheduler_mode::enable_stealing_numa, false);
+            scheduler_mode::steal_high_priority_first);
     }
 
     // setup executors for different task priorities on the pools

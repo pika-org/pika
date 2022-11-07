@@ -163,15 +163,12 @@ void function_futures_limiting_executor(
         sched->get_description())
     {
         using ::pika::threads::scheduler_mode;
-        sched->add_remove_scheduler_mode(
-            // add these flags
-            scheduler_mode::enable_stealing |
-                scheduler_mode::enable_stealing_numa |
-                scheduler_mode::assign_work_round_robin |
-                scheduler_mode::steal_after_local,
-            // remove these flags
-            scheduler_mode::assign_work_thread_parent |
-                scheduler_mode::steal_high_priority_first);
+        sched->add_scheduler_mode(scheduler_mode::enable_stealing |
+            scheduler_mode::enable_stealing_numa |
+            scheduler_mode::assign_work_round_robin |
+            scheduler_mode::steal_after_local);
+        sched->remove_scheduler_mode(scheduler_mode::assign_work_thread_parent |
+            scheduler_mode::steal_high_priority_first);
     }
 
     // test a parallel algorithm on custom pool with high priority
@@ -332,15 +329,12 @@ void function_futures_create_thread_hierarchical_placement(
         sched->get_description())
     {
         using ::pika::threads::scheduler_mode;
-        sched->add_remove_scheduler_mode(
-            // add
-            scheduler_mode::assign_work_thread_parent,
-            // remove
-            scheduler_mode::enable_stealing |
-                scheduler_mode::enable_stealing_numa |
-                scheduler_mode::assign_work_round_robin |
-                scheduler_mode::steal_after_local |
-                scheduler_mode::steal_high_priority_first);
+        sched->add_scheduler_mode(scheduler_mode::assign_work_thread_parent);
+        sched->remove_scheduler_mode(scheduler_mode::enable_stealing |
+            scheduler_mode::enable_stealing_numa |
+            scheduler_mode::assign_work_round_robin |
+            scheduler_mode::steal_after_local |
+            scheduler_mode::steal_high_priority_first);
     }
     auto const func = [&l]() {
         null_function();
