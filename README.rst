@@ -44,7 +44,7 @@ pika optionally requires:
   <http://jemalloc.net/>`_, or `mimalloc
   <https://github.com/microsoft/mimalloc>`_
 * `CUDA <https://docs.nvidia.com/cuda/>`_ 11.0 or greater
-* `HIP <https://rocmdocs.amd.com/en/latest/index.html>`_ 4.3.0 or greater
+* `HIP <https://rocmdocs.amd.com/en/latest/index.html>`_ 5.2.0 or greater
 * `MPI <https://www.mpi-forum.org/>`_
 * `Boost.Context, Thread, and Chrono <https://boost.org>`_ on macOS
 * `Boost.Regex <https://boost.org>`_ when building pika tools
