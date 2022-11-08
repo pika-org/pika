@@ -347,7 +347,6 @@ with section("parse"):
         "pika_add_module": {
             "kwargs": {
                 "CMAKE_SUBDIRS": "+",
-                "COMPAT_HEADERS": "+",
                 "DEPENDENCIES": "+",
                 "EXCLUDE_FROM_GLOBAL_HEADER": "+",
                 "GLOBAL_HEADER_GEN": 1,
