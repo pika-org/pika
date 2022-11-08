@@ -17,8 +17,12 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/type_support/unused.hpp>
+
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstddef>
 #include <sstream>
@@ -91,7 +95,11 @@ namespace pika { namespace util { namespace logging {
         message&
         format(std::string_view format_str, Args const&... args) noexcept
         {
-            util::format_to(m_str, format_str, args...);
+            // Using fmt::runtime below means that the format string is not
+            // checked at compile time. With some refactoring of the logging
+            // macros this could be made into a compile time constant formatting
+            // string.
+            fmt::print(m_str, fmt::runtime(format_str), args...);
             m_full_msg_computed = false;
             return *this;
         }

@@ -33,11 +33,12 @@
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <pika/config.hpp>
-
-#include <pika/modules/format.hpp>
+#include <pika/modules/program_options.hpp>
 #include <pika/modules/timing.hpp>
 
-#include <pika/modules/program_options.hpp>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <atomic>
 #include <cstdint>
@@ -74,13 +75,12 @@ void print_results(std::uint64_t cores, double walltime)
         std::cout << "OS-threads,Tasks,Delay (micro-seconds),"
                      "Total Walltime (seconds),Walltime per Task (seconds)\n";
 
-    std::string const cores_str = pika::util::format("{},", cores);
-    std::string const tasks_str = pika::util::format("{},", tasks);
-    std::string const delay_str = pika::util::format("{},", delay);
+    std::string const cores_str = fmt::format("{},", cores);
+    std::string const tasks_str = fmt::format("{},", tasks);
+    std::string const delay_str = fmt::format("{},", delay);
 
-    pika::util::format_to(std::cout,
-        "{:-21} {:-21} {:-21} {:10.12}, {:10.12}\n", cores_str, tasks_str,
-        delay_str, walltime, walltime / tasks);
+    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n",
+        cores_str, tasks_str, delay_str, walltime, walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

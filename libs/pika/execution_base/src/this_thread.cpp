@@ -13,12 +13,16 @@
 #include <pika/execution_base/context_base.hpp>
 #include <pika/execution_base/detail/spinlock_deadlock_detection.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/timing/steady_clock.hpp>
 
 #ifdef PIKA_HAVE_SPINLOCK_DEADLOCK_DETECTION
 #include <pika/errors/throw_exception.hpp>
 #endif
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+#include <fmt/std.h>
 
 #include <condition_variable>
 #include <cstddef>
@@ -60,7 +64,7 @@ namespace pika { namespace execution_base {
 
             std::string description() const override
             {
-                return pika::util::format("{}", id_);
+                return fmt::format("{}", id_);
             }
 
             default_context const& context() const override
@@ -276,12 +280,11 @@ namespace pika { namespace execution_base {
                 if (k >= deadlock_detection_limit)
                 {
                     PIKA_THROW_EXCEPTION(pika::error::deadlock, desc,
-                        pika::util::format(
-                            "yield_k yielded {} times. This may indicate a "
-                            "deadlock in your application or a bug in pika. "
-                            "Stopping because "
-                            "pika.spinlock_deadlock_detection_limit={}.",
-                            k, deadlock_detection_limit));
+                        "yield_k yielded {} times. This may indicate a "
+                        "deadlock in your application or a bug in pika. "
+                        "Stopping because "
+                        "pika.spinlock_deadlock_detection_limit={}.",
+                        k, deadlock_detection_limit);
                 }
 
                 auto const deadlock_warning_limit =
@@ -289,11 +292,11 @@ namespace pika { namespace execution_base {
                 if (k >= deadlock_warning_limit &&
                     k % deadlock_warning_limit == 0)
                 {
-                    pika::util::format_to(std::cerr,
-                        "desc: {}. yield_k already yielded "
-                        "{} times (pika.spinlock_deadlock_warning_limit={}). "
-                        "This may indicate a deadlock in your application or a "
-                        "bug in pika. Stopping after "
+                    fmt::print(std::cerr,
+                        "desc: {}. yield_k already yielded {} times "
+                        "(pika.spinlock_deadlock_warning_limit={}). This may "
+                        "indicate a deadlock in your application or a bug in "
+                        "pika. Stopping after "
                         "pika.spinlock_deadlock_detection_limit={} "
                         "iterations.\n",
                         desc, k, deadlock_warning_limit,

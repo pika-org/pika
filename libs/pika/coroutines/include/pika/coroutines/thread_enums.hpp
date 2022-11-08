@@ -11,6 +11,8 @@
 #include <pika/config.hpp>
 #include <pika/coroutines/detail/combined_tagged_state.hpp>
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <iosfwd>
@@ -52,9 +54,6 @@ namespace pika::threads::detail {
     };
     // clang-format on
 
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream& os, thread_schedule_state const t);
-
     /// \brief Returns the name of the given state
     ///
     /// Get the readable string representing the name of the given
@@ -76,9 +75,6 @@ namespace pika::threads::detail {
         terminate = 3,    ///< The thread needs to be terminated
         abort = 4         ///< The thread needs to be aborted
     };
-
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream& os, thread_restart_state const t);
 
     /// Get the readable string representing the name of the given
     /// thread_restart_state constant.
@@ -136,9 +132,6 @@ namespace pika::execution {
     };
     // clang-format on
 
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream& os, thread_priority const t);
-
     namespace detail {
         /// \brief Return the thread priority name.
         ///
@@ -171,9 +164,6 @@ namespace pika::execution {
         minimal = small_,     ///< use minimally stack size
         maximal = huge,       ///< use maximally stack size
     };
-
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream& os, thread_stacksize const t);
 
     namespace detail {
         /// \brief Returns the stack size name.
@@ -262,3 +252,53 @@ namespace pika::execution {
         thread_schedule_hint_mode mode;
     };
 }    // namespace pika::execution
+
+template <>
+struct fmt::formatter<pika::threads::detail::thread_schedule_state>
+  : fmt::formatter<char const*>
+{
+    template <typename FormatContext>
+    auto format(pika::threads::detail::thread_schedule_state const& t,
+        FormatContext& ctx)
+    {
+        return fmt::formatter<char const*>::format(
+            pika::threads::detail::get_thread_state_name(t), ctx);
+    }
+};
+
+template <>
+struct fmt::formatter<pika::threads::detail::thread_restart_state>
+  : fmt::formatter<char const*>
+{
+    template <typename FormatContext>
+    auto format(pika::threads::detail::thread_restart_state const& t,
+        FormatContext& ctx)
+    {
+        return fmt::formatter<char const*>::format(
+            pika::threads::detail::get_thread_state_ex_name(t), ctx);
+    }
+};
+
+template <>
+struct fmt::formatter<pika::execution::thread_priority>
+  : fmt::formatter<char const*>
+{
+    template <typename FormatContext>
+    auto format(pika::execution::thread_priority const& t, FormatContext& ctx)
+    {
+        return fmt::formatter<char const*>::format(
+            pika::execution::detail::get_thread_priority_name(t), ctx);
+    }
+};
+
+template <>
+struct fmt::formatter<pika::execution::thread_stacksize>
+  : fmt::formatter<char const*>
+{
+    template <typename FormatContext>
+    auto format(pika::execution::thread_stacksize const& t, FormatContext& ctx)
+    {
+        return fmt::formatter<char const*>::format(
+            pika::execution::detail::get_stack_size_enum_name(t), ctx);
+    }
+};

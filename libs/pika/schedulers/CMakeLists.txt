@@ -32,13 +32,7 @@ pika_add_module(
   SOURCES ${schedulers_sources}
   HEADERS ${schedulers_headers}
   SOURCES ${schedulers_sources}
-  MODULE_DEPENDENCIES
-    pika_config
-    pika_assertion
-    pika_errors
-    pika_format
-    pika_functional
-    pika_logging
-    pika_threading_base
+  MODULE_DEPENDENCIES pika_config pika_assertion pika_errors pika_functional
+                      pika_logging pika_threading_base
   CMAKE_SUBDIRS examples tests
 )

@@ -56,7 +56,6 @@ pika_add_module(
     pika_debugging
     pika_errors
     pika_execution
-    pika_format
     pika_futures
     pika_logging
     pika_program_options

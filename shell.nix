@@ -5,6 +5,7 @@ pkgs.mkShell.override { stdenv = pkgs.gcc11Stdenv; } {
     ccache
     cmake-format
     cmakeCurses
+    fmt_9
     gperftools
     hwloc
     mpich

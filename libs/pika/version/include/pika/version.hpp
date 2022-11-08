@@ -11,7 +11,6 @@
 #include <pika/config.hpp>
 #include <pika/config/config_strings.hpp>
 #include <pika/config/version.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/prefix/find_prefix.hpp>
 #include <pika/preprocessor/stringize.hpp>
 

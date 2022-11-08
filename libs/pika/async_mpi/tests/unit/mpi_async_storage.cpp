@@ -12,11 +12,13 @@
 
 #include <pika/config.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/mpi_base/mpi_environment.hpp>
 #include <pika/threading_base/print.hpp>
 //
 #define RANK_OUTPUT (rank == 0)
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <algorithm>
 #include <array>
@@ -106,14 +108,12 @@ void display(perf const& data, const test_options& options)
         if (/*options.final && */ !options.warmup)
         {
             // a complete set of results that our python matplotlib script will ingest
-            char const* msg =
-                "CSVData, {1}, network, "
-                "{2}, ranks, {3}, threads, {4}, Memory, {5}, IOPsize, {6}, "
-                "IOPS/s, {7}, BW(MB/s), {8}, in_flight, {9}";
-            pika::util::format_to(temp, msg, data.mode.c_str(), "pika-mpi",
-                data.nranks, options.threads, data.dataMB,
-                options.transfer_size_B, IOPs_s, BW, options.in_flight_limit)
-                << std::endl;
+            constexpr char const* msg =
+                "CSVData, {}, network, {}, ranks, {}, threads, {}, Memory, {}, "
+                "IOPsize, {}, IOPS/s, {}, BW(MB/s), {}, in_flight, {}\n";
+            fmt::print(temp, msg, data.mode.c_str(), "pika-mpi", data.nranks,
+                options.threads, data.dataMB, options.transfer_size_B, IOPs_s,
+                BW, options.in_flight_limit);
         }
         std::cout << temp.str() << std::endl;
     }
@@ -376,12 +376,10 @@ int pika_main(pika::program_options::variables_map& vm)
 
     if (rank == 0)
     {
-        char const* msg = "hello world from OS-thread {:02} on locality "
-                          "{:04} rank {:04} hostname {}";
-        pika::util::format_to(std::cout, msg, current, pika::get_locality_id(),
-            rank, name.c_str())
-            << std::endl
-            << std::endl;
+        constexpr char const* msg = "hello world from OS-thread {:02} on "
+                                    "locality {:04} rank {:04} hostname {}\n\n";
+        fmt::print(std::cout, msg, current, pika::get_locality_id(), rank,
+            name.c_str());
     }
 
     // extract command line argument

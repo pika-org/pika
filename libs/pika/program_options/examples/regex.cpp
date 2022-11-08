@@ -21,7 +21,7 @@
 // and the second invocation should issue an error message.
 
 #include <pika/modules/program_options.hpp>
-#include <pika/util/from_string.hpp>
+#include <pika/string_util/from_string.hpp>
 
 #include <any>
 #include <iostream>

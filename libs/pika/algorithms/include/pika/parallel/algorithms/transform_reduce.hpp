@@ -579,16 +579,11 @@ namespace pika::detail {
     struct get_function_address<parallel::detail::transform_reduce_iteration<T,
         ExPolicy, Reduce, Convert>>
     {
-        static constexpr char const* call(
+        static constexpr std::size_t call(
             parallel::detail::transform_reduce_iteration<T, ExPolicy, Reduce,
                 Convert> const& f) noexcept
         {
-            char const* reduce_name =
-                get_function_address<std::decay_t<Reduce>>::call(f.reduce_);
-
-            return reduce_name != nullptr ?
-                reduce_name :
-                get_function_address<std::decay_t<Convert>>::call(f.convert_);
+            return get_function_address<std::decay_t<Reduce>>::call(f.reduce_);
         }
     };
 

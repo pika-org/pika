@@ -12,6 +12,9 @@
 #include <pika/testing.hpp>
 #include <pika/thread.hpp>
 
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
@@ -37,7 +40,7 @@ void bulk_test(int, int passed_through)    //-V813
 template <typename... ExecutorArgs>
 void test_bulk_sync(ExecutorArgs&&... args)
 {
-    std::cerr << "test_bulk_sync\n";
+    fmt::print(std::cerr, "test_bulk_sync\n");
 
     count = 0;
     std::size_t const n = 107;
@@ -59,7 +62,7 @@ void test_bulk_sync(ExecutorArgs&&... args)
 template <typename... ExecutorArgs>
 void test_bulk_async(ExecutorArgs&&... args)
 {
-    std::cerr << "test_bulk_async\n";
+    fmt::print(std::cerr, "test_bulk_async\n");
 
     count = 0;
     std::size_t const n = 107;
@@ -91,7 +94,7 @@ void bulk_test_exception(int, int passed_through)    //-V813
 template <typename... ExecutorArgs>
 void test_bulk_sync_exception(ExecutorArgs&&... args)
 {
-    std::cerr << "test_bulk_sync_exception\n";
+    fmt::print(std::cerr, "test_bulk_sync_exception\n");
 
     count = 0;
     std::size_t const n = 107;
@@ -122,7 +125,7 @@ void test_bulk_sync_exception(ExecutorArgs&&... args)
 template <typename... ExecutorArgs>
 void test_bulk_async_exception(ExecutorArgs&&... args)
 {
-    std::cerr << "test_bulk_async_exception\n";
+    fmt::print(std::cerr, "test_bulk_async_exception\n");
 
     count = 0;
     std::size_t const n = 107;
@@ -177,9 +180,10 @@ void test_executor(pika::execution::thread_priority priority,
     pika::execution::thread_stacksize stacksize,
     fork_join_executor::loop_schedule schedule)
 {
-    std::cerr << "testing fork_join_executor with priority = " << priority
-              << ", stacksize = " << stacksize << ", schedule = " << schedule
-              << "\n";
+    fmt::print(std::cerr,
+        "testing fork_join_executor with priority = {}, stacksize = {}, "
+        "schedule = {}\n",
+        priority, stacksize, schedule);
     test_bulk_sync(priority, stacksize, schedule);
     test_bulk_async(priority, stacksize, schedule);
     test_bulk_sync_exception(priority, stacksize, schedule);

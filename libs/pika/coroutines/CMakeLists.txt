@@ -100,7 +100,6 @@ pika_add_module(
     pika_assertion
     pika_config
     pika_errors
-    pika_format
     pika_functional
     pika_memory
     pika_thread_support

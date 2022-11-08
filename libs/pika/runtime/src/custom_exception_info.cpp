@@ -11,7 +11,6 @@
 #include <pika/lock_registration/detail/register_locks.hpp>
 #include <pika/modules/debugging.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/modules/thread_manager.hpp>
 #include <pika/modules/threading.hpp>
@@ -24,6 +23,10 @@
 #include <pika/runtime/state.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/version.hpp>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #if defined(PIKA_WINDOWS)
 #include <process.h>
@@ -123,7 +126,7 @@ namespace pika {
             if (thread_id && *thread_id)
             {
                 strm << "{thread-id}: ";
-                pika::util::format_to(strm, "{:016x}\n", *thread_id);
+                fmt::print(strm, "{:016x}\n", *thread_id);
             }
 
             std::string const* thread_description =
@@ -352,8 +355,7 @@ namespace pika {
 
             static constexpr char const* ignored_env_patterns[] = {
                 "DOCKER", "GITHUB_TOKEN"};
-            std::string retval =
-                pika::util::format("{} entries:\n", env.size());
+            std::string retval = fmt::format("{} entries:\n", env.size());
             for (std::string const& s : env)
             {
                 if (std::all_of(std::begin(ignored_env_patterns),

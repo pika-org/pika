@@ -9,9 +9,11 @@
 
 #include <pika/iterator_support/iterator_range.hpp>
 #include <pika/iterator_support/tests/iter_sent.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/parallel/container_algorithms/sort.hpp>
 #include <pika/testing.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <algorithm>
 #include <cstddef>
@@ -100,16 +102,14 @@ int verify_(const std::vector<IA>& A, Compare comp, double elapsed, bool print)
             if (comp((*it), temp))
             {
                 if (print)
-                    pika::util::format_to(std::cout, "fail {:8.6}", elapsed)
-                        << A.size() << std::endl;
+                    fmt::print(std::cout, "fail {} {}\n", elapsed, A.size());
                 return 0;
             }
             temp = (*it);
         }
     }
     if (print)
-        pika::util::format_to(std::cout, "OK {:8.6}", elapsed)
-            << A.size() << std::endl;
+        fmt::print(std::cout, "OK {:8.6}{}\n", elapsed, A.size());
     return 1;
 }
 

@@ -80,6 +80,8 @@ if(NOT BOOST_ROOT AND NOT "$ENV{BOOST_ROOT}")
 endif()
 include(pika_setup_boost)
 
+include(pika_setup_fmt)
+
 # Hwloc
 set(PIKA_HWLOC_ROOT "@HWLOC_ROOT@")
 include(pika_setup_hwloc)

@@ -14,10 +14,11 @@
 // See http://www.boost.org for updates, documentation, and revision history.
 // See http://www.torjo.com/log2/ for more details
 
+#include <pika/config.hpp>
 #include <pika/logging/format/formatters.hpp>
 
-#include <pika/config.hpp>
-#include <pika/modules/format.hpp>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstdint>
 #include <memory>
@@ -36,7 +37,7 @@ namespace pika { namespace util { namespace logging { namespace formatter {
 
         void operator()(std::ostream& to) const override
         {
-            util::format_to(to, "{:016x}", ++value);
+            fmt::print(to, "{:016x}", ++value);
         }
 
     private:

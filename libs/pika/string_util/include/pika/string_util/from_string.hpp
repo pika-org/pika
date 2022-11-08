@@ -7,7 +7,7 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/util/bad_lexical_cast.hpp>
+#include <pika/string_util/bad_lexical_cast.hpp>
 
 #include <algorithm>
 #include <cctype>
@@ -19,8 +19,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace util {
-
+namespace pika::util {
     namespace detail {
         template <typename T, typename Enable = void>
         struct from_string
@@ -239,5 +238,4 @@ namespace pika { namespace util {
             return PIKA_FORWARD(U, default_value);
         }
     }
-
-}}    // namespace pika::util
+}    // namespace pika::util

@@ -10,10 +10,11 @@
 #include <pika/config.hpp>
 #include <pika/config/config_strings.hpp>
 #include <pika/config/version.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/prefix/find_prefix.hpp>
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/version.hpp>
+
+#include <fmt/format.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -25,7 +26,7 @@ namespace pika {
 
     std::string full_version_as_string()
     {
-        return pika::util::format("{}.{}.{}",    //-V609
+        return fmt::format("{}.{}.{}",    //-V609
             PIKA_VERSION_MAJOR, PIKA_VERSION_MINOR, PIKA_VERSION_PATCH);
     }
 
@@ -58,18 +59,18 @@ namespace pika {
 
     std::string build_string()
     {
-        return pika::util::format("V{}{}, Git: {:.10}",    //-V609
+        return fmt::format("V{}{}, Git: {:.10}",    //-V609
             full_version_as_string(), PIKA_VERSION_TAG, PIKA_HAVE_GIT_COMMIT);
     }
 
     std::string complete_version()
     {
-        std::string version = pika::util::format("Version:\n"
-                                                 "  pika: {}\n"
-                                                 "\n"
-                                                 "Build:\n"
-                                                 "  Type: {}\n"
-                                                 "  Date: {}\n",
+        std::string version = fmt::format("Version:\n"
+                                          "  pika: {}\n"
+                                          "\n"
+                                          "Build:\n"
+                                          "  Type: {}\n"
+                                          "  Date: {}\n",
             build_string(), build_type(), build_date_time());
 
         return version;

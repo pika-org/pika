@@ -10,8 +10,8 @@
 #include <pika/program_options/options_description.hpp>
 #include <pika/program_options/variables_map.hpp>
 #include <pika/runtime_configuration/runtime_configuration.hpp>
+#include <pika/string_util/from_string.hpp>
 #include <pika/type_support/unused.hpp>
-#include <pika/util/from_string.hpp>
 
 #include <cstddef>
 #include <iostream>

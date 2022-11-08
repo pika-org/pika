@@ -29,13 +29,7 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${errors_sources}
   HEADERS ${errors_headers}
-  MODULE_DEPENDENCIES
-    pika_assertion
-    pika_config
-    pika_filesystem
-    pika_format
-    pika_logging
-    pika_preprocessor
-    pika_thread_support
+  MODULE_DEPENDENCIES pika_assertion pika_config pika_filesystem pika_logging
+                      pika_preprocessor pika_thread_support
   CMAKE_SUBDIRS examples tests
 )

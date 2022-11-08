@@ -7,8 +7,9 @@
 #pragma once
 
 #include <pika/config.hpp>
-#include <pika/modules/format.hpp>
-#include <pika/util/bad_lexical_cast.hpp>
+#include <pika/string_util/bad_lexical_cast.hpp>
+
+#include <fmt/format.h>
 
 #include <string>
 #include <type_traits>
@@ -21,7 +22,7 @@ namespace pika { namespace util {
         {
             static std::string call(T const& value)
             {
-                return util::format("{}", value);
+                return fmt::format("{}", value);
             }
         };
 

@@ -573,7 +573,7 @@ namespace pika { namespace lcos { namespace detail {
         void set_error(error e, char const* f, char const* msg)
         {
             pika::detail::try_catch_exception_ptr(
-                [&]() { PIKA_THROW_EXCEPTION(e, f, msg); },
+                [&]() { PIKA_THROW_EXCEPTION(e, f, "{}", msg); },
                 [&](std::exception_ptr ep) { set_exception(PIKA_MOVE(ep)); });
         }
 

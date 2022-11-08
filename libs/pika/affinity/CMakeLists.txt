@@ -18,14 +18,8 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${affinity_sources}
   HEADERS ${affinity_headers}
-  MODULE_DEPENDENCIES
-    pika_assertion
-    pika_config
-    pika_datastructures
-    pika_errors
-    pika_format
-    pika_topology
-    pika_util
+  MODULE_DEPENDENCIES pika_assertion pika_config pika_datastructures pika_errors
+                      pika_topology pika_util
   DEPENDENCIES Hwloc::hwloc
   CMAKE_SUBDIRS tests
 )

@@ -32,9 +32,12 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/timing.hpp>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstdint>
 #include <iostream>
@@ -67,13 +70,12 @@ void print_results(int cores, double walltime)
         std::cout << "OS-threads,Tasks,Delay (iterations),"
                      "Total Walltime (seconds),Walltime per Task (seconds)\n";
 
-    std::string const cores_str = pika::util::format("{},", cores);
-    std::string const tasks_str = pika::util::format("{},", tasks);
-    std::string const delay_str = pika::util::format("{},", delay);
+    std::string const cores_str = fmt::format("{},", cores);
+    std::string const tasks_str = fmt::format("{},", tasks);
+    std::string const delay_str = fmt::format("{},", delay);
 
-    pika::util::format_to(std::cout,
-        "{:-21} {:-21} {:-21} {:10.12}, {:10.12}\n", cores_str, tasks_str,
-        delay_str, walltime, walltime / tasks);
+    fmt::print(std::cout, "{:>21} {:>21} {:>21} {:10.12}, {:10.12}\n",
+        cores_str, tasks_str, delay_str, walltime, walltime / tasks);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

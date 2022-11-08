@@ -23,6 +23,7 @@
 #include <pika/functional/invoke_fused.hpp>
 #include <pika/type_support/pack.hpp>
 
+#include <fmt/format.h>
 #include <whip.hpp>
 
 #include <exception>
@@ -78,11 +79,11 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         else
         {
             pika::execution::experimental::set_error(PIKA_FORWARD(R, r),
-                std::make_exception_ptr(pika::exception(
-                    pika::error::unknown_error,
-                    pika::util::format("Getting event after CUDA stream "
-                                       "transform failed with status {} ({})",
-                        status, whip::get_error_string(status)))));
+                std::make_exception_ptr(
+                    pika::exception(pika::error::unknown_error,
+                        fmt::format("Getting event after CUDA stream transform "
+                                    "failed with status {} ({})",
+                            status, whip::get_error_string(status)))));
         }
     }
 

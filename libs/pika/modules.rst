@@ -35,7 +35,6 @@ Core modules
    /libs/core/execution_base/docs/index.rst
    /libs/core/executors/docs/index.rst
    /libs/core/filesystem/docs/index.rst
-   /libs/core/format/docs/index.rst
    /libs/core/functional/docs/index.rst
    /libs/core/futures/docs/index.rst
    /libs/core/hardware/docs/index.rst

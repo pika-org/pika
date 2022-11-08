@@ -8,9 +8,11 @@
 #if !defined(PIKA_COMPUTE_DEVICE_CODE)
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/timing.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -91,9 +93,8 @@ int pika_main(pika::program_options::variables_map& vm)
                   << std::endl;
     }
 
-    pika::util::format_to(std::cout, "{},{},{},{}", num_cores, iterations,
-        child_stealing_time, parent_stealing_time)
-        << std::endl;
+    fmt::print(std::cout, "{},{},{},{}\n", num_cores, iterations,
+        child_stealing_time, parent_stealing_time);
 
     return pika::finalize();
 }

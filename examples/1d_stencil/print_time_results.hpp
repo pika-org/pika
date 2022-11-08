@@ -7,7 +7,9 @@
 
 #pragma once
 
-#include <pika/modules/format.hpp>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstdint>
 #include <iostream>
@@ -24,16 +26,14 @@ void print_time_results(std::uint32_t num_localities,
                      "Points_per_Partition,Partitions,Time_Steps\n"
                   << std::flush;
 
-    std::string const locs_str = pika::util::format("{},", num_localities);
-    std::string const threads_str = pika::util::format("{},", num_os_threads);
-    std::string const nx_str = pika::util::format("{},", nx);
-    std::string const np_str = pika::util::format("{},", np);
-    std::string const nt_str = pika::util::format("{} ", nt);
+    std::string const locs_str = fmt::format("{},", num_localities);
+    std::string const threads_str = fmt::format("{},", num_os_threads);
+    std::string const nx_str = fmt::format("{},", nx);
+    std::string const np_str = fmt::format("{},", np);
+    std::string const nt_str = fmt::format("{} ", nt);
 
-    pika::util::format_to(std::cout,
-        "{:-6} {:-6} {:.14g}, {:-21} {:-21} {:-21}\n", locs_str, threads_str,
-        elapsed_seconds, nx_str, np_str, nt_str)
-        << std::flush;
+    fmt::print(std::cout, "{:6} {:6} {:.14g}, {:21} {:21} {:21}\n", locs_str,
+        threads_str, elapsed_seconds, nx_str, np_str, nt_str);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,14 +45,13 @@ void print_time_results(std::uint64_t num_os_threads, double elapsed_seconds,
                      "Points_per_Partition,Partitions,Time_Steps\n"
                   << std::flush;
 
-    std::string const threads_str = pika::util::format("{},", num_os_threads);
-    std::string const nx_str = pika::util::format("{},", nx);
-    std::string const np_str = pika::util::format("{},", np);
-    std::string const nt_str = pika::util::format("{} ", nt);
+    std::string const threads_str = fmt::format("{},", num_os_threads);
+    std::string const nx_str = fmt::format("{},", nx);
+    std::string const np_str = fmt::format("{},", np);
+    std::string const nt_str = fmt::format("{} ", nt);
 
-    pika::util::format_to(std::cout, "{:-21} {:.14g}, {:-21} {:-21} {:-21}\n",
-        threads_str, elapsed_seconds, nx_str, np_str, nt_str)
-        << std::flush;
+    fmt::print(std::cout, "{:21} {:.14g}, {:21} {:21} {:21}\n", threads_str,
+        elapsed_seconds, nx_str, np_str, nt_str);
 }
 
 void print_time_results(std::uint64_t num_os_threads, double elapsed_seconds,
@@ -63,11 +62,10 @@ void print_time_results(std::uint64_t num_os_threads, double elapsed_seconds,
                      "Grid_Points,Time_Steps\n"
                   << std::flush;
 
-    std::string const threads_str = pika::util::format("{},", num_os_threads);
-    std::string const nx_str = pika::util::format("{},", nx);
-    std::string const nt_str = pika::util::format("{} ", nt);
+    std::string const threads_str = fmt::format("{},", num_os_threads);
+    std::string const nx_str = fmt::format("{},", nx);
+    std::string const nt_str = fmt::format("{} ", nt);
 
-    pika::util::format_to(std::cout, "{:-21} {:10.12}, {:-21} {:-21}\n",
-        threads_str, elapsed_seconds, nx_str, nt_str)
-        << std::flush;
+    fmt::print(std::cout, "{:21} {:10.12f}, {:21} {:21}\n", threads_str,
+        elapsed_seconds, nx_str, nt_str);
 }

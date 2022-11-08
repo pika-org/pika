@@ -21,6 +21,8 @@
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <exception>
@@ -552,9 +554,20 @@ namespace pika::threads::detail {
         threads::callback_notifier& notifier_;
         /// \endcond
     };
-
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream& os, thread_pool_base const& thread_pool);
 }    // namespace pika::threads::detail
+
+template <>
+struct fmt::formatter<pika::threads::detail::thread_pool_base>
+  : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(pika::threads::detail::thread_pool_base const& thread_pool,
+        FormatContext& ctx)
+    {
+        auto id = thread_pool.get_pool_id();
+        return fmt::formatter<std::string>::format(
+            fmt::format("{}({})", id.name(), id.index()), ctx);
+    }
+};
 
 #include <pika/config/warnings_suffix.hpp>

@@ -22,6 +22,8 @@
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
 #include <pika/topology/topology.hpp>
 
+#include <fmt/format.h>
+
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -943,5 +945,20 @@ namespace pika::threads {
             outside_numa_domain_masks_;
     };
 }    // namespace pika::threads
+
+template <typename Mutex, typename PendingQueuing, typename StagedQueuing,
+    typename TerminatedQueuing>
+struct fmt::formatter<pika::threads::local_queue_scheduler<Mutex,
+    PendingQueuing, StagedQueuing, TerminatedQueuing>>
+  : fmt::formatter<pika::threads::detail::scheduler_base>
+{
+    template <typename FormatContext>
+    auto format(pika::threads::detail::scheduler_base const& scheduler,
+        FormatContext& ctx)
+    {
+        return fmt::formatter<pika::threads::detail::scheduler_base>::format(
+            scheduler, ctx);
+    }
+};
 
 #include <pika/config/warnings_suffix.hpp>

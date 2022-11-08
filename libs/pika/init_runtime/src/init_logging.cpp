@@ -14,6 +14,9 @@
 #include <pika/runtime_configuration/runtime_configuration.hpp>
 #include <pika/threading_base/thread_data.hpp>
 
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -39,7 +42,7 @@ namespace pika { namespace util {
 
             if (std::size_t(-1) != thread_num)
             {
-                util::format_to(to, "{:016x}", thread_num);
+                fmt::print(to, "{:016x}", thread_num);
             }
             else
             {
@@ -58,7 +61,7 @@ namespace pika { namespace util {
 
             if (~static_cast<std::uint32_t>(0) != locality_id)
             {
-                util::format_to(to, "{:08x}", locality_id);
+                fmt::print(to, "{:08x}", locality_id);
             }
             else
             {
@@ -85,7 +88,7 @@ namespace pika { namespace util {
                 {
                     std::ptrdiff_t value =
                         reinterpret_cast<std::ptrdiff_t>(id.get());
-                    util::format_to(to, "{:016x}", value);
+                    fmt::print(to, "{:016x}", value);
                     return;
                 }
             }
@@ -109,7 +112,7 @@ namespace pika { namespace util {
                 std::size_t phase = self->get_thread_phase();
                 if (0 != phase)
                 {
-                    util::format_to(to, "{:04x}", self->get_thread_phase());
+                    fmt::print(to, "{:04x}", self->get_thread_phase());
                     return;
                 }
             }
@@ -130,7 +133,7 @@ namespace pika { namespace util {
             if (~static_cast<std::uint32_t>(0) != parent_locality_id)
             {
                 // called from inside a pika thread
-                util::format_to(to, "{:08x}", parent_locality_id);
+                fmt::print(to, "{:08x}", parent_locality_id);
             }
             else
             {
@@ -153,7 +156,7 @@ namespace pika { namespace util {
                 // called from inside a pika thread
                 std::ptrdiff_t value =
                     reinterpret_cast<std::ptrdiff_t>(parent_id.get());
-                util::format_to(to, "{:016x}", value);
+                fmt::print(to, "{:016x}", value);
             }
             else
             {
@@ -173,7 +176,7 @@ namespace pika { namespace util {
             if (0 != parent_phase)
             {
                 // called from inside a pika thread
-                util::format_to(to, "{:04x}", parent_phase);
+                fmt::print(to, "{:04x}", parent_phase);
             }
             else
             {

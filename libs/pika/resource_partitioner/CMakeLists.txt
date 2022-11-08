@@ -26,7 +26,6 @@ pika_add_module(
     pika_config
     pika_runtime_configuration
     pika_errors
-    pika_format
     pika_ini
     pika_prefix
     pika_threading_base

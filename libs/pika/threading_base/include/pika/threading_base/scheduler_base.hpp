@@ -11,7 +11,6 @@
 #include <pika/concurrency/cache_line_data.hpp>
 #include <pika/functional/function.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/scheduler_state.hpp>
 #include <pika/threading_base/thread_data.hpp>
@@ -23,6 +22,8 @@
 #include <pika/coroutines/detail/tss.hpp>
 #endif
 
+#include <fmt/format.h>
+
 #include <atomic>
 #include <condition_variable>
 #include <cstddef>
@@ -31,6 +32,7 @@
 #include <iosfwd>
 #include <memory>
 #include <mutex>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -288,7 +290,7 @@ namespace pika::threads::detail {
 
             default:
                 PIKA_ASSERT_MSG(
-                    false, util::format("Invalid stack size {1}", stacksize));
+                    false, fmt::format("Invalid stack size {}", stacksize));
                 break;
             }
 
@@ -435,9 +437,21 @@ namespace pika::threads::detail {
         std::shared_ptr<coroutines::detail::tss_storage> thread_data_;
 #endif
     };
-
-    PIKA_EXPORT std::ostream& operator<<(
-        std::ostream& os, scheduler_base const& scheduler);
 }    // namespace pika::threads::detail
+
+template <>
+struct fmt::formatter<pika::threads::detail::scheduler_base>
+  : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(pika::threads::detail::scheduler_base const& scheduler,
+        FormatContext& ctx)
+    {
+        return fmt::formatter<std::string>::format(
+            fmt::format("{}({})", scheduler.get_description(),
+                static_cast<const void*>(&scheduler)),
+            ctx);
+    }
+};
 
 #include <pika/config/warnings_suffix.hpp>

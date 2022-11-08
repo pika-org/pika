@@ -9,13 +9,14 @@
 #include <pika/coroutines/coroutine.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/threading_base/create_work.hpp>
 #include <pika/threading_base/register_thread.hpp>
 #include <pika/threading_base/set_thread_state.hpp>
 #include <pika/threading_base/thread_data.hpp>
 #include <pika/threading_base/threading_base_fwd.hpp>
+
+#include <fmt/format.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -195,7 +196,7 @@ namespace pika::threads::detail {
                 {
                     // we do not allow explicit resetting of a state to suspended
                     // without the thread being executed.
-                    std::string str = pika::util::format(
+                    std::string str = fmt::format(
                         "set_thread_state: invalid new state, can't demote a "
                         "pending thread, thread({}), description({}), new "
                         "state({})",
@@ -206,7 +207,7 @@ namespace pika::threads::detail {
                     LTM_(fatal) << str;
 
                     PIKA_THROWS_IF(ec, pika::error::bad_parameter,
-                        "threads::detail::set_thread_state", str);
+                        "threads::detail::set_thread_state", "{}", str);
                     return thread_state(thread_schedule_state::unknown,
                         thread_restart_state::unknown);
                 }
@@ -218,8 +219,7 @@ namespace pika::threads::detail {
             default:
             {
                 PIKA_ASSERT_MSG(false,
-                    pika::util::format(
-                        "set_thread_state: previous state was {}",
+                    fmt::format("set_thread_state: previous state was {}",
                         previous_state_val));    // should not happen
                 break;
             }
@@ -251,8 +251,7 @@ namespace pika::threads::detail {
                 "set_thread_state: state has been changed since it was "
                 "fetched, retrying, thread({}), description({}), new "
                 "state({}), old state({})",
-                get_thread_id_data(thrd),
-                get_thread_id_data(thrd)->get_description(),
+                thrd, get_thread_id_data(thrd)->get_description(),
                 get_thread_state_name(new_state),
                 get_thread_state_name(previous_state_val));
         } while (true);

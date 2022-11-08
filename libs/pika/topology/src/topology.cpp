@@ -11,7 +11,6 @@
 
 #include <pika/assert.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/logging.hpp>
 #include <pika/topology/cpu_mask.hpp>
 #include <pika/topology/topology.hpp>
@@ -415,7 +414,7 @@ namespace pika::threads::detail {
 
         PIKA_THROWS_IF(ec, pika::error::bad_parameter,
             "pika::threads::detail::topology::get_socket_affinity_mask",
-            "thread number {1} is out of range", num_thread);
+            "thread number {} is out of range", num_thread);
         return empty_mask;
     }    // }}}
 
@@ -434,7 +433,7 @@ namespace pika::threads::detail {
 
         PIKA_THROWS_IF(ec, pika::error::bad_parameter,
             "pika::threads::detail::topology::get_numa_node_affinity_mask",
-            "thread number {1} is out of range", num_thread);
+            "thread number {} is out of range", num_thread);
         return empty_mask;
     }    // }}}
 
@@ -453,7 +452,7 @@ namespace pika::threads::detail {
 
         PIKA_THROWS_IF(ec, pika::error::bad_parameter,
             "pika::threads::detail::topology::get_core_affinity_mask",
-            "thread number {1} is out of range", num_thread);
+            "thread number {} is out of range", num_thread);
         return empty_mask;
     }
 
@@ -472,7 +471,7 @@ namespace pika::threads::detail {
 
         PIKA_THROWS_IF(ec, pika::error::bad_parameter,
             "pika::threads::detail::topology::get_thread_affinity_mask",
-            "thread number {1} is out of range", num_thread);
+            "thread number {} is out of range", num_thread);
         return empty_mask;
     }    // }}}
 

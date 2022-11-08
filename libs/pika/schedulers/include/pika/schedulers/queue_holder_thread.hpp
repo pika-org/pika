@@ -18,6 +18,8 @@
 #include <pika/threading_base/thread_queue_init_parameters.hpp>
 #include <pika/type_support/unused.hpp>
 
+#include <fmt/format.h>
+
 #include <atomic>
 #include <cmath>
 #include <cstddef>
@@ -601,7 +603,7 @@ namespace pika::threads {
             else
             {
                 PIKA_ASSERT_MSG(
-                    false, util::format("Invalid stack size {1}", stacksize));
+                    false, fmt::format("Invalid stack size {}", stacksize));
             }
         }
 
@@ -628,7 +630,7 @@ namespace pika::threads {
                 // threads::detail::thread_id_type tid2 = *(p.first);
                 // threads::detail::thread_data* td =
                 //     threads::detail::get_thread_id_data(tid2);
-                // std::string prev = pika::util::format("{}", td);
+                // std::string prev = fmt::format("{}", td);
 
                 tq_deb.error(debug::detail::str<>("map add"),
                     "Couldn't add new thread to the thread map",

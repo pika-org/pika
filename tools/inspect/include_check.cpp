@@ -9,7 +9,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/util/to_string.hpp>
+#include <pika/string_util/to_string.hpp>
 
 #include <algorithm>
 #include <filesystem>
@@ -263,9 +263,9 @@ namespace boost { namespace inspect {
         {"(\\bpika\\s*::\\s*intrusive_ptr\\b)", "pika::intrusive_ptr",
             "pika/memory/intrusive_ptr.hpp"},
         {"(\\bpika\\s*::\\s*util\\s*::\\s*from_string\\b)",
-            "pika::util::from_string", "pika/util/from_string.hpp"},
+            "pika::util::from_string", "pika/string_util/from_string.hpp"},
         {"(\\bpika\\s*::\\s*util\\s*::\\s*to_string\\b)",
-            "pika::util::to_string", "pika/util/to_string.hpp"},
+            "pika::util::to_string", "pika/string_util/to_string.hpp"},
         // macros
         {"(\\bPIKA_PP_CAT\\b)", "PIKA_PP_CAT", "pika/preprocessor/cat.hpp"},
         {"(\\bPIKA_PP_EXPAND\\b)", "PIKA_PP_EXPAND",
@@ -280,6 +280,11 @@ namespace boost { namespace inspect {
         {"(\\bPIKA_ASSERT\\b)", "PIKA_ASSERT", "pika/assert.hpp"},
         {"(\\bPIKA_ASSERT_MSG\\b)", "PIKA_ASSERT_MSG", "pika/assert.hpp"},
         {"(\\bwhip\\s*::\\s*([^\\s]+)\\b)", "whip::\\2", "whip.hpp"},
+        //
+        {"(\\bfmt\\s*::\\s*format\\b)", "fmt::format", "fmt/format.h"},
+        {"(\\bfmt\\s*::\\s*format_to\\b)", "fmt::format_to", "fmt/format.h"},
+        {"(\\bfmt\\s*::\\s*ptr\\b)", "fmt::ptr", "fmt/format.h"},
+        {"(\\bfmt\\s*::\\s*print\\b)", "fmt::print", "fmt/printf.h"},
         {nullptr, nullptr, nullptr}};
 
     //  include_check constructor  -------------------------------------------//

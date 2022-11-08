@@ -11,7 +11,7 @@
 #include <pika/config.hpp>
 #include <pika/concurrency/spinlock.hpp>
 #include <pika/functional/function.hpp>
-#include <pika/util/to_string.hpp>
+#include <pika/string_util/to_string.hpp>
 
 #include <iosfwd>
 #include <map>

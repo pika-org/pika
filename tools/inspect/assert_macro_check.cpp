@@ -9,7 +9,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/util/to_string.hpp>
+#include <pika/string_util/to_string.hpp>
 
 #include "assert_macro_check.hpp"
 #include "boost/regex.hpp"

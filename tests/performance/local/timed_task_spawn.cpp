@@ -14,12 +14,14 @@
 #include <pika/pika_init.hpp>
 
 #include <pika/functional/bind.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/string_util/classification.hpp>
 #include <pika/string_util/split.hpp>
 #include <pika/testing.hpp>
 
 #include <boost/integer/common_factor.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <chrono>
 #include <condition_variable>
@@ -140,13 +142,13 @@ void print_results(std::uint64_t cores, double walltime, double warmup_estimate,
         }
     }
 
-    pika::util::format_to(cout, "{}, {}, {}, {}, {:.14g}, {:.14g}", delay,
-        tasks, suspended_tasks, cores, walltime, warmup_estimate);
+    fmt::print(cout, "{}, {}, {}, {}, {:.14g}, {:.14g}", delay, tasks,
+        suspended_tasks, cores, walltime, warmup_estimate);
 
     if (ac)
     {
         for (std::uint64_t i = 0; i < counter_shortnames.size(); ++i)
-            pika::util::format_to(
+            fmt::print(
                 cout, ", {:.14g}", counter_values[i].get_value<double>());
     }
 

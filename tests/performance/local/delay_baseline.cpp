@@ -8,8 +8,10 @@
 
 #include "worker_timed.hpp"
 
-#include <pika/modules/format.hpp>
 #include <pika/modules/timing.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <chrono>
 #include <cstdint>
@@ -70,10 +72,7 @@ void print_results(variables_map& vm, double sum_, double mean_)
                 "## 2:WTIME_THR:Total Walltime/Thread [micro-seconds]\n";
     }
 
-    //     std::string const tasks_str = pika::util::format("{},", tasks);
-    //     std::string const delay_str = pika::util::format("{},", delay);
-
-    pika::util::format_to(cout, "{} {} {:.14g}\n", delay, tasks, mean_);
+    fmt::print(cout, "{} {} {:.14g}\n", delay, tasks, mean_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

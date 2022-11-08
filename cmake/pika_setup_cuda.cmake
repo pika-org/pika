@@ -48,6 +48,12 @@ if(PIKA_WITH_CUDA AND NOT TARGET Cuda::cuda)
     Cuda::cuda PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON
   )
 
+  target_compile_definitions(
+    Cuda::cuda
+    INTERFACE
+      $<$<AND:$<CUDA_COMPILER_ID:Clang>,$<COMPILE_LANGUAGE:CUDA>>:FMT_USE_FLOAT128=0>
+  )
+
   if(PIKA_WITH_CLANG_CUDA)
     if(NOT PIKA_FIND_PACKAGE)
       pika_add_target_compile_option(-DBOOST_THREAD_USES_MOVE PUBLIC)

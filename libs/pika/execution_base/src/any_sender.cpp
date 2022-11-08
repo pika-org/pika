@@ -7,7 +7,8 @@
 #include <pika/errors/error.hpp>
 #include <pika/errors/throw_exception.hpp>
 #include <pika/execution_base/any_sender.hpp>
-#include <pika/modules/format.hpp>
+
+#include <fmt/format.h>
 
 #include <atomic>
 #include <exception>
@@ -18,8 +19,8 @@ namespace pika::execution::experimental::detail {
     void empty_any_operation_state::start() & noexcept
     {
         PIKA_THROW_EXCEPTION(pika::error::bad_function_call,
-            "attempted to call start on empty any_operation_state",
-            "any_operation_state::start");
+            "any_operation_state::start",
+            "attempted to call start on empty any_operation_state");
     }
 
     bool empty_any_operation_state::empty() const noexcept
@@ -36,8 +37,7 @@ namespace pika::execution::experimental::detail {
     void throw_bad_any_call(char const* class_name, char const* function_name)
     {
         PIKA_THROW_EXCEPTION(pika::error::bad_function_call,
-            pika::util::format(
-                "attempted to call {} on empty {}", function_name, class_name),
-            pika::util::format("{}::{}", class_name, function_name));
+            fmt::format("{}::{}", class_name, function_name),
+            "attempted to call {} on empty {}", function_name, class_name);
     }
 }    // namespace pika::execution::experimental::detail

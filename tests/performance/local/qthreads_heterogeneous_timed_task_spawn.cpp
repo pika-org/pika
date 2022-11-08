@@ -32,10 +32,12 @@
 
 #include <pika/assert.hpp>
 #include <pika/functional/bind.hpp>
-#include <pika/modules/format.hpp>
+#include <pika/modules/program_options.hpp>
 #include <pika/modules/timing.hpp>
 
-#include <pika/modules/program_options.hpp>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <atomic>
 #include <cstdint>
@@ -81,16 +83,16 @@ void print_results(std::uint64_t cores, double walltime)
                      "Maximum Delay (iterations),Total Delay (iterations),"
                      "Total Walltime (seconds),Walltime per Task (seconds)\n";
 
-    std::string const cores_str = pika::util::format("{},", cores);
-    std::string const seed_str = pika::util::format("{},", seed);
-    std::string const tasks_str = pika::util::format("{},", tasks);
+    std::string const cores_str = fmt::format("{},", cores);
+    std::string const seed_str = fmt::format("{},", seed);
+    std::string const tasks_str = fmt::format("{},", tasks);
 
-    std::string const min_delay_str = pika::util::format("{},", min_delay);
-    std::string const max_delay_str = pika::util::format("{},", max_delay);
-    std::string const total_delay_str = pika::util::format("{},", total_delay);
+    std::string const min_delay_str = fmt::format("{},", min_delay);
+    std::string const max_delay_str = fmt::format("{},", max_delay);
+    std::string const total_delay_str = fmt::format("{},", total_delay);
 
-    pika::util::format_to(std::cout,
-        "{:-21} {:-21} {:-21} {:-21} {:-21} {:-21} {:10.12}\n", cores_str,
+    fmt::print(std::cout,
+        "{:>21} {:>21} {:>21} {:>21} {:>21} {:>21} {:10.12}\n", cores_str,
         seed_str, tasks_str, min_delay_str, max_delay_str, total_delay_str,
         walltime, walltime / tasks);
 }

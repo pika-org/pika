@@ -19,6 +19,8 @@
 #include <pika/threading_base/external_timer.hpp>
 #endif
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -74,8 +76,8 @@ namespace pika::threads::detail {
       , stacksize_enum_(init_data.stacksize)
       , queue_(queue)
     {
-        LTM_(debug).format(
-            "thread::thread({}), description({})", this, get_description());
+        LTM_(debug).format("thread::thread({}), description({})",
+            fmt::ptr(this), get_description());
 
         PIKA_ASSERT(stacksize_enum_ != execution::thread_stacksize::current);
 
@@ -101,15 +103,15 @@ namespace pika::threads::detail {
 
     thread_data::~thread_data()
     {
-        LTM_(debug).format("thread_data::~thread_data({})", this);
+        LTM_(debug).format("thread_data::~thread_data({})", fmt::ptr(this));
         free_thread_exit_callbacks();
     }
 
     void thread_data::destroy_thread()
     {
         LTM_(debug).format(
-            "thread_data::destroy_thread({}), description({}), phase({})", this,
-            this->get_description(), this->get_thread_phase());
+            "thread_data::destroy_thread({}), description({}), phase({})",
+            fmt::ptr(this), this->get_description(), this->get_thread_phase());
 
         get_scheduler_base()->destroy_thread(this);
     }
@@ -191,7 +193,7 @@ namespace pika::threads::detail {
     {
         LTM_(debug).format(
             "thread_data::rebind_base({}), description({}), phase({}), rebind",
-            this, get_description(), get_thread_phase());
+            fmt::ptr(this), get_description(), get_thread_phase());
 
         free_thread_exit_callbacks();
 
@@ -228,8 +230,8 @@ namespace pika::threads::detail {
         PIKA_ASSERT(stacksize_ == get_stack_size());
         PIKA_ASSERT(stacksize_ != 0);
 
-        LTM_(debug).format("thread::thread({}), description({}), rebind", this,
-            get_description());
+        LTM_(debug).format("thread::thread({}), description({}), rebind",
+            fmt::ptr(this), get_description());
 
 #ifdef PIKA_HAVE_THREAD_PARENT_REFERENCE
         // store the thread id of the parent thread, mainly for debugging

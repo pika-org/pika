@@ -15,10 +15,12 @@
 #include <pika/algorithm.hpp>
 #include <pika/execution.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/thread.hpp>
 #include <pika/type_support/unused.hpp>
 #include <pika/version.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstddef>
 #include <iostream>
@@ -132,7 +134,7 @@ void check_results(std::size_t iterations, Vector const& a_res,
     }
     else
     {
-        pika::util::format_to(std::cout, "WEIRD: sizeof(STREAM_TYPE) = {}\n",
+        fmt::print(std::cout, "WEIRD: sizeof(STREAM_TYPE) = {}\n",
             sizeof(STREAM_TYPE));
         epsilon = 1.e-6;
     }
@@ -141,10 +143,10 @@ void check_results(std::size_t iterations, Vector const& a_res,
     if (std::abs(aAvgErr / aj) > epsilon)
     {
         err++;
-        pika::util::format_to(std::cout,
+        fmt::print(std::cout,
             "Failed Validation on array a[], AvgRelAbsErr > epsilon ({})\n",
             epsilon);
-        pika::util::format_to(std::cout,
+        fmt::print(std::cout,
             "     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}\n", aj,
             aAvgErr, std::abs(aAvgErr) / aj);
         ierr = 0;
@@ -156,7 +158,7 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #ifdef VERBOSE
                 if (ierr < 10)
                 {
-                    pika::util::format_to(std::cout,
+                    fmt::print(std::cout,
                         "         array a: index: {}, expected: {}, "
                         "observed: {}, relative error: {}\n",
                         (unsigned long) j, aj, a[j],
@@ -165,20 +167,19 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #endif
             }
         }
-        pika::util::format_to(
+        fmt::print(
             std::cout, "     For array a[], {} errors were found.\n", ierr);
     }
     if (std::abs(bAvgErr / bj) > epsilon)
     {
         err++;
-        pika::util::format_to(std::cout,
+        fmt::print(std::cout,
             "Failed Validation on array b[], AvgRelAbsErr > epsilon ({})\n",
             epsilon);
-        pika::util::format_to(std::cout,
+        fmt::print(std::cout,
             "     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}\n", bj,
             bAvgErr, std::abs(bAvgErr) / bj);
-        pika::util::format_to(
-            std::cout, "     AvgRelAbsErr > Epsilon ({})\n", epsilon);
+        fmt::print(std::cout, "     AvgRelAbsErr > Epsilon ({})\n", epsilon);
         ierr = 0;
         for (std::size_t j = 0; j < a.size(); j++)
         {
@@ -188,7 +189,7 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #ifdef VERBOSE
                 if (ierr < 10)
                 {
-                    pika::util::format_to(std::cout,
+                    fmt::print(std::cout,
                         "         array b: index: {}, expected: {}, "
                         "observed: {}, relative error: {}\n",
                         (unsigned long) j, bj, b[j],
@@ -197,20 +198,19 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #endif
             }
         }
-        pika::util::format_to(
+        fmt::print(
             std::cout, "     For array b[], {} errors were found.\n", ierr);
     }
     if (std::abs(cAvgErr / cj) > epsilon)
     {
         err++;
-        pika::util::format_to(std::cout,
+        fmt::print(std::cout,
             "Failed Validation on array c[], AvgRelAbsErr > epsilon ({})\n",
             epsilon);
-        pika::util::format_to(std::cout,
+        fmt::print(std::cout,
             "     Expected Value: {}, AvgAbsErr: {}, AvgRelAbsErr: {}\n", cj,
             cAvgErr, std::abs(cAvgErr) / cj);
-        pika::util::format_to(
-            std::cout, "     AvgRelAbsErr > Epsilon ({})\n", epsilon);
+        fmt::print(std::cout, "     AvgRelAbsErr > Epsilon ({})\n", epsilon);
         ierr = 0;
         for (std::size_t j = 0; j < a.size(); j++)
         {
@@ -220,7 +220,7 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #ifdef VERBOSE
                 if (ierr < 10)
                 {
-                    pika::util::format_to(std::cout,
+                    fmt::print(std::cout,
                         "         array c: index: {}, expected: {}, "
                         "observed: {}, relative error: {}\n",
                         (unsigned long) j, cj, c[j],
@@ -229,27 +229,26 @@ void check_results(std::size_t iterations, Vector const& a_res,
 #endif
             }
         }
-        pika::util::format_to(
+        fmt::print(
             std::cout, "     For array c[], {} errors were found.\n", ierr);
     }
     if (err == 0)
     {
         if (!csv)
         {
-            pika::util::format_to(std::cout,
+            fmt::print(std::cout,
                 "Solution Validates: avg error less than {} on all three "
                 "arrays\n",
                 epsilon);
         }
     }
 #ifdef VERBOSE
-    pika::util::format_to(std::cout, "Results Validation Verbose Results:\n");
-    pika::util::format_to(
+    fmt::print(std::cout, "Results Validation Verbose Results:\n");
+    fmt::print(
         std::cout, "    Expected a(1), b(1), c(1): {} {} {}\n", aj, bj, cj);
-    pika::util::format_to(std::cout,
-        "    Observed a(1), b(1), c(1): {} {} {}\n", a[1], b[1], c[1]);
-    pika::util::format_to(std::cout,
-        "    Rel Errors on a, b, c:     {} {} {}\n",
+    fmt::print(std::cout, "    Observed a(1), b(1), c(1): {} {} {}\n", a[1],
+        b[1], c[1]);
+    fmt::print(std::cout, "    Rel Errors on a, b, c:     {} {} {}\n",
         (double) std::abs(aAvgErr / aj), (double) std::abs(bAvgErr / bj),
         (double) std::abs(cAvgErr / cj));
 #endif
@@ -595,7 +594,7 @@ int pika_main(pika::program_options::variables_map& vm)
     {
         if (header)
         {
-            pika::util::format_to(std::cout,
+            fmt::print(std::cout,
                 "executor,threads,vector_size,copy_bytes,copy_bw,copy_avg,copy_"
                 "min,copy_max,scale_bytes,scale_bw,scale_avg,scale_min,scale_"
                 "max,add_bytes,add_bw,add_avg,add_min,add_max,triad_bytes,"
@@ -604,12 +603,12 @@ int pika_main(pika::program_options::variables_map& vm)
         std::size_t const num_executors = 5;
         const char* executors[num_executors] = {"parallel-serial", "block",
             "parallel-parallel", "fork_join_executor", "scheduler_executor"};
-        pika::util::format_to(std::cout, "{},{},{},", executors[executor],
+        fmt::print(std::cout, "{},{},{},", executors[executor],
             pika::get_os_thread_count(), vector_size);
     }
     else
     {
-        pika::util::format_to(std::cout,
+        fmt::print(std::cout,
             "Function    Best Rate MB/s  Avg time     Min time     Max time\n");
     }
 
@@ -619,16 +618,15 @@ int pika_main(pika::program_options::variables_map& vm)
 
         if (csv)
         {
-            pika::util::format_to(std::cout, "{:.0},{:.2},{:.9},{:.9},{:.9}{}",
-                bytes[j], 1.0E-06 * bytes[j] / mintime[j], avgtime[j],
-                mintime[j], maxtime[j], j < num_stream_tests - 1 ? "," : "\n");
+            fmt::print(std::cout, "{:.0},{:.2},{:.9},{:.9},{:.9}{}", bytes[j],
+                1.0E-06 * bytes[j] / mintime[j], avgtime[j], mintime[j],
+                maxtime[j], j < num_stream_tests - 1 ? "," : "\n");
         }
         else
         {
-            pika::util::format_to(std::cout,
-                "{}{:12.1}  {:11.6}  {:11.6}  {:11.6}\n", label[j],
-                1.0E-06 * bytes[j] / mintime[j], avgtime[j], mintime[j],
-                maxtime[j]);
+            fmt::print(std::cout, "{}{:12.1}  {:11.6}  {:11.6}  {:11.6}\n",
+                label[j], 1.0E-06 * bytes[j] / mintime[j], avgtime[j],
+                mintime[j], maxtime[j]);
         }
     }
 

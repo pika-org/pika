@@ -4,12 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <pika/util/bad_lexical_cast.hpp>
+#include <pika/string_util/bad_lexical_cast.hpp>
 
 #include <typeinfo>
 
-namespace pika { namespace util {
-
+namespace pika::util {
     const char* bad_lexical_cast::what() const noexcept
     {
         return "bad lexical cast: "
@@ -25,5 +24,4 @@ namespace pika { namespace util {
             throw bad_lexical_cast(source_type, target_type);
         }
     }    // namespace detail
-
-}}    // namespace pika::util
+}    // namespace pika::util

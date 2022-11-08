@@ -20,7 +20,7 @@ jobs:
   build:
     name: github/linux/sanitizers/fast
     runs-on: ubuntu-latest
-    container: pikaorg/pika-ci-base:11
+    container: pikaorg/pika-ci-base:12
 
     steps:
     - uses: actions/checkout@v2

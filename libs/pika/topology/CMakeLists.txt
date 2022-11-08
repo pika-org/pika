@@ -23,7 +23,6 @@ pika_add_module(
     pika_config
     pika_concurrency
     pika_errors
-    pika_format
     pika_logging
     pika_type_support
     pika_util

@@ -17,7 +17,10 @@
 #include <pika/logging/format/formatters.hpp>
 
 #include <pika/config.hpp>
-#include <pika/modules/format.hpp>
+
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <chrono>
 #include <cstdint>
@@ -78,11 +81,11 @@ namespace pika { namespace util { namespace logging { namespace formatter {
                 std::chrono::duration_cast<std::chrono::milliseconds>(
                     val.time_since_epoch());
 
-            util::format_to(to, m_format, local_tm.tm_mday, local_tm.tm_mon + 1,
-                local_tm.tm_year + 1900, local_tm.tm_year % 100,
-                local_tm.tm_hour, local_tm.tm_min, local_tm.tm_sec,
-                millisecs.count() % 1000, microsecs.count() % 1000,
-                nanosecs.count() % 1000);
+            fmt::print(to, fmt::runtime(m_format), local_tm.tm_mday,
+                local_tm.tm_mon + 1, local_tm.tm_year + 1900,
+                local_tm.tm_year % 100, local_tm.tm_hour, local_tm.tm_min,
+                local_tm.tm_sec, millisecs.count() % 1000,
+                microsecs.count() % 1000, nanosecs.count() % 1000);
         }
 
         /** @brief configure through script

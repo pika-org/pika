@@ -18,7 +18,9 @@
 
 #include <pika/config.hpp>
 
-#include <string_view>
+#include <fmt/format.h>
+
+#include <string>
 
 namespace pika { namespace util { namespace logging {
 
@@ -34,13 +36,11 @@ namespace pika { namespace util { namespace logging {
         - error ,
         - fatal (highest level)
 
-    Depending on which level is enabled for your application,
-    some messages will reach the log: those
-    messages having at least that level. For instance, if info level is enabled, all
-    logged messages will reach the log.
-    If warning level is enabled, all messages are logged, but the warnings.
-    If debug level is enabled, messages that have levels debug,
-    error, fatal will be logged.
+    Depending on which level is enabled for your application, some messages will
+    reach the log: those messages having at least that level. For instance, if
+    info level is enabled, all logged messages will reach the log. If warning
+    level is enabled, all messages are logged, but the warnings. If debug level
+    is enabled, messages that have levels debug, error, fatal will be logged.
 
 */
     enum class level : unsigned int
@@ -55,8 +55,16 @@ namespace pika { namespace util { namespace logging {
         always = 6000
     };
 
-    ////////////////////////////////////////////////////////////////////////////
-    PIKA_EXPORT void format_value(
-        std::ostream& os, std::string_view spec, level value);
-
+    PIKA_EXPORT std::string levelname(level value);
 }}}    // namespace pika::util::logging
+
+template <>
+struct fmt::formatter<pika::util::logging::level> : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(pika::util::logging::level const& value, FormatContext& ctx)
+    {
+        return fmt::formatter<std::string>::format(
+            pika::util::logging::levelname(value), ctx);
+    }
+};

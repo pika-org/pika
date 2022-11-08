@@ -5,10 +5,12 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/runtime/thread_pool_helpers.hpp>
 #include <pika/runtime/thread_stacktrace.hpp>
 #include <pika/threading_base/thread_data.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstdint>
 #include <sstream>
@@ -65,8 +67,8 @@ namespace pika { namespace util { namespace debug {
         int count = 0;
         for (const auto& data : tlist)
         {
-            pika::util::format_to(tmp, "Stack trace {} : {:#012x} : \n{}\n\n\n",
-                count, reinterpret_cast<uintptr_t>(data),
+            fmt::print(tmp, "Stack trace {} : {:#012x} : \n{}\n\n\n", count,
+                reinterpret_cast<uintptr_t>(data),
 #ifdef PIKA_HAVE_THREAD_BACKTRACE_ON_SUSPENSION
                 data->backtrace()
 #else

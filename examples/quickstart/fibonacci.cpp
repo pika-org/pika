@@ -14,7 +14,9 @@
 #include <pika/chrono.hpp>
 #include <pika/future.hpp>
 #include <pika/init.hpp>
-#include <pika/modules/format.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <cstdint>
 #include <iostream>
@@ -51,9 +53,9 @@ int pika_main(pika::program_options::variables_map& vm)
 
         std::uint64_t r = fibonacci(n);
 
-        char const* fmt = "fibonacci({1}) == {2}\nelapsed time: {3} [s]\n";
-        pika::util::format_to(
-            std::cout, fmt, n, r, t.elapsed<std::chrono::seconds>());
+        constexpr char const* fmt =
+            "fibonacci({}) == {}\nelapsed time: {} [s]\n";
+        fmt::print(std::cout, fmt, n, r, t.elapsed<std::chrono::seconds>());
     }
 
     return pika::finalize();    // Handles pika shutdown

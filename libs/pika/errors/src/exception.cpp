@@ -11,7 +11,6 @@
 #include <pika/errors/error_code.hpp>
 #include <pika/errors/exception.hpp>
 #include <pika/errors/exception_info.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/logging.hpp>
 
 #if defined(PIKA_WINDOWS)

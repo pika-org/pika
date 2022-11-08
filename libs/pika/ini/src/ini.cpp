@@ -807,7 +807,8 @@ namespace pika { namespace util {
         if (!line.empty())
             msg += " (offending entry: " + line + ")";
 
-        PIKA_THROW_EXCEPTION(pika::error::no_success, "section::line_msg", msg);
+        PIKA_THROW_EXCEPTION(
+            pika::error::no_success, "section::line_msg", "{}", msg);
     }
 
     ///////////////////////////////////////////////////////////////////////////////

@@ -418,11 +418,4 @@ namespace pika::threads::detail {
         }
     }
 #endif
-
-    std::ostream& operator<<(std::ostream& os, scheduler_base const& scheduler)
-    {
-        os << scheduler.get_description() << "(" << &scheduler << ")";
-
-        return os;
-    }
 }    // namespace pika::threads::detail

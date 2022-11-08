@@ -12,6 +12,8 @@
 
 #include <pika/config.hpp>
 
+#include <fmt/format.h>
+
 #include <string>
 #include <system_error>
 
@@ -161,6 +163,27 @@ namespace pika {
         /// \endcond
     }    // namespace detail
 }    // namespace pika
+
+template <>
+struct fmt::formatter<pika::error> : fmt::formatter<std::string>
+{
+    template <typename FormatContext>
+    auto format(pika::error e, FormatContext& ctx)
+    {
+        int e_int = static_cast<int>(e);
+        if (e_int >= static_cast<int>(pika::error::success) &&
+            e_int < static_cast<int>(pika::error::last_error))
+        {
+            return fmt::formatter<std::string>::format(
+                pika::detail::error_names[e_int], ctx);
+        }
+        else
+        {
+            return fmt::formatter<std::string>::format(
+                fmt::format("invalid pika::error ({})", e_int), ctx);
+        }
+    }
+};
 
 /// \cond NOEXTERNAL
 namespace std {

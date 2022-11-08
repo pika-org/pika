@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <pika/init.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/modules/program_options.hpp>
 #include <pika/modules/timing.hpp>
 #include <pika/parallel/algorithms/generate.hpp>
 #include <pika/parallel/algorithms/is_heap.hpp>
+
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #include <algorithm>
 #include <cstddef>
@@ -175,12 +177,11 @@ int pika_main(pika::program_options::variables_map& vm)
 
     std::cout << "\n-------------- Benchmark Result --------------"
               << std::endl;
-    auto fmt = "is_heap ({1}) : {2}(sec)";
-    pika::util::format_to(std::cout, fmt, "std", time_std) << std::endl;
-    pika::util::format_to(std::cout, fmt, "seq", time_seq) << std::endl;
-    pika::util::format_to(std::cout, fmt, "par", time_par) << std::endl;
-    pika::util::format_to(std::cout, fmt, "par_unseq", time_par_unseq)
-        << std::endl;
+    constexpr auto fmt = "is_heap ({}) : {}(sec)\n";
+    fmt::print(std::cout, fmt, "std", time_std);
+    fmt::print(std::cout, fmt, "seq", time_seq);
+    fmt::print(std::cout, fmt, "par", time_par);
+    fmt::print(std::cout, fmt, "par_unseq", time_par_unseq);
     std::cout << "----------------------------------------------" << std::endl;
 
     return pika::finalize();

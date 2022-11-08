@@ -9,15 +9,16 @@
 #include <pika/functional/function.hpp>
 #include <pika/ini/ini.hpp>
 #include <pika/modules/errors.hpp>
-#include <pika/modules/format.hpp>
 #include <pika/resource_partitioner/detail/partitioner.hpp>
 #include <pika/resource_partitioner/partitioner.hpp>
+#include <pika/string_util/from_string.hpp>
 #include <pika/thread_pools/scheduled_thread_pool.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/thread_pool_base.hpp>
 #include <pika/topology/topology.hpp>
-#include <pika/util/from_string.hpp>
 #include <pika/util/get_entry_as.hpp>
+
+#include <fmt/format.h>
 
 #include <atomic>
 #include <cstddef>
@@ -35,13 +36,13 @@ namespace pika { namespace resource { namespace detail {
     [[noreturn]] void throw_runtime_error(
         std::string const& func, std::string const& message)
     {
-        PIKA_THROW_EXCEPTION(pika::error::invalid_status, func, message);
+        PIKA_THROW_EXCEPTION(pika::error::invalid_status, func, "{}", message);
     }
 
     [[noreturn]] void throw_invalid_argument(
         std::string const& func, std::string const& message)
     {
-        PIKA_THROW_EXCEPTION(pika::error::bad_parameter, func, message);
+        PIKA_THROW_EXCEPTION(pika::error::bad_parameter, func, "{}", message);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -225,13 +226,11 @@ namespace pika { namespace resource { namespace detail {
         if (PIKA_HAVE_MAX_CPU_COUNT < topo_.get_number_of_pus())
         {
             throw_runtime_error("partitioner::partioner",
-                pika::util::format(
-                    "Currently, PIKA_HAVE_MAX_CPU_COUNT is set to {1} "
-                    "while your system has {2} processing units. Please "
-                    "reconfigure pika with -DPIKA_WITH_MAX_CPU_COUNT={2} "
-                    "(or "
-                    "higher) to increase the maximal CPU count supported by "
-                    "pika.",
+                fmt::format(
+                    "Currently, PIKA_HAVE_MAX_CPU_COUNT is set to {0} while "
+                    "your system has {1} processing units. Please reconfigure "
+                    "pika with -DPIKA_WITH_MAX_CPU_COUNT={1} (or higher) to "
+                    "increase the maximal CPU count supported by pika.",
                     PIKA_HAVE_MAX_CPU_COUNT, topo_.get_number_of_pus()));
         }
 #endif

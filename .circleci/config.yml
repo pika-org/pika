@@ -26,7 +26,7 @@ setup_arm64_machine: &setup_arm64_machine
 
 docker_default: &docker_default
     docker:
-      - image: pikaorg/pika-ci-base:11
+      - image: pikaorg/pika-ci-base:12
 
 defaults: &defaults
     <<: *working_dir_default
@@ -218,7 +218,7 @@ jobs:
                 -G "Ninja" \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DCMAKE_CXX_CLANG_TIDY=clang-tidy \
-                -DCMAKE_CXX_FLAGS="-fcolor-diagnostics" \
+                -DCMAKE_CXX_FLAGS="-fcolor-diagnostics -DSTDEXEC_DISABLE_STD_DEPRECATIONS" \
                 -DPIKA_WITH_GIT_COMMIT=${CIRCLE_SHA1} \
                 -DPIKA_WITH_GIT_BRANCH="${CIRCLE_BRANCH}" \
                 -DPIKA_WITH_GIT_TAG="${CIRCLE_TAG}" \
@@ -602,12 +602,27 @@ jobs:
               rm cmake.tar.gz
             cmake --version
             # Install pika dependencies
-            sudo apt install clang ninja-build libboost-regex-dev \
-            libboost-context-dev libhwloc-dev mpi-default-dev xsltproc -y
+            sudo apt install -y \
+              clang \
+              ninja-build \
+              libboost-regex-dev \
+            libboost-context-dev \
+            libhwloc-dev \
+              mpi-default-dev \
+              xsltproc
+            git clone --branch 9.1.0 --single-branch --depth 1 \
+              https://github.com/fmtlib/fmt.git
+            (cd fmt && \
+              cmake \
+                -GNinja \
+                -DBUILD_SHARED_LIBS=ON \
+                -DCMAKE_INSTALL_PREFIX=$HOME/project/install/fmt . && \
+              ninja install)
             mkdir build
       - run:
           name: Configuring pika Arm64
           command: |
+            export CMAKE_PREFIX_PATH=$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
             cmake \
                 ./pika \
                 -Bbuild \
@@ -644,6 +659,7 @@ jobs:
       - run:
           name: Building tests Arm64
           command: |
+            export CMAKE_PREFIX_PATH=$HOME/project/install/fmt:${CMAKE_PREFIX_PATH}
             cd build
             ninja -k 0 tests
       - run:

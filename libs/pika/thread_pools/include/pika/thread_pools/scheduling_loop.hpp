@@ -29,6 +29,8 @@
 #include <common/TracyColor.hpp>
 #endif
 
+#include <fmt/format.h>
+
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -48,8 +50,7 @@ namespace pika::threads::detail {
         LTM_(debug).format("scheduling_loop state change: pool({}), "
                            "scheduler({}), worker_thread({}), thread({}), "
                            "description({}), old state({}), new state({})",
-            *scheduler.get_parent_pool(), scheduler, num_thread,
-            get_thread_id_data(thrd),
+            *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
             get_thread_id_data(thrd)->get_description(),
             get_thread_state_name(old_state), get_thread_state_name(new_state));
     }
@@ -61,8 +62,7 @@ namespace pika::threads::detail {
         LTM_(warning).format("scheduling_loop state change failed: pool({}), "
                              "scheduler({}), worker thread ({}), thread({}), "
                              "description({}), state({}), {}",
-            *scheduler.get_parent_pool(), scheduler, num_thread,
-            get_thread_id_data(thrd)->get_thread_id(),
+            *scheduler.get_parent_pool(), scheduler, num_thread, thrd,
             get_thread_id_data(thrd)->get_description(),
             get_thread_state_name(state), info);
     }
