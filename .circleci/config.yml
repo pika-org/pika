@@ -218,7 +218,7 @@ jobs:
                 -G "Ninja" \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DCMAKE_CXX_CLANG_TIDY=clang-tidy \
-                -DCMAKE_CXX_FLAGS="-fcolor-diagnostics -DSTDEXEC_DISABLE_STD_DEPRECATIONS" \
+                -DCMAKE_CXX_FLAGS="-fcolor-diagnostics" \
                 -DPIKA_WITH_GIT_COMMIT=${CIRCLE_SHA1} \
                 -DPIKA_WITH_GIT_BRANCH="${CIRCLE_BRANCH}" \
                 -DPIKA_WITH_GIT_TAG="${CIRCLE_TAG}" \

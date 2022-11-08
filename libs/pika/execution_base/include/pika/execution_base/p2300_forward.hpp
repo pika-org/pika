@@ -11,6 +11,6 @@
 #include <stdexec/execution.hpp>
 
 namespace pika::execution::experimental {
-    using namespace std::execution;
+    using namespace stdexec;
 }
 #endif
