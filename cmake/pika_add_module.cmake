@@ -13,7 +13,6 @@ function(pika_add_module libname modulename)
   set(multi_value_args
       SOURCES
       HEADERS
-      COMPAT_HEADERS
       OBJECTS
       DEPENDENCIES
       MODULE_DEPENDENCIES
@@ -55,14 +54,6 @@ function(pika_add_module libname modulename)
   pika_debug("Add module ${modulename}: SOURCE_ROOT: ${SOURCE_ROOT}")
   pika_debug("Add module ${modulename}: HEADER_ROOT: ${HEADER_ROOT}")
 
-  if(${modulename}_COMPAT_HEADERS)
-    set(COMPAT_HEADER_ROOT "${CMAKE_CURRENT_BINARY_DIR}/include_compatibility")
-    file(MAKE_DIRECTORY ${COMPAT_HEADER_ROOT})
-    pika_debug(
-      "Add module ${modulename}: COMPAT_HEADER_ROOT: ${COMPAT_HEADER_ROOT}"
-    )
-  endif()
-
   set(all_headers ${${modulename}_HEADERS})
 
   # Write full path for the sources files
@@ -72,27 +63,6 @@ function(pika_add_module libname modulename)
   list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE
                                                                headers
   )
-  if(${modulename}_COMPAT_HEADERS)
-    string(REPLACE ";=>;" "=>" ${modulename}_COMPAT_HEADERS
-                   "${${modulename}_COMPAT_HEADERS}"
-    )
-    foreach(compat_header IN LISTS ${modulename}_COMPAT_HEADERS)
-      string(REPLACE "=>" ";" compat_header "${compat_header}")
-      list(LENGTH compat_header compat_header_length)
-      if(NOT compat_header_length EQUAL 2)
-        message(FATAL_ERROR "Invalid compatibility header ${compat_header}")
-      endif()
-
-      list(GET compat_header 0 old_header)
-      list(GET compat_header 1 new_header)
-      configure_file(
-        "${PROJECT_SOURCE_DIR}/cmake/templates/compatibility_header.hpp.in"
-        "${COMPAT_HEADER_ROOT}/${old_header}"
-      )
-      list(APPEND compat_headers "${COMPAT_HEADER_ROOT}/${old_header}")
-      list(APPEND all_headers ${old_header})
-    endforeach()
-  endif()
 
   # This header generation is disabled for config module specific generated
   # headers are included
@@ -246,13 +216,6 @@ function(pika_add_module libname modulename)
     )
   endif()
 
-  if(${modulename}_COMPAT_HEADERS)
-    target_include_directories(
-      pika_${modulename} ${module_public_keyword}
-      $<BUILD_INTERFACE:${COMPAT_HEADER_ROOT}>
-    )
-  endif()
-
   if(NOT module_is_interface_library)
     target_compile_definitions(
       pika_${modulename} PRIVATE ${libname_upper}_EXPORTS
@@ -277,14 +240,6 @@ function(pika_add_module libname modulename)
     CLASS "Source Files"
     TARGETS ${sources}
   )
-  if(${modulename}_COMPAT_HEADERS)
-    pika_add_source_group(
-      NAME pika_${modulename}
-      ROOT ${COMPAT_HEADER_ROOT}/pika
-      CLASS "Generated Files"
-      TARGETS ${compat_headers}
-    )
-  endif()
 
   if(${modulename}_GLOBAL_HEADER_GEN OR ${modulename}_CONFIG_FILES)
     pika_add_source_group(
@@ -353,15 +308,6 @@ function(pika_add_module libname modulename)
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT ${modulename}
   )
-
-  # Install the compatibility headers from the source
-  if(${modulename}_COMPAT_HEADERS)
-    install(
-      DIRECTORY ${COMPAT_HEADER_ROOT}/pika
-      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-      COMPONENT ${modulename}
-    )
-  endif()
 
   # Installing the generated header files from the build dir
   install(

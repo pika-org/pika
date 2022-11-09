@@ -94,7 +94,6 @@ pika_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${{{module_name}_sources}}
   HEADERS ${{{module_name}_headers}}
-  COMPAT_HEADERS ${{{module_name}_compat_headers}}
   DEPENDENCIES
   CMAKE_SUBDIRS examples tests
 )
