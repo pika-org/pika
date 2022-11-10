@@ -2,12 +2,14 @@
 //
 // Copyright Michael Park, 2015-2017
 //
+// SPDX-License-Identifier: BSL-1.0
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 #pragma once
 
-// pika-no-inspect : disable automatic code inspection for this file
+// noinshpect: disable automatic code inspection for this file
+// pika-no-inspect
 // clang-format off
 
 /*

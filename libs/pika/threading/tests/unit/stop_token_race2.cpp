@@ -13,6 +13,7 @@
 #include <pika/modules/threading.hpp>
 #include <pika/testing.hpp>
 
+#include <exception>
 #include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////

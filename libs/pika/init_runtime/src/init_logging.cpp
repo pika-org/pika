@@ -8,6 +8,7 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_LOGGING)
+#include <pika/assert.hpp>
 #include <pika/init_runtime/detail/init_logging.hpp>
 #include <pika/runtime/get_locality_id.hpp>
 #include <pika/runtime/get_worker_thread_num.hpp>

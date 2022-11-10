@@ -84,7 +84,7 @@ namespace pika { namespace program_options {
      *      readable error message
      *
      *  Placeholders are surrounded by % signs: %example%
-     *      Poor man's version of boost::format
+     *      Poor man's version of format
      *
      *  If a parameter name is absent, perform default substitutions
      *      instead so ugly placeholders are never left in-place.

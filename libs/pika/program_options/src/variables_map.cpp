@@ -238,7 +238,7 @@ namespace pika { namespace program_options {
                defined. Do not crash on such values. In multi-module programs,
                one module might add custom values, and the 'notify' function
                will be called after that, so we check that value_sematics is
-               not NULL. See:
+               not nullptr. See:
                    https://svn.boost.org/trac/boost/ticket/2782
             */
             if (k.second.m_value_semantic)
