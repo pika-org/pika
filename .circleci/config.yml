@@ -26,7 +26,7 @@ setup_arm64_machine: &setup_arm64_machine
 
 docker_default: &docker_default
     docker:
-      - image: pikaorg/pika-ci-base:12
+      - image: pikaorg/pika-ci-base:13
 
 defaults: &defaults
     <<: *working_dir_default
@@ -299,6 +299,32 @@ jobs:
           destination: pika_inspect_report.html
       - store_test_results:
           path: /report
+
+  inshpect:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /pika
+      - run:
+          name: Running inshpect
+          command: |
+              export INSHPECT_NUMTHREADS=2
+              export INSHPECT_VERBOSE=1
+              # TODO: Currently restricted to libs, remove libs when regular inspect tool is removed
+              inshpect /pika/source/libs /pika/source/.inshpect.toml > \
+                  inshpect.txt
+              res=$?
+              INSHPECT_FD="fd --exclude LICENSE_1_0.txt" \
+                  inshpect /pika/source /pika/source/.inshpect-noncpp.toml > \
+                  inshpect-noncpp.txt
+              res_noncpp=$?
+              exit $((res + res_noncpp))
+      - store_artifacts:
+          path: inshpect.txt
+          destination: inshpect.txt
+      - store_artifacts:
+          path: inshpect-noncpp.txt
+          destination: inshpect-noncpp.txt
 
   spellcheck:
     <<: *defaults
@@ -718,6 +744,9 @@ workflows:
           requires:
             - checkout_code
       - spellcheck:
+          requires:
+            - checkout_code
+      - inshpect:
           requires:
             - checkout_code
       - inspect:
