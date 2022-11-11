@@ -12,7 +12,7 @@
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/type_support/equality.hpp>
 
-#include <pika/execution/algorithms/detail/is_negative.hpp>
+#include <pika/parallel/algorithms/detail/is_negative.hpp>
 
 #include <algorithm>
 #include <cstddef>

@@ -11,10 +11,10 @@
 #include <pika/futures/future.hpp>
 #include <pika/iterator_support/iterator_range.hpp>
 
-#include <pika/execution/algorithms/detail/is_negative.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/execution/executors/execution_information.hpp>
 #include <pika/execution/executors/execution_parameters.hpp>
+#include <pika/parallel/algorithms/detail/is_negative.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/util/detail/chunk_size_iterator.hpp>
 
 #include <algorithm>

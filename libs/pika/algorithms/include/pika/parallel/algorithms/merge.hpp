@@ -174,12 +174,12 @@ namespace pika {
 #include <pika/parallel/util/detail/sender_util.hpp>
 
 #include <pika/algorithms/traits/projected.hpp>
-#include <pika/execution/algorithms/detail/is_negative.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/copy.hpp>
 #include <pika/parallel/algorithms/detail/advance_to_sentinel.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
+#include <pika/parallel/algorithms/detail/is_negative.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/detail/rotate.hpp>
 #include <pika/parallel/algorithms/detail/upper_lower_bound.hpp>
 #include <pika/parallel/util/compare_projected.hpp>

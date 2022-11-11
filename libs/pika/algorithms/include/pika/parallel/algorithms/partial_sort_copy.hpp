@@ -152,13 +152,13 @@ namespace pika {
 #include <pika/iterator_support/traits/is_iterator.hpp>
 
 #include <pika/algorithms/traits/projected.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/exception_list.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/copy.hpp>
 #include <pika/parallel/algorithms/detail/advance_to_sentinel.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
 #include <pika/parallel/algorithms/detail/is_sorted.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/partial_sort.hpp>
 #include <pika/parallel/util/compare_projected.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>

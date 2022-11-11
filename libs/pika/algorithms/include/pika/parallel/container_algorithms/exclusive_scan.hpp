@@ -570,11 +570,11 @@ namespace pika { namespace ranges {
 
 #include <pika/config.hpp>
 #include <pika/algorithms/traits/projected_range.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/iterator_support/traits/is_range.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/exclusive_scan.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>

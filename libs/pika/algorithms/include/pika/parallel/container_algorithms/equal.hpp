@@ -215,7 +215,7 @@ namespace pika { namespace ranges {
 
 #include <pika/algorithms/traits/projected.hpp>
 #include <pika/algorithms/traits/projected_range.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/equal.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
 #include <pika/parallel/util/invoke_projected.hpp>

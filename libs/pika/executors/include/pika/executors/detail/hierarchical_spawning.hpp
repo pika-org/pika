@@ -12,7 +12,6 @@
 #include <pika/assert.hpp>
 #include <pika/async_base/launch_policy.hpp>
 #include <pika/coroutines/thread_enums.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/execution/detail/async_launch_policy_dispatch.hpp>
 #include <pika/execution/detail/post_policy_dispatch.hpp>
 #include <pika/execution/executors/execution.hpp>

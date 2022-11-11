@@ -216,11 +216,11 @@ namespace pika {
 #include <pika/type_support/unused.hpp>
 
 #include <pika/algorithms/traits/projected.hpp>
-#include <pika/execution/algorithms/detail/is_negative.hpp>
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
 #include <pika/parallel/algorithms/detail/find.hpp>
+#include <pika/parallel/algorithms/detail/is_negative.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/detail/transfer.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/foreach_partitioner.hpp>

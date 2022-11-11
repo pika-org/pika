@@ -99,9 +99,9 @@ namespace pika {
 #include <pika/iterator_support/traits/is_iterator.hpp>
 #include <pika/parallel/util/detail/sender_util.hpp>
 
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/algorithms/detail/upper_lower_bound.hpp>
 #include <pika/parallel/util/cancellation_token.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>

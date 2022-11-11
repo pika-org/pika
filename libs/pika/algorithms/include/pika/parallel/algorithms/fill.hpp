@@ -112,11 +112,11 @@ namespace pika {
 #include <pika/parallel/util/detail/sender_util.hpp>
 #include <pika/type_support/void_guard.hpp>
 
-#include <pika/execution/algorithms/detail/is_negative.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/parallel/algorithms/detail/dispatch.hpp>
 #include <pika/parallel/algorithms/detail/distance.hpp>
 #include <pika/parallel/algorithms/detail/fill.hpp>
+#include <pika/parallel/algorithms/detail/is_negative.hpp>
 #include <pika/parallel/algorithms/for_each.hpp>
 #include <pika/parallel/util/detail/algorithm_result.hpp>
 #include <pika/parallel/util/projection_identity.hpp>

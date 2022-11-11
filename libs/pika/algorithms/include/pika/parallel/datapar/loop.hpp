@@ -9,7 +9,6 @@
 #include <pika/config.hpp>
 
 #if defined(PIKA_HAVE_DATAPAR)
-#include <pika/execution/algorithms/detail/predicates.hpp>
 #include <pika/execution/traits/is_execution_policy.hpp>
 #include <pika/execution/traits/vector_pack_alignment_size.hpp>
 #include <pika/execution/traits/vector_pack_load_store.hpp>
@@ -17,6 +16,7 @@
 #include <pika/executors/datapar/execution_policy.hpp>
 #include <pika/executors/execution_policy.hpp>
 #include <pika/functional/tag_invoke.hpp>
+#include <pika/parallel/algorithms/detail/predicates.hpp>
 #include <pika/parallel/datapar/iterator_helpers.hpp>
 #include <pika/parallel/util/loop.hpp>
 
