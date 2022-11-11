@@ -23,7 +23,7 @@ namespace pika::parallel::traits::detail {
 }    // namespace pika::parallel::traits::detail
 
 #if !defined(__CUDACC__)
-#include <pika/execution/traits/detail/simd/vector_pack_load_store.hpp>
+#include <pika/parallel/util/detail/simd/vector_pack_load_store.hpp>
 #endif
 
 #endif

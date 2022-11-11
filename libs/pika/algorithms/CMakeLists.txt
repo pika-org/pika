@@ -175,6 +175,12 @@ set(algorithms_headers
     pika/parallel/util/detail/scoped_executor_parameters.hpp
     pika/parallel/util/detail/select_partitioner.hpp
     pika/parallel/util/detail/sender_util.hpp
+    pika/parallel/util/detail/simd/vector_pack_alignment_size.hpp
+    pika/parallel/util/detail/simd/vector_pack_all_any_none.hpp
+    pika/parallel/util/detail/simd/vector_pack_count_bits.hpp
+    pika/parallel/util/detail/simd/vector_pack_find.hpp
+    pika/parallel/util/detail/simd/vector_pack_load_store.hpp
+    pika/parallel/util/detail/simd/vector_pack_type.hpp
     pika/parallel/util/foreach_partitioner.hpp
     pika/parallel/util/invoke_projected.hpp
     pika/parallel/util/loop.hpp
@@ -192,6 +198,12 @@ set(algorithms_headers
     pika/parallel/util/scan_partitioner.hpp
     pika/parallel/util/transfer.hpp
     pika/parallel/util/transform_loop.hpp
+    pika/parallel/util/vector_pack_alignment_size.hpp
+    pika/parallel/util/vector_pack_all_any_none.hpp
+    pika/parallel/util/vector_pack_count_bits.hpp
+    pika/parallel/util/vector_pack_find.hpp
+    pika/parallel/util/vector_pack_load_store.hpp
+    pika/parallel/util/vector_pack_type.hpp
     pika/parallel/util/zip_iterator.hpp
 )
 

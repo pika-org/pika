@@ -46,21 +46,9 @@ set(execution_headers
     pika/execution/executors/rebind_executor.hpp
     pika/execution/executors/static_chunk_size.hpp
     pika/execution/scheduler_queries.hpp
-    pika/execution/traits/detail/simd/vector_pack_alignment_size.hpp
-    pika/execution/traits/detail/simd/vector_pack_all_any_none.hpp
-    pika/execution/traits/detail/simd/vector_pack_count_bits.hpp
-    pika/execution/traits/detail/simd/vector_pack_find.hpp
-    pika/execution/traits/detail/simd/vector_pack_load_store.hpp
-    pika/execution/traits/detail/simd/vector_pack_type.hpp
     pika/execution/traits/executor_traits.hpp
     pika/execution/traits/future_then_result_exec.hpp
     pika/execution/traits/is_execution_policy.hpp
-    pika/execution/traits/vector_pack_alignment_size.hpp
-    pika/execution/traits/vector_pack_all_any_none.hpp
-    pika/execution/traits/vector_pack_count_bits.hpp
-    pika/execution/traits/vector_pack_find.hpp
-    pika/execution/traits/vector_pack_load_store.hpp
-    pika/execution/traits/vector_pack_type.hpp
 )
 
 set(execution_sources execution_parameter_callbacks.cpp)

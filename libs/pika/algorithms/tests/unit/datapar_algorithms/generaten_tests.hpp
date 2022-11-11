@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <pika/execution/traits/vector_pack_type.hpp>
 #include <pika/init.hpp>
 #include <pika/parallel/algorithms/generate.hpp>
 #include <pika/parallel/datapar.hpp>
+#include <pika/parallel/util/vector_pack_type.hpp>
 #include <pika/testing.hpp>
 
 #include <cstddef>

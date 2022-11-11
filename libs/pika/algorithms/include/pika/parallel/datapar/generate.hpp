@@ -10,13 +10,13 @@
 
 #if defined(PIKA_HAVE_DATAPAR)
 #include <pika/execution/traits/is_execution_policy.hpp>
-#include <pika/execution/traits/vector_pack_alignment_size.hpp>
-#include <pika/execution/traits/vector_pack_type.hpp>
 #include <pika/functional/tag_invoke.hpp>
 #include <pika/parallel/algorithms/detail/generate.hpp>
 #include <pika/parallel/datapar/iterator_helpers.hpp>
 #include <pika/parallel/datapar/loop.hpp>
 #include <pika/parallel/util/result_types.hpp>
+#include <pika/parallel/util/vector_pack_alignment_size.hpp>
+#include <pika/parallel/util/vector_pack_type.hpp>
 
 #include <cstddef>
 #include <cstdint>

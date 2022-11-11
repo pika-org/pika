@@ -32,7 +32,7 @@ namespace pika::parallel::traits::detail {
 }    // namespace pika::parallel::traits::detail
 
 #if !defined(__CUDACC__)
-#include <pika/execution/traits/detail/simd/vector_pack_type.hpp>
+#include <pika/parallel/util/detail/simd/vector_pack_type.hpp>
 #endif
 
 #endif
