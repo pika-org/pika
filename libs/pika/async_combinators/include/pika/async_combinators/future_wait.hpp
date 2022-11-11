@@ -48,7 +48,7 @@ namespace pika::detail {
     struct wait_each
     {
     protected:
-        void on_future_ready_(pika::execution_base::agent_ref ctx)
+        void on_future_ready_(pika::execution::detail::agent_ref ctx)
         {
             std::size_t oldcount = ready_count_.fetch_add(1);
             PIKA_ASSERT(oldcount < lazy_values_.size());
@@ -56,7 +56,7 @@ namespace pika::detail {
             if (oldcount + 1 == lazy_values_.size())
             {
                 // reactivate waiting thread only if it's not us
-                if (ctx != pika::execution_base::this_thread::agent())
+                if (ctx != pika::execution::this_thread::detail::agent())
                     ctx.resume();
                 else
                     goal_reached_on_calling_thread_ = true;
@@ -65,7 +65,7 @@ namespace pika::detail {
 
         template <typename Index>
         void on_future_ready(
-            std::false_type, Index i, pika::execution_base::agent_ref ctx)
+            std::false_type, Index i, pika::execution::detail::agent_ref ctx)
         {
             if (lazy_values_[i].has_value())
             {
@@ -81,7 +81,7 @@ namespace pika::detail {
 
         template <typename Index>
         void on_future_ready(
-            std::true_type, Index i, pika::execution_base::agent_ref ctx)
+            std::true_type, Index i, pika::execution::detail::agent_ref ctx)
         {
             if (lazy_values_[i].has_value())
             {
@@ -155,7 +155,7 @@ namespace pika::detail {
 
             // set callback functions to executed when future is ready
             std::size_t size = lazy_values_.size();
-            auto ctx = pika::execution_base::this_thread::agent();
+            auto ctx = pika::execution::this_thread::detail::agent();
             for (std::size_t i = 0; i != size; ++i)
             {
                 using shared_state_ptr =
@@ -178,7 +178,7 @@ namespace pika::detail {
             if (!goal_reached_on_calling_thread_)
             {
                 // wait for all of the futures to return to become ready
-                pika::execution_base::this_thread::suspend(
+                pika::execution::this_thread::detail::suspend(
                     "pika::lcos::detail::wait_each::operator()");
             }
 

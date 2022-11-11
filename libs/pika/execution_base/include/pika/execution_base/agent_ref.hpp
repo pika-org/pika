@@ -16,8 +16,7 @@
 #include <iosfwd>
 #include <string>
 
-namespace pika { namespace execution_base {
-
+namespace pika::execution::detail {
     struct agent_base;
 
     class PIKA_EXPORT agent_ref
@@ -48,18 +47,20 @@ namespace pika { namespace execution_base {
             impl_ = impl;
         }
 
-        void yield(char const* desc = "pika::execution_base::agent_ref::yield");
+        void yield(
+            char const* desc = "pika::execution::detail::agent_ref::yield");
         void yield_k(std::size_t k,
-            char const* desc = "pika::execution_base::agent_ref::yield_k");
+            char const* desc = "pika::execution::detail::agent_ref::yield_k");
         void suspend(
-            char const* desc = "pika::execution_base::agent_ref::suspend");
+            char const* desc = "pika::execution::detail::agent_ref::suspend");
         void resume(
-            char const* desc = "pika::execution_base::agent_ref::resume");
-        void abort(char const* desc = "pika::execution_base::agent_ref::abort");
+            char const* desc = "pika::execution::detail::agent_ref::resume");
+        void abort(
+            char const* desc = "pika::execution::detail::agent_ref::abort");
 
         template <typename Rep, typename Period>
         void sleep_for(std::chrono::duration<Rep, Period> const& sleep_duration,
-            char const* desc = "pika::execution_base::agent_ref::sleep_for")
+            char const* desc = "pika::execution::detail::agent_ref::sleep_for")
         {
             sleep_for(pika::chrono::steady_duration{sleep_duration}, desc);
         }
@@ -67,7 +68,8 @@ namespace pika { namespace execution_base {
         template <typename Clock, typename Duration>
         void
         sleep_until(std::chrono::time_point<Clock, Duration> const& sleep_time,
-            char const* desc = "pika::execution_base::agent_ref::sleep_until")
+            char const* desc =
+                "pika::execution::detail::agent_ref::sleep_until")
         {
             sleep_until(pika::chrono::steady_time_point{sleep_time}, desc);
         }
@@ -106,16 +108,16 @@ namespace pika { namespace execution_base {
     };
 
     PIKA_EXPORT std::string format(agent_ref const&);
-}}    // namespace pika::execution_base
+}    // namespace pika::execution::detail
 
 template <>
-struct fmt::formatter<pika::execution_base::agent_ref>
+struct fmt::formatter<pika::execution::detail::agent_ref>
   : fmt::formatter<std::string>
 {
     template <typename FormatContext>
-    auto format(pika::execution_base::agent_ref const& a, FormatContext& ctx)
+    auto format(pika::execution::detail::agent_ref const& a, FormatContext& ctx)
     {
         return fmt::formatter<std::string>::format(
-            pika::execution_base::format(a), ctx);
+            pika::execution::detail::format(a), ctx);
     }
 };

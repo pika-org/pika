@@ -11,12 +11,11 @@
 
 #include <cstdint>
 
-namespace pika { namespace execution_base {
-
+namespace pika::execution::detail {
     struct context_base
     {
         virtual ~context_base() = default;
 
         virtual resource_base const& resource() const = 0;
     };
-}}    // namespace pika::execution_base
+}    // namespace pika::execution::detail

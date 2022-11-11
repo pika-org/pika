@@ -151,7 +151,7 @@ namespace pika::threads::detail {
                 }
                 else
                 {
-                    pika::execution_base::this_thread::yield_k(
+                    pika::execution::this_thread::detail::yield_k(
                         k, "pika::threads::detail::set_thread_state");
                     ++k;
 

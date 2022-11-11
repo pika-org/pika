@@ -12,13 +12,13 @@
 #include <functional>
 #include <type_traits>
 
-namespace pika { namespace traits {
+namespace pika::traits {
     // new executor framework
     template <typename Parameters, typename Enable = void>
     struct is_executor_parameters;
-}}    // namespace pika::traits
+}    // namespace pika::traits
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     ///////////////////////////////////////////////////////////////////////////
     // Default sequential executor parameters
     struct sequential_executor_parameters
@@ -94,9 +94,9 @@ namespace pika { namespace parallel { namespace execution {
     template <typename T>
     inline constexpr bool is_executor_parameters_v =
         is_executor_parameters<T>::value;
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
-namespace pika { namespace traits {
+namespace pika::traits {
     // new executor framework
     template <typename Parameters, typename Enable>
     struct is_executor_parameters
@@ -110,4 +110,4 @@ namespace pika { namespace traits {
     template <typename T>
     inline constexpr bool is_executor_parameters_v =
         is_executor_parameters<T>::value;
-}}    // namespace pika::traits
+}    // namespace pika::traits

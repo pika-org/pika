@@ -319,7 +319,7 @@ namespace pika { namespace execution { namespace experimental {
             explicit shared_data(execution::thread_priority priority,
                 execution::thread_stacksize stacksize, loop_schedule schedule,
                 std::chrono::nanoseconds yield_delay)
-              : pool_(this_thread::get_pool())
+              : pool_(pika::this_thread::get_pool())
               , priority_(priority)
               , stacksize_(stacksize)
               , schedule_(schedule)

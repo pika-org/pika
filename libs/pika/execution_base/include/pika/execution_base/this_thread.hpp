@@ -17,41 +17,41 @@
 #include <cstdint>
 #include <ratio>
 
-namespace pika { namespace execution_base {
+namespace pika::execution {
     namespace detail {
         PIKA_EXPORT agent_base& get_default_agent();
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    namespace this_thread {
-        namespace detail {
+    namespace this_thread::detail {
+        struct agent_storage;
 
-            struct agent_storage;
-            PIKA_EXPORT agent_storage* get_agent_storage();
-        }    // namespace detail
+        PIKA_EXPORT agent_storage* get_agent_storage();
 
         struct PIKA_EXPORT reset_agent
         {
-            reset_agent(detail::agent_storage*, agent_base& impl);
-            reset_agent(agent_base& impl);
+            reset_agent(
+                detail::agent_storage*, execution::detail::agent_base& impl);
+            reset_agent(execution::detail::agent_base& impl);
             ~reset_agent();
 
             detail::agent_storage* storage_;
-            agent_base* old_;
+            execution::detail::agent_base* old_;
         };
 
-        PIKA_EXPORT pika::execution_base::agent_ref agent();
+        PIKA_EXPORT pika::execution::detail::agent_ref agent();
 
         PIKA_EXPORT void yield(
-            char const* desc = "pika::execution_base::this_thread::yield");
+            char const* desc = "pika::execution::this_thread::detail::yield");
         PIKA_EXPORT void yield_k(std::size_t k,
-            char const* desc = "pika::execution_base::this_thread::yield_k");
+            char const* desc = "pika::execution::this_thread::detail::yield_k");
         PIKA_EXPORT void suspend(
-            char const* desc = "pika::execution_base::this_thread::suspend");
+            char const* desc = "pika::execution::this_thread::detail::suspend");
 
         template <typename Rep, typename Period>
         void sleep_for(std::chrono::duration<Rep, Period> const& sleep_duration,
-            char const* desc = "pika::execution_base::this_thread::sleep_for")
+            char const* desc =
+                "pika::execution::this_thread::detail::sleep_for")
         {
             agent().sleep_for(sleep_duration, desc);
         }
@@ -59,14 +59,15 @@ namespace pika { namespace execution_base {
         template <class Clock, class Duration>
         void
         sleep_until(std::chrono::time_point<Clock, Duration> const& sleep_time,
-            char const* desc = "pika::execution_base::this_thread::sleep_for")
+            char const* desc =
+                "pika::execution::this_thread::detail::sleep_for")
         {
             agent().sleep_until(sleep_time, desc);
         }
-    }    // namespace this_thread
-}}       // namespace pika::execution_base
+    }    // namespace this_thread::detail
+}    // namespace pika::execution
 
-namespace pika { namespace util {
+namespace pika::util {
     template <typename Predicate>
     void yield_while(Predicate&& predicate, const char* thread_name = nullptr,
         bool allow_timed_suspension = true)
@@ -75,14 +76,15 @@ namespace pika { namespace util {
         {
             for (std::size_t k = 0; predicate(); ++k)
             {
-                pika::execution_base::this_thread::yield_k(k, thread_name);
+                pika::execution::this_thread::detail::yield_k(k, thread_name);
             }
         }
         else
         {
             for (std::size_t k = 0; predicate(); ++k)
             {
-                pika::execution_base::this_thread::yield_k(k % 16, thread_name);
+                pika::execution::this_thread::detail::yield_k(
+                    k % 16, thread_name);
             }
         }
     }
@@ -116,7 +118,7 @@ namespace pika { namespace util {
                     else
                     {
                         count = 0;
-                        pika::execution_base::this_thread::yield_k(
+                        pika::execution::this_thread::detail::yield_k(
                             k, thread_name);
                     }
                 }
@@ -135,7 +137,7 @@ namespace pika { namespace util {
                     else
                     {
                         count = 0;
-                        pika::execution_base::this_thread::yield_k(
+                        pika::execution::this_thread::detail::yield_k(
                             k % 16, thread_name);
                     }
                 }
@@ -179,7 +181,7 @@ namespace pika { namespace util {
                     else
                     {
                         count = 0;
-                        pika::execution_base::this_thread::yield_k(
+                        pika::execution::this_thread::detail::yield_k(
                             k, thread_name);
                     }
                 }
@@ -203,11 +205,11 @@ namespace pika { namespace util {
                     else
                     {
                         count = 0;
-                        pika::execution_base::this_thread::yield_k(
+                        pika::execution::this_thread::detail::yield_k(
                             k % 16, thread_name);
                     }
                 }
             }
         }
     }    // namespace detail
-}}       // namespace pika::util
+}    // namespace pika::util

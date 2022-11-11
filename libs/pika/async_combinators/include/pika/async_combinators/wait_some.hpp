@@ -206,7 +206,7 @@ namespace pika {
                                 util::detail::deferred_call(
                                     &wait_some<Sequence>::on_future_ready,
                                     wait_.shared_from_this(),
-                                    pika::execution_base::this_thread::
+                                    pika::execution::this_thread::detail::
                                         agent()));
                             return;
                         }
@@ -256,12 +256,12 @@ namespace pika {
           : std::enable_shared_from_this<wait_some<Sequence>>    //-V690
         {
         public:
-            void on_future_ready(pika::execution_base::agent_ref ctx)
+            void on_future_ready(pika::execution::detail::agent_ref ctx)
             {
                 if (count_.fetch_add(1) + 1 == needed_count_)
                 {
                     // reactivate waiting thread only if it's not us
-                    if (ctx != pika::execution_base::this_thread::agent())
+                    if (ctx != pika::execution::this_thread::detail::agent())
                     {
                         ctx.resume();
                     }
@@ -301,7 +301,7 @@ namespace pika {
                 if (!goal_reached_on_calling_thread_)
                 {
                     // wait for any of the futures to return to become ready
-                    pika::execution_base::this_thread::suspend(
+                    pika::execution::this_thread::detail::suspend(
                         "pika::detail::wait_some::operator()");
                 }
 

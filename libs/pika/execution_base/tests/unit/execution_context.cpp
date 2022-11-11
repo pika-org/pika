@@ -17,17 +17,17 @@
 
 std::size_t dummy_called = 0;
 
-struct dummy_context : pika::execution_base::context_base
+struct dummy_context : pika::execution::detail::context_base
 {
-    pika::execution_base::resource_base const& resource() const override
+    pika::execution::detail::resource_base const& resource() const override
     {
         return resource_;
     }
 
-    pika::execution_base::resource_base resource_;
+    pika::execution::detail::resource_base resource_;
 };
 
-struct dummy_agent : pika::execution_base::agent_base
+struct dummy_agent : pika::execution::detail::agent_base
 {
     std::string description() const override
     {
@@ -64,22 +64,23 @@ void test_basic_functionality()
         PIKA_TEST_EQ(dummy_called, 0u);
         {
             dummy_agent dummy;
-            pika::execution_base::this_thread::reset_agent ctx(dummy);
-            pika::execution_base::this_thread::yield();
+            pika::execution::this_thread::detail::reset_agent ctx(dummy);
+            pika::execution::this_thread::detail::yield();
         }
 
         PIKA_TEST_EQ(dummy_called, 1u);
 
-        pika::execution_base::this_thread::yield();
+        pika::execution::this_thread::detail::yield();
 
         PIKA_TEST_EQ(dummy_called, 1u);
     }
 
     // Test that we get different contexts in different threads...
     {
-        auto context = pika::execution_base::this_thread::agent();
+        auto context = pika::execution::this_thread::detail::agent();
         std::thread t([&context]() {
-            PIKA_TEST_NEQ(context, pika::execution_base::this_thread::agent());
+            PIKA_TEST_NEQ(
+                context, pika::execution::this_thread::detail::agent());
         });
         t.join();
     }
@@ -93,7 +94,7 @@ struct simple_spinlock
     {
         while (locked_.test_and_set())
         {
-            pika::execution_base::this_thread::yield();
+            pika::execution::this_thread::detail::yield();
         }
     }
 
@@ -134,12 +135,12 @@ void test_yield()
 void test_suspend_resume()
 {
     std::mutex mtx;
-    pika::execution_base::agent_ref suspended;
+    pika::execution::detail::agent_ref suspended;
 
     bool resumed = false;
 
     std::thread t1([&mtx, &suspended, &resumed]() {
-        auto context = pika::execution_base::this_thread::agent();
+        auto context = pika::execution::this_thread::detail::agent();
         {
             std::unique_lock<std::mutex> l(mtx);
             suspended = context;
@@ -165,11 +166,11 @@ void test_sleep()
 {
     auto now = std::chrono::steady_clock::now();
     auto sleep_duration = std::chrono::milliseconds(100);
-    pika::execution_base::this_thread::sleep_for(sleep_duration);
+    pika::execution::this_thread::detail::sleep_for(sleep_duration);
     PIKA_TEST(now + sleep_duration <= std::chrono::steady_clock::now());
 
     auto sleep_time = sleep_duration * 2 + std::chrono::steady_clock::now();
-    pika::execution_base::this_thread::sleep_until(sleep_time);
+    pika::execution::this_thread::detail::sleep_until(sleep_time);
     PIKA_TEST(now + sleep_duration * 2 <= std::chrono::steady_clock::now());
 }
 

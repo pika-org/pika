@@ -12,8 +12,7 @@
 #include <cstddef>
 #include <string>
 
-namespace pika { namespace execution_base {
-
+namespace pika::execution::detail {
     struct agent_base
     {
         virtual ~agent_base() = default;
@@ -34,4 +33,4 @@ namespace pika { namespace execution_base {
             pika::chrono::steady_time_point const& sleep_time,
             char const* desc) = 0;
     };
-}}    // namespace pika::execution_base
+}    // namespace pika::execution::detail

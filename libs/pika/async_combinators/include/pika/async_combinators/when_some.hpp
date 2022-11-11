@@ -267,7 +267,7 @@ namespace pika {
                                     &detail::when_some<
                                         Sequence>::on_future_ready,
                                     when_.shared_from_this(), idx_,
-                                    pika::execution_base::this_thread::
+                                    pika::execution::this_thread::detail::
                                         agent()));
                             ++idx_;
 
@@ -341,7 +341,7 @@ namespace pika {
 
         public:
             void on_future_ready(
-                std::size_t idx, pika::execution_base::agent_ref ctx)
+                std::size_t idx, pika::execution::detail::agent_ref ctx)
             {
                 std::size_t const new_count = count_.fetch_add(1) + 1;
                 if (new_count <= needed_count_)
@@ -353,7 +353,8 @@ namespace pika {
 
                     if (new_count == needed_count_)
                     {
-                        if (ctx != pika::execution_base::this_thread::agent())
+                        if (ctx !=
+                            pika::execution::this_thread::detail::agent())
                         {
                             ctx.resume();
                         }
@@ -396,7 +397,7 @@ namespace pika {
                         std::memory_order_acquire))
                 {
                     // wait for any of the futures to return to become ready
-                    pika::execution_base::this_thread::suspend(
+                    pika::execution::this_thread::detail::suspend(
                         "pika::lcos::detail::when_some::operator()");
                 }
 

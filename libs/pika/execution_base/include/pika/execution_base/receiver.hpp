@@ -45,7 +45,7 @@ namespace pika::execution::experimental {
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
 
 #if defined(DOXYGEN)
     /// set_value is a customization point object. The expression
@@ -216,7 +216,7 @@ namespace pika { namespace execution { namespace experimental {
     inline constexpr struct get_env_t
     {
     } get_env{};
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 #endif
 
 namespace pika::execution::experimental::detail {

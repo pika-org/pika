@@ -251,7 +251,7 @@ namespace pika {
                                     &detail::when_any<
                                         Sequence>::on_future_ready,
                                     when_.shared_from_this(), idx_,
-                                    pika::execution_base::this_thread::
+                                    pika::execution::this_thread::detail::
                                         agent()));
                             ++idx_;
                             return;
@@ -315,14 +315,14 @@ namespace pika {
         {
         public:
             void on_future_ready(
-                std::size_t idx, pika::execution_base::agent_ref ctx)
+                std::size_t idx, pika::execution::detail::agent_ref ctx)
             {
                 std::size_t index_not_initialized =
                     when_any_result<Sequence>::index_error();
                 if (index_.compare_exchange_strong(index_not_initialized, idx))
                 {
                     // reactivate waiting thread only if it's not us
-                    if (ctx != pika::execution_base::this_thread::agent())
+                    if (ctx != pika::execution::this_thread::detail::agent())
                     {
                         ctx.resume();
                     }
@@ -361,7 +361,7 @@ namespace pika {
                 if (!goal_reached_on_calling_thread_)
                 {
                     // wait for any of the futures to return to become ready
-                    pika::execution_base::this_thread::suspend(
+                    pika::execution::this_thread::detail::suspend(
                         "pika::detail::when_any::operator()");
                 }
 
