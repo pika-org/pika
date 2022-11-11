@@ -23,7 +23,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace detail {
+namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     // dispatch point used for launch_policy implementations
@@ -252,4 +252,4 @@ namespace pika { namespace detail {
             return p.get_future();
         }
     };
-}}    // namespace pika::detail
+}    // namespace pika::detail

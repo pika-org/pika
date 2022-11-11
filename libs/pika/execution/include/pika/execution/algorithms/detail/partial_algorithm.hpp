@@ -12,10 +12,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika {
-    namespace execution {
-        namespace experimental {
-            namespace detail {
+namespace pika::execution::experimental::detail {
     template <typename Tag, typename IsPack, typename... Ts>
     struct partial_algorithm_base;
 
@@ -52,4 +49,4 @@ namespace pika {
     using partial_algorithm = partial_algorithm_base<Tag,
         typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type,
         Ts...>;
-}}}}    // namespace pika::execution::experimental::detail
+}    // namespace pika::execution::experimental::detail

@@ -20,7 +20,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel { namespace execution { namespace detail {
+namespace pika::parallel::execution::detail {
 
     ////////////////////////////////////////////////////////////////////////////
     // forward declaration
@@ -158,4 +158,4 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
             threads::detail::register_work(data);
         }
     };
-}}}}    // namespace pika::parallel::execution::detail
+}    // namespace pika::parallel::execution::detail

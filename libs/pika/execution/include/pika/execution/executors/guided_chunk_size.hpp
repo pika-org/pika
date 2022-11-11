@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace pika { namespace execution {
+namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     /// Iterations are dynamically assigned to threads in blocks as threads
     /// request them until no blocks remain to be assigned. Similar to
@@ -70,9 +70,9 @@ namespace pika { namespace execution {
         std::size_t min_chunk_size_;
         /// \endcond
     };
-}}    // namespace pika::execution
+}    // namespace pika::execution
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
     struct is_executor_parameters<pika::execution::guided_chunk_size>
@@ -80,4 +80,4 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
     /// \endcond
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

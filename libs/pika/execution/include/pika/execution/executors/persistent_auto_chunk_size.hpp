@@ -17,7 +17,7 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace pika { namespace execution {
+namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     /// Loop iterations are divided into pieces and then assigned to threads.
     /// The number of loop iterations combined is determined based on
@@ -129,9 +129,9 @@ namespace pika { namespace execution {
         std::uint64_t num_iters_for_timing_;
         /// \endcond
     };
-}}    // namespace pika::execution
+}    // namespace pika::execution
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
     struct is_executor_parameters<pika::execution::persistent_auto_chunk_size>
@@ -139,4 +139,4 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
     /// \endcond
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

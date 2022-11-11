@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { namespace execution { namespace detail {
+namespace pika::parallel::execution::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename F, typename Shape, typename Future, typename... Ts>
@@ -171,4 +171,4 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
             PIKA_FORWARD(Executor, exec), PIKA_FORWARD(F, f),
             PIKA_FORWARD(Shape, shape), PIKA_FORWARD(Args, args)};
     }
-}}}}    // namespace pika::parallel::execution::detail
+}    // namespace pika::parallel::execution::detail
