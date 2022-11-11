@@ -43,7 +43,6 @@ set(execution_headers
     pika/execution/executors/fused_bulk_execute.hpp
     pika/execution/executors/guided_chunk_size.hpp
     pika/execution/executors/persistent_auto_chunk_size.hpp
-    pika/execution/executors/polymorphic_executor.hpp
     pika/execution/executors/rebind_executor.hpp
     pika/execution/executors/static_chunk_size.hpp
     pika/execution/scheduler_queries.hpp
@@ -64,9 +63,7 @@ set(execution_headers
     pika/execution/traits/vector_pack_type.hpp
 )
 
-set(execution_sources execution_parameter_callbacks.cpp
-                      polymorphic_executor.cpp
-)
+set(execution_sources execution_parameter_callbacks.cpp)
 
 include(pika_add_module)
 pika_add_module(
