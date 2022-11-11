@@ -11,7 +11,7 @@
 #include <pika/executors/datapar/execution_policy_fwd.hpp>
 #endif
 
-namespace pika { namespace execution {
+namespace pika::execution {
     ///////////////////////////////////////////////////////////////////////////
     // forward declarations, see execution_policy.hpp
     struct sequenced_policy;
@@ -37,4 +37,4 @@ namespace pika { namespace execution {
     struct parallel_unsequenced_policy;
 
     struct unsequenced_policy;
-}}    // namespace pika::execution
+}    // namespace pika::execution

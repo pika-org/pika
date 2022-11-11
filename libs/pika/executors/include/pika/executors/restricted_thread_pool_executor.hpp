@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     class restricted_thread_pool_executor
     {
         static constexpr std::size_t hierarchical_threshold_default_ = 6;
@@ -188,9 +188,9 @@ namespace pika { namespace parallel { namespace execution {
         std::size_t num_threads_;
         std::atomic<std::size_t> os_thread_;
     };
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
     struct is_one_way_executor<
@@ -210,4 +210,4 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
     /// \endcond
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

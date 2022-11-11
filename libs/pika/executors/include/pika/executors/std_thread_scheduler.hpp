@@ -17,7 +17,7 @@
 #include <thread>
 #include <type_traits>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
     struct std_thread_scheduler
     {
         constexpr std_thread_scheduler() = default;
@@ -115,4 +115,4 @@ namespace pika { namespace execution { namespace experimental {
         }
         /// \endcond
     };
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental

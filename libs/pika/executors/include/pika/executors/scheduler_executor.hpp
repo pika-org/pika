@@ -34,7 +34,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
 
     namespace detail {
 #if defined(PIKA_HAVE_CXX20_PERFECT_PACK_CAPTURE)
@@ -405,9 +405,9 @@ namespace pika { namespace execution { namespace experimental {
     template <typename BaseScheduler>
     explicit scheduler_executor(BaseScheduler&& sched)
         -> scheduler_executor<std::decay_t<BaseScheduler>>;
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
 
     /// \cond NOINTERNAL
     template <typename BaseScheduler>
@@ -445,4 +445,4 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
     /// \endcond
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

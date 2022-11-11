@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace parallel {
+namespace pika::parallel {
     namespace detail {
         /// \cond NOINTERNAL
         template <typename ExPolicy, typename Result = void>
@@ -249,4 +249,4 @@ namespace pika { namespace parallel {
 
     // we're just reusing our existing implementation
     using pika::exception_list;
-}}    // namespace pika::parallel
+}    // namespace pika::parallel

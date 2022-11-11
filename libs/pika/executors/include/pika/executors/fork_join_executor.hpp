@@ -40,7 +40,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
     /// \brief An executor with fork-join (blocking) semantics.
     ///
     /// The fork_join_executor creates on construction a set of worker threads
@@ -666,7 +666,7 @@ namespace pika { namespace execution { namespace experimental {
                 priority, stacksize, schedule, yield_delay);
         }
     };
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
 
 template <>
 struct fmt::formatter<
@@ -703,7 +703,7 @@ struct fmt::formatter<
     }
 };
 
-namespace pika { namespace parallel { namespace execution {
+namespace pika::parallel::execution {
     /// \cond NOINTERNAL
     template <>
     struct is_bulk_one_way_executor<
@@ -717,4 +717,4 @@ namespace pika { namespace parallel { namespace execution {
     {
     };
     /// \endcond
-}}}    // namespace pika::parallel::execution
+}    // namespace pika::parallel::execution

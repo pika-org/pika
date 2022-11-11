@@ -17,7 +17,7 @@
 #include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace pika { namespace detail {
+namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     // Define apply() overloads for plain local functions and function objects.
     // dispatching trait for pika::apply
@@ -56,4 +56,4 @@ namespace pika { namespace detail {
             return false;
         }
     };
-}}    // namespace pika::detail
+}    // namespace pika::detail

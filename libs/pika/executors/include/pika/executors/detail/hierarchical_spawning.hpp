@@ -34,7 +34,7 @@
 #include <utility>
 #include <vector>
 
-namespace pika { namespace parallel { namespace execution { namespace detail {
+namespace pika::parallel::execution::detail {
 
     template <typename Launch, typename F, typename S, typename... Ts>
     std::vector<
@@ -174,4 +174,4 @@ namespace pika { namespace parallel { namespace execution { namespace detail {
         return pika::traits::future_access<result_future_type>::create(
             PIKA_MOVE(p));
     }
-}}}}    // namespace pika::parallel::execution::detail
+}    // namespace pika::parallel::execution::detail

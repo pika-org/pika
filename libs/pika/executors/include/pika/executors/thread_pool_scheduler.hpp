@@ -25,7 +25,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika { namespace execution { namespace experimental {
+namespace pika::execution::experimental {
     struct thread_pool_scheduler
     {
         constexpr thread_pool_scheduler() = default;
@@ -342,4 +342,4 @@ namespace pika { namespace execution { namespace experimental {
         char const* annotation_ = nullptr;
         /// \endcond
     };
-}}}    // namespace pika::execution::experimental
+}    // namespace pika::execution::experimental
