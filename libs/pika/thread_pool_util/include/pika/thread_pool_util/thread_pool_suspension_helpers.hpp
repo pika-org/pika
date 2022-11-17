@@ -13,7 +13,7 @@
 
 #include <cstddef>
 
-namespace pika { namespace threads {
+namespace pika::threads {
     /// Resumes the given processing unit. When the processing unit has been
     /// resumed the returned future will be ready.
     ///
@@ -132,4 +132,4 @@ namespace pika { namespace threads {
     ///         on the pool itself.
     PIKA_EXPORT void suspend_pool_cb(detail::thread_pool_base& pool,
         util::detail::function<void(void)> callback, error_code& ec = throws);
-}}    // namespace pika::threads
+}    // namespace pika::threads

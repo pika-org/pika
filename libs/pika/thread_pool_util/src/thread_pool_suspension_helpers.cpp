@@ -16,7 +16,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace pika { namespace threads {
+namespace pika::threads {
     pika::future<void> resume_processing_unit(
         detail::thread_pool_base& pool, std::size_t virt_core)
     {
@@ -227,4 +227,4 @@ namespace pika { namespace threads {
         }
     }
 
-}}    // namespace pika::threads
+}    // namespace pika::threads
