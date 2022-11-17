@@ -592,8 +592,8 @@ namespace pika::threads::detail {
                         num_thread, running, thrd, enable_stealing)))
             {
                 tfunc_time_wrapper tfunc_time_collector(idle_rate);
-                PIKA_ASSERT(get_thread_id_data(thrd)->get_scheduler_base() ==
-                    &scheduler);
+                //                PIKA_ASSERT(get_thread_id_data(thrd)->get_scheduler_base() ==
+                //                    &scheduler);
 
                 idle_loop_count = 0;
                 ++busy_loop_count;
