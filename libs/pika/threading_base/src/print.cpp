@@ -11,6 +11,12 @@
 #include <cstdint>
 #include <thread>
 
+#if defined(__linux) || defined(linux) || defined(__linux__)
+# include <linux/unistd.h>
+# include <sys/mman.h>
+# define DEBUGGING_PRINT_LINUX
+#endif
+
 // ------------------------------------------------------------
 /// \cond NODETAIL
 namespace pika::debug::detail {
