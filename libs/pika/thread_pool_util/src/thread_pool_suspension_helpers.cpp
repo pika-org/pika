@@ -16,9 +16,9 @@
 #include <cstddef>
 #include <utility>
 
-namespace pika { namespace threads {
+namespace pika::threads::detail {
     pika::future<void> resume_processing_unit(
-        detail::thread_pool_base& pool, std::size_t virt_core)
+        thread_pool_base& pool, std::size_t virt_core)
     {
         if (!threads::detail::get_self_ptr())
         {
@@ -41,7 +41,7 @@ namespace pika { namespace threads {
         });
     }
 
-    void resume_processing_unit_cb(detail::thread_pool_base& pool,
+    void resume_processing_unit_cb(thread_pool_base& pool,
         util::detail::function<void(void)> callback, std::size_t virt_core,
         error_code& ec)
     {
@@ -72,7 +72,7 @@ namespace pika { namespace threads {
     }
 
     pika::future<void> suspend_processing_unit(
-        detail::thread_pool_base& pool, std::size_t virt_core)
+        thread_pool_base& pool, std::size_t virt_core)
     {
         if (!threads::detail::get_self_ptr())
         {
@@ -104,7 +104,7 @@ namespace pika { namespace threads {
         });
     }
 
-    void suspend_processing_unit_cb(detail::thread_pool_base& pool,
+    void suspend_processing_unit_cb(thread_pool_base& pool,
         util::detail::function<void(void)> callback, std::size_t virt_core,
         error_code& ec)
     {
@@ -145,7 +145,7 @@ namespace pika { namespace threads {
         }
     }
 
-    future<void> resume_pool(detail::thread_pool_base& pool)
+    future<void> resume_pool(thread_pool_base& pool)
     {
         if (!threads::detail::get_self_ptr())
         {
@@ -159,7 +159,7 @@ namespace pika { namespace threads {
             [&pool]() -> void { return pool.resume_direct(throws); });
     }
 
-    void resume_pool_cb(detail::thread_pool_base& pool,
+    void resume_pool_cb(thread_pool_base& pool,
         util::detail::function<void(void)> callback, error_code& /* ec */)
     {
         auto resume_direct_wrapper =
@@ -178,7 +178,7 @@ namespace pika { namespace threads {
         }
     }
 
-    future<void> suspend_pool(detail::thread_pool_base& pool)
+    future<void> suspend_pool(thread_pool_base& pool)
     {
         if (!threads::detail::get_self_ptr())
         {
@@ -200,7 +200,7 @@ namespace pika { namespace threads {
             [&pool]() -> void { return pool.suspend_direct(throws); });
     }
 
-    void suspend_pool_cb(detail::thread_pool_base& pool,
+    void suspend_pool_cb(thread_pool_base& pool,
         util::detail::function<void(void)> callback, error_code& ec)
     {
         if (threads::detail::get_self_ptr() &&
@@ -227,4 +227,4 @@ namespace pika { namespace threads {
         }
     }
 
-}}    // namespace pika::threads
+}    // namespace pika::threads::detail

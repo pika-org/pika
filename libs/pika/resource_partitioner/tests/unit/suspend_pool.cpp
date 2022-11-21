@@ -38,7 +38,8 @@ int pika_main()
     try
     {
         // Use .get() to throw exception
-        pika::threads::suspend_pool(*pika::this_thread::get_pool()).get();
+        pika::threads::detail::suspend_pool(*pika::this_thread::get_pool())
+            .get();
         PIKA_TEST_MSG(false, "Suspending should not be allowed on own pool");
     }
     catch (pika::exception const&)
@@ -68,12 +69,12 @@ int pika_main()
                 fs.push_back(pika::async(worker_exec, []() {}));
             }
 
-            pika::threads::suspend_pool(worker_pool).get();
+            pika::threads::detail::suspend_pool(worker_pool).get();
 
             // All work should be done when pool has been suspended
             PIKA_TEST(pika::when_all(std::move(fs)).is_ready());
 
-            pika::threads::resume_pool(worker_pool).get();
+            pika::threads::detail::resume_pool(worker_pool).get();
         }
     }
 
@@ -91,7 +92,7 @@ int pika_main()
                 fs.push_back(pika::async(worker_exec, []() {}));
             }
 
-            pika::threads::suspend_pool_cb(
+            pika::threads::detail::suspend_pool_cb(
                 worker_pool, [&sem]() { sem.release(); });
 
             sem.acquire();
@@ -99,7 +100,7 @@ int pika_main()
             // All work should be done when pool has been suspended
             PIKA_TEST(pika::when_all(std::move(fs)).is_ready());
 
-            pika::threads::resume_pool_cb(
+            pika::threads::detail::resume_pool_cb(
                 worker_pool, [&sem]() { sem.release(); });
 
             sem.acquire();
@@ -115,7 +116,8 @@ int pika_main()
             for (std::size_t thread_num = 0;
                  thread_num < worker_pool_threads - 1; ++thread_num)
             {
-                pika::threads::suspend_processing_unit(worker_pool, thread_num);
+                pika::threads::detail::suspend_processing_unit(
+                    worker_pool, thread_num);
             }
 
             std::vector<pika::future<void>> fs;
@@ -126,12 +128,12 @@ int pika_main()
                 fs.push_back(pika::async(worker_exec, []() {}));
             }
 
-            pika::threads::suspend_pool(worker_pool).get();
+            pika::threads::detail::suspend_pool(worker_pool).get();
 
             // All work should be done when pool has been suspended
             PIKA_TEST(pika::when_all(std::move(fs)).is_ready());
 
-            pika::threads::resume_pool(worker_pool).get();
+            pika::threads::detail::resume_pool(worker_pool).get();
         }
     }
 

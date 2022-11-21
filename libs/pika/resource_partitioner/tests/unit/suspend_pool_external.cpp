@@ -55,7 +55,7 @@ void test_scheduler(
         }
 
         bool suspended = false;
-        pika::threads::suspend_pool_cb(
+        pika::threads::detail::suspend_pool_cb(
             default_pool, [&suspended]() { suspended = true; });
 
         // NOLINTNEXTLINE(bugprone-infinite-loop)
@@ -65,7 +65,7 @@ void test_scheduler(
         }
 
         bool resumed = false;
-        pika::threads::resume_pool_cb(
+        pika::threads::detail::resume_pool_cb(
             default_pool, [&resumed]() { resumed = true; });
 
         // NOLINTNEXTLINE(bugprone-infinite-loop)

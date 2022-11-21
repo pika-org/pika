@@ -29,7 +29,7 @@ int pika_main()
             pika::resource::get_thread_pool("default");
 
         // Use .get() to throw exception
-        pika::threads::suspend_processing_unit(tp, 0).get();
+        pika::threads::detail::suspend_processing_unit(tp, 0).get();
         PIKA_TEST_MSG(false,
             "Suspending should not be allowed with "
             "elasticity disabled");
